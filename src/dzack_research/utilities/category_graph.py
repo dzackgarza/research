@@ -247,16 +247,21 @@ def _declarations(node: ast.ClassDef) -> list[ast.FunctionDef]:
     ]
 
 
-def _object_methods(node: ast.ClassDef) -> dict[str, ast.FunctionDef]:
-    """The methods a category installs on its objects: its ``ParentMethods`` body."""
+def _container_methods(node: ast.ClassDef, container: str) -> dict[str, ast.FunctionDef]:
+    """The methods a category installs through one of its ``*Methods`` classes."""
     for statement in node.body:
-        if isinstance(statement, ast.ClassDef) and statement.name == "ParentMethods":
+        if isinstance(statement, ast.ClassDef) and statement.name == container:
             return {
                 method.name: method
                 for method in statement.body
                 if isinstance(method, ast.FunctionDef)
             }
     return {}
+
+
+def _object_methods(node: ast.ClassDef) -> dict[str, ast.FunctionDef]:
+    """The methods a category installs on its objects: its ``ParentMethods`` body."""
+    return _container_methods(node, "ParentMethods")
 
 
 def _factories(trees: list[ast.Module]) -> dict[str, str]:
@@ -1375,11 +1380,6 @@ def render_routes(
     return "\n".join(header + body)
 
 
-def _words(name: str) -> set[str]:
-    """The capitalized words of a CamelCase name: ``FiniteOrderedSets`` gives Finite, Ordered, Sets."""
-    return set(re.findall(r"[A-Z][a-z0-9]*", name))
-
-
 def _construction_sites(
     root: Path, factories: dict[str, str], trees: dict[Path, ast.Module] | None = None
 ) -> list[tuple[str, str, list[tuple[str, str]]]]:
@@ -1475,13 +1475,10 @@ def _construction_sites(
 
 
 def render_properties(declarations: list[CategoryDeclaration], root: Path) -> str:
-    """For each property axiom on a category, who is under it, who claims it by name, and who propagates it.
+    """For each property axiom: the categories under it, and the construction sites that place results under it.
 
-    A category whose name states a property (``FiniteOrderedSets``) and that
-    does not lie under the axiom (``Sets.Finite``) is a misplacement or a
-    misnomer; both are findings.  A construction that places its result by
-    the properties of its input states preservation in its body, so the
-    sites that state none for a property are listed beside those that do.
+    A viewer for auditing by hand. It lists what the source declares and places and
+    judges nothing: whether a result belongs under a property is for the reader.
     """
     above = _up_sets(declarations)
     by_vertex = {d.vertex: d for d in declarations}
@@ -1502,16 +1499,7 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
     )
     reports: list[tuple[int, list[str]]] = []
     for axiom_vertex in axiom_vertices:
-        base, axiom = axiom_vertex.split(".")
         below = sorted(v for v in above if axiom_vertex in above[v])
-        claimants = sorted(
-            v
-            for v in by_vertex
-            if axiom in _words(by_vertex[v].name)
-            and base in above[v]
-            and axiom_vertex not in above[v]
-            and "." not in v
-        )
         propagating = sorted(
             {
                 (site, source, result)
@@ -1520,19 +1508,8 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
                 if result == axiom_vertex
             }
         )
-        if not (claimants or propagating):
-            continue
         lines = [
             f"## {axiom_vertex}",
-            "",
-            f"### Categories whose name states {axiom} and that do not lie under {axiom_vertex} ({len(claimants)})",
-            "",
-        ]
-        lines += [
-            f"{v}  ({by_vertex[v].path}:{by_vertex[v].line}) declares {', '.join(by_vertex[v].heads) or 'nothing'}"
-            for v in claimants
-        ] or ["none"]
-        lines += [
             "",
             f"### Categories under {axiom_vertex} ({len(below)})",
             "",
@@ -1546,7 +1523,7 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
         lines += [f"{site}: input in {source}" for site, source, _ in propagating] or [
             "none"
         ]
-        reports.append((len(claimants), lines))
+        reports.append((len(below), lines))
     axiom_names = {v.split(".")[1] for v in axiom_vertices}
     construction_axioms = _construction_axioms(declarations, axiom_names)
     constructions = [
@@ -1580,7 +1557,7 @@ def render_properties(declarations: list[CategoryDeclaration], root: Path) -> st
         *silent,
     ]
     header = [
-        "Property axioms, the categories whose names state them, and the constructions that propagate them, read from source.",
+        "Property axioms, the categories under them, and the construction sites that place results under them, read from source.",
         "",
     ]
     body = [
@@ -1614,7 +1591,10 @@ def _signature(function: ast.FunctionDef) -> str:
 
 
 def render_constructions(
-    declarations: list[CategoryDeclaration], root: Path, selected: list[str]
+    declarations: list[CategoryDeclaration],
+    root: Path,
+    selected: list[str],
+    inferred: dict[str, dict[str, dict[str, str]]],
 ) -> str:
     """Each operation on the objects of a category that builds an object, and where the result is placed.
 
@@ -1630,13 +1610,12 @@ def render_constructions(
         for path in sorted(root.rglob("*.py"))
     }
     factories = _factories(list(trees.values()))
-    module_functions: dict[str, list[tuple[ast.FunctionDef, Path]]] = {}
-    for path, tree in trees.items():
-        for statement in tree.body:
-            if isinstance(statement, ast.FunctionDef):
-                module_functions.setdefault(statement.name, []).append(
-                    (statement, path)
-                )
+    source_root = root.parents[1]
+    module_paths = {
+        ".".join(path.relative_to(source_root).with_suffix("").parts): path
+        for path in trees
+    }
+    imports = {path: _imported_names(tree) for path, tree in trees.items()}
     by_name = {d.name: d for d in declarations if not d.axiom_of and not d.nested_in}
     classes = {name: _class_at(d)[0] for name, d in by_name.items()}
     sites = {
@@ -1685,12 +1664,50 @@ def render_constructions(
             )
         return stated
 
+    def module_function(name: str, path: Path) -> tuple[ast.FunctionDef, Path] | None:
+        r"""The module-level function ``name`` means in ``path``: defined there, or imported."""
+        for statement in trees[path].body:
+            if isinstance(statement, ast.FunctionDef) and statement.name == name:
+                return statement, path
+        if name in imports[path]:
+            module, original = imports[path][name]
+            target = module_paths.get(module)
+            if target is not None:
+                for statement in trees[target].body:
+                    if isinstance(statement, ast.FunctionDef) and statement.name == original:
+                        return statement, target
+        return None
+
+    def inherited_method(
+        owner: str, container: str, name: str
+    ) -> tuple[ast.FunctionDef, Path, str, dict[str, ast.FunctionDef]] | None:
+        r"""The method ``name`` that ``owner``'s objects inherit through ``container``."""
+        vertex = by_name[owner].vertex if owner in by_name else owner
+        for ancestor in sorted(above.get(vertex, set())):
+            if ancestor in classes:
+                found = _container_methods(classes[ancestor], container)
+                if name in found:
+                    return found[name], Path(by_name[ancestor].path), ancestor, found
+        return None
+
+    def assigned(function: ast.FunctionDef, variable: str) -> ast.expr | None:
+        r"""The last value bound to the local ``variable`` in ``function``'s own body."""
+        value: ast.expr | None = None
+        for node in ast.walk(function):
+            if isinstance(node, ast.Assign) and any(
+                isinstance(target, ast.Name) and target.id == variable
+                for target in node.targets
+            ):
+                value = node.value
+        return value
+
     def trace(
         function: ast.FunctionDef,
         path: Path,
         owner: str,
         methods: dict[str, ast.FunctionDef],
         depth: int,
+        container: str = "ParentMethods",
     ) -> list[str]:
         site = f"{path}:{function.lineno} {function.name}"
         if site in sites:
@@ -1707,8 +1724,24 @@ def render_constructions(
                 )
             ]
         outcomes: list[str] = []
-        for value in _returns(function):
+        pending = list(_returns(function))
+        seen_locals: set[str] = set()
+        while pending:
+            value = pending.pop(0)
             match value:
+                case ast.Constant(value=bool()) | ast.Compare() | ast.UnaryOp(
+                    op=ast.Not()
+                ) | ast.BoolOp():
+                    outcomes.append("a truth value, not an object")
+                case ast.Constant(value=None):
+                    outcomes.append("None, not an object")
+                case ast.Name(id="self"):
+                    outcomes.append(f"the input itself, in {owner}")
+                case ast.Name(id=variable) if variable not in seen_locals and (
+                    bound := assigned(function, variable)
+                ) is not None:
+                    seen_locals.add(variable)
+                    pending.append(bound)
                 case ast.Call(
                     func=ast.Attribute(attr="_with_structure"),
                     args=[ast.Tuple(elts=elts), *_],
@@ -1729,18 +1762,24 @@ def render_constructions(
                     outcomes.append(
                         f"an object of {ast.unparse(category)}, that is of {placed_by(category)}"
                     )
-                case ast.Call(func=ast.Name(id=name)) if (
-                    depth and len(module_functions.get(name, [])) == 1
+                case ast.Call(func=ast.Name(id=name)) if depth and (
+                    callee := module_function(name, path)
                 ):
-                    callee, callee_path = module_functions[name][0]
                     outcomes.extend(
-                        trace(callee, callee_path, owner, methods, depth - 1)
+                        trace(callee[0], callee[1], owner, methods, depth - 1, container)
                     )
                 case ast.Call(
                     func=ast.Attribute(value=ast.Name(id="self"), attr=name)
                 ) if depth and name in methods:
                     outcomes.extend(
-                        trace(methods[name], path, owner, methods, depth - 1)
+                        trace(methods[name], path, owner, methods, depth - 1, container)
+                    )
+                case ast.Call(
+                    func=ast.Attribute(value=ast.Name(id="self"), attr=name)
+                ) if depth and (inherited := inherited_method(owner, container, name)):
+                    found, found_path, ancestor, found_methods = inherited
+                    outcomes.extend(
+                        trace(found, found_path, ancestor, found_methods, depth - 1, container)
                     )
                 case ast.Call(func=ast.Attribute(value=receiver, attr=name)) if (
                     depth
@@ -1753,35 +1792,47 @@ def render_constructions(
         return list(dict.fromkeys(outcomes))
 
     lines = [
-        "Operations on the objects of each category that build an object, and the category the source places the result in.",
+        "Every public operation a category gives its objects, elements and morphisms, and the category the source places its result in.",
         "",
     ]
+    containers = (
+        ("ParentMethods", "Objects X", "X"),
+        ("ElementMethods", "Elements x of objects", "x"),
+        ("MorphismMethods", "Morphisms f", "f"),
+    )
     for d in sorted(by_name.values(), key=lambda d: d.name):
         if selected and not any(fnmatchcase(d.name, p) for p in selected):
             continue
         node, _ = _class_at(d)
-        methods = _object_methods(node)
-        rows = []
-        for name, method in methods.items():
-            if name.startswith("_"):
-                continue
-            outcomes = trace(method, Path(d.path), d.name, methods, 4)
-            if outcomes:
+        kind = (
+            " (a construction on a category or an object)"
+            if d.name in construction_axioms
+            else ""
+        )
+        for container, subject, symbol in containers:
+            methods = _container_methods(node, container)
+            rows = []
+            for name, method in methods.items():
+                if name.startswith("_"):
+                    continue
+                at_runtime = inferred.get(d.name, {}).get(container, {}).get(name)
+                outcomes = trace(method, Path(d.path), d.name, methods, 4, container) or [
+                    f"{at_runtime}, read from the returned value's class"
+                    if at_runtime
+                    else "not resolved from the source, and not inferred at runtime (it needs arguments or "
+                    "its category has no example object); it returns "
+                    + ("; ".join(ast.unparse(v) for v in _returns(method)) or "nothing")
+                ]
                 rows.append(
-                    f"  X.{name}({_signature(method)})  ->  " + "  |  ".join(outcomes)
+                    f"  {symbol}.{name}({_signature(method)})  ->  " + "  |  ".join(outcomes)
                 )
-        if rows:
-            kind = (
-                " (a construction on a category or an object)"
-                if d.name in construction_axioms
-                else ""
-            )
-            lines += [
-                f"## Objects X of {d.name}{kind}  ({d.path}:{d.line})",
-                "",
-                *rows,
-                "",
-            ]
+            if rows:
+                lines += [
+                    f"## {subject} of {d.name}{kind}  ({d.path}:{d.line})",
+                    "",
+                    *rows,
+                    "",
+                ]
     return "\n".join(lines)
 
 
@@ -1978,6 +2029,11 @@ def main() -> None:
         "--select", action="append", default=[], help="category vertex glob; repeatable"
     )
     parser.add_argument(
+        "--inferred",
+        type=Path,
+        help="JSON from dzack_research.utilities.category_inference: the categories of returned values, read at runtime",
+    )
+    parser.add_argument(
         "--direction", choices=("self", "up", "down", "both"), default="self"
     )
     parser.add_argument("--between", nargs=2, default=[], metavar=("LOWER", "UPPER"))
@@ -2032,7 +2088,15 @@ def main() -> None:
         return
     if arguments.format == "constructions":
         print(
-            render_constructions(declarations, arguments.root, arguments.select), end=""
+            render_constructions(
+                declarations,
+                arguments.root,
+                arguments.select,
+                json.loads(arguments.inferred.read_text(encoding="utf-8"))
+                if arguments.inferred
+                else {},
+            ),
+            end="",
         )
         return
     if arguments.format == "properties":
