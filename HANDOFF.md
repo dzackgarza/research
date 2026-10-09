@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**G-object forgetful endpoint comparison verified (2026-10-09):** The `C_2`-action on a two-point set constructs in both `GObjects(C_2,Sets())` and `Sets()`. Its forgetful value is a two-point set, but not literally the previously supplied `Sets.Δ[1]` object: it retains the selected action's separate representation. Focused Sage verifies that `GObjects._mor_endpoints_in_supercategory(Sets(),A,A)` uses the precise object returned by its forgetful functor. The owner now carries the executable specimen, without replacing selected object identity by equality of cardinalities.
+
 **Direct-sum object result and structure morphisms verified (2026-10-09):** For `DirectSumObjects(Modules(ZZ)).an_object()`, focused Sage verifies both the selected direct-sum placement and the base-module placement, exactly two indexed summands, and the exact target of each injection and source of each projection. The executable specimen is recorded at `DirectSumObjects`. The `self.base_category()` edge therefore has a concrete result-and-arrow example without identifying all arrows of the chosen-decomposition category with unstructured module arrows.
 
 **Coslice-category nonidentity square composition verified (2026-10-09):** Over `Sets.Δ[0]`, a map into the zero point of `Sets.Δ[1]` is fixed by the nonidentity collapse endomorphism. Focused Sage confirms its coslice square is idempotent, has the identity as the left fixed edge, and the collapse as the right edge; the executable owner specimen now records the source-dependent `self.base_category()` expression comparison. This complements the previously verified slice swap-square example without identifying their arrow theories.

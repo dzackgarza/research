@@ -741,7 +741,22 @@ class GObjectMorCategoryConstruction(MorCategoryConstruction):
 
 
 class GObjects(CategoryPacketMethods, OwnedCategory):
-    r"""The category of objects of ``C`` with a chosen ``G``-action."""
+    r"""The category of objects of ``C`` with a chosen ``G``-action.
+
+    A represented two-point `C_2`-set retains its set cardinality, and the
+    forgetful functor supplies the exact underlying arrow endpoints::
+
+        sage: from dzack_research.preamble.all import Sets, Groups
+        sage: G, X = Groups.C(2), Sets.Δ[1]
+        sage: C = GObjects(G, Sets())
+        sage: A = C.on_set(X, lambda g, x: X((int(x) + int(g)) % 2))
+        sage: A in C and A in Sets()
+        True
+        sage: C.forgetful_functor()(A).cardinality() == 2
+        True
+        sage: C._mor_endpoints_in_supercategory(Sets(), A, A)[0] is C.forgetful_functor()(A)
+        True
+    """
 
     @staticmethod
     def __classcall__(cls, group, category):
