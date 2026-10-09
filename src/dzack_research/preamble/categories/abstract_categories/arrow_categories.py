@@ -1332,6 +1332,8 @@ class SubobjectCategory(OwnedCategoryBase):
         sage: category = SubobjectCategory(Modules(ZZ), inclusion.codomain())
         sage: submodule in category
         True
+        sage: category.super_categories()[0] is Modules(ZZ)
+        True
         sage: _ = refine(submodule, category)
         sage: submodule in category
         True

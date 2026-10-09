@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Module-subobject base-category edge checked (2026-10-09):** For the ideal `2ZZ` as a submodule of `ZZ`, `SubobjectCategory(Modules(ZZ),ZZ)` has the exact `Modules(ZZ)` supercategory and retains the selected inclusion; its identity subobject morphism composes with itself. Focused Sage passed. The `self.base_category()` expression records ordinary module placement without identifying the restricted triangle Mor with every module map.
+
 **Lattice embedding Mor inherited-endpoint expression checked (2026-10-09):** For `L=U`, every selected supercategory of `L.Mono(L)` retains exactly `L` as both endpoint objects; its chosen embedding identity composes to itself. Focused Sage passed, and the owner specimen now includes these assertions. The dependent `*inherited` graph entry is an endpoint-admissible family of monomorphism categories, not a declaration that all embeddings arise from one fixed scalar restriction.
 
 **Graded algebra exemplar result placement checked (2026-10-09):** `GradedAlgebras(ZZ).an_object()` lies in its selected graded-algebra category, its graded-module category, and the associative unital algebra supercategory. Targeted Sage passed; the executable result-level assertions now supplement the prior declaration-only expression-edge check at the graded algebra owner.
