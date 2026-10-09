@@ -179,6 +179,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 14. Twist functor on isometries
 
+**Frozen-call reconciliation (2026-10-09):** The existing `TwistFunctor` transports an isometry and its inverse, preserving isomorphism-specialized endpoints. The lattice method `L.twist(-1)` has normalized parent identity on applying the sign twist twice. Its result is a twisted formed object, not a new underlying abelian group chosen independently. The prior U owner specimen tests inverse composition and literal parent identity. A general nonunit value scaling does not acquire an inverse by virtue of this sign-twist specimen; that formal equivalence boundary remains separate.
+
 **Owner:** change of value of a formed object, by multiplication on its value module. Restrict this functor to the relevant lattice category and its core of isomorphisms.
 
 **Contract:** transport both a map and its inverse; preserve composition. Scaling twice has the comparison with scaling by the product. For the sign twist, the requested Python identity `L.twist(-1).twist(-1) is L` additionally requires constructor normalization of this action. Mathematical functoriality alone does not imply object identity in Python. Nonzero versus invertible scaling must be separated when claiming an equivalence over a general ring.
@@ -209,6 +211,8 @@ The parameter space can be affine while its evaluation in the space of matrices 
 
 ### 17. Binary fixed-norm representations — frozen extension of `L.vectors_of_square(n)`
 
+**Frozen-call reconciliation (2026-10-09):** Research `vectors_of_square(n)` retains the full norm fibre rather than returning orbit representatives. On definite lattices and nonzero split binary fibres this is a finite subset with inclusion; otherwise it retains the represented square-fibre object. The separate `binary_fixed_norm_representatives(n)` returns the selected orbit representatives with the action/quotient data, and `reduction_cycle(bound,start)` returns a period isometry with its bounded vector subset, or `None`. A split binary zero fibre is not finite and the representative method rejects its infinitely many content classes with `ValueError`. The frozen row's interpretation of `vectors_of_square` as orbit representatives conflicts with the actual mathematical return object; the stopped port must take the orbit quotient explicitly rather than changing the norm-fibre API.
+
 **Owner:** the norm fibre as a `G`-set, followed by its orbit quotient for an explicitly selected subgroup of the orthogonal group. Chosen representatives and transporters are data over that quotient.
 
 **Contract:** distinguish all vectors in the fibre from one vector in each orbit. A definite shell currently returns vectors; replacing its meaning by orbit representatives only in the indefinite case is not a signature-based specialization of the same object. Distinguish `O`, `SO`, primitive vectors, and all vectors. A generator of the infinite cyclic part is not the whole automorphism group. At norm zero a split binary lattice has infinitely many content classes unless primitivity is imposed.
@@ -218,6 +222,8 @@ The parameter space can be affine while its evaluation in the space of matrices 
 The current issue body distinguishes the cases explicitly: `vectors_of_square(n)` returns all vectors for a split binary form and `n != 0`; `primitive_isotropic_vectors()` returns the primitive vectors on its isotropic lines; `reduction_cycle(bound,start)` returns the cycle automorph as an isometry and the bounded vectors met in one period, or `None`, for an anisotropic binary form. The older frozen table instead assigns orbit representatives to `vectors_of_square(n)`. Preserve the norm-fibre meaning of `vectors_of_square`; the quotient belongs to the group action. The cycle operation also retains its primitive positive starting vector and the action of the returned automorph; a norm-fibre quotient alone does not specify a reduction cycle.
 
 ### 18. Affine close-vector shells — frozen shell methods with a multiplier bound
+
+**Frozen-call reconciliation (2026-10-09):** Research exports `first_close_vector_shell(t,B,M)` and `first_close_vector_sphere(t,B,M)` with the frozen names. Each returns `None` if no multiplier in `1..M` succeeds, or a product element `(m, finite_subset)` whose finite subset retains its inclusion into the original lattice. Sphere selection tests the exact boundary, while shell selection tests the whole signed sublevel interval; the shared `scaled_close_vector_shells` retains the fixed-m family. A nondefinite form or a bound of the wrong sign raises `ValueError`, and a target outside the selected rational ambient is rejected. The observed bound-zero shell returns `None`; it is not an unbounded search.
 
 **Owner:** intersection of an affine quadratic sublevel set with a discrete lattice, and an indexed family of such intersections. The least successful multiplier is a selection from the index set of nonempty fibres.
 
@@ -236,6 +242,8 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 **Trace:** F1/F9 → row 7 → image and retained parameterization. This is not a separate coordinate congruence algorithm on lattices. The affine fibre must exist first.
 
 ### 20. Divisibility sublattice — requested `L.divisible_sublattice(d)`
+
+**Frozen-call reconciliation (2026-10-09):** Research implements the exact name as `L.ideal_dual(d).integral_pullback()` and returns a formed subobject of `L`, not an independently presented Gram matrix. Its inclusion `i`, retained ideal-dual morphism `k=map_to_ideal_dual()`, generic-fibre inclusion `j`, and ideal-dual inclusion `u` satisfy `j*i=u*k`. On Gram `diag(0,2)` and divisor `3`, this equality passed on all generators; the divisor-zero case returns the radical with rank one and also passes the square comparison. Divisor zero is not substituted into the nonzero-divisor expression `L intersect d*L^#`.
 
 **Owner:** inverse image of an ideal-valued metric dual along the integral inclusion into the rational span. For `j: L -> L_Q` and `I=(d)`, form the pullback of `idealDual(ZZ,L,I) -> L_Q` along `j`.
 
