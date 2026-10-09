@@ -231,6 +231,37 @@ class CoxeterDiagrams(OwnedCategory):
 
     _MorCategory = CoxeterDiagramMorCategoryConstruction
 
+    def _call_(self, datum, *, names=None, positions=None):
+        r"""Construct the diagram presented by a Coxeter matrix or by roots.
+
+        The defining data determine whether this is an unrooted diagram or
+        a diagram equipped with its root realization.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.all import CoxeterDiagrams
+            sage: C = CoxeterDiagrams()
+            sage: C([[1, 3], [3, 1]]).coxeter_entry(0, 1) == 3
+            True
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+        match datum:
+            case CoxeterMatrix() | IndexedFamily():
+                return self.from_coxeter_matrix(datum, names=names, positions=positions)
+            case CartanType():
+                return self.from_cartan_type(datum, names=names, positions=positions)
+            case list() | tuple():
+                entries = tuple(datum)
+                first_parent = element_parent(entries[0]) if entries else None
+                match first_parent:
+                    case _ if first_parent is not None and first_parent in Lattices(first_parent.base_ring()):
+                        return self.from_roots(entries, names=names, positions=positions)
+                    case _:
+                        return self.from_coxeter_matrix(entries, names=names, positions=positions)
+            case _:
+                raise TypeError(f"{datum!r} is not a Coxeter matrix, Cartan type, or family of roots")
+
     def an_object(self):
         r"""The diagram of ``A_2``: two vertices joined by an edge of order 3."""
         return self.from_cartan_type(["A", 2])
