@@ -635,6 +635,10 @@ class SetMorCategory(CategoricalMor):
             # The empty exponent was handled above; evaluation at any point
             # embeds the uncountable codomain into the function set.
             placement = owned_category_join((placement, UncountableSets()))
+        elif domain in InfiniteSets() and codomain in UncountableSets():
+            # Constant functions embed the codomain into functions on any
+            # nonempty domain, independently of an enumeration of either set.
+            placement = owned_category_join((placement, UncountableSets()))
         elif (
             domain in InfiniteSets()
             and codomain in FiniteSets()
