@@ -2961,6 +2961,11 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         family(index) in FiniteSets() for index in index_set
     ):
         placements.append(FiniteSets())
+    elif index_set in FiniteSets() and all(
+        family(index) in CountableSets() for index in index_set
+    ):
+        # Countability of a finite product needs no chosen enumeration.
+        placements.append(CountableSets())
     if index_set in FiniteSets() and index_set in EnumeratedSets():
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
@@ -2969,12 +2974,6 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         factors = tuple(family(index) for index in index_set)
         if all(factor in EnumeratedSets() for factor in factors):
             placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
-        if FiniteSets() not in placements and all(factor in CountableSets() for factor in factors):
-            # A finite product of countable sets is countable.  Do not demand
-            # exact cardinalities merely to construct the product: some owned
-            # factors (for example matrix Mor objects) know their structural
-            # category before exposing a cardinality computation.
-            placements.append(CountableSets())
     return _object_of(owned_category_join(placements), family=family)
 
 
