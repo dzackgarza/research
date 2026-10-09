@@ -2120,7 +2120,19 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def discriminant_image(self):
-            r"""Return the computed image of ``rho_L`` when ``O(L)`` generators are known."""
+            r"""Return the computed image of ``rho_L`` when ``O(L)`` generators are known.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("A2")
+                sage: rho = L.discriminant_representation()
+                sage: Q = L.discriminant_group().orthogonal_group()
+                sage: H = rho.preimage_subgroup(Q.subgroup(tuple(Q.group_generators())))
+                sage: all(g in H for g in H.schreier_generators())
+                True
+                sage: H.image_under(rho).cardinality() == Q.cardinality() == 2
+                True
+            """
             return self.Aut().discriminant_image()
 
         @cached_method
