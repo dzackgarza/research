@@ -117,6 +117,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 True
                 sage: G.subgroup(generators).cardinality() == 2
                 True
+                sage: P.finite_index_schreier_generators(index_bound=2)
+                Traceback (most recent call last):
+                ...
+                ValueError: the subgroup index exceeds the supplied bound
                 sage: F, C = Groups.Free(1), Groups.C(2)
                 sage: s, t = F.group_generators()[0], C.group_generators()[0]
                 sage: phi = F.Mor(C)({next(iter(F.free_basis())): t})
