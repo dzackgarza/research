@@ -1540,7 +1540,19 @@ class CoveredObjectCategory(CosliceCategory):
 
 
 class FixedWideMorCategory(FixedRestrictedMorCategory):
-    r"""The selected arrows in one existing Mor of the underlying category."""
+    r"""The selected arrows in one existing Mor of the underlying category.
+
+    Its selected underlying fixed Mor has the *same* endpoints; this does
+    not equate the narrower arrow class with all underlying arrows::
+
+        sage: from dzack_research.preamble.all import Sets
+        sage: X = Sets.Δ[1]
+        sage: wide = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+        sage: H = wide.Mor(X, X)
+        sage: K = H.super_categories()[0]
+        sage: K.domain_object() is X and K.codomain_object() is X
+        True
+    """
 
     def arrow_set(self) -> SageHomset:
         return _category_mor_parent(
