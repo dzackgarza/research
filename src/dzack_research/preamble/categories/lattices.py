@@ -1406,12 +1406,19 @@ class Lattices(OwnedCategoryOverBaseRing):
         of rank `n`; ``Lattices(R)(R^{\mathbb N})`` is its colimit.
         A pairing Gram is a lattice: ``C((R^NN).diagonal_gram({0: -1}))``.
         ``module_generators=`` is the generating set of the underlying
-        free module; when omitted, the generators are the formal symbols
-        \(e_i\in\mathrm{SR}\).  The result is an owned lattice.
+        free module; when omitted, its labels are the natural-number ordinal
+        of the rank. The symbols \(e_i\) only print basis vectors.
+        The result is an owned lattice.
 
         EXAMPLES::
 
             sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: A2 = Lattices(ZZ)([[2, 1], [1, 2]])
+            sage: F = A2.unformed_module()
+            sage: tuple(int(key) for key in F.module_generating_set())
+            (0, 1)
+            sage: F.module_generator(0) != F.module_generator(1)
+            True
             sage: Lattices(ZZ)("U")
             Integral lattice of rank 2 and signature (1, 1)
             sage: I2 = Lattices(ZZ)(ZZ^2)
