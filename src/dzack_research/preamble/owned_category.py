@@ -770,16 +770,16 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         """
         if axiom in self.axioms():
             return (self,)
-        axiom_attribute = getattr(self.__class__, axiom, None)
-        if axiom_attribute is None:
-            return (self,)
         if axiom in self.__class__.__base__.__dict__:
             from sage.categories.category_with_axiom import CategoryWithAxiom
 
+            axiom_attribute = getattr(self.__class__.__base__, axiom)
             if isclass(axiom_attribute) and issubclass(
                 axiom_attribute, CategoryWithAxiom
             ):
                 return (axiom_attribute(self),)
+            return (self,)
+        if not any(axiom in base.__dict__ for base in self.__class__.__mro__):
             return (self,)
 
         result = (self,) + tuple(
