@@ -1267,7 +1267,23 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         )
 
     def super_categories(self):
-        r"""The same maps as ordinary ``R[G]``-linear maps, with equivariance remembered."""
+        r"""The same maps as ordinary ``R[G]``-linear maps, with equivariance remembered.
+
+        For the regular representation, the declared underlying Mor retains
+        both endpoints, while the selected equivariant identity composes::
+
+            sage: from dzack_research.preamble.all import ZZ, Groups
+            sage: algebra = ZZ[Groups.C(2)]
+            sage: A = algebra.regular_representation()
+            sage: E = A.Mor(A)
+            sage: E.super_categories()[0].domain_object() is A
+            True
+            sage: E.super_categories()[0].codomain_object() is A
+            True
+            sage: f = E.identity()
+            sage: f.domain() is A and f.codomain() is A and f * f == f
+            True
+        """
         generic_modules = GeneralModules(self.domain().base_ring())
         ordinary = ModuleMorCategoryConstruction(generic_modules).Of(
             self.domain(),
