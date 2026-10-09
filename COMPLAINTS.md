@@ -663,24 +663,6 @@ survey, 2026-10-08). The code-wrangling helpers `lmap`, `lzip`, `zipsum` and
 `tests/user_simulations/test_newcomer_session.sage:126` call `matrix(ZZ, ...)`.
 Repair: `session-objects-are-built-by-their-parents` in TODO.
 
-### A finite cardinal does not convert into the integers
-
-A finite cardinal is a natural number, and the natural numbers include
-into the integers. The session's cardinals are objects of `Cardinalities`
-(parents), so Sage's `parent(c)` returns the cardinal's class, and the
-integers' element constructor (`categories/rings/ring_foundation.py`) passes
-that class to `Modules(ZZ).__contains__`, which raises
-`TypeError: category() needs an argument` (observed 2026-10-07).
-`RegularPolytopes.dimension()` (`categories/schemes/polytopes.py`) converts
-`schlafli_symbol().cardinality() + 1` into `_own_ring(SageZZ)`, so the cube
-has no dimension.
-**Dependency path:** cardinality of a finite set -> the natural number it
-is -> its image under `NN -> ZZ`.
-**Consumers:** `tests/schemes/test_regular_polytope_symmetry.sage`
-(`test_the_cube_is_three_dimensional`) and every caller of
-`RegularPolytopes.dimension()`.
-Repair: `a-finite-cardinal-is-a-natural-number` in TODO.
-
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 
 The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
