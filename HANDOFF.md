@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Lattice embedding Mor inherited-endpoint expression checked (2026-10-09):** For `L=U`, every selected supercategory of `L.Mono(L)` retains exactly `L` as both endpoint objects; its chosen embedding identity composes to itself. Focused Sage passed, and the owner specimen now includes these assertions. The dependent `*inherited` graph entry is an endpoint-admissible family of monomorphism categories, not a declaration that all embeddings arise from one fixed scalar restriction.
+
 **Graded algebra exemplar result placement checked (2026-10-09):** `GradedAlgebras(ZZ).an_object()` lies in its selected graded-algebra category, its graded-module category, and the associative unital algebra supercategory. Targeted Sage passed; the executable result-level assertions now supplement the prior declaration-only expression-edge check at the graded algebra owner.
 
 **Group-algebra ordinary module-supercategory expression verified (2026-10-09):** For `R=ZZ[C_2]`, `Modules(R).super_categories()[0]` is exactly the generic `Modules(R)` constructed through its declaring base-category constructor, and `R.regular_representation()` lies in both that ordinary category and the specialized group-action category while retaining `R` as the identical scalar ring. Focused Sage passed and the specialization owner now has the executable result-placement specimen. This is not an assertion that its rank-two coefficient framing is an `R`-basis; the rank-one transport remains under its distinct TODO node.

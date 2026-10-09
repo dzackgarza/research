@@ -1537,6 +1537,11 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: E = L.Mono(L)
             sage: E.domain() is L and E.codomain() is L and len(E.super_categories()) >= 1
             True
+            sage: all(C.domain_object() is L and C.codomain_object() is L for C in E.super_categories())
+            True
+            sage: identity = E.identity()
+            sage: identity * identity == identity
+            True
         """
         packet = self.base_category().category_packet()
         source = self.domain()
