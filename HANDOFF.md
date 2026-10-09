@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Slice-category nonidentity square composition checked (2026-10-09):** Over `Sets.Δ[0]`, the slice object defined by the unique map `Sets.Δ[1] -> Sets.Δ[0]` admits the nonidentity swap square. Focused Sage verifies that its square is the selected identity and that its left edge is the swap while its right edge is exactly the fixed object's identity. The executable specimen is retained at `SliceCategory` for the `self.base_category()` expression-edge audit.
+
 **Finite wide-subcategory Mor cardinality deficiency isolated (2026-10-09):** The existing `test_injections_and_isomorphisms_of_a_two_element_set` reveals missing `FixedWideMorCategory.cardinality()` (the two-point injective endomorphism Mor should contain the identity and swap only). The apparent shortcut `self.object_set().cardinality()` fails with `Parent.__getitem__` recursion: underlying fixed Mor objects are not necessarily iterable sets. This is a separate finite-map enumeration obligation at the restricted Mor owner, filed as `finite-wide-mor-cardinality` in `TODO.md`; no false cardinality method was retained. The distinct endpoint comparison from `c235d63918` remains valid.
 
 **Wide-subcategory fixed Mor supercategory endpoints checked (2026-10-09):** For the injective-map wide subcategory of `Sets()`, the selected fixed Mor over the two-point finite ordinal has an ordinary Mor supercategory with exactly the same source and target objects. Focused Sage verified both endpoint identities. An executable specimen is retained at `FixedWideMorCategory`; it does not assert that a collapse map belongs to the restricted Mor.

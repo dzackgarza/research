@@ -672,6 +672,17 @@ class SliceCategory(_SubcategoryOfArrows):
     Unverified specimens retain equal-but-distinct base sets and keep the
     slice and coslice fixed edges under nonidentity composition::
 
+        sage: from dzack_research.preamble.all import Sets
+        sage: X, T = Sets.Δ[1], Sets.Δ[0]
+        sage: C = SliceCategory(Sets(), T)
+        sage: A = C(Sets().Mor(X, T)(lambda point: T(0)))
+        sage: swap = Sets().Mor(X, X)(lambda point: X(1-int(point)))
+        sage: square = C.Mor(A, A)(swap)
+        sage: square * square == C.Mor(A, A).identity()
+        True
+        sage: square.left() == swap and square.right() == Sets().Mor(T, T).identity()
+        True
+
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
