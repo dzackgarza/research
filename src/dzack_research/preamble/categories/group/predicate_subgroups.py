@@ -99,6 +99,59 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def defining_predicate(self):
             return self._predicate
 
+        def finite_index_schreier_generators(self, *, index_bound):
+            r"""Generate a finite-index predicate subgroup by coset traversal.
+
+            The index bound is required: a predicate alone does not certify
+            finite index. Representatives of cosets ``r H`` are recognized
+            by membership of ``r^(-1) x`` in ``H``. The resulting Schreier
+            words ``t_(s r H)^(-1) s r`` generate the subgroup.
+
+            EXAMPLES::
+
+                sage: G = Groups.S(3)
+                sage: H = G.subgroup((G((1, 2)),))
+                sage: P = G.predicate_subgroup(lambda g: g in H, "transposition subgroup")
+                sage: generators = P.finite_index_schreier_generators(index_bound=3)
+                sage: all(g in P for g in generators)
+                True
+                sage: G.subgroup(generators).cardinality() == 2
+                True
+                sage: F, C = Groups.Free(1), Groups.C(2)
+                sage: s, t = F.group_generators()[0], C.group_generators()[0]
+                sage: phi = F.Mor(C)({next(iter(F.free_basis())): t})
+                sage: P = F.predicate_subgroup(lambda g: phi(g) == C.one(), "even exponent")
+                sage: generators = P.finite_index_schreier_generators(index_bound=2)
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
+            """
+            ambient = self.supergroup()
+            generators = tuple(ambient.group_generators())
+            bound = int(index_bound)
+            if bound < 1:
+                raise ValueError("the subgroup index bound must be positive")
+            representatives = [ambient.one()]
+
+            def representative_of(candidate):
+                for representative in representatives:
+                    if (~representative) * candidate in self:
+                        return representative
+                return None
+
+            for representative in representatives:
+                for generator in generators:
+                    for step in (generator, ~generator):
+                        candidate = step * representative
+                        if representative_of(candidate) is None:
+                            representatives.append(candidate)
+                            if len(representatives) > bound:
+                                raise ValueError("the subgroup index exceeds the supplied bound")
+            return tuple(
+                self((~representative_of(generator * representative)) * generator * representative)
+                for representative in representatives
+                for generator in generators
+            )
+
         def _character_data_snapshot(self):
             r"""Return private finite-character representation metadata."""
             return dict(self._character_data)
