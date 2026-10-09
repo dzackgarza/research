@@ -407,6 +407,16 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 True
                 sage: four.subgroup(generators).cardinality() == kernel.cardinality()
                 True
+                sage: F = Groups.Free(1)
+                sage: label = next(iter(F.free_basis()))
+                sage: s = F.group_generators()[0]
+                sage: reduction = F.Mor(two)({label: t})
+                sage: free_kernel = KernelSubgroups(F)(reduction)
+                sage: generators = free_kernel.schreier_generators()
+                sage: all(reduction(g) == two.one() for g in generators)
+                True
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
             """
             morphism = self.kernel_morphism()
             ambient = self.supergroup()
