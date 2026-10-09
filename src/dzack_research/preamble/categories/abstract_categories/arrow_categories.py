@@ -1402,6 +1402,17 @@ class SetSubobjectCategory(SliceCategory):
         Monicity is the admission condition on ``i``; the inclusion into
         the monomorphisms of ``Ar(Set)`` is a functor, not a declaration
         (``CAT-16``, ``CAT-20``).
+
+        A finite ambient set forces each represented subset to be finite;
+        an infinite ambient set does not impose that categorical placement::
+
+            sage: from dzack_research.preamble.all import Sets, NN
+            sage: finite = Sets().Subobjects(Sets.Δ[2])
+            sage: infinite = Sets().Subobjects(NN)
+            sage: Sets().Finite() in finite.super_categories()
+            True
+            sage: Sets().Finite() in infinite.super_categories()
+            False
         """
         from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 
