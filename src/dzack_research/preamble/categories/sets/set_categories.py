@@ -853,7 +853,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
                 return self._finite_product(family)
-            return CartesianProductsOfSets()(family)
+            return _cartesian_product_of(family)
 
         def _categorical_product(self, left, right):
             return self._finite_product((left, right))
@@ -1108,7 +1108,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
                 return self._finite_coproduct(family)
-            return CoproductsOfSets()(family)
+            return _coproduct_of_indexed_family(family)
 
         def _categorical_coproduct(self, left, right):
             return self._finite_coproduct((left, right))
