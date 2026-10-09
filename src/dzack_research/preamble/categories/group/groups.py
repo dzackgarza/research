@@ -4471,6 +4471,12 @@ class Subgroups(OwnedParameterizedCategory):
                 sage: P = G.predicate_subgroup(lambda g: g in H, "transposition subgroup")
                 sage: P.image_under(f, index_bound=3).cardinality() == 2
                 True
+                sage: F, C = Groups.Free(1), Groups.C(2)
+                sage: h = C.group_generators()[0]
+                sage: reduction = F.Mor(C)({next(iter(F.free_basis())): h})
+                sage: parity = F.predicate_subgroup(lambda g: reduction(g) == C.one(), "parity kernel")
+                sage: parity.image_under(reduction, index_bound=2).cardinality() == 1
+                True
             """
             if morphism.domain() is not self.supergroup():
                 raise ValueError("a subgroup image requires a morphism of its containing group")
