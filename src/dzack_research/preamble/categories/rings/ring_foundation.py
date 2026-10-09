@@ -1236,11 +1236,16 @@ class LocalizationRings(OwnedCategory):
             # by sending the original variables through ``P -> P/I`` and each
             # auxiliary variable to the represented inverse of its selected
             # denominator.  This is exactly the universal localization map.
-            if isinstance(engine, QuotientRing_generic) and isinstance(
-                source_engine, QuotientRing_generic
+            if isinstance(engine, QuotientRing_generic) and (
+                isinstance(source_engine, QuotientRing_generic)
+                or self._localization_engine_source_encoder is not None
             ):
                 engine_cover = engine.cover_ring()
-                source_cover = source_engine.cover_ring()
+                source_cover = (
+                    source_engine.cover_ring()
+                    if isinstance(source_engine, QuotientRing_generic)
+                    else source_engine
+                )
                 source_names = tuple(source_cover.variable_names())
                 inverted = tuple(self.inverted_elements())
                 engine_names = tuple(engine_cover.variable_names())

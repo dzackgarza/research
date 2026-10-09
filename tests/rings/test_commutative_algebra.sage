@@ -5,6 +5,20 @@ import pytest
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_localizing_a_polynomial_ring_over_a_nondomain_retains_the_inverse_map() -> None:
+    r"""For R=Z/4, R[x,x^-1]=R[x,t]/(xt-1), without domain hypotheses."""
+    R = ZZ.quotient_ring(ZZ.ideal(4))
+    ring = R["x"]
+    x = ring.algebra_generator("x")
+    localized = ring.localization(x)
+    numerator = localized.fraction(x)
+    inverse = localized.fraction(ring.one(), x)
+    assert numerator * inverse == localized.one()
+    assert localized.localization_source() is ring
+    assert localized.localization_map()(x) == numerator
+    assert localized._from_engine_element(localized._engine_element(inverse)) == inverse
+
+
 def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
     assert Zmod(2).spectrum().cardinality() == 1
     assert Zmod(8).spectrum().cardinality() == 1

@@ -2847,6 +2847,35 @@ def _finite_generated_localization(source, submonoid):
         localization_engine = extended_cover.quotient(
             extended_cover.ideal(relations)
         )
+    elif (
+        bottom is source
+        and hasattr(engine_bottom, "variable_names")
+        and engine_bottom.base_ring().is_integral_domain() is False
+    ):
+        # An arbitrary commutative coefficient ring admits localization,
+        # although Sage's PolynomialRing.localization demands a domain.
+        # The inverse-variable presentation represents the universal ring
+        # without imposing a false no-zero-divisors hypothesis.
+        source_names = tuple(engine_bottom.variable_names())
+        occupied = set(source_names)
+        inverse_names = []
+        for i in range(len(values)):
+            candidate = f"localization_inverse_{i}"
+            while candidate in occupied:
+                candidate += "_"
+            occupied.add(candidate)
+            inverse_names.append(candidate)
+        extended = _SagePolynomialRing(
+            engine_bottom.base_ring(), names=(*source_names, *inverse_names)
+        )
+        relations = tuple(
+            extended.gen(len(source_names) + i) * extended(value) - extended.one()
+            for i, value in enumerate(values)
+        )
+        localization_engine = extended.quotient(extended.ideal(relations))
+        engine_source_encoder = lambda element: localization_engine(
+            extended(_engine_element(source, element))
+        )
     else:
         (
             localization_engine,

@@ -1,9 +1,5 @@
 # Foundational Gaps and Papercuts
 
-## Localization of polynomial rings over rings with zero divisors
-
-For a commutative ring `R` and a multiplicative subset `S` of `R[x]`, the localization `S^{-1}R[x]` exists without an integral-domain hypothesis. The current `_finite_generated_localization` engine route in `categories/rings/commutative_algebra.py` falls through to Sage's integral-domain-only `engine_bottom.localization(values)` when the polynomial coefficient ring has zero divisors. In particular, constructing the fan presentation of `P^1` in `ToricSchemes(ZZ/(4))` fails at that call, even though the category correctly does not declare the result a variety over an integral domain. The localization owner must realize the universal ring with inverse generators and relations for such rings, retaining the localization map and universal property; do not narrow toric schemes to integral-domain coefficients. Execution owner: `TODO.md`, `toric-nondomain-localization`.
-
 Record unresolved issues observed anywhere in research or contribution work.
 The primary subject is general mathematical machinery that should be available but is missing, incomplete, or bypassed in the owned language.
 Concrete workflow papercuts also belong here.
