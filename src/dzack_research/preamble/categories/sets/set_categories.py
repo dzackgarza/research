@@ -622,38 +622,9 @@ class SetMorCategory(CategoricalMor):
             if domain in FiniteSets()
             else FunctionSets()
         )
-        if (
-            (domain in FiniteSets() and domain.cardinality() == cardinal(0))
-            or (codomain in FiniteSets() and codomain.cardinality() == cardinal(0))
-            or (codomain in FiniteSets() and codomain.cardinality() == cardinal(1))
-            or (domain in FiniteSets() and codomain in FiniteSets())
-        ):
-            placement = owned_category_join((placement, FiniteSets()))
-        elif (
-            domain in FiniteSets()
-            and codomain in CountableSets()
-            and codomain in InfiniteSets()
-        ):
-            # A nonempty finite exponent admits the constant-function
-            # embedding and has only countably many coordinate tuples.
-            placement = owned_category_join((placement, CountablyInfiniteSets()))
-        elif domain in FiniteSets() and codomain in CountableSets():
-            placement = owned_category_join((placement, CountableSets()))
-        elif domain in FiniteSets() and codomain in UncountableSets():
-            # The empty exponent was handled above; evaluation at any point
-            # embeds the uncountable codomain into the function set.
-            placement = owned_category_join((placement, UncountableSets()))
-        elif domain in InfiniteSets() and codomain in UncountableSets():
-            # Constant functions embed the codomain into functions on any
-            # nonempty domain, independently of an enumeration of either set.
-            placement = owned_category_join((placement, UncountableSets()))
-        elif (
-            domain in InfiniteSets()
-            and codomain in FiniteSets()
-            and codomain.cardinality().finite_value() >= 2
-        ):
-            # Two distinct values embed the power set of the infinite domain.
-            placement = owned_category_join((placement, UncountableSets()))
+        placement = owned_category_join((
+            placement, _cardinalities().set_power_category(codomain, domain),
+        ))
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -2322,15 +2293,12 @@ class PowerSets(OwnedCategory):
 
     def _call_(self, base_set):
         r"""Construct the power object of ``base_set``."""
-        placements = [self]
+        placements = [self, _cardinalities().set_power_category(Sets.Δ[1], base_set)]
         engine = None
         if base_set in FiniteSets() or base_set.is_finite() is True:
-            placements.append(FiniteSets())
             if base_set in EnumeratedSets():
                 placements.append(EnumeratedSets())
                 engine = (self, _EnumeratedPowerSetEngine, None)
-        elif base_set in InfiniteSets():
-            placements.append(UncountableSets())
         return _object_of(
             owned_category_join(placements),
             _engine=engine,
@@ -2600,16 +2568,8 @@ class FixedCardinalitySubsetSets(OwnedCategory):
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
         subset_cardinality = int(subset_cardinality)
-        placements = [self]
+        placements = [self, _cardinalities().set_subset_category(source, fixed_size=subset_cardinality)]
         engine = None
-        if subset_cardinality == 0 or source in FiniteSets() or source.is_finite() is True:
-            placements.append(FiniteSets())
-        elif source in CountableSets() and source in InfiniteSets():
-            placements.append(CountablyInfiniteSets())
-        elif source in UncountableSets():
-            placements.append(UncountableSets())
-        elif source in CountableSets():
-            placements.append(CountableSets())
         if source in EnumeratedSets():
             placements.append(EnumeratedSets())
             engine = (self, _EnumeratedFixedCardinalitySubsetSetEngine, None)
@@ -2706,16 +2666,8 @@ class FinitePowerSets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
-        placements = [self]
+        placements = [self, _cardinalities().set_subset_category(source)]
         engine = None
-        if source in FiniteSets() or source.is_finite() is True:
-            placements.append(FiniteSets())
-        elif source in CountableSets() and source in InfiniteSets():
-            placements.append(CountablyInfiniteSets())
-        elif source in UncountableSets():
-            placements.append(UncountableSets())
-        elif source in CountableSets():
-            placements.append(CountableSets())
         if source in EnumeratedSets():
             placements.append(EnumeratedSets())
             engine = (self, _EnumeratedFinitePowerSetEngine, None)
@@ -2988,24 +2940,10 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     finite or countable placement its factors establish.
     """
     index_set = family.index_set()
-    placements = [CartesianProductsOfSets()]
-    if index_set in FiniteSets() and any(
-        family(index) in FiniteSets()
-        and family(index).cardinality() == cardinal(0)
-        for index in index_set
-    ):
-        # A single empty factor makes the entire product empty, even when
-        # another factor is infinite or its cardinality is undecided.
-        placements.append(FiniteSets())
-    elif index_set in FiniteSets() and all(
-        family(index) in FiniteSets() for index in index_set
-    ):
-        placements.append(FiniteSets())
-    elif index_set in FiniteSets() and all(
-        family(index) in CountableSets() for index in index_set
-    ):
-        # Countability of a finite product needs no chosen enumeration.
-        placements.append(CountableSets())
+    placements = [
+        CartesianProductsOfSets(),
+        _cardinalities().set_indexed_category(family, operation="product"),
+    ]
     if index_set in FiniteSets() and index_set in EnumeratedSets():
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
@@ -3723,29 +3661,16 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
     other coproduct is placed as a set, with no enumeration claimed.
     """
     index_set = family.index_set()
-    placements = [CoproductsOfSets()]
-    if index_set in FiniteSets() and any(
-        family(index) in UncountableSets() for index in index_set
-    ):
-        # Each summand injects into the disjoint union, regardless of the
-        # cardinalities or enumerability of the other summands.
-        placements.append(UncountableSets())
-    if index_set in FiniteSets() and all(
-        family(index) in FiniteSets() for index in index_set
-    ):
-        placements.append(FiniteSets())
-    elif index_set in FiniteSets() and all(
-        family(index) in CountableSets() for index in index_set
-    ):
-        placements.append(CountableSets())
+    placements = [
+        CoproductsOfSets(),
+        _cardinalities().set_indexed_category(family, operation="sum"),
+    ]
     if (
         index_set in FiniteSets()
         and index_set in EnumeratedSets()
         and all(family(index) in EnumeratedSets() for index in index_set)
     ):
         placements.append(EnumeratedCoproductsOfSets())
-        if FiniteSets() not in placements:
-            placements.append(CountablyInfiniteSets())
     return _object_of(owned_category_join(placements), family=family)
 
 
