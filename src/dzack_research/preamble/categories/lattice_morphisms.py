@@ -619,6 +619,13 @@ class LatticeIsometryMethods:
             True
             sage: a.extension_across(v, v, source_inclusion=P.inclusion(), target_inclusion=P.inclusion()).is_integral_on(L)
             True
+            sage: w = L.basis_vector(1)
+            sage: Q = L.subobject_on((w,)).orthogonal_complement()
+            sage: P is not Q
+            True
+            sage: between = P.Isom(Q)(lambda s: Q.module_generator(s))
+            sage: between.extension_across(v, w, source_inclusion=P.inclusion(), target_inclusion=Q.inclusion()).is_integral_on(L)
+            True
         """
         source = source_vector.parent()
         target = target_vector.parent()
