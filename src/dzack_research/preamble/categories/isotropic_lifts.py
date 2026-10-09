@@ -51,7 +51,22 @@ def _rational_splitting(reduction, plane):
 
 
 class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
-    r"""Rational isometry lifts preserving the marked generators of isotropic lines."""
+    r"""Rational isometry lifts preserving the marked generators of isotropic lines.
+
+    The reduction of a hyperbolic plane along a primitive null line has rank
+    zero; its marked-line lift torsor therefore has a rank-zero parameter
+    space, and its selected point already descends to the integral lattice.
+
+    EXAMPLES::
+
+        sage: U = Lattices(ZZ)("U")
+        sage: R = U.basis_vector(0).isotropic_reduction()
+        sage: lifts = R.rational_lifts(R, R.Isom(R).identity())
+        sage: lifts.parameter_space().module_rank() == 0
+        True
+        sage: lifts.integral_base_point().integral_restriction(U, U) is not None
+        True
+    """
 
     def super_categories(self):
         return [Sets()]
