@@ -626,6 +626,15 @@ class LatticeIsometryMethods:
             sage: between = P.Isom(Q)(lambda s: Q.module_generator(s))
             sage: between.extension_across(v, w, source_inclusion=P.inclusion(), target_inclusion=Q.inclusion()).is_integral_on(L)
             True
+            sage: neg = P.Isom(P)(lambda s: -P.module_generator(s))
+            sage: j = P.inclusion()
+            sage: twisted = j * neg
+            sage: twisted != j
+            True
+            sage: g = P.Isom(P).identity().extension_across(v, v, source_inclusion=twisted, target_inclusion=j)
+            sage: h = L.integral_isometry(g)
+            sage: all(h(twisted(x)) == j(x) for x in P.module_generators())
+            True
         """
         source = source_vector.parent()
         target = target_vector.parent()
