@@ -197,6 +197,8 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 
 ### 19. Integral points on an affine line — frozen `L.affine_line_points(base,direction)`
 
+**Frozen-call reconciliation (2026-10-09):** The frozen callable name is present on the research lattice. It returns `None` for an empty fibre or an element of `Sets().product((L,L))` representing `(point, primitive_step)` for a nonempty affine rank-at-most-one integral image. The full affine point set, translation module, and evaluation map belong to the separate `L.affine_line_fibre(base,direction)` datum; the tuple is presentation data and does not replace that object. At zero direction and integral zero base, focused Sage verifies `(0,0)` and independently verifies the retained image has cardinality one. An empty constant image is represented by `None`, while the parameter fibre must not be identified with its image. The frozen consumer must not treat the pair itself as an object carrying the affine inclusion. This is a return-object distinction to retain at port #33 when that stopped stream resumes, not a request to rename the research operation.
+
 **Owner:** row 7 specialized to the affine map `lambda ↦ base+lambda*direction`, followed by its image in the ambient rational space.
 
 **Contract:** with nonzero rational direction, the integral point set is empty or an affine rank-one lattice; retain its inclusion and a chosen point and primitive integral step. For zero direction, the point set is empty or a singleton, while the parameter preimage is empty or all of `QQ`. Those are different objects. A pair of vectors is useful presentation data only when attached to the appropriate affine point set.

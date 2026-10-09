@@ -4954,6 +4954,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``affine_line_fibre(base,direction)``. The generator ``s`` is
             primitive in the intersection with the line. A constant line
             has ``s=0`` when its point is integral and is empty otherwise.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U")
+                sage: V = L.vector_space()
+                sage: point, step = L.affine_line_points(V.zero(), V.zero())
+                sage: point == L.zero() and step == L.zero()
+                True
+                sage: L.affine_line_fibre(V.zero(), V.zero()).image_point_set().cardinality() == 1
+                True
             """
             if self.base_ring() is not _own_ring(SageZZ):
                 raise TypeError("an integral affine-line presentation requires ZZ")
