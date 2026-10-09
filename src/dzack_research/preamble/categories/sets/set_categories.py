@@ -624,6 +624,7 @@ class SetMorCategory(CategoricalMor):
         )
         if (
             (domain in FiniteSets() and domain.cardinality() == cardinal(0))
+            or (codomain in FiniteSets() and codomain.cardinality() == cardinal(0))
             or (codomain in FiniteSets() and codomain.cardinality() == cardinal(1))
             or (domain in FiniteSets() and codomain in FiniteSets())
         ):
