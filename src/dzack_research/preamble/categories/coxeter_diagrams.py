@@ -243,24 +243,40 @@ class CoxeterDiagrams(OwnedCategory):
             sage: C = CoxeterDiagrams()
             sage: C([[1, 3], [3, 1]]).coxeter_entry(0, 1) == 3
             True
+            sage: C(["A", 2]).coxeter_entry(1, 2) == 3
+            True
+            sage: roots = Lattices(ZZ)([[-2, 2], [2, -2]]).module_generators()
+            sage: C(roots).is_rooted()
+            True
         """
         from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
         match datum:
-            case CoxeterMatrix() | IndexedFamily():
+            case CoxeterMatrix():
                 return self.from_coxeter_matrix(datum, names=names, positions=positions)
+            case IndexedFamily():
+                first_index = next(iter(datum.index_set()), None)
+                match first_index:
+                    case tuple():
+                        return self.from_coxeter_matrix(datum, names=names, positions=positions)
+                    case _:
+                        return self.from_roots(tuple(datum.values()), names=names, positions=positions)
             case CartanType_abstract():
                 return self.from_cartan_type(datum, names=names, positions=positions)
             case [str() as letter, rank] | (str() as letter, rank):
                 return self.from_cartan_type([letter, rank], names=names, positions=positions)
             case list() | tuple():
                 entries = tuple(datum)
-                first_parent = element_parent(entries[0]) if entries else None
-                match first_parent:
-                    case _ if first_parent is not None and first_parent in Lattices(first_parent.base_ring()):
-                        return self.from_roots(entries, names=names, positions=positions)
-                    case _:
+                match entries[0] if entries else None:
+                    case list() | tuple() | None:
                         return self.from_coxeter_matrix(entries, names=names, positions=positions)
+                    case _:
+                        first_parent = element_parent(entries[0])
+                        match first_parent:
+                            case _ if first_parent in Lattices(first_parent.base_ring()):
+                                return self.from_roots(entries, names=names, positions=positions)
+                            case _:
+                                return self.from_coxeter_matrix(entries, names=names, positions=positions)
             case _:
                 raise TypeError(f"{datum!r} is not a Coxeter matrix, Cartan type, or family of roots")
 
