@@ -3168,7 +3168,19 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
 
 
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
-    r"""Finitely presented modules carrying one selected finite presentation."""
+    r"""Finitely presented modules carrying one selected finite presentation.
+
+    The selected presentation refines the generic finitely presented module
+    category over precisely the same scalar ring::
+
+        sage: from dzack_research.preamble.all import ZZ, Modules
+        sage: P = ModulesWithChosenFinitePresentation(ZZ)
+        sage: P.super_categories()[0] is Modules(ZZ).FinitelyPresented()
+        True
+        sage: M = P.an_object()
+        sage: M in P and M in Modules(ZZ).FinitelyPresented()
+        True
+    """
 
     def an_object(self):
         r"""The hyperbolic plane U, presented by its Gram matrix."""

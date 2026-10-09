@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Chosen finite-presentation result/category edge checked (2026-10-09):** `ModulesWithChosenFinitePresentation(ZZ)` declares the generic `Modules(ZZ).FinitelyPresented()` as its exact supercategory, and its selected witness (the lattice `U`) lies in both categories. Focused Sage passed. The owner now records an executable specimen for `ordinary.FinitelyPresented()` that retains the same integer scalar ring rather than conflating the group-algebra coefficient action with an ordinary finitely presented module.
+
 **Declared-base free-module edge checked (2026-10-09):** `FramedFreeModules(ZZ).an_object()` belongs to both its framed-free category and the generic `Modules(ZZ).Free()` declaration; its rank is one and its framing augmentation has exactly that module as target. The selected finite-presentation category independently declares the generic `Modules(ZZ).FinitelyPresented()` as its immediate supercategory. These are focused Sage assertions for the same scalar ring, not a restriction from a group algebra to its coefficient ring.
 
 **Finite covering-family presentation placement verified (2026-10-09):** `CoveringFamilies(Sets()).an_object()` constructs a one-member identity cover, lies in both its covering-family category and the explicit presentation slice `Cat/Sets`, and its retained presentation targets `Sets()` by identity. Its selected covering-family Mor identity has the cover as its exact domain. Focused Sage passed; the owner-level specimen records this actual object-and-Mor comparison for `self.presentation_category()`.
