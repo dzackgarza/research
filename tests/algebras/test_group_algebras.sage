@@ -41,6 +41,22 @@ def test_regular_representation_has_a_rank_one_group_algebra_basis_isomorphism()
         for label in acted.module_generating_set()
     )
 
+    # The nonidentity group element gives right multiplication on the left
+    # regular module.  Its matrix on the free rank-one source is one entry
+    # in R[G], rather than a 2-by-2 R[G]-matrix on the coefficient generators.
+    (basis,) = tuple(free.module_generating_set())
+    nonidentity = next(g for g in group if g != group.one())
+    group_element = algebra.module_generator(nonidentity)
+    matrix_arrow = matrices({
+        basis: free.scalar_multiple(group_element, free.module_generator(basis))
+    })
+    equivariant = acted.Mor(acted)(
+        framing.forward() * matrix_arrow * framing.inverse()
+    )
+    assert equivariant.domain() is acted and equivariant.codomain() is acted
+    assert equivariant(acted(algebra.one())) == acted(group_element)
+    assert equivariant * equivariant == equivariant_identity
+
 
 def test_the_group_algebra_functor_extends_a_subgroup_inclusion_linearly() -> None:
     symmetric = Groups.S(3)
