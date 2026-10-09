@@ -536,6 +536,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
             target_ring = _base_change_codomain(self, ring_map)
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
             return target_ring._fresh_free_module_on(
                 self.module_generating_set(),
                 _extra_construction_data=_extra_construction_data,
