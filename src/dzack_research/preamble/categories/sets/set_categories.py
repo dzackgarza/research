@@ -2446,8 +2446,10 @@ class PowerSets(OwnedCategory):
             target = morphism.codomain().power_set()
 
             def direct_image(subset):
-                inclusion = SetInclusion(subset.image_set(morphism), morphism.codomain())
-                return Sets().Subobjects(morphism.codomain())(inclusion)
+                image = subset.image_set(morphism)
+                inclusion = SetInclusion(image, morphism.codomain())
+                placements = (FiniteSets(),) if image in FiniteSets() or image.is_finite() is True else ()
+                return Sets().Subobjects(morphism.codomain()).object(inclusion, categories=placements)
 
             return Sets().Mor(self, target)(direct_image)
 
