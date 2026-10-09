@@ -1445,7 +1445,29 @@ class _StandardProjectiveChartEmbedding(_ProjectiveCoordinateMorphism):
 
 
 class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
-    r"""The product of selected standard projective-chart open immersions."""
+    r"""The product of selected standard projective-chart open immersions.
+
+    Composing into the projective product pulls back the homogeneous
+    coordinate sections, not merely a formal native Sage map::
+
+        sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
+        sage: P = ProjectiveSpaces(QQ)(1)
+        sage: product = P.scheme_category().product((P, P))
+        sage: atlas = product.standard_affine_atlas()
+        sage: atlas in atlas.category() and atlas.chart_index_set().cardinality() == 4
+        True
+    """
+
+    def __mul__(self, other):
+        r"""Compose the selected homogeneous-coordinate map by substitution.
+
+        The native Sage composite is only a formal composite map; the
+        represented projective-coordinate construction retains the actual
+        pullback of each homogeneous section to the source chart.
+        """
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return _projective_coordinate_morphism(self) * other
 
     def is_open_immersion(self) -> bool:
         return True

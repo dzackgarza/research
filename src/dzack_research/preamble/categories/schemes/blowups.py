@@ -197,7 +197,20 @@ class Blowups(OwnedCategoryOverBaseRing):
 
 
 class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
-    r"""Blowups ``Bl_p(P^2)`` of the projective plane at one rational point ``p``."""
+    r"""Blowups ``Bl_p(P^2)`` of the projective plane at one rational point ``p``.
+
+    Over a field, the graph-closure realization has the declared projective
+    surface placement, and its blowdown retains its exact endpoints::
+
+        sage: from dzack_research.preamble.all import QQ, ProjectivePointBlowups, ProjectiveSurfaces
+        sage: B = ProjectivePointBlowups(QQ).an_object()
+        sage: B in ProjectivePointBlowups(QQ) and B in ProjectiveSurfaces(QQ)
+        True
+        sage: B.blowup_morphism().domain() is B
+        True
+        sage: B.blowup_morphism().codomain() is B.blowup_point().codomain()
+        True
+    """
 
     def _repr_object_names(self):
         return f"projective-plane point blowups over {self.base_ring()}"
