@@ -631,6 +631,10 @@ class SetMorCategory(CategoricalMor):
             placement = owned_category_join((placement, FiniteSets()))
         elif domain in FiniteSets() and codomain in CountableSets():
             placement = owned_category_join((placement, CountableSets()))
+        elif domain in FiniteSets() and codomain in UncountableSets():
+            # The empty exponent was handled above; evaluation at any point
+            # embeds the uncountable codomain into the function set.
+            placement = owned_category_join((placement, UncountableSets()))
         CategoricalMor.__init__(
             self,
             mor_family,
