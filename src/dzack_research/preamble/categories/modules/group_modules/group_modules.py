@@ -377,6 +377,17 @@ class ModulesOverGroupAlgebra(Modules):
             Coefficients enter through the canonical ring morphism
             ``R -> R[G]``; arbitrary integers are not elements of ``R[G]``
             without this map.
+
+            EXAMPLES::
+
+                sage: G = Groups.C(2)
+                sage: R = ZZ[G]
+                sage: M = Modules(R)(ZZ.free_module(1), lambda g, v: v)
+                sage: v = M.module_generators()[0]
+                sage: M.scalar_multiple(R.one(), v) == v
+                True
+                sage: M.scalar_multiple(ZZ(2), v) == v + v
+                True
             """
             algebra = self.group_algebra()
             coefficient_ring = self.coefficient_ring()
