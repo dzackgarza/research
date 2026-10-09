@@ -4371,6 +4371,14 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
     dimension = int(dimension)
     engine = _SageProjectiveSpace(dimension, _engine_ring(base), names=_normalized_space_names(names))
     decided = list(_space_placements(base, dimension))
+    match dimension:
+        case 0:
+            # Proj R[x_0] = D_+(x_0) = Spec R: the degree-zero part of
+            # R[x_0,x_0^-1] is R. Retain its affine algebra datum.
+            decided.append(Schemes(base).Affine())
+            level_data = {"coordinate_algebra": base, **level_data}
+        case _:
+            pass
     match (base in OwnedFields(), dimension):
         case (True, 2):
             from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
