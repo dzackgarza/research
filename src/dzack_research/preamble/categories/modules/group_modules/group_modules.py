@@ -1191,6 +1191,12 @@ class GroupModuleMorphism(GroupModuleMorphismMethods, ModuleMorphism):
 
 
 class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
+    r"""Equivariant Hom, linear over the center of the coefficient ring.
+
+    For commutative coefficients the center is the coefficient ring itself.
+    For noncommutative coefficients ``ZZ`` need not be the full scalar
+    structure: central scalars commute with all equivariant endomorphisms.
+    """
     ElementMethods = GroupModuleMorphismMethods
 
     def __init__(self, mor_family, domain, codomain) -> None:
@@ -1207,7 +1213,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         scalar_ring = (
             coefficient_ring
             if coefficient_ring in OwnedRings().Commutative()
-            else _own_ring(SageZZ)
+            else coefficient_ring.ring_center()
         )
         self._preamble_base_ring = scalar_ring
         self._preamble_algebra_base_ring = scalar_ring
