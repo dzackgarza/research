@@ -107,12 +107,19 @@ class SemilinearModuleMorphism:
             case None, _:
                 pass
             case _, None:
-                restricted = self.restricted_codomain()
+                restricted = Modules(domain.base_ring()).base_change_adjunction(
+                    scalar_map
+                ).right_adjoint()(codomain)
+                self._restricted_codomain = restricted
                 linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
                 self._restricted_morphism = linear_mor(restricted_morphism)
-                evaluator = lambda element: codomain(
-                    self._restricted_morphism(element).underlying_element()
-                )
+                match restricted is codomain:
+                    case True:
+                        evaluator = lambda element: codomain(self._restricted_morphism(element))
+                    case False:
+                        evaluator = lambda element: codomain(
+                            self._restricted_morphism(element).underlying_element()
+                        )
             case _, _:
                 raise TypeError(
                     "a semilinear arrow is defined either by its restricted linear morphism "
@@ -147,7 +154,7 @@ class SemilinearModuleMorphism:
         linear_mor = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
         return _LinearMapIntoRestrictionOfScalars(
             linear_mor,
-            lambda element: restricted.wrap(self(element)),
+            lambda element: restricted(self(element)),
             lambda: self._supplied_linearity_decision,
         )
 
@@ -220,7 +227,7 @@ class SemilinearModuleMorphism:
         linear_mor = Modules(source.base_ring()).Mor(source, restricted)
         composite = _LinearMapIntoRestrictionOfScalars(
             linear_mor,
-            lambda element: restricted.wrap(self(other(element))),
+            lambda element: restricted(self(other(element))),
             lambda: conjunction(
                 (
                     self.restricted_morphism().linearity_decision(),
@@ -251,7 +258,7 @@ class SemilinearModuleMorphism:
         restricted = mor.restricted_codomain(scalar_map)
         compatible = _LinearMapIntoRestrictionOfScalars(
             Modules(source.base_ring()).Mor(source, restricted),
-            lambda element: restricted.wrap(morphism(element)),
+            lambda element: restricted(morphism(element)),
             morphism.linearity_decision,
         )
         return mor(scalar_map, compatible)
@@ -309,12 +316,12 @@ class SemilinearModuleMor(CategoricalMor):
                 if isinstance(compatible_map, ModuleMorphismMethods):
                     compatible_map = _LinearMapIntoRestrictionOfScalars(
                         compatible_mor,
-                        lambda element: restricted.wrap(additive(element)),
+                        lambda element: restricted(additive(element)),
                         compatible_map.linearity_decision,
                     )
                 else:
                     compatible_map = compatible_mor.elementwise(
-                        lambda element: restricted.wrap(additive(element))
+                        lambda element: restricted(additive(element))
                     )
             case _:
                 compatible_map = compatible_mor(compatible_map)
@@ -348,7 +355,7 @@ class SemilinearModuleMor(CategoricalMor):
         restricted = self.restricted_codomain(scalar_map)
         compatible = _LinearMapIntoRestrictionOfScalars(
             Modules(ring).Mor(module, restricted),
-            lambda element: restricted.wrap(module(element)),
+            lambda element: restricted(module(element)),
             lambda: True,
         )
         return self(scalar_map, compatible)
