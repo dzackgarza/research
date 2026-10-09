@@ -4984,7 +4984,8 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         match _is_group_algebra(self.base_ring()):
             case True:
-                free = self.base_ring().regular_representation()
+                modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+                free = self.base_ring().free_module(1)
             case False:
                 free = modules.an_object()
         return modules.Mor(free, free)
@@ -5483,7 +5484,8 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         match _is_group_algebra(self.base_ring()):
             case True:
-                free = self.base_ring().regular_representation()
+                modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+                free = self.base_ring().free_module(1)
             case False:
                 free = modules.an_object()
         return modules.Mor(free, free)
