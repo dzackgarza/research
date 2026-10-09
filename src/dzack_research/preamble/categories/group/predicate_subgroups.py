@@ -99,7 +99,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def defining_predicate(self):
             return self._predicate
 
-        def finite_index_schreier_generators(self, *, index_bound):
+        def finite_index_schreier_generators(self, *, index_bound, generators=None):
             r"""Generate a finite-index predicate subgroup by coset traversal.
 
             The index bound is required: a predicate alone does not certify
@@ -134,7 +134,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 True
             """
             ambient = self.supergroup()
-            generators = tuple(ambient.group_generators())
+            if generators is None:
+                generators = tuple(ambient.group_generators())
+            else:
+                generators = tuple(generators)
             bound = int(index_bound)
             if bound != index_bound:
                 raise ValueError("the subgroup index bound must be an integer")

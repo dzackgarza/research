@@ -54,3 +54,17 @@ def test_unresolved_predicate_image_names_missing_inverse_algorithm():
         assert "source is infinite and no inverse on the image was given" in str(error)
     else:
         raise AssertionError("membership in a predicate image was decided without an algorithm")
+
+
+def test_indefinite_predicate_image_with_supplied_ambient_generators():
+    lattice = Lattices(ZZ)([[0, 2], [2, 0]])
+    group = lattice.Aut()
+    exchange = group([[0, 1], [1, 0]])
+    minus_id = group([[-1, 0], [0, -1]])
+    rho = lattice.discriminant_representation()
+    stable = group.predicate_subgroup(
+        lambda g: rho(g) == rho.codomain().one(), "stable kernel predicate"
+    )
+    assert stable.image_under(
+        rho, index_bound=4, ambient_generators=(exchange, minus_id)
+    ).cardinality() == 1

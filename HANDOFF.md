@@ -35,6 +35,8 @@ Step 1 ends when the TODO nodes `finite-index-subgroup-generators`, `images-of-s
 
 **Explicit selected orthogonal-group resolution (2026-10-09):** `O(L).select_group_resolution(generators=...)` now installs a complete generator family as the selected group resolution without asking an unfinished indefinite backend to compute it. The input must be proved complete by its caller; repeating selection is rejected rather than silently replacing an existing resolution. For `U(2)`, the exchange and minus-identity matrices are the full four-element `O(U(2))` and the default `stable_orthogonal_group().schreier_generators()` route now returns four generators in `ker rho` after explicit selection (focused Sage). This repairs the missing ordinary consumer route without assuming a selected subset generates every arithmetic orthogonal group.
 
+**Indefinite membership-only subgroup image (2026-10-09):** `PredicateSubgroups.finite_index_schreier_generators` now accepts an explicitly supplied complete ambient generator family; `Subgroups.image_under` forwards that family along the bounded finite-index predicate route. The subgroup of `O(U(2))` defined solely by `rho(g)=1` now has a computable image under `rho` of order one using its known exchange and minus-identity generators and an index bound of four (focused Sage). The result does not require a selected ambient resolution or a finite quotient preimage object.
+
 The remaining unit is integration of the affine fibres, integral lift torsors, and generated orthogonal-group actions. The checkpoint includes shared-owner changes whose broader contracts still need review:
 
 | Owner | Check still needed |

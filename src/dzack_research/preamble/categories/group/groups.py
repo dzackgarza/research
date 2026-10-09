@@ -4490,7 +4490,7 @@ class Subgroups(OwnedParameterizedCategory):
                 case _ if hasattr(self, "schreier_generators"):
                     generators = self.schreier_generators(generators=ambient_generators)
                 case _ if index_bound is not None and hasattr(self, "finite_index_schreier_generators"):
-                    generators = self.finite_index_schreier_generators(index_bound=index_bound)
+                    generators = self.finite_index_schreier_generators(index_bound=index_bound, generators=ambient_generators)
                 case _:
                     raise ValueError("the subgroup image needs a generating family or a finite-index Schreier construction")
             return morphism.codomain().subgroup(tuple(morphism(g) for g in generators))
