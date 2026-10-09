@@ -71,6 +71,17 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     match Cardinalities().lt(module_generating_set.cardinality(), aleph0):
         case True:
             categories.append(FramedFreeModules(ring).FinitelyGenerated())
+            from dzack_research.preamble.categories.sets.set_categories import (
+                FiniteSets, CountableSets,
+            )
+
+            match ring in FiniteSets(), ring in CountableSets():
+                case True, _:
+                    categories.append(FiniteSets())
+                case _, True:
+                    categories.append(CountableSets())
+                case _:
+                    pass
         case False:
             pass
     return categories
