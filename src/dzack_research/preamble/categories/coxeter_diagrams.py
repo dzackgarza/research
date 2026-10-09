@@ -3,7 +3,7 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 from itertools import combinations
 
 from sage.combinat.posets.posets import Poset
-from sage.combinat.root_system.cartan_type import CartanType
+from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix as engine_matrix
@@ -249,8 +249,10 @@ class CoxeterDiagrams(OwnedCategory):
         match datum:
             case CoxeterMatrix() | IndexedFamily():
                 return self.from_coxeter_matrix(datum, names=names, positions=positions)
-            case CartanType():
+            case CartanType_abstract():
                 return self.from_cartan_type(datum, names=names, positions=positions)
+            case [str() as letter, rank] | (str() as letter, rank):
+                return self.from_cartan_type([letter, rank], names=names, positions=positions)
             case list() | tuple():
                 entries = tuple(datum)
                 first_parent = element_parent(entries[0]) if entries else None
