@@ -5153,7 +5153,7 @@ def _scheme_product(*schemes, placements=(), **level_data):
             )
             offsets = tuple(sum(widths[:position]) for position in range(len(widths)))
             return _object_of(
-                owned_category_join((ProductProjectiveSpaces(base), Schemes(base).Projective(), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
+                owned_category_join((ProductProjectiveSpaces(base), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
                 scheme_base_ring=base,
                 scheme_engine=engine,
                 factors=factors,
