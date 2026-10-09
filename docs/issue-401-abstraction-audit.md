@@ -49,6 +49,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 1. Isotropic witness — frozen `L.isotropic_vector()`
 
+**Frozen-call reconciliation (2026-10-09):** Research exposes the exact frozen name. It returns a nonzero lattice element, primitive over `ZZ`, with square zero. When the nonzero zero-fibre is empty, it raises `ValueError("the lattice has no nonzero isotropic vector")`; a nonzero radical vector is a valid result. The positive, anisotropic and radical cases are retained as specimens at the owning method. The older discussion of a differently named `isotropic_vector_witness()` is historical, not the current public research call.
+
 **Owner:** the nonzero zero fibre of a quadratic form, with a witness-selection operation on that represented locus. Integral lattices specialize this after scalar extension to their rational quadratic space.
 
 **Contract:** retain the quadratic space, its form, the selected nonzero vector, and the integral inclusion when an integral vector is requested. Over a finite free integer lattice, denominator clearing followed by primitive normalization raises a rational witness. In a degenerate space a radical vector is a valid isotropic witness, but it is insufficient for splitting off a nondegenerate hyperbolic plane.
@@ -76,6 +78,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F1/F2/F3 → image factorization → fibre and kernel. `divisibility` is already an image ideal in F3. Generic image lifting owns the computation; a lattice-local xgcd loop duplicates that responsibility. The added method and the rational Witt consumer must use the same general lift construction once its presentation is available.
 
 ### 4. Integral hyperbolic partner — frozen `v.hyperbolic_partner()`
+
+**Frozen-call reconciliation (2026-10-09):** The exact frozen name returns a selected integral element `h` satisfying `q(h)=0` and `b(v,h)=v.div()`, rather than the entire locus. That locus with its inclusion is separately available from `v.hyperbolic_partner_locus()`. A primitive isotropic vector outside the radical is required; the caller violates the hypotheses otherwise. A provably empty locus raises `ValueError("the integral hyperbolic partner locus is empty")`, as on Gram `[[0,2],[2,2]]`. The existing positive specimen on Gram `[[0,2,0],[2,2,0],[0,0,-2]]` has pairing two. These owner-local positive and negative specimens are already retained; the general method does not assert primitive implies existence.
 
 **Owner:** the integral point locus cut out by `b(v,w)=d` and `q(w)=0`, where `d` generates the pairing ideal. This is a quadratic locus inside an affine linear fibre, not another linear solver.
 
