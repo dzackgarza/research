@@ -411,7 +411,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 sage: label = next(iter(F.free_basis()))
                 sage: s = F.group_generators()[0]
                 sage: reduction = F.Mor(two)({label: t})
-                sage: free_kernel = KernelSubgroups(F)(reduction)
+                sage: free_kernel = reduction.kernel()
                 sage: generators = free_kernel.schreier_generators()
                 sage: all(reduction(g) == two.one() for g in generators)
                 True

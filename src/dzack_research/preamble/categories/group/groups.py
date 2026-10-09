@@ -1985,6 +1985,16 @@ class IndexedFreeGroupMorphism:
     def generator_morphism(self):
         return self._generator_morphism
 
+    def kernel(self):
+        r"""The kernel as an owned predicate subgroup of the source free group.
+
+        Evaluation on reduced words determines membership without requiring
+        a GAP realization of a free group on an arbitrary basis.
+        """
+        from dzack_research.preamble.categories.group.predicate_subgroups import KernelSubgroups
+
+        return KernelSubgroups(self.domain())(self)
+
     def _evaluate_reduced_word(self, element):
         codomain = self.codomain()
         return reduce(
