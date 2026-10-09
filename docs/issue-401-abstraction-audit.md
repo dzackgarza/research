@@ -187,6 +187,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 15. Lifts through isotropic reductions — frozen `R.rational_lifts(target,psi)`
 
+**Frozen-call reconciliation (2026-10-09):** The exact `R.rational_lifts(target,isometry)` call is implemented at the isotropic-reduction owner. It returns an `IsotropicReductionLiftTorsors` object over the rational marked-line reduction kernel, not an affine-linear space of matrices or a list of lifts. The selected `base_point()` is additional trivialization data; the group action and evaluation are retained. Integral points belong to the separate `integral_members()` G-object, and parameter integrality does not identify the whole integral kernel with a finite residue quotient. Existing `U+<2>` owner specimens verify the nontrivial integral parameter/inverse and difference actions; the rank-zero boundary has an integral base point. A chosen lift's failure to descend integrally is not a proof that the integral-lift locus is empty.
+
 **Owner:** a fibre of the map from isometries preserving marked isotropic data to isometries of the reductions. When nonempty this fibre is a torsor under the kernel of the restriction/reduction action.
 
 **Contract:** specify the map on the isotropic line as well as on the reduction. For a marked isotropic vector in a nondegenerate rational space of dimension `n`, the relevant kernel is the additive unipotent group of dimension `n-2`. Preserving only the line leaves an additional scaling parameter. Higher-dimensional isotropic subspaces need their own kernel group and cannot inherit the rank-one dimension formula.
@@ -196,6 +198,8 @@ The parameter space can be affine while its evaluation in the space of matrices 
 **Trace:** F2/F5 → isotropic quotient and parabolic action → kernel group → torsor and evaluation → row 12 for integral members. A chosen `.base_point()` trivializes the torsor; it does not replace its action or parameters. Integral members, when nonempty, are a torsor under the subgroup of integral kernel elements. Identifying that subgroup with an additive lattice needs a theorem. The existing finite `Torsors` constructor in `group/g_sets.py` does not yet present this rational parameter torsor. A torsor with an empty list of directions has not supplied the requested object.
 
 ### 16. Signature-defined directions — frozen `L.positive_vector()`, `S.vector_of_sign(sign)`
+
+**Frozen-call reconciliation (2026-10-09):** Both names exist through the formed-module owner. `positive_vector()` is `vector_of_sign(1)`; `negative_vector()` is `vector_of_sign(-1)`. These return a vector in the *original formed parent*, or `None` if the requested strict sign does not occur. A requested sign other than `-1` or `1` raises `ValueError`. For a formed subobject of `U`, owner specimens verify that positive and negative witnesses retain the subobject parent and their form values agree under its inclusion; a negative-definite line has no positive witness. Neither operation returns an ambient-lattice vector after silently forgetting the selected subobject.
 
 **Owner:** witness selection in a signed locus of an ordered-field-valued quadratic form. For a subspace, first restrict the form along its retained inclusion.
 
