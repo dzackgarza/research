@@ -2422,7 +2422,7 @@ class PowerSets(OwnedCategory):
                     return False
 
         def top(self):
-            return self(self.base_set())
+            return self.from_predicate(lambda _member: True)
 
         def bottom(self):
             return self(())
