@@ -31,6 +31,8 @@ The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogon
 
 ## In progress
 
+**Category-graph functor-Mor edge verified (2026-10-09):** `Cat().functor_mor(Sets(),Sets())` is the `CategoryFunctorMor` owner; `Cat().Mor(Sets(),Sets())` instead returns its functor-category target and cannot serve as the specimen. Focused Sage verifies that the selected Mor owner's `super_categories()[0] is functor_category()`. This distinguishing call and passing assertion are retained in the owner docstring. The active audit remains separate from the deferred module-exemplar chain.
+
 **Category-graph object-level verification continued (2026-10-09):** Focused Sage confirms the exact selected supercategory of `DirectSumObjects(Modules(ZZ))` is `Modules(ZZ)`, and that of `GObjects(Groups.C(2),Sets())` is `Sets()`. Their corresponding dynamic expression edges have executable runtime evidence in addition to source-level dispositions. Mor and universal-property comparisons remain distinct.
 
 **Category-graph slice/coslice runtime check (2026-10-09):** Focused Sage on `X=Sets.Δ[0]` confirms both `SliceCategory(Sets(),X)` and `CosliceCategory(Sets(),X)` have `Sets()` as the selected supercategory and retain `X` as their fixed base object. This advances the active expression-edge audit without reopening the module-exemplar dependency or confusing an arrow-category forgetful functor with a supercategory assertion. The commuting-square Mor acceptance remains separate.
