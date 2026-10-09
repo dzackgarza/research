@@ -885,17 +885,22 @@ class Torsors(OwnedParameterizedCategory):
             permutation_representation=candidate.permutation_representation(),
         )
 
-    def from_trivialization(self, trivialization):
+    def from_trivialization(self, trivialization, *, base_point=None):
         r"""Transport the regular torsor along a chosen set isomorphism ``G -> T``.
 
         This works for infinite groups. The inverse is part of the given
-        isomorphism; a selected point alone is not a trivialization.
+        isomorphism; a selected point alone is not a trivialization. When
+        the chosen point defining the trivialization is already available,
+        retain it rather than evaluating the group identity through the
+        potentially costly realization a second time. The supplied point
+        must be the image of the identity under the selected trivialization.
         """
         if trivialization.domain() is not self.group():
             raise ValueError("a torsor trivialization must start at its acting group")
         return _object_of(
             TrivializedTorsors(self.group()),
             trivialization=trivialization,
+            selected_base_point=base_point,
         )
 
     class ParentMethods:
@@ -991,8 +996,9 @@ class TrivializedTorsors(OwnedParameterizedCategory):
     class ParentMethods:
         _derived_construction_parameters = ("acting_group", "action", "underlying_category")
 
-        def __init__(self, trivialization, **rest):
+        def __init__(self, trivialization, selected_base_point=None, **rest):
             self._trivialization = trivialization
+            self._selected_base_point = selected_base_point
             group = trivialization.domain()
             points = trivialization.codomain()
             inverse = trivialization.inverse()
@@ -1011,6 +1017,8 @@ class TrivializedTorsors(OwnedParameterizedCategory):
             return self.trivialization().codomain()
 
         def base_point(self):
+            if self._selected_base_point is not None:
+                return self._selected_base_point
             return self.trivialization()(self.acting_group().one())
 
         def an_element(self):

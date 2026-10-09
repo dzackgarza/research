@@ -289,6 +289,10 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                 True
                 sage: torsor.trivialization()(coordinate) == lift
                 True
+                sage: torsor.base_point() == T.integral_base_point()
+                True
+                sage: torsor.difference(lift, torsor.base_point()) == coordinate
+                True
             """
             from dzack_research.preamble.categories.group.g_sets import Torsors
 
@@ -299,4 +303,4 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             forward = Sets().Mor(group, points)(lambda g: points(g * chosen))
             backward = Sets().Mor(points, group)(lambda lift: group(lift * chosen.inverse()))
             trivialization = Sets().Core().Mor(group, points)._from_known_inverse_pair(forward, backward)
-            return Torsors(group).from_trivialization(trivialization)
+            return Torsors(group).from_trivialization(trivialization, base_point=points(chosen))
