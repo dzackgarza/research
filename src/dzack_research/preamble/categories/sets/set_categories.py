@@ -2571,7 +2571,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
         subset_cardinality = int(subset_cardinality)
         placements = [self]
         engine = None
-        if subset_cardinality == 0 or source in FiniteSets():
+        if subset_cardinality == 0 or source in FiniteSets() or source.is_finite() is True:
             placements.append(FiniteSets())
         elif source in CountablyInfiniteSets():
             placements.append(CountablyInfiniteSets())
