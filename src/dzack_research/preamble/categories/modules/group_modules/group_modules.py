@@ -15,6 +15,7 @@ and coequalizer of the action on a finite group generating set.
 """
 
 from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
@@ -1028,6 +1029,10 @@ def _coefficient_morphism_from_images(
 
 class GroupModuleMorphismMethods:
     r"""An ``R``-linear map commuting with the chosen ``G``-actions."""
+
+    def _initialize_lower_arrow(self, parent):
+        r"""Initialize the actual equivariant Mor, not a scalar-extension map."""
+        Morphism.__init__(self, parent)
 
     def __init__(
         self,
