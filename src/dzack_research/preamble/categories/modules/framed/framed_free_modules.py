@@ -72,15 +72,17 @@ def _finitely_generated_free_placement(ring, module_generating_set):
         case True:
             categories.append(FramedFreeModules(ring).FinitelyGenerated())
             from dzack_research.preamble.categories.sets.set_categories import (
-                FiniteSets, CountableSets,
+                FiniteSets, CountableSets, InfiniteSets, CountablyInfiniteSets,
             )
 
-            match module_generating_set.cardinality() == Cardinalities().zero(), ring in FiniteSets(), ring in CountableSets():
-                case True, _, _:
+            match module_generating_set.cardinality() == Cardinalities().zero(), ring in FiniteSets(), ring in CountableSets(), ring in InfiniteSets():
+                case True, _, _, _:
                     categories.append(FiniteSets())
-                case _, True, _:
+                case _, True, _, _:
                     categories.append(FiniteSets())
-                case _, _, True:
+                case False, _, True, True:
+                    categories.append(CountablyInfiniteSets())
+                case _, _, True, _:
                     categories.append(CountableSets())
                 case _:
                     pass
