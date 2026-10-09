@@ -371,6 +371,25 @@ class ModulesOverGroupAlgebra(Modules):
         return self.restriction_coextension_adjunction(Modules(self.coefficient_ring()[subgroup])._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
+        def scalar_multiple(self, scalar, element):
+            r"""Apply the group-algebra action, including coefficient scalars.
+
+            Coefficients enter through the canonical ring morphism
+            ``R -> R[G]``; arbitrary integers are not elements of ``R[G]``
+            without this map.
+            """
+            algebra = self.group_algebra()
+            coefficient_ring = self.coefficient_ring()
+            match scalar:
+                case _ if scalar in algebra:
+                    algebra_scalar = algebra(scalar)
+                case _ if scalar in coefficient_ring:
+                    inclusion = Modules(algebra).coefficient_inclusion()
+                    algebra_scalar = inclusion(coefficient_ring(scalar))
+                case _:
+                    raise TypeError(f"{scalar!r} is not a scalar of {algebra} or {coefficient_ring}")
+            return super().scalar_multiple(algebra_scalar, element)
+
         def __init__(
             self,
             unformed_module,
