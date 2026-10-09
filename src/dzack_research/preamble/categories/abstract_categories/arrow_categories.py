@@ -1474,19 +1474,19 @@ class SetSubobjectCategory(SliceCategory):
             return self.inclusion() <= other.inclusion()
 
         def union(self, other):
-            return self._set_subobject_category()(self.inclusion().union(other.inclusion()).inclusion())
+            return self.inclusion().union(other.inclusion())
 
         def intersection(self, other):
-            return self._set_subobject_category()(self.inclusion().intersection(other.inclusion()).inclusion())
+            return self.inclusion().intersection(other.inclusion())
 
         def difference(self, other):
-            return self._set_subobject_category()(self.inclusion().difference(other.inclusion()).inclusion())
+            return self.inclusion().difference(other.inclusion())
 
         def symmetric_difference(self, other):
-            return self._set_subobject_category()(self.inclusion().symmetric_difference(other.inclusion()).inclusion())
+            return self.inclusion().symmetric_difference(other.inclusion())
 
         def complement(self):
-            return self._set_subobject_category()(self.inclusion().complement().inclusion())
+            return self.inclusion().complement()
 
         def __or__(self, other):
             return self.union(other)
