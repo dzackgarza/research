@@ -334,10 +334,13 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical basis map."""
 
     def an_object(self):
-        r"""The hyperbolic plane U, framed by its standard basis."""
-        from dzack_research.preamble.categories.lattices import Lattices
+        r"""The framed free module of rank one over the base ring.
 
-        return Lattices(self.base_ring())("U")
+        A framed module requires no bilinear form; in particular this
+        constructor must not attempt to equip an arbitrary noncommutative
+        coefficient ring with the hyperbolic lattice form ``U``.
+        """
+        return self.base_ring().free_module(1)
 
     @classmethod
     def _repr_object_names(cls):
