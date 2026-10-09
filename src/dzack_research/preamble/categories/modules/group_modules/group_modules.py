@@ -1391,11 +1391,14 @@ class _CoefficientModuleEngine:
     """
 
     def _selected_module_coefficients(self, element):
-        if self.unformed_module() is self.group_algebra():
-            # The regular R[G]-basis is the unit; the R-basis remains on
-            # unformed_module(), not on this selected R[G]-resolution.
-            (basis,) = tuple(self.module_generating_set())
-            return {basis: self.group_algebra()(self.unformed_module()(element))}
+        match self.unformed_module() is self.group_algebra():
+            case True:
+                # The regular R[G]-basis is the unit; the R-basis remains
+                # on unformed_module(), not on this R[G]-resolution.
+                (basis,) = tuple(self.module_generating_set())
+                return {basis: self.group_algebra()(self.unformed_module()(element))}
+            case False:
+                pass
         if self._is_the_regular_module():
             return super()._selected_module_coefficients(element)
         module = self.unformed_module()
@@ -1594,16 +1597,17 @@ def _equip_action(module, group_or_action, action=None):
     )
     # An arbitrary selected group action has no inferred R[G]-basis.
     regular = module is group_algebra
-    if regular:
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+    match regular:
+        case True:
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
-        selected_labels = group_algebra.free_module(1).module_generating_set()
-        selected_generator = lambda label: module.one()
-        extra_category = (FramedFreeModules(group_algebra),)
-    else:
-        selected_labels = labels
-        selected_generator = module.module_generator
-        extra_category = ()
+            selected_labels = group_algebra.free_module(1).module_generating_set()
+            selected_generator = lambda label: module.one()
+            extra_category = (FramedFreeModules(group_algebra),)
+        case False:
+            selected_labels = labels
+            selected_generator = module.module_generator
+            extra_category = ()
     framing_source = group_algebra.free_module(selected_labels)
     # The generic linear realization and the represented action are both
     # actual properties of this object. Neither placement implies the other.
