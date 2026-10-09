@@ -3557,6 +3557,29 @@ class FiniteAtlasModuleSheafMorphismMethods:
         target = self.target_datum()
         return source.category().Mor(source, target)(self.local_maps())
 
+    def __mul__(self, other):
+        r"""Compose sheaf arrows, with descent maps composing chartwise."""
+        match other:
+            case FiniteAtlasModuleSheafMorphismMethods() if other.codomain() is self.domain():
+                return self.domain().category().Mor(other.domain(), self.codomain())(
+                    {
+                        index: self.local_map(index) * other.local_map(index)
+                        for index in other.source_datum().chart_indices()
+                    }
+                )
+            case _:
+                return NotImplemented
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, FiniteAtlasModuleSheafMorphismMethods)
+            and other.parent() is self.parent()
+            and all(
+                self.local_map(index) == other.local_map(index)
+                for index in self.source_datum().chart_indices()
+            )
+        )
+
     def _kernel_quasi_coherent_sheaf(self):
         return self.kernel_sheaf()
 
