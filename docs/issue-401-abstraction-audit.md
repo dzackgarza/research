@@ -99,6 +99,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 6. Recovering two hyperbolic planes
 
+**Frozen-call reconciliation (2026-10-09):** Research `L.two_hyperbolic_plane_splitting()` returns `None` when two integral hyperbolic planes do not split off, or a chosen isometry `U⊥U⊥K -> L` with a two-sided inverse and the defining biproduct injections and quotient comparisons. This reverses the single-reduction splitting arrow's direction because the two-plane construction presents a chosen model *into* `L`; consumers must not infer the direction from the method name. Both scalar rank and genus conditions are checked at the owner, and the represented scrambled `2U + E8(-1)` specimen has passed an inverse-on-generators check. An unavailable computation is not to be reported as a proved absence of planes.
+
 **Owner:** repeated chosen orthogonal decomposition, using row 5 at each stage. A two-plane or Eichler model contains this decomposition; it does not independently compute another lattice and attach splitting labels.
 
 **Contract:** return a chosen isometry and its summand maps for `L ≅ U ⊥ U ⊥ K`. Finding a suitable divisibility-one isotropic vector is a separate integral existence/search problem. A rational witness with larger divisibility does not refute the existence of a splitting. A construction from a supplied complement is not recovery from an arbitrary Gram presentation.
