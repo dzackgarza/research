@@ -2604,7 +2604,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
         engine = None
         if subset_cardinality == 0 or source in FiniteSets() or source.is_finite() is True:
             placements.append(FiniteSets())
-        elif source in CountablyInfiniteSets():
+        elif source in CountableSets() and source in InfiniteSets():
             placements.append(CountablyInfiniteSets())
         elif source in UncountableSets():
             placements.append(UncountableSets())
@@ -2710,7 +2710,7 @@ class FinitePowerSets(OwnedCategory):
         engine = None
         if source in FiniteSets() or source.is_finite() is True:
             placements.append(FiniteSets())
-        elif source in CountablyInfiniteSets():
+        elif source in CountableSets() and source in InfiniteSets():
             placements.append(CountablyInfiniteSets())
         elif source in UncountableSets():
             placements.append(UncountableSets())
