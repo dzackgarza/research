@@ -417,6 +417,15 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 True
                 sage: any(g == s*s or g == ~(s*s) for g in generators)
                 True
+                sage: G = Groups.S(3)
+                sage: H = G.subgroup((G((1, 2)),))
+                sage: identity_on_generators = G.Mor(G)({g: g for g in G.group_generators()})
+                sage: P = identity_on_generators.preimage_subgroup(H)
+                sage: generators = P.schreier_generators()
+                sage: all(g in P for g in generators)
+                True
+                sage: G.subgroup(generators).cardinality() == H.cardinality() == 2
+                True
             """
             morphism = self.kernel_morphism()
             ambient = self.supergroup()
