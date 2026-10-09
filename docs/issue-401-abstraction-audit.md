@@ -109,6 +109,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 7. Affine integral solution locus — frozen `family.integral_members()`
 
+**Frozen-call reconciliation (2026-10-09):** `AffineModuleFibres.ParentMethods.integral_members(integral_parameters)` retains the frozen name on a represented *solution fibre*, not on an arbitrary family. The argument is the chosen integral parameter inclusion into the restricted-scalars rational parameter module. It returns another `AffineModuleFibres` object with that inclusion, offset, full translation module and torsor action retained; it is not a single integral solution or a Boolean. The method rejects an invalid rational ambient module, and requires the original fibre's target submodule to be zero (`ValueError`). The finite-rank matrix-fibre and affine-line specimens already exercise the integration. A stopped port consumer that calls the method on a general parameterized family must first construct its linear solution fibre; silently treating `integral_members` as an enumeration is a contract mismatch.
+
 **Owner:** inverse image of a chosen integral submodule under an affine map, after restricting scalars. For `F: P → V`, `F(p)=c+A(p)`, and `j: M → Res(V)`, the object is the pullback of `F` and `j` on underlying affine sets.
 
 **Contract:** when nonempty, retain a selected point, the homogeneous group `A^-1(M)`, its action, and the maps to parameters and integral values. It is a coset of a module, but that module need not be a finitely generated lattice. For `A(s,t)=s+t`, the homogeneous group is `ZZ*(1,0)+QQ*(1,-1)`. An injective rational parameter map into a finite-dimensional rational space gives the finite-lattice case. A solver must not drop the rational kernel.
@@ -116,6 +118,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F0/F1/F9 → scalar restriction → inverse image → affine fibre and kernel action. Existing single-preimage and finite-span operations are partial presentation capabilities. A general mixed-scalar affine fibre has not been identified in the inspected sources. Smith form/Hermite form and CRT are private realizations of the appropriate linear/integral pieces, not definitions of the object. A named affine-family wrapper with only a particular matrix is insufficient.
 
 ### 8. Equation `XA + A-transpose X-transpose = B`
+
+**Frozen-call reconciliation (2026-10-09):** `A.symmetrized_right_multiplication()` returns the based linear operator `X ↦ XA+(XA)^t`, not a solution set. Its `solution_fibre(B)` returns the complete affine fibre and homogeneous translation action; `preimage(B)` selects only one solution and `kernel()` gives only homogeneous solutions. The map is built over a commutative base ring and raises `ValueError` otherwise. On the integral 2-by-2 identity matrix, focused Sage confirms `equation(fibre.base_point())=2I`, the skew generator belongs to the homogeneous kernel, and translating the selected origin by it remains inside the fibre. The research result uses an explicit framing; an unframed general equation requires separate duality data.
 
 **Owner:** a fibre of a linear map between modules of maps/forms. With explicit finite framings, the displayed map is `X ↦ XA+(XA)^t`; without framings, use duality and a correctly typed symmetrization into bilinear forms. An unframed map `V → W` does not canonically identify either space with its dual.
 
