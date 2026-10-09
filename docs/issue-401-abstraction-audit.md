@@ -57,6 +57,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 2. Vector content — frozen `v.content()`
 
+**Frozen-call reconciliation (2026-10-09):** `v.content()` is available through the free-module owner and returns the nonnegative generator in `ZZ`, rather than the order-ideal object. `v.order_ideal()` retains that intrinsic ideal separately. The zero vector has content zero, while `primitive_part()` raises `ValueError` at zero. On the lattice with Gram `[[0,6],[6,0]]`, the vector with chosen-frame coordinates `(2,3)` has content one (focused Sage); this operation does not depend on the form. The earlier discussion of coordinate realization is a mathematical ownership caveat, not a missing research method.
+
 **Owner:** the order ideal of an element of a module, obtained from evaluation `M* → R`, `f ↦ f(v)`. On a finite projective module this gives the intrinsic ideal represented by the coordinate ideal in a basis. The nonnegative integer generator is a specialization for free integer modules.
 
 **Contract:** separate the ideal from a normalized generator and from division by that generator. The zero vector has content zero under the ideal convention; the literal maximum of positive divisors of zero does not exist. Primitive normalization of zero is undefined. A form plays no role.
@@ -64,6 +66,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F0/F1 → internal Hom/dual → evaluation → image ideal → normalized principal generator. The module/dual foundations are present; the order-ideal declaration and its comparison with the free-coordinate realization remain unresolved. The added `FramedFreeModules.ElementMethods.content()` is a coordinate realization, not evidence that framing is the semantic owner. Infinite free modules require a separate comparison using finite support, rather than an unqualified finite-projective argument.
 
 ### 3. Bezout partner — frozen `v.bezout_partner()`
+
+**Frozen-call reconciliation (2026-10-09):** The method is present at the lattice element owner. On `ZZ` lattices it returns a selected lattice vector `h` with `b(v,h)=v.div()` by lifting through the pairing module morphism; zero has selected partner zero. For Gram `[[0,6],[6,0]]` and coordinates `(2,3)`, focused Sage returns pairing six; `L.zero().bezout_partner()==L.zero()` also holds. The full solution fibre is separately retained by `pairing.solution_fibre`, so the selected vector is not substituted for the affine locus. The finite and finite-support infinite-rank branches are separate computational realizations.
 
 **Owner:** lifting a generator of the image of a linear functional. For a formed module, compose its correlation map with evaluation at `v` to obtain `b(v,-): M → R`.
 
