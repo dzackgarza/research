@@ -2209,15 +2209,36 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         """
         _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
-    def select_group_resolution(self):
+    def select_group_resolution(self, *, generators=None):
         r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
 
         It is the degree-zero truncation of a free-group resolution of
         ``O(L)`` (``CAT-29``); after it, ``group_generators()`` answers.
+        A known complete generating family may be supplied explicitly when
+        the indefinite orthogonal-group engine is not yet available. The
+        caller must establish that its family generates the full group.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[0,2],[2,0]])
+            sage: O = L.Aut()
+            sage: exchange = O([[0,1],[1,0]])
+            sage: minus_id = O([[-1,0],[0,-1]])
+            sage: O.select_group_resolution(generators=(exchange, minus_id))
+            Orthogonal group O(Integral lattice of rank 2 and signature (1, 1))
+            sage: rho = L.discriminant_representation()
+            sage: all(rho(g) == rho.codomain().one() for g in L.stable_orthogonal_group().schreier_generators())
+            True
         """
         if self.has_selected_group_resolution():
+            if generators is not None:
+                raise ValueError("the orthogonal group already has a selected generating resolution")
             return self
-        self._select_computed_group_resolution()
+        if generators is None:
+            self._select_computed_group_resolution()
+        else:
+            selected = finite_ordered_set(tuple(self(generator) for generator in generators))
+            _fix_selected_group_resolution_on(self, lambda: selected)
         return self
 
     def structure_description(self):
