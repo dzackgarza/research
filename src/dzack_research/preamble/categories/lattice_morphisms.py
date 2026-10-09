@@ -777,13 +777,16 @@ class LatticeIsometryMethods:
             for vector in source_radical.module_generators()
             if not source_inclusion.is_in_image(source_radical.inclusion()(vector))
         )
+        target_radical_complements = tuple(
+            target_radical.inclusion()(vector)
+            for vector in target_radical.module_generators()
+            if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
+        )
+        if bool(radical_complements) != bool(target_radical_complements):
+            raise ValueError("the specified hyperplanes have incompatible ambient-radical intersections")
         if radical_complements:
             source_vector = radical_complements[0]
-            target_vector = next(
-                target_radical.inclusion()(vector)
-                for vector in target_radical.module_generators()
-                if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
-            )
+            target_vector = target_radical_complements[0]
         else:
             source_vector = next(
                 vector for vector in source.module_generators()
