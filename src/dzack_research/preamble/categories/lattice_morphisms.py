@@ -639,6 +639,10 @@ class LatticeIsometryMethods:
             sage: h = L.integral_isometry(g)
             sage: all(h(twisted(x)) == j(x) for x in P.module_generators())
             True
+            sage: a.extension_across(L.zero(), L.zero())
+            Traceback (most recent call last):
+            ...
+            ValueError: orthogonal extension requires equal nonzero vector squares
         """
         source = source_vector.parent()
         target = target_vector.parent()

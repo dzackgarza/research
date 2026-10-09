@@ -121,6 +121,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 10. Nonisotropic perpendicular extension — frozen `phi.extension_across(v,w)`
 
+**Frozen-call reconciliation (2026-10-09):** Research now exposes the exact frozen name `extension_across(source_vector,target_vector,*,source_inclusion=None,target_inclusion=None)`. It returns an isometry of the scalar-extended ambient spaces, preserving the selected perpendicular embedding squares. Both canonical inclusions and explicitly specified noncanonical embeddings are supported, including distinct perpendicular endpoints inside one ambient lattice. Unequal or zero vector squares and wrong embedding domains/codomains raise `ValueError`. The source docstring verifies integral descent for `diag(2,2,-2)`, while targeted prior specimens verify that the extension restricts correctly along a twisted embedding `j*(-id)`; this operation itself does not assert integral descent. The earlier trace below describes the *superseded* local `extend_from_perpendicular` implementation and is not the current API.
+
 **Owner:** extension of an isometry between orthogonal summands, composed with chosen orthogonal decompositions. Over a field, a vector of nonzero square splits off its line. An isometry of the complementary spaces together with `v ↦ w` extends uniquely when their squares agree.
 
 **Contract:** retain both perpendicular inclusions and both ambient spaces. The partial isometry need not have subobjects as literal Python endpoints if explicit embedding data is supplied. Scalar extension supplies the rational ambient extension; integral descent is row 12. Definiteness belongs only to an algorithm enumerating the complement isometry torsor.
