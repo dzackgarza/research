@@ -105,6 +105,17 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return _center_algebra(self, self.subobject_on(class_sums))
 
         @cached_method
+        def ring_center(self):
+            r"""The ring centre is the same selected class-sum algebra.
+
+            Its defining submodule and embedding are already retained by
+            ``center()`` and ``center_inclusion()``.  Constructing another
+            predicate subring would require an independent centrality
+            oracle and discard this chosen finite-group computation.
+            """
+            return self.center()
+
+        @cached_method
         def group_inclusion(self):
             r"""The monoid morphism \(G\to R[G]\), \(g\mapsto g\).
 
