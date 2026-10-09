@@ -348,6 +348,15 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return "framed free modules"
 
     def super_categories(self):
+        r"""The chosen free basis refines free modules over the same ring.
+
+            sage: from dzack_research.preamble.all import ZZ, Modules
+            sage: F = FramedFreeModules(ZZ).an_object()
+            sage: F in Modules(ZZ).Free() and F in FramedFreeModules(ZZ)
+            True
+            sage: F.module_rank() == 1 and F.framing_morphism().codomain() is F
+            True
+        """
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
         # The Free axiom belongs to Modules; use that base rather than the
