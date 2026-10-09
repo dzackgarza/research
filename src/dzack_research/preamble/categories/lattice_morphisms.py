@@ -1525,6 +1525,19 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
 
     def super_categories(self):
+        r"""Retain lattice morphisms and endpoint-admissible inherited monomorphisms.
+
+        Only packets containing both endpoints contribute inherited Mor
+        categories; a lattice embedding is not automatically a morphism in
+        a packet whose objects exclude either endpoint.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: E = L.Mono(L)
+            sage: E.domain() is L and E.codomain() is L and len(E.super_categories()) >= 1
+            True
+        """
         packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
