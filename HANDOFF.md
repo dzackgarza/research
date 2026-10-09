@@ -29,6 +29,22 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Bare-placement audit disposition (construction view, 2026-10-09).** The
+`placed in Sets()` and `placed in Objects()` lines do not, by themselves,
+identify a group/ring/module/lattice/scheme constructed in the wrong category.
+`Modules.pairings_with`, `bilinear_forms` and `quadratic_forms` use module Mor
+classifiers for module-valued forms; the fallback `Sets()` object represents
+callable-valued forms when that classifier does not apply. The `Objects()`
+entries for algebra `presentation`, coproduct factors/injections, primary/Jordan
+decompositions, lattice summands, and scheme point counts/affine charts are
+indexed families of mathematical objects, not those objects themselves.
+Likewise, isotropic-sublattice and flag **loci** are sets of lattice subobjects,
+not lattices. The reported `tensor_power` placement is already a module with
+its `TensorPowerModules` structure, including degrees zero and one. Further
+repairs must come from a concrete false mathematical construction statement,
+not from coercing one of these families or classifier sets into its element's
+category.
+
 Both complete reports were read together (478 construction lines and 410 property lines). The following are false *property-report assertions*, rather than defects in the categories' actual `super_categories()` declarations. Each came from scanning arbitrary calls in object methods as though they were categorical placements:
 
 - [x] `WeilDivisorGroups ... places Affine`: a Weil divisor group is a free abelian group of divisors, not an affine scheme. Its `affine_divisor_coordinate_ring()` queries whether the **underlying scheme** is affine; the group itself declares `DivisorGroups()`.
