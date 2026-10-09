@@ -3684,15 +3684,17 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
     """
     index_set = family.index_set()
     placements = [CoproductsOfSets()]
+    if index_set in FiniteSets() and all(
+        family(index) in FiniteSets() for index in index_set
+    ):
+        placements.append(FiniteSets())
     if (
         index_set in FiniteSets()
         and index_set in EnumeratedSets()
         and all(family(index) in EnumeratedSets() for index in index_set)
     ):
         placements.append(EnumeratedCoproductsOfSets())
-        if all(family(index) in FiniteSets() for index in index_set):
-            placements.append(FiniteSets())
-        else:
+        if FiniteSets() not in placements:
             placements.append(CountablyInfiniteSets())
     return _object_of(owned_category_join(placements), family=family)
 
