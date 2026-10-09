@@ -635,6 +635,13 @@ class SetMorCategory(CategoricalMor):
             # The empty exponent was handled above; evaluation at any point
             # embeds the uncountable codomain into the function set.
             placement = owned_category_join((placement, UncountableSets()))
+        elif (
+            domain in InfiniteSets()
+            and codomain in FiniteSets()
+            and codomain.cardinality().finite_value() >= 2
+        ):
+            # Two distinct values embed the power set of the infinite domain.
+            placement = owned_category_join((placement, UncountableSets()))
         CategoricalMor.__init__(
             self,
             mor_family,
