@@ -2944,14 +2944,15 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    if index_set in FiniteSets() and index_set in EnumeratedSets():
+    if index_set in FiniteSets():
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
-        factors = tuple(family(index) for index in index_set)
-        if all(factor in EnumeratedSets() for factor in factors):
-            placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
+        if index_set in EnumeratedSets():
+            factors = tuple(family(index) for index in index_set)
+            if all(factor in EnumeratedSets() for factor in factors):
+                placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
 
 
