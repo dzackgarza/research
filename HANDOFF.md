@@ -31,6 +31,8 @@ The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogon
 
 ## In progress
 
+**Step-2 varying-ring formed Mor edge verified (2026-10-09):** For `L=U` and the canonical `ZZ→QQ` morphism, the exact `FiberedFormedModuleMor(L,L.vector_space(),f)` constructs and its selected supercategory is identically its retained underlying varying-ring semilinear `module_mor()`. Focused Sage passed, and the executable owner specimen records the comparison without identifying the form-preserving data with the underlying arrow.
+
 **Category-graph functor-Mor edge verified (2026-10-09):** `Cat().functor_mor(Sets(),Sets())` is the `CategoryFunctorMor` owner; `Cat().Mor(Sets(),Sets())` instead returns its functor-category target and cannot serve as the specimen. Focused Sage verifies that the selected Mor owner's `super_categories()[0] is functor_category()`. This distinguishing call and passing assertion are retained in the owner docstring. The active audit remains separate from the deferred module-exemplar chain.
 
 **Category-graph object-level verification continued (2026-10-09):** Focused Sage confirms the exact selected supercategory of `DirectSumObjects(Modules(ZZ))` is `Modules(ZZ)`, and that of `GObjects(Groups.C(2),Sets())` is `Sets()`. Their corresponding dynamic expression edges have executable runtime evidence in addition to source-level dispositions. Mor and universal-property comparisons remain distinct.

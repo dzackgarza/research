@@ -894,7 +894,15 @@ class FiberedFormedModuleMor(CategoricalMor):
         return self._module_mor
 
     def super_categories(self):
-        r"""The lower arrow theory is the varying-ring semilinear module Mor."""
+        r"""The lower arrow theory is the varying-ring semilinear module Mor.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: C = FiberedFormedModuleMor(L, L.vector_space(), ZZ.fraction_field_map())
+            sage: C.super_categories()[0] is C.module_mor()
+            True
+        """
         return [self.module_mor()]
 
     def _element_constructor_(self, datum, *, check=False):
