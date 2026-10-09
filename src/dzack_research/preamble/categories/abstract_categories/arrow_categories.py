@@ -912,7 +912,21 @@ class CosliceMorCategoryConstruction(MorCategoryConstruction):
 
 
 class CosliceCategory(_SubcategoryOfArrows):
-    r"""The coslice category \(X/C\): arrows out of ``X``, with squares whose left edge is ``id_X``."""
+    r"""The coslice category \(X/C\): arrows out of ``X``, with squares whose left edge is ``id_X``.
+
+    A nonidentity idempotent square retains the fixed identity edge::
+
+        sage: from dzack_research.preamble.all import Sets
+        sage: T, X = Sets.Δ[0], Sets.Δ[1]
+        sage: C = CosliceCategory(Sets(), T)
+        sage: A = C(Sets().Mor(T, X)(lambda point: X(0)))
+        sage: collapse = Sets().Mor(X, X)(lambda point: X(0))
+        sage: square = C.Mor(A, A)(collapse)
+        sage: square * square == square
+        True
+        sage: square.left() == Sets().Mor(T, T).identity() and square.right() == collapse
+        True
+    """
 
     _MorCategory = CosliceMorCategoryConstruction
 
