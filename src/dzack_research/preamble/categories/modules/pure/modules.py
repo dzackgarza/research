@@ -1096,6 +1096,8 @@ class Modules(OwnedCategoryOverBaseRing):
             placement = [LinearMorModules(center)]
             if _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring):
                 placement.append(MatrixSpaces(ring))
+                if domain is codomain:
+                    placement.append(MatrixEndomorphismSpaces(ring))
             if domain is codomain:
                 placement.append(AdditiveEndomorphismRings(center))
             return owned_category_join(tuple(placement))
@@ -5475,6 +5477,11 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
         sage: R = MatrixAlgebras(ZZ).an_object()
         sage: MatrixEndomorphismSpaces(R).super_categories()[1] is OwnedRings()
+        True
+        sage: E = MatrixEndomorphismSpaces(R).an_object()
+        sage: E in MatrixEndomorphismSpaces(R) and E in MatrixSpaces(R)
+        True
+        sage: E.domain().base_ring() is R and E.domain() is E.codomain()
         True
     """
 
