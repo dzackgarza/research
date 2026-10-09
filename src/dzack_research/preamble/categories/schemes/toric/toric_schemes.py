@@ -487,6 +487,15 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         return f"toric schemes over {self.base_ring()}"
 
     def super_categories(self):
+        r"""A toric scheme over a ring with zero divisors is not placed in varieties.
+
+            sage: from dzack_research.preamble.all import ZZ, ToricSchemes, Varieties
+            sage: R = ZZ.quotient_ring(ZZ.ideal(4))
+            sage: R.is_integral_domain()
+            False
+            sage: Varieties(R) in ToricSchemes(R).super_categories()
+            False
+        """
         base = self.base_ring()
         schemes = Schemes(base)
         categories = [schemes.Separated().FiniteType()]
