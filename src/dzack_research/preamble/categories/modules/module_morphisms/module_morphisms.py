@@ -2750,7 +2750,14 @@ class SubFramingMorphism(ModuleEmbedding):
 
 
 def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
-    mor = domain.module_category().Mor(domain, codomain)
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+
+    # A framing is linear over the scalar ring, not a map required to retain
+    # a chosen group action. Its free source need not be in the specialized
+    # category Modules(R[G]), although both endpoints are ordinary R[G]-modules.
+    modules = OwnedCategoryOverBaseRing.__classcall__(Modules, domain.base_ring())
+    mor = modules.Mor(domain, codomain)
     return FramingMorphism(mor, generator_morphism)
 
 

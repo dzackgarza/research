@@ -451,7 +451,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 Resolutions,
             )
 
-            modules = Modules(self.base_ring())
+            modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
             match projective_class:
                 case None:
                     projective_class = modules.Projective()
