@@ -3356,7 +3356,7 @@ class FiniteAtlasModuleGluingMorphismMethods:
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, FiniteAtlasModuleGluingMorphism)
+            isinstance(other, FiniteAtlasModuleGluingMorphismMethods)
             and other.parent() is self.parent()
             and all(
                 other.local_map(index) == self.local_map(index)
@@ -3543,6 +3543,19 @@ class FiniteAtlasModuleGluingMorphism(
 class FiniteAtlasModuleSheafMorphismMethods:
     r"""The sheaf-endpoint realization of a finite-atlas descent morphism."""
 
+    def __init__(self, parent, local_maps):
+        Morphism.__init__(self, parent)
+        source = self.source_datum()
+        target = self.target_datum()
+        descent = source.category().Mor(source, target)(local_maps)
+        self._local_maps = descent.local_maps()
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        return self.local_maps()[self.source_datum().gluing_datum().normalize_chart_index(index)]
+
     def source_datum(self):
         return self.domain().gluing_datum()
 
@@ -3564,7 +3577,7 @@ class FiniteAtlasModuleSheafMorphismMethods:
         r"""Compose sheaf arrows, with descent maps composing chartwise."""
         match other:
             case FiniteAtlasModuleSheafMorphismMethods() if other.codomain() is self.domain():
-                return self.domain().category().Mor(other.domain(), self.codomain())(
+                return QuasiCoherentSheaves(self.domain().scheme()).Mor(other.domain(), self.codomain())(
                     {
                         index: self.local_map(index) * other.local_map(index)
                         for index in other.source_datum().chart_indices()
@@ -3604,6 +3617,24 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
     Its endpoints are sheaves, not their descent data.  The separate
     ``descent_morphism`` comparison transports an arrow to the Mor between
     those data; that Mor is not a supercategory with the same endpoints.
+
+    The selected comparison preserves identity and chartwise composition on
+    the standard two-chart cover of the projective line::
+
+        sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
+        sage: from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasModuleGluingData
+        sage: from dzack_research.preamble.categories.schemes.schemes import QuasiCoherentSheaves
+        sage: atlas = ProjectiveSpaces(QQ)(1).standard_affine_atlas()
+        sage: datum = FiniteAtlasModuleGluingData(atlas).structure_module_datum()
+        sage: sheaf = datum.sheaf()
+        sage: identity = QuasiCoherentSheaves(sheaf.scheme()).Mor(sheaf, sheaf).identity()
+        sage: descent = identity.descent_morphism()
+        sage: descent.domain() is datum and descent.codomain() is datum
+        True
+        sage: identity * identity == identity
+        True
+        sage: (identity * identity).descent_morphism() == descent * descent
+        True
     """
 
     ElementMethods = FiniteAtlasModuleSheafMorphismMethods
