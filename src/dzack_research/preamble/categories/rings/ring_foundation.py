@@ -1721,7 +1721,11 @@ class _PredicateSubringParent(Parent):
         self._preamble_is_commutative = category.is_subcategory(commutative_rings) or ambient_ring in commutative_rings
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
-        base = self if self._preamble_is_commutative else _own_ring(SageZZ)
+        # The predicate subring is not yet a Parent with a category.  Its
+        # algebra/category placement cannot take this partially initialized
+        # object as the scalar ring: doing so recursively constructs
+        # Algebras(self) before self has a subcategory_class.
+        base = _own_ring(SageZZ)
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         algebra = Algebras(base).Associative().Unital()
@@ -1732,10 +1736,7 @@ class _PredicateSubringParent(Parent):
                     FinitelyGeneratedFreeModules,
                 )
 
-                placements.extend((
-                    algebra.Commutative(),
-                    FinitelyGeneratedFreeModules(self),
-                ))
+                placements.append(algebra.Commutative())
             case False:
                 placements.append(algebra)
         Parent.__init__(self, base=base, category=owned_category_join(tuple(placements)))
