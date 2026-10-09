@@ -388,6 +388,36 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def kernel_morphism(self):
             return self._kernel_morphism
 
+        def schreier_generators(self):
+            r"""Generators of the kernel of a homomorphism with finite image.
+
+            For left image representatives ``t_q`` and each selected source
+            generator ``s``, Schreier's rewriting gives
+            ``t_(f(s)q)^(-1) s t_q``. The finite image and its chosen lifts
+            come from the group owner's ``finite_image_lifts`` construction;
+            no ambient finite-group hypothesis is imposed.
+
+            EXAMPLES::
+
+                sage: four, two = Groups.C(4), Groups.C(2)
+                sage: s, t = four.group_generators()[0], two.group_generators()[0]
+                sage: kernel = four.Mor(two)({s: t}).kernel()
+                sage: generators = kernel.schreier_generators()
+                sage: all(g in kernel for g in generators)
+                True
+                sage: four.subgroup(generators).cardinality() == kernel.cardinality()
+                True
+            """
+            morphism = self.kernel_morphism()
+            ambient = self.supergroup()
+            generators = tuple(ambient.group_generators())
+            lifts = ambient.finite_image_lifts(morphism, generators=generators)
+            return tuple(
+                self((~lifts[morphism(s) * image]) * s * representative)
+                for image, representative in lifts.items()
+                for s in generators
+            )
+
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
