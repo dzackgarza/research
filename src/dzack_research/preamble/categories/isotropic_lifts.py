@@ -66,6 +66,10 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
         True
         sage: lifts.integral_base_point().integral_restriction(U, U) is not None
         True
+        sage: integral = lifts.integral_torsor()
+        sage: origin = integral.base_point()
+        sage: integral.difference(origin, origin) == integral.acting_group().one()
+        True
     """
 
     def super_categories(self):
