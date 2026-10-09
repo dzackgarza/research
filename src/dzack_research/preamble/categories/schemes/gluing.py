@@ -3546,6 +3546,17 @@ class FiniteAtlasModuleSheafMorphismMethods:
     def target_datum(self):
         return self.codomain().gluing_datum()
 
+    def descent_morphism(self):
+        r"""The corresponding arrow between the selected descent data.
+
+        The sheaf arrow and the descent arrow have different endpoints:
+        ``F -> G`` versus ``datum(F) -> datum(G)``.  Local maps define the
+        latter only after the descent Mor owner checks their overlap squares.
+        """
+        source = self.source_datum()
+        target = self.target_datum()
+        return source.category().Mor(source, target)(self.local_maps())
+
     def _kernel_quasi_coherent_sheaf(self):
         return self.kernel_sheaf()
 
