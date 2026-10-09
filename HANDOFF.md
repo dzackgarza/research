@@ -6,7 +6,7 @@ Issue 401 is unfinished. Continue the implementation in the priority order below
 
 Finish the research-side primitives required by the pinned `sage-indefinite-port` migration. Place each operation at its mathematical owner and compose its general construction, retaining all defining maps. The acceptance inventory is [the abstraction audit](docs/issue-401-abstraction-audit.md); the active node is [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
-Read `INTENT.md`, `AGENTS.md`, `CONTRIBUTING.md`, `TODO.md`, `COMPLAINTS.md`, and `docs/preamble-megadoc.md` before editing. The formal authority is `lean-categories`; correctness acceptance belongs to `lean-cas-dsl`. Research runtime checks establish engineering integration only. Formal requests run beside computational work.
+Read `INTENT.md`, `AGENTS.md`, `CONTRIBUTING.md`, `TODO.md`, `COMPLAINTS.md`, and `docs/preamble-megadoc.md` before editing. The formal authority is `lean-categories`; correctness acceptance belongs to `lean-cas-dsl`. Research is general mathematics: each operation is accepted by true assertions about pure mathematics at its owner. There are no integration tests, and no consumer gates research. Formal requests run beside computational work.
 
 ## Priorities
 
@@ -235,11 +235,11 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 - **Noncanonical formed embedding restriction verified:** on the same Gram `diag(2,2,-2)`, let `P=v^perp`, `j:P -> L` its inclusion, and `a=-id_P`. The explicit source embedding `j*a` differs from `j`, although both have the same image. Extending the identity of `P` with source embedding `j*a` and target embedding `j` gives an integral ambient isometry `h` satisfying `h*(j*a)=j` on every generator (targeted Sage). This checks that `extension_across` uses the *supplied arrows*, not only the endpoint objects or their images.
 
-- Reconcile every audit row with the pinned migration contract, including return objects, failure cases, multiplier bounds, inclusions, and inverse maps. Resolve the remaining contract questions from the mathematical definitions and the recorded amendments.
+- Each audit operation is decided by its mathematical definition: return object, failure case, inclusions and inverse maps follow from the mathematics, not from what a consumer calls.
 - **Two-plane recovery repaired at the decomposition owner:** `two_hyperbolic_plane_splitting()` uses the integral hyperbolic index to decide existence, then searches integral null vectors exhaustively by increasing coordinate height when PARI selects one with divisibility greater than one. The genus criterion is exact for a lattice whose genus contains `2U`, by Nikulin's indefinite genus uniqueness theorem and `rank(L) >= length(A_L)+4`; the analogous bound after removing one `U` is `rank >= length(A)+2`. Targeted Sage checks passed on `U(2)+U+U`, a permuted Gram presentation, and a nontrivial integral basis change. The resulting isometry retains the original reduction-owned comparison maps and has a two-sided inverse. Broader frozen-port parity and independent acceptance remain open.
 - **Two-plane structural comparison extended:** targeted Sage execution on a nontrivial rank-four Gram presentation confirms both hyperbolic biproduct factors have rank two, the splitting and its inverse agree on the retained summand injections, and the two compositions are identities. The earlier abstraction-audit assertion that this operation bypasses reductions was stale and has been corrected at its contract row. Formal equivalence and independent acceptance remain open.
 - Follow the group-consumer dependencies named in the TODO only where they remain necessary for the issue-401 contract.
-- Update the audit, TODO, and relevant complaints. Their statements that every specimen remains unexecuted are stale. Separate pending engineering integration from formal comparisons and independent acceptance. Keep all still-required proof work at its existing owner.
+- Update the audit, TODO, and relevant complaints. Their statements that every specimen remains unexecuted are stale. Keep all still-required proof work at its existing owner.
 - Complete the applicable formatting and targeted checks, commit coherent units, and follow the repository's synchronization rules. Do not mark the task complete from source inspection or a few successful specimens alone.
 
 ## Workspace boundary
