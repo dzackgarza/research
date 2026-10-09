@@ -3630,7 +3630,7 @@ def _finite_family_key(family: IndexedFamily) -> tuple[Parent, tuple[Parent, ...
 
 @cached_function(key=_finite_family_key)
 def _cartesian_product_of_finite_family(family: IndexedFamily) -> Sets().ObjectType:
-    return CartesianProductsOfSets()(family)
+    return _cartesian_product_of(family)
 
 
 def _cartesian_product_morphism[IndexT](
@@ -3649,7 +3649,7 @@ def _cartesian_product_morphism[IndexT](
 
 @cached_function(key=_finite_family_key)
 def _coproduct_of_finite_family(family: IndexedFamily) -> Sets().ObjectType:
-    return CoproductsOfSets()(family)
+    return _coproduct_of_indexed_family(family)
 
 
 @cached_function(key=lambda family: id(family))
