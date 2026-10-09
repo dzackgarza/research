@@ -167,7 +167,7 @@ def _generating_set_for(rank, module_generators, names):
     size = cardinal(rank)
     match size.is_finite():
         case True:
-            return finite_ordered_set(tuple(range(int(size))))
+            return Sets.Δ[int(size) - 1]
         case False:
             return NN
 
