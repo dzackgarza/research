@@ -29,6 +29,13 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Fibered formed-module Mor expression edge (2026-10-09).** On the hyperbolic
+lattice `L=U`, scalar extension along `ZZ.fraction_field_map()` gives `V`.
+`FiberedFormedModuleMor(L,V,f)` has endpoints `L,V` by identity, and its
+selected supercategory is exactly its semilinear `module_mor()` with the same
+endpoints (five focused assertions passed). This expression represents a
+same-endpoint forgetful inclusion, not a false categorical placement.
+
 **Group-module Mor expression edge (2026-10-09).** For the trivial `C_2` action
 on the rank-one free `ZZ`-module, `V.Mor(V)` and its selected ordinary
 `ZZ[C_2]`-linear Mor supercategory retain the exact two endpoints `V` by
