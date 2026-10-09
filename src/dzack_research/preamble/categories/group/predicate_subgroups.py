@@ -461,7 +461,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             selected a generating resolution.
             """
             morphism = self.kernel_morphism()
-            return len(self.supergroup().finite_image_lifts(morphism, generators=generators))
+            return cardinal(len(self.supergroup().finite_image_lifts(morphism, generators=generators)))
 
         def schreier_generators(self, *, generators=None):
             r"""Generators of the kernel of a homomorphism with finite image.
