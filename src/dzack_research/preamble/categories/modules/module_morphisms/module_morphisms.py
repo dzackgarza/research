@@ -2462,7 +2462,28 @@ class _ModuleMorCommonMethods:
         return morphism
 
     def _apply_pointwise_scalar(self, scalar, element):
-        return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
+        center = self.base_ring()
+        ring = self.codomain().base_ring()
+        coefficient = center(scalar)
+        match center is ring:
+            case True:
+                pass
+            case False:
+                if ring.ring_center() is not center:
+                    raise TypeError(
+                        f"the scalars of {self} lie in {center}, which is not the selected centre of {ring}"
+                    )
+                match hasattr(ring, "center_inclusion"):
+                    case True:
+                        inclusion = ring.center_inclusion()
+                    case False:
+                        inclusion = center.inclusion()
+                if inclusion.domain() is not center or inclusion.codomain() is not ring:
+                    raise TypeError(
+                        f"the selected centre inclusion {inclusion} must have endpoints {center} -> {ring}"
+                    )
+                coefficient = inclusion(coefficient)
+        return self.codomain().scalar_multiple(coefficient, element)
 
     def _scalar_identity(self, scalar):
         r"""The endomorphism ``r . id``, linear by the module axioms."""
