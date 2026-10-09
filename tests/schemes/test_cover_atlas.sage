@@ -45,6 +45,21 @@ def test_finite_atlas_sheaf_arrows_preserve_descent_identity_and_zero() -> None:
         identity.descent_morphism() * zero.descent_morphism()
     )
 
+    doubling = hom({
+        index: datum.local_module(index).module_category().Mor(
+            datum.local_module(index), datum.local_module(index)
+        )({label: datum.local_module(index).scalar_multiple(
+            QQ(2), datum.local_module(index).module_generator(label)
+        ) for label in datum.local_module(index).module_generating_set()})
+        for index in datum.chart_indices()
+    })
+    assert doubling != identity and doubling != zero
+    assert doubling * identity == doubling
+    assert identity * doubling == doubling
+    assert (doubling * doubling).descent_morphism() == (
+        doubling.descent_morphism() * doubling.descent_morphism()
+    )
+
     tensor_datum = datum.tensor_product(datum)
     tensor_sheaf = tensor_datum.sheaf()
     sheaves = QuasiCoherentSheaves(sheaf.scheme())
