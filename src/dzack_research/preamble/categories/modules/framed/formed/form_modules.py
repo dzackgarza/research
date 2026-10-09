@@ -902,6 +902,8 @@ class FiberedFormedModuleMor(CategoricalMor):
             sage: C = FiberedFormedModuleMor(L, L.vector_space(), ZZ.fraction_field_map())
             sage: C.super_categories()[0] is C.module_mor()
             True
+            sage: C.domain() is L and C.codomain() is L.vector_space()
+            True
         """
         return [self.module_mor()]
 

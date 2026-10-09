@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Semilinear formed-module Mor expression edge verified (2026-10-09):** With `L=U` over `ZZ`, the Mor category `FiberedFormedModuleMor(L,L.vector_space(),ZZ.fraction_field_map())` retains exactly the chosen integral lattice and rational extension as its endpoints and has the selected varying-ring module Mor as its immediate supercategory by identity. Focused Sage passed; the owner specimen now records both the endpoint and lower-Mor comparison without identifying a form-preserving arrow with an arbitrary semilinear arrow.
+
 **Functor-category expression-edge endpoints verified (2026-10-09):** `Cat().functor_mor(Sets(),Sets())` has its actual functor category as its selected supercategory. Its source and target are the distinct endpoint *objects of Cat* representing `Sets()`, rather than literally the underlying `Sets()` category; both `.represented_category()` maps return the exact selected `Sets()`. Focused Sage passed, and the functor-Mor owner specimen now records the category-versus-category-object distinction.
 
 **Chosen finite-presentation result/category edge checked (2026-10-09):** `ModulesWithChosenFinitePresentation(ZZ)` declares the generic `Modules(ZZ).FinitelyPresented()` as its exact supercategory, and its selected witness (the lattice `U`) lies in both categories. Focused Sage passed. The owner now records an executable specimen for `ordinary.FinitelyPresented()` that retains the same integer scalar ring rather than conflating the group-algebra coefficient action with an ordinary finitely presented module.
