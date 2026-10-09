@@ -4958,7 +4958,19 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
 
 
 class MatrixSpaces(OwnedCategoryOverBaseRing):
-    r"""Mor objects between finitely generated framed free ``R``-modules."""
+    r"""Mor objects between finitely generated framed free ``R``-modules.
+
+    Over noncommutative ``R`` the Hom is central-linear, not a left
+    ``R``-module. For ``R=M_2(ZZ)`` the center itself is a represented
+    commutative subring and determines that scalar placement.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+        sage: R = MatrixAlgebras(ZZ).an_object()
+        sage: MatrixSpaces(R).super_categories()[0].base_ring() is R.ring_center()
+        True
+    """
 
     def an_object(self):
         r"""The one-by-one matrices over the base ring."""
@@ -5445,7 +5457,15 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
 
 class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
-    r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``."""
+    r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+        sage: R = MatrixAlgebras(ZZ).an_object()
+        sage: MatrixEndomorphismSpaces(R).super_categories()[1] is OwnedRings()
+        True
+    """
 
     def an_object(self):
         r"""The endomorphisms of the free module of rank one."""
