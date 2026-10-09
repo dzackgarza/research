@@ -1596,6 +1596,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Transport the selected finite presentation along ``R -> S``."""
 
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
             presentation = self.presentation()
             source = presentation.domain().base_change(ring_map)
             target = presentation.codomain().base_change(ring_map)
