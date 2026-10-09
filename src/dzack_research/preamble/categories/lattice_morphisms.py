@@ -631,13 +631,13 @@ class LatticeIsometryMethods:
             source_inclusion = self.domain().inclusion()
         if target_inclusion is None:
             target_inclusion = self.codomain().inclusion()
-        for inclusion, ambient, vector in (
-            (source_inclusion, source, source_vector),
-            (target_inclusion, target, target_vector),
+        for inclusion, endpoint, ambient, vector in (
+            (source_inclusion, self.domain(), source, source_vector),
+            (target_inclusion, self.codomain(), target, target_vector),
         ):
             if inclusion.codomain() is not ambient:
                 raise ValueError("the perpendicular inclusion has the wrong ambient lattice")
-            if inclusion.domain() is not (self.domain() if ambient is source else self.codomain()):
+            if inclusion.domain() is not endpoint:
                 raise ValueError("the perpendicular embedding must start at the corresponding isometry endpoint")
             if inclusion.domain().module_rank() + 1 != ambient.module_rank():
                 raise ValueError("the perpendicular subobject must have codimension one")
