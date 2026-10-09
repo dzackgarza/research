@@ -520,10 +520,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             return self._target_subgroup
 
         def schreier_generators(self):
-            r"""Generate a finite-index preimage using right cosets of its image.
+            r"""Generate a finite-index preimage using cosets ``t J`` of its image.
 
             Let ``Q=f(G)`` and ``J=Q intersect H``. Choose a representative
-            ``t`` for each right coset ``q J`` and lift it to ``G``. For
+            ``t`` for each left coset ``q J`` and lift it to ``G``. For
             each source generator ``s`` and representative ``t``, the
             element ``t_(f(s)tJ)^-1 s t`` belongs to the preimage and the
             resulting Schreier family generates it.
