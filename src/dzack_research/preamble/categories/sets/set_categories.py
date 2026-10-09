@@ -629,6 +629,14 @@ class SetMorCategory(CategoricalMor):
             or (domain in FiniteSets() and codomain in FiniteSets())
         ):
             placement = owned_category_join((placement, FiniteSets()))
+        elif (
+            domain in FiniteSets()
+            and codomain in CountableSets()
+            and codomain in InfiniteSets()
+        ):
+            # A nonempty finite exponent admits the constant-function
+            # embedding and has only countably many coordinate tuples.
+            placement = owned_category_join((placement, CountablyInfiniteSets()))
         elif domain in FiniteSets() and codomain in CountableSets():
             placement = owned_category_join((placement, CountableSets()))
         elif domain in FiniteSets() and codomain in UncountableSets():
