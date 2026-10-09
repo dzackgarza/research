@@ -31,6 +31,15 @@ Step 1 ends when the TODO nodes `finite-index-subgroup-generators`, `images-of-s
 
 Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2 is current.
 
+## Step-2 false statements from the complete construction/property views (2026-10-09)
+
+Both complete reports were read together (478 construction lines and 410 property lines). The following are false *property-report assertions*, rather than defects in the categories' actual `super_categories()` declarations. Each came from scanning arbitrary calls in object methods as though they were categorical placements:
+
+- [x] `WeilDivisorGroups ... places Affine`: a Weil divisor group is a free abelian group of divisors, not an affine scheme. Its `affine_divisor_coordinate_ring()` queries whether the **underlying scheme** is affine; the group itself declares `DivisorGroups()`.
+- [x] `FiniteAffineAtlases ... places Affine`: an atlas of affine charts need not be an affine scheme (e.g. the standard atlas of projective space). Its objects are covering families, and its declaration is `ZariskiCoveringFamilies(X)`.
+
+The common owner repair is in `utilities/category_graph.py`: property-placement inference now inspects only category supercategory declarations, not arbitrary uses of an axiom name in any member method. The `Sets.Finite` category-name warnings concerning a *finite presentation*, a *finite field*, or the finite-subset construction are not mathematical assertions that the resulting groups/algebras/power sets are finite, and are not added as false placements.
+
 ## In progress
 
 **Step-2 varying-ring formed Mor edge verified (2026-10-09):** For `L=U` and the canonical `ZZ→QQ` morphism, the exact `FiberedFormedModuleMor(L,L.vector_space(),f)` constructs and its selected supercategory is identically its retained underlying varying-ring semilinear `module_mor()`. Focused Sage passed, and the executable owner specimen records the comparison without identifying the form-preserving data with the underlying arrow.

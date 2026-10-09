@@ -1024,19 +1024,23 @@ def _construction_axioms(
         if d.name not in names:
             continue
         node, _ = _class_at(d)
+        # Only the category's declared supercategories place properties on
+        # every object.  An unrelated object method referring to an affine
+        # scheme does not make an atlas or a divisor group an affine scheme.
+        placement_methods = tuple(
+            member for member in node.body
+            if isinstance(member, ast.FunctionDef)
+            and member.name in {"super_categories", "extra_super_categories"}
+        )
         found[d.name] = tuple(
             sorted(
                 {
                     n.func.attr
-                    for n in ast.walk(node)
+                    for method in placement_methods
+                    for n in ast.walk(method)
                     if isinstance(n, ast.Call)
                     and isinstance(n.func, ast.Attribute)
                     and n.func.attr in axiom_names
-                }
-                | {
-                    n.value
-                    for n in ast.walk(node)
-                    if isinstance(n, ast.Constant) and n.value in axiom_names
                 }
             )
         )
