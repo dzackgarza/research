@@ -2712,6 +2712,15 @@ class Schemes(OwnedCategoryOverBaseRing):
             product of projective spaces the coordinates are the concatenated
             homogeneous blocks of the factors; on another realized scheme they
             are its native point coordinates.
+
+            For a represented projective plane, the native realization's
+            point homset supplies only the private computational point::
+
+                sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
+                sage: plane = ProjectiveSpaces(QQ)(2)
+                sage: point = plane.point_morphism((QQ.one(), QQ.one(), QQ.one()))
+                sage: point.domain() is plane.base_scheme() and point.codomain() is plane
+                True
             """
             base = self.scheme_base_ring()
             owned_coordinates = tuple(base(coordinate) for coordinate in coordinates)
@@ -2745,19 +2754,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                             f"{factor} needs {width} homogeneous coordinates, but only {len(block)} remain"
                         )
                         factor_engine = _engine_scheme(factor)
-                        factor_points.append(factor_engine._point(factor_engine.point_mor(), block, check=False))
+                        factor_points.append(factor_engine._point(factor_engine.point_homset(), block, check=False))
                         offset += width
                     assert offset == len(engine_coordinates), (
                         f"cannot form the {base}-point of {self} with coordinates {owned_coordinates}: the factors "
                         f"need {offset} homogeneous coordinates in total, but {len(engine_coordinates)} were given"
                     )
                     engine = _engine_scheme(self)
-                    native = engine._point(engine.point_mor(), factor_points, check=False)
+                    native = engine._point(engine.point_homset(), factor_points, check=False)
                     return SchemeMorphism(native, mor=mor, point_coordinates=selected)
                 case _:
                     engine = _engine_scheme(self)
                     native = engine._point(
-                        engine.point_mor(),
+                        engine.point_homset(),
                         [_engine_element(base, coordinate) for coordinate in owned_coordinates],
                         check=False,
                     )

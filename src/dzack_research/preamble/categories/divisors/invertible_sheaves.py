@@ -1171,6 +1171,11 @@ def _projective_subscheme_line_bundle(
 class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
     r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
 
+    # The product's standard affine atlas and its transition units are
+    # determined by the product and the selected multidegree, not independent
+    # constructor inputs to a chosen trivialization.
+    _derived_construction_parameters = frozenset({"gluing_datum", "transition_units"})
+
     def __init__(
         self,
         projective_product,
