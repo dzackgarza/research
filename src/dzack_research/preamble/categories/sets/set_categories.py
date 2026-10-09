@@ -2981,7 +2981,15 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     """
     index_set = family.index_set()
     placements = [CartesianProductsOfSets()]
-    if index_set in FiniteSets() and all(
+    if index_set in FiniteSets() and any(
+        family(index) in FiniteSets()
+        and family(index).cardinality() == cardinal(0)
+        for index in index_set
+    ):
+        # A single empty factor makes the entire product empty, even when
+        # another factor is infinite or its cardinality is undecided.
+        placements.append(FiniteSets())
+    elif index_set in FiniteSets() and all(
         family(index) in FiniteSets() for index in index_set
     ):
         placements.append(FiniteSets())
