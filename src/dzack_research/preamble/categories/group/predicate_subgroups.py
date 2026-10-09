@@ -505,6 +505,49 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         def target_subgroup(self):
             return self._target_subgroup
 
+        def schreier_generators(self):
+            r"""Generate a finite-index preimage using right cosets of its image.
+
+            Let ``Q=f(G)`` and ``J=Q intersect H``. Choose a representative
+            ``t`` for each right coset ``q J`` and lift it to ``G``. For
+            each source generator ``s`` and representative ``t``, the
+            element ``t_(f(s)tJ)^-1 s t`` belongs to the preimage and the
+            resulting Schreier family generates it.
+
+            EXAMPLES::
+
+                sage: C = Groups.C(4)
+                sage: c = C.group_generators()[0]
+                sage: H = C.subgroup((c*c,))
+                sage: F = Groups.Free(1)
+                sage: s = F.group_generators()[0]
+                sage: phi = F.Mor(C)({next(iter(F.free_basis())): c})
+                sage: P = phi.preimage_subgroup(H)
+                sage: generators = P.schreier_generators()
+                sage: all(g in P for g in generators)
+                True
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
+            """
+            morphism = self.preimage_morphism()
+            ambient = self.supergroup()
+            target = self.target_subgroup()
+            source_generators = tuple(ambient.group_generators())
+            lifts = ambient.finite_image_lifts(morphism, generators=source_generators)
+            representatives = []
+            for image in lifts:
+                if not any((~representative) * image in target for representative in representatives):
+                    representatives.append(image)
+
+            def representative_of(image):
+                return next(rep for rep in representatives if (~rep) * image in target)
+
+            return tuple(
+                self((~lifts[representative_of(morphism(generator) * image)]) * generator * lifts[image])
+                for image in representatives
+                for generator in source_generators
+            )
+
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
