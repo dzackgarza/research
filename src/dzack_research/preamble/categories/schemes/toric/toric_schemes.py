@@ -467,7 +467,16 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        r"""The projective line, as the toric variety of the fan of ``P^1``."""
+        r"""The projective line, as the toric variety of the fan of ``P^1``.
+
+        The represented result retains the base-ring-dependent toric
+        and integral-variety categories::
+
+            sage: from dzack_research.preamble.all import QQ, ZZ, ToricSchemes, Varieties
+            sage: all((ToricSchemes(R).an_object() in ToricSchemes(R) and
+            ....:      ToricSchemes(R).an_object() in Varieties(R)) for R in (QQ, ZZ))
+            True
+        """
 
         cocharacters = _integers().free_module(1)
         return RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
