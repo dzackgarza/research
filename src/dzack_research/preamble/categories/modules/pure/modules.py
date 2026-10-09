@@ -1094,6 +1094,8 @@ class Modules(OwnedCategoryOverBaseRing):
         if ring not in OwnedRings().Commutative():
             center = ring.ring_center()
             placement = [LinearMorModules(center)]
+            if _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring):
+                placement.append(MatrixSpaces(ring))
             if domain is codomain:
                 placement.append(AdditiveEndomorphismRings(center))
             return owned_category_join(tuple(placement))
