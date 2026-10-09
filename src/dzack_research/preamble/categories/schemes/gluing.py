@@ -1290,6 +1290,9 @@ class _FiniteAffineAtlasEngine:
     def presentation(self):
         return self._gluing_presentation
 
+    def _ordered_pair(self, left_index, right_index):
+        return self.presentation()._ordered_pair(left_index, right_index)
+
     def base_ring(self):
         return self.scheme().scheme_base_ring()
 
