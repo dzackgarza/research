@@ -2714,7 +2714,11 @@ class FinitePowerSets(OwnedCategory):
             subset = self.source().power_set()(members)
             if not subset.domain().cardinality().is_finite():
                 raise ValueError(f"{subset.domain()} is not in {self}: it is not finite")
-            return subset
+            if subset in FiniteSets():
+                return subset
+            return Sets().Subobjects(self.source()).object(
+                subset.inclusion(), categories=(FiniteSets(),)
+            )
 
         def __contains__(self, candidate) -> bool:
             ambient_power_set = self.source().power_set()
