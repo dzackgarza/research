@@ -144,8 +144,9 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
             The forward arrow sends its sole basis vector to ``1`` and is
             extended linearly over the *group algebra*, not merely its
-            coefficient ring.  Its inverse sends the coefficient-module
-            generator indexed by ``g`` to ``g`` times that basis vector.
+            coefficient ring.  Its inverse sends the selected regular-module
+            basis vector to the free generator, hence sends every original
+            coefficient-module generator ``g`` to ``g`` times that generator.
             Both composites fix the corresponding generating families,
             while the original coefficient-module presentation remains
             retained by the regular representation.
@@ -162,8 +163,8 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             (basis,) = tuple(free.module_generating_set())
             forward = ordinary.Mor(free, acted)({basis: acted(ring.one())})
             inverse = ordinary.Mor(acted, free)({
-                g: free.scalar_multiple(ring.module_generator(g), free.module_generator(basis))
-                for g in acted.module_generating_set()
+                label: free.module_generator(basis)
+                for label in acted.module_generating_set()
             })
             return ordinary.Core().Mor(free, acted)(forward, inverse)
 

@@ -17,7 +17,13 @@ def test_regular_representation_has_a_rank_one_group_algebra_basis_isomorphism()
     acted = framing.forward().codomain()
     ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, algebra)
     assert free.module_rank() == 1
-    assert acted.module_generating_set().cardinality() == 2
+    assert acted.module_generating_set().cardinality() == 1
+    assert acted.unformed_module().module_generating_set().cardinality() == 2
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+    assert acted in FramedFreeModules(algebra)
+    assert acted.module_rank() == 1
+    assert acted.coefficient_module_rank() == 2
+    assert acted.framing_morphism().domain() is acted.framing_source()
     assert acted.unformed_module() is algebra
     assert all(
         (framing.forward() * framing.inverse())(acted.module_generator(label))
