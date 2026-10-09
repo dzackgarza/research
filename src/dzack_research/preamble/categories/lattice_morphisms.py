@@ -724,6 +724,21 @@ class LatticeIsometryMethods:
         isotropic norm correction is the one in sage-indefinite-port at
         709f81a, ``CodimensionOneIsotropicExtension.rational_extension``.
         The extension locus retains the square with the two given inclusions.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U") + Lattices(ZZ)([[2]])
+            sage: V = L.base_change(ZZ.fraction_field_map())
+            sage: e, f, a = tuple(V.module_generators())
+            sage: H = V.subobject_on((e, a))
+            sage: i = H.inclusion()
+            sage: u, v = tuple(H.module_generators())
+            sage: partial = H.Isom(H)((u, -v))
+            sage: extension = partial.witt_extension(i, i)
+            sage: all(extension(i(x)) == i(partial(x)) for x in H.module_generators())
+            True
+            sage: extension.inverse() * extension == V.Isom(V).identity()
+            True
         """
         locus = self.witt_extension_locus(source_inclusion, target_inclusion)
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
