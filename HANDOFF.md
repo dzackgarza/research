@@ -18,6 +18,8 @@ Do the work in this order. Do not start a later step while an earlier step has r
    - `just category-graph properties` shows the properties that each category places on its objects.
    - `just category-graph routes --operation NAME` shows the routes to one operation.
 
+   Step 2 is about methods placed on the wrong categories, and methods that do not place their results in the correct category. No tool can determine this automatically: read the code and think about the mathematics. The views help you see it; they do not decide it.
+
    Read each line as a mathematical statement. A line that is obviously false is a defect. For example, an element of the power set of a finite set that is not placed in finite sets is a defect. Repair the placement at its owner, and file a TODO node when the repair is not immediate.
 3. **Duplication.** Reduce duplicate implementations only after steps 1 and 2. A duplicate that blocks the port or causes a wrong placement belongs to the earlier step.
 
