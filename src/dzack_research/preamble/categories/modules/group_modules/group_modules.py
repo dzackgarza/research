@@ -1408,7 +1408,7 @@ class _CoefficientModuleEngine:
         }
 
     def _selected_relation_morphism(self):
-        if self._is_the_regular_module():
+        if self._is_the_regular_module() or self.unformed_module() is self.group_algebra():
             return super()._selected_relation_morphism()
         return self.unformed_module()._selected_relation_morphism()
 
