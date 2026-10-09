@@ -1377,7 +1377,7 @@ def _words(name: str) -> set[str]:
 
 
 def _construction_sites(
-    root: Path, factories: dict[str, str]
+    root: Path, factories: dict[str, str], trees: dict[Path, ast.Module] | None = None
 ) -> list[tuple[str, str, list[tuple[str, str]]]]:
     """Every function that builds an object with ``_object_of``, and what it places on that object.
 
@@ -1387,8 +1387,12 @@ def _construction_sites(
     in a further category.
     """
     sites = []
-    for path in sorted(root.rglob("*.py")):
-        tree = ast.parse(path.read_text(encoding="utf-8"))
+    if trees is None:
+        trees = {
+            path: ast.parse(path.read_text(encoding="utf-8"))
+            for path in sorted(root.rglob("*.py"))
+        }
+    for path, tree in trees.items():
         imported = _imported_names(tree)
 
         def vertex_of(
@@ -1625,7 +1629,7 @@ def render_constructions(
     classes = {name: _class_at(d)[0] for name, d in by_name.items()}
     sites = {
         site: (default, pairs)
-        for site, default, pairs in _construction_sites(root, factories)
+        for site, default, pairs in _construction_sites(root, factories, trees)
     }
     above = _up_sets(declarations)
     construction_axioms = _construction_axioms(
