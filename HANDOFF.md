@@ -28,7 +28,7 @@ A commit is not a stopping point. After banking a unit, take the next unchecked 
 
 Step 1 ends when the TODO nodes `finite-index-subgroup-generators`, `images-of-subgroups-and-predicate-subsets` and then `indefinite-port-primitives` are closed: run each node's **Closure specimens** as written in `TODO.md` (for example the index-6 kernel of `SL_2(ZZ) -> SL_2(ZZ/2)`, generators of `\tilde O(L)` lying in `ker rho`, the image of `O(A_2)` under `rho`), repair what they expose, and tick the node with that evidence. Further boundary specimens for rows that already passed are not step-1 work; once the three nodes are closed, step 2 begins.
 
-The owner stopped `sage-indefinite-port` on 2026-10-07. Its unfinished `orthogonal_group_generators` (port work unit #18) and anything filed or integrated on the port side, including #33, wait for that stream and do not hold step 1 open. What remains of step 1 is research-side: reconcile every audit row's frozen call against the research API (name, return object, failure case), repairing the research owner where they disagree and recording in the audit any correction the port must take. When that reconciliation is complete, record `indefinite-port-primitives` as blocked only on the stopped port and begin step 2.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2 is current.
 
 ## In progress
 
