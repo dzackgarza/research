@@ -118,6 +118,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 - **Finite-index bound rejection checked:** the order-two transposition subgroup of `S3` has index three. Calling its predicate Schreier construction with `index_bound=2` raises `ValueError` once a third coset is found (targeted Sage). The exceeded-bound failure specimen is retained on the group owner.
 
+- **Index bound must be integral:** `finite_index_schreier_generators` now rejects nonintegral bounds rather than truncating them with `int`, as required for an index cardinality. A `1.5` bound on the full subgroup of `C2` raised the intended `ValueError` (targeted Sage).
+
 - **Predicate subgroup images via explicit finite-index bound:** `Subgroups.image_under(f,index_bound=...)` now routes a subgroup specified only by membership to its coset-generated Schreier family. On the nonnormal transposition predicate subgroup of `S3`, the identity-on-generators group endomorphism gives an image of order two containing the transposition (targeted Sage). Without an index bound or another generating-family route, predicate subgroup images remain uncomputed.
 
 - **Infinite predicate image route checked:** for the free group `F_1` mapped onto `C2`, the membership-only predicate subgroup cutting out the parity kernel has index two and `image_under(reduction,index_bound=2)` is the trivial subgroup of `C2` (targeted Sage). This verifies the general predicate generator/image composition does not require a finite source group.

@@ -121,6 +121,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 Traceback (most recent call last):
                 ...
                 ValueError: the subgroup index exceeds the supplied bound
+                sage: P.finite_index_schreier_generators(index_bound=2.5)
+                Traceback (most recent call last):
+                ...
+                ValueError: the subgroup index bound must be an integer
                 sage: F, C = Groups.Free(1), Groups.C(2)
                 sage: s, t = F.group_generators()[0], C.group_generators()[0]
                 sage: phi = F.Mor(C)({next(iter(F.free_basis())): t})
@@ -132,6 +136,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             ambient = self.supergroup()
             generators = tuple(ambient.group_generators())
             bound = int(index_bound)
+            if bound != index_bound:
+                raise ValueError("the subgroup index bound must be an integer")
             if bound < 1:
                 raise ValueError("the subgroup index bound must be positive")
             representatives = [ambient.one()]
