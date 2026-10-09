@@ -18,3 +18,29 @@ def test_intersections_of_distinguished_opens_of_the_line_are_distinguished_by_t
     assert cover.intersection(1, 0).distinguished_open_element() == x * (1 - x)
     assert cover.intersection(0, 1, 2).distinguished_open_element() == x * (1 - x) * (2 - x)
     assert R.ideal(x, 1 - x, 2 - x) == R.ideal(R.one())
+
+
+def test_finite_atlas_sheaf_arrows_preserve_descent_identity_and_zero() -> None:
+    r"""The chartwise comparison from sheaf morphisms to descent morphisms
+    preserves the two distinct endomorphisms zero and identity and their
+    compositions on the standard affine atlas of projective space.
+    """
+    from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasModuleGluingData
+
+    atlas = ProjectiveSpaces(QQ)(1).standard_affine_atlas()
+    datum = FiniteAtlasModuleGluingData(atlas).structure_module_datum()
+    sheaf = datum.sheaf()
+    hom = QuasiCoherentSheaves(sheaf.scheme()).Mor(sheaf, sheaf)
+    zero = hom({
+        index: datum.local_module(index).module_category().Mor(
+            datum.local_module(index), datum.local_module(index)
+        ).zero()
+        for index in datum.chart_indices()
+    })
+    identity = hom.identity()
+    assert zero != identity
+    assert zero * identity == zero
+    assert identity * zero == zero
+    assert (identity * zero).descent_morphism() == (
+        identity.descent_morphism() * zero.descent_morphism()
+    )

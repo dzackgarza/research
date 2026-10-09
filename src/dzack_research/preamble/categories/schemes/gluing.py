@@ -6,6 +6,7 @@ from itertools import combinations, permutations
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
+from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -3367,6 +3368,15 @@ class FiniteAtlasModuleGluingMorphismMethods:
     def __ne__(self, other) -> bool:
         return not self == other
 
+    def _richcmp_(self, other, op):
+        match op:
+            case _ if op == op_EQ:
+                return self.__eq__(other)
+            case _ if op == op_NE:
+                return not self.__eq__(other)
+            case _:
+                return NotImplemented
+
     @staticmethod
     def _base_changed_map(local_map, ring_map, source, target):
         r"""Transport ``local_map`` to already selected scalar-extension parents."""
@@ -3595,6 +3605,15 @@ class FiniteAtlasModuleSheafMorphismMethods:
                 for index in self.source_datum().chart_indices()
             )
         )
+
+    def _richcmp_(self, other, op):
+        match op:
+            case _ if op == op_EQ:
+                return self.__eq__(other)
+            case _ if op == op_NE:
+                return not self.__eq__(other)
+            case _:
+                return NotImplemented
 
     def _kernel_quasi_coherent_sheaf(self):
         return self.kernel_sheaf()
