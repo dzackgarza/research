@@ -2137,6 +2137,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             :meth:`discriminant_representation`, the first term of
             :meth:`discriminant_reduction_sequence` (Gritsenko--Hulek--Sankaran,
             *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("A2")
+                sage: stable = L.stable_orthogonal_group()
+                sage: generators = stable.schreier_generators()
+                sage: all(g in stable for g in generators)
+                True
+                sage: stable.image_under(L.discriminant_representation()).cardinality() == 1
+                True
             """
             target = self.discriminant_group().orthogonal_group()
             trivial = target.subgroup_on(())
