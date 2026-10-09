@@ -4976,11 +4976,17 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FramedFreeModules,
         )
-
-        return [
-            InternalMorModules(self.base_ring()),
-            FramedFreeModules(self.base_ring()).FinitelyGenerated(),
-        ]
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True:
+                return [
+                    InternalMorModules(ring),
+                    FramedFreeModules(ring).FinitelyGenerated(),
+                ]
+            case False:
+                # Hom_R(F,G) is canonically additive and central-linear,
+                # not a left R-module when R is noncommutative.
+                return [LinearMorModules(ring.ring_center())]
 
     class ParentMethods:
         def projectivity_decision(self):
