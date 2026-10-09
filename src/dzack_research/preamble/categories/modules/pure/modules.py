@@ -2411,7 +2411,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
-            return [Modules(self.base_ring()).FinitelyGenerated()]
+            return [self.base_category().FinitelyGenerated()]
 
         def biproduct_bifunctor(self):
             r"""Return the biproduct bifunctor on finitely presented modules."""
@@ -3237,7 +3237,10 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         )
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented()]
+        # FinitelyPresented is declared on Modules, not on the specialized
+        # ModulesOverGroupAlgebra subclass returned by Modules(R[G]).
+        ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        return [ordinary.FinitelyPresented()]
 
     @cached_method
     def presentation_category(self):
