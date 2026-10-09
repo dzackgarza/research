@@ -29,6 +29,14 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Action-category forgetful Mor edge (2026-10-09).** For the trivial action
+of `C_2` on `Sets.Δ[1]`, the evaluation functor of `GObjects(C_2,Sets())`
+sends the acted object into `Sets()`. Its declared supercategory is exactly
+`Sets()`, and `_mor_endpoints_in_supercategory(Sets(),X,X)` uses that same
+forgotten object by identity (three targeted checks). The dependent
+supercategory therefore retains correct endpoints through the selected
+forgetful functor; it does not identify an acted object with its underlying set.
+
 **Category-functor Mor endpoints reconciled (2026-10-09).** The apparent
 `Cat().functor_mor(Sets(),Sets())` endpoint-identity failure compared the
 represented `CategoryObject` endpoints with the unrepresented category.
