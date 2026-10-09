@@ -593,11 +593,11 @@ class LatticeIsometryMethods:
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
 
-    def extension_across(self, source_vector, target_vector):
+    def extension_across(self, source_vector, target_vector, *, source_inclusion=None, target_inclusion=None):
         r"""Extend this perpendicular isometry over the common fraction field.
 
-        The endpoints must be represented codimension-one subobjects of the
-        vectors' ambient lattices. The vectors must have the same nonzero
+        The endpoints must admit specified codimension-one embeddings into
+        the vectors' ambient lattices. The vectors must have the same nonzero
         square. Their lines and perpendicular spaces then give orthogonal
         direct sums, so the extension is unique. No signature hypothesis is
         needed. The result retains the scalar-extended ambient endpoints.
@@ -617,6 +617,8 @@ class LatticeIsometryMethods:
             True
             sage: L.integral_isometry(g)(L.basis_vector(1)) == -L.basis_vector(1)
             True
+            sage: a.extension_across(v, v, source_inclusion=P.inclusion(), target_inclusion=P.inclusion()).is_integral_on(L)
+            True
         """
         source = source_vector.parent()
         target = target_vector.parent()
@@ -625,14 +627,18 @@ class LatticeIsometryMethods:
             raise ValueError("orthogonal extension requires a common base ring")
         if not source_vector.q() or source_vector.q() != target_vector.q():
             raise ValueError("orthogonal extension requires equal nonzero vector squares")
-        source_inclusion = self.domain().inclusion()
-        target_inclusion = self.codomain().inclusion()
+        if source_inclusion is None:
+            source_inclusion = self.domain().inclusion()
+        if target_inclusion is None:
+            target_inclusion = self.codomain().inclusion()
         for inclusion, ambient, vector in (
             (source_inclusion, source, source_vector),
             (target_inclusion, target, target_vector),
         ):
             if inclusion.codomain() is not ambient:
                 raise ValueError("the perpendicular inclusion has the wrong ambient lattice")
+            if inclusion.domain() is not (self.domain() if ambient is source else self.codomain()):
+                raise ValueError("the perpendicular embedding must start at the corresponding isometry endpoint")
             if inclusion.domain().module_rank() + 1 != ambient.module_rank():
                 raise ValueError("the perpendicular subobject must have codimension one")
             if any(ambient.b(vector, inclusion(x)) for x in inclusion.domain().module_generators()):
