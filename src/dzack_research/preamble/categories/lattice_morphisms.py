@@ -626,6 +626,10 @@ class LatticeIsometryMethods:
             sage: between = P.Isom(Q)(lambda s: Q.module_generator(s))
             sage: between.extension_across(v, w, source_inclusion=P.inclusion(), target_inclusion=Q.inclusion()).is_integral_on(L)
             True
+            sage: between.extension_across(v, w, source_inclusion=Q.inclusion(), target_inclusion=P.inclusion())
+            Traceback (most recent call last):
+            ...
+            ValueError: the perpendicular embedding must start at the corresponding isometry endpoint
             sage: neg = P.Isom(P)(lambda s: -P.module_generator(s))
             sage: j = P.inclusion()
             sage: twisted = j * neg

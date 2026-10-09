@@ -134,6 +134,8 @@ Keep traceback output bounded with `traceback.print_exception(error, chain=False
 
 - **Distinct perpendicular endpoints verified:** on Gram `diag(2,2,-2)` with `v=e_0`, `w=e_1`, the perpendicular subobjects `P=v^perp` and `Q=w^perp` are distinct parents of rank two embedded in the same ambient lattice. The represented isometry `P -> Q` extends across the explicit embeddings and descends integrally (targeted Sage). This discharges the previously open distinct-endpoint regression specimen; it does not by itself settle general formed embeddings not presented as canonical subobjects.
 
+- **Mismatched explicit endpoint rejected:** on the same distinct subobjects `P` and `Q`, supplying `Q.inclusion()` as the source embedding for an isometry `P -> Q` raises `ValueError` identifying the incorrect endpoint (targeted Sage). This separates actual arrow-domain validation from rank and orthogonality alone.
+
 - **Noncanonical formed embedding restriction verified:** on the same Gram `diag(2,2,-2)`, let `P=v^perp`, `j:P -> L` its inclusion, and `a=-id_P`. The explicit source embedding `j*a` differs from `j`, although both have the same image. Extending the identity of `P` with source embedding `j*a` and target embedding `j` gives an integral ambient isometry `h` satisfying `h*(j*a)=j` on every generator (targeted Sage). This checks that `extension_across` uses the *supplied arrows*, not only the endpoint objects or their images.
 
 - Reconcile every audit row with the pinned migration contract, including return objects, failure cases, multiplier bounds, inclusions, and inverse maps. Resolve the remaining contract questions from the mathematical definitions and the recorded amendments.
