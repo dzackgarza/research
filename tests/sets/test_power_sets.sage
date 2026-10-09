@@ -3,6 +3,26 @@ r"""Direct and inverse images of subsets along maps of sets."""
 from dzack_research.preamble.all import *
 
 
+def test_finite_subobject_boolean_operations_retain_the_ambient_inclusion() -> None:
+    r"""Union, meet and complement are subobjects of the same three-point set."""
+    ambient = Sets.Δ[2]
+    subsets = ambient.power_set()
+    left = subsets((ambient(0),))
+    right = subsets((ambient(1),))
+    results = (
+        (left.union(right), 2),
+        (left.intersection(right), 0),
+        (left.difference(right), 1),
+        (left.symmetric_difference(right), 2),
+        (left.complement(), 2),
+    )
+    for result, size in results:
+        assert result.cardinality() == size
+        assert result.inclusion().codomain() is ambient
+        assert result in Sets().Finite()
+    assert ambient.intersection(ambient).cardinality() == 3
+
+
 def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> None:
     source = Sets.Δ[5]
     target = Sets.Δ[2]
