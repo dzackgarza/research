@@ -137,6 +137,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 12. Integral descent — frozen `M.integral_isometry(phi)` and `phi.is_integral_on(L)`
 
+**Frozen-call reconciliation (2026-10-09):** Both names exist. `M.integral_isometry(phi, source=None)` returns an integral lattice isomorphism, not a Boolean or merely an embedding; it infers the source from the retained base-change parent, or from `M.vector_space()` for an endomorphism, and otherwise requires the caller to provide `source`. It raises `ValueError` when either direction fails to factor integrally. `phi.is_integral_on(L, target=None)` is instead a Boolean forward-factorization test, defaulting to the same target lattice. `phi.integral_restriction(L,M)` returns `None` on failed two-sided descent. On U, the rational isometry `diag(2,1/2)` returns `False` for `is_integral_on(U)` and `None` for `integral_restriction(U,U)` and raises the specified `ValueError` for `U.integral_isometry(phi)` (targeted Sage). The frozen port must distinguish these three return/failure contracts.
+
 **Owner:** factorization through specified integral subobject inclusions under scalar extension. For `j_L: L → V`, `j_M: M → W`, factor `phi*j_L` through `j_M`. This gives an integral map. Factor the inverse too to obtain an isomorphism.
 
 **Contract:** retain `j_L`, `j_M`, and the commuting square. The source integral structure must be explicit or retained in the scalar-extension datum; a bare rational space does not determine it. Mapping `L` into `M` and mapping `L` onto `M` are different predicates. The frozen isometry constructor raises if equality fails. Integrality on a lattice needs a declared target integral structure.

@@ -2007,6 +2007,12 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: g = L.integral_isometry(phi)
                 sage: all(g(x) == -x for x in L.module_generators())
                 True
+                sage: e, f = V.basis_vector(0), V.basis_vector(1)
+                sage: dilation = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == 0 else V.scalar_multiple(QQ(1)/QQ(2), f))
+                sage: L.integral_isometry(dilation)
+                Traceback (most recent call last):
+                ...
+                ValueError: the rational isometry does not map the source integral lattice onto the target
             """
             if source is None:
                 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormBaseChanges
