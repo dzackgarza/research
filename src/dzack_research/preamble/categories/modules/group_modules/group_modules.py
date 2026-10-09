@@ -1365,6 +1365,14 @@ def _equip_action(module, group_or_action, action=None):
     answered by ``unformed_module()``, with its selected presentation.
     ``action`` may be an actual ``BG -> Modules(R)`` functor, a ring morphism
     out of ``R[G]``, or the binary action ``action(g,m)``.
+
+    EXAMPLES::
+
+        sage: G = Groups.C(2)
+        sage: R = ZZ[G]
+        sage: N = Modules(R)(ZZ.free_module(1), lambda g, v: v)
+        sage: N in Modules(R) and N.Mor(N).base_ring() is R
+        True
     """
 
     base_ring = module.base_ring()
@@ -1514,8 +1522,10 @@ def _equip_action(module, group_or_action, action=None):
         )
     )
     framing_source = group_algebra.free_module(labels)
+    # The generic linear realization and the represented action are both
+    # actual properties of this object. Neither placement implies the other.
     equipped = _object_of(
-        GeneralModules(group_algebra),
+        Cat().meet((GeneralModules(group_algebra), Modules(group_algebra))),
         _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
         rho=scalar_action,
