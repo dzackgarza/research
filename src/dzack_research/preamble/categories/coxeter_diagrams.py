@@ -255,9 +255,9 @@ class CoxeterDiagrams(OwnedCategory):
             case CoxeterMatrix():
                 return self.from_coxeter_matrix(datum, names=names, positions=positions)
             case IndexedFamily():
-                first_index = next(iter(datum.index_set()), None)
-                match first_index:
-                    case tuple():
+                first_value = next(iter(datum.values()), None)
+                match first_value:
+                    case _ if first_value in Cardinalities():
                         return self.from_coxeter_matrix(datum, names=names, positions=positions)
                     case _:
                         return self.from_roots(tuple(datum.values()), names=names, positions=positions)
