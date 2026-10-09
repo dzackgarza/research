@@ -238,6 +238,16 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self._graded_modules)
 
     def super_categories(self):
+        r"""Retain both the algebra structure and the selected graded-module datum.
+
+        EXAMPLES::
+
+            sage: C = GradedAlgebras(ZZ)
+            sage: C.super_categories()[0] is Algebras(ZZ).Associative().Unital()
+            True
+            sage: C.super_categories()[1] is C._graded_modules
+            True
+        """
         return [
             Algebras(self.base_ring()).Associative().Unital(),
             self._graded_modules,
