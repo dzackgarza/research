@@ -1366,8 +1366,9 @@ class _CoefficientModuleEngine:
         module = self.unformed_module()
         group_algebra = self.group_algebra()
         coordinates = module.framing_morphism().lift(module(element))
+        inclusion = Modules(group_algebra).coefficient_inclusion()
         return {
-            label: group_algebra(coordinates(label))
+            label: inclusion(coordinates(label))
             for label in coordinates.support().domain()
         }
 

@@ -127,6 +127,35 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
             return Modules(self)(self, left_action)
 
+        @cached_method
+        def regular_representation_basis_isomorphism(self):
+            r"""The selected ``R[G]``-linear isomorphism ``R[G]^1 -> R[G]``.
+
+            The forward arrow sends its sole basis vector to ``1`` and is
+            extended linearly over the *group algebra*, not merely its
+            coefficient ring.  Its inverse sends the coefficient-module
+            generator indexed by ``g`` to ``g`` times that basis vector.
+            Both composites fix the corresponding generating families,
+            while the original coefficient-module presentation remains
+            retained by the regular representation.
+
+            The underlying Mor owner is the generic category of modules
+            over ``R[G]``; the chosen-action category is an additional
+            structured realization, not the endpoint category of the
+            abstract rank-one free source.
+            """
+            ring = self
+            free = ring.free_module(1)
+            acted = ring.regular_representation()
+            ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, ring)
+            (basis,) = tuple(free.module_generating_set())
+            forward = ordinary.Mor(free, acted)({basis: acted(ring.one())})
+            inverse = ordinary.Mor(acted, free)({
+                g: free.scalar_multiple(ring.module_generator(g), free.module_generator(basis))
+                for g in acted.module_generating_set()
+            })
+            return ordinary.Core().Mor(free, acted)(forward, inverse)
+
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).
 

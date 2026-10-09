@@ -1906,7 +1906,11 @@ class ModuleMorphismMethods:
                     return other
                 if other._is_the_identity():
                     return self
-                mor = source.module_category().Mor(source, target)
+                # Keep the Mor theory in which both arrows were admitted.
+                # Redispatching Modules(R) from the source's scalar ring can
+                # select a stricter chosen-action category on a group algebra,
+                # even when this composite is an ordinary R-linear map.
+                mor = self.parent().mor_category().Mor(source, target)
                 # Composition of linear maps is linear.  Keep that theorem as
                 # construction data instead of rebuilding the composite from
                 # all selected generator images and rechecking the source
