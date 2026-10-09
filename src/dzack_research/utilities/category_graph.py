@@ -498,7 +498,7 @@ def _defined_names(declarations: list[CategoryDeclaration]) -> set[str]:
         for path in root.glob("*.py"):
             try:
                 tree = ast.parse(path.read_text(encoding="utf-8"))
-            except SyntaxError, OSError:
+            except (SyntaxError, OSError):
                 continue
             bound |= _module_level_names(tree)
     return bound
