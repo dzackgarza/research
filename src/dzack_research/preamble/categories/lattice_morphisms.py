@@ -739,6 +739,16 @@ class LatticeIsometryMethods:
             True
             sage: extension.inverse() * extension == V.Isom(V).identity()
             True
+
+            sage: W = Lattices(QQ)([[1, 0, 0], [0, -1, 0], [0, 0, 0]])
+            sage: e, f, r = tuple(W.module_generators())
+            sage: H = W.subobject_on((e + f, r))
+            sage: u, v = tuple(H.module_generators())
+            sage: swap = H.Isom(H)((v, u))
+            sage: swap.witt_extension(H.inclusion(), H.inclusion())
+            Traceback (most recent call last):
+            ...
+            ValueError: the partial isometry does not identify the ambient radical intersections
         """
         locus = self.witt_extension_locus(source_inclusion, target_inclusion)
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
