@@ -92,6 +92,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Finite covering-family presentation placement verified (2026-10-09):** `CoveringFamilies(Sets()).an_object()` constructs a one-member identity cover, lies in both its covering-family category and the explicit presentation slice `Cat/Sets`, and its retained presentation targets `Sets()` by identity. Its selected covering-family Mor identity has the cover as its exact domain. Focused Sage passed; the owner-level specimen records this actual object-and-Mor comparison for `self.presentation_category()`.
+
 **G-object forgetful endpoint comparison verified (2026-10-09):** The `C_2`-action on a two-point set constructs in both `GObjects(C_2,Sets())` and `Sets()`. Its forgetful value is a two-point set, but not literally the previously supplied `Sets.Δ[1]` object: it retains the selected action's separate representation. Focused Sage verifies that `GObjects._mor_endpoints_in_supercategory(Sets(),A,A)` uses the precise object returned by its forgetful functor. The owner now carries the executable specimen, without replacing selected object identity by equality of cardinalities.
 
 **Direct-sum object result and structure morphisms verified (2026-10-09):** For `DirectSumObjects(Modules(ZZ)).an_object()`, focused Sage verifies both the selected direct-sum placement and the base-module placement, exactly two indexed summands, and the exact target of each injection and source of each projection. The executable specimen is recorded at `DirectSumObjects`. The `self.base_category()` edge therefore has a concrete result-and-arrow example without identifying all arrows of the chosen-decomposition category with unstructured module arrows.

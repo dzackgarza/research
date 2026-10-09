@@ -705,6 +705,16 @@ class CoveringFamilies(OwnedCategory):
     functor, not recognized afterwards from methods on an arbitrary object::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: C = CoveringFamilies(Sets())
+        sage: cover = C.an_object()
+        sage: cover in C and cover in C.presentation_category()
+        True
+        sage: cover.presentation().codomain() is Sets()
+        True
+        sage: C.Mor(cover, cover).identity().domain() is cover
+        True
+
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: points = finite_ordered_set(("a", "b"))
         sage: identity = Sets().Mor(points, points).identity()
