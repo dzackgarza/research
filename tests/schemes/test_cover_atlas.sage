@@ -44,3 +44,25 @@ def test_finite_atlas_sheaf_arrows_preserve_descent_identity_and_zero() -> None:
     assert (identity * zero).descent_morphism() == (
         identity.descent_morphism() * zero.descent_morphism()
     )
+
+    tensor_datum = datum.tensor_product(datum)
+    tensor_sheaf = tensor_datum.sheaf()
+    sheaves = QuasiCoherentSheaves(sheaf.scheme())
+    forward = sheaves.Mor(sheaf, tensor_sheaf)({
+        index: datum.local_module(index).module_category().Mor(
+            datum.local_module(index), tensor_datum.local_module(index)
+        ).zero()
+        for index in datum.chart_indices()
+    })
+    backward = sheaves.Mor(tensor_sheaf, sheaf)({
+        index: datum.local_module(index).module_category().Mor(
+            tensor_datum.local_module(index), datum.local_module(index)
+        ).zero()
+        for index in datum.chart_indices()
+    })
+    assert forward.domain() is sheaf and forward.codomain() is tensor_sheaf
+    assert backward.domain() is tensor_sheaf and backward.codomain() is sheaf
+    assert backward * forward == zero
+    assert (backward * forward).descent_morphism() == (
+        backward.descent_morphism() * forward.descent_morphism()
+    )
