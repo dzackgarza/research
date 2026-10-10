@@ -1,20 +1,19 @@
 r"""Owned ordinary characters of finite groups.
 
 A character is kept distinct from an arbitrary class function.  Its actual
-evaluation is the already-owned :class:`FiniteGroupClassFunction`; this module
-adds the mathematical parent ``Characters(G)``, addition of characters, and
-exact irreducible constituents.  GAP remains private to the finite group
+evaluation is a class function ``G -> A``, an element of
+``Sets().Mor(G, A)``; this module adds the mathematical parent
+``Characters(G)``, addition of characters, and exact irreducible
+constituents.  GAP remains private to the finite group
 engine and is used here only for conjugacy-class sizes.
 """
 
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
-)
-from dzack_research.preamble.categories.group.class_functions import (
-    FiniteGroupClassFunction,
 )
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
@@ -24,6 +23,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -68,16 +68,20 @@ class CharacterSets(OwnedParameterizedCategory):
         def _element_constructor_(self, class_function):
             if class_function in self:
                 return class_function
-            if not isinstance(class_function, FiniteGroupClassFunction):
+            if not isinstance(class_function, Morphism):
                 raise TypeError(
                     f"{class_function} is not a character of {self.group()}: a character is a "
-                    f"class function on a finite group, and {class_function} is not a class function"
+                    f"class function on a finite group, and {class_function} is not a map"
                 )
             if class_function.domain() is not self.group():
                 raise ValueError(
                     f"{class_function} is a class function on {class_function.domain()}, so it "
                     f"is not a character of {self.group()}"
                 )
+            assert class_function in Sets().Mor(self.group(), class_function.codomain()), (
+                f"{class_function} is not a character of {self.group()}: a class function is a map "
+                f"of sets {self.group()} -> {class_function.codomain()}"
+            )
             return self.element_class(self, class_function)
 
         def __contains__(self, candidate) -> bool:
@@ -101,7 +105,12 @@ class CharacterSets(OwnedParameterizedCategory):
             return self.class_function().codomain()
 
         def values(self):
-            return self.class_function().values()
+            r"""Return the values on the conjugacy-class representatives of ``G``."""
+            return finite_indexed_family(
+                self.conjugacy_class_representatives(),
+                self.class_function(),
+                name="Class-function values",
+            )
 
         def class_values(self):
             r"""Return the values on the retained conjugacy-class framing of ``G``.
@@ -113,13 +122,14 @@ class CharacterSets(OwnedParameterizedCategory):
             return self.values()
 
         def conjugacy_class_representatives(self):
-            return self.class_function().conjugacy_class_representatives()
+            return self.group().conjugacy_classes_representatives()
 
         def __call__(self, element):
             return self.class_function()(element)
 
         def degree(self):
-            return self.class_function().degree()
+            r"""The value at the identity, the dimension of the representation."""
+            return self(self.group().one())
 
         def __add__(self, other):
             if other not in self.parent():

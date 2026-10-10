@@ -16,11 +16,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _morphism_on_engine_vectors,
     _relation_morphism,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-    _combined_linearity_decision,
-    _module_subobject_inclusion,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _represented_finite_presentation,
@@ -31,22 +26,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class _InternalMorFunctorialMorphism(ModuleMorphism):
-    r"""Pre- and postcomposition on an internal Mor; its linearity decision conjoins those of the two maps."""
-
-    def __init__(self, parent, source_map, target_map) -> None:
-        self._source_map = source_map
-        self._target_map = target_map
-        super().__init__(
-            parent,
-            lambda morphism: target_map * morphism * source_map,
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision((self._source_map, self._target_map))
 
 
 def _native_fgp_morphism(morphism):
@@ -141,8 +120,7 @@ def _internal_mor_model_data_from_endpoints(source, target):
             engine_kernel_relations.rows(),
         )
         model = kernel_presentation.cokernel()
-        inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_mor(model, generator_assignments),
+        inclusion = model.Mono(generator_assignments)._subobject_inclusion(
             {
                 label: generator_assignments(
                     kernel(kernel.V().gen(position)).lift()
@@ -160,8 +138,7 @@ def _internal_mor_model_data_from_endpoints(source, target):
             "returned without its inclusion into the module of generator assignments"
         )
         lift = construction.selected_lift()
-        inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_mor(model, ambient),
+        inclusion = model.Mono(ambient)._subobject_inclusion(
             images,
             lift=(None if lift is None else lambda element: lift(model, element)),
         )
@@ -229,13 +206,12 @@ def _internal_mor_morphism(
             f"target is {target_internal_mor.target_module()}, not the codomain of {target_map}"
         )
 
-    return _InternalMorFunctorialMorphism(
-        source_internal_mor.module_category().Mor(
-            source_internal_mor,
-            target_internal_mor,
-        ),
-        source_map,
-        target_map,
+    return source_internal_mor.module_category().Mor(
+        source_internal_mor,
+        target_internal_mor,
+    )._from_constructed_element_map(
+        lambda morphism: target_map * morphism * source_map,
+        premises=(source_map, target_map),
     )
 
 

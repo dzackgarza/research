@@ -54,7 +54,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     ModuleMorphismMethods,
     _ModuleMorCommonMethods,
-    _combined_linearity_decision,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -827,10 +826,6 @@ class ModulesOverGroupAlgebra(Modules):
                     f"submodule inclusion into {self.unformed_module()}, since its codomain is {inclusion.codomain()}"
                 )
 
-            from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-                CategoricalIsomorphism,
-            )
-
             acted_inclusion = self.restrict_action_to(inclusion)
             forward = self.Mor(self)(automorphism.forward()).restrict_to(
                 acted_inclusion
@@ -839,12 +834,8 @@ class ModulesOverGroupAlgebra(Modules):
                 acted_inclusion
             )
             piece = acted_inclusion.domain()
-            return Modules(self.group_algebra()).Aut(piece)(
-                CategoricalIsomorphism(
-                    forward.parent(),
-                    forward,
-                    inverse,
-                )
+            return Modules(self.group_algebra()).Aut(piece)._from_known_inverse_pair(
+                forward, inverse
             )
 
         def base_change(self, ring_map):
@@ -859,48 +850,6 @@ def _apply_action(action, group_element, vector):
     if isinstance(action, Map):
         return action(group_element)(vector)
     return action(group_element, vector)
-
-
-class _CoefficientViewModuleMorphism(ModuleMorphism):
-    r"""An acted-module map read on the retained coefficient modules."""
-
-    def __init__(self, parent, source_morphism, acted_source, acted_target) -> None:
-        self._source_morphism = source_morphism
-        self._acted_source = acted_source
-        self._acted_target = acted_target
-        target = parent.codomain()
-        super().__init__(
-            parent,
-            lambda element: target(source_morphism(acted_source(element))),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._source_morphism.linearity_decision()
-
-
-class _RestrictedEquivariantCoefficientMorphism(ModuleMorphism):
-    r"""The coefficient map induced by restricting an equivariant endomorphism to a stable subobject."""
-
-    def __init__(self, parent, ambient_map, inclusion) -> None:
-        self._ambient_map = ambient_map
-        self._inclusion = inclusion
-        target = parent.codomain()
-        super().__init__(
-            parent,
-            lambda element: target(
-                inclusion.lift(ambient_map(inclusion(element)))
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision(
-            (
-                self._ambient_map.underlying_module_morphism(),
-                self._inclusion.underlying_module_morphism(),
-            )
-        )
 
 
 def _coefficient_morphism_from_images(
@@ -928,11 +877,12 @@ def _coefficient_morphism_from_images(
         if images.domain() is source and images.codomain() is target:
             return mor(images)
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():
-            return _CoefficientViewModuleMorphism(
-                mor,
-                images,
-                parent.domain(),
-                parent.codomain(),
+            # The acted map read on the retained coefficient modules is
+            # linear exactly when the acted map is.
+            acted_source = parent.domain()
+            return mor._from_constructed_element_map(
+                lambda element: target(images(acted_source(element))),
+                premises=(images,),
             )
 
     if isinstance(images, Map):
@@ -1100,13 +1050,17 @@ class GroupModuleMorphismMethods:
                 f"{ambient.group_algebra()}; it is in {piece.category()}"
             )
 
-        underlying = _RestrictedEquivariantCoefficientMorphism(
-            piece.unformed_module().module_category().Mor(
-                piece.unformed_module(),
-                piece.unformed_module(),
+        # ``f_S = i^{-1} f i`` on the stable piece is linear when ``f`` and
+        # ``i`` are.
+        coefficients = piece.unformed_module()
+        underlying = coefficients.module_category().Mor(
+            coefficients, coefficients
+        )._from_constructed_element_map(
+            lambda element: coefficients(inclusion.lift(self(inclusion(element)))),
+            premises=(
+                self.underlying_module_morphism(),
+                inclusion.underlying_module_morphism(),
             ),
-            self,
-            inclusion,
         )
         return piece.Mor(piece)._from_equivariant_images(
             underlying,
@@ -1121,22 +1075,14 @@ class GroupModuleMorphismMethods:
 
     def as_automorphism(self):
         r"""Return this invertible equivariant endomorphism in ``Aut_{R[G]}(M)``."""
-        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-            CategoricalIsomorphism,
-        )
-
         module = self.domain()
         if self.codomain() is not module:
             raise ValueError(
                 f"{self} is not an automorphism: it is a map {module} -> {self.codomain()}"
             )
-        inverse = self.inverse()
-        return Modules(module.group_algebra()).Aut(module)(
-            CategoricalIsomorphism(
-                self.parent(),
-                self,
-                inverse,
-            )
+        # ``inverse()`` constructs the two-sided inverse, so the pair is known.
+        return Modules(module.group_algebra()).Aut(module)._from_known_inverse_pair(
+            self, self.inverse()
         )
 
 

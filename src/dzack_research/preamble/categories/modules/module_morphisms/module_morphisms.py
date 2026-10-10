@@ -215,6 +215,7 @@ class ModuleMorphismMethods:
     _scalar_extension_of = None
     _scalar_extension_functor = None
     _lift_function = None
+    _linearity_premises = None
 
     def _initialize_lower_arrow(self, parent) -> None:
         domain = parent.domain()
@@ -229,7 +230,6 @@ class ModuleMorphismMethods:
                     parent,
                     scalar_map,
                     evaluator=self._call_,
-                    linearity_decision=None,
                 )
             case _:
                 super().__init__(parent, self._call_)
@@ -237,21 +237,23 @@ class ModuleMorphismMethods:
     def _elementwise_linearity_derivation(self):
         r"""Return the construction-derived linearity decision, or ``None``.
 
-        An arrow built by a Mor-module operation conjoins the linearity
-        decisions of its premises; a linear map read into another Mor with
-        the same endpoints keeps the decision of that map.  Ordinary
-        elementwise callables have no derivation.  No caller selects a
-        derivation with a string or boolean flag.
+        A linear map read into another Mor with the same endpoints keeps the
+        decision of that map.  Ordinary elementwise callables have no
+        derivation.  No caller selects a derivation with a string or boolean
+        flag.
         """
-        match self._linearity_premises:
-            case None:
-                pass
-            case premises:
-                return _combined_linearity_decision(premises)
         source_morphism = self._source_module_morphism
         if source_morphism is not None:
             return source_morphism.linearity_decision()
         return None
+
+    def _generator_image_linearity_derivation(self):
+        r"""The linearity decision of a map given by images of a chosen generating set.
+
+        Its linear extension is linear by construction once the images kill
+        the selected relations of the domain, so those relations are checked.
+        """
+        return self._check_selected_domain_relations()
 
     def _selected_lift_derivation(self):
         r"""Return whether a supplied lift is exact by construction, or ``None``.
@@ -492,11 +494,18 @@ class ModuleMorphismMethods:
         Generator-image maps are linear extensions after their source
         relations are checked.  Elementwise maps are either decided in an
         effective regime, derived by a named universal construction, or retain
-        the unresolved hypothesis explicitly.
+        the unresolved hypothesis explicitly.  An arrow built by a Mor
+        operation from a family of linear maps, on elements or by generator
+        images, has the conjoined decision of that family.
         """
+        match self._linearity_premises:
+            case None:
+                pass
+            case premises:
+                return _combined_linearity_decision(premises)
         match self._element_function:
             case None:
-                return self._check_selected_domain_relations()
+                return self._generator_image_linearity_derivation()
             case _:
                 derivation = self._elementwise_linearity_derivation()
                 match derivation:
@@ -841,7 +850,7 @@ class ModuleMorphismMethods:
         return hash(id(self.parent()))
 
     def __rmul__(self, actor):
-        # A specialized right operand such as ModuleEmbedding gets reflected
+        # A specialized right operand such as a module embedding gets reflected
         # multiplication before Python tries the less-specialized left
         # ModuleMorphism.__mul__.  In that case the operation is composition,
         # not scalar multiplication.  Delegate to the left morphism so the
@@ -2130,11 +2139,42 @@ class ModuleEmbeddingMethods:
     Membership states injectivity, so :meth:`is_injective` answers by
     placement; :meth:`validate_injectivity` computes the kernel when asked
     (``OWN-22``).
+
+    An embedding built by a construction of its Mor takes
+    ``injectivity_premises``: the family of maps from which the construction
+    builds it, so that it is injective when every premise is, the empty
+    family meaning the construction alone makes it injective.  It may also
+    take ``lift_is_section``: the construction's statement that its selected
+    lift returns a preimage exactly on the image.
     """
 
+    _injectivity_premises = None
+    _lift_is_section = None
+
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        injectivity_premises=None,
+        lift_is_section=None,
+        **construction,
+    ) -> None:
+        self._injectivity_premises = injectivity_premises
+        self._lift_is_section = lift_is_section
+        super().__init__(parent, images, **construction)
+
     def _injectivity_derivation(self):
-        r"""Return a construction-derived injectivity decision, or ``None``."""
-        return None
+        r"""Return the injectivity decision the construction gives, or ``None``."""
+        match self._injectivity_premises:
+            case None:
+                return None
+            case premises:
+                return conjunction(premise.is_injective() for premise in premises)
+
+    def _selected_lift_derivation(self):
+        r"""Return whether the construction states its selected lift is a section, or ``None``."""
+        return self._lift_is_section
 
     def is_injective(self) -> bool:
         r"""True: an element of ``Mono_R(M, N)`` is injective by its placement."""
@@ -2161,72 +2201,6 @@ class ModuleEmbeddingMethods:
             raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: its injectivity cannot be decided")
 
 
-class ModuleEmbedding(ModuleEmbeddingMethods, ModuleMorphism):
-    r"""Compatibility shell for private embedding realizations not yet graph-generated."""
-
-
-class _SubobjectInclusionModuleMorphism(ModuleEmbedding):
-    r"""The inclusion carried by an already-constructed module subobject."""
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-    def _injectivity_derivation(self):
-        return True
-
-    def _selected_lift_derivation(self):
-        r"""A selected subobject lift is part of the constructor's exact data."""
-        return True
-
-
-def _module_subobject_inclusion(parent, images, *, lift=None):
-    r"""Admit the inclusion carried by an already-constructed module subobject."""
-    return _SubobjectInclusionModuleMorphism(parent, images, lift=lift)
-
-
-class _TransportedModuleEmbedding(ModuleEmbedding):
-    r"""An existing admitted embedding viewed in another Mono parent."""
-
-    def __init__(self, parent, embedding, *, lift=None) -> None:
-        self._transported_embedding = embedding
-        self._transported_lift_is_exact = (
-            lift is None
-            and embedding.has_selected_lift()
-            and embedding.selected_lift_exactness_decision() is True
-        )
-        super().__init__(
-            parent,
-            lambda element: embedding(element),
-            elementwise=True,
-            lift=(embedding._lift_function if lift is None else lift),
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._transported_embedding.linearity_decision()
-
-    def _injectivity_derivation(self):
-        return True
-
-    def _selected_lift_derivation(self):
-        return True if self._transported_lift_is_exact else None
-
-
-class _ModuleMorphismAsEmbedding(ModuleEmbedding):
-    r"""A module map regarded as an element of the injective linear maps; its injectivity is checked by validation."""
-
-    def __init__(self, parent, morphism, *, lift=None) -> None:
-        self._linear_map = morphism
-        super().__init__(
-            parent,
-            lambda element: morphism(element),
-            elementwise=True,
-            lift=lift,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._linear_map.linearity_decision()
-
-
 class ModuleEmbeddingMor(CategoricalMor):
     r"""The declared monomorphisms between two modules over one scalar ring."""
 
@@ -2247,11 +2221,32 @@ class ModuleEmbeddingMor(CategoricalMor):
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            embedding = _TransportedModuleEmbedding(self, images, lift=lift)
+            # The same embedding read in another Mono parent: it is linear and
+            # injective because ``images`` is, and keeps its selected lift.
+            keeps_lift = lift is None and images.has_selected_lift()
+            embedding = self.element_class(
+                self,
+                images,
+                lift=(images._lift_function if keeps_lift else lift),
+                linearity_premises=(images,),
+                injectivity_premises=(images,),
+                lift_is_section=(
+                    True
+                    if keeps_lift and images.selected_lift_exactness_decision() is True
+                    else None
+                ),
+            )
         elif isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            embedding = _ModuleMorphismAsEmbedding(self, images, lift=lift)
+            # A linear map read as a monomorphism: linear because ``images``
+            # is; its injectivity is what validation computes.
+            embedding = self.element_class(
+                self,
+                images,
+                lift=lift,
+                linearity_premises=(images,),
+            )
         else:
             embedding = self.element_class(self, images, lift=lift)
         embedding.validate_linearity(check=check)
@@ -2259,9 +2254,49 @@ class ModuleEmbeddingMor(CategoricalMor):
         embedding.validate_injectivity(check=check)
         return embedding
 
+    def _from_constructed_embedding(
+        self,
+        datum,
+        premises=(),
+        *,
+        elementwise=True,
+        lift=None,
+        lift_is_section=None,
+        scalar_extension_of=None,
+        scalar_extension_functor=None,
+    ):
+        r"""The monomorphism of a construction that makes it linear and injective when the maps of ``premises`` are.
+
+        ``datum`` is a function on elements, or with ``elementwise=False`` the
+        images of the domain framing.  The empty family means the construction
+        alone makes the map a monomorphism: the inclusion of a subobject, of a
+        homogeneous piece into its graded algebra, of a fractional ideal into
+        ``Frac(R)``, the free module on an injection of framings.  The
+        localization ``S^{-1} f`` of a monomorphism ``f`` has the premise
+        ``f``, since localization is exact.  ``lift_is_section`` states that
+        the construction's selected lift returns a preimage exactly on the
+        image.
+        """
+        return self.element_class(
+            self,
+            datum,
+            elementwise=elementwise,
+            lift=lift,
+            linearity_premises=premises,
+            injectivity_premises=premises,
+            lift_is_section=lift_is_section,
+            scalar_extension_of=scalar_extension_of,
+            scalar_extension_functor=scalar_extension_functor,
+        )
+
     def _subobject_inclusion(self, images, *, lift=None):
-        r"""Construct the inclusion carried by an owned module-subobject datum."""
-        return _module_subobject_inclusion(self, images, lift=lift)
+        r"""The inclusion carried by an owned module-subobject datum; its selected lift is part of that datum."""
+        return self._from_constructed_embedding(
+            images,
+            elementwise=False,
+            lift=lift,
+            lift_is_section=True,
+        )
 
     def base_ring(self):
         return self.domain().base_ring()
@@ -2396,6 +2431,25 @@ class _ModuleMorCommonMethods:
         datum once that placement is realized.
         """
         return self._preamble_base_ring
+
+    def _from_constructed_element_map(self, function, premises=()):
+        r"""The elementwise map of a construction that makes it linear when the maps of ``premises`` are.
+
+        The empty family means the construction alone makes it linear, as
+        for a unit or counit given by its defining formula.  The image of a
+        linear map ``f`` under a functor has the premise ``f``.
+        """
+        if not callable(function):
+            raise TypeError(
+                f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
+                f"but got {function!r}"
+            )
+        return self.element_class(
+            self,
+            function,
+            elementwise=True,
+            linearity_premises=premises,
+        )
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the linear map with these images; ``check=True`` runs its validators (``OWN-22``)."""
@@ -2684,18 +2738,20 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
 
-    def _from_constructed_element_map(self, function):
-        r"""The elementwise map of a construction that makes it linear: a premise-free Mor operation."""
-        if not callable(function):
-            raise TypeError(
-                f"a constructed linear map {self.domain()} -> {self.codomain()} needs a function on elements, "
-                f"but got {function!r}"
-            )
+    def _from_scalar_extension(self, morphism, datum, functor, *, elementwise=False):
+        r"""``S tensor_R f`` for ``f = morphism``, given by its images on the extended framing or on elements.
+
+        Scalar extension is a functor on linear maps, so ``S tensor_R f`` is
+        linear exactly when ``f`` is.  A localization ``S^{-1} f`` is the
+        scalar extension along ``R -> S^{-1}R``.
+        """
         return self.element_class(
             self,
-            function,
-            elementwise=True,
-            linearity_premises=(),
+            datum,
+            elementwise=elementwise,
+            scalar_extension_of=morphism,
+            scalar_extension_functor=functor,
+            linearity_premises=(morphism,),
         )
 
     def presentation_matrix(self):
@@ -2736,44 +2792,6 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class SubFramingMorphism(ModuleEmbedding):
-    r"""The free module functor applied to an injection of framings.
-
-    An injection of framing sets is split, and the free functor is a left
-    adjoint that carries the splitting, so this is a split monomorphism and
-    both membership in its image and the lift are decided on labels: an
-    element of the larger free module comes from the smaller one exactly when
-    it is supported on the smaller framing, and its preimage has the same
-    coefficients.
-
-    That is what the class buys over the general route below, which builds the
-    matrix of images and solves a linear system.  The smaller framing may be
-    infinite, as the degree-two piece of an algebra on countably many
-    generators is, and then no matrix exists to solve against.
-    """
-
-    def _injectivity_derivation(self):
-        return True
-
-    def is_in_image(self, element) -> bool:
-        r"""Return whether ``element`` is supported on the smaller framing."""
-        if element.parent() is not self.codomain():
-            return False
-        source_labels = self.domain().module_generating_set()
-        return all(
-            label in source_labels
-            for label in element.to_vector().support().domain()
-        )
-
-    def lift(self, element):
-        r"""Return the unique element of the smaller free module mapping here."""
-        assert self.is_in_image(element), f"{element} is not in the image of {self}"
-        coordinates = element.to_vector()
-        return self.domain().linear_combination(
-            {label: coordinates(label) for label in coordinates.support().domain()}
-        )
-
-
 def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
     from dzack_research.preamble.categories.modules.pure.modules import Modules
     from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
@@ -2787,7 +2805,49 @@ def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
 
 
 class TensorProductModuleMorphismMethods:
-    r"""A linear map out of a chosen tensor product, hence a bilinear map."""
+    r"""A linear map out of a chosen tensor product, hence a bilinear map.
+
+    A map stated by a two-variable evaluation ``b`` keeps ``b``: its values
+    on the selected tensor framing are its generator images, and it answers
+    ``f(x, y)`` with ``b(x, y)``.  A Python callable does not establish that
+    its values on arbitrary factor elements agree with that bilinear
+    extension, so unless the construction supplies it as a premise, the
+    linearity decision is the proposition ``is_linear(f)`` once the framing
+    values kill the selected tensor relations.
+    """
+
+    _bilinear_evaluation = None
+
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        scalar_extension_of=None,
+        scalar_extension_functor=None,
+        lift=None,
+        linearity_premises=None,
+        bilinear_evaluation=None,
+    ) -> None:
+        self._bilinear_evaluation = bilinear_evaluation
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            scalar_extension_of=scalar_extension_of,
+            scalar_extension_functor=scalar_extension_functor,
+            lift=lift,
+            linearity_premises=linearity_premises,
+        )
+
+    def _generator_image_linearity_derivation(self):
+        decision = super()._generator_image_linearity_derivation()
+        match self._bilinear_evaluation:
+            case None:
+                return decision
+            case _:
+                return AtomicProposition("is_linear", self)
 
     def left_module(self):
         return self.domain().tensor_factor(0)
@@ -2803,6 +2863,10 @@ class TensorProductModuleMorphismMethods:
     def __call__(self, *arguments):
         if len(arguments) == 1:
             return self._call_(arguments[0])
+        if len(arguments) == 2 and self._bilinear_evaluation is not None:
+            left, right = arguments
+            value = self._bilinear_evaluation(self.left_module()(left), self.right_module()(right))
+            return value if element_parent(value) is self.codomain() else self.codomain()(value)
         if len(arguments) == 2 and self._generator_image is not None:
             return self._evaluate_by_bilinearity(*arguments)
         if len(arguments) == 2:
@@ -2899,62 +2963,6 @@ class TensorProductModuleMorphismMethods:
 
 class TensorProductModuleMorphism(TensorProductModuleMorphismMethods, ModuleMorphism):
     r"""Compatibility shell for private tensor-product arrow realizations."""
-
-
-class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
-    r"""Conditional classifier of a two-variable evaluation on framed factors.
-
-    The selected tensor framing determines the only possible linear extension
-    from the values on pairs of factor generators, and ordinary module-Mor
-    admission still rejects any selected tensor relation that those values do
-    not kill.  A Python callable, however, does not establish that its values
-    on arbitrary factor elements agree with that bilinear extension.  So the
-    linearity is not decided by construction: agreement on the selected framing does
-    not decide bilinearity, and the linearity decision is the proposition
-    ``is_linear(f)``.
-    """
-
-    def __init__(self, parent, evaluation) -> None:
-        self._bilinear_evaluation = evaluation
-        source = parent.domain()
-        left = source.tensor_factor(0)
-        right = source.tensor_factor(1)
-
-        def generator_image(pair):
-            value = evaluation(
-                left.module_generator(pair.component(0)),
-                right.module_generator(pair.component(1)),
-            )
-            match element_parent(value) is parent.codomain():
-                case True:
-                    return value
-                case False:
-                    return parent.codomain()(value)
-
-        super().__init__(parent, generator_image)
-
-    @cached_method
-    def linearity_decision(self):
-        r"""Reject a selected tensor relation the values do not kill; otherwise return ``is_linear(f)``."""
-        self._check_selected_domain_relations()
-        return AtomicProposition("is_linear", self)
-
-    def __call__(self, *arguments):
-        match len(arguments):
-            case 2:
-                left, right = arguments
-                value = self._bilinear_evaluation(
-                    self.left_module()(left),
-                    self.right_module()(right),
-                )
-                match element_parent(value) is self.codomain():
-                    case True:
-                        return value
-                    case False:
-                        return self.codomain()(value)
-            case _:
-                return super().__call__(*arguments)
-
 
 
 class ModuleAutomorphismMethods:
@@ -3227,10 +3235,34 @@ class TensorProductModuleMor(ModuleMor):
 
         return super()._element_constructor_(images)
 
-    def _from_bilinear_evaluation(self, evaluation):
-        r"""Classify a stated bilinear evaluation without proving it from a framing sample."""
+    def _from_bilinear_evaluation(self, evaluation, premises=None):
+        r"""Classify a stated bilinear evaluation without proving it from a framing sample.
+
+        The values on pairs of factor generators are the images of the
+        selected tensor framing.  A construction whose evaluation is bilinear
+        by its own data, such as the product of a ring, supplies the empty
+        family of premises.
+        """
         match callable(evaluation):
             case True:
-                return _FramedTensorBilinearEvaluationMorphism(self, evaluation)
+                pass
             case False:
                 raise TypeError(f"cannot define a bilinear map on {self.domain()} from {evaluation!r}: it must be a function of two arguments")
+        source = self.domain()
+        left = source.tensor_factor(0)
+        right = source.tensor_factor(1)
+        codomain = self.codomain()
+
+        def generator_image(pair):
+            value = evaluation(
+                left.module_generator(pair.component(0)),
+                right.module_generator(pair.component(1)),
+            )
+            return value if element_parent(value) is codomain else codomain(value)
+
+        return self.element_class(
+            self,
+            generator_image,
+            linearity_premises=premises,
+            bilinear_evaluation=evaluation,
+        )

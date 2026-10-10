@@ -3,47 +3,9 @@
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.group.magmas import (
-    MonoidMorphism,
-    Monoids,
-)
+from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
-
-
-class SubmonoidInclusion(MonoidMorphism):
-    """The chosen monomorphism ``S -> M`` representing a submonoid."""
-
-    def is_injective(self):
-        return True
-
-    def factor_through(self, target_inclusion):
-        factor = self.factor_through_or_none(target_inclusion)
-        if factor is None:
-            raise ValueError(
-                f"{self.domain()} is not contained in {target_inclusion.domain()}: "
-                f"some monoid generator of {self.domain()} does not lie in "
-                f"{target_inclusion.domain()}"
-            )
-        return factor
-
-    def factor_through_or_none(self, target_inclusion):
-        if target_inclusion.codomain() is not self.codomain():
-            raise ValueError(
-                f"cannot factor {self.domain()} through {target_inclusion.domain()}: they are "
-                f"submonoids of different monoids, {self.codomain()} and "
-                f"{target_inclusion.codomain()}"
-            )
-        if target_inclusion is self:
-            return Monoids().Mor(self.domain(), self.domain()).identity()
-        source = self.domain()
-        target = target_inclusion.domain()
-        generators = tuple(source.monoid_generators())
-        if not all(generator in target for generator in generators):
-            return None
-        return Monoids().Mor(source, target)(
-            lambda element: target(element)
-        )
 
 
 class _SubmonoidEngine:
@@ -90,9 +52,7 @@ class _SubmonoidEngine:
 
     @cached_method
     def inclusion(self):
-        return SubmonoidInclusion(
-            Monoids().Mor(self, self.ambient_monoid()), lambda element: element
-        )
+        return Monoids().Mor(self, self.ambient_monoid())._from_submonoid_inclusion()
 
     def _structure_data(self):
         r"""Return private constructor metadata for localization adapters."""
@@ -182,7 +142,6 @@ def _generated_submonoid(ambient, generators, *, description=None, structure_dat
         structure_data=structure_data,
     )
 
-
 def _predicate_submonoid(
     ambient,
     predicate,
@@ -200,8 +159,3 @@ def _predicate_submonoid(
         description=description,
         structure_data=structure_data,
     )
-
-
-__all__ = [
-    "SubmonoidInclusion",
-]

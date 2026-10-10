@@ -70,7 +70,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
     PartiallyOrderedSets,
-    SetInclusion,
     Sets,
     UncountableSets,
 )
@@ -642,7 +641,7 @@ def _zariski_closed_subobject(spectrum, ideal):
             <= _engine_ideal(spectrum.ring(), point.ideal())
         )
     )
-    inclusion = SetInclusion(domain, spectrum)
+    inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
         inclusion,
         categories=(ZariskiClosedSubobjects(spectrum),),
@@ -656,7 +655,7 @@ def _distinguished_open_subobject(spectrum, function):
         lambda point: _engine_element(spectrum.ring(), function)
         not in _engine_ideal(spectrum.ring(), point.ideal())
     )
-    inclusion = SetInclusion(domain, spectrum)
+    inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
         inclusion,
         categories=(DistinguishedOpenSubobjects(spectrum),),

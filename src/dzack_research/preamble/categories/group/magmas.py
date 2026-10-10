@@ -1,6 +1,7 @@
 """The owned operation spine below groups."""
 
 from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -429,10 +430,63 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
 
 
 class MonoidMorphism:
-    """A morphism in the owned category of monoids."""
+    """A morphism in the owned category of monoids.
 
-    def __init__(self, parent, function) -> None:
+    The inclusion ``S -> M`` of a submonoid sends ``s`` to ``s``.  Its
+    construction gives two premises, which are stored and never checked:
+    the arrow is injective (``injectivity_decision``), and its image is the
+    domain ``S`` itself (``submonoid_of_codomain``).
+    """
+
+    def __init__(self, parent, function, *, injectivity_decision=None, submonoid_of_codomain=False) -> None:
+        self._injectivity_premise = injectivity_decision
+        self._submonoid_premise = submonoid_of_codomain
         super().__init__(parent, function)
+
+    def is_injective(self):
+        assert self._injectivity_premise is not None, (
+            f"whether {self} is injective is defined for every monoid morphism, but the current "
+            "preamble answers it only for the inclusion of a submonoid"
+        )
+        return self._injectivity_premise
+
+    def image(self):
+        r"""``f(S)``; the image of the inclusion of a submonoid ``S`` is ``S``."""
+        assert self._submonoid_premise, (
+            f"the image of {self} is defined for every monoid morphism, but the current preamble "
+            "constructs it only for the inclusion of a submonoid"
+        )
+        return self.domain()
+
+    def factor_through_or_none(self, target_inclusion):
+        r"""The factor ``k`` with ``n . k = m`` of this inclusion ``m`` through ``n``, or None.
+
+        It exists exactly when the image of ``m`` lies in the image of
+        ``n``; containment is decided on the monoid generators of the
+        domain.
+        """
+        if target_inclusion.codomain() is not self.codomain():
+            raise ValueError(
+                f"cannot factor {self} through {target_inclusion}: their codomains {self.codomain()} "
+                f"and {target_inclusion.codomain()} differ"
+            )
+        source = self.domain()
+        target = target_inclusion.domain()
+        if target_inclusion is self:
+            return Monoids().Mor(source, source).identity()
+        target_image = target_inclusion.image()
+        if not all(self(generator) in target_image for generator in source.monoid_generators()):
+            return None
+        return Monoids().Mor(source, target)(lambda element: target(self(element)))
+
+    def factor_through(self, target_inclusion):
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError(
+                f"{self} does not factor through {target_inclusion}: some monoid generator of "
+                f"{self.domain()} does not map into {target_inclusion.domain()}"
+            )
+        return factor
 
 
 class MonoidMor(CategoricalMor):
@@ -454,6 +508,20 @@ class MonoidMor(CategoricalMor):
                 return function
             function = function.__call__
         return self.element_class(self, function)
+
+    @cached_method
+    def _from_submonoid_inclusion(self):
+        r"""The inclusion ``S -> M`` of the domain, a submonoid of the codomain, sending ``s`` to ``s``.
+
+        The construction gives the arrow's injectivity and its image ``S``
+        as premises; neither is checked.
+        """
+        return self.element_class(
+            self,
+            lambda element: element,
+            injectivity_decision=True,
+            submonoid_of_codomain=True,
+        )
 
     def identity(self):
         if self.domain() is not self.codomain():

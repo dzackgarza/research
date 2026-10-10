@@ -12,6 +12,32 @@ $P^{t} G P$.  Every value is computed by hand from these component formulas.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_private_modular_pairing_realization_uses_exact_products_when_int64_would_overflow() -> None:
+    r"""Engineering regression for the private contraction, not a replacement
+    for the owned quotient-valued form assertions.
+
+    Modulo m, the rows are (-4,-3), (3,5) and the symmetric form is
+    [[-1,-2],[-2,-3]], yielding [[-91,115],[115,-144]]. Computing the
+    unreduced products with int64 would overflow even though all inputs fit.
+    """
+    import numpy
+
+    from dzack_research.preamble.tensors.tensor import _engine_modular_pairing_pullback
+
+    modulus = 10**12 + 39
+    coordinates = numpy.array(((modulus - 4, modulus - 3), (3, 5)), dtype=numpy.int64)
+    form = numpy.array(
+        ((modulus - 1, modulus - 2), (modulus - 2, modulus - 3)), dtype=numpy.int64
+    )
+    assert _engine_modular_pairing_pullback(form, coordinates, modulus).tolist() == [
+        [modulus - 91, 115],
+        [115, modulus - 144],
+    ]
+    assert _engine_modular_pairing_pullback(
+        form, coordinates, modulus, diagonal_only=True
+    ).tolist() == [modulus - 91, modulus - 144]
+
+
 def test_a_bilinear_form_evaluates_as_v_transpose_g_w() -> None:
     r"""$G = [[2, 1], [1, 3]]$, $v = (4, 5)$, $w = (1, -1)$: $G(-, v)$ pairs as $v^t G = (13, 19)$
     and $G(v, w) = 13 - 19 = -6$; $G$ is symmetric."""

@@ -56,20 +56,29 @@ class _FiniteGaloisExtensionEngine:
     retained by the realization.
     """
 
+    def _stage_category(self):
+        r"""``(K/Fields)/e``, the slice of ``K/Fields`` over ``e: K -> Kbar`` that this stage lies in."""
+        factorization = self.arrow()
+        return factorization.parent().arrow_category().SliceOver(factorization.codomain())
+
+    def _extension_category(self):
+        r"""``K/Fields``, the coslice of field extensions of ``K``."""
+        return self._stage_category().base_category()
+
     def base_field(self):
-        return self.coslice_arrow().domain()
+        return self.base_embedding().domain()
 
     def field(self):
-        return self.coslice_arrow().codomain()
+        return self.base_embedding().codomain()
 
     def algebraic_closure(self):
-        return self.slice_arrow().codomain().coslice_arrow().codomain()
+        return self._extension_category().arrow(self.arrow().codomain()).codomain()
 
     def base_embedding(self) -> RingMorphism:
-        return self.coslice_arrow()
+        return self._extension_category().arrow(self)
 
     def embedding(self) -> RingMorphism:
-        return self.slice_arrow().right()
+        return self.arrow().right()
 
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
@@ -108,11 +117,14 @@ class _FiniteGaloisExtensionEngine:
         ``e: K -> Kbar``; the field is compared by identity and the two exact
         embeddings by their values on field generators.
         """
+        stage_category = self._stage_category()
+        if other not in stage_category:
+            return False
+        base_embedding = self._extension_category().arrow(other)
         return (
-            other in self.slice_category()
-            and other.coslice_arrow().codomain() is self.field()
-            and other.coslice_arrow() == self.base_embedding()
-            and other.slice_arrow().right() == self.embedding()
+            base_embedding.codomain() is self.field()
+            and base_embedding == self.base_embedding()
+            and stage_category.arrow(other).right() == self.embedding()
         )
 
     def __ne__(self, other) -> bool:
@@ -173,14 +185,14 @@ def FiniteGaloisExtension(
             f"the embedding K -> Kbar {extension_object} is not a field extension of "
             f"{base_field}"
         )
-        assert extension_object.coslice_arrow().codomain() is closure, (
+        assert coslice.arrow(extension_object).codomain() is closure, (
             f"the embedding K -> Kbar {extension_object} does not land in the algebraic "
             f"closure {closure}"
         )
-        assert extension_object.coslice_arrow() == composite, (
+        assert coslice.arrow(extension_object) == composite, (
             f"{field} is not an intermediate field of {base_field} -> {closure}: the "
             f"composite {base_field} -> {field} -> {closure} differs from the given "
-            f"embedding {extension_object.coslice_arrow()}"
+            f"embedding {coslice.arrow(extension_object)}"
         )
 
     factorization = coslice.Mor(source_object, extension_object)(closure_embedding)

@@ -272,6 +272,15 @@ and each clone's local `main` is only a copy.  So:
   `git pull origin main` on the other, before either selects its next
   node.  Syncing is not a verification event.  A refused push means the
   other host has committed; pull and merge before committing more.
+- **A local worktree merge is not a cross-host reconciliation.** Inspect the
+  other active host's actual `main`, its pending commits and relevant dirty
+  source before claiming the two lines have been integrated; the remote
+  tracking ref contains only published work. Compare the mathematical
+  construction owners and affected consumers, not just commit ancestry or
+  overlapping filenames. If the other workstream cannot be inspected
+  because its owner is active, preserve the local checkpoint and branches,
+  leave the push outstanding, and report the cross-host comparison as
+  unperformed. Never call a local clean import evidence of remote agreement.
 - Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
   host is closed by the commit that reaches `origin/main`.
 - A `--no-verify` sync skips the gate, so it checks the one thing the gate
@@ -1164,8 +1173,18 @@ the category states. Every construction in the tree moves to this shape;
   `Tensor.pullback` holds the only `A^t G A`. Everywhere else, code states
   pullback, composition `f * g`, inverse `~f` and application `f(v)`, so
   `M^t G M` and `M G M^t` cannot be written, and no call site chooses between
-  them. `just tensor-boundary` lists every transpose and matrix action
-  outside the package.
+  them. An owned morphism's framing-dependent `transpose()` is a morphism
+  operation, not a Sage coordinate transpose. `just tensor-boundary` rejects
+  recognizable unowned coordinate operations outside the package. A green
+  textual gate does not prove categorical ownership. Identify the actual
+  tensor or form morphism, selected family and map, their source and target,
+  and the owner of the pullback or contraction. An `einsum` replacing a raw
+  matrix product at the consumer is still the same architectural violation.
+  Conversely, a genuine typed morphism `transpose()` stays at its Mor owner,
+  even if a syntax-only checker mistakes it for an engine matrix operation.
+  Fix checker classifications using that provenance; never ask the owner to
+  choose between relocating a mathematically correct public API, suppressing
+  its semantics, or accepting an unreviewed bypass.
 
 Some conditions cannot be checked at all. The Fourier transform is an isometry
 of `L^2(RR)`, and no finite computation confirms it. A construction that

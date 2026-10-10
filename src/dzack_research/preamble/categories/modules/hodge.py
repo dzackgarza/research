@@ -7,9 +7,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
@@ -218,13 +215,6 @@ def _poincare_duality(module, volume, degree):
     return result
 
 
-class _ConstructedCorrelationEmbedding(ModuleEmbedding):
-    r"""A correlation whose injectivity is already part of the formed object's construction."""
-
-    def _injectivity_derivation(self):
-        return True
-
-
 def _algebraic_correlation_morphism(metric, *, injective=False):
     r"""Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric."""
 
@@ -244,9 +234,11 @@ def _algebraic_correlation_morphism(metric, *, injective=False):
 
     def correlation_from_generator_images(images):
         if injective:
-            return _ConstructedCorrelationEmbedding(
-                Modules(ring).Mono(metric, dual),
+            # The linear extension of images of a basis is linear, and a
+            # nondegenerate form is one whose correlation has zero kernel.
+            return Modules(ring).Mono(metric, dual)._from_constructed_embedding(
                 images,
+                elementwise=False,
             )
         return metric.module_category().Mor(metric, dual)(images)
 

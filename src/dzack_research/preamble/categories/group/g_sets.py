@@ -462,7 +462,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
                     quotient_projection.lift(quotient_element)
                 )
             )
-            return Sets().Core().Mor(self, quotient)(forward, inverse)
+            return Sets().Core().Mor(self, quotient)._from_known_inverse_pair(forward, inverse)
 
 
 class GSetMor(GObjectMor):
@@ -835,7 +835,12 @@ class _LeftCosetPoint(SageObject):
 
 
 class _LeftCosetPointSet(Parent):
-    r"""The quotient set of ``G`` under ``g ~ h`` iff ``g^-1 h in H``."""
+    r"""The quotient set of ``G`` under ``g ~ h`` iff ``g^-1 h in H``.
+
+    This is a private representation of the selected points of the owned
+    left-``G``-set ``G/H``; the action and quotient map belong to
+    ``LeftCosetGSets(H)``, not to this point representation.
+    """
 
     def __init__(self, group, subgroup):
         self._group = group

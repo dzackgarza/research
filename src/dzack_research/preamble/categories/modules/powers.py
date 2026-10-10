@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
     ModuleMor,
     ModuleMorphismMethods,
 )
@@ -73,30 +72,6 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.owned_category import owned_category_join
-
-
-class _PowerModuleInclusion(ModuleEmbedding):
-    r"""The canonical inclusion of a homogeneous power piece into its graded algebra."""
-
-    def __init__(self, parent, source, algebra, degree) -> None:
-        self._power_source = source
-        self._power_algebra = algebra
-        self._power_degree = degree
-        super().__init__(
-            parent,
-            lambda element: algebra.from_graded_piece(degree, source(element)),
-            elementwise=True,
-            lift=source._lift_from_ambient_power_algebra,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-    def _injectivity_derivation(self):
-        return True
-
-    def _selected_lift_derivation(self):
-        return True
 
 
 class _PowerModuleParentMethods:
@@ -144,11 +119,13 @@ class _PowerModuleParentMethods:
         r"""Return the canonical homogeneous-piece inclusion into its power algebra."""
         algebra = self.ambient_power_algebra()
         degree = self.power_degree()
-        inclusion = _PowerModuleInclusion(
-            self.Mono(algebra),
-            self,
-            algebra,
-            degree,
+        # A homogeneous piece of a graded algebra is a direct summand of it,
+        # so its inclusion is a monomorphism, and reading the degree component
+        # of an element is the lift.
+        inclusion = self.Mono(algebra)._from_constructed_embedding(
+            lambda element: algebra.from_graded_piece(degree, self(element)),
+            lift=self._lift_from_ambient_power_algebra,
+            lift_is_section=True,
         )
         self.register_conversion(
             SetMorphism(

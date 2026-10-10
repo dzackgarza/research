@@ -1162,6 +1162,70 @@ def _engine_dual_row_family(row_family):
     return row_family.inverse().transpose()
 
 
+def _engine_inverse_form_pullback(form, isomorphism):
+    r"""Private engine adapter (``OWN-24``): pull a form back along an inverse map.
+
+    ``isomorphism`` uses coordinate columns: it sends the standard basis
+    to its columns.  The returned Gram matrix represents
+    ``(isomorphism^{-1})^* form``.  The inverse, transpose and action
+    conventions are confined to this tensor boundary.
+
+    For the rational diagonalization ``T^t (2G) T = D``, pullback of
+    ``|D|`` along ``T^{-1}`` gives the positive-definite majorant
+    ``M`` with ``|2G(x,x)| <= M(x,x)``. Thus the engine does not choose
+    between row and column conjugation when constructing its search bound.
+    """
+    return _engine_row_family_gram(form, _engine_dual_row_family(isomorphism))
+
+
+def _engine_modular_pairing_pullback(form, row_family, modulus, *, diagonal_only=False):
+    r"""Private engine adapter (``OWN-24``): a finite-family pairing contraction.
+
+    Let ``u: ZZ^r -> A`` send the standard basis to the chosen generators
+    of a finite form module, and let ``c: I -> ZZ^r`` give chosen coordinate
+    representatives of a finite family. The values being realized are
+    ``b(u(c(i)), u(c(j)))``, the pullback of the quotient-valued pairing
+    along this family, not a new pairing on the coordinates.
+
+    ``form`` gives normalized integer representatives in
+    ``[0, modulus)`` of the generator pairings, and each row of
+    ``row_family`` has nonnegative integer coordinates. For
+    ``diagonal_only``, its diagonal instead records the chosen quadratic
+    generator values, with off-diagonal entries the bilinear cross terms;
+    its result is ``q(u(c(i)))`` in ``QQ/2ZZ``, not the diagonal of the
+    bilinear pairing in ``QQ/ZZ``.
+
+    This is the private NumPy realization of a tensor contraction; no caller
+    chooses where the family transpose belongs or how to contract indices.
+    The fixed-width integer backend is used only when both sums of products
+    fit in signed 64 bits *before* reduction; otherwise Python integers
+    preserve exact arithmetic.
+    """
+    import numpy
+
+    modulus = int(modulus)
+    rank = form.shape[0]
+    if rank == 0:
+        count = row_family.shape[0]
+        return numpy.zeros(count if diagonal_only else (count, count), dtype=numpy.int64)
+
+    largest_coordinate = int(numpy.max(row_family))
+    largest_form_entry = int(numpy.max(form))
+    signed_int64_max = (1 << 63) - 1
+    exact_int64 = (
+        modulus <= signed_int64_max
+        and rank * largest_coordinate * largest_form_entry <= signed_int64_max
+        and rank * largest_coordinate * (modulus - 1) <= signed_int64_max
+    )
+    representation = numpy.int64 if exact_int64 else object
+    coordinates = numpy.asarray(row_family, dtype=representation)
+    gram = numpy.asarray(form, dtype=representation)
+    first_contraction = (coordinates @ gram) % modulus
+    if diagonal_only:
+        return numpy.sum(first_contraction * coordinates, axis=1) % modulus
+    return (first_contraction @ coordinates.transpose()) % modulus
+
+
 def _engine_row_action_from_images(source_rows, target_rows):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): the row action carrying a family to its images.
 

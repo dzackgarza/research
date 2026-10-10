@@ -1848,125 +1848,9 @@ def _abelian_subgroup_quotient(subgroup):
     )
 
 
-class SubgroupInclusion(SetMorphism):
-    def _composition(self, right):
-        r"""Compose an inclusion in the owned group morphism category."""
-        if right.codomain() is not self.domain():
-            return NotImplemented
-        return OwnedGroups().Mor(right.domain(), self.codomain())(
-            lambda element: self(right(element))
-        )
-
-    def is_injective(self):
-        return True
-
-    def factor_through_or_none(self, target_inclusion):
-        r"""Return the subgroup factor, or None when represented containment fails."""
-        if target_inclusion.codomain() is not self.codomain():
-            raise ValueError(f"the inclusion of {self.domain()} cannot factor through the inclusion of {target_inclusion.domain()}: they are subgroups of different groups, {self.codomain()} and {target_inclusion.codomain()}")
-        source = self.domain()
-        target = target_inclusion.domain()
-        if source is target:
-            return source.Mor(target).identity()
-        match source:
-            case _ if source in GeneratedSubgroups(self.codomain()):
-                witnesses = source.selected_subgroup_generators()
-            case _ if source in OwnedFiniteGroups():
-                witnesses = source
-            case _:
-                assert source in GeneratedSubgroups(self.codomain()), (
-                    f"cannot decide whether {source} is contained in {target}: {source} has no chosen generating set "
-                    f"and is not known to be finite"
-                )
-        if not all(element in target for element in witnesses):
-            return None
-        return source.Mor(target)(lambda element: target(element))
-
-    def factor_through(self, target_inclusion):
-        factor = self.factor_through_or_none(target_inclusion)
-        if factor is None:
-            raise ValueError(f"the inclusion of {self.domain()} does not factor through {target_inclusion.domain()}: {self.domain()} is not contained in {target_inclusion.domain()}")
-        return factor
-
-    def _finite_subgroup_model(self):
-        r"""Return the GAP model of the subgroup, inside the model of its finite ambient group."""
-        subgroup = self.domain()
-        ambient = self.codomain()
-        assert ambient in OwnedFiniteGroups(), (
-            f"the subgroup {subgroup} of {ambient} is computed here only inside a finite group, "
-            f"and {ambient} is not known to be finite"
-        )
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            KernelSubgroups,
-        )
-
-        match subgroup:
-            case _ if subgroup in KernelSubgroups(ambient):
-                return subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
-            case _:
-                return _gap_model(subgroup)
-
-    def is_normal(self) -> bool:
-        r"""Whether the subgroup ``H`` is normal in ``G``: ``g H g^{-1} = H`` for every ``g`` in ``G``.
-
-        Decided for a finite ``G`` by GAP's ``IsNormal``.  ``G/H`` is a group,
-        and ``H -> G -> G/H`` exact, exactly when this holds; otherwise
-        :meth:`cokernel` is ``G`` modulo the normal closure of ``H``.
-        """
-        ambient = self.codomain()
-        match ambient:
-            case _ if ambient in OwnedAbelianGroups():
-                return True
-            case _ if ambient in OwnedFiniteGroups():
-                return bool(_gap_model(ambient).IsNormal(self._finite_subgroup_model()))
-            case _:
-                assert False, (
-                    f"whether {self.domain()} is normal in {ambient} is defined for every subgroup inclusion, "
-                    "but the current preamble decides it only inside finite represented groups"
-                )
-
-    @cached_method
-    def _cokernel_data(self):
-        r"""Return the quotient by the normal closure of this subgroup image.
-
-        A finite ambient group is quotiented by GAP, which realizes the
-        quotient as a finite group with its own engine.  An abelian ambient
-        group not known to be finite is quotiented through subgroup
-        membership, since every subgroup of it is normal.
-        """
-        ambient = self.codomain()
-        match ambient:
-            case _ if ambient in OwnedFiniteGroups():
-                normal_closure = libgap.NormalClosure(
-                    _gap_model(ambient),
-                    self._finite_subgroup_model(),
-                )
-                return _finite_group_quotient_by_gap_normal_subgroup(
-                    ambient,
-                    normal_closure,
-                )
-            case _ if ambient in OwnedAbelianGroups():
-                quotient = _abelian_subgroup_quotient(self.domain())
-                return quotient, quotient.quotient_projection()
-            case _:
-                assert False, (
-                    f"the cokernel of the inclusion of {self.domain()} in {ambient} exists, but it is "
-                    f"computed here only when {ambient} is finite or abelian"
-                )
-
-    def cokernel(self):
-        return self._cokernel_data()[0]
-
-    def cokernel_projection(self):
-        return self._cokernel_data()[1]
-
-
 def _canonical_subgroup_inclusion(subgroup):
     r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
-    containing_group = subgroup.supergroup()
-    return subgroup.Mor(containing_group)._from_realization_rule(
-        lambda mor: SubgroupInclusion(mor, containing_group)
-    )
+    return subgroup.Mor(subgroup.supergroup())._from_subgroup_inclusion()
 
 
 class IndexedFreeGroupMorphism:
@@ -2071,6 +1955,21 @@ class _GroupMorRealizationMixin:
         )
         return realized_type(self, *args, **kwargs)
 
+    @cached_method
+    def _from_subgroup_inclusion(self):
+        r"""The inclusion ``H -> G`` of the domain, a subgroup of the codomain, sending ``h`` to ``h``.
+
+        The construction gives the arrow's injectivity and its image ``H``
+        as premises; neither is checked.
+        """
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            lambda element: codomain(element),
+            injectivity_decision=True,
+            subgroup_of_codomain=True,
+        )
+
     def _from_realization_rule(self, rule):
         r"""Realize a specialized group arrow through this canonical Mor parent."""
         morphism = rule(self)
@@ -2127,6 +2026,18 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
 
+    @cached_method
+    def _from_subgroup_inclusion(self):
+        r"""The inclusion ``F(S) -> G`` of a free subgroup, given by the images ``s -> s`` of its free basis."""
+        domain = self.domain()
+        codomain = self.codomain()
+        return self.element_class(
+            self,
+            Sets().Mor(domain.free_basis(), codomain)(
+                lambda index: codomain(domain.free_generator(index))
+            ),
+        )
+
     def _cardinality_decision(self):
         r"""A homomorphism from F(S) is exactly a function S -> H."""
         return cardinal(self.codomain().cardinality()) ** cardinal(self.domain().free_basis().cardinality())
@@ -2141,9 +2052,16 @@ class GroupMorphism:
     Images of the chosen generators of the domain are the defining datum of
     a morphism out of a presented group: a GAP homomorphism into the
     codomain's engine is then computed on the first request.
+
+    The inclusion ``H -> G`` of a subgroup sends ``h`` to ``h``.  Its
+    construction gives two premises, which are stored and never checked:
+    the arrow is injective (``injectivity_decision``), and its image is the
+    domain ``H`` itself (``subgroup_of_codomain``).
     """
 
-    def __init__(self, parent, realization) -> None:
+    def __init__(self, parent, realization, *, injectivity_decision=None, subgroup_of_codomain=False) -> None:
+        self._injectivity_premise = injectivity_decision
+        self._subgroup_premise = subgroup_of_codomain
         self._gap_homomorphism = None
         self._generator_images = None
         match realization:
@@ -2322,7 +2240,14 @@ class GroupMorphism:
         )
 
     def lift(self, element):
-        r"""Return one preimage of ``element``."""
+        r"""Return one preimage of ``element``.
+
+        The inclusion of a subgroup ``H`` sends ``h`` to ``h``, so the
+        preimage of an element of ``H`` is that element.
+        """
+        if self._subgroup_premise:
+            assert element in self.domain(), f"{element} is not in the image of {self}"
+            return self.domain()(element)
         engine_element = _element_to_engine(self.codomain(), element)
         gap_morphism = self._gap_morphism_crossing()
         assert engine_element in gap_morphism.Image(), (
@@ -2364,10 +2289,86 @@ class GroupMorphism:
         return KernelSubgroups(self.domain())(self)
 
     def image(self):
+        r"""``f(G)``; the image of the inclusion of a subgroup ``H`` is ``H``."""
+        if self._subgroup_premise:
+            return self.domain()
         return _subgroup_from_gap(
             self.codomain(),
             self._gap_morphism_crossing().Image(),
         )
+
+    def _image_model(self):
+        r"""The GAP model of ``f(G)`` inside the model of a finite codomain."""
+        if not self._subgroup_premise:
+            return self._gap_morphism_crossing().Image()
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            KernelSubgroups,
+        )
+
+        subgroup = self.domain()
+        match subgroup:
+            case _ if subgroup in KernelSubgroups(self.codomain()):
+                return subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
+            case _:
+                return _gap_model(subgroup)
+
+    def is_normal(self) -> bool:
+        r"""Whether this is a normal monomorphism: injective, with image normal in the codomain.
+
+        For the inclusion of ``H`` in ``G`` this is ``g H g^{-1} = H`` for
+        every ``g`` in ``G``, decided for a finite ``G`` by GAP's
+        ``IsNormal``.  ``G/H`` is a group, and ``H -> G -> G/H`` exact,
+        exactly when this holds; otherwise :meth:`cokernel` is ``G`` modulo
+        the normal closure of the image.
+        """
+        codomain = self.codomain()
+        match codomain:
+            case _ if codomain in OwnedAbelianGroups():
+                return self.is_injective()
+            case _ if codomain in OwnedFiniteGroups():
+                return self.is_injective() and bool(_gap_model(codomain).IsNormal(self._image_model()))
+            case _:
+                assert False, (
+                    f"whether {self} is a normal monomorphism is defined for every group morphism, but the "
+                    "current preamble decides it only into finite or abelian represented groups"
+                )
+
+    def factor_through_or_none(self, target_inclusion):
+        r"""The factor ``m = n . k`` of this monomorphism ``m`` through ``n``, or None.
+
+        ``k(a) = n^{-1}(m(a))`` exists exactly when ``m(A)`` lies in
+        ``n(B)``; containment is decided on the chosen generators of a
+        generated subgroup ``A``, or on the elements of a finite ``A``.
+        """
+        if target_inclusion.codomain() is not self.codomain():
+            raise ValueError(f"{self} cannot factor through {target_inclusion}: their codomains {self.codomain()} and {target_inclusion.codomain()} differ")
+        assert self.is_injective() is True and target_inclusion.is_injective() is True, (
+            f"factoring {self} through {target_inclusion} is defined here for monomorphisms, and one of them is not known to be injective"
+        )
+        source = self.domain()
+        target = target_inclusion.domain()
+        if source is target and self is target_inclusion:
+            return source.Mor(target).identity()
+        match source:
+            case _ if source in GeneratedSubgroups(self.codomain()):
+                witnesses = source.selected_subgroup_generators()
+            case _ if source in OwnedFiniteGroups():
+                witnesses = source
+            case _:
+                assert False, (
+                    f"cannot decide whether the image of {self} lies in the image of {target_inclusion}: {source} "
+                    f"has no chosen generating set and is not known to be finite"
+                )
+        target_image = target_inclusion.image()
+        if not all(self(element) in target_image for element in witnesses):
+            return None
+        return source.Mor(target)(lambda element: target_inclusion.lift(self(element)))
+
+    def factor_through(self, target_inclusion):
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError(f"{self} does not factor through {target_inclusion}: its image is not contained in the image of {target_inclusion}")
+        return factor
 
     @cached_method
     def coset_cokernel(self):
@@ -2380,19 +2381,32 @@ class GroupMorphism:
 
     @cached_method
     def _cokernel_data(self):
-        r"""Return the quotient of the codomain by the normal closure of the image."""
+        r"""Return the quotient of the codomain by the normal closure of the image.
+
+        A finite codomain is quotiented by GAP, which realizes the quotient
+        as a finite group with its own engine.  An abelian codomain not
+        known to be finite is quotiented through membership in a subgroup
+        whose inclusion this is, since every subgroup of it is normal.
+        """
         codomain = self.codomain()
-        assert codomain in OwnedFiniteGroups(), (
-            f"the cokernel of {self} is computed here only when the codomain is finite, and {codomain} is not known to be finite"
-        )
-        normal_closure = libgap.NormalClosure(
-            _gap_model(codomain),
-            self._gap_morphism_crossing().Image(),
-        )
-        return _finite_group_quotient_by_gap_normal_subgroup(
-            codomain,
-            normal_closure,
-        )
+        match codomain:
+            case _ if codomain in OwnedFiniteGroups():
+                normal_closure = libgap.NormalClosure(
+                    _gap_model(codomain),
+                    self._image_model(),
+                )
+                return _finite_group_quotient_by_gap_normal_subgroup(
+                    codomain,
+                    normal_closure,
+                )
+            case _ if codomain in OwnedAbelianGroups() and self._subgroup_premise:
+                quotient = _abelian_subgroup_quotient(self.domain())
+                return quotient, quotient.quotient_projection()
+            case _:
+                assert False, (
+                    f"the cokernel of {self} exists, but it is computed here only into a finite group, or "
+                    f"for the inclusion of a subgroup of an abelian group"
+                )
 
     def cokernel(self):
         return self._cokernel_data()[0]
@@ -2401,6 +2415,8 @@ class GroupMorphism:
         return self._cokernel_data()[1]
 
     def is_injective(self):
+        if self._injectivity_premise is not None:
+            return self._injectivity_premise
         return bool(self._gap_morphism_crossing().IsInjective())
 
     def is_surjective(self):
@@ -3850,17 +3866,43 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
 
             def class_function(self, codomain, values, *, representatives=None):
-                r"""Return the class function on this finite group with the stated values."""
-                from dzack_research.preamble.categories.group.class_functions import (
-                    _finite_group_class_function,
+                r"""The conjugacy-invariant map on the classes of the given representatives.
+
+                A class function is constant on conjugacy classes, so it is
+                the map from the union of those classes into ``A``, sending
+                each member to its class value. If the representatives cover
+                all of ``G``, its domain is exactly ``G``. A proper union,
+                such as the ``p``-regular locus of a Brauer character, is
+                an owned subset of ``G``, not a partial map with domain ``G``.
+                The representatives default to the group's entire conjugacy
+                class framing.
+                """
+                if representatives is None:
+                    representatives = self.conjugacy_classes_representatives()
+                if representatives not in FiniteOrderedSets():
+                    representatives = finite_ordered_set(tuple(representatives))
+                supplied = tuple(codomain(value) for value in values)
+                if len(supplied) != int(representatives.cardinality()):
+                    raise ValueError(
+                        f"cannot build a class function on {self} from {len(supplied)} values: a class "
+                        f"function takes one value per given conjugacy class, and {representatives.cardinality()} "
+                        f"classes were given"
+                    )
+                table = {
+                    element: value
+                    for representative, value in zip(representatives, supplied, strict=True)
+                    for element in _conjugacy_class_elements(self, representative)
+                }
+                # The domain carries its inclusion into G as selected set data.
+                domain = (
+                    self if len(table) == int(self.order())
+                    else self.condition_set(lambda element: element in table)
                 )
 
-                return _finite_group_class_function(
-                    self,
-                    codomain,
-                    values,
-                    representatives=representatives,
-                )
+                def value_of_class(element):
+                    return table[element]
+
+                return Sets().Mor(domain, codomain)(value_of_class)
 
             @cached_method
             def character_set(self):
@@ -4330,7 +4372,7 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                     )
                 )
             )
-            return OwnedGroups().Core().Mor(self, source)(forward, inverse)
+            return OwnedGroups().Core().Mor(self, source)._from_known_inverse_pair(forward, inverse)
 
 class AbelianGroupEndomorphismRings(OwnedCategory):
     r"""The rings ``End(A)`` of endomorphisms of an abelian group ``A``.

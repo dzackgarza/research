@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMor,
     ModuleMorphism,
     ModuleMorphismMethods,
-    SubFramingMorphism,
     TensorProductModuleMor,
     _framing_morphism,
 )
@@ -1300,7 +1299,17 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.selected_module_resolution().generator_count()
 
         def sub_framing_morphism(self, codomain):
-            r"""Return the inclusion induced by the selected generators."""
+            r"""Return the free module functor applied to the inclusion of framings.
+
+            An injection of framing sets is split, and the free functor is a
+            left adjoint that carries the splitting, so this is a split
+            monomorphism, and membership in its image and the lift are decided
+            on labels: an element of ``codomain`` comes from this module
+            exactly when it is supported on the smaller framing, and its
+            preimage has the same coefficients.  The smaller framing may be
+            infinite, as the degree-two piece of an algebra on countably many
+            generators is, so no matrix of images is solved against.
+            """
             match codomain.has_selected_module_resolution():
                 case False:
                     raise TypeError(
@@ -1308,10 +1317,26 @@ class Modules(OwnedCategoryOverBaseRing):
                         f"{codomain} has no chosen module resolution"
                     )
                 case True:
-                    return SubFramingMorphism(
-                        self.Mono(codomain),
-                        codomain.module_generator,
-                    )
+                    pass
+            source_labels = self.module_generating_set()
+
+            def preimage_on_labels(element):
+                coordinates = codomain(element).to_vector()
+                support = coordinates.support().domain()
+                match all(label in source_labels for label in support):
+                    case False:
+                        return None
+                    case True:
+                        return self.linear_combination(
+                            {label: coordinates(label) for label in support}
+                        )
+
+            return self.Mono(codomain)._from_constructed_embedding(
+                codomain.module_generator,
+                elementwise=False,
+                lift=preimage_on_labels,
+                lift_is_section=True,
+            )
 
         def framing_source(self):
             r"""Return the free degree-zero term of the selected module resolution."""
@@ -1988,14 +2013,8 @@ class Modules(OwnedCategoryOverBaseRing):
                 f"cannot construct {self} again with the computation class {engine}: the module "
                 "owner selects the realization of a module with added structure"
             )
-            added_categories, added_data = self._added_structure()
-            assert added_data.keys().isdisjoint(construction_data), (
-                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
-                f"the data {sorted(added_data)} of the same names"
-            )
-            return self._module_with_structure(
-                (*added_categories, *categories), {**added_data, **construction_data},
-            )
+            added_categories, added_data = self._added_structure(construction_data)
+            return self._module_with_structure((*added_categories, *categories), added_data)
 
         def _module_with_structure(self, categories, construction_data):
             r"""Construct further structure on this exact module's data.

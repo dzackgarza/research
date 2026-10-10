@@ -40,10 +40,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-    _combined_linearity_decision,
-)
 from dzack_research.preamble.categories.modules.base_change import _base_change_element
 from dzack_research.preamble.categories.modules.fibered_modules import (
     ModulesOverCommutativeRings,
@@ -84,45 +80,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
-
-
-class _CanonicalDescentRestrictionMorphism(ModuleMorphism):
-    r"""A canonical linear restriction/base-change map in represented descent data."""
-
-    def __init__(self, parent, action) -> None:
-        super().__init__(parent, action, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _DescentGlobalSectionsMorphism(ModuleMorphism):
-    r"""The compatible-section map induced chartwise by one descent morphism."""
-
-    def __init__(self, parent, descent_morphism, source_datum, target_datum) -> None:
-        self._descent_morphism = descent_morphism
-        self._source_datum = source_datum
-        self._target_datum = target_datum
-
-        def image(section):
-            return target_datum.compatible_section(
-                finite_indexed_family(
-                    descent_morphism.cover().atlas(),
-                    lambda label: descent_morphism.local_map(label)(
-                        source_datum.compatible_section_component(section, label)
-                    ),
-                    name="Components of an induced global section",
-                )
-            )
-
-        super().__init__(parent, image, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        local_maps = tuple(
-            self._descent_morphism.local_map(label)
-            for label in self._descent_morphism.cover().atlas()
-        )
-        return _combined_linearity_decision(local_maps)
 
 
 def _chart_pair(cover, left_index, right_index):
@@ -1472,10 +1429,9 @@ class _FiniteAffineAtlasEngine:
             )
             return target(self._rank_one_coefficient(datum.local_module(index), component))
 
-        linear = _CanonicalDescentRestrictionMorphism(
-            Modules(base).Mor(functions, target),
-            image,
-        )
+        # Restriction of global functions to a chart is a morphism of
+        # algebras over the base, so the construction alone gives linearity.
+        linear = Modules(base).Mor(functions, target)._from_constructed_element_map(image)
         return _algebra_mor(functions, target)(linear)
 
     @cached_method
@@ -1489,9 +1445,10 @@ class _FiniteAffineAtlasEngine:
         overlap_restriction = overlap.inclusion().coordinate_algebra_morphism()
         target = overlap.coordinate_algebra()
         base = self.scheme().scheme_base_ring()
-        linear = _CanonicalDescentRestrictionMorphism(
-            Modules(base).Mor(functions, target),
-            lambda section: target(overlap_restriction(chart_restriction(section))),
+        # A composite of two restrictions of functions is a morphism of
+        # algebras over the base, so the construction alone gives linearity.
+        linear = Modules(base).Mor(functions, target)._from_constructed_element_map(
+            lambda section: target(overlap_restriction(chart_restriction(section)))
         )
         return _algebra_mor(functions, target)(linear)
 
@@ -3020,13 +2977,12 @@ class _FiniteAtlasModuleGluingDatumEngine:
                 )
 
         local_factor = local_factors.value(chart_index)
-        restriction = _CanonicalDescentRestrictionMorphism(
-            local_factor.module_category().Mor(
-                local_factor,
-                matching_factor,
-            ),
-            image,
-        )
+        # A leg of the Čech diagram restricts a chart module to an overlap
+        # and changes coordinates there, both linear over the base, so the
+        # construction alone gives linearity.
+        restriction = local_factor.module_category().Mor(
+            local_factor, matching_factor
+        )._from_constructed_element_map(image)
         projection = local_product.structure_morphism(
             local_product.diagram().domain()(chart_index)
         )
@@ -3171,13 +3127,12 @@ class _FiniteAtlasModuleGluingDatumEngine:
                 )
 
         local_factor = local_factors.value(chart_index)
-        restriction = _CanonicalDescentRestrictionMorphism(
-            local_factor.module_category().Mor(
-                local_factor,
-                matching_factor,
-            ),
-            image,
-        )
+        # A leg of the Čech diagram restricts a chart module to an overlap
+        # and changes coordinates there, both linear over the base, so the
+        # construction alone gives linearity.
+        restriction = local_factor.module_category().Mor(
+            local_factor, matching_factor
+        )._from_constructed_element_map(image)
         projection = local_product.structure_morphism(
             local_product.diagram().domain()(chart_index)
         )
@@ -4927,13 +4882,14 @@ class _ModuleGluingCechPresheaf(Functor):
             case True:
                 return mor.identity()
             case False:
-                return _CanonicalDescentRestrictionMorphism(
-                    mor,
+                # A restriction of the Čech presheaf is linear by
+                # construction.
+                return mor._from_constructed_element_map(
                     lambda element: self._restriction_value(
                         source_label,
                         target_label,
                         element,
-                    ),
+                    )
                 )
 
     def _apply_morphism(self, opposite_arrow):
@@ -5180,11 +5136,26 @@ class ModuleGluingMorphism(Morphism):
         source_sections = self.domain().compatible_sections()
         target_sections = self.codomain().compatible_sections()
 
-        return _DescentGlobalSectionsMorphism(
-            source_sections.module_category().Mor(source_sections, target_sections),
-            self,
-            source_datum,
-            target_datum,
+        atlas = self.cover().atlas()
+
+        def image(section):
+            return target_datum.compatible_section(
+                finite_indexed_family(
+                    atlas,
+                    lambda label: self.local_map(label)(
+                        source_datum.compatible_section_component(section, label)
+                    ),
+                    name="Components of an induced global section",
+                )
+            )
+
+        # A compatible section mapped chartwise is linear when every local
+        # map is.
+        return source_sections.module_category().Mor(
+            source_sections, target_sections
+        )._from_constructed_element_map(
+            image,
+            premises=tuple(self.local_map(label) for label in atlas),
         )
 
     def then(self, other):
