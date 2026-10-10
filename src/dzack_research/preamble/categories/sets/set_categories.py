@@ -3103,18 +3103,9 @@ class CartesianProductsOfSets(OwnedCategory):
             return negation(self == other)
 
         def __hash__(self) -> int:
-            if not self.parent().has_finite_index_set() or self.parent().index_set() not in EnumeratedSets():
-                return hash(id(self.parent()))
-            if self.parent() in FiniteEnumeratedCartesianProductsOfSets():
-                ranks = tuple(
-                    int(self.parent().factor(index).ranking_map()(self.component(index)))
-                    for index in self.parent().index_set()
-                )
-                return hash((id(self.parent()), ranks))
-            components = tuple(
-                self.component(index) for index in self.parent().index_set()
-            )
-            return hash((id(self.parent()), components))
+            # A product of sets imposes no hashability requirement on its
+            # component points. Equality only relates points of one parent.
+            return hash(id(self.parent()))
 
     def _call_(self, family: IndexedFamily) -> Sets().ObjectType:
         r"""Construct the dependent product of the family of sets ``family``."""
