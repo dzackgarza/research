@@ -272,6 +272,11 @@ def indexed_family[IndexT, ValueT](
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
+        if not Sets().is_provably_finite(index_set) and family.constant_value() is None:
+            raise TypeError(
+                "an infinite nonconstant family cannot establish its value category by declaring one: "
+                "supply a mathematically justified category-valued diagram"
+            )
         if Sets().is_provably_finite(index_set):
             for index in index_set:
                 if family(index) not in value_category:
