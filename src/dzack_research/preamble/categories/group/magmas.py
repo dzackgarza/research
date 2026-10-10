@@ -6,6 +6,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _compose_operation_preserving_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
@@ -27,17 +28,7 @@ class MagmaMorphism:
         super().__init__(parent, function)
 
     def _composition(self, right):
-        if right.codomain() is not self.domain():
-            return NotImplemented
-        category = self.parent().mor_family().base_category()
-        if (
-            right.domain() not in category
-            or not right.parent().mor_family().base_category().is_subcategory(category)
-        ):
-            return super()._composition(right)
-        return self.parent().mor_family().Of(
-            right.domain(), self.codomain()
-        )(lambda element: self(right(element)))
+        return _compose_operation_preserving_mor(self, right, super()._composition)
 
 
 class MagmaMor(CategoricalMor):

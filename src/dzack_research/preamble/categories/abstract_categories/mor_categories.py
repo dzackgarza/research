@@ -28,6 +28,21 @@ reuses the arrow objects without inheriting all the squares between them.
 
 from __future__ import annotations
 
+
+def _compose_operation_preserving_mor(left, right, fallback):
+    """Compose arrows in their selected Mor family, or use the weaker Mor."""
+    if right.codomain() is not left.domain():
+        return NotImplemented
+    category = left.parent().mor_family().base_category()
+    if (
+        right.domain() not in category
+        or not right.parent().mor_family().base_category().is_subcategory(category)
+    ):
+        return fallback(right)
+    return left.parent().mor_family().Of(right.domain(), left.codomain())(
+        lambda element: left(right(element))
+    )
+
 from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
