@@ -2978,6 +2978,9 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     constant = family.constant_value()
     if constant is not None and constant in AdditiveMonoids():
         placements.append(CartesianProductsOfAdditiveMonoids())
+    diagram = family.selected_diagram()
+    if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
+        placements.append(CartesianProductsOfAdditiveMonoids())
     if Sets().is_provably_finite(index_set):
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())

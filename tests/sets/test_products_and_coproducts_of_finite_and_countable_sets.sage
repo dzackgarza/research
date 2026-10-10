@@ -62,6 +62,31 @@ def test_infinite_constant_additive_product_retains_its_monoid_and_projections()
     assert nonmonoid not in AdditiveMonoids()
 
 
+def test_selected_discrete_diagram_places_nonconstant_infinite_monoid_product() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+
+    factor = AdditiveMonoids().an_object()
+    family = indexed_family(NN, lambda index: factor if int(index) % 2 == 0 else AdditiveMonoids().an_object(), value_category=AdditiveMonoids())
+    product = Sets().product(family)
+    assert family.selected_diagram().codomain() is AdditiveMonoids()
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert product in AdditiveMonoids()
+    point = product(lambda index: family(index)(int(index)))
+    other = product(lambda index: family(index).one())
+    projection = product.projection(NN(3))
+    assert projection.parent() is AdditiveMonoids().Mor(product, family(NN(3)))
+    assert projection(point + other) == projection(point) + projection(other)
+    assert projection(product.zero()) == family(NN(3)).zero()
+    try:
+        indexed_family(Sets.Δ[0], lambda _index: Sets.Δ[1], value_category=AdditiveMonoids())
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("nonmonoid set admitted to an additive-monoid diagram")
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]

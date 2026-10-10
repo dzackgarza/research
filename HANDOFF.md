@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Selected discrete diagram for nonconstant infinite additive products (2026-10-10):** `indexed_family(I, values, value_category=C)` now retains the actual `Cat().Mor(DiscreteCategory(I),C).discrete_diagram(family)` as the selected typed functor, rather than sampling values at finitely many indices. A product whose family retains a diagram into `AdditiveMonoids()` receives pointwise additive placement, with the existing additive projection Mor. Focused Sage passes for a nonconstant `NN`-indexed section, pointwise addition, zero and exact projection Mor; an invalid finite family with a nonmonoid value is rejected. On infinite indices, the selected diagram remains a supplied mathematical datum, not independent verification of arbitrary Python callback values; acceptance must come from the formal mathematical side. This is the computational presentation portion; the broader `placement-audit` remains open.
+
+
 **Infinite constant additive products constructed (2026-10-10):** `indexed_family(NN,A)` now represents the genuinely constant family with selected object `A`, rather than an opaque lambda whose values cannot be proved to lie in one category. `CartesianProductsOfSets` derives additive-monoid placement from that selected value without enumerating the infinite index. Focused Sage owner checks pass for category membership, nonconstant sections, componentwise addition and zero after projection at index two, and nonmonoid constant families receiving no additive placement. General nonconstant infinite families still require a typed functor/category of values; the separate `infinite-index-additive-product-placement` TODO retains that requirement and is not closed.
 
 

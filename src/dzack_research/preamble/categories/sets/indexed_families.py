@@ -32,6 +32,7 @@ class IndexedFamily[IndexT, ValueT]:
         index_set: Parent,
         value: Callable[[IndexT], ValueT] | Parent,
         *,
+        value_category=None,
         name: str | None = None,
         **rest,
     ) -> None:
@@ -49,6 +50,8 @@ class IndexedFamily[IndexT, ValueT]:
         self._value_cache: dict[IndexT, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
+        self._diagram = None
+        self._value_category = value_category
         super().__init__(**rest)
 
     def index_set(self) -> SetObject:
@@ -57,6 +60,9 @@ class IndexedFamily[IndexT, ValueT]:
     def constant_value(self):
         r"""The defining value of a constant family, or ``None`` otherwise."""
         return self._constant_value
+
+    def selected_diagram(self):
+        return self._diagram
 
     def cardinality(self) -> Cardinal:
         from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -242,6 +248,7 @@ def indexed_family[IndexT, ValueT](
     index_set: Parent,
     value: Callable[[IndexT], ValueT] | Parent,
     *,
+    value_category=None,
     name: str | None = None,
 ) -> IndexedFamily[IndexT, ValueT]:
     r"""Return the family ``index |-> value(index)`` as an owned mathematical object.
@@ -252,13 +259,28 @@ def indexed_family[IndexT, ValueT](
     therefore lives at the existing root ``Objects()`` rather than being
     misdeclared as a set.
     """
-    return _object_of(
+    family = _object_of(
         Objects(),
         _engine=(Objects(), IndexedFamily, None),
         index_set=index_set,
         value=value,
+        value_category=value_category,
         name=name,
     )
+    if value_category is not None:
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        if Sets().is_provably_finite(index_set):
+            for index in index_set:
+                if family(index) not in value_category:
+                    raise ValueError(
+                        f"the selected family has value {family(index)} at {index}, outside {value_category}"
+                    )
+
+        family._diagram = Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
+    return family
 
 
 finite_indexed_family = indexed_family
