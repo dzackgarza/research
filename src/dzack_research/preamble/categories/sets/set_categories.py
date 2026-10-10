@@ -3744,7 +3744,18 @@ def _cartesian_product_morphism[IndexT](
             f"a componentwise map of products needs one index set, but {source} is indexed by "
             f"{source.index_set()} and {target} by {target.index_set()}"
         )
-    return Sets().Mor(source, target)(lambda element: target(lambda index: component_morphisms(index)(element.component(index))))
+    index_set = source.index_set()
+    if not Sets().is_provably_finite(index_set):
+        raise TypeError("componentwise product maps need a selected typed family on an infinite index")
+    components = tuple((index, component_morphisms(index)) for index in index_set)
+    for index, arrow in components:
+        if arrow.parent() is not Sets().Mor(source.factor(index), target.factor(index)):
+            raise TypeError(f"component at {index} is not in its exact set Mor category")
+    return Sets().Mor(source, target)(
+        lambda element: target(
+            lambda index: next(arrow(element.component(index)) for label, arrow in components if label == index)
+        )
+    )
 
 
 @cached_function(key=_finite_family_key)

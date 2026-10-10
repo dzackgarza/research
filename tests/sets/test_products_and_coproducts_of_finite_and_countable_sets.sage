@@ -311,3 +311,25 @@ def test_the_product_functor_applies_a_transposition_to_the_first_coordinate() -
 
     assert induced(product((two(1), three(2)))) == product((two(0), three(2)))
     assert induced(product((two(0), three(0)))) == product((two(1), three(0)))
+
+
+def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import _cartesian_product_morphism
+
+    small, large = Sets.Δ[1], Sets.Δ[2]
+    source = Sets().product((small, large))
+    target = Sets().product((large, small))
+    labels = source.index_set()
+    first = Sets().Mor(small, large)(lambda x: large(int(x)))
+    second = Sets().Mor(large, small)(lambda x: small(int(x) % 2))
+    induced = _cartesian_product_morphism(source, target, lambda i: first if i == labels(0) else second)
+    assert induced.parent() is Sets().Mor(source, target)
+    corner = source((small(1), large(2)))
+    assert induced(corner).component(labels(0)) == first(small(1))
+    assert induced(corner).component(labels(1)) == second(large(2))
+    try:
+        _cartesian_product_morphism(source, target, lambda _i: first)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("product admitted a component with incorrect target factor")
