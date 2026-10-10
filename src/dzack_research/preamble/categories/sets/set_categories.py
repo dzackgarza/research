@@ -2914,12 +2914,17 @@ class _ImageSetEngine:
     @cached_method
     def _distinct_values(self):
         r"""The values of \(f\) over a finite source, each once, in the order of the source."""
-        return tuple(dict.fromkeys(self.image_map()(point) for point in self.source_set()))
+        distinct = []
+        for point in self.source_set():
+            value = self.image_map()(point)
+            if not any(value is previous or value == previous for previous in distinct):
+                distinct.append(value)
+        return tuple(distinct)
 
     @cached_method
     def _finite_image(self):
-        r"""Sage's enumerated set on the values: membership by hashing, not by search."""
-        return SageSet(self._distinct_values())
+        r"""Distinct image values, including points without a Python hash."""
+        return self._distinct_values()
 
     def __iter__(self):
         assert Sets().is_provably_finite(self.source_set()) and self.source_set() in EnumeratedSets(), (
