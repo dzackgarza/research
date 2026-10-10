@@ -748,6 +748,15 @@ def _presented_degree_power(
     if degree == 1:
         return module
 
+    # Higher powers exist for every R-module.  This realization can construct
+    # them only from a chosen free framing or finite presentation; a general
+    # module has neither, and no finite-presentation placement is inferred.
+    if module not in FramedFreeModules(ring) and module not in ModulesWithChosenFinitePresentation(ring):
+        raise NotImplementedError(
+            f"the degree-{degree} {flavor} power of {module} exists in Modules({ring}), "
+            "but its current presentation realization requires a selected free framing "
+            "or finite module presentation"
+        )
     source_labels = module.module_generating_set()
     labels = _free_degree_labels(source_labels, degree, flavor)
 
@@ -759,13 +768,6 @@ def _presented_degree_power(
                 _extra_construction_data=extra_construction_data,
             )
         return ring.free_module(labels)
-
-    assert module in ModulesWithChosenFinitePresentation(ring), (
-        f"cannot compute the degree-{degree} {flavor} power of {module}: this algorithm needs a free "
-        f"module or a finitely presented module with a chosen finite presentation, but {module} is in "
-        f"{module.category()}"
-    )
-
 
     if not source_labels.cardinality().is_finite():
         raise TypeError(
