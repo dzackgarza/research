@@ -1082,6 +1082,15 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
     return True
 
 
+def _apex_morphism_equal(left, right):
+    """Equality of cone or cocone morphisms in one fixed Mor parent."""
+    if left is right:
+        return True
+    if parent(right) is not left.parent():
+        return False
+    return left.apex_map() == right.apex_map()
+
+
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
@@ -1118,11 +1127,7 @@ class ConeMorphism(Morphism):
         return self._apex_map
 
     def __eq__(self, other: Any) -> bool | Predicate:
-        if self is other:
-            return True
-        if parent(other) is not self.parent():
-            return False
-        return self.apex_map() == other.apex_map()
+        return _apex_morphism_equal(self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
@@ -1180,11 +1185,7 @@ class CoconeMorphism(Morphism):
         return self._apex_map
 
     def __eq__(self, other: Any) -> bool | Predicate:
-        if self is other:
-            return True
-        if parent(other) is not self.parent():
-            return False
-        return self.apex_map() == other.apex_map()
+        return _apex_morphism_equal(self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
