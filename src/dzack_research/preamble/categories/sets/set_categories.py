@@ -3110,7 +3110,8 @@ class CartesianProductsOfSets(OwnedCategory):
             return self._family
 
         def has_finite_index_set(self) -> bool:
-            return self.index_set() in FiniteSets()
+            index = self.index_set()
+            return index in FiniteSets() or index.is_finite() is True
 
         def factor(self, index: IndexT) -> Sets().ObjectType:
             normalized = self.index_set()(index)
