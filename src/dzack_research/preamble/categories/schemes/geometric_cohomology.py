@@ -1523,6 +1523,15 @@ def _complex_realization(scheme, scalar_embedding):
 
 
 @cached_function
+def _integral_singular_cohomology_over_rationals(scheme, degree):
+    """Integral cohomology after the canonical rational-to-complex base change."""
+    assert _engine_ring(scheme.scheme_base_ring()) is SageQQ, (
+        f"H^{degree}({scheme}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
+        f"{scheme} is over {scheme.scheme_base_ring()}"
+    )
+    return scheme.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
+
+
 def _rational_complex_embedding():
     r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
     rationals = _own_ring(SageQQ)

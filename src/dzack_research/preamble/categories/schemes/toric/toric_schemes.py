@@ -1508,14 +1508,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def integral_singular_cohomology(self, degree):
             r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                _rational_complex_embedding,
+                _integral_singular_cohomology_over_rationals,
             )
-
-            assert _engine_ring(self.scheme_base_ring()) is SageQQ, (
-                f"H^{degree}({self}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
-                f"{self} is over {self.scheme_base_ring()}"
-            )
-            return self.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
+            return _integral_singular_cohomology_over_rationals(self, degree)
 
         @cached_method
         def cycle_class_isomorphism(self, codimension):
