@@ -31,8 +31,8 @@ def test_delta_of_a_two_elementary_lattice_vanishes_exactly_when_it_is_coeven() 
         NamedLattices.E10_2,
         NamedLattices.TEn,
     ):
-        assert lattice.delta() == 0
+        assert EvenTwoElementaryLattices(ZZ)(lattice).delta() == 0
         assert lattice.is_coeven()
 
-    assert NamedLattices.A1.delta() == 1
+    assert EvenTwoElementaryLattices(ZZ)(NamedLattices.A1).delta() == 1
     assert not NamedLattices.A1.is_coeven()

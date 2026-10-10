@@ -43,7 +43,7 @@ def test_the_twist_by_two() -> None:
     assert twisted.determinant() == 256
     assert twisted.discriminant_group().cardinality() == 256
     assert twisted.is_p_elementary(2)
-    assert twisted.two_elementary_invariants() == nikulin_invariants(8, 8, 0)
+    assert EvenTwoElementaryLattices(ZZ)(twisted).two_elementary_invariants() == nikulin_invariants(8, 8, 0)
     assert twisted.is_isometric(NamedLattices.E8_2)
 
 

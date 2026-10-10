@@ -53,7 +53,7 @@ def test_a_sterk_cusp_reduces_to_its_recorded_rank_ten_lattice(name) -> None:
     assert reduction.module_rank() == 10
     assert reduction.is_even()
     assert reduction.is_p_elementary(2)
-    assert reduction.two_elementary_invariants() == nikulin_invariants(
+    assert EvenTwoElementaryLattices(ZZ)(reduction).two_elementary_invariants() == nikulin_invariants(
         rank, length, delta
     )
     assert reduction.discriminant_group().cardinality() == 2**length
