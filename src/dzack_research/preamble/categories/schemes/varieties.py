@@ -30,6 +30,11 @@ class Varieties(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the affine line over {self.base_ring()} is a variety only when the base is an integral domain"
+        )
         return AffineSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
