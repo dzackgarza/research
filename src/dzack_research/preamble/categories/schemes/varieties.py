@@ -388,13 +388,6 @@ class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
                 "line bundle is not decided by a represented algorithm here"
             )
 
-        def del_pezzo_degree(self):
-            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
-            assert self.is_del_pezzo(), (
-                f"the Del Pezzo degree (-K)^2 is requested for {self}, but it is not a Del Pezzo surface"
-            )
-            return self._del_pezzo_degree()
-
         def _del_pezzo_degree(self):
             raise AssertionError(
                 f"the Del Pezzo degree of {self} is (-K)^2, but no represented self-intersection "
@@ -402,4 +395,28 @@ class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
             )
 
 
-__all__ = ["Curves", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]
+class DelPezzoSurfaces(OwnedCategoryOverBaseRing):
+    r"""Normal Gorenstein projective surfaces with ample anticanonical class."""
+
+    def parameter_category(self):
+        return OwnedFields()
+
+    def super_categories(self):
+        return [ProjectiveSurfaces(self.base_ring())]
+
+    def an_object(self):
+        return self(ProjectiveSurfaces(self.base_ring()).an_object())
+
+    def _call_(self, surface):
+        from dzack_research.preamble.refine import refine
+        if surface not in ProjectiveSurfaces(self.base_ring()) or not surface.is_del_pezzo():
+            raise ValueError("Del Pezzo surfaces require normal Gorenstein projective surfaces with ample anticanonical class")
+        return refine(surface, self)
+
+    class ParentMethods:
+        def del_pezzo_degree(self):
+            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
+            return self._del_pezzo_degree()
+
+
+__all__ = ["Curves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]

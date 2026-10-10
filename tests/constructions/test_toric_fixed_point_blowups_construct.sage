@@ -21,4 +21,4 @@ def test_toric_fixed_point_blowup_of_projective_plane() -> None:
     assert blowup.blowup_morphism().codomain() is plane
     assert blowup.is_hirzebruch_surface(1)
     assert blowup.exceptional_self_intersection() == -1
-    assert blowup.del_pezzo_degree() == 8
+    assert DelPezzoSurfaces(blowup.scheme_base_ring())(blowup).del_pezzo_degree() == 8

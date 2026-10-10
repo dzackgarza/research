@@ -20,7 +20,7 @@ def test_projective_plane_from_its_fan_is_toric() -> None:
     assert plane.is_smooth()
     assert plane.is_normal()
     assert plane.is_del_pezzo()
-    assert plane.del_pezzo_degree() == 9
+    assert DelPezzoSurfaces(plane.scheme_base_ring())(plane).del_pezzo_degree() == 9
 
 
 def test_projective_plane_orbit_cone_correspondence() -> None:

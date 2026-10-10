@@ -12,4 +12,4 @@ def test_one_point_blowup_has_anticanonical_bundle_and_del_pezzo_degree_eight() 
     assert blowup.canonical_bundle() == blowup.canonical_line_bundle()
     assert blowup.anticanonical_bundle() == blowup.anticanonical_line_bundle()
     assert blowup.is_del_pezzo()
-    assert blowup.del_pezzo_degree() == 8
+    assert DelPezzoSurfaces(blowup.scheme_base_ring())(blowup).del_pezzo_degree() == 8
