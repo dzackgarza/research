@@ -583,6 +583,28 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
+            def determinant_line(self):
+                r"""The top exterior power of this finite free module."""
+                from dzack_research.preamble.categories.modules.hodge import _determinant_line
+                return _determinant_line(self)
+
+            def exterior_forms(self, degree):
+                r"""Exterior forms in the selected finite free framing."""
+                from dzack_research.preamble.categories.modules.hodge import _exterior_forms
+                return _exterior_forms(self, degree)
+
+            def volume_trivialization(self, forward, inverse):
+                from dzack_research.preamble.categories.modules.hodge import _volume_trivialization
+                return _volume_trivialization(self, forward, inverse)
+
+            def framing_volume_trivialization(self, unit=None):
+                from dzack_research.preamble.categories.modules.hodge import _framing_volume_trivialization
+                return _framing_volume_trivialization(self, unit=unit)
+
+            def poincare_duality(self, volume, degree):
+                from dzack_research.preamble.categories.modules.hodge import _poincare_duality
+                return _poincare_duality(self, volume, degree)
+
             def _represented_vector_space_dimension(self):
                 return self.module_rank()
 
