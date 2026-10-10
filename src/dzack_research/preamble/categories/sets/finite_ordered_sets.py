@@ -266,9 +266,12 @@ class FiniteOrderedSets(OwnedCategory):
                     contains=lambda element: element in source,
                 )
             case _:
+                # Choose the order once; separately iterating an unordered
+                # source for each position does not retain one enumeration.
+                points = tuple(source)
                 return self.from_indexed(
                     index_set,
-                    lambda position: next(islice(iter(source), int(position), None)),
+                    lambda position: points[int(position)],
                     contains=lambda element: element in source,
                 )
 
