@@ -303,6 +303,7 @@ from dzack_research.preamble.categories.modules import (
     GeneralModules,
     GradedAlgebraModules,
     GradedModules,
+    IntegerGradedModules,
     GroupModuleMor,
     FiniteFreeGroupRepresentations,
     OrdinaryCharacterRepresentations,

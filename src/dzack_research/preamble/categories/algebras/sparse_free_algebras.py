@@ -12,7 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.algebras.algebras import Algebras, _AlgebraMorCommonMethods, _algebra_on_module
 from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
-from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules, IntegerGradedModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules, ModulesWithChosenComponentPresentation,
@@ -323,7 +323,7 @@ def _sparse_free_algebra_of(source, flavor):
     tensor = Modules(ring).tensor_product((module, module))
     multiplication = tensor.from_bilinear_map(module, lambda x, y: _word_product(module, x, y))
     flavor_category = TensorAlgebras(ring) if flavor == "tensor" else SymmetricAlgebras(ring)
-    categories = (flavor_category,)
+    categories = (flavor_category, IntegerGradedModules(ring))
     match source.module_generating_set().cardinality().is_finite():
         case True:
             categories = (
