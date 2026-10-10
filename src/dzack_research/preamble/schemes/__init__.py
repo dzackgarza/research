@@ -76,6 +76,7 @@ from dzack_research.preamble.categories.schemes.complete_intersections import Pr
 
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
+    ProjectiveCurves,
     ProjectiveSurfaces,
     DelPezzoSurfaces,
     ProperSurfaces,
@@ -185,6 +186,7 @@ __all__ = [
     'SmoothQuarticK3CompleteIntersections',
     'ProjectiveSchemes',
     'ProjectiveSurfaces',
+    'ProjectiveCurves',
     'DelPezzoSurfaces',
     'ProperSurfaces',
     'ProjectiveSpaces',

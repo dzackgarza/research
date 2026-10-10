@@ -156,7 +156,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
                     f"{base} is {engine.dimension_relative()}, not 1"
                 )
                 return _projective_closed_subscheme(
-                    ambient, equations, placements=(self, *placements),
+                    ambient, equations, placements=(self, ProjectiveCurves(base), *placements),
                     _engine=engine, **level_data,
                 )
 
@@ -167,30 +167,6 @@ class Curves(_DimensionSubcategoryOfVarieties):
             self._normalization_coordinates = normalization_coordinates
             self._local_delta_contributions = local_delta_contributions
             super().__init__(**rest)
-
-        def arithmetic_genus(self):
-            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
-
-            For a projective curve the Hilbert polynomial is the defining
-            projective invariant whose constant term gives ``1-p_a``.  The
-            computation therefore belongs to the projective presentation and
-            remains distinct from normalization/geometric-genus algorithms.
-            """
-            base = self.scheme_base_ring()
-            assert base in OwnedFields(), (
-                f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
-            )
-            assert self in Schemes(base).Projective(), (
-                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
-                f"projective curves, but {self} is not known to be projective over {base}"
-            )
-            integers = _own_ring(SageZZ)
-            if self in ProjectiveSpaces(base):
-                return integers.zero()
-            defining_ideal = self.defining_ideal_owned()
-            return integers.one() - integers(
-                defining_ideal.hilbert_polynomial_value(0)
-            )
 
         @cached_method
         def normalization_data(self):
@@ -279,9 +255,10 @@ class Curves(_DimensionSubcategoryOfVarieties):
                         f"the geometric genus of {self} needs its normalization: {self} is not "
                         "known to be smooth and no normalization was given"
                     )
-                    return self.arithmetic_genus()
+                    return ProjectiveCurves(self.scheme_base_ring())(self).arithmetic_genus()
                 case _:
-                    return self.normalization_curve().arithmetic_genus()
+                    normalized = self.normalization_curve()
+                    return ProjectiveCurves(self.scheme_base_ring())(normalized).arithmetic_genus()
 
         def genus(self):
             r"""Return geometric genus, never arithmetic genus by convention."""
@@ -346,6 +323,49 @@ class ProperSurfaces(OwnedCategoryOverBaseRing):
                 f"the Picard intersection pairing of the proper surface {self} is mathematically "
                 "defined by numerical intersection, but no represented algorithm for it applies here"
             )
+
+
+class ProjectiveCurves(OwnedCategoryOverBaseRing):
+    r"""Integral projective curves over a field."""
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedFields():
+            raise TypeError("projective arithmetic genus requires a field base")
+        return [Curves(self.base_ring()), Schemes(self.base_ring()).Projective()]
+
+    def an_object(self):
+        return self(ProjectiveSpaces(self.base_ring())(1))
+
+    def _call_(self, curve):
+        from dzack_research.preamble.refine import refine
+        if curve not in Curves(self.base_ring()) or curve not in Schemes(self.base_ring()).Projective():
+            raise TypeError("this is not a projective curve over the selected field")
+        return refine(curve, self)
+    class ParentMethods:
+        def arithmetic_genus(self):
+            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
+
+            For a projective curve the Hilbert polynomial is the defining
+            projective invariant whose constant term gives ``1-p_a``.  The
+            computation therefore belongs to the projective presentation and
+            remains distinct from normalization/geometric-genus algorithms.
+            """
+            base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
+            )
+            assert self in Schemes(base).Projective(), (
+                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
+                f"projective curves, but {self} is not known to be projective over {base}"
+            )
+            integers = _own_ring(SageZZ)
+            if self in ProjectiveSpaces(base):
+                return integers.zero()
+            defining_ideal = self.defining_ideal_owned()
+            return integers.one() - integers(
+                defining_ideal.hilbert_polynomial_value(0)
+            )
+
 
 
 class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
@@ -419,4 +439,4 @@ class DelPezzoSurfaces(OwnedCategoryOverBaseRing):
             return self._del_pezzo_degree()
 
 
-__all__ = ["Curves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]
+__all__ = ["Curves", "ProjectiveCurves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]

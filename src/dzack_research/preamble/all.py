@@ -401,6 +401,7 @@ _lazy_import(
         "ProjectivePointBlowups",
         "ProjectiveSchemes",
         "ProjectiveSurfaces",
+        "ProjectiveCurves",
         "DelPezzoSurfaces",
         "ProjectiveSpaces",
         "ProjectiveLines",
