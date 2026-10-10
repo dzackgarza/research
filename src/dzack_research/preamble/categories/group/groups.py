@@ -4216,8 +4216,13 @@ class PermutationGroups(OwnedCategory):
         def action_on(self, points):
             r"""The ``G``-set on ``points`` with the natural action ``g . x = g(x)``."""
             from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.sets.set_categories import Sets, FiniteSets
 
-            return FiniteGSets(self)(points, lambda group_element, point: group_element(point))
+            action = lambda group_element, point: group_element(point)
+            if points in FiniteSets():
+                return FiniteGSets(self)(points, action)
+            return GObjects(self, Sets()).on_set(points, action)
 
         def natural_g_set(self):
             r"""The natural ``G``-set on the points the group permutes."""
