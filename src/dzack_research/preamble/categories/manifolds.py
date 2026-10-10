@@ -357,6 +357,7 @@ class TopologicalManifolds(OwnedCategory):
             differentiability_degree,
             manifold_field="real",
             chart_index_set=None,
+            chart_provider=None,
             **rest,
         ) -> None:
             self._preamble_engine_manifold = engine_manifold
@@ -371,6 +372,7 @@ class TopologicalManifolds(OwnedCategory):
             self._preamble_manifold_field = str(manifold_field)
             self._preamble_charts = {}
             self._preamble_chart_index_set = chart_index_set
+            self._preamble_chart_provider = chart_provider
             self._preamble_transitions = {}
             super().__init__(**rest)
 
@@ -458,7 +460,13 @@ class TopologicalManifolds(OwnedCategory):
             labels = self.chart_labels()
             return indexed_family(
                 labels,
-                lambda label: self._preamble_charts[label],
+                lambda label: (
+                    self._preamble_charts[label]
+                    if label in self._preamble_charts
+                    else self._preamble_chart_provider(label)
+                    if self._preamble_chart_provider is not None
+                    else self._preamble_charts[label]
+                ),
                 name=f"Atlas charts of {self}",
             )
 
