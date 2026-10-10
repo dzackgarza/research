@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Nonconstant infinite additive product from finite diagram restriction (2026-10-10):** The selected finite functor `DiscreteCategory(Δ[1]) -> AdditiveMonoids` with alternating additive-monoid/additive-group factors has its object images verified at the finite diagram owner. Precomposition by the parity functor `DiscreteCategory(NN) -> DiscreteCategory(Δ[1])` gives a genuine nonconstant infinite family; its product has additive-monoid placement and its odd projection preserves the zero and nontrivial sum (focused Sage). `indexed_family` now follows `RestrictedDiagram.original_diagram()` through nested restrictions and rejects any lineage whose originating `_DiscreteDiagram` has unchecked infinite object images. The checked finite source and the original functor and indexing map remain retained. General nonconstant infinite diagrams from unchecked callbacks remain prohibited.
+
+
 **Empty discrete-diagram extrema verified (2026-10-10):** For the empty discrete indexing category `DiscreteCategory(Sets.Δ[-1])`, the canonical selected limit in `Sets()` is terminal of cardinality one and the canonical selected colimit is initial of cardinality zero. The focused regression exercises both through `Sets().Limits(index)` and `Sets().Colimits(index)`, retaining the zero-object shape rather than constructing fictitious factor data.
 
 

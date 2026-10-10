@@ -106,6 +106,49 @@ def test_unchecked_discrete_diagram_cannot_certify_infinite_factors() -> None:
     assert product.projection(NN(3))(product.zero()) == factor.zero()
 
 
+def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+
+    labels = Sets.Δ[1]
+    finite_index = DiscreteCategory(labels)
+    infinite_index = DiscreteCategory(NN)
+    even = AdditiveMonoids().an_object()
+    odd = AdditiveGroups().an_object()
+    diagram = Cat().Mor(finite_index, AdditiveMonoids()).discrete_diagram(
+        indexed_family(labels, lambda i: even if i == labels(0) else odd)
+    )
+    parity = Cat().Mor(infinite_index, finite_index).from_object_map(
+        lambda n: labels(int(n) % 2)
+    )
+    selected = diagram.restrict(parity)
+    family = indexed_family(NN, selected)
+    product = Sets().product(family)
+    assert family.selected_diagram() is selected
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert family(NN(0)) is even and family(NN(1)) is odd
+    point = product(lambda n: family(n)(int(n)))
+    unit = product(lambda n: family(n).one())
+    projection = product.projection(NN(3))
+    assert projection.parent() is AdditiveMonoids().Mor(product, odd)
+    assert projection(point + unit) == projection(point) + projection(unit)
+    assert projection(product.zero()) == odd.zero()
+
+    unchecked = Cat().Mor(infinite_index, AdditiveMonoids()).discrete_diagram(
+        indexed_family(NN, lambda n: even if int(n) % 2 == 0 else Sets.Δ[1])
+    )
+    identity = Cat().Mor(infinite_index, infinite_index).from_object_map(lambda n: n)
+    for candidate in (unchecked, unchecked.restrict(identity)):
+        try:
+            indexed_family(NN, candidate)
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("unchecked infinite diagram incorrectly certified additive placement")
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]

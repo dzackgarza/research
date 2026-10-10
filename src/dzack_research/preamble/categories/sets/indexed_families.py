@@ -265,10 +265,16 @@ def indexed_family[IndexT, ValueT](
     selected_functor = value if isinstance(value, Functor) else None
     if selected_functor is not None:
         from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.abstract_categories.products import RestrictedDiagram
 
-        if isinstance(selected_functor, _DiscreteDiagram) and not Sets().is_provably_finite(index_set):
+        provenance = selected_functor
+        while isinstance(provenance, RestrictedDiagram):
+            provenance = provenance.original_diagram()
+        if isinstance(provenance, _DiscreteDiagram) and not Sets().is_provably_finite(
+            provenance.domain().object_set()
+        ):
             raise TypeError(
-                "a diagram on an infinite index set assembled from an unchecked object callback "
+                "a diagram descended from an unchecked infinite object callback "
                 "does not establish that its values belong to its claimed codomain"
             )
         index_category = DiscreteCategory(index_set)
