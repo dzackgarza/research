@@ -596,25 +596,6 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 
         def from_quadratic(self, quadratic, codomain):
             r"""Factor a quadratic map uniquely through the divided square."""
-            source = self.divided_square_source()
-
-            def generator_image(selection):
-                support = selection.support()
-                if int(support.cardinality()) == 1:
-                    label = support[0]
-                    return quadratic(source.module_generator(label))
-                left = support[0]
-                right = support[1]
-                return (
-                    quadratic(
-                        source.module_generator(left)
-                        + source.module_generator(right)
-                    )
-                    - quadratic(source.module_generator(left))
-                    - quadratic(source.module_generator(right))
-                )
-
-
             mor = self.module_category().Mor(self, codomain)
             return mor.from_quadratic_map(quadratic)
 
