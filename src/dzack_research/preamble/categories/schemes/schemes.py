@@ -3861,6 +3861,23 @@ class AffineGSchemes(OwnedCategory):
             self._unacted_scheme = unacted_scheme
             super().__init__(**rest)
 
+        def nontrivial_stabilizer_subscheme(self):
+            r"""Scheme-theoretic union of nonidentity fixed loci for a finite action."""
+            group = self.acting_group()
+            assert group.is_finite() is True, (
+                f"a represented nontrivial stabilizer subscheme requires a finite group, not {group}"
+            )
+            ideal = None
+            for element in group:
+                if element == group.one():
+                    continue
+                fixed = self._cyclic_restriction(element).fixed_ideal()
+                ideal = fixed if ideal is None else ideal.intersection(fixed)
+            if ideal is None:
+                algebra = self.coordinate_algebra()
+                ideal = algebra.ideal(algebra.one())
+            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+
         def Mor(self, codomain, category=None):
             from dzack_research.preamble.categories.group.g_objects import GObjects
 
