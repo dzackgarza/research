@@ -767,10 +767,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
     def condition_set(self, universe, predicate):
         r"""Return the subset \(\{x\in X : P(x)\}\) of ``universe`` cut out by ``predicate``, with its inclusion.
 
-        A subset of a finite enumerated set is the finite ordered set of its
-        points in the order of \(X\), realized by the ordered filter engine;
-        any other subset is realized by the condition-set engine, a set that
-        is finite when \(X\) is.
+        A decided predicate on a finite enumerated set selects its points
+        in the order of \(X\), realized by the ordered filter engine.
+        Otherwise the condition-set engine retains \((X, P)\) and its
+        inclusion.  The subset is still finite when \(X\) is finite;
+        undecided membership supplies neither an enumeration nor an exact
+        cardinality.
         """
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
             _filtered_ordered_set,
@@ -778,9 +780,10 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
         match universe:
             case _ if Sets().is_provably_finite(universe) and universe in EnumeratedSets():
-                return _filtered_ordered_set(universe, predicate)
-            case _:
-                return _condition_set(universe, predicate)
+                ordered_subset = _filtered_ordered_set(universe, predicate)
+                if ordered_subset is not None:
+                    return ordered_subset
+        return _condition_set(universe, predicate)
 
     def image_set(self, map_, domain_subset, *, inverse=None):
         r"""Return the image \(f(A)\) of ``domain_subset`` under ``map_``.
@@ -1469,8 +1472,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
-        def is_parent_of(self, element) -> bool:
-            r"""Whether the candidate belongs to this represented set."""
+        def is_parent_of(self, element) -> bool | Predicate:
+            r"""Whether the candidate belongs to this represented set.
+
+            The default keeps native set membership and its iteration
+            fallback.  A predicate-set realization retains an undecided
+            proposition through this owned interface; Python's ``in``
+            expression necessarily requests a Boolean truth value.
+            """
             return element in self
 
         @RealizationHook
@@ -1486,13 +1495,23 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             return AtomicProposition("is_finite", self)
 
         @RealizationHook
-        def _cardinality_decision(self):
+        def _cardinality_decision(self) -> Cardinalities.ObjectType | None:
             r"""Protected exact cardinality supplied by a construction-specific realization.
 
-            ``cardinality`` is the only caller.  A realization or a more
-            specific category supplies the answer as a cardinal.  ``None``
-            here means that no realization supplies one, and ``cardinality``
-            then reads the standard set constructions.
+            Owner: ``Sets``.  A realization or a more specific category
+            supplies an owned cardinal, or ``None`` when its construction
+            supplies no exact cardinal computation.  ``None`` makes no
+            assertion about finiteness or emptiness.
+
+            Permitted callers are ``cardinality``, the finite-endpoint
+            queries in ``Cardinalities.set_power_category``. The latter
+            caller must retain only its established
+            cardinal bounds when no value is supplied.  They may not call
+            the public exact-valued operation merely to ask whether a
+            computation is available: that operation reports an assertion
+            at its computational frontier.  ``cardinality`` itself also
+            reads the standard set constructions when this hook returns
+            ``None``.
             """
             return None
 
@@ -1825,6 +1844,10 @@ class _FiniteLiteralSet(Sets().ObjectType):
     def __contains__(self, point) -> bool:
         return point in self._points
 
+    def _cardinality_decision(self):
+        r"""The retained finite set of literal points supplies its exact size."""
+        return cardinal(len(self._points))
+
     def _element_constructor_(self, point):
         if point not in self:
             raise ValueError(f"{point!r} is not in {self}")
@@ -2033,6 +2056,12 @@ class SetInjection(OwnedSetMorphism):
             return composite
         monomorphisms = Sets().Mono(other.domain(), self.codomain())
         if self.is_injective() is True and Sets().Mono(other.domain(), other.codomain()).accepts(other):
+            if (
+                self._subset_premise
+                and isinstance(other, SetInjection)
+                and other._subset_premise
+            ):
+                return monomorphisms._from_subset_inclusion()
             return monomorphisms.element_class(
                 monomorphisms,
                 lambda element: self(other(element)),
@@ -2118,9 +2147,14 @@ class SetInjectionMor(SetMorCategory):
     def _from_subset_inclusion(self) -> SetInjection:
         r"""The inclusion \(A\hookrightarrow X\) of a subset, \(a\mapsto a\).
 
-        The construction that calls it gives that every point of \(A\) is a
-        point of \(X\); that is its premise, so the inclusion is injective and
-        its image is \(A\).  Nothing is checked here.
+        Protected contract (``OWN-05``), owned by ``SetInjectionMor``.
+        Set subset constructors and composition of two retained subset
+        inclusions are its callers.  The parent has owned set endpoints
+        \(A, X\); the caller has established \(A\subseteq X\) and that
+        the inclusion sends each point to itself.  The returned owned
+        ``SetInjection`` keeps injectivity and the exact image \(A\).
+        Ordinary ingress cannot establish these construction facts without
+        deciding arbitrary membership, so this route evaluates no points.
         """
         return self.element_class(
             self,
@@ -2308,7 +2342,7 @@ class PowerSets(OwnedCategory):
 
         def from_predicate(
             self,
-            predicate: Callable[[SourcePointT], bool],
+            predicate: Callable[[SourcePointT], bool | Predicate],
         ):
             r"""The subset \(\{x\in X : P(x)\}\) with its inclusion."""
             inclusion = self.base_set().condition_set(predicate).inclusion()
@@ -2689,15 +2723,21 @@ class FinitePowerSets(OwnedCategory):
 
         def _element_constructor_(self, members):
             subset = self.source().power_set()(members)
-            if not subset.domain().cardinality().is_finite():
+            finite = subset.domain().is_finite()
+            if finite is False:
                 raise ValueError(f"{subset.domain()} is not in {self}: it is not finite")
+            assert finite is True, (
+                f"cannot admit {subset.domain()} into {self}: its finiteness is undecided"
+            )
             return subset
 
-        def __contains__(self, candidate) -> bool:
+        def __contains__(self, candidate) -> bool | Predicate:
             ambient_power_set = self.source().power_set()
             if candidate not in ambient_power_set:
                 return False
-            return ambient_power_set(candidate).domain().cardinality().is_finite()
+            return ambient_power_set(candidate).domain().is_finite()
+
+        is_parent_of = __contains__
 
         def _repr_(self) -> str:
             return f"Finite subsets of {self.source()}"
@@ -2714,7 +2754,7 @@ def _finite_subsets(source: Parent) -> Sets().ObjectType:
     return FinitePowerSets()(source)
 
 
-def _condition_set(universe: Parent, predicate: Callable[[SourcePointT], bool]) -> Sets().ObjectType:
+def _condition_set(universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate]) -> Sets().ObjectType:
     r"""The subset \(\{x\in X : P(x)\}\) of ``universe``, constructed by the set owner.
 
     A subset of a finite set is finite, which places it.
@@ -2744,10 +2784,11 @@ class _ConditionSetEngine:
     the set of points satisfying \(P\), whose inclusion into \(X\) is the
     subobject it is.  ``Sets().condition_set`` is the construction route; a
     subset of a finite enumerated set is built there by the ordered filter
-    engine instead.
+    engine when every membership is decided.  Otherwise the finite subset
+    retains its predicate without a selected enumeration.
     """
 
-    def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool], **rest) -> None:
+    def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
         super().__init__(facade=True, **rest)
@@ -2756,7 +2797,7 @@ class _ConditionSetEngine:
         r"""The set \(X\) this subset is cut out of."""
         return self._universe
 
-    def predicate(self) -> Callable[[SourcePointT], bool]:
+    def predicate(self) -> Callable[[SourcePointT], bool | Predicate]:
         r"""The predicate \(P\) cutting this subset out of \(X\)."""
         return self._predicate
 
@@ -2765,14 +2806,30 @@ class _ConditionSetEngine:
         r"""The inclusion \(\{x\in X : P(x)\}\hookrightarrow X\)."""
         return Sets().Mono(self, self.universe())._from_subset_inclusion()
 
-    def __contains__(self, element) -> bool:
+    def __contains__(self, element) -> bool | Predicate:
         r"""Whether ``element`` is a point of \(X\) satisfying \(P\)."""
+        from dzack_research.preamble.logic import AtomicProposition
+
         universe = self.universe()
-        return element in universe and bool(self.predicate()(universe(element)))
+        match universe.is_parent_of(element):
+            case False:
+                return False
+            case True:
+                return self.predicate()(universe(element))
+            case _:
+                # P is defined on X; uncertain ingress into X does not
+                # authorize applying P to an arbitrary foreign value.
+                return AtomicProposition("is_parent_of", self, element)
+
+    is_parent_of = __contains__
 
     def _element_constructor_(self, element):
-        if element not in self:
+        member = self.is_parent_of(element)
+        if member is False:
             raise ValueError(f"{element!r} is not in {self}")
+        assert member is True, (
+            f"cannot admit {element!r} into {self}: its membership is undecided"
+        )
         return self.universe()(element)
 
     def __iter__(self):
@@ -2781,7 +2838,13 @@ class _ConditionSetEngine:
             f"cannot list the elements of {self}: the set {universe} it is cut out of is neither finite "
             "nor enumerated"
         )
-        return (point for point in universe if self.predicate()(point))
+        for point in universe:
+            member = self.predicate()(point)
+            assert member is True or member is False, (
+                f"cannot enumerate {self}: membership of {point!r} remains undecided"
+            )
+            if member is True:
+                yield point
 
     def _repr_(self) -> str:
         return f"Subset of {self.universe()} cut out by {self.predicate()}"

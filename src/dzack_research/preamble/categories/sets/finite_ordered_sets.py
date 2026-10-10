@@ -1,8 +1,10 @@
 """Owned ordered enumerated sets, with the finite ones as a refinement."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from itertools import chain, islice
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
@@ -22,6 +24,9 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
@@ -350,7 +355,12 @@ class FiniteOrderedSets(OwnedCategory):
     class ParentMethods:
         def filtered(self, predicate, *, name=None):
             r"""Return the ordered subset of this set cut out by ``predicate``."""
-            return _filtered_ordered_set(self, predicate, name=name)
+            subset = _filtered_ordered_set(self, predicate, name=name)
+            assert subset is not None, (
+                f"cannot enumerate the subset of {self} cut out by {predicate}: some memberships "
+                "are undecided; condition_set retains this finite subset without an enumeration"
+            )
+            return subset
 
         def union(self, other):
             r"""The finite set of the points of this set and of the finite set ``other``.
@@ -409,21 +419,48 @@ class FiniteOrderedSets(OwnedCategory):
 
 def _filtered_ordered_set(
     universe: Parent,
-    predicate: Callable[[PointT], bool],
+    predicate: Callable[[PointT], bool | Predicate],
     *,
     name: str | None = None,
-) -> FiniteOrderedSets().ObjectType:
-    r"""The subset \(\{x\in S : P(x)\}\) of a finite enumerated set \(S\), in the order of \(S\).
+) -> FiniteOrderedSets().ObjectType | None:
+    r"""Compute the ordered subset \(\{x\in S : P(x)\}\), or decline an undecided enumeration.
 
-    A finite ordered set, enumerated over the ordinal counting the points
-    satisfying \(P\), the \(k\)-th point being the \(k\)-th such point of
-    \(S\).  The enumeration is computed from \((S, P)\) here, and the finite
-    ordered sets owner constructs the set on it.
+    Protected construction contract (``OWN-05``), owned by
+    ``FiniteOrderedSets`` and called only by its ``filtered`` operation and
+    ``Sets.condition_set``.  The input is an owned finite enumerated set
+    with an immutable predicate on its points.  When every value is decided,
+    the result is the owned finite ordered subset, with the original
+    universe, predicate and canonical inclusion retained.  ``None`` means
+    only that this optional enumeration computation is unavailable; it
+    makes no claim about the subset or its cardinality.
+
+    ``Sets.condition_set`` needs this optional construction choice because
+    the public ``filtered`` operation requires a represented enumeration.
+    A successful computation selects the \(k\)-th satisfying point of
+    \(S\), indexed by the ordinal counting those points.  No point family
+    is materialized, and a declined computation constructs no order.
     """
+    from dzack_research.preamble.logic import Predicate
+
     assert Sets().is_provably_finite(universe) and universe in EnumeratedSets(), (
         f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
         "finite and enumerated"
     )
+
+    size = 0
+    for point in universe:
+        match predicate(point):
+            case True:
+                size += 1
+            case False:
+                pass
+            case Predicate():
+                return None
+            case value:
+                raise TypeError(
+                    f"a subset predicate on {universe} must return True, False or a proposition, "
+                    f"but returned {value!r} at {point!r}"
+                )
 
     def survivors():
         return (point for point in universe if predicate(point))
@@ -445,7 +482,7 @@ def _filtered_ordered_set(
         _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
         universe=universe,
         predicate=predicate,
-        index_set=finite_ordinal_set(sum(1 for _point in survivors())),
+        index_set=finite_ordinal_set(size),
         element_at=element_at,
         index_of=index_of,
         contains=lambda element: element in universe and bool(predicate(universe(element))),

@@ -405,54 +405,60 @@ class Cardinalities(OwnedCategory):
                 return UncountableSets()
 
     def set_power_category(self, codomain, exponent):
-        r"""Place `Y^X` using cardinal exponentiation and known cardinal bounds."""
+        r"""Place `Y^X` from supplied finite cardinalities and cardinal bounds.
+
+        Finite endpoints suffice for finiteness.  Exact sizes are consulted
+        only when they distinguish stronger placements, through the Set
+        owner's optional cardinality hook or a chosen finite enumeration.
+        A finite predicate subset need not supply either computation.
+        """
         from dzack_research.preamble.categories.sets.set_categories import (
             Sets, FiniteSets, InfiniteSets, CountableSets,
-            CountablyInfiniteSets, UncountableSets,
+            CountablyInfiniteSets, UncountableSets, EnumeratedSets,
         )
 
-        match codomain, exponent:
-            case _, _ if Sets().is_provably_finite(exponent) and exponent.cardinality() == cardinal(0):
-                return self.set_category(cardinal(1))
-            case _, _ if (
-                codomain in FiniteSets()
-                and codomain.cardinality() == cardinal(0)
-                and (
-                    exponent in InfiniteSets()
-                    or (Sets().is_provably_finite(exponent) and exponent.cardinality() != cardinal(0))
+        finite_exponent = Sets().is_provably_finite(exponent)
+        finite_codomain = Sets().is_provably_finite(codomain)
+        if finite_exponent and finite_codomain:
+            return FiniteSets()
+
+        if finite_exponent:
+            size = exponent._cardinality_decision()
+            if size is None and exponent in EnumeratedSets():
+                size = exponent.cardinality()
+            if size is not None:
+                size = cardinal(size)
+                assert size.is_finite(), (
+                    f"{exponent} is finite, but its supplied cardinality is {size}"
                 )
-            ):
-                return self.set_category(cardinal(0))
-            case _, _ if codomain in FiniteSets() and codomain.cardinality() == cardinal(1):
-                return self.set_category(cardinal(1))
-            case _, _ if codomain in FiniteSets() and exponent in FiniteSets():
-                return self.set_category(self.power(codomain.cardinality(), exponent.cardinality()))
-            case _, _ if codomain in FiniteSets() and Sets().is_provably_finite(exponent):
-                # A proved finite exponent gives a finite function set even
-                # before the exponent has acquired its finite-set placement.
-                return FiniteSets()
-            case _, _ if (
-                Sets().is_provably_finite(exponent)
-                and exponent.cardinality() != cardinal(0)
-                and codomain in CountableSets()
-                and codomain in InfiniteSets()
-            ):
-                return CountablyInfiniteSets()
-            case _, _ if Sets().is_provably_finite(exponent) and codomain in CountableSets():
+                if size == cardinal(0):
+                    return FiniteSets()
+                if codomain in CountableSets() and codomain in InfiniteSets():
+                    return CountablyInfiniteSets()
+                if codomain in UncountableSets():
+                    return UncountableSets()
+            if codomain in CountableSets():
                 return CountableSets()
-            case _, _ if (
-                Sets().is_provably_finite(exponent)
-                and exponent.cardinality() != cardinal(0)
-                and codomain in UncountableSets()
-            ):
-                return UncountableSets()
-            case _, _ if exponent in InfiniteSets() and (
-                codomain in InfiniteSets()
-                or (codomain in FiniteSets() and codomain.cardinality().finite_value() >= 2)
-            ):
-                return UncountableSets()
-            case _:
-                return Sets()
+            return Sets()
+
+        if finite_codomain:
+            size = codomain._cardinality_decision()
+            if size is None and codomain in EnumeratedSets():
+                size = codomain.cardinality()
+            if size is not None:
+                size = cardinal(size)
+                assert size.is_finite(), (
+                    f"{codomain} is finite, but its supplied cardinality is {size}"
+                )
+                if size.finite_value() <= 1:
+                    # Even an empty codomain gives at most one function,
+                    # whether or not the exponent's emptiness is decided.
+                    return FiniteSets()
+                if exponent in InfiniteSets():
+                    return UncountableSets()
+        if exponent in InfiniteSets() and codomain in InfiniteSets():
+            return UncountableSets()
+        return Sets()
 
     def finite_support_power_category(self, coefficient_ring, index_set):
         r"""Place finite-support functions ``index_set -> coefficient_ring``.
@@ -471,7 +477,6 @@ class Cardinalities(OwnedCategory):
 
     def set_subset_category(self, source, *, fixed_size=None):
         r"""Place finite-subset sets from `2^|X|` or `|[X]^k|`."""
-        from math import comb
         from dzack_research.preamble.categories.sets.set_categories import (
             Sets, FiniteSets, InfiniteSets, CountableSets,
             CountablyInfiniteSets, UncountableSets,
@@ -480,12 +485,6 @@ class Cardinalities(OwnedCategory):
         match fixed_size, source:
             case 0, _:
                 return self.set_category(cardinal(1))
-            case _, _ if source in FiniteSets():
-                size = cardinal(source.cardinality())
-                return self.set_category(
-                    self.power(2, size) if fixed_size is None
-                    else cardinal(comb(size.finite_value(), int(fixed_size)))
-                )
             case _, _ if Sets().is_provably_finite(source):
                 # Every family of subsets of a finite set is finite, even
                 # before the source has acquired its FiniteSets placement.

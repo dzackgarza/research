@@ -1578,8 +1578,18 @@ class SetSubobjectCategory(SliceCategory):
 
         def __contains__(self, member):
             r"""Whether ``member`` names a point of \(X\) in the image of \(A\hookrightarrow X\)."""
+            from dzack_research.preamble.logic import AtomicProposition
+
             base = self.codomain()
-            return member in base and base(member) in self.inclusion().image()
+            match base.is_parent_of(member):
+                case False:
+                    return False
+                case True:
+                    return self.inclusion().image().is_parent_of(base(member))
+                case _:
+                    return AtomicProposition("is_parent_of", self, member)
+
+        is_parent_of = __contains__
 
         def characteristic_morphism(self):
             return self.inclusion().characteristic_morphism()
