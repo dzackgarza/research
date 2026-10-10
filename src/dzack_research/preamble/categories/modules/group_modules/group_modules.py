@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     OwnedRings,
     _engine_element,
     _engine_ring,
@@ -843,111 +844,6 @@ class ModulesOverGroupAlgebra(Modules):
                 )
             )
 
-        def character(self):
-            r"""Return the ordinary trace character in characteristic zero."""
-            group = self.group()
-            coefficient_module = self.unformed_module()
-            coefficient_ring = self.coefficient_ring()
-            assert group.is_finite() is True, (
-                f"cannot compute the character of {self}: this needs a finite group, and {group} is not known to be finite"
-            )
-            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
-                f"cannot compute the character of {self}: the trace needs a free {coefficient_ring}-module of "
-                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
-            )
-            if coefficient_ring.characteristic() != 0:
-                raise TypeError(
-                    f"cannot compute the ordinary character of {self}: {coefficient_ring} has characteristic "
-                    f"{coefficient_ring.characteristic()}, not 0; a modular representation has a Brauer "
-                    f"character instead (brauer_character())"
-                )
-            representatives = group.conjugacy_classes_representatives()
-            traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
-
-            return group.class_function(
-                coefficient_ring,
-                traces,
-                representatives=representatives,
-            )
-
-        def brauer_character(self):
-            r"""Return the Brauer character of a finite-dimensional modular representation."""
-            group = self.group()
-            coefficient_module = self.unformed_module()
-            coefficient_ring = self.coefficient_ring()
-            assert group.is_finite() is True, (
-                f"cannot compute the Brauer character of {self}: this needs a finite group, and {group} is not known to be finite"
-            )
-            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
-                f"cannot compute the Brauer character of {self}: this needs a free {coefficient_ring}-module of "
-                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
-            )
-            if coefficient_ring.characteristic() == 0:
-                raise TypeError(
-                    f"cannot compute the Brauer character of {self}: {coefficient_ring} has characteristic 0, "
-                    f"and Brauer characters are defined in positive characteristic; use character()"
-                )
-            if not coefficient_ring.is_field():
-                raise TypeError(
-                    f"cannot compute the Brauer character of {self}: the coefficient ring {coefficient_ring} is not a field"
-                )
-
-            from sage.combinat.free_module import CombinatorialFreeModule
-
-            indices = tuple(range(int(coefficient_module.module_rank())))
-            computation_module = CombinatorialFreeModule(
-                _engine_ring(coefficient_ring),
-                indices,
-            )
-            basis = computation_module.basis()
-
-            def on_basis(group_element, index):
-                action_matrix = self.action_of(group_element)
-                return computation_module.sum(
-                    _engine_element(
-                        coefficient_ring,
-                        action_matrix[image_index, index],
-                    )
-                    * basis[image_index]
-                    for image_index in indices
-                )
-
-            # Sage maintains the Teichmuller-lift computation on a private
-            # finite-basis representation.  Only the resulting exact values
-            # cross back into the owned class-function object.
-
-            engine_group = _engine_group(group)
-
-            def engine_on_basis(engine_group_element, index):
-                return on_basis(_element_from_engine(group, engine_group_element), index)
-
-            backend_character = engine_group.representation(
-                computation_module,
-                engine_on_basis,
-                side="left",
-            ).brauer_character()
-            backend_values = tuple(backend_character)
-            if not backend_values:
-                raise ArithmeticError(
-                    f"the Brauer character of {self} came back with no values, but {group} has at least the "
-                    f"identity as a p-regular class"
-                )
-            value_ring = _own_ring(backend_values[0].parent())
-            engine_value_ring = _engine_ring(value_ring)
-            values = tuple(_owned_engine_element(value_ring, engine_value_ring(value)) for value in backend_values)
-            characteristic = int(coefficient_ring.characteristic())
-            representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
-            if len(representatives) != len(values):
-                raise ArithmeticError(
-                    f"the Brauer character of {self} has {len(values)} values, but {group} has "
-                    f"{len(representatives)} {characteristic}-regular conjugacy classes"
-                )
-            return group.class_function(
-                value_ring,
-                values,
-                representatives=representatives,
-            )
-
         def base_change(self, ring_map):
             r"""Transport this group module through the category-owned coefficient extension."""
             extension = self.module_category().coefficient_base_change_adjunction(
@@ -1717,7 +1613,157 @@ class _LinearizationEquivalence(Adjunction):
         return f"Linearization equivalence {self.left_adjoint().domain()} <-> {self.left_adjoint().codomain()}"
 
 
+class FiniteFreeGroupRepresentations(OwnedCategoryOverBaseRing):
+    r"""Group-algebra modules finite free over their coefficient field or ring."""
+
+    def super_categories(self):
+        return [ModulesOverGroupAlgebra(self.base_ring())]
+
+    def an_object(self):
+        return self(ModulesOverGroupAlgebra(self.base_ring()).an_object())
+
+    def _call_(self, module):
+        from dzack_research.preamble.refine import refine
+        coefficient_ring = self.base_ring().base_ring()
+        if module not in ModulesOverGroupAlgebra(self.base_ring()):
+            raise TypeError("representation must be a module over the selected group algebra")
+        if module.group().is_finite() is not True or module.unformed_module() not in FinitelyGeneratedFreeModules(coefficient_ring):
+            raise TypeError("a finite free representation requires a finite group and finite free coefficient module")
+        return refine(module, self)
+
+
+class OrdinaryCharacterRepresentations(FiniteFreeGroupRepresentations):
+    r"""Finite free group representations in characteristic zero."""
+
+    def _call_(self, module):
+        if self.base_ring().base_ring().characteristic() != 0:
+            raise TypeError("ordinary characters require characteristic-zero coefficients")
+        return super()._call_(module)
+
+    class ParentMethods:
+        def character(self):
+            r"""Return the ordinary trace character in characteristic zero."""
+            group = self.group()
+            coefficient_module = self.unformed_module()
+            coefficient_ring = self.coefficient_ring()
+            assert group.is_finite() is True, (
+                f"cannot compute the character of {self}: this needs a finite group, and {group} is not known to be finite"
+            )
+            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
+                f"cannot compute the character of {self}: the trace needs a free {coefficient_ring}-module of "
+                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
+            )
+            if coefficient_ring.characteristic() != 0:
+                raise TypeError(
+                    f"cannot compute the ordinary character of {self}: {coefficient_ring} has characteristic "
+                    f"{coefficient_ring.characteristic()}, not 0; a modular representation has a Brauer "
+                    f"character instead (brauer_character())"
+                )
+            representatives = group.conjugacy_classes_representatives()
+            traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
+
+            return group.class_function(
+                coefficient_ring,
+                traces,
+                representatives=representatives,
+            )
+
+
+
+class BrauerCharacterRepresentations(FiniteFreeGroupRepresentations):
+    r"""Finite free modular group representations over a positive-characteristic field."""
+
+    def _call_(self, module):
+        coefficient_ring = self.base_ring().base_ring()
+        if coefficient_ring.characteristic() == 0 or not coefficient_ring.is_field():
+            raise TypeError("Brauer characters require a positive-characteristic coefficient field")
+        return super()._call_(module)
+
+    class ParentMethods:
+        def brauer_character(self):
+            r"""Return the Brauer character of a finite-dimensional modular representation."""
+            group = self.group()
+            coefficient_module = self.unformed_module()
+            coefficient_ring = self.coefficient_ring()
+            assert group.is_finite() is True, (
+                f"cannot compute the Brauer character of {self}: this needs a finite group, and {group} is not known to be finite"
+            )
+            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
+                f"cannot compute the Brauer character of {self}: this needs a free {coefficient_ring}-module of "
+                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
+            )
+            if coefficient_ring.characteristic() == 0:
+                raise TypeError(
+                    f"cannot compute the Brauer character of {self}: {coefficient_ring} has characteristic 0, "
+                    f"and Brauer characters are defined in positive characteristic; use character()"
+                )
+            if not coefficient_ring.is_field():
+                raise TypeError(
+                    f"cannot compute the Brauer character of {self}: the coefficient ring {coefficient_ring} is not a field"
+                )
+
+            from sage.combinat.free_module import CombinatorialFreeModule
+
+            indices = tuple(range(int(coefficient_module.module_rank())))
+            computation_module = CombinatorialFreeModule(
+                _engine_ring(coefficient_ring),
+                indices,
+            )
+            basis = computation_module.basis()
+
+            def on_basis(group_element, index):
+                action_matrix = self.action_of(group_element)
+                return computation_module.sum(
+                    _engine_element(
+                        coefficient_ring,
+                        action_matrix[image_index, index],
+                    )
+                    * basis[image_index]
+                    for image_index in indices
+                )
+
+            # Sage maintains the Teichmuller-lift computation on a private
+            # finite-basis representation.  Only the resulting exact values
+            # cross back into the owned class-function object.
+
+            engine_group = _engine_group(group)
+
+            def engine_on_basis(engine_group_element, index):
+                return on_basis(_element_from_engine(group, engine_group_element), index)
+
+            backend_character = engine_group.representation(
+                computation_module,
+                engine_on_basis,
+                side="left",
+            ).brauer_character()
+            backend_values = tuple(backend_character)
+            if not backend_values:
+                raise ArithmeticError(
+                    f"the Brauer character of {self} came back with no values, but {group} has at least the "
+                    f"identity as a p-regular class"
+                )
+            value_ring = _own_ring(backend_values[0].parent())
+            engine_value_ring = _engine_ring(value_ring)
+            values = tuple(_owned_engine_element(value_ring, engine_value_ring(value)) for value in backend_values)
+            characteristic = int(coefficient_ring.characteristic())
+            representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
+            if len(representatives) != len(values):
+                raise ArithmeticError(
+                    f"the Brauer character of {self} has {len(values)} values, but {group} has "
+                    f"{len(representatives)} {characteristic}-regular conjugacy classes"
+                )
+            return group.class_function(
+                value_ring,
+                values,
+                representatives=representatives,
+            )
+
+
+
 __all__ = [
+    "FiniteFreeGroupRepresentations",
+    "OrdinaryCharacterRepresentations",
+    "BrauerCharacterRepresentations",
     "GroupModuleMor",
     "GroupModuleMorphism",
     "ModulesOverGroupAlgebra",

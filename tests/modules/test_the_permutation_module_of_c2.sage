@@ -49,5 +49,6 @@ def test_the_character_of_the_permutation_module() -> None:
     module = permutation_module()
     group = module.acting_group()
 
-    assert module.character()(group.one()) == 2
-    assert module.character()(group.group_generators()[0]) == 0
+    representation = OrdinaryCharacterRepresentations(module.group_algebra())(module)
+    assert representation.character()(group.one()) == 2
+    assert representation.character()(group.group_generators()[0]) == 0
