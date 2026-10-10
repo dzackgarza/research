@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Additive-product projection Mor corrected (2026-10-10):** The already selected `CartesianProductsOfAdditiveMonoids` now constructs each factor projection in `AdditiveMonoids().Mor(product,factor)` rather than merely `Sets().Mor`. The actual finite product of two additive monoids retains zero and componentwise addition; a focused Sage owner regression verifies the projection has that exact Mor parent, sends zero to zero and preserves a nonzero doubled element. Infinite-index additive placement still requires the selected value-category family datum under `infinite-index-additive-product-placement`; this finite-arrow correction does not claim its closure.
+
+
 **Infinite-index additive-product placement defect (2026-10-10):** The finite product of two copies of `AdditiveMonoids().an_object()` lies in both `CartesianProductsOfAdditiveMonoids` and `AdditiveMonoids`; its pointwise zero is a left/right identity for a nonzero section. But `Sets().product(indexed_family(NN, lambda n:A))`, with the same additive monoid `A`, belongs to neither category (focused Sage). Its product constructor presently tests factors only after proving the index finite. This is a real missing result placement, rather than a nonmonoid counterexample. The indexed family has no selected value category for infinite indices; the required typed family and product transport are filed at `infinite-index-additive-product-placement` in TODO.md, with a negative mixed-family case and projection-morphism obligations.
 
 

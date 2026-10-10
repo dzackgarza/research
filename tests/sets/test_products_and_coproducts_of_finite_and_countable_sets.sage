@@ -28,6 +28,10 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
     assert point + zero == point
     assert zero + point == point
     assert (point + point).component(product.index_set()(0)) == factor.one() + factor.one()
+    projection = product.projection(product.index_set()(0))
+    assert projection.parent() is AdditiveMonoids().Mor(product, factor)
+    assert projection(zero) == factor.zero()
+    assert projection(point + point) == projection(point) + projection(point)
 
 
 def test_the_product_of_two_and_three_points_has_six_points() -> None:

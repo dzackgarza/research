@@ -3232,6 +3232,15 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
         def zero(self):
             return self(lambda index: self.factor(index).zero())
 
+        def projection(self, index):
+            r"""The additive-monoid projection from a product to its selected factor."""
+            from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+            normalized = self.index_set()(index)
+            return AdditiveMonoids().Mor(self, self.factor(normalized))(
+                lambda section: section.component(normalized)
+            )
+
 
 def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
     r"""Return the enumeration of a finite-index product of enumerated sets.
