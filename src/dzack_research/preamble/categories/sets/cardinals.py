@@ -514,6 +514,8 @@ class Cardinalities(OwnedCategory):
                     return self.set_category(cardinal(0))
                 if all(f in FiniteSets() for f in factors):
                     return self.set_category(self.product(*(f.cardinality() for f in factors)))
+                if all(f.is_finite() is True for f in factors):
+                    return FiniteSets()
                 nonempty = all(
                     f in InfiniteSets()
                     or (f in FiniteSets() and f.cardinality() != cardinal(0))
@@ -531,6 +533,8 @@ class Cardinalities(OwnedCategory):
             case "sum":
                 if all(f in FiniteSets() for f in factors):
                     return self.set_category(self.sum(*(f.cardinality() for f in factors)))
+                if all(f.is_finite() is True for f in factors):
+                    return FiniteSets()
                 if any(f in UncountableSets() for f in factors):
                     return UncountableSets()
                 if all(f in CountableSets() for f in factors):
