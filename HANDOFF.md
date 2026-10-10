@@ -32,6 +32,8 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+- [ ] `QuotientRings.X.minimal_primes()` and `X.irreducible_components()` are unconditionally placed in `FiniteOrderedSets()` (`categories/rings/commutative_algebra.py:1072–1095`), although `QuotientRings` imposes no Noetherian hypothesis. For example, the zero-ideal quotient of the infinite product of fields `A=∏_{n∈ℕ} F_2` has infinitely many distinct minimal prime ideals (the kernels of its coordinate projections, among others), and `Spec(A)` has infinitely many irreducible components. The finite realization at `_presentation_minimal_primes` assumes a finite engine enumeration without placing a Noetherian hypothesis on the mathematical operation. Preserve the complete minimal-prime locus and select a finite presentation only when justified.
+
 - [ ] `Lattices.X.vectors_of_square_and_divisibility` claims `FiniteOrderedSets()` for every lattice. On the indefinite lattice `U ⊕ ⟨-2⟩`, the vectors `(n²+1,1,n)` have square `2` and divisibility `1` for every nonnegative integer `n`, so this locus is infinite; `categories/definite_lattices.py:_vectors_of_square_and_divisibility` attempts to enumerate the entire square fibre into a finite ordered set. Repair at the defining locus/finite-realization owner, preserving the actual infinite locus.
 
 **Cross-family result-placement follow-up (2026-10-10).** The earlier full
