@@ -1283,6 +1283,12 @@ class _AffineReducedQuotientNormalizationData(SageObject):
         delta,
         is_normal,
         components,
+        *,
+        normalization_module_realization,
+        normalization_unit_map,
+        coefficient_map,
+        component_module_numerators,
+        component_projections,
     ) -> None:
         self.normalization = normalization
         self.normalization_map = normalization_map
@@ -1290,6 +1296,13 @@ class _AffineReducedQuotientNormalizationData(SageObject):
         self.delta = int(delta)
         self.is_normal = bool(is_normal)
         self.components = components
+        self.normalization_module_realization = normalization_module_realization
+        self.normalization_module = normalization_module_realization.domain()
+        self.normalization_unit_map = normalization_unit_map
+        self.normalization_cokernel = normalization_unit_map.cokernel()
+        self.coefficient_map = coefficient_map
+        self.component_module_numerators = component_module_numerators
+        self.component_projections = component_projections
 
 
 def _finite_product_ring(factors):
@@ -1302,6 +1315,120 @@ def _finite_product_ring(factors):
         return factors[0]
     engines = tuple(_engine_ring(factor) for factor in factors)
     return _own_ring(engines[0].cartesian_product(*engines[1:]))
+
+
+def _affine_normalization_module_maps(
+    quotient,
+    normalization_map,
+    components,
+    component_numerators,
+):
+    r"""Present the finite normalization module and retain its actual realization.
+
+    Private construction adapter owned here. Its only caller is
+    ``_affine_reduced_quotient_normalization_data``. The arguments are the
+    owned affine quotient, its normalization ring map, and finite indexed
+    families of component triples and exact ordered numerators. The result
+    retains the owned module realization and the diagonal unit map.
+
+    For the component prime K_i in A and the ordered numerator family U_i,
+    Singular supplies B_i = U_i/c_i inside Frac(A/K_i), with c_i the LAST
+    numerator.  The module owner constructs N_i = (U_i+K_i)/K_i from
+    the kernel of the map from the free module on these exact labels.
+    Division by c_i identifies N_i with B_i.  It is evaluated through the
+    unique lift under multiplication by the nonzero c_i in B_i, which need
+    not be a unit.
+
+    The finite biproduct N of the N_i realizes Res_nu(B) for B = product B_i.
+    Its unit map sends 1 to the sum of the classes labelled by the c_i.
+    Its cokernel is therefore B/image(A), with the ONE diagonal image of A.
+    Neither this construction nor its realization changes B's parent or
+    equips B with a separately constructed underlying module.
+    """
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+    indices = components.index_set()
+    component_values = tuple(components)
+    normalization = normalization_map.codomain()
+    normalization_engine = _engine_ring(normalization)
+    regular = quotient.regular_module()
+    (regular_label,) = tuple(regular.module_generating_set())
+    regular_one = regular.module_generator(regular_label)
+    target_regular = normalization.regular_module()
+    (target_label,) = tuple(target_regular.module_generating_set())
+    target_one = target_regular.module_generator(target_label)
+    target = target_regular.restrict_scalars(normalization_map)
+
+    def in_product(position, value):
+        # Coordinate insertion is additive and A-linear; for more than one
+        # component it is not unital and must never be made a ring morphism.
+        if len(component_values) == 1:
+            return value
+        values = tuple(
+            _engine_element(component, value if other == position else component.zero())
+            for other, (_, component, _) in enumerate(component_values)
+        )
+        return _owned_engine_element(normalization, normalization_engine(values))
+
+    modules = {}
+    realization_legs = {}
+    unit_labels = {}
+    for index in indices:
+        prime, component, component_map = components.value(index)
+        numerators = component_numerators.value(index)
+        labels = numerators.index_set()
+        denominator_label = tuple(labels)[-1]
+        component_quotient = prime.inclusion().cokernel()
+        quotient_projection = component_quotient.cokernel_projection()
+        free = quotient.free_module(labels)
+        numerator_map = Modules(quotient).Mor(free, component_quotient)(
+            {
+                label: quotient_projection(
+                    regular.scalar_multiple(quotient(numerators.value(label)), regular_one)
+                )
+                for label in labels
+            }
+        )
+        module = numerator_map.kernel().inclusion().cokernel()
+        modules[index] = module
+        unit_labels[index] = denominator_label
+
+        component_regular = component.regular_module()
+        (component_label,) = tuple(component_regular.module_generating_set())
+        component_one = component_regular.module_generator(component_label)
+        denominator = component_map(quotient(numerators.value(denominator_label)))
+        multiplication = Modules(component).Mor(component_regular, component_regular)(
+            {component_label: component_regular.scalar_multiple(denominator, component_one)}
+        )
+        images = {}
+        for label in labels:
+            numerator = component_map(quotient(numerators.value(label)))
+            preimage = multiplication.lift(
+                component_regular.scalar_multiple(numerator, component_one)
+            )
+            value = component_regular.framing_morphism().lift(preimage)(component_label)
+            images[label] = target.wrap(
+                target_regular.scalar_multiple(in_product(int(index), value), target_one)
+            )
+        realization_legs[index] = Modules(quotient).Mor(module, target)(images)
+
+    normalization_module = Modules(quotient).biproduct(
+        finite_indexed_family(indices, lambda index: modules[index])
+    )
+    realization = normalization_module.from_coproduct_cocone(
+        finite_indexed_family(indices, lambda index: realization_legs[index])
+    )
+    unit = sum(
+        (
+            normalization_module.injection(index)(
+                modules[index].module_generator(unit_labels[index])
+            )
+            for index in indices
+        ),
+        normalization_module.zero(),
+    )
+    unit_map = Modules(quotient).Mor(regular, normalization_module)({regular_label: unit})
+    return realization, unit_map
 
 
 def _affine_reduced_quotient_normalization_data(quotient):
@@ -1351,6 +1478,33 @@ def _affine_reduced_quotient_normalization_data(quotient):
 
         total_delta = int(normal_data[3][2].sage())
 
+        # These ideals live in the ORIGINAL polynomial ring.  Their exact
+        # generator order is data: the last entry is the common denominator.
+        # computeRing may eliminate variables of the normalization cover, so
+        # these positions are not positions of its polynomial generators.
+        source_engine._singular_(singular).set_ring()
+        module_numerator_families = []
+        for position in range(1, len(normal_rings) + 1):
+            numerator_singular = normal_data[2][position]
+            # Converting the ideal as a whole would call a Sage ideal
+            # constructor, which may normalize its generators. These
+            # positions, especially the final denominator, are retained data.
+            numerators = tuple(
+                _owned_engine_element(source, generator.sage_poly(source_engine))
+                for generator in numerator_singular
+            )
+            if not numerators:
+                raise ArithmeticError(
+                    f"Singular returned no numerator or denominator for normalization component {position}"
+                )
+            labels = finite_ordered_set(range(len(numerators)))
+            module_numerator_families.append(
+                finite_indexed_family(
+                    labels,
+                    lambda label, numerators=numerators: numerators[int(label)],
+                )
+            )
+
         source_quotient_engine = _engine_ring(quotient)
         normalizations = []
         normalization_maps = []
@@ -1364,7 +1518,12 @@ def _affine_reduced_quotient_normalization_data(quotient):
             normal_ring_singular.set_ring()
             normal_cover_engine = normal_ring_singular.sage()
             normal_ideal_engine = singular("norid").sage(normal_cover_engine)
-            normal_map_images_engine = singular("normap").sage(normal_cover_engine)
+            # These are the images of the ordered source variables, not an
+            # ideal to canonicalize in the normalization cover.
+            normal_map_images = tuple(
+                generator.sage_poly(normal_cover_engine)
+                for generator in singular("normap")
+            )
             normal_cover = _own_ring(normal_cover_engine)
             normal_ideal = normal_cover.ideal(
                 *(
@@ -1375,8 +1534,8 @@ def _affine_reduced_quotient_normalization_data(quotient):
             component = normal_cover.quotient_ring(normal_ideal)
             target_engine = _engine_ring(component)
             target_images = tuple(
-                target_engine(normal_cover_engine(generator))
-                for generator in normal_map_images_engine.gens()
+                target_engine(generator)
+                for generator in normal_map_images
             )
             if len(target_images) != source_engine.ngens():
                 raise ArithmeticError(
@@ -1436,7 +1595,34 @@ def _affine_reduced_quotient_normalization_data(quotient):
             ),
             name=f"Normalized components of {quotient}",
         )
+        component_module_numerators = finite_indexed_family(
+            component_indices,
+            lambda position: module_numerator_families[int(position)],
+        )
+        module_realization, unit_map = _affine_normalization_module_maps(
+            quotient,
+            normalization_map,
+            components,
+            component_module_numerators,
+        )
 
+        def component_projection(position):
+            component = normalizations[int(position)]
+            if len(normalizations) == 1:
+                return normalization.Mor(component)(lambda element: element)
+            projection_engine = product_engine.cartesian_projection(int(position))
+            return normalization.Mor(component)(
+                lambda element: _owned_engine_element(
+                    component,
+                    projection_engine(_engine_element(normalization, element)),
+                )
+            )
+
+        component_projections = finite_indexed_family(
+            component_indices,
+            component_projection,
+        )
+        coefficient_map = quotient.quotient_map() * source.algebra_structure_morphism()
         return _AffineReducedQuotientNormalizationData(
             normalization,
             normalization_map,
@@ -1444,6 +1630,11 @@ def _affine_reduced_quotient_normalization_data(quotient):
             total_delta,
             total_delta == 0,
             components,
+            normalization_module_realization=module_realization,
+            normalization_unit_map=unit_map,
+            coefficient_map=coefficient_map,
+            component_module_numerators=component_module_numerators,
+            component_projections=component_projections,
         )
     finally:
         if previous_ring is not None:
