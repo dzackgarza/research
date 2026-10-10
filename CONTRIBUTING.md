@@ -1563,10 +1563,13 @@ of this specification.
   convention.  It is fixed once, inside `preamble/tensors/`, where
   `Tensor.pullback` holds the only `A^t G A`.  The engine's own convention
   (Sage matrix groups act on rows) is converted once, at the tensor package's
-  lowering and raising of a morphism.  Outside that package no code writes
-  `.transpose()`, `.T` or `matrix_action_*`, and no code multiplies coordinate
-  matrices to state a mathematical equation.  So `M^t G M` and `M G M^t` cannot
-  be written at all, and neither can choosing between them.
+  lowering and raising of a morphism.  Outside that package no code transposes
+  **coordinate matrices** with `.transpose()` or `.T`, calls `matrix_action_*`,
+  or multiplies coordinate matrices to state a mathematical equation.
+  Transpose on an owned framed module morphism is itself a typed morphism
+  operation with reversed endpoints; it is not a choice of engine convention
+  and is not banned.  Thus `M^t G M` and `M G M^t` cannot be written as raw
+  matrix equations at their consumers, and no caller chooses between them.
 
   One equation has one owner.  A second statement of the same invariant, such
   as a loop of form evaluations beside a pullback, is deleted.
@@ -1588,8 +1591,10 @@ of this specification.
   in a reduced basis is the pullback along the reducing automorphism; the
   Gram tensor of a family of roots is the pullback along the map that
   sends the standard basis to the roots.
-- **Enforcement:** `just tensor-boundary` lists every transpose and matrix
-  action outside `preamble/tensors/`.
+- **Enforcement:** `just tensor-boundary` rejects coordinate transposes and
+  matrix actions outside `preamble/tensors/`.  Its one reviewed exception
+  identifies the owned morphism transpose in `symmetrized_right_multiplication`;
+  a textual match alone is not a mathematical type judgment.
 
 ### Construction-chain review protocol
 

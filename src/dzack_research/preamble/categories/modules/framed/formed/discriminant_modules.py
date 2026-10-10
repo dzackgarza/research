@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets, finite_ordinal_set
+from dzack_research.preamble.tensors.tensor import _engine_modular_pairing_pullback
 from dzack_research.preamble.owned_category import owned_category_join
 
 
@@ -892,10 +893,13 @@ def _isotropic_subgroups(ambient, quadratic):
         [[int(entry * denominator) % (self_modulus * denominator) for entry in row] for row in self_gram],
         dtype=numpy.int64,
     ).reshape(rank, rank)
-    pairings = (coordinates @ bilinear_numerators % denominator) @ coordinates.T % denominator
-    self_values = numpy.einsum(
-        "ij,jk,ik->i", coordinates, self_numerators, coordinates
-    ) % (self_modulus * denominator)
+    pairings = _engine_modular_pairing_pullback(
+        bilinear_numerators, coordinates, denominator
+    )
+    self_values = _engine_modular_pairing_pullback(
+        self_numerators, coordinates, self_modulus * denominator,
+        diagonal_only=True,
+    )
     width = (order + 7) // 8
 
     def mask_of(codes):

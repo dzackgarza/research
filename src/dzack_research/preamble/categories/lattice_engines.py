@@ -20,6 +20,7 @@ from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_column_matrix_from_row_action,
     _engine_component_matrix,
+    _engine_inverse_form_pullback,
     _engine_row_action_matrix,
     tensor,
 )
@@ -912,8 +913,7 @@ def _roots_generating_lattice(gram, lengths):
     form = _engine_component_matrix(gram).change_ring(SageZZ)
     rank = form.nrows()
     diagonal, change = QuadraticForm(SageQQ, 2 * form).rational_diagonal_form(return_matrix=True)
-    inverse = change.inverse()
-    majorant = inverse.transpose() * diagonal.matrix().apply_map(abs) * inverse
+    majorant = _engine_inverse_form_pullback(diagonal.matrix().apply_map(abs), change)
     majorant = (lcm(entry.denominator() for entry in majorant.list()) * majorant).change_ring(SageZZ)
     roots_in_annulus = pari(_ROOTS_IN_ANNULUS)
     lengths = pari(sorted(int(length) for length in lengths))

@@ -1154,8 +1154,9 @@ the category states. Every construction in the tree moves to this shape;
   `Tensor.pullback` holds the only `A^t G A`. Everywhere else, code states
   pullback, composition `f * g`, inverse `~f` and application `f(v)`, so
   `M^t G M` and `M G M^t` cannot be written, and no call site chooses between
-  them. `just tensor-boundary` lists every transpose and matrix action
-  outside the package.
+  them. An owned morphism's framing-dependent `transpose()` is a morphism
+  operation, not a Sage coordinate transpose. `just tensor-boundary` rejects
+  unowned coordinate transposes and matrix actions outside the package.
 
 Some conditions cannot be checked at all. The Fourier transform is an isometry
 of `L^2(RR)`, and no finite computation confirms it. A construction that
