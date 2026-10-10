@@ -473,6 +473,34 @@ def _init_mor_category_class(mor: CategoricalMor | FixedMorCategory) -> None:
     )
 
 
+
+def _attach_end_family(owner: CategoricalMor, family: _EndCategoryOf) -> None:
+    if owner.domain_object() is not owner.codomain_object():
+        raise ValueError(f"only End(X) = Mor(X, X) can be the endomorphism category of X, but {owner} has distinct objects")
+    category_owner = _category_packet(owner.base_category()).Ends()
+    if family is not category_owner:
+        represented = _category_packet(family.base_category()).Mors().Of(owner.domain_object(), owner.codomain_object())
+        if represented is not owner and represented.arrow_set() is not owner:
+            raise ValueError(f"{family} already has {represented} as End({owner.domain_object()})")
+    if owner._end_family is not None and owner._end_family is not category_owner:
+        raise ValueError(f"{owner} is already attached to another End family")
+    owner._end_family = category_owner
+    category_owner._remember_between(owner.domain_object(), owner.codomain_object(), owner)
+
+
+def _attach_aut_family(owner: CategoricalMor, family: _AutCategoryOf) -> None:
+    if owner.domain_object() is not owner.codomain_object():
+        raise ValueError(f"only Iso(X, X) can be the automorphism category Aut(X), but {owner} has distinct objects")
+    category_owner = _category_packet(owner.base_category()).Auts()
+    if family is not category_owner:
+        represented = _category_packet(family.base_category()).Isos().Of(owner.domain_object(), owner.codomain_object())
+        if represented is not owner and represented.arrow_set() is not owner:
+            raise ValueError(f"{family} already has {represented} as Aut({owner.domain_object()})")
+    if owner._aut_family is not None and owner._aut_family is not category_owner:
+        raise ValueError(f"{owner} is already attached to another Aut family")
+    owner._aut_family = category_owner
+    category_owner._remember_between(owner.domain_object(), owner.codomain_object(), owner)
+
 class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
@@ -734,51 +762,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         return self.mor_family().Of(obj, obj).arrow_set().identity()
 
     def attach_end_family(self, family: _EndCategoryOf) -> None:
-        if self.domain_object() is not self.codomain_object():
-            raise ValueError(
-                f"only End(X) = Mor(X, X) can be the endomorphism category of X, but {self} is "
-                f"Mor({self.domain_object()}, {self.codomain_object()}) with distinct objects"
-            )
-        owner = _category_packet(self.base_category()).Ends()
-        if family is not owner:
-            represented = _category_packet(family.base_category()).Mors().Of(
-                self.domain_object(), self.codomain_object()
-            )
-            if represented is not self and represented.arrow_set() is not self:
-                raise ValueError(
-                    f"{family} already has {represented} as End({self.domain_object()}), so {self} cannot also be it"
-                )
-        if self._end_family is not None and self._end_family is not owner:
-            raise ValueError(
-                f"{self} is already the endomorphism category End({self.domain_object()}) of another family"
-            )
-        self._end_family = owner
-        owner._remember_between(self.domain_object(), self.codomain_object(), self)
+        _attach_end_family(self, family)
 
     def end_family(self) -> _EndCategoryOf | None:
         return self._end_family
 
     def attach_aut_family(self, family: _AutCategoryOf) -> None:
-        if self.domain_object() is not self.codomain_object():
-            raise ValueError(
-                f"only Iso(X, X) can be the automorphism category Aut(X), but {self} is "
-                f"Iso({self.domain_object()}, {self.codomain_object()}) with distinct objects"
-            )
-        owner = _category_packet(self.base_category()).Auts()
-        if family is not owner:
-            represented = _category_packet(family.base_category()).Isos().Of(
-                self.domain_object(), self.codomain_object()
-            )
-            if represented is not self and represented.arrow_set() is not self:
-                raise ValueError(
-                    f"{family} already has {represented} as Aut({self.domain_object()}), so {self} cannot also be it"
-                )
-        if self._aut_family is not None and self._aut_family is not owner:
-            raise ValueError(
-                f"{self} is already the automorphism category Aut({self.domain_object()}) of another family"
-            )
-        self._aut_family = owner
-        owner._remember_between(self.domain_object(), self.codomain_object(), self)
+        _attach_aut_family(self, family)
 
     def aut_family(self) -> _AutCategoryOf | None:
         return self._aut_family
@@ -1009,51 +999,13 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
         return _DiscreteTwoMorCategoryOf
 
     def attach_end_family(self, family: _EndCategoryOf) -> None:
-        if self.domain_object() is not self.codomain_object():
-            raise ValueError(
-                f"only End(X) = Mor(X, X) can be the endomorphism category of X, but {self} is "
-                f"Mor({self.domain_object()}, {self.codomain_object()}) with distinct objects"
-            )
-        owner = _category_packet(self.base_category()).Ends()
-        if family is not owner:
-            represented = _category_packet(family.base_category()).Mors().Of(
-                self.domain_object(), self.codomain_object()
-            )
-            if represented is not self and represented.arrow_set() is not self:
-                raise ValueError(
-                    f"{family} already has {represented} as End({self.domain_object()}), so {self} cannot also be it"
-                )
-        if self._end_family is not None and self._end_family is not owner:
-            raise ValueError(
-                f"{self} is already the endomorphism category End({self.domain_object()}) of another family"
-            )
-        self._end_family = owner
-        owner._remember_between(self.domain_object(), self.codomain_object(), self)
+        _attach_end_family(self, family)
 
     def end_family(self) -> _EndCategoryOf | None:
         return self._end_family
 
     def attach_aut_family(self, family: _AutCategoryOf) -> None:
-        if self.domain_object() is not self.codomain_object():
-            raise ValueError(
-                f"only Iso(X, X) can be the automorphism category Aut(X), but {self} is "
-                f"Iso({self.domain_object()}, {self.codomain_object()}) with distinct objects"
-            )
-        owner = _category_packet(self.base_category()).Auts()
-        if family is not owner:
-            represented = _category_packet(family.base_category()).Isos().Of(
-                self.domain_object(), self.codomain_object()
-            )
-            if represented is not self and represented.arrow_set() is not self:
-                raise ValueError(
-                    f"{family} already has {represented} as Aut({self.domain_object()}), so {self} cannot also be it"
-                )
-        if self._aut_family is not None and self._aut_family is not owner:
-            raise ValueError(
-                f"{self} is already the automorphism category Aut({self.domain_object()}) of another family"
-            )
-        self._aut_family = owner
-        owner._remember_between(self.domain_object(), self.codomain_object(), self)
+        _attach_aut_family(self, family)
 
     def aut_family(self) -> _AutCategoryOf | None:
         return self._aut_family
