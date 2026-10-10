@@ -3383,8 +3383,7 @@ class CoproductsOfSets(OwnedCategory):
 
         def __eq__(self, other) -> bool:
             return (
-                isinstance(other, Element)
-                and other.parent() is self.parent()
+                element_parent(other) is self.parent()
                 and other.summand_index() == self.summand_index()
                 and other.summand_element() == self.summand_element()
             )
