@@ -246,6 +246,31 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
         raise AssertionError("an incorrectly typed natural-transformation component was admitted")
 
 
+def test_componentwise_coproduct_morphism_checks_its_source_and_target_summands() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import _coproduct_morphism
+
+    left = Sets.Δ[1]
+    right = Sets.Δ[2]
+    source = Sets().coproduct((left, right))
+    target = Sets().coproduct((right, left))
+    index_set = source.index_set()
+    first = Sets().Mor(left, right)(lambda point: right(int(point)))
+    second = Sets().Mor(right, left)(lambda point: left(int(point) % 2))
+    arrow = _coproduct_morphism(source, target, lambda index: first if index == index_set(0) else second)
+    assert arrow.parent() is Sets().Mor(source, target)
+    for index in index_set:
+        component = first if index == index_set(0) else second
+        for point in source.cofactor(index):
+            assert arrow(source.injection(index)(point)) == target.injection(index)(component(point))
+
+    try:
+        _coproduct_morphism(source, target, lambda _index: first)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("a component with wrong coproduct endpoints was admitted")
+
+
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
     listing = iter(square)

@@ -3786,10 +3786,17 @@ def _coproduct_morphism[IndexT](
             f"a componentwise map of coproducts needs one index set, but {source} is indexed by "
             f"{source.index_set()} and {target} by {target.index_set()}"
         )
+    index_set = source.index_set()
+    if not Sets().is_provably_finite(index_set):
+        raise TypeError("componentwise coproduct maps need a selected typed family on an infinite index")
+    components = tuple((index, component_morphisms(index)) for index in index_set)
+    for index, arrow in components:
+        if arrow.parent() is not Sets().Mor(source.cofactor(index), target.cofactor(index)):
+            raise TypeError(f"component at {index} is not in its exact set Mor category")
     return Sets().Mor(source, target)(
         lambda element: target(
             element.summand_index(),
-            component_morphisms(element.summand_index())(element.summand_element()),
+            next(arrow(element.summand_element()) for index, arrow in components if index == element.summand_index()),
         )
     )
 
