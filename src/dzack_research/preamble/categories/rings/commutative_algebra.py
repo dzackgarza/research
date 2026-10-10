@@ -1079,7 +1079,14 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def irreducible_components(self):
-            r"""Return the component domains ``R/p`` for the minimal primes ``p``."""
+            r"""Return component domains in the Noetherian finite realization.
+
+            For arbitrary spectra, component closures instead form the
+            nonenumerated ``irreducible_component_locus``.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.quotient_source() not in OwnedNoetherianRings():
+                return self.irreducible_component_locus()
             if not self.is_reduced():
                 raise ValueError(
                     f"irreducible components R/p are computed here only for a reduced ring, but {self} is not reduced"
@@ -1089,6 +1096,19 @@ class QuotientRings(OwnedCategory):
                     self.quotient_source().quotient_ring(prime)
                     for prime in self._presentation_minimal_primes()
                 )
+            )
+
+        def irreducible_component_locus(self):
+            r"""Possibly infinite set of irreducible closed components of ``Spec R``.
+
+            Each component is the closure of one minimal prime point.
+            This does not assume a finite list of prime ideals.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+            spectrum = self.spectrum()
+            return Sets().image_set(
+                lambda point: spectrum.closed_set(point.ideal()),
+                self.minimal_prime_locus(),
             )
 
         @cached_method

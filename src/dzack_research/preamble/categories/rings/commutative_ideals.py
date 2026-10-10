@@ -550,7 +550,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
-            r"""A chosen primary decomposition, when one is represented."""
+            r"""A selected primary decomposition when one exists and is represented.
+
+            Outside the Noetherian case, existence is not asserted.
+            """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise NotImplementedError(
