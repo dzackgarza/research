@@ -466,6 +466,11 @@ class Cardinalities(OwnedCategory):
                     self.power(2, size) if fixed_size is None
                     else cardinal(comb(size.finite_value(), int(fixed_size)))
                 )
+            case _, _ if source.is_finite() is True:
+                # Every family of subsets of a finite set is finite, even
+                # before the source has acquired its FiniteSets placement.
+                # Its exact cardinality need not yet be computed.
+                return FiniteSets()
             case _, _ if source in InfiniteSets() and source in CountableSets():
                 return CountablyInfiniteSets()
             case _, _ if source in UncountableSets():
