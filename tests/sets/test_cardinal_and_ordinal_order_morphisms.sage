@@ -129,3 +129,22 @@ def test_infinite_well_order_type_uses_its_core_isomorphism() -> None:
     assert NN in TotallyOrderedSets()
     assert order_type(NN) is NN.order_type()
     assert order_type(selected_isomorphism).is_identity()
+
+
+def test_nonidentity_well_order_maps_compose_with_exact_endpoints() -> None:
+    well_orders = WellOrderedSets()
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    inclusion = well_orders.Mor(source, target)(lambda point: target(int(point) + 1))
+    shift = well_orders.Mor(target, target)(lambda point: target(min(2, int(point) + 1)))
+    composite = shift * inclusion
+    assert composite.parent() is well_orders.Mor(source, target)
+    assert composite.underlying_set_morphism().domain() is source
+    assert composite.underlying_set_morphism().codomain() is target
+    assert tuple(int(composite(point)) for point in source) == (2, 2)
+    try:
+        well_orders.Mor(target, target)(lambda point: target(2 - int(point)))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an order-reversing map was admitted to well-ordered Mor")
