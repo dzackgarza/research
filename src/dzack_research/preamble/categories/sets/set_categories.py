@@ -851,7 +851,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
             family = _factor_family(family, name="Product factors")
             index_set = family.index_set()
-            if index_set in FiniteSets() and index_set in EnumeratedSets():
+            if (index_set in FiniteSets() or index_set.is_finite() is True) and index_set in EnumeratedSets():
                 return self._finite_product(family)
             return _cartesian_product_of(family)
 
@@ -1106,7 +1106,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
             family = _factor_family(family, name="Coproduct factors")
             index_set = family.index_set()
-            if index_set in FiniteSets() and index_set in EnumeratedSets():
+            if (index_set in FiniteSets() or index_set.is_finite() is True) and index_set in EnumeratedSets():
                 return self._finite_coproduct(family)
             return _coproduct_of_indexed_family(family)
 
