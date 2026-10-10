@@ -241,8 +241,13 @@ class Curves(_DimensionSubcategoryOfVarieties):
             )
 
         def normalization_is_connected(self) -> bool:
-            r"""The selected normalization ``P^1`` is connected."""
-            return self.is_geometrically_integral()
+            r"""A chosen integral normalization is connected, whether or not it is ``P^1``."""
+            normalization = self.normalization_curve()
+            assert normalization in Curves(self.scheme_base_ring()), (
+                f"connectedness of the normalization of {self} requires a selected integral curve, "
+                f"but the chosen normalization {normalization} is not placed in Curves"
+            )
+            return True
 
         @cached_method
         def genus_comparison(self):
