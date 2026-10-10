@@ -349,7 +349,11 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     self.action_of(group_element)(inclusion(vector))
                 )
 
-            return Lattices(self.group_algebra())(formed, restricted_action)
+            # The component is an R-lattice carrying a G-action, not an
+            # R[G]-valued bilinear lattice.  The group-algebra category is
+            # the action-bearing owner; its constructor retains the R-form.
+            assert formed.base_ring() is self.coefficient_ring()
+            return LatticesOverGroupAlgebra(self.group_algebra())(formed, restricted_action)
 
         def character(self):
             return super().character()
