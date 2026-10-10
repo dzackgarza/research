@@ -177,6 +177,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
             remains distinct from normalization/geometric-genus algorithms.
             """
             base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
+            )
             assert self in Schemes(base).Projective(), (
                 f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
                 f"projective curves, but {self} is not known to be projective over {base}"
