@@ -4019,7 +4019,7 @@ class WellOrderedSetMor(CategoricalMor):
 
     def _verify_order_preserving(self, set_morphism) -> None:
         domain = self.domain()
-        assert domain in FiniteSets() and domain in EnumeratedSets(), (
+        assert Sets().is_provably_finite(domain) and domain in EnumeratedSets(), (
             f"cannot decide whether {set_morphism} preserves the well-order: arbitrary order preservation is "
             f"decided here only on finite enumerated domains, but {domain} lies in {domain.category()}"
         )
