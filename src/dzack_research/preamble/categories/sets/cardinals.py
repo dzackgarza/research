@@ -510,7 +510,10 @@ class Cardinalities(OwnedCategory):
         factors = tuple(family(i) for i in index)
         match operation:
             case "product":
-                if any(f in FiniteSets() and f.cardinality() == cardinal(0) for f in factors):
+                if any(
+                    f.is_finite() is True and f.cardinality() == cardinal(0)
+                    for f in factors
+                ):
                     return self.set_category(cardinal(0))
                 if all(f in FiniteSets() for f in factors):
                     return self.set_category(self.product(*(f.cardinality() for f in factors)))
