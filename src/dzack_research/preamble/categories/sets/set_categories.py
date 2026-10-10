@@ -3746,7 +3746,27 @@ def _cartesian_product_morphism[IndexT](
         )
     index_set = source.index_set()
     if not Sets().is_provably_finite(index_set):
-        raise TypeError("componentwise product maps need a selected typed family on an infinite index")
+        from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+        from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+        if not isinstance(component_morphisms, NaturalTransformation):
+            raise TypeError("componentwise product maps need a selected typed family on an infinite index")
+        transformation = component_morphisms
+        shape = DiscreteCategory(index_set)
+        if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
+            raise ValueError("the product component transformation must have the exact discrete index category")
+        if transformation.source().codomain() is not Sets() or transformation.target().codomain() is not Sets():
+            raise TypeError("componentwise product transformations must be set-valued")
+
+        def component(index):
+            selected = shape.object(index)
+            if transformation.source()(selected) is not source.factor(index) or transformation.target()(selected) is not target.factor(index):
+                raise ValueError("the component transformation does not have the product's factor objects")
+            return transformation.component(selected)
+
+        return Sets().Mor(source, target)(
+            lambda section: target(lambda index: component(index)(section.component(index)))
+        )
     components = tuple((index, component_morphisms(index)) for index in index_set)
     for index, arrow in components:
         if arrow.parent() is not Sets().Mor(source.factor(index), target.factor(index)):
@@ -3799,7 +3819,26 @@ def _coproduct_morphism[IndexT](
         )
     index_set = source.index_set()
     if not Sets().is_provably_finite(index_set):
-        raise TypeError("componentwise coproduct maps need a selected typed family on an infinite index")
+        from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+        from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+        if not isinstance(component_morphisms, NaturalTransformation):
+            raise TypeError("componentwise coproduct maps need a selected typed family on an infinite index")
+        transformation = component_morphisms
+        shape = DiscreteCategory(index_set)
+        if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
+            raise ValueError("the coproduct component transformation must have the exact discrete index category")
+        if transformation.source().codomain() is not Sets() or transformation.target().codomain() is not Sets():
+            raise TypeError("componentwise coproduct transformations must be set-valued")
+
+        def induced(element):
+            index = element.summand_index()
+            selected = shape.object(index)
+            if transformation.source()(selected) is not source.cofactor(index) or transformation.target()(selected) is not target.cofactor(index):
+                raise ValueError("the component transformation does not have the coproduct's summand objects")
+            return target(index, transformation.component(selected)(element.summand_element()))
+
+        return Sets().Mor(source, target)(induced)
     components = tuple((index, component_morphisms(index)) for index in index_set)
     for index, arrow in components:
         if arrow.parent() is not Sets().Mor(source.cofactor(index), target.cofactor(index)):

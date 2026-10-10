@@ -333,3 +333,31 @@ def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
         pass
     else:
         raise AssertionError("product admitted a component with incorrect target factor")
+
+
+def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import (
+        _cartesian_product_morphism, _coproduct_morphism,
+    )
+
+    point = Sets.Δ[0]
+    index_category = DiscreteCategory(NN)
+    diagram = Cat().Mor(index_category, Sets()).constant_functor(point)
+    components = NaturalTransformation(
+        diagram, diagram, lambda _index: Sets().Mor(point, point).identity()
+    )
+    family = indexed_family(NN, point)
+    product = Sets().product(family)
+    coproduct = Sets().coproduct(family)
+    product_map = _cartesian_product_morphism(product, product, components)
+    coproduct_map = _coproduct_morphism(coproduct, coproduct, components)
+    section = product(lambda _index: point(0))
+    assert product_map.parent() is Sets().Mor(product, product)
+    assert coproduct_map.parent() is Sets().Mor(coproduct, coproduct)
+    for index in (NN(0), NN(1), NN(5)):
+        assert product_map(section).component(index) == section.component(index)
+        selected = coproduct.injection(index)(point(0))
+        assert coproduct_map(selected) == selected
