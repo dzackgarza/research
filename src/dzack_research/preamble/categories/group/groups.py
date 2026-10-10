@@ -3394,6 +3394,18 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             Absence of a topological-group category placement does not prove
             that no compatible topology is carried by the represented group.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.group.groups import OwnedGroups, TopologicalGroups
+                sage: from dzack_research.preamble.logic import AtomicProposition
+                sage: topological = TopologicalGroups().an_object()
+                sage: topological.is_topological_group()
+                True
+                sage: underlying = OwnedGroups().C(2)
+                sage: undecided = underlying.is_topological_group()
+                sage: isinstance(undecided, AtomicProposition)
+                True
             """
             match self:
                 case _ if self in TopologicalGroups():
