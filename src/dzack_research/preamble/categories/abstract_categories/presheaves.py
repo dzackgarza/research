@@ -801,6 +801,52 @@ class CoveringFamilies(OwnedCategory):
         def pair_index_set(self):
             return self.overlaps().index_set()
 
+        @cached_method
+        def cech_site(self):
+            r"""The labelled finite incidence site of this covering family.
+
+            Its objects are the covered-object label ``()``, member labels
+            ``(i,)``, and the selected pair labels ``(i,j)``. The geometric
+            overlap spans remain data of the original cover; this site records
+            their incidence for the pairwise descent equalizer.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                PosetCategory,
+            )
+
+            labels = [()]
+            labels.extend((index,) for index in self.index_set())
+            labels.extend(tuple(pair) for pair in self.pair_index_set())
+            return PosetCategory(
+                finite_ordered_set(tuple(labels)),
+                le=lambda finer, coarser: set(coarser).issubset(set(finer)),
+            )
+
+        @cached_method
+        def cech_covering_family(self):
+            r"""The member arrows as the selected cover of :meth:`cech_site`."""
+            site = self.cech_site()
+            category = _CechCoveringFamilies(self)
+            target = site(())
+            members = finite_indexed_family(
+                self.index_set(),
+                lambda index: site.Mor(site((index,)), target).unique(),
+                name="Čech cover arrows",
+            )
+            overlaps = {
+                tuple(pair): site.span(
+                    site.Mor(site(tuple(pair)), site((pair[0],))).unique(),
+                    site.Mor(site(tuple(pair)), site((pair[1],))).unique(),
+                )
+                for pair in self.pair_index_set()
+            }
+            return category.family(target, members, overlaps)
+
+        @cached_method
+        def cech_coverage(self) -> Category:
+            r"""The coverage selected by this cover's finite Čech family."""
+            return Coverage(self.cech_site(), _CechCoveringFamilies(self))
+
         def overlap_span(self, left_index, right_index):
             r"""The overlap span ``U_i <- U_ij -> U_j`` of two members, in either order."""
             ranking = self.index_set().ranking_map()
