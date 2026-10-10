@@ -1043,7 +1043,7 @@ class LocalizationRings(OwnedCategory):
                 case False:
                     return super().cardinality()
 
-        def inverted_submonoid_meets(self, ideal) -> bool:
+        def inverted_submonoid_meets(self, ideal):
             r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
 
             For a prime complement this means a generator of I lies outside
@@ -1063,7 +1063,10 @@ class LocalizationRings(OwnedCategory):
             match self:
                 case _ if self in PrimeLocalizations():
                     prime = self.localized_prime()
-                    return any(not prime.contains_ambient_element(g) for g in ideal.ideal_generators())
+                    return negation(conjunction(
+                        prime.contains_ambient_element(generator)
+                        for generator in ideal.ideal_generators()
+                    ))
                 case _ if self.is_fraction_field_localization():
                     return ideal != ring.ideal(ring.zero())
                 case _:

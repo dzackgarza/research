@@ -294,6 +294,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ``sqrt(I~)/K``.
             """
             ring = self.ring()
+            if ring in LocalizationRings():
+                source_ideal = self._localization_source_ideal
+                assert source_ideal is not None, (
+                    "a localized ideal must retain the source ideal whose extension it is"
+                )
+                # Radicals commute with localization, including when the
+                # selected fraction model is larger than the actual ring.
+                return source_ideal.radical().extension_to_localization(ring)
             if ring._has_selected_exact_coefficient_presentation():
                 presentation_ring = ring._exact_coefficient_presentation_ring()
                 lifted_generators = tuple(
@@ -424,7 +432,21 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         saturation = ideal_saturation
 
         def contraction_from_localization(self):
-            r"""Contract this selected localized extension back to its source ring."""
+            r"""Contract this localized ideal to its actual source ring.
+
+            For a finite generating family of S, contraction is saturation
+            by its product. For S = R minus p, a primary component Q survives
+            precisely when its radical is contained in p. Since p is prime,
+            this is equivalent to Q being contained in p. Such a component
+            is already S-saturated; every other component becomes the unit
+            ideal. Localization preserves finite intersections.
+
+            The prime-complement computation uses the existing finite
+            primary-decomposition owner. It neither enumerates S nor reads
+            an ideal of a larger fraction-field computation model.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
+
             source_ideal = self._localization_source_ideal
             assert source_ideal is not None, (
                 f"cannot contract the ideal {self}: it was not constructed as the extension S^-1 I of an ideal I "
@@ -432,11 +454,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             )
             localization_ring = self.ring()
             submonoid = localization_ring.localization_submonoid()
+            source_ring = localization_ring.localization_source()
+            if localization_ring in PrimeLocalizations():
+                contracted = source_ring.ideal(source_ring.one())
+                for component in source_ideal.finite_primary_decomposition():
+                    match localization_ring.inverted_submonoid_meets(component):
+                        case False:
+                            contracted = contracted.intersection(component)
+                        case True:
+                            pass
+                        case _:
+                            raise NotImplementedError(
+                                f"cannot decide whether the primary component {component} survives in {localization_ring}"
+                            )
+                return contracted
             generators = tuple(submonoid.monoid_generators())
             if not generators:
                 return source_ideal
 
-            source_ring = localization_ring.localization_source()
             product = source_ring.one()
             for generator in generators:
                 product *= source_ring(generator)
@@ -459,8 +494,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     # ``(I : a)``.  So membership says that ``(I : a)`` is not
                     # contained in ``p``, and an ideal lies in a prime exactly
                     # when its generators do.  The complement of a prime has no
-                    # finite generating set, so no contraction is available to
-                    # ask instead.
+                    # finite generating set. This membership criterion needs
+                    # no selected primary decomposition of the source ideal.
                     prime = structure["prime_ideal"]
                     source = source_ideal.ring()
                     colon_ideal = source_ideal.colon(source.ideal(numerator))
@@ -600,14 +635,59 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             )
 
         def finite_primary_decomposition(self):
-            r"""Selected finite primary decomposition over a Noetherian ring."""
+            r"""Selected finite primary decomposition over a Noetherian ring.
+
+            In a PID, the prime powers in a nonzero generator's factorization
+            give its primary components. The zero ideal is prime in a domain,
+            and the empty intersection is the unit ideal. This uses the
+            existing owned element factorization rather than an unsupported
+            generic engine ideal primary-decomposition method.
+
+            Over a localization, extend the selected source components and
+            discard exactly those that become the unit ideal. Primary ideals
+            disjoint from S stay primary after localization.
+            """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-            if self.ring() not in OwnedNoetherianRings():
+            ring = self.ring()
+            if ring not in OwnedNoetherianRings():
                 raise TypeError("finite primary decomposition requires a Noetherian ring")
+            if ring in LocalizationRings():
+                source_ideal = self._localization_source_ideal
+                assert source_ideal is not None, (
+                    "a localized ideal must retain the source ideal whose extension it is"
+                )
+                components = []
+                for component in source_ideal.finite_primary_decomposition():
+                    match ring.inverted_submonoid_meets(component):
+                        case True:
+                            pass
+                        case False:
+                            components.append(component.extension_to_localization(ring))
+                        case _:
+                            raise NotImplementedError(
+                                f"cannot decide whether the primary component {component} survives in {ring}"
+                            )
+                return finite_ordered_set(tuple(components))
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                generator = _pid_principal_ideal_generator(self)
+                if generator.is_unit() is True:
+                    return finite_ordered_set(())
+                if (generator == ring.zero()) is True:
+                    return finite_ordered_set((self,))
+                return finite_ordered_set(tuple(
+                    ring.ideal(prime ** int(exponent))
+                    for prime, exponent in generator.factor().items()
+                ))
             return self._finite_engine_ideal_family("primary_decomposition")
 
         def _finite_engine_ideal_family(self, operation):
             r"""Read one finite engine ideal family through the owned ideal ingress."""
+            ring = self.ring()
+            if _realized_as_quotient(ring):
+                return finite_ordered_set(tuple(
+                    _descend_cover_ideal(ring, ideal)
+                    for ideal in getattr(_cover_lifted_ideal(self), operation)()
+                ))
             return finite_ordered_set(tuple(
                 _from_engine_ideal(self.ring(), ideal)
                 for ideal in getattr(self._engine_ideal(), operation)()

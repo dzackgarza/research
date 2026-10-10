@@ -259,6 +259,11 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Exact localized-ideal source unit (2026-10-10):** `CommutativeIdeals.contraction_from_localization` now uses finite primary decomposition for a prime complement, retaining every primary component contained in the prime, including embedded components. PID decomposition reuses the owned factorization; quotient presentations transport through their cover, and localized primary components/radicals stay in the actual localized ring. The colon-based membership criterion remains independent of primary decomposition. The required quotient-invariant node stays open; its next work is the retained canonical comparison with the contracted quotient and the exact computation crossings. Separating assertions, including nonsaturated integer ideals and a zero-divisor source, are under `core-usability-session`.
+
+**Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
+
+
 ### Whole-category placement: `QuotientRings` (2026-10-10)
 
 All introduced object and element operations were reviewed together with the actual up-set. `QuotientRings` carries a commutative ring plus a selected presentation `P -> P/I`. Its declared chain reaches `OwnedRings.Commutative`, then `OwnedRings`, whose unital-semiring and rng branches reach `Monoids`, `AdditiveGroups`, their weaker operation spines, and `Sets`. These supply, respectively, commutative ideal/spectrum mathematics; unital-ring operations; zero/one/addition for characteristic; multiplication/identity for units; addition/inverse for subtraction; and underlying-set cardinality. No new supercategory edge was invented.
