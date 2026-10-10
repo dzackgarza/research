@@ -427,6 +427,7 @@ _lazy_import(
         "ToricLogPairs",
         "ToricSchemes",
         "ToricProjectiveSpaces",
+        "GorensteinToricSchemes",
         "SmoothCompleteRationalToricSchemes",
         "ToricWeightCohomologyComplexes",
         "Varieties",

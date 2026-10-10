@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
     SmoothCompleteRationalToricSchemes,
     ToricSchemes,
     ToricProjectiveSpaces,
+    GorensteinToricSchemes,
 )
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     "ToricFixedPointBlowups",
     "ToricSchemes",
     "ToricProjectiveSpaces",
+    "GorensteinToricSchemes",
     "SmoothCompleteRationalToricSchemes",
 ]

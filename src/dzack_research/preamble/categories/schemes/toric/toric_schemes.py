@@ -797,22 +797,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return -self.toric_boundary_divisor()
 
         @cached_method
-        def canonical_line_bundle(self):
-            r"""Return ``omega_X = O_X(K_X)`` in the represented toric Cartier regime."""
-            return self.invertible_sheaf_of_divisor(self.canonical_divisor())
-
-        def canonical_bundle(self, *args, **kwargs):
-            return self.canonical_line_bundle(*args, **kwargs)
-
-        @cached_method
-        def anticanonical_line_bundle(self):
-            r"""Return ``omega_X^{-1} = O_X(-K_X)``."""
-            return self.invertible_sheaf_of_divisor(-self.canonical_divisor())
-
-        def anticanonical_bundle(self, *args, **kwargs):
-            return self.anticanonical_line_bundle(*args, **kwargs)
-
-        @cached_method
         def character_divisor_morphism(self):
             r"""``M -> Div_T(X)``, ``m |-> div(chi^m)`` (CLS Thm. 4.1.3).
 
@@ -1999,6 +1983,8 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
         f"a toric variety is built from a rational polyhedral fan, but {fan} is in {fan.category()}"
     )
     decided = [ToricSchemes(base)]
+    if fan.is_smooth():
+        decided.append(GorensteinToricSchemes(base))
     projective_fan = RationalPolyhedralFans(fan.cocharacter_lattice()).projective_space_fan()
     if fan.is_isomorphic(projective_fan):
         decided.append(ToricProjectiveSpaces(base))
@@ -2040,11 +2026,45 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     )
 
 
+class GorensteinToricSchemes(OwnedCategoryOverBaseRing):
+    r"""Toric schemes whose canonical toric Weil divisor is Cartier."""
+
+    def super_categories(self):
+        return [ToricSchemes(self.base_ring())]
+
+    def an_object(self):
+        return self(ToricSchemes(self.base_ring()).an_object())
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+
+        if scheme not in ToricSchemes(self.base_ring()) or not scheme.is_cartier(scheme.canonical_divisor()):
+            raise ValueError("the canonical toric divisor must be Cartier")
+        return refine(scheme, self)
+
+    class ParentMethods:
+        @cached_method
+        def canonical_line_bundle(self):
+            r"""The invertible dualizing sheaf associated with Cartier ``K_X``."""
+            return self.invertible_sheaf_of_divisor(self.canonical_divisor())
+
+        def canonical_bundle(self, *args, **kwargs):
+            return self.canonical_line_bundle(*args, **kwargs)
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            r"""The invertible sheaf associated with Cartier ``-K_X``."""
+            return self.invertible_sheaf_of_divisor(-self.canonical_divisor())
+
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
+
+
 class ToricProjectiveSpaces(OwnedCategoryOverBaseRing):
     r"""Toric projective spaces with a distinguished fan realization."""
 
     def super_categories(self):
-        return [ToricSchemes(self.base_ring())]
+        return [GorensteinToricSchemes(self.base_ring())]
 
     def an_object(self):
         return self(ToricSchemes(self.base_ring()).an_object())
@@ -2112,4 +2132,4 @@ class SmoothCompleteRationalToricSchemes(OwnedCategoryOverBaseRing):
             return _toric_fundamental_group(self, base_point_cone)
 
 
-__all__ = ["ToricSchemeMorphism", "ToricSchemes", "ToricProjectiveSpaces", "SmoothCompleteRationalToricSchemes"]
+__all__ = ["ToricSchemeMorphism", "ToricSchemes", "ToricProjectiveSpaces", "GorensteinToricSchemes", "SmoothCompleteRationalToricSchemes"]
