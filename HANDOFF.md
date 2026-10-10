@@ -259,6 +259,11 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Localized component-map source unit (2026-10-10):** the total-quotient map of a reduced localized quotient now factors through the existing total-quotient map of its retained contracted quotient. Saturation makes every denominator regular there, so the localization universal map supplies the exact arrow into the same component-field target. Actual irreducible components keep the selected localized source. `LocalizationRings.induced_morphism` no longer demands an unjustified map from its larger fraction-field realization. The two-component, single-survivor and fraction equations are retained unexecuted under T. Next: exact ideal arithmetic for nested localizations and quotient covers, then reconcile the full localized-invariant node.
+
+**Finite-unit source checks:** `31b81e8134` passed focused AST parsing of its three source files. The required source-only construction view for `LocalizationRings` and `CommutativeIdeals` completed within its two-minute bound; all 62 lines of `.tmp/localized-quotient-owner-constructions.txt` were read. Its `None` alternatives follow optional private results past the public assertions and are static-inference limits. No Sage, tests or QC were run.
+
+
 **Finite localized-quotient comparison source unit (2026-10-10):** the localization owner now retains the canonical injection from the contracted quotient and its explicit finite inverse pair in the owned ring core. Exact computation crossings keep the original quotient, source and projection; characteristic uses the injection, while cardinality, dimension, normality and unit inversion use the finite comparison. Ideal primality, radicals and finite prime families stay at their actual owners, including recursive owned PID cover operations. Optional-result dispatchers preserve propositions at unsupported cases. Every finite commutative ring now retains the identity as its total-quotient map. The separating integer, quotient-ideal and map assertions remain unexecuted under `core-usability-session`. The next source unit is the nonfinite component/total-quotient factorization through the contracted quotient and the exact nested-localization ideal operations it needs; the required node remains open.
 
 

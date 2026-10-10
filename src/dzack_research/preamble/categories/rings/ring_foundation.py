@@ -1688,29 +1688,11 @@ class LocalizationRings(OwnedCategory):
                     fraction.denominator()
                 ).inverse_of_unit()
 
-            engine_source = _engine_ring(source)
-            engine_target = _engine_ring(morphism.codomain())
-            engine_localization = self._selected_engine_ring()
-            source_generators = tuple(engine_source.gens())
-            localization_generators = tuple(engine_localization.gens())
-            engine_morphism = None
-            if len(source_generators) == len(localization_generators):
-                engine_images = [
-                    _engine_element(
-                        morphism.codomain(),
-                        morphism(_owned_engine_element(source, generator)),
-                    )
-                    for generator in source_generators
-                ]
-                engine_morphism = engine_localization.hom(
-                    engine_images,
-                    engine_target,
-                )
-
-            return self.Mor(morphism.codomain(), category=OwnedRings())._elementwise_with_engine(
-                image,
-                engine_morphism,
-            )
+            # The universal map is defined on the actual localization. Its
+            # larger fraction-field computation model need not admit this
+            # map: a residue or component map can kill elements that become
+            # invertible in that model. The owned fraction formula is exact.
+            return OwnedRings().Mor(self, morphism.codomain())(image)
 
         @cached_method
         def localization_map(self):

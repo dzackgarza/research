@@ -1133,10 +1133,22 @@ class QuotientRings(OwnedCategory):
             (Stacks, Section 10.25). The common owner handles domains and the
             zero ring separately and retains this map together with its target.
             """
-            if (
-                self.is_reduced() is not True
-                or self._presentation_minimal_primes() is None
-            ):
+            if self.is_reduced() is not True:
+                return None
+            source = self.quotient_source()
+            if source in LocalizationRings():
+                # For I contracted from J, every denominator acts regularly
+                # on B=R/I by S-saturation. It is already invertible in Q(B),
+                # so localization changes neither that total quotient ring
+                # nor its surviving component fields. Reuse their owner.
+                contracted_quotient = source.quotient_contraction_map(self).domain()
+                total_map = contracted_quotient.total_quotient_map()
+                source_map = total_map * contracted_quotient.quotient_map()
+                localized_map = source.induced_morphism(source_map)
+                return OwnedRings().Mor(self, localized_map.codomain())(
+                    lambda element: localized_map(self(element).lift())
+                )
+            if self._presentation_minimal_primes() is None:
                 return None
             components = tuple(self.irreducible_components())
             fields = tuple(component.fraction_field() for component in components)
