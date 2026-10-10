@@ -401,9 +401,12 @@ def _reflective_root_system_components(lattice):
 
 def _vectors_of_square_and_divisibility(lattice, square, divisibility):
     divisibility = lattice.base_ring()(divisibility)
+    fibre = lattice.vectors_of_square(square)
+    if fibre.is_finite() is not True:
+        return fibre.condition_set(lambda vector: vector.div() == divisibility)
     return finite_ordered_set(tuple(
         vector
-        for vector in lattice.vectors_of_square(square)
+        for vector in fibre
         if vector.div() == divisibility
     ))
 
