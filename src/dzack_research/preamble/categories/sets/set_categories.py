@@ -3393,7 +3393,9 @@ class CoproductsOfSets(OwnedCategory):
             return not self == other
 
         def __hash__(self) -> int:
-            return hash((id(self.parent()), self.summand_index(), self.summand_element()))
+            # Neither summand indices nor summand points need a Python hash.
+            # Equality only compares elements within this coproduct parent.
+            return hash(id(self.parent()))
 
     def _call_(self, family: IndexedFamily) -> Sets().ObjectType:
         r"""Construct the dependent coproduct of the family of sets ``family``."""
