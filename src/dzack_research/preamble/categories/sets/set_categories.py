@@ -2477,6 +2477,7 @@ class PowerSets(OwnedCategory):
 def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
     r"""Rank finite subsets of an enumerated source by their binary support."""
     source_size = cardinal(source.cardinality())
+    point_at_source_rank = source.ranking_map().inverse()
 
     def point_at(position):
         position = int(position)
@@ -2490,7 +2491,7 @@ def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
         remaining_bits = position
         while remaining_bits:
             if remaining_bits & 1:
-                members.append(source[source_position])
+                members.append(point_at_source_rank(source_position))
             source_position += 1
             remaining_bits >>= 1
         return subset_set(tuple(members))
@@ -2501,7 +2502,7 @@ def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
         position = 0
         source_position = 0
         while remaining:
-            point = source[source_position]
+            point = point_at_source_rank(source_position)
             if point in subset:
                 position |= 1 << source_position
                 remaining -= 1
