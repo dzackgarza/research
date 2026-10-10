@@ -130,6 +130,7 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
     PicardGroups,
+    ProjectiveBundlePicardGroups,
     ProjectiveJetSpaces,
     ProjectiveLinearSystems,
     SectionRings,
