@@ -590,12 +590,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise TypeError("finite primary decomposition requires a Noetherian ring")
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().primary_decomposition()
-                )
-            )
+            return self._finite_engine_ideal_family("primary_decomposition")
+
+        def _finite_engine_ideal_family(self, operation):
+            r"""Read one finite engine ideal family through the owned ideal ingress."""
+            return finite_ordered_set(tuple(
+                _from_engine_ideal(self.ring(), ideal)
+                for ideal in getattr(self._engine_ideal(), operation)()
+            ))
 
         def hilbert_polynomial_value(self, argument):
             r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
@@ -641,12 +643,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise TypeError("finite associated-prime enumeration requires a Noetherian ring")
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().associated_primes()
-                )
-            )
+            return self._finite_engine_ideal_family("associated_primes")
 
         def _repr_(self):
             listed = ", ".join(str(generator) for generator in self.ideal_generators())
