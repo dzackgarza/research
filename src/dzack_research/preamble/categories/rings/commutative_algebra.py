@@ -1052,7 +1052,10 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def minimal_primes(self):
-            r"""Return the minimal prime ideals of this quotient ring."""
+            r"""Minimal prime ideals, with finite enumeration in the Noetherian regime."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.quotient_source() not in OwnedNoetherianRings():
+                return self.minimal_prime_locus()
             return finite_ordered_set(
                 tuple(
                     self.ideal(
@@ -1060,6 +1063,18 @@ class QuotientRings(OwnedCategory):
                     )
                     for prime in self._presentation_minimal_primes()
                 )
+            )
+
+        def minimal_prime_locus(self):
+            r"""The (possibly infinite) generic points of irreducible components.
+
+            A prime ``p`` is minimal when no prime lies strictly below it.
+            This is a predicate subspace of the full prime spectrum, not an
+            enumerated family of ideals or a finite associated-prime list.
+            """
+            spectrum = self.spectrum()
+            return spectrum.condition_set(
+                lambda point: AtomicProposition("is_minimal_prime", point)
             )
 
         @cached_method

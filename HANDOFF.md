@@ -138,6 +138,8 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
   The internal finite minimal-prime enumeration now requires its presentation ring to be Noetherian, so neither it nor its downstream component enumeration silently asserts finiteness in the unrestricted regime. The complete prime-ideal universe and non-enumerated minimal-point locus remain necessary to finish this step-2 item.
 
+  `QuotientRings.minimal_primes()` now selects a nonenumerated `minimal_prime_locus()` for non-Noetherian presentations: the subset of the full prime spectrum defined by minimality under specialization. Its membership remains a predicate where prime-minimality is not decidable. The finite enumerator remains only for Noetherian presentations. General irreducible-component representation and full arbitrary-ideal realization are still outstanding; leave unchecked.
+
 - [x] `Lattices.X.vectors_of_square_and_divisibility` claimed `FiniteOrderedSets()` for every lattice. On the indefinite lattice `U ⊕ ⟨-2⟩`, the vectors `(n²+1,1,n)` have square `2` and divisibility `1` for every nonnegative integer `n`, so this locus is infinite. The defining helper in `categories/definite_lattices.py` now retains the full predicate subobject of the square fibre unless the fibre is known finite. Focused Sage confirms membership of four distinct such vectors in the retained locus; on `⟨-2⟩`, the finite shell remains in `Sets().Finite()` and has cardinality two.
 
 **Cross-family result-placement follow-up (2026-10-10).** The earlier full
