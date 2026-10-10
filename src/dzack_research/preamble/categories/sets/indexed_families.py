@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from itertools import islice
 from typing import TYPE_CHECKING, Any
 
@@ -80,6 +80,10 @@ class IndexedFamily[IndexT, ValueT]:
             sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0],)))
             sage: family.value([0]) is family.value([0])
             True
+            sage: labels = finite_ordered_set((([0],),))
+            sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0][0],)))
+            sage: family.value(([0],)) is family.value(([0],))
+            True
         """
         return self._value_at_normalized_index(self.index_set()(index))
 
@@ -91,26 +95,32 @@ class IndexedFamily[IndexT, ValueT]:
         mathematical operation and can be expensive for represented index
         sets, so the internal iteration path enters the value cache directly.
         Public ``value(index)`` still performs the canonical normalization.
+
+        This is the Python memoization boundary. A tuple may implement the
+        hash protocol while containing an unhashable label. Only that hash
+        computation is caught; errors from the mathematical value constructor
+        propagate without selecting another cache or constructing twice.
         """
-        match normalized:
-            case Hashable():
-                missing = object()
-                cached = self._value_cache.get(normalized, missing)
-                if cached is not missing:
-                    return cached
-                value = self._value_function(normalized)
-                self._value_cache[normalized] = value
-                return value
-            case _:
-                # Hashability is representation data, not a hypothesis on an
-                # indexing set. Only unhashable labels actually requested are
-                # retained on this exact fallback path.
-                for known, value in self._unhashable_value_cache:
-                    if (normalized == known) is True:
-                        return value
-                value = self._value_function(normalized)
-                self._unhashable_value_cache.append((normalized, value))
-                return value
+        try:
+            hash(normalized)
+        except TypeError:
+            # Hashability is representation data, not a hypothesis on an
+            # indexing set. Only unhashable labels actually requested are
+            # retained on this exact fallback path.
+            for known, value in self._unhashable_value_cache:
+                if (normalized == known) is True:
+                    return value
+            value = self._value_function(normalized)
+            self._unhashable_value_cache.append((normalized, value))
+            return value
+        else:
+            missing = object()
+            cached = self._value_cache.get(normalized, missing)
+            if cached is not missing:
+                return cached
+            value = self._value_function(normalized)
+            self._value_cache[normalized] = value
+            return value
 
     __call__ = value
 
