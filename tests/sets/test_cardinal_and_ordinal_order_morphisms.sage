@@ -148,3 +148,18 @@ def test_nonidentity_well_order_maps_compose_with_exact_endpoints() -> None:
         pass
     else:
         raise AssertionError("an order-reversing map was admitted to well-ordered Mor")
+
+
+def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
+    left = finite_ordered_set(("b", "a", "c"))
+    right = finite_ordered_set(("c", "d"))
+    union = left.union(right)
+    intersection = left.intersection(right)
+    difference = left.difference(right)
+    assert tuple(union) == ("b", "a", "c", "d")
+    assert tuple(intersection) == ("c",)
+    assert tuple(difference) == ("b", "a")
+    assert all(result in WellOrderedSets() for result in (union, intersection, difference))
+    assert (union.order_type(), intersection.order_type(), difference.order_type()) == (
+        Ordinals()(4), Ordinals()(1), Ordinals()(2)
+    )
