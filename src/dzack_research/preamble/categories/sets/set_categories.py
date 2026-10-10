@@ -2921,11 +2921,6 @@ class _ImageSetEngine:
                 distinct.append(value)
         return tuple(distinct)
 
-    @cached_method
-    def _finite_image(self):
-        r"""Distinct image values, including points without a Python hash."""
-        return self._distinct_values()
-
     def __iter__(self):
         assert Sets().is_provably_finite(self.source_set()) and self.source_set() in EnumeratedSets(), (
             f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
@@ -2938,7 +2933,7 @@ class _ImageSetEngine:
         source = self.source_set()
         match source:
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
-                return element in self._finite_image()
+                return element in self._distinct_values()
             case _ if self._image_inverse is not None:
                 preimage = self._image_inverse(element)
                 return preimage in source and self.image_map()(source(preimage)) == element
