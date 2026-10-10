@@ -1066,15 +1066,23 @@ class QuotientRings(OwnedCategory):
             )
 
         def minimal_prime_locus(self):
-            r"""The (possibly infinite) generic points of irreducible components.
+            r"""All minimal prime *subsets* of this ring, including non-finitely generated primes.
 
-            A prime ``p`` is minimal when no prime lies strictly below it.
-            This is a predicate subspace of the full prime spectrum, not an
-            enumerated family of ideals or a finite associated-prime list.
+            The full ideal universe is a predicate subset of ``P(R)``. In
+            particular, this does not rely on points built from the finite
+            generator presentations used by the computational spectrum.
             """
-            spectrum = self.spectrum()
-            return spectrum.condition_set(
-                lambda point: AtomicProposition("is_minimal_prime", point)
+            prime_subsets = self.prime_ideal_locus()
+            return prime_subsets.condition_set(
+                lambda ideal_subset: AtomicProposition(
+                    "is_minimal_prime_ideal_subset", ideal_subset, self
+                )
+            )
+
+        def prime_ideal_locus(self):
+            r"""All prime ideals of this ring as subsets, not finite presentations."""
+            return self.power_set().condition_set(
+                lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
             )
 
         @cached_method
@@ -1105,9 +1113,13 @@ class QuotientRings(OwnedCategory):
             This does not assume a finite list of prime ideals.
             """
             from dzack_research.preamble.categories.sets.set_categories import Sets
-            spectrum = self.spectrum()
+            prime_subsets = self.prime_ideal_locus()
             return Sets().image_set(
-                lambda point: spectrum.closed_set(point.ideal()),
+                lambda minimal_prime: prime_subsets.condition_set(
+                    lambda prime: AtomicProposition(
+                        "contains_ideal_subset", prime, minimal_prime
+                    )
+                ),
                 self.minimal_prime_locus(),
             )
 
