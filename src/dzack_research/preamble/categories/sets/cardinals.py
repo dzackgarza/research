@@ -433,7 +433,7 @@ class Cardinalities(OwnedCategory):
                 return FiniteSets()
             case _, _ if exponent in FiniteSets() and codomain in CountableSets() and codomain in InfiniteSets():
                 return CountablyInfiniteSets()
-            case _, _ if exponent in FiniteSets() and codomain in CountableSets():
+            case _, _ if Sets().is_provably_finite(exponent) and codomain in CountableSets():
                 return CountableSets()
             case _, _ if exponent in FiniteSets() and codomain in UncountableSets():
                 return UncountableSets()
