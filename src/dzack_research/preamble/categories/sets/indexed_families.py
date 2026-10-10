@@ -30,11 +30,15 @@ class IndexedFamily[IndexT, ValueT]:
     def __init__(
         self,
         index_set: Parent,
-        value: Callable[[IndexT], ValueT],
+        value: Callable[[IndexT], ValueT] | Parent,
         *,
         name: str | None = None,
         **rest,
     ) -> None:
+        self._constant_value = value if isinstance(value, Parent) else None
+        if isinstance(value, Parent):
+            selected = value
+            value = lambda _index: selected
         if not callable(value):
             raise TypeError(
                 f"an indexed family over {index_set} needs a map from indices to values, but {value!r} is "
@@ -49,6 +53,10 @@ class IndexedFamily[IndexT, ValueT]:
 
     def index_set(self) -> SetObject:
         return self._index_set
+
+    def constant_value(self):
+        r"""The defining value of a constant family, or ``None`` otherwise."""
+        return self._constant_value
 
     def cardinality(self) -> Cardinal:
         from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -232,7 +240,7 @@ class IndexedFamily[IndexT, ValueT]:
 
 def indexed_family[IndexT, ValueT](
     index_set: Parent,
-    value: Callable[[IndexT], ValueT],
+    value: Callable[[IndexT], ValueT] | Parent,
     *,
     name: str | None = None,
 ) -> IndexedFamily[IndexT, ValueT]:

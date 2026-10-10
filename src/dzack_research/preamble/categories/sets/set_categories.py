@@ -2973,9 +2973,12 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    if Sets().is_provably_finite(index_set):
-        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
+    constant = family.constant_value()
+    if constant is not None and constant in AdditiveMonoids():
+        placements.append(CartesianProductsOfAdditiveMonoids())
+    if Sets().is_provably_finite(index_set):
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
         if index_set in EnumeratedSets():

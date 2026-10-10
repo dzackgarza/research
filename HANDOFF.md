@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Infinite constant additive products constructed (2026-10-10):** `indexed_family(NN,A)` now represents the genuinely constant family with selected object `A`, rather than an opaque lambda whose values cannot be proved to lie in one category. `CartesianProductsOfSets` derives additive-monoid placement from that selected value without enumerating the infinite index. Focused Sage owner checks pass for category membership, nonconstant sections, componentwise addition and zero after projection at index two, and nonmonoid constant families receiving no additive placement. General nonconstant infinite families still require a typed functor/category of values; the separate `infinite-index-additive-product-placement` TODO retains that requirement and is not closed.
+
+
 **Additive-product projection Mor corrected (2026-10-10):** The already selected `CartesianProductsOfAdditiveMonoids` now constructs each factor projection in `AdditiveMonoids().Mor(product,factor)` rather than merely `Sets().Mor`. The actual finite product of two additive monoids retains zero and componentwise addition; a focused Sage owner regression verifies the projection has that exact Mor parent, sends zero to zero and preserves a nonzero doubled element. Infinite-index additive placement still requires the selected value-category family datum under `infinite-index-additive-product-placement`; this finite-arrow correction does not claim its closure.
 
 

@@ -34,6 +34,34 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
     assert projection(point + point) == projection(point) + projection(point)
 
 
+def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import (
+        CartesianProductsOfAdditiveMonoids,
+    )
+
+    factor = AdditiveMonoids().an_object()
+    family = indexed_family(NN, factor)
+    product = Sets().product(family)
+    assert family.constant_value() is factor
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert product in AdditiveMonoids()
+    varying = product(lambda index: factor(int(index)))
+    unit = product(lambda index: factor.one())
+    zero = product.zero()
+    projection = product.projection(NN(2))
+    assert projection.parent() is AdditiveMonoids().Mor(product, factor)
+    assert projection(varying) != projection(product(lambda index: factor.zero()))
+    assert projection(varying + zero) == projection(varying)
+    assert projection(varying + unit) == projection(varying) + projection(unit)
+    assert projection(zero) == factor.zero()
+
+    nonmonoid = Sets().product(indexed_family(NN, Sets.Δ[1]))
+    assert nonmonoid not in CartesianProductsOfAdditiveMonoids()
+    assert nonmonoid not in AdditiveMonoids()
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
