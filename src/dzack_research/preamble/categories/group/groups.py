@@ -3683,18 +3683,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         def left_cosets(self, subgroup):
             r"""Return the represented left-coset space ``G/H``."""
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    from dzack_research.preamble.categories.group.g_sets import (
-                        _left_coset_g_set,
-                    )
-
-                    return _left_coset_g_set(self, subgroup)
-                case _:
-                    assert False, (
-                        f"the left cosets of {subgroup} in {self} are defined, but the current "
-                        "preamble materializes coset spaces only for finite represented groups"
-                    )
+            from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
+            return _left_coset_g_set(self, subgroup)
 
         def right_cosets(self, subgroup):
             r"""Return the represented right-coset space ``H\\G``."""
