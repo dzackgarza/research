@@ -592,11 +592,23 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
-                raise NotImplementedError(
-                    f"the associated-prime locus of {self} is not necessarily finite; "
-                    "this realization enumerates it only over a Noetherian ring"
-                )
+                return self.associated_prime_locus()
             return self.finite_associated_primes()
+
+        def associated_prime_locus(self):
+            r"""All primes ``(I:a)`` for ``a`` in ``R`` with ``(I:a)`` prime.
+
+            These are precisely the annihilators of nonzero elements in
+            ``R/I`` which happen to be prime. The index is a predicate
+            subset of ``R`` and its image may be infinite; no enumeration
+            or Noetherian hypothesis is involved in this definition.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            ring = self.ring()
+            candidate = lambda a: self.colon(ring.ideal(a))
+            elements = ring.condition_set(lambda a: candidate(a).is_prime())
+            return Sets().image_set(candidate, elements)
 
         def finite_associated_primes(self):
             r"""Finite associated-prime enumeration, only for Noetherian rings."""
