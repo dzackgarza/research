@@ -252,6 +252,10 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
         def geometric_genus(self):
             r"""The genus of the normalization, or the arithmetic genus when smooth."""
+            assert self.scheme_base_ring() in OwnedFields(), (
+                f"the geometric genus of {self} by normalization requires a field base, "
+                f"not {self.scheme_base_ring()}"
+            )
             assert self in Schemes(self.scheme_base_ring()).Projective(), (
                 f"the geometric genus is computed only for projective curves, but {self} is not "
                 f"known to be projective over {self.scheme_base_ring()}"
