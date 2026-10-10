@@ -1068,7 +1068,10 @@ class LocalizationRings(OwnedCategory):
                         for generator in ideal.ideal_generators()
                     ))
                 case _ if self.is_fraction_field_localization():
-                    return ideal != ring.ideal(ring.zero())
+                    return negation(conjunction(
+                        generator == ring.zero()
+                        for generator in ideal.ideal_generators()
+                    ))
                 case _:
                     element = prod(self.inverted_elements(), ring.one())
                     return ideal.ideal_saturation(ring.ideal(element)).contains_ambient_element(ring.one())
@@ -1513,6 +1516,113 @@ class LocalizationRings(OwnedCategory):
                         "for a localization R[1/f] at a single element f"
                     )
             return inverted[0]
+
+        def quotient_contraction_map(self, quotient):
+            r"""The canonical injection R/I -> (S^-1 R)/J, with I contracted from J.
+
+            The exact selected quotient must have this localization as its
+            source. Extension of its contracted ideal is J (Stacks, 02C9),
+            and quotient commutes with localization (00CT). Hence this map
+            is injective and presents the target as a localization of its
+            retained domain. It need not be an isomorphism.
+
+            Contraction is computed when this construction is requested;
+            neither the source localization nor the quotient is reconstructed.
+            """
+            morphism = self._quotient_contraction_map_decision(quotient)
+            assert morphism is not None, (
+                "the canonical contraction map requires an exact source-ideal contraction in the selected representation"
+            )
+            return morphism
+
+        @cached_method
+        def _quotient_contraction_map_decision(self, quotient):
+            r"""Protected canonical-map result, or None at the computation frontier.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            quotient_contraction_map, this owner's finite comparison, and
+            the QuotientRings finiteness hook. The input is an exact quotient
+            of this localization. The output is the canonical owned ring
+            arrow from its contracted source quotient to that same input,
+            or None when the ideal owner has no selected contraction result.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
+            if quotient not in QuotientRings() or quotient.quotient_source() is not self:
+                raise ValueError(
+                    f"the contraction comparison from {self} requires its exact selected quotient, not {quotient}"
+                )
+            contracted = quotient.defining_ideal()._localization_contraction_decision()
+            if contracted is None:
+                return None
+            source_quotient = contracted.quotient_ring()
+            localization_map = self.localization_map()
+            quotient_map = quotient.quotient_map()
+
+            def image(element):
+                return quotient_map(localization_map(source_quotient(element).lift()))
+
+            return OwnedRings().Mor(source_quotient, quotient)(image)
+
+        @cached_method
+        def _finite_quotient_contraction_isomorphism(self, quotient):
+            r"""Protected exact finite comparison, or None when it is unavailable.
+
+            Owner: LocalizationRings.ParentMethods. The permitted callers
+            are quotient_contraction_isomorphism and the QuotientRings finite
+            computation adapters. The input is an owned quotient with this
+            exact localization as source. The result is an owned ring-core
+            isomorphism from quotient_contraction_map(quotient).domain() to
+            that exact quotient, retaining the same forward arrow.
+
+            The contraction is S-saturated, so multiplication by each image
+            of S is injective on the contracted quotient B. When B is finite
+            as a set, multiplication is surjective, hence that image is a
+            unit. The inverse sends the class of a/s to [a] [s]^-1. No
+            enumeration or property of the target quotient is used to prove
+            this. Finiteness alone does not supply a computation engine.
+            """
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _isomorphism_from_known_inverse_pair,
+            )
+
+            forward = self._quotient_contraction_map_decision(quotient)
+            if forward is None:
+                return None
+            source_quotient = forward.domain()
+            if source_quotient.is_finite() is not True:
+                return None
+            source_projection = source_quotient.quotient_map()
+            zero_quotient = (source_quotient.one() == source_quotient.zero()) is True
+
+            def inverse_image(element):
+                if zero_quotient:
+                    return source_quotient.zero()
+                numerator, denominator = self.localization_fraction_data(
+                    quotient(element).lift()
+                )
+                return source_projection(numerator) * source_projection(
+                    denominator
+                ).inverse_of_unit()
+
+            inverse = OwnedRings().Mor(quotient, source_quotient)(inverse_image)
+            return _isomorphism_from_known_inverse_pair(
+                forward, inverse, base_category=OwnedRings()
+            )
+
+        def quotient_contraction_isomorphism(self, quotient):
+            r"""Return the retained ring isomorphism when the contracted quotient is finite.
+
+            The canonical injection is invertible precisely when its domain
+            already inverts S. Finite cardinality proves this sufficient case;
+            an unavailable finite computation is not proof that the map is
+            noninvertible for an infinite domain.
+            """
+            comparison = self._finite_quotient_contraction_isomorphism(quotient)
+            assert comparison is not None, (
+                "the selected contraction-isomorphism computation requires a contracted quotient known to be finite"
+            )
+            return comparison
 
         def induced_morphism(self, morphism):
             r"""Return the unique ``S^{-1}R -> T`` extending ``g: R -> T``.
@@ -2524,6 +2634,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def total_quotient_map(self):
                 r"""The canonical injection into the localization at all regular elements."""
                 if (self.one() == self.zero()) is True:
+                    return OwnedRings().Mor(self, self).identity()
+                if self.is_finite() is True:
+                    # Multiplication by a regular element is injective on
+                    # this finite set, hence surjective; every regular
+                    # element is already a unit, including in nonreduced rings.
                     return OwnedRings().Mor(self, self).identity()
                 if self in OwnedRings().Commutative().NoZeroDivisors():
                     return self.fraction_field_map()

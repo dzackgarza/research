@@ -9,6 +9,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.multi_polynomial_libsingular import MPolynomialRing_libsingular
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -38,6 +39,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import owned_category_join
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 
 def _engine_commutative_ideal(ideal):
@@ -170,7 +172,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             )
             return generators
 
-        def __eq__(self, other) -> bool:
+        def __eq__(self, other):
             r"""Two ideals of one ring are equal when each contains the other.
 
             Over a localization the equality is decided that way rather than by
@@ -183,17 +185,15 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if other not in CommutativeIdeals(self.ring()):
                 return False
             if self.ring() in LocalizationRings():
-                return all(
-                    other.contains_ambient_element(generator)
-                    for generator in self.ideal_generators()
-                ) and all(
-                    self.contains_ambient_element(generator)
-                    for generator in other.ideal_generators()
+                return conjunction(
+                    target.contains_ambient_element(generator)
+                    for source, target in ((self, other), (other, self))
+                    for generator in source.ideal_generators()
                 )
             return bool(self._engine_ideal() == other._engine_ideal())
 
-        def __ne__(self, other) -> bool:
-            return not self == other
+        def __ne__(self, other):
+            return negation(self == other)
 
         def __hash__(self):
             r"""Hash on the ring alone, which equality then refines.
@@ -213,7 +213,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if op not in (op_EQ, op_NE):
                 return NotImplemented
             equal = self == other
-            return equal if op == op_EQ else not equal
+            return equal if op == op_EQ else negation(equal)
 
         def _engine_ideal(self):
             r"""Return this ideal's private selected computation realization.
@@ -252,6 +252,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _localized_commutative_ideal(self, localization_ring)
 
         def is_prime(self):
+            if self.ring() in LocalizationRings():
+                # Prime ideals correspond exactly under extension and
+                # contraction along a localization, with properness retained.
+                contracted = self._localization_contraction_decision()
+                if contracted is None:
+                    return AtomicProposition("is_prime_ideal", self)
+                return contracted.is_prime()
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_prime())
@@ -263,6 +270,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(selected.is_prime())
 
         def is_maximal(self):
+            ring = self.ring()
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
+
+                contracted = self._localization_contraction_decision()
+                if contracted is None:
+                    return AtomicProposition("is_maximal_ideal", self)
+                if ring in PrimeLocalizations():
+                    # The unique maximal ideal of R_p contracts to p.
+                    return contracted == ring.localized_prime()
+                maximal = contracted.is_maximal()
+                if maximal is True:
+                    return True
+                # A finite saturated quotient already inverts S. Without
+                # this hypothesis, a nonmaximal contraction can become maximal.
+                if contracted.quotient_ring().is_finite() is True:
+                    return maximal
+                return AtomicProposition("is_maximal_ideal", self)
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_maximal())
@@ -293,6 +318,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             lift is nilpotent modulo the preimage, so ``sqrt(I)`` is
             ``sqrt(I~)/K``.
             """
+            radical = self._radical_decision()
+            assert radical is not None, (
+                f"the radical of {self} requires a selected exact ideal-radical algorithm"
+            )
+            return radical
+
+        def _radical_decision(self):
+            r"""Protected exact radical result, or None at its algorithm frontier.
+
+            Owner: CommutativeIdeals.ParentMethods. Permitted callers are
+            radical, this owner's source/presentation ideal transports, and
+            QuotientRings._reducedness_decision. The result is an ideal of
+            this exact ring, never an ideal of its larger computation model.
+            """
             ring = self.ring()
             if ring in LocalizationRings():
                 source_ideal = self._localization_source_ideal
@@ -301,7 +340,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 )
                 # Radicals commute with localization, including when the
                 # selected fraction model is larger than the actual ring.
-                return source_ideal.radical().extension_to_localization(ring)
+                radical = source_ideal._radical_decision()
+                return None if radical is None else radical.extension_to_localization(ring)
             if ring._has_selected_exact_coefficient_presentation():
                 presentation_ring = ring._exact_coefficient_presentation_ring()
                 lifted_generators = tuple(
@@ -321,7 +361,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         or (presentation_ring.zero(),)
                     )
                 )
-                radical = lifted.radical()
+                radical = lifted._radical_decision()
+                if radical is None:
+                    return None
                 descended_generators = tuple(
                     ring._descend_coefficient_from_presentation(generator)
                     for generator in radical.ideal_generators()
@@ -329,9 +371,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return ring.ideal(
                     *(descended_generators or (ring.zero(),))
                 )
+            if self._selected_engine_ideal is None:
+                return None
             if _realized_as_quotient(ring):
-                return _descend_cover_ideal(ring, _cover_lifted_ideal(self).radical())
-            return _from_engine_ideal(ring, self._engine_ideal().radical())
+                cover = _cover_lifted_ideal(self)
+                radical = _from_engine_ideal(_own_ring(cover.ring()), cover)._radical_decision()
+                return None if radical is None else _descend_cover_ideal(
+                    ring, radical._engine_ideal()
+                )
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                return _from_engine_ideal(ring, self._engine_ideal().radical())
+            engine = _engine_ring(ring)
+            if isinstance(engine, MPolynomialRing_libsingular) and engine.base_ring().is_field():
+                return _from_engine_ideal(ring, self._engine_ideal().radical())
+            return None
 
         def colon(self, other):
             r"""Return the ideal quotient ``(I : J)``.
@@ -445,6 +498,23 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             primary-decomposition owner. It neither enumerates S nor reads
             an ideal of a larger fraction-field computation model.
             """
+            contracted = self._localization_contraction_decision()
+            assert contracted is not None, (
+                f"contracting {self} requires a selected source saturation or primary decomposition with decided component survival"
+            )
+            return contracted
+
+        @cached_method
+        def _localization_contraction_decision(self):
+            r"""Protected exact contraction result, or None when it is unavailable.
+
+            Owner: CommutativeIdeals.ParentMethods. Permitted callers are
+            this owner's contraction and ideal predicates, and
+            LocalizationRings._quotient_contraction_map_decision. The input
+            ideal retains a source ideal whose localization it is. A result
+            is the S-saturated ideal of that exact source; None records an
+            unavailable algorithm, never a negative mathematical answer.
+            """
             from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
 
             source_ideal = self._localization_source_ideal
@@ -456,21 +526,51 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             submonoid = localization_ring.localization_submonoid()
             source_ring = localization_ring.localization_source()
             if localization_ring in PrimeLocalizations():
+                components = source_ideal._finite_primary_decomposition_decision()
+                if components is None:
+                    return None
                 contracted = source_ring.ideal(source_ring.one())
-                for component in source_ideal.finite_primary_decomposition():
+                for component in components:
                     match localization_ring.inverted_submonoid_meets(component):
                         case False:
                             contracted = contracted.intersection(component)
                         case True:
                             pass
                         case _:
-                            raise NotImplementedError(
-                                f"cannot decide whether the primary component {component} survives in {localization_ring}"
-                            )
+                            return None
                 return contracted
+            if localization_ring.is_fraction_field_localization():
+                match localization_ring.inverted_submonoid_meets(source_ideal):
+                    case True:
+                        return source_ring.ideal(source_ring.one())
+                    case False:
+                        return source_ideal
+                    case _:
+                        return None
+            if submonoid._selected_representation_kind() != "generators":
+                return None
             generators = tuple(submonoid.monoid_generators())
             if not generators:
                 return source_ideal
+
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+
+            if source_ring not in OwnedNoetherianRings():
+                return None
+            selected = source_ideal._selected_engine_ideal
+            if selected is None:
+                return None
+            engine = selected.ring()
+            if isinstance(engine, QuotientRing_generic):
+                engine = engine.cover_ring()
+            if not (
+                source_ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+                or (
+                    isinstance(engine, MPolynomialRing_libsingular)
+                    and engine.base_ring().is_field()
+                )
+            ):
+                return None
 
             product = source_ring.one()
             for generator in generators:
@@ -479,7 +579,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         contraction = contraction_from_localization
 
-        def contains_ambient_element(self, element) -> bool:
+        def contains_ambient_element(self, element):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
@@ -488,6 +588,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 numerator, _denominator = ring.localization_fraction_data(value)
                 structure = ring.localization_submonoid()._structure_data()
                 if structure.get("kind") == "prime_complement":
+                    from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+
+                    if source_ideal.ring() not in OwnedNoetherianRings():
+                        return AtomicProposition("contains_ambient_element", self, value)
                     # ``a/s`` lies in ``I R_p`` exactly when some element
                     # outside ``p`` carries ``a`` into ``I``, and the elements
                     # that carry ``a`` into ``I`` are the colon ideal
@@ -496,15 +600,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     # when its generators do.  The complement of a prime has no
                     # finite generating set. This membership criterion needs
                     # no selected primary decomposition of the source ideal.
-                    prime = structure["prime_ideal"]
                     source = source_ideal.ring()
                     colon_ideal = source_ideal.colon(source.ideal(numerator))
-                    return any(
-                        not prime.contains_ambient_element(generator)
-                        for generator in colon_ideal.ideal_generators()
-                    )
-                contracted = self.contraction_from_localization()
-                return _engine_ring_value(contracted.ring(), numerator) in contracted._engine_ideal()
+                    return ring.inverted_submonoid_meets(colon_ideal)
+                contracted = self._localization_contraction_decision()
+                if contracted is None:
+                    return AtomicProposition("contains_ambient_element", self, value)
+                return contracted.contains_ambient_element(numerator)
             return _engine_element(ring, value) in self._engine_ideal()
 
         def __contains__(self, candidate) -> bool:
@@ -651,42 +753,134 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ring = self.ring()
             if ring not in OwnedNoetherianRings():
                 raise TypeError("finite primary decomposition requires a Noetherian ring")
+            components = self._finite_primary_decomposition_decision()
+            assert components is not None, (
+                f"finite primary decomposition of {self} requires a selected exact source algorithm and decided localization survival"
+            )
+            return components
+
+        def _finite_primary_decomposition_decision(self):
+            r"""Owner-local exact primary family, or None when none is selected.
+
+            Used by finite_primary_decomposition and this same ideal owner's
+            localization/quotient-cover transports. Every returned component
+            belongs to the actual ring of this ideal; the family is empty
+            exactly for the unit ideal. No finite enumeration is claimed for
+            a ring outside the selected Noetherian regime.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+
+            ring = self.ring()
+            if ring not in OwnedNoetherianRings():
+                return None
             if ring in LocalizationRings():
-                source_ideal = self._localization_source_ideal
-                assert source_ideal is not None, (
-                    "a localized ideal must retain the source ideal whose extension it is"
-                )
-                components = []
-                for component in source_ideal.finite_primary_decomposition():
-                    match ring.inverted_submonoid_meets(component):
-                        case True:
-                            pass
-                        case False:
-                            components.append(component.extension_to_localization(ring))
-                        case _:
-                            raise NotImplementedError(
-                                f"cannot decide whether the primary component {component} survives in {ring}"
-                            )
-                return finite_ordered_set(tuple(components))
+                return self._finite_localized_ideal_family("_finite_primary_decomposition_decision")
+            if self._selected_engine_ideal is None:
+                return None
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                 generator = _pid_principal_ideal_generator(self)
-                if generator.is_unit() is True:
-                    return finite_ordered_set(())
-                if (generator == ring.zero()) is True:
-                    return finite_ordered_set((self,))
+                match generator.is_unit():
+                    case True:
+                        return finite_ordered_set(())
+                    case False:
+                        pass
+                    case _:
+                        return None
+                match generator == ring.zero():
+                    case True:
+                        return finite_ordered_set((self,))
+                    case False:
+                        pass
+                    case _:
+                        return None
                 return finite_ordered_set(tuple(
                     ring.ideal(prime ** int(exponent))
                     for prime, exponent in generator.factor().items()
                 ))
-            return self._finite_engine_ideal_family("primary_decomposition")
+            if _realized_as_quotient(ring):
+                return self._finite_engine_ideal_family("primary_decomposition")
+            engine = _engine_ring(ring)
+            if isinstance(engine, MPolynomialRing_libsingular) and engine.base_ring().is_field():
+                return self._finite_engine_ideal_family("primary_decomposition")
+            return None
+
+        def finite_minimal_primes(self):
+            r"""The finite family of minimal primes over this ideal, when computed.
+
+            In a PID they are the radicals of the distinct prime-power
+            components. A localization retains exactly the source minimal
+            primes disjoint from S and extends them into the actual ring.
+            Other selected Noetherian presentations use their maintained
+            minimal-associated-prime algorithm at the existing ideal ingress.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+
+            ring = self.ring()
+            if ring not in OwnedNoetherianRings():
+                raise TypeError("finite minimal-prime enumeration requires a Noetherian ring")
+            if ring in LocalizationRings():
+                primes = self._finite_localized_ideal_family("finite_minimal_primes")
+                assert primes is not None, (
+                    f"finite minimal-prime enumeration of {self} requires decided localization survival"
+                )
+                return primes
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                return finite_ordered_set(tuple(
+                    component.radical() for component in self.finite_primary_decomposition()
+                ))
+            return self._finite_engine_ideal_family("minimal_associated_primes")
+
+        def _finite_localized_ideal_family(self, operation):
+            r"""Extend the surviving source primary or minimal-prime family.
+
+            Owner-local transport used only by the primary-decomposition
+            decision and finite minimal/associated-prime owners, with operation naming that
+            source owner. Every input component is primary; it survives
+            precisely when disjoint from the multiplicative system. None
+            retains an unavailable source family or undecided survival.
+            """
+            ring = self.ring()
+            source_ideal = self._localization_source_ideal
+            assert source_ideal is not None, (
+                "a localized ideal must retain the source ideal whose extension it is"
+            )
+            source_components = getattr(source_ideal, operation)()
+            if source_components is None:
+                return None
+            components = []
+            for component in source_components:
+                match ring.inverted_submonoid_meets(component):
+                    case True:
+                        pass
+                    case False:
+                        components.append(component.extension_to_localization(ring))
+                    case _:
+                        return None
+            return finite_ordered_set(tuple(components))
 
         def _finite_engine_ideal_family(self, operation):
-            r"""Read one finite engine ideal family through the owned ideal ingress."""
+            r"""Read one finite ideal family through its exact presentation.
+
+            Quotient covers recurse through the owned ideal operation, so
+            a PID cover uses its owned factorization algorithm. The primary
+            decision may return None; exact public family owners assert at
+            their frontier. Nonquotient engines supply the selected family.
+            """
             ring = self.ring()
             if _realized_as_quotient(ring):
+                cover = _cover_lifted_ideal(self)
+                cover_ideal = _from_engine_ideal(_own_ring(cover.ring()), cover)
+                source_operation = {
+                    "primary_decomposition": "_finite_primary_decomposition_decision",
+                    "minimal_associated_primes": "finite_minimal_primes",
+                    "associated_primes": "finite_associated_primes",
+                }[operation]
+                family = getattr(cover_ideal, source_operation)()
+                if family is None:
+                    return None
                 return finite_ordered_set(tuple(
-                    _descend_cover_ideal(ring, ideal)
-                    for ideal in getattr(_cover_lifted_ideal(self), operation)()
+                    _descend_cover_ideal(ring, ideal._engine_ideal())
+                    for ideal in family
                 ))
             return finite_ordered_set(tuple(
                 _from_engine_ideal(self.ring(), ideal)
@@ -735,8 +929,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def finite_associated_primes(self):
             r"""Finite associated-prime enumeration, only for Noetherian rings."""
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-            if self.ring() not in OwnedNoetherianRings():
+            ring = self.ring()
+            if ring not in OwnedNoetherianRings():
                 raise TypeError("finite associated-prime enumeration requires a Noetherian ring")
+            if ring in LocalizationRings():
+                primes = self._finite_localized_ideal_family("finite_associated_primes")
+                assert primes is not None, (
+                    f"finite associated-prime enumeration of {self} requires decided localization survival"
+                )
+                return primes
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                # A principal ideal in a PID has no embedded associated primes.
+                return self.finite_minimal_primes()
             return self._finite_engine_ideal_family("associated_primes")
 
         def _repr_(self):
@@ -844,10 +1048,20 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
             cover = engine.cover_ring()
             defining = engine.defining_ideal()
             lifted = tuple(engine(generator).lift() for generator in selected)
-            augmented = cover.ideal(lifted + tuple(defining.gens()))
+            augmented_generators = lifted + tuple(defining.gens())
+            if cover is SageZZ:
+                # Keep the ordered augmented family: ZZ.ideal would replace
+                # it by its gcd and lose the relation coordinates. Integral
+                # kernel rows give all relations modulo the defining integer.
+                relation_rows = matrix(
+                    SageZZ, tuple((entry,) for entry in augmented_generators)
+                ).left_kernel().basis()
+            else:
+                augmented = cover.ideal(augmented_generators)
+                relation_rows = _polynomial_syzygy_rows(augmented)
             rows = tuple(
                 tuple(engine(entry) for entry in row[: len(selected)])
-                for row in _polynomial_syzygy_rows(augmented)
+                for row in relation_rows
             )
             zero = engine.zero()
             return tuple(

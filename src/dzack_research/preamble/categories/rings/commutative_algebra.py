@@ -747,6 +747,12 @@ class QuotientRings(OwnedCategory):
             if source is self:
                 return value
             quotient_source = self.quotient_source()
+            if source is quotient_source or quotient_source in LocalizationRings():
+                # A class of an actual source element needs no computation
+                # model, including for localizations with zero divisors.
+                # The quotient factory supplies no native quotient engine
+                # for a localized source; its exact comparison is separate.
+                return self.element_class(self, quotient_source(value))
             source_engine = _engine_ring(quotient_source)
             value_parent = source
             quotient_engine = self._preamble_engine_ring
@@ -778,30 +784,53 @@ class QuotientRings(OwnedCategory):
         def _from_engine_element(self, value):
             r"""Cross one element of the selected quotient engine into this quotient."""
             engine = self._preamble_engine_ring
-            assert engine is not None, (
+            if engine is not None:
+                return self._element_constructor_(engine(value))
+            comparison = self._finite_localized_quotient_isomorphism()
+            assert comparison is not None, (
                 f"cannot convert {value} into the quotient ring {self}: it has no computer-algebra model"
             )
-            return self._element_constructor_(engine(value))
+            return comparison.forward()(_owned_engine_element(comparison.domain(), value))
 
         def _selected_engine_ring(self):
             r"""Return this quotient's selected private computation realization."""
             engine = self._preamble_engine_ring
-            assert engine is not None, (
+            if engine is not None:
+                return engine
+            comparison = self._finite_localized_quotient_isomorphism()
+            assert comparison is not None, (
                 "this quotient operation requires a selected computation realization"
             )
-            return engine
+            return _engine_ring(comparison.domain())
 
         def _engine_element(self, value):
             engine = self._preamble_engine_ring
-            assert engine is not None, (
-                f"cannot compute with {value} in the quotient ring {self}: it has no computer-algebra model"
-            )
+            if engine is None:
+                comparison = self._finite_localized_quotient_isomorphism()
+                assert comparison is not None, (
+                    f"cannot compute with {value} in the quotient ring {self}: it has no computer-algebra model"
+                )
+                return _engine_element(comparison.domain(), comparison.inverse()(self(value)))
             element = self(value)
             source_value = _engine_element(self.quotient_source(), element.lift())
             quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
             if quotient_map is not None:
                 return quotient_map(source_value)
             return engine(source_value)
+
+        def _finite_localized_quotient_isomorphism(self):
+            r"""Select the localization owner's retained finite comparison.
+
+            This owner-local dispatcher is used only by this quotient's
+            computation crossings and invariant hooks. A native quotient
+            keeps its own selected engine; a quotient of a localization may
+            compute through an exact finite isomorphism without replacing its
+            source, defining ideal, projection, or category placement.
+            """
+            source = self.quotient_source()
+            if source in LocalizationRings():
+                return source._finite_quotient_contraction_isomorphism(self)
+            return None
 
         def _quotient_unit_inverse(self, element):
             r"""Private parent computation for the monoid unit-inverse hook.
@@ -813,8 +842,13 @@ class QuotientRings(OwnedCategory):
             it has no inverse computation, and a proved nonunit raises
             ZeroDivisionError.
             """
+            if self._is_zero_ring() is True:
+                return self.zero()
             if self._preamble_engine_ring is None:
-                return None
+                comparison = self._finite_localized_quotient_isomorphism()
+                if comparison is None:
+                    return None
+                return comparison.forward()(comparison.inverse()(element).inverse_of_unit())
             represented = self._engine_element(element)
             if not represented.is_unit():
                 raise ZeroDivisionError(f"{element} is not a unit in {self}")
@@ -840,7 +874,15 @@ class QuotientRings(OwnedCategory):
                 return True
             if self._preamble_engine_ring is not None:
                 return bool(self._preamble_engine_ring.is_finite())
-            source_engine = _engine_ring(self.quotient_source())
+            source = self.quotient_source()
+            if source in LocalizationRings():
+                # The canonical contracted quotient embeds into this
+                # localization; if finite, it already inverts S.
+                comparison = source._quotient_contraction_map_decision(self)
+                if comparison is None:
+                    return AtomicProposition("is_finite", self)
+                return comparison.domain().is_finite()
+            source_engine = _engine_ring(source)
             if isinstance(source_engine, SageNumberFieldOrder):
                 return not _engine_ideal(
                     self.quotient_source(), self.defining_ideal()
@@ -854,6 +896,9 @@ class QuotientRings(OwnedCategory):
                 return cardinal(1)
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
+            if self.quotient_source() in LocalizationRings():
+                comparison = self._finite_localized_quotient_isomorphism()
+                return None if comparison is None else comparison.domain().cardinality()
             source_engine = _engine_ring(self.quotient_source())
             if isinstance(source_engine, SageNumberFieldOrder):
                 defining = _engine_ideal(
@@ -882,23 +927,20 @@ class QuotientRings(OwnedCategory):
             r"""Return whether R/I is a field, equivalently whether I is maximal."""
             if self._is_zero_ring() is True:
                 return False
-            if self.quotient_source() in LocalizationRings():
-                return AtomicProposition("is_field", self)
-            return bool(self.defining_ideal().is_maximal())
+            return self.defining_ideal().is_maximal()
 
         def _integral_domain_decision(self):
             if self._is_zero_ring() is True:
                 return False
-            if self.quotient_source() in LocalizationRings():
-                return AtomicProposition("is_integral_domain", self)
-            return bool(self.defining_ideal().is_prime())
+            return self.defining_ideal().is_prime()
 
         def _krull_dimension_decision(self):
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
             source = self.quotient_source()
             if source in LocalizationRings():
-                return None
+                comparison = self._finite_localized_quotient_isomorphism()
+                return None if comparison is None else comparison.domain().krull_dimension()
             backend = _engine_ideal(source, self.defining_ideal())
             source_engine = _engine_ring(source)
             if isinstance(source_engine, SageNumberFieldOrder) and not backend.is_zero():
@@ -992,6 +1034,10 @@ class QuotientRings(OwnedCategory):
                 and self._is_zero_ring() is False
             ):
                 return source.characteristic()
+            if source in LocalizationRings():
+                # This canonical map is injective and unital even when its
+                # domain is infinite, so it preserves the characteristic.
+                return source.quotient_contraction_map(self).domain().characteristic()
             engine = self._preamble_engine_ring
             if engine is not None:
                 return _owned_engine_element(SageZZ, SageZZ(engine.characteristic()))
@@ -1029,7 +1075,11 @@ class QuotientRings(OwnedCategory):
             if self._is_zero_ring() is True:
                 return True
             if self.quotient_source() in LocalizationRings():
-                return AtomicProposition("is_reduced", self)
+                defining = self.defining_ideal()
+                radical = defining._radical_decision()
+                if radical is None:
+                    return AtomicProposition("is_reduced", self)
+                return radical == defining
             defining = _engine_ideal(self.quotient_source(), self.defining_ideal())
             return defining.radical() == defining
 
@@ -1037,26 +1087,15 @@ class QuotientRings(OwnedCategory):
         def _presentation_minimal_primes(self):
             r"""The exact finite minimal primes upstairs, or no selected computation.
 
-            A Noetherian presentation has finitely many minimal primes.
-            Localized-source quotients still need an exact ideal transport:
-            their source's fraction-field model can turn a proper ideal into
-            the unit ideal, so it cannot supply this finite enumeration.
+            The defining ideal owns this computation, including its PID,
+            quotient-cover and localization transports. Its result consists
+            of ideals of the actual source of this quotient.
             """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             source = self.quotient_source()
-            if source not in OwnedNoetherianRings() or source in LocalizationRings():
+            if source not in OwnedNoetherianRings():
                 return None
-            from dzack_research.preamble.categories.rings.commutative_ideals import (
-                _from_engine_ideal,
-            )
-
-            defining = _engine_ideal(source, self.defining_ideal())
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(source, prime)
-                    for prime in defining.minimal_associated_primes()
-                )
-            )
+            return self.defining_ideal().finite_minimal_primes()
 
         @cached_method
         def _finite_minimal_primes(self):
@@ -1140,6 +1179,11 @@ class QuotientRings(OwnedCategory):
             if reduced is False:
                 return False
             source = self.quotient_source()
+            if source in LocalizationRings():
+                comparison = self._finite_localized_quotient_isomorphism()
+                if comparison is not None:
+                    return comparison.domain().is_normal()
+                return AtomicProposition("is_normal", self)
             base = source.base_ring()
             if (
                 reduced is True
