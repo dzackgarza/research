@@ -1954,6 +1954,13 @@ class Modules(OwnedCategoryOverBaseRing):
             return None
 
         def _represented_vector_space_dimension(self):
+            r"""An owned dimension, or ``NotImplemented`` when not represented.
+
+            ``VectorSpaces.dimension`` reads this value. The scalar
+            restriction constructor also reads it for a field-to-field
+            tower with a selected finite scalar basis. A known dimension
+            does not supply a finite framing or require an enumeration.
+            """
             return NotImplemented
 
         def _represented_vector_space_basis_generator_labels(self):
@@ -4257,6 +4264,9 @@ def _restricted_scalars_view(
     the given map and never from ``S``'s structure over its own base ring.
     A basis of ``Res_f(M)`` supplied by the module's selected presentation
     gives a second framing route without requiring ``Res_f(S)`` to be finite.
+    Along a field-to-field map with a selected finite scalar basis, an
+    already represented dimension is multiplied by that basis cardinality.
+    This dimension transport does not require or create a finite frame of M.
     """
     assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
         f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the base ring "
@@ -4277,13 +4287,27 @@ def _restricted_scalars_view(
     data = {"module_over_extension": module, "ring_map": ring_map}
 
     finitely_framed = module.has_selected_module_resolution() and module in Modules(extension_ring).FinitelyGenerated()
-    scalar_basis = extension_ring._module_basis_along(ring_map) if finitely_framed else None
-    framed_over_finite_free_scalars = scalar_basis is not None and scalar_basis.source() in FinitelyGeneratedFreeModules(
+    field_tower = (
+        base_ring in OwnedFields()
+        and extension_ring in OwnedFields()
+        and ring_map.codomain() is extension_ring
+    )
+    scalar_basis = extension_ring._module_basis_along(ring_map) if finitely_framed or field_tower else None
+    finite_scalar_basis = scalar_basis is not None and scalar_basis.source() in FinitelyGeneratedFreeModules(
         base_ring
     )
+    framed_over_finite_free_scalars = finitely_framed and finite_scalar_basis
     restriction_data = None
     if not framed_over_finite_free_scalars:
         restriction_data = module._scalar_restriction_data(ring_map)
+        if restriction_data is None and field_tower and finite_scalar_basis:
+            dimension = module._represented_vector_space_dimension()
+            if dimension is not NotImplemented:
+                restriction_data = (
+                    cardinal(dimension) * scalar_basis.source().module_rank(),
+                    None,
+                )
+                data["scalar_basis"] = scalar_basis
         if restriction_data is not None:
             data["restriction_data"] = restriction_data
     match module:
