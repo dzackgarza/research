@@ -796,6 +796,22 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""``K_X = -sum_rho D_rho`` (CLS Thm. 8.2.3)."""
             return -self.toric_boundary_divisor()
 
+        def canonical_reflexive_sheaf(self):
+            r"""The rank-one reflexive dualizing sheaf ``O_X(K_X)``.
+
+            For a normal toric variety this is the divisorial sheaf of the
+            canonical Weil divisor, including when ``K_X`` is not Cartier.
+            On the Cartier locus it agrees with the invertible canonical
+            sheaf. Its general realization requires divisorial module
+            gluing, not Cartier transition functions.
+            """
+            if self.is_cartier(self.canonical_divisor()):
+                return self.invertible_sheaf_of_divisor(self.canonical_divisor())
+            raise NotImplementedError(
+                f"the reflexive divisorial sheaf O(K_X) on {self} requires "
+                "a non-Cartier divisorial module gluing realization"
+            )
+
         @cached_method
         def character_divisor_morphism(self):
             r"""``M -> Div_T(X)``, ``m |-> div(chi^m)`` (CLS Thm. 4.1.3).
