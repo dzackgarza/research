@@ -314,6 +314,7 @@ from dzack_research.preamble.categories.modules import (
     ModuleEmbedding,
     ModuleResolutions,
     Modules,
+    ModulesOverIntegralDomains,
     ModulesOverCommutativeRings,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,

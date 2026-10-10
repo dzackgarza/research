@@ -15,7 +15,7 @@ def test_framed_free_integer_module_reports_module_structure_and_scalar_action()
 
 def test_free_integer_line_generic_fibre_map_is_injective_into_a_rational_line() -> None:
     module = ZZ.free_module(1)
-    generic = module.generic_fibre_map()
+    generic = ModulesOverIntegralDomains(ZZ)(module).generic_fibre_map()
 
     assert generic.domain() is module
     assert generic.codomain().base_ring() is QQ

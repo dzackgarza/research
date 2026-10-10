@@ -14,8 +14,8 @@ def test_z_mod_6_is_torsion_with_generic_rank_0_and_is_its_own_torsion_submodule
     assert not M.is_torsion_free()
     assert M.generic_rank() == 0
     assert M.vector_space().is_zero()
-    assert M.torsion_submodule().inclusion().is_surjective()
-    assert M.torsion_submodule().cardinality() == 6
+    assert ModulesOverIntegralDomains(ZZ)(M).torsion_submodule().inclusion().is_surjective()
+    assert ModulesOverIntegralDomains(ZZ)(M).torsion_submodule().cardinality() == 6
 
 
 def test_z_mod_6_plus_z_has_generic_rank_1_and_is_neither_torsion_nor_torsion_free() -> None:
@@ -25,5 +25,5 @@ def test_z_mod_6_plus_z_has_generic_rank_1_and_is_neither_torsion_nor_torsion_fr
     assert M.generic_rank() == 1
     assert not M.is_torsion()
     assert not M.is_torsion_free()
-    assert M.torsion_submodule().cardinality() == 6
-    assert not M.generic_fibre_map().is_injective()
+    assert ModulesOverIntegralDomains(ZZ)(M).torsion_submodule().cardinality() == 6
+    assert not ModulesOverIntegralDomains(ZZ)(M).generic_fibre_map().is_injective()

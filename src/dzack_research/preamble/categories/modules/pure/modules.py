@@ -2110,16 +2110,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return represented
 
         @cached_method
-        def generic_fibre_map(self):
-            r"""Return the unit ``M -> K tensor_R M`` of scalar extension to ``Frac(R)``."""
-            ring = self.base_ring()
-            assert ring in IntegralDomains(), (
-                f"the generic fibre of {self} is not defined: it is the base change to Frac(R), "
-                f"which needs R to be an integral domain, but R = {ring} is not known to be one"
-            )
-            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
-
-        @cached_method
         def zero_subobject(self):
             r"""The zero module with its unique monomorphism into this module.
 
@@ -2141,22 +2131,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 (ModuleSubobjects(ring),),
                 {"subobject_ambient": self, "subobject_inclusion_factory": inclusion},
             )
-
-        def torsion_submodule(self):
-            r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
-
-            An element is torsion exactly when some nonzero scalar kills it, and
-            over a domain that is exactly when it dies in the generic fibre: the
-            unit of scalar extension along ``R -> K`` inverts every nonzero
-            scalar and nothing else.  So the torsion submodule is that unit's
-            kernel, computed as a kernel rather than read off a decomposition
-            that only a principal ideal domain supplies.
-            """
-            return self.generic_fibre_map().kernel()
-
-        def _torsion_freeness_decision(self) -> bool:
-            r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
-            return self.generic_fibre_map().is_injective()
 
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
@@ -2748,6 +2722,39 @@ FinitelyPresentedTorsionModules = Modules.FinitelyPresented.Torsion
 FreeModules = Modules.Free
 ProjectiveModules = Modules.Projective
 TorsionModules = Modules.Torsion
+
+
+class ModulesOverIntegralDomains(OwnedCategoryOverBaseRing):
+    r"""Modules over an integral domain, with their canonical generic fibre."""
+
+    def super_categories(self):
+        if self.base_ring() not in IntegralDomains():
+            raise TypeError("generic-fibre modules require an integral-domain coefficient ring")
+        return [Modules(self.base_ring())]
+
+    def an_object(self):
+        return self(Modules(self.base_ring()).an_object())
+
+    def _call_(self, module):
+        from dzack_research.preamble.refine import refine
+
+        if module not in Modules(self.base_ring()):
+            raise TypeError("the supplied module does not have this integral-domain base")
+        return refine(module, self)
+
+    class ParentMethods:
+        @cached_method
+        def generic_fibre_map(self):
+            r"""The unit ``M -> Frac(R) tensor_R M`` of fraction-field extension."""
+            ring = self.base_ring()
+            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
+
+        def torsion_submodule(self):
+            r"""The kernel of ``M -> Frac(R) tensor_R M``."""
+            return self.generic_fibre_map().kernel()
+
+        def _torsion_freeness_decision(self) -> bool:
+            return self.generic_fibre_map().is_injective()
 
 
 def FinitelyGeneratedFreeModules(base_ring):
