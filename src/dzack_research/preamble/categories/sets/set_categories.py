@@ -1884,7 +1884,7 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectT
     if isinstance(source, _FiniteLiteralSet):
         return source
     if isinstance(source, Parent) and source in Sets() and (
-        source not in FiniteSets() or source not in EnumeratedSets()
+        not Sets().is_provably_finite(source) or source not in EnumeratedSets()
     ):
         return source
     return _FiniteLiteralSet(source)
