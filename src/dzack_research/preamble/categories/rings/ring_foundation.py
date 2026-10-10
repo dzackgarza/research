@@ -2371,12 +2371,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def spectrum(self):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     PrimeSpectra,
+                    IntegralPrimeSpectra,
                     _PrimeSpectrumTopologyData,
                 )
-                from dzack_research.preamble.owned_category import _object_of
+                from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
                 return _object_of(
-                    PrimeSpectra(),
+                    owned_category_join((PrimeSpectra(), IntegralPrimeSpectra()))
+                    if self in OwnedIntegralDomains() else PrimeSpectra(),
                     ring=self,
                     topology_data=_PrimeSpectrumTopologyData(self),
                 )

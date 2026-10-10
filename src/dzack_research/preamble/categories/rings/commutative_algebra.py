@@ -480,17 +480,23 @@ class PrimeSpectra(OwnedCategory):
 
         D = distinguished_open
 
-        def generic_point(self):
-            engine = _engine_ring(self.ring())
-            zero = engine.ideal(0)
-            if not bool(zero.is_prime()):
-                raise ValueError(
-                    f"{self.ring()} is not an integral domain, so Spec({self.ring()}) has no unique generic point"
-                )
-            return self._element_constructor_(zero)
-
         def _repr_(self):
             return f"Spec({self.ring()})"
+
+
+class IntegralPrimeSpectra(OwnedCategory):
+    r"""Spectra of integral domains, with their distinguished generic point."""
+
+    def super_categories(self):
+        return [PrimeSpectra()]
+
+    def an_object(self):
+        return _own_ring(SageZZ).spectrum()
+
+    class ParentMethods:
+        def generic_point(self):
+            r"""The generic point corresponding to the zero prime ideal."""
+            return self(self.ring().ideal(self.ring().zero()))
 
 
 def _engine_ring_value(ring, value):
@@ -3760,6 +3766,7 @@ def _dual_numbers(base_ring, name="epsilon"):
 
 __all__ = [
     "AdicCompletions",
+    "IntegralPrimeSpectra",
     "DistinguishedOpenSubobjects",
     "GeneratedIdealView",
     "LocalizationRings",
