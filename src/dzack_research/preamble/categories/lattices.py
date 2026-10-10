@@ -154,6 +154,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjectConstruction,
     ModuleSubobjects,
     Modules,
+    ModulesOverIntegralDomains,
     TensorProductModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -3254,7 +3255,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: i3.is_in_image(e) and not i3.is_in_image(f) and i3.is_in_image(L.scalar_multiple(3, f))
                 True
                 sage: D = L.divisible_sublattice(3)
-                sage: j = L.generic_fibre_map()
+                sage: j = ModulesOverIntegralDomains(ZZ)(L).generic_fibre_map()
                 sage: i = D.inclusion()
                 sage: k = D.map_to_ideal_dual()
                 sage: u = D.defining_ideal_dual().inclusion()
@@ -4924,11 +4925,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ambient = next_inclusion.codomain()
             rational = ambient.base_change(field_map)
             if direction.parent() is ambient:
-                direction = ambient.generic_fibre_map()(direction).underlying_element()
+                direction = ModulesOverIntegralDomains(ring)(ambient).generic_fibre_map()(direction).underlying_element()
             direction = rational(direction)
             scalars = field.regular_module()
             linear = Modules(field).Mor(scalars, rational)(lambda label: direction)
-            integral_inclusion = ambient.generic_fibre_map() * inclusion
+            integral_inclusion = ModulesOverIntegralDomains(ring)(ambient).generic_fibre_map() * inclusion
             return linear.affine_inverse_image(integral_inclusion, offset=base)
 
         def affine_line_points(self, base, direction):
@@ -5000,7 +5001,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             maximum = NN(max_multiplier)
             ambient = self.vector_space()
             if target.parent() is self:
-                target = self.generic_fibre_map()(target).underlying_element()
+                target = ModulesOverIntegralDomains(self.base_ring())(self).generic_fibre_map()(target).underlying_element()
             if target.parent() is not ambient:
                 raise ValueError("the affine target must belong to the lattice or its rational span")
             field = ambient.base_ring()

@@ -452,8 +452,9 @@ class FormEmbedding:
             raise ValueError("the clearing factor must generate the denominator ideal and square to the multiplier")
         fraction_map = ring.fraction_field_map()
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        extended = restrict(rational) * source.generic_fibre_map()
-        integral = target.generic_fibre_map()
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesOverIntegralDomains
+        extended = restrict(rational) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
+        integral = ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
         for vector in source.module_generators():
             if integral(self(vector)) != extended.codomain().scalar_multiple(scale, extended(vector)):
                 raise ValueError("the embedding must equal the clearing factor times its retained rational map")

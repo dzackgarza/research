@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     ModuleMorphismMethods,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules, _engine_matrix
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
@@ -735,8 +735,8 @@ class LatticeIsometryMethods:
         if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
             raise ValueError("integrality requires the source and target integral structures of this rational map")
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        return (restrict(self) * source.generic_fibre_map()).factor_through_or_none(
-            target.generic_fibre_map()
+        return (restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()).factor_through_or_none(
+            ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
         ) is not None
 
     @cached_method
@@ -905,8 +905,8 @@ class LatticeIsometryMethods:
         if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
             raise ValueError("the isometry must join the selected lattices' fraction-field extensions")
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        source_inclusion = source.generic_fibre_map()
-        target_inclusion = target.generic_fibre_map()
+        source_inclusion = ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
+        target_inclusion = ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
         rational_source = self.domain()
         rational_target = self.codomain()
         linear = rational_source.module_category().Mor(rational_source, rational_target)(self)
@@ -937,13 +937,13 @@ class LatticeIsometryMethods:
         ring = source.base_ring()
         field_map = ring.fraction_field_map()
         restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
-        rational = restrict(self) * source.generic_fibre_map()
+        rational = restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
         scaled = Modules(ring).Mor(source, rational.codomain())(
             lambda label: rational.codomain().scalar_multiple(
                 scale, rational(source.module_generator(label))
             )
         )
-        integral = scaled.factor_through_or_none(target.generic_fibre_map())
+        integral = scaled.factor_through_or_none(ModulesOverIntegralDomains(ring)(target).generic_fibre_map())
         if integral is None:
             raise ArithmeticError("the denominator ideal failed to clear the rational map")
         values = ring.regular_module()

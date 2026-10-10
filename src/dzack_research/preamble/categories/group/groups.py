@@ -3246,7 +3246,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
             from dzack_research.preamble.categories.group.g_objects import GObjects
             from dzack_research.preamble.categories.modules.orbit_spans import OrbitSpanLattices
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
+            from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 
             ring = lattice.base_ring()
             if ring is not _own_ring(ZZ):
@@ -3255,7 +3255,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 raise NotImplementedError("the invariant overlattice construction requires finite rank")
             field_map = ring.fraction_field_map()
             rational = lattice.base_change(field_map)
-            seed = lattice.generic_fibre_map()
+            seed = ModulesOverIntegralDomains(ring)(lattice).generic_fibre_map()
             ambient = seed.codomain()
             group = self
             group_inclusion = OwnedGroups().Mor(self, self).identity()

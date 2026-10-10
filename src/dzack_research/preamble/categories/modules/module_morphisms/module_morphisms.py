@@ -1234,7 +1234,7 @@ class ModuleMorphismMethods:
         ``Hom_ZZ(source,target)`` inside its rational scalar extension.
         """
         from sage.rings.integer_ring import ZZ as SageZZ
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         ring = source.base_ring()
@@ -1246,7 +1246,7 @@ class ModuleMorphismMethods:
         if not _has_finite_free_framing(source) or not _has_finite_free_framing(target):
             raise NotImplementedError("denominator-ideal computation requires finite integral bases")
         restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
-        restricted = restrict(self) * source.generic_fibre_map()
+        restricted = restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
         framing = self.codomain().framing_morphism()
         denominator = ring.one()
         for vector in source.module_generators():

@@ -12,7 +12,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
@@ -37,7 +37,7 @@ def _rational_splitting(reduction, plane):
     rational_reduction = reduction.vector_space()
     e, f = witt.isotropic_vector(), witt.dual_isotropic_vector()
     integral_ambient = reduction.isotropic_embedding().codomain()
-    rationalize = integral_ambient.generic_fibre_map()
+    rationalize = ModulesOverIntegralDomains(integral_ambient.base_ring())(integral_ambient).generic_fibre_map()
     perpendicular = reduction.orthogonal_complement().inclusion()
 
     def section_image(label):
@@ -228,7 +228,7 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             source_vector = self.base_point().inverse()(witt.dual_isotropic_vector())
             denominator = _vector_denominator(source_vector, source)
             projection = self.target_splitting().codomain().projection(1) * self.target_splitting()
-            rationalize = target.generic_fibre_map()
+            rationalize = ModulesOverIntegralDomains(target.base_ring())(target).generic_fibre_map()
             parameter_lattice = restricted_parameters.subobject_on(tuple(
                 restricted_parameters(parameters.scalar_multiple(
                     field.one() / field_map(denominator),
