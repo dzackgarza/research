@@ -32,6 +32,8 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+- [ ] `Lattices.X.vectors_of_square_and_divisibility` claims `FiniteOrderedSets()` for every lattice. On the indefinite lattice `U ⊕ ⟨-2⟩`, the vectors `(n²+1,1,n)` have square `2` and divisibility `1` for every nonnegative integer `n`, so this locus is infinite; `categories/definite_lattices.py:_vectors_of_square_and_divisibility` attempts to enumerate the entire square fibre into a finite ordered set. Repair at the defining locus/finite-realization owner, preserving the actual infinite locus.
+
 **Cross-family result-placement follow-up (2026-10-10).** The earlier full
 construction/property report review was checked against source constructors
 outside `Sets`: `GradedModules._call_` constructs through the graded-module
