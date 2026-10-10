@@ -39,7 +39,8 @@ def test_limit_and_colimit_of_a_discrete_diagram_are_product_and_disjoint_union(
 
     selected_limit = Sets().Limits(index).construction(diagram)
     assert selected_limit.object().cardinality() == 6
-    assert Sets().Colimits(index).object(diagram).cardinality() == 5
+    selected_colimit = Sets().Colimits(index).construction(diagram)
+    assert selected_colimit.object().cardinality() == 5
     point = Sets.Δ[0]
     assert Sets().Mor(point, selected_limit.object()).cardinality() == 6
     for left in two:
@@ -53,3 +54,16 @@ def test_limit_and_colimit_of_a_discrete_diagram_are_product_and_disjoint_union(
             factor = selected_limit.factor(cone)
             assert selected_limit.structure_morphism(index.object(Sets.Δ[1](0))) * factor.apex_map() == cone.structure_morphism(index.object(Sets.Δ[1](0)))
             assert selected_limit.structure_morphism(index.object(Sets.Δ[1](1))) * factor.apex_map() == cone.structure_morphism(index.object(Sets.Δ[1](1)))
+    for first in two:
+        for second in three:
+            target = Sets.Δ[1]
+            cocone = diagram.Cocones().cocone(
+                target,
+                lambda object_, first=first, second=second: Sets().Mor(diagram(object_), target)(
+                    lambda value: target(0) if object_ is index.object(Sets.Δ[1](0)) and value == first else target(1)
+                ),
+            )
+            factor = selected_colimit.factor(cocone)
+            for position in Sets.Δ[1]:
+                selected = index.object(position)
+                assert factor.apex_map() * selected_colimit.costructure_morphism(selected) == cocone.costructure_morphism(selected)

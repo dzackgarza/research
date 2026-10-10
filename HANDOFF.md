@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Selected colimit cocone factorization verified (2026-10-10):** The finite two-object diagram of two- and three-point sets now has its universal colimit checked at the retained categorical owner, `Sets().Colimits(index).construction(diagram)`. Four nontrivial cocones into the two-point set factor through the selected colimit, with both costructure triangles commuting as actual Mor composites through `factor.apex_map()`. The same focused owner test continues to verify the six cone factorizations at the selected limit. No alternate limit/colimit method or algorithm was introduced.
+
+
 **Finite diagram universal limit/colimit route corrected (2026-10-10):** The existing `Sets().Limits(index).construction(diagram)` and `Sets().Colimits(index).object(diagram)` are the canonical construction owners; the old `diagram.limit()`/`.colimit()` test calls had no such methods. The finite-shape adapter wrongly used the shape's *indexed family* of arrows as a set of indices for its arrow-target product. It now constructs the actual finite ordered set of arrows. Focused Sage on a discrete two-object diagram with two- and three-point values returns limit cardinality six and colimit cardinality five, and checks all six point-apex cones factor with both defining triangles commuting through the selected cone morphism's apex map. The old `Cones().Mor(point)` assertion was invalid because Mor requires source and target cones; it has been replaced by the actual universal factorization comparisons.
 
 
