@@ -1,10 +1,11 @@
 # Issue 401: remaining implementation work
 
-Issue 401 is unfinished. Continue the implementation in the priority order below.
+Issue 401's research-side primitives are complete. Continue the remaining
+mathematical placement and ownership work in the priority order below.
 
 ## Target
 
-Finish the research-side primitives required by the pinned `sage-indefinite-port` migration. Place each operation at its mathematical owner and compose its general construction, retaining all defining maps. The acceptance inventory is [the abstraction audit](docs/issue-401-abstraction-audit.md); the active node is [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
+The research-side primitives required by the pinned `sage-indefinite-port` migration have been delivered at their mathematical owners, retaining their defining maps. The acceptance inventory is [the abstraction audit](docs/issue-401-abstraction-audit.md); [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives) is closed and the active source audit is [`placement-audit`](TODO.md#placement-audit).
 
 Read `INTENT.md`, `AGENTS.md`, `CONTRIBUTING.md`, `TODO.md`, `COMPLAINTS.md`, and `docs/preamble-megadoc.md` before editing. The formal authority is `lean-categories`; correctness acceptance belongs to `lean-cas-dsl`. Research is general mathematics: each operation is accepted by true assertions about pure mathematics at its owner. There are no integration tests, and no consumer gates research. Formal requests run beside computational work.
 
