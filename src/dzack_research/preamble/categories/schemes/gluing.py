@@ -2109,14 +2109,11 @@ def _finite_framing(module):
             "here only for modules with a chosen finite set of module generators, and "
             f"{module} has no chosen module generators"
         )
-    labels = module.module_generating_set()
-    if not labels.cardinality().is_finite():
-        raise TypeError(
-            f"cannot glue the module {module} as local data on an affine chart: descent is computed "
-            "here only for modules with a chosen finite set of module generators, but "
-            f"{module} has {labels.cardinality()}"
-        )
-    return labels
+    from dzack_research.preamble.categories.sets.coordinate_families import (
+        _finite_framing as _selected_finite_framing,
+    )
+
+    return _selected_finite_framing(module)
 
 
 def _maps_agree_on_framing(left, right) -> bool:
