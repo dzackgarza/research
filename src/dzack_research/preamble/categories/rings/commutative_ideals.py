@@ -254,12 +254,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_prime())
-            backend = self._engine_ideal()
-            match _realized_as_quotient(self.ring()):
-                case True:
-                    selected = _cover_lifted_ideal(self)
-                case False:
-                    selected = backend
+            selected = self._ideal_primality_engine()
             match selected:
                 case _ if _is_integral_multivariate_ideal(selected):
                     return _integral_polynomial_ideal_is_prime(selected)
@@ -270,12 +265,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_maximal())
-            backend = self._engine_ideal()
-            match _realized_as_quotient(self.ring()):
-                case True:
-                    selected = _cover_lifted_ideal(self)
-                case False:
-                    selected = backend
+            selected = self._ideal_primality_engine()
             selected_ring = selected.ring()
             match selected_ring:
                 case _ if _is_integral_multivariate_ideal(selected):
@@ -287,6 +277,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(selected.is_prime() and selected.dimension() == 0)
                 case _:
                     return bool(selected.is_maximal())
+
+        def _ideal_primality_engine(self):
+            r"""Ideal in the ring where primality and maximality are decided."""
+            if _realized_as_quotient(self.ring()):
+                return _cover_lifted_ideal(self)
+            return self._engine_ideal()
 
         def radical(self):
             r"""Return ``sqrt(I)``.
