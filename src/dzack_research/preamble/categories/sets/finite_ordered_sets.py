@@ -68,7 +68,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
         )
         match index_set:
-            case _ if index_set in FiniteSets():
+            case _ if Sets().is_provably_finite(index_set):
                 return FiniteOrderedSets().from_indexed(
                     index_set, element_at, index_of=index_of, contains=contains, name=name
                 )
