@@ -28,6 +28,13 @@ def test_discrete_diagram_rejects_invalid_finite_object_images() -> None:
         raise AssertionError("a discrete diagram admitted an unrelated indexing set")
 
 
+def test_empty_discrete_diagram_has_terminal_limit_and_initial_colimit() -> None:
+    index = DiscreteCategory(Sets.Δ[-1])
+    diagram = Cat().Mor(index, Sets()).discrete_diagram(lambda _index: Sets.Δ[0])
+    assert Sets().Limits(index).object(diagram).cardinality() == 1
+    assert Sets().Colimits(index).object(diagram).cardinality() == 0
+
+
 def test_limit_and_colimit_of_a_discrete_diagram_are_product_and_disjoint_union() -> None:
     r"""For the discrete diagram ``{0 ↦ [1], 1 ↦ [2]}`` (sets of 2 and 3 elements),
     the limit is the product, of cardinality ``2 · 3 = 6``, and the colimit is

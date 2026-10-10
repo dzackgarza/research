@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Empty discrete-diagram extrema verified (2026-10-10):** For the empty discrete indexing category `DiscreteCategory(Sets.Δ[-1])`, the canonical selected limit in `Sets()` is terminal of cardinality one and the canonical selected colimit is initial of cardinality zero. The focused regression exercises both through `Sets().Limits(index)` and `Sets().Colimits(index)`, retaining the zero-object shape rather than constructing fictitious factor data.
+
+
 **Selected colimit cocone factorization verified (2026-10-10):** The finite two-object diagram of two- and three-point sets now has its universal colimit checked at the retained categorical owner, `Sets().Colimits(index).construction(diagram)`. Four nontrivial cocones into the two-point set factor through the selected colimit, with both costructure triangles commuting as actual Mor composites through `factor.apex_map()`. The same focused owner test continues to verify the six cone factorizations at the selected limit. No alternate limit/colimit method or algorithm was introduced.
 
 
