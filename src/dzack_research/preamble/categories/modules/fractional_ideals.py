@@ -11,9 +11,6 @@ from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
@@ -71,7 +68,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             self._value = _engine_ring(parent.fraction_field())(value)
 
         def _inclusion_value(self):
-            r"""Protected representation contract used only by ``FractionalIdealInclusion``."""
+            r"""Protected representation contract of this module's fractional-ideal constructions: the value in ``K``."""
             return self._value
 
         def _add_(self, other):
@@ -399,59 +396,6 @@ class _FractionalIdealExtension(Functor):
         return f"Extension of ideals of {self.domain().base_ring()} to fractional ideals"
 
 
-class FractionalIdealInclusion(ModuleEmbedding):
-    r"""The selected monomorphism from a fractional ideal into ``Frac(R)`` read over ``R``."""
-
-    def _call_(self, element):
-        if element.parent() is not self.domain():
-            element = self.domain()(element)
-        value = element._inclusion_value()
-        target = self.codomain()
-        extension_module = target.module_over_extension()
-        (label,) = tuple(extension_module.module_generating_set())
-        scalar = _owned_engine_element(target.extension_ring(), value)
-        underlying = extension_module.scalar_multiple(
-            scalar,
-            extension_module.module_generator(label),
-        )
-        return target.wrap(underlying)
-
-    def _fraction_field_value(self, element):
-        r"""The element of ``K`` that ``element`` of ``K`` read over ``R`` is."""
-        target = self.codomain()
-        if element.parent() is not target:
-            element = target(element)
-        extension_module = target.module_over_extension()
-        (label,) = tuple(extension_module.module_generating_set())
-        return extension_module.framing_morphism().lift(element.underlying_element())(label)
-
-    def lift(self, element):
-        r"""Return the ideal element mapping to ``element`` when it belongs to the ideal."""
-        return self.domain()(self._fraction_field_value(element))
-
-    def is_in_image(self, element) -> bool:
-        r"""Return whether ``element`` of ``K`` lies in this fractional ideal."""
-        return self._fraction_field_value(element) in self.domain()
-
-    def is_primitive(self) -> bool:
-
-        assert self.codomain().has_selected_module_resolution(), (
-            f"primitivity of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
-            f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
-            f"{self.codomain().category()}"
-        )
-        return super().is_primitive()
-
-    def index(self):
-
-        assert self.codomain().has_selected_module_resolution(), (
-            f"the index of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
-            f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
-            f"{self.codomain().category()}"
-        )
-        return super().index()
-
-
 @cached_function
 def _fraction_field_as_module(base_ring):
     r"""Return ``Frac(R)`` restricted to an ``R``-module along ``R -> Frac(R)``."""
@@ -463,22 +407,37 @@ def _fraction_field_as_module(base_ring):
 
 
 def _fractional_ideal_inclusion(ideal):
-    r"""The inclusion of a fractional ideal into ``Frac(R)`` read as an ``R``-module."""
+    r"""The inclusion of a fractional ideal into ``Frac(R)`` read as an ``R``-module.
+
+    An ``R``-submodule of ``K`` includes into ``K`` read over ``R``, so the
+    map is linear and injective by that construction.  An element of ``K``
+    lies in the ideal exactly when its value does, and then that value is its
+    preimage.
+    """
     target = _fraction_field_as_module(ideal.base_ring())
     extension_module = target.module_over_extension()
     (unit_label,) = tuple(extension_module.module_generating_set())
-    images = {}
-    for label in ideal.module_generating_set():
-        value = _owned_engine_element(ideal.fraction_field(),
-            ideal.module_generator(label)._inclusion_value()
-        )
-        images[label] = target(
-            extension_module.scalar_multiple(
-                value,
-                extension_module.module_generator(unit_label),
-            )
-        )
-    return FractionalIdealInclusion(ideal.module_category().Mor(ideal, target), images)
+    unit = extension_module.module_generator(unit_label)
+
+    def include(element):
+        scalar = _owned_engine_element(target.extension_ring(), element._inclusion_value())
+        return target.wrap(extension_module.scalar_multiple(scalar, unit))
+
+    def preimage(element):
+        if element.parent() is not target:
+            element = target(element)
+        value = extension_module.framing_morphism().lift(element.underlying_element())(unit_label)
+        match value in ideal:
+            case False:
+                return None
+            case True:
+                return ideal(value)
+
+    return ideal.Mono(target)._from_constructed_embedding(
+        include,
+        lift=preimage,
+        lift_is_section=True,
+    )
 
 
 def _fraction_field_backend_value(base_ring, value):

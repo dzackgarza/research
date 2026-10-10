@@ -16,9 +16,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _morphism_on_engine_vectors,
     _relation_morphism,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _module_subobject_inclusion,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _represented_finite_presentation,
@@ -123,8 +120,7 @@ def _internal_mor_model_data_from_endpoints(source, target):
             engine_kernel_relations.rows(),
         )
         model = kernel_presentation.cokernel()
-        inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_mor(model, generator_assignments),
+        inclusion = model.Mono(generator_assignments)._subobject_inclusion(
             {
                 label: generator_assignments(
                     kernel(kernel.V().gen(position)).lift()
@@ -142,8 +138,7 @@ def _internal_mor_model_data_from_endpoints(source, target):
             "returned without its inclusion into the module of generator assignments"
         )
         lift = construction.selected_lift()
-        inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_mor(model, ambient),
+        inclusion = model.Mono(ambient)._subobject_inclusion(
             images,
             lift=(None if lift is None else lambda element: lift(model, element)),
         )

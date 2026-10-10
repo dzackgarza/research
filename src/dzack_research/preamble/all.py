@@ -305,7 +305,6 @@ from dzack_research.preamble.categories.modules import (
     LinearMorModules,
     LocalizedModules,
     ModuleBaseRingProjection,
-    ModuleEmbedding,
     ModuleResolutions,
     Modules,
     ModulesOverCommutativeRings,

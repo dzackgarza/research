@@ -850,7 +850,7 @@ class ModuleMorphismMethods:
         return hash(id(self.parent()))
 
     def __rmul__(self, actor):
-        # A specialized right operand such as ModuleEmbedding gets reflected
+        # A specialized right operand such as a module embedding gets reflected
         # multiplication before Python tries the less-specialized left
         # ModuleMorphism.__mul__.  In that case the operation is composition,
         # not scalar multiplication.  Delegate to the left morphism so the
@@ -2070,11 +2070,42 @@ class ModuleEmbeddingMethods:
     Membership states injectivity, so :meth:`is_injective` answers by
     placement; :meth:`validate_injectivity` computes the kernel when asked
     (``OWN-22``).
+
+    An embedding built by a construction of its Mor takes
+    ``injectivity_premises``: the family of maps from which the construction
+    builds it, so that it is injective when every premise is, the empty
+    family meaning the construction alone makes it injective.  It may also
+    take ``lift_is_section``: the construction's statement that its selected
+    lift returns a preimage exactly on the image.
     """
 
+    _injectivity_premises = None
+    _lift_is_section = None
+
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        injectivity_premises=None,
+        lift_is_section=None,
+        **construction,
+    ) -> None:
+        self._injectivity_premises = injectivity_premises
+        self._lift_is_section = lift_is_section
+        super().__init__(parent, images, **construction)
+
     def _injectivity_derivation(self):
-        r"""Return a construction-derived injectivity decision, or ``None``."""
-        return None
+        r"""Return the injectivity decision the construction gives, or ``None``."""
+        match self._injectivity_premises:
+            case None:
+                return None
+            case premises:
+                return conjunction(premise.is_injective() for premise in premises)
+
+    def _selected_lift_derivation(self):
+        r"""Return whether the construction states its selected lift is a section, or ``None``."""
+        return self._lift_is_section
 
     def is_injective(self) -> bool:
         r"""True: an element of ``Mono_R(M, N)`` is injective by its placement."""
@@ -2101,72 +2132,6 @@ class ModuleEmbeddingMethods:
             raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: its injectivity cannot be decided")
 
 
-class ModuleEmbedding(ModuleEmbeddingMethods, ModuleMorphism):
-    r"""Compatibility shell for private embedding realizations not yet graph-generated."""
-
-
-class _SubobjectInclusionModuleMorphism(ModuleEmbedding):
-    r"""The inclusion carried by an already-constructed module subobject."""
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-    def _injectivity_derivation(self):
-        return True
-
-    def _selected_lift_derivation(self):
-        r"""A selected subobject lift is part of the constructor's exact data."""
-        return True
-
-
-def _module_subobject_inclusion(parent, images, *, lift=None):
-    r"""Admit the inclusion carried by an already-constructed module subobject."""
-    return _SubobjectInclusionModuleMorphism(parent, images, lift=lift)
-
-
-class _TransportedModuleEmbedding(ModuleEmbedding):
-    r"""An existing admitted embedding viewed in another Mono parent."""
-
-    def __init__(self, parent, embedding, *, lift=None) -> None:
-        self._transported_embedding = embedding
-        self._transported_lift_is_exact = (
-            lift is None
-            and embedding.has_selected_lift()
-            and embedding.selected_lift_exactness_decision() is True
-        )
-        super().__init__(
-            parent,
-            lambda element: embedding(element),
-            elementwise=True,
-            lift=(embedding._lift_function if lift is None else lift),
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._transported_embedding.linearity_decision()
-
-    def _injectivity_derivation(self):
-        return True
-
-    def _selected_lift_derivation(self):
-        return True if self._transported_lift_is_exact else None
-
-
-class _ModuleMorphismAsEmbedding(ModuleEmbedding):
-    r"""A module map regarded as an element of the injective linear maps; its injectivity is checked by validation."""
-
-    def __init__(self, parent, morphism, *, lift=None) -> None:
-        self._linear_map = morphism
-        super().__init__(
-            parent,
-            lambda element: morphism(element),
-            elementwise=True,
-            lift=lift,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._linear_map.linearity_decision()
-
-
 class ModuleEmbeddingMor(CategoricalMor):
     r"""The declared monomorphisms between two modules over one scalar ring."""
 
@@ -2187,11 +2152,32 @@ class ModuleEmbeddingMor(CategoricalMor):
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            embedding = _TransportedModuleEmbedding(self, images, lift=lift)
+            # The same embedding read in another Mono parent: it is linear and
+            # injective because ``images`` is, and keeps its selected lift.
+            keeps_lift = lift is None and images.has_selected_lift()
+            embedding = self.element_class(
+                self,
+                images,
+                lift=(images._lift_function if keeps_lift else lift),
+                linearity_premises=(images,),
+                injectivity_premises=(images,),
+                lift_is_section=(
+                    True
+                    if keeps_lift and images.selected_lift_exactness_decision() is True
+                    else None
+                ),
+            )
         elif isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            embedding = _ModuleMorphismAsEmbedding(self, images, lift=lift)
+            # A linear map read as a monomorphism: linear because ``images``
+            # is; its injectivity is what validation computes.
+            embedding = self.element_class(
+                self,
+                images,
+                lift=lift,
+                linearity_premises=(images,),
+            )
         else:
             embedding = self.element_class(self, images, lift=lift)
         embedding.validate_linearity(check=check)
@@ -2199,9 +2185,49 @@ class ModuleEmbeddingMor(CategoricalMor):
         embedding.validate_injectivity(check=check)
         return embedding
 
+    def _from_constructed_embedding(
+        self,
+        datum,
+        premises=(),
+        *,
+        elementwise=True,
+        lift=None,
+        lift_is_section=None,
+        scalar_extension_of=None,
+        scalar_extension_functor=None,
+    ):
+        r"""The monomorphism of a construction that makes it linear and injective when the maps of ``premises`` are.
+
+        ``datum`` is a function on elements, or with ``elementwise=False`` the
+        images of the domain framing.  The empty family means the construction
+        alone makes the map a monomorphism: the inclusion of a subobject, of a
+        homogeneous piece into its graded algebra, of a fractional ideal into
+        ``Frac(R)``, the free module on an injection of framings.  The
+        localization ``S^{-1} f`` of a monomorphism ``f`` has the premise
+        ``f``, since localization is exact.  ``lift_is_section`` states that
+        the construction's selected lift returns a preimage exactly on the
+        image.
+        """
+        return self.element_class(
+            self,
+            datum,
+            elementwise=elementwise,
+            lift=lift,
+            linearity_premises=premises,
+            injectivity_premises=premises,
+            lift_is_section=lift_is_section,
+            scalar_extension_of=scalar_extension_of,
+            scalar_extension_functor=scalar_extension_functor,
+        )
+
     def _subobject_inclusion(self, images, *, lift=None):
-        r"""Construct the inclusion carried by an owned module-subobject datum."""
-        return _module_subobject_inclusion(self, images, lift=lift)
+        r"""The inclusion carried by an owned module-subobject datum; its selected lift is part of that datum."""
+        return self._from_constructed_embedding(
+            images,
+            elementwise=False,
+            lift=lift,
+            lift_is_section=True,
+        )
 
     def base_ring(self):
         return self.domain().base_ring()
@@ -2674,44 +2700,6 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
-
-
-class SubFramingMorphism(ModuleEmbedding):
-    r"""The free module functor applied to an injection of framings.
-
-    An injection of framing sets is split, and the free functor is a left
-    adjoint that carries the splitting, so this is a split monomorphism and
-    both membership in its image and the lift are decided on labels: an
-    element of the larger free module comes from the smaller one exactly when
-    it is supported on the smaller framing, and its preimage has the same
-    coefficients.
-
-    That is what the class buys over the general route below, which builds the
-    matrix of images and solves a linear system.  The smaller framing may be
-    infinite, as the degree-two piece of an algebra on countably many
-    generators is, and then no matrix exists to solve against.
-    """
-
-    def _injectivity_derivation(self):
-        return True
-
-    def is_in_image(self, element) -> bool:
-        r"""Return whether ``element`` is supported on the smaller framing."""
-        if element.parent() is not self.codomain():
-            return False
-        source_labels = self.domain().module_generating_set()
-        return all(
-            label in source_labels
-            for label in element.to_vector().support().domain()
-        )
-
-    def lift(self, element):
-        r"""Return the unique element of the smaller free module mapping here."""
-        assert self.is_in_image(element), f"{element} is not in the image of {self}"
-        coordinates = element.to_vector()
-        return self.domain().linear_combination(
-            {label: coordinates(label) for label in coordinates.support().domain()}
-        )
 
 
 def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:

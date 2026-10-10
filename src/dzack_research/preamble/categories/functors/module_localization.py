@@ -10,33 +10,9 @@ from dzack_research.preamble.categories.modules.localizations import (
     LocalizedModules,
     _localized_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
 )
-
-
-class _LocalizedModuleEmbedding(ModuleEmbedding):
-    r"""Localization of a monomorphism; flatness preserves injectivity."""
-
-    def __init__(self, parent, source_embedding, functor, action, *, elementwise) -> None:
-        self._source_embedding = source_embedding
-        self._localization_functor = functor
-        super().__init__(
-            parent,
-            action,
-            elementwise=elementwise,
-            scalar_extension_of=source_embedding,
-            scalar_extension_functor=functor,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._source_embedding.linearity_decision()
-
-    def _injectivity_derivation(self):
-        return True
 
 
 class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
@@ -76,15 +52,15 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
             source_inclusion = module.inclusion()
             localized_ambient = self(source_inclusion.codomain())
             def inclusion(localized_subobject):
-                mor = localized_subobject.Mono(localized_ambient)
-                return _LocalizedModuleEmbedding(
-                    mor,
-                    source_inclusion,
-                    self,
+                # Localization is exact, so ``S^{-1} i`` is a monomorphism
+                # because ``i`` is.
+                return localized_subobject.Mono(localized_ambient)._from_constructed_embedding(
                     lambda element: localized_ambient.fraction(
                         source_inclusion(element.numerator()), element.denominator(),
                     ),
-                    elementwise=True,
+                    (source_inclusion,),
+                    scalar_extension_of=source_inclusion,
+                    scalar_extension_functor=self,
                 )
 
             subobject_data = {"subobject_inclusion_factory": inclusion}
@@ -144,13 +120,12 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         monomorphisms = morphism.domain().module_category().Mono()
         match source_mor.is_subcategory(monomorphisms):
             case True:
-                mor = source.Mono(target)
-                return _LocalizedModuleEmbedding(
-                    mor,
-                    morphism,
-                    self,
+                return source.Mono(target)._from_constructed_embedding(
                     action,
+                    (morphism,),
                     elementwise=elementwise,
+                    scalar_extension_of=morphism,
+                    scalar_extension_functor=self,
                 )
             case False:
                 mor = source.module_category().Mor(source, target)
