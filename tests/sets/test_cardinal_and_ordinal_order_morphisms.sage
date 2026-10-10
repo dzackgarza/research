@@ -118,3 +118,14 @@ def test_order_type_is_a_functor_from_well_orders_to_ord() -> None:
     assert order_type(labels) is Ordinals()(3)
     assert order_type(standard) is Ordinals()(3)
     assert order_type(isomorphism) == Ord.Mor(3, 3).identity()
+
+
+def test_infinite_well_order_type_uses_its_core_isomorphism() -> None:
+    well_orders = WellOrderedSets()
+    order_type = well_orders.order_type_functor()
+    identity = well_orders.Mor(NN, NN).identity()
+    selected_isomorphism = well_orders.Core().Mor(NN, NN)(identity, identity)
+    assert NN in well_orders
+    assert NN in TotallyOrderedSets()
+    assert order_type(NN) is NN.order_type()
+    assert order_type(selected_isomorphism).is_identity()
