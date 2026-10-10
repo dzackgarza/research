@@ -50,6 +50,7 @@ def test_standard_degree_zero_chart_of_the_projective_line_has_dimension_one() -
     y = algebra.algebra_generator("y")
     at_x = algebra.localization(x)
     at_xy = algebra.localization(x * y)
+    algebra = CommutativeGradedIntegralDomains(QQ)(algebra)
     chart = algebra.degree_zero_chart(at_x)
     overlap = algebra.degree_zero_chart(at_xy)
     restriction = algebra.degree_zero_chart_restriction(at_x, at_xy)
@@ -58,4 +59,3 @@ def test_standard_degree_zero_chart_of_the_projective_line_has_dimension_one() -
     assert chart.krull_dimension() == 1
     assert restriction.domain() is chart
     assert restriction.codomain() is overlap
-

@@ -81,6 +81,7 @@ from dzack_research.preamble.categories.algebras import (
     GradedAlgebraMor,
     GradedAlgebraMorphism,
     GradedAlgebras,
+    CommutativeGradedIntegralDomains,
     GradedAugmentedAlgebras,
     GradedCommutativeAlgebras,
     GradedDerivation,
