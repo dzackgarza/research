@@ -106,14 +106,12 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def ring_center(self):
-            r"""The ring centre is the same selected class-sum algebra.
-
-            Its defining submodule and embedding are already retained by
-            ``center()`` and ``center_inclusion()``.  Constructing another
-            predicate subring would require an independent centrality
-            oracle and discard this chosen finite-group computation.
-            """
-            return self.center()
+            r"""Use class sums when the group is finite; retain the ring centre otherwise."""
+            match self.group() in FiniteGroups():
+                case True:
+                    return self.center()
+                case _:
+                    return OwnedRings.ParentMethods.ring_center(self)
 
         @cached_method
         def group_inclusion(self):
