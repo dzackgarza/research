@@ -550,13 +550,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
-            r"""A chosen finite primary decomposition over a Noetherian ring."""
+            r"""A chosen primary decomposition, when one is represented."""
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise NotImplementedError(
                     f"a finite primary decomposition of {self} is not guaranteed "
                     "outside the Noetherian regime"
                 )
+            return self.finite_primary_decomposition()
+
+        def finite_primary_decomposition(self):
+            r"""Selected finite primary decomposition over a Noetherian ring."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.ring() not in OwnedNoetherianRings():
+                raise TypeError("finite primary decomposition requires a Noetherian ring")
             return finite_ordered_set(
                 tuple(
                     _from_engine_ideal(self.ring(), ideal)
@@ -578,13 +585,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _owned_engine_element(SageZZ, SageZZ(value))
 
         def associated_primes(self):
-            r"""Associated primes of ``R/I``; finite enumeration in the Noetherian regime."""
+            r"""Associated primes of ``R/I`` in the represented Noetherian regime.
+
+            Mathematically the associated-prime locus need not be finite.
+            The selected backend provides only finite Noetherian enumeration.
+            """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise NotImplementedError(
                     f"the associated-prime locus of {self} is not necessarily finite; "
                     "this realization enumerates it only over a Noetherian ring"
                 )
+            return self.finite_associated_primes()
+
+        def finite_associated_primes(self):
+            r"""Finite associated-prime enumeration, only for Noetherian rings."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.ring() not in OwnedNoetherianRings():
+                raise TypeError("finite associated-prime enumeration requires a Noetherian ring")
             return finite_ordered_set(
                 tuple(
                     _from_engine_ideal(self.ring(), ideal)
