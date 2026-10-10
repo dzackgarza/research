@@ -3092,7 +3092,11 @@ def OwnedPrincipalIdealDomains():
 
 
 def _engine_krull_dimension(ring):
-    return _krull_dimension_of_engine(_engine_ring(ring))
+    engine = _engine_ring(ring)
+    assert engine is not ring, (
+        f"no exact Krull-dimension algorithm is selected for the retained realization of {ring}"
+    )
+    return _krull_dimension_of_engine(engine)
 
 
 def _krull_dimension_of_engine(engine):

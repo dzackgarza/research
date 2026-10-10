@@ -844,14 +844,32 @@ class QuotientRings(OwnedCategory):
             only this parent inspects its selected quotient engine. None means
             it has no inverse computation, and a proved nonunit raises
             ZeroDivisionError.
+
+            A unit of the actual source descends with its inverse. For a
+            proper ideal in a local source, the converse holds: every proper
+            ideal lies in the maximal ideal, so a source nonunit remains a
+            nonunit. Neither statement requires a finite quotient comparison.
             """
-            if self._is_zero_ring() is True:
+            zero_quotient = self._is_zero_ring()
+            if zero_quotient is True:
                 return self.zero()
             if self._preamble_engine_ring is None:
                 comparison = self._finite_localized_quotient_isomorphism()
-                if comparison is None:
-                    return None
-                return comparison.forward()(comparison.inverse()(element).inverse_of_unit())
+                if comparison is not None:
+                    return comparison.forward()(comparison.inverse()(element).inverse_of_unit())
+                source = self.quotient_source()
+                lift = element.lift()
+                match (
+                    lift.is_unit(),
+                    zero_quotient,
+                    source in OwnedRings().Commutative().Local(),
+                ):
+                    case (True, _, _):
+                        return self(lift.inverse_of_unit())
+                    case (False, False, True):
+                        raise ZeroDivisionError(f"{element} is not a unit in {self}")
+                    case _:
+                        return None
             represented = self._engine_element(element)
             if not represented.is_unit():
                 raise ZeroDivisionError(f"{element} is not a unit in {self}")
@@ -944,8 +962,10 @@ class QuotientRings(OwnedCategory):
             if source in LocalizationRings():
                 comparison = self._finite_localized_quotient_isomorphism()
                 return None if comparison is None else comparison.domain().krull_dimension()
-            backend = _engine_ideal(source, self.defining_ideal())
             source_engine = _engine_ring(source)
+            if source_engine is source:
+                return None
+            backend = _engine_ideal(source, self.defining_ideal())
             if isinstance(source_engine, SageNumberFieldOrder) and not backend.is_zero():
                 return _owned_engine_element(SageZZ, SageZZ.zero())
             return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
@@ -1115,7 +1135,8 @@ class QuotientRings(OwnedCategory):
         def _reducedness_decision(self):
             if self._is_zero_ring() is True:
                 return True
-            if self.quotient_source() in LocalizationRings():
+            source = self.quotient_source()
+            if source in LocalizationRings() or _engine_ring(source) is source:
                 defining = self.defining_ideal()
                 radical = defining._radical_decision()
                 if radical is None:
