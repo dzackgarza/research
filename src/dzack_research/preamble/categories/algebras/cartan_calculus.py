@@ -84,12 +84,7 @@ def _graded_commutator(left, right):
     )._from_derived_elementwise(commutator, left, right)
 
 
-def _exterior_word(label, degree):
-    if degree == 0:
-        return ()
-    if degree == 1:
-        return (label,)
-    return tuple(label)
+from dzack_research.preamble.categories.modules.powers import _exterior_word
 
 
 def _exterior_label(word):

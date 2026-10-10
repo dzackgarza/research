@@ -74,6 +74,15 @@ from dzack_research.preamble.validation import validator
 from dzack_research.preamble.owned_category import owned_category_join
 
 
+def _exterior_word(label, degree):
+    r"""Canonical word encoding of a degree in an exterior-power basis."""
+    if degree == 0:
+        return ()
+    if degree == 1:
+        return (label,)
+    return tuple(label)
+
+
 class _PowerModuleParentMethods:
     def __init__(self, power_source, power_degree, **rest) -> None:
         self._power_source = power_source

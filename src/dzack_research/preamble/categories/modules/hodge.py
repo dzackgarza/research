@@ -27,12 +27,7 @@ def _require_finite_free(module) -> int:
     return int(rank)
 
 
-def _power_word(label, degree: int) -> tuple:
-    if degree == 0:
-        return ()
-    if degree == 1:
-        return (label,)
-    return tuple(label)
+from dzack_research.preamble.categories.modules.powers import _exterior_word as _power_word
 
 
 def _power_label(word: tuple, degree: int):

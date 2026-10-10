@@ -11,12 +11,7 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-def _exterior_word(label, degree):
-    if degree == 0:
-        return ()
-    if degree == 1:
-        return (label,)
-    return tuple(label)
+from dzack_research.preamble.categories.modules.powers import _exterior_word
 
 
 def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
