@@ -808,7 +808,8 @@ class CoveringFamilies(OwnedCategory):
             Its objects are the covered-object label ``()``, member labels
             ``(i,)``, and the selected pair labels ``(i,j)``. The geometric
             overlap spans remain data of the original cover; this site records
-            their incidence for the pairwise descent equalizer.
+            their incidence for the pairwise descent equalizer. Incidence uses
+            equality of labels and does not require them to be hashable.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 PosetCategory,
@@ -819,7 +820,7 @@ class CoveringFamilies(OwnedCategory):
             labels.extend(tuple(pair) for pair in self.pair_index_set())
             return PosetCategory(
                 finite_ordered_set(tuple(labels)),
-                le=lambda finer, coarser: set(coarser).issubset(set(finer)),
+                le=lambda finer, coarser: all(index in finer for index in coarser),
             )
 
         @cached_method
