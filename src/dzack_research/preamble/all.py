@@ -392,6 +392,7 @@ _lazy_import(
         "ProjectiveSchemes",
         "ProjectiveSurfaces",
         "ProjectiveSpaces",
+        "ProjectiveLines",
         "ProperSurfaces",
         "QuasiCoherentSheaves",
         "RationalPolyhedralFans",

@@ -7,7 +7,7 @@ def linearizations():
     r"""``P^1`` with coordinates ``x, y``, ``O(1)``, and its trivial and sign linearizations."""
     line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     bundle = line.O(1)
-    swap = line.coordinate_swap_action()
+    swap = ProjectiveLines(QQ)(line).coordinate_swap_action()
     group = swap.acting_group()
     trivial_character = group.trivial_character()
     sign_character = next(chi for chi in group.characters() if chi != trivial_character)

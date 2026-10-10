@@ -4427,14 +4427,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""The names of the chosen homogeneous coordinates ``x_0, ..., x_n``."""
             return tuple(str(name) for name in _engine_scheme(self).variable_names())
 
-        def coordinate_swap_action(self, group=None):
-            r"""Return the C2 action interchanging the two coordinates of this projective line."""
-            from dzack_research.preamble.categories.divisors.linearizations import (
-                _projective_line_coordinate_swap_action,
-            )
-
-            return _projective_line_coordinate_swap_action(self, group)
-
         @cached_method
         def fan(self):
             r"""Return the owned standard fan of ``P^n``."""
@@ -6348,6 +6340,28 @@ class SchemeMonomorphisms(_MonoCategoryOf):
                 return arrow.is_open_immersion()
 
 
+class ProjectiveLines(OwnedCategoryOverBaseRing):
+    r"""Projective spaces of relative dimension one with chosen coordinates."""
+
+    def super_categories(self):
+        return [ProjectiveSpaces(self.base_ring())]
+
+    def an_object(self):
+        return self(ProjectiveSpaces(self.base_ring())(1))
+
+    def _call_(self, line):
+        from dzack_research.preamble.refine import refine
+        if line not in ProjectiveSpaces(self.base_ring()) or int(line.relative_dimension()) != 1:
+            raise ValueError("a projective line must be P^1 over the specified base ring")
+        return refine(line, self)
+
+    class ParentMethods:
+        def coordinate_swap_action(self, group=None):
+            r"""The involution swapping the two homogeneous coordinates of P^1."""
+            from dzack_research.preamble.categories.divisors.linearizations import _projective_line_coordinate_swap_action
+            return _projective_line_coordinate_swap_action(self, group)
+
+
 class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
     r"""Schemes with a canonical generic fibre over an integral base."""
 
@@ -6413,6 +6427,7 @@ __all__ = [
     "OpenImmersions",
     "ProjectiveSchemes",
     "ProjectiveSpaces",
+    "ProjectiveLines",
     "ProductProjectiveSpaces",
     "ProductSchemes",
     "SchemeMonomorphisms",

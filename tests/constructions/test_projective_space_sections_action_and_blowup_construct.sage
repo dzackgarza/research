@@ -19,7 +19,7 @@ def test_projective_plane_coordinate_restriction_and_jets() -> None:
 
 def test_projective_line_coordinate_swap_is_an_involution() -> None:
     line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
-    action = line.coordinate_swap_action()
+    action = ProjectiveLines(QQ)(line).coordinate_swap_action()
     group = action.acting_group()
     generator = group.group_generators()[0]
     swap = action.action_of(generator)
