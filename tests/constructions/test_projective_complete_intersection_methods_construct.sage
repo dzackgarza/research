@@ -45,8 +45,9 @@ def test_fermat_quartic_exposes_k3_topology_and_hodge_structure() -> None:
     space = ProjectiveSpaces(QQ)(3)
     x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
     quartic = space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
-    topology = quartic.integral_topology()
-    hodge = quartic.hodge_structure()
+    k3 = SmoothQuarticK3CompleteIntersections(QQ)(quartic)
+    topology = k3.integral_topology()
+    hodge = k3.hodge_structure()
 
     assert topology.integral_cohomology(2).module_rank() == 22
     assert hodge.hodge_number(2, 0) == 1

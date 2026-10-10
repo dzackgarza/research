@@ -71,7 +71,7 @@ from dzack_research.preamble.categories.schemes.blowups import (
     ProjectivePointBlowups,
 )
 
-from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections
+from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections, SmoothQuarticK3CompleteIntersections
 
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
@@ -180,6 +180,7 @@ __all__ = [
     'EffectiveCartierDivisors',
     'ProjectivePointBlowups',
     'ProjectiveCompleteIntersections',
+    'SmoothQuarticK3CompleteIntersections',
     'ProjectiveSchemes',
     'ProjectiveSurfaces',
     'DelPezzoSurfaces',

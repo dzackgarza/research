@@ -8,4 +8,4 @@ def test_fermat_quartic_direct_degree_two_cohomology_matches_integral_topology()
     x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
     quartic = space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
 
-    assert quartic.integral_singular_cohomology(2) == quartic.integral_topology().integral_cohomology(2)
+    assert quartic.integral_singular_cohomology(2) == SmoothQuarticK3CompleteIntersections(QQ)(quartic).integral_topology().integral_cohomology(2)

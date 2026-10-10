@@ -387,6 +387,7 @@ _lazy_import(
         "ProductProjectiveSpaces",
         "ProductSchemes",
         "ProjectiveCompleteIntersections",
+        "SmoothQuarticK3CompleteIntersections",
         "ProjectiveGeneralLinearGroup2",
         "ProjectivePointBlowups",
         "ProjectiveSchemes",
