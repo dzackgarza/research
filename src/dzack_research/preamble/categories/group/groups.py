@@ -3389,9 +3389,17 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def _arithmeticity_decision(self):
             return AtomicProposition("is_arithmetic_group", self)
 
-        def is_topological_group(self) -> bool:
-            r"""Whether this represented group carries compatible topology data."""
-            return self in TopologicalGroups()
+        def is_topological_group(self):
+            r"""Whether a compatible group topology is part of the selected structure.
+
+            Absence of a topological-group category placement does not prove
+            that no compatible topology is carried by the represented group.
+            """
+            match self:
+                case _ if self in TopologicalGroups():
+                    return True
+                case _:
+                    return AtomicProposition("is_topological_group", self)
 
         def _cardinality_decision(self):
             r"""``|G|``, from what the group's own data determine.
