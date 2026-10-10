@@ -235,10 +235,15 @@ class Curves(_DimensionSubcategoryOfVarieties):
         def is_geometrically_integral(self) -> bool:
             r"""The selected normalization by ``P^1`` certifies geometric integrality in this representation."""
             normalization = self.normalization_curve()
-            return (
+            assert (
                 normalization in ProjectiveSpaces(self.scheme_base_ring())
                 and int(normalization.relative_dimension()) == 1
+            ), (
+                f"geometric integrality of {self} is not decided by the selected "
+                f"normalization {normalization}: only a projective-line normalization "
+                "has a represented certificate here"
             )
+            return True
 
         def normalization_is_connected(self) -> bool:
             r"""A chosen integral normalization is connected, whether or not it is ``P^1``."""
