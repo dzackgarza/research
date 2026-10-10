@@ -30,6 +30,21 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
+**Cross-family result-placement follow-up (2026-10-10).** The earlier full
+construction/property report review was checked against source constructors
+outside `Sets`: `GradedModules._call_` constructs through the graded-module
+owner; `R[G]` is constructed as `GroupAlgebras(R)` and is additionally
+commutative only when the coefficient ring is commutative and the group is
+proved abelian; a cyclic subgroup is placed in `Subgroups(G)` and becomes
+finite when `G` is finite; lattice construction retains its lattice category;
+`Spec(A)` is placed in `Schemes(R).Affine()` with additional integral,
+finite-type, and smooth assertions conditioned on their own hypotheses.
+`AffineGroupSchemes(R)` represents a group object in affine schemes through
+its selected internal group datum, not an ordinary group of points. No new
+false mathematical result placement was established in these source slices.
+This finding does not discharge the separate category-wide method-owner and
+Mor-inheritance obligations of `placement-audit` in `TODO.md`.
+
 **Covering-family presentation edge (2026-10-09).** The parameterized
 `CoveringFamilies(Sets())` retains its site by identity, and its selected
 supercategory is exactly the constructed `presentation_category()` (two
