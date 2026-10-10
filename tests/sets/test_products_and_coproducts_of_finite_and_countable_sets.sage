@@ -60,6 +60,12 @@ def test_infinite_constant_additive_product_retains_its_monoid_and_projections()
     nonmonoid = Sets().product(indexed_family(NN, Sets.Δ[1]))
     assert nonmonoid not in CartesianProductsOfAdditiveMonoids()
     assert nonmonoid not in AdditiveMonoids()
+    try:
+        indexed_family(NN, Sets.Δ[1], value_category=AdditiveMonoids())
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an infinite constant nonmonoid was admitted as additive")
 
 
 def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:

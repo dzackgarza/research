@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Constant-family categorical admission repaired (2026-10-10):** `indexed_family(NN, Sets.Δ[1], value_category=AdditiveMonoids())` previously passed a false selected-value-category claim, causing its product to enter `CartesianProductsOfAdditiveMonoids` even though the two-point set is not an additive monoid. The indexed-family owner now checks the actual selected constant object against the declared category before constructing its diagram. Focused Sage verifies rejection of the false claim while both the valid infinite constant additive product and the parity-restricted nonconstant additive product still pass.
+
+
 **Nonconstant infinite additive product from finite diagram restriction (2026-10-10):** The selected finite functor `DiscreteCategory(Δ[1]) -> AdditiveMonoids` with alternating additive-monoid/additive-group factors has its object images verified at the finite diagram owner. Precomposition by the parity functor `DiscreteCategory(NN) -> DiscreteCategory(Δ[1])` gives a genuine nonconstant infinite family; its product has additive-monoid placement and its odd projection preserves the zero and nontrivial sum (focused Sage). `indexed_family` now follows `RestrictedDiagram.original_diagram()` through nested restrictions and rejects any lineage whose originating `_DiscreteDiagram` has unchecked infinite object images. The checked finite source and the original functor and indexing map remain retained. General nonconstant infinite diagrams from unchecked callbacks remain prohibited.
 
 

@@ -298,6 +298,11 @@ def indexed_family[IndexT, ValueT](
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
+        constant = family.constant_value()
+        if constant is not None and constant not in value_category:
+            raise ValueError(
+                f"the constant family has value {constant}, outside its declared category {value_category}"
+            )
         if not Sets().is_provably_finite(index_set) and family.constant_value() is None and selected_functor is None:
             raise TypeError(
                 "an infinite nonconstant family cannot establish its value category by declaring one: "
