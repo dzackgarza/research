@@ -3486,8 +3486,28 @@ class CoproductsOfSets(OwnedCategory):
             target: Parent,
             maps: Callable[[IndexT], SetMorphism],
         ) -> SetMorphism:
-            r"""Return the unique map out of the coproduct extending the stated maps."""
-            return Sets().Mor(self, target)(lambda element: maps(element.summand_index())(element.summand_element()))
+            r"""Return the induced set map from a compatible family of component maps."""
+            if target not in Sets():
+                raise TypeError(f"a set coproduct map requires a set target, not {target}")
+            index_set = self.index_set()
+            if not Sets().is_provably_finite(index_set):
+                raise TypeError(
+                    "a map from an infinite coproduct needs a selected family of set morphisms, "
+                    "not an unchecked component callback"
+                )
+            components = tuple((index, maps(index)) for index in index_set)
+            for index, morphism in components:
+                if morphism.parent() is not Sets().Mor(self.cofactor(index), target):
+                    raise TypeError(
+                        f"the component at {index} must lie in the exact Mor category "
+                        f"from {self.cofactor(index)} to {target}"
+                    )
+
+            def induced(element):
+                label = element.summand_index()
+                return next(morphism(element.summand_element()) for index, morphism in components if index == label)
+
+            return Sets().Mor(self, target)(induced)
 
         def __contains__(self, element) -> bool:
             return element_parent(element) is self

@@ -185,6 +185,28 @@ def test_the_disjoint_union_of_two_and_three_points_has_five_points() -> None:
     assert sum(1 for _point in union) == 5
 
 
+def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None:
+    source = Sets().coproduct((Sets.Δ[0], Sets.Δ[1]))
+    target = Sets.Δ[1]
+    components = lambda index: Sets().Mor(source.cofactor(index), target)(
+        lambda point: target(0) if index == source.index_set()(0) else target(1)
+    )
+    induced = source.from_maps(target, components)
+    assert induced.parent() is Sets().Mor(source, target)
+    for index in source.index_set():
+        component = components(index)
+        for point in source.cofactor(index):
+            assert induced(source.injection(index)(point)) == component(point)
+
+    wrong = Sets().Mor(target, target).identity()
+    try:
+        source.from_maps(target, lambda _index: wrong)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("coproduct accepted a map with incorrect component endpoints")
+
+
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
     listing = iter(square)
