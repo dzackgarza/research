@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     FreeResolution,
     Modules,
+    ModulesOverIntegralDomains,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
@@ -1556,7 +1557,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def torsion_submodule(self):
             r"""Return Tor(M) from the invariant-factor quotient over a PID."""
             if self.base_ring() not in PrincipalIdealDomains():
-                return super().torsion_submodule()
+                return ModulesOverIntegralDomains(self.base_ring())(self).generic_fibre_map().kernel()
             return self.torsion_free_quotient_projection().kernel()
 
         def torsion_free_quotient(self):
