@@ -3247,6 +3247,26 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 lambda section: section.component(normalized)
             )
 
+        def from_maps(self, source, maps):
+            r"""The additive map classified by a finite family of additive component maps."""
+            from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+            if source not in AdditiveMonoids():
+                raise TypeError(f"an additive product map needs an additive-monoid source, not {source}")
+            index = self.index_set()
+            if not Sets().is_provably_finite(index):
+                raise TypeError(
+                    "a map into an infinite additive product needs a selected categorical "
+                    "family of additive morphisms, not an unchecked callback"
+                )
+            components = tuple((label, maps(label)) for label in index)
+            for label, morphism in components:
+                if morphism.parent() is not AdditiveMonoids().Mor(source, self.factor(label)):
+                    raise TypeError(f"the component at {label} is not an additive morphism into {self.factor(label)}")
+            return AdditiveMonoids().Mor(source, self)(
+                lambda point: self(lambda label: next(morphism(point) for key, morphism in components if key == label))
+            )
+
 
 def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
     r"""Return the enumeration of a finite-index product of enumerated sets.

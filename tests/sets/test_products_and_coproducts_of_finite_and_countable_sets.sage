@@ -32,6 +32,17 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
     assert projection.parent() is AdditiveMonoids().Mor(product, factor)
     assert projection(zero) == factor.zero()
     assert projection(point + point) == projection(point) + projection(point)
+    identity = AdditiveMonoids().Mor(factor, factor).identity()
+    induced = product.from_maps(factor, lambda _index: identity)
+    assert induced.parent() is AdditiveMonoids().Mor(factor, product)
+    assert all(product.projection(index)(induced(factor.one())) == factor.one() for index in product.index_set())
+    assert all(product.projection(index)(induced(factor.zero())) == factor.zero() for index in product.index_set())
+    try:
+        product.from_maps(factor, lambda _index: Sets().Mor(factor, factor).identity())
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
 
 
 def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
