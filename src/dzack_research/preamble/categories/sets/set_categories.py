@@ -473,7 +473,7 @@ class OwnedSetMorphism(SetMorphism):
         domain = self.domain()
         match domain:
             case _ if (
-                (domain in FiniteSets() or domain.is_finite() is True)
+                Sets().is_provably_finite(domain)
                 and domain in EnumeratedSets()
             ):
                 equal = conjunction(self(element) == other(element) for element in domain)
@@ -526,7 +526,7 @@ class OwnedSetMorphism(SetMorphism):
         domain = self.domain()
         match domain:
             case _ if (
-                (domain in FiniteSets() or domain.is_finite() is True)
+                Sets().is_provably_finite(domain)
                 and domain in EnumeratedSets()
             ):
                 return self.image().cardinality() == domain.cardinality()
@@ -545,7 +545,7 @@ class OwnedSetMorphism(SetMorphism):
         codomain = self.codomain()
         match domain, codomain:
             case _ if all(
-                (end in FiniteSets() or end.is_finite() is True)
+                Sets().is_provably_finite(end)
                 and end in EnumeratedSets()
                 for end in (domain, codomain)
             ):
@@ -629,7 +629,7 @@ class SetMorCategory(CategoricalMor):
     ) -> None:
         placement = (
             FinitelySupportedFunctionSets()
-            if (domain in FiniteSets() or domain.is_finite() is True)
+            if Sets().is_provably_finite(domain)
             else FunctionSets()
         )
         placement = owned_category_join((
@@ -728,6 +728,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
     Δ = _Delta()
     ℵ = _Aleph()
     א = ℵ
+
+    def is_provably_finite(self, set_object) -> bool:
+        r"""Whether finite placement or the set's decision proves finiteness.
+
+        This predicate does not infer finiteness from enumerability and does
+        not turn an undecided finiteness proposition into a Boolean claim.
+        """
+        return set_object in FiniteSets() or set_object.is_finite() is True
 
     def an_object(self) -> ObjectOfCategory:
         r"""The ordinal 2: two distinct elements, so a map out of it is not forced."""
@@ -861,7 +869,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
             family = _factor_family(family, name="Product factors")
             index_set = family.index_set()
-            if (index_set in FiniteSets() or index_set.is_finite() is True) and index_set in EnumeratedSets():
+            if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
                 return self._finite_product(family)
             return _cartesian_product_of(family)
 
@@ -1116,7 +1124,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
             family = _factor_family(family, name="Coproduct factors")
             index_set = family.index_set()
-            if (index_set in FiniteSets() or index_set.is_finite() is True) and index_set in EnumeratedSets():
+            if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
                 return self._finite_coproduct(family)
             return _coproduct_of_indexed_family(family)
 
@@ -2305,7 +2313,7 @@ class PowerSets(OwnedCategory):
         r"""Construct the power object of ``base_set``."""
         placements = [self, _cardinalities().set_power_category(Sets.Δ[1], base_set)]
         engine = None
-        if base_set in FiniteSets() or base_set.is_finite() is True:
+        if Sets().is_provably_finite(base_set):
             if base_set in EnumeratedSets():
                 placements.append(EnumeratedSets())
                 engine = (self, _EnumeratedPowerSetEngine, None)
@@ -2741,7 +2749,7 @@ def _condition_set(universe: Parent, predicate: Callable[[SourcePointT], bool]) 
         "category of sets"
     )
     match universe:
-        case _ if universe in FiniteSets() or universe.is_finite() is True:
+        case _ if Sets().is_provably_finite(universe):
             placement = FiniteSets()
         case _:
             placement = Sets()
@@ -2794,7 +2802,7 @@ class _ConditionSetEngine:
 
     def __iter__(self):
         universe = self.universe()
-        assert universe in FiniteSets() or universe in EnumeratedSets() or universe.is_finite() is True, (
+        assert Sets().is_provably_finite(universe) or universe in EnumeratedSets(), (
             f"cannot list the elements of {self}: the set {universe} it is cut out of is neither finite "
             "nor enumerated"
         )
@@ -2817,7 +2825,7 @@ def _image_set(
         f"the image of a map needs a set as domain, but {source} is not in the category of sets"
     )
     match source:
-        case _ if source in FiniteSets() or source.is_finite() is True:
+        case _ if Sets().is_provably_finite(source):
             placement = FiniteSets()
         case _:
             placement = Sets()
@@ -2880,9 +2888,7 @@ class _ImageSetEngine:
         match self.source_set():
             case _ if self._image_inverse is not None:
                 return True
-            case source if source in FiniteSets() or (
-                source.is_finite() is True and source in EnumeratedSets()
-            ):
+            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 return cardinal(sum(1 for _value in self._distinct_values())) == cardinal(
                     source.cardinality()
                 )
@@ -2914,9 +2920,7 @@ class _ImageSetEngine:
         return SageSet(self._distinct_values())
 
     def __iter__(self):
-        assert self.source_set() in FiniteSets() or (
-            self.source_set().is_finite() is True and self.source_set() in EnumeratedSets()
-        ), (
+        assert Sets().is_provably_finite(self.source_set()) and self.source_set() in EnumeratedSets(), (
             f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
             "to be finite; for an infinite image use Sets().image_set with an inverse on the image"
         )
@@ -2926,9 +2930,7 @@ class _ImageSetEngine:
         r"""Whether ``element`` is a value \(f(a)\) for a point \(a\) of the source."""
         source = self.source_set()
         match source:
-            case _ if source in FiniteSets() or (
-                source.is_finite() is True and source in EnumeratedSets()
-            ):
+            case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 return element in self._finite_image()
             case _ if self._image_inverse is not None:
                 preimage = self._image_inverse(element)
@@ -2965,7 +2967,7 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    if index_set in FiniteSets() or index_set.is_finite() is True:
+    if Sets().is_provably_finite(index_set):
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
         if all(family(index) in AdditiveMonoids() for index in index_set):
@@ -3127,7 +3129,7 @@ class CartesianProductsOfSets(OwnedCategory):
 
         def has_finite_index_set(self) -> bool:
             index = self.index_set()
-            return index in FiniteSets() or index.is_finite() is True
+            return Sets().is_provably_finite(index)
 
         def factor(self, index: IndexT) -> Sets().ObjectType:
             normalized = self.index_set()(index)
@@ -3689,7 +3691,7 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
         _cardinalities().set_indexed_category(family, operation="sum"),
     ]
     if (
-        (index_set in FiniteSets() or index_set.is_finite() is True)
+        Sets().is_provably_finite(index_set)
         and index_set in EnumeratedSets()
         and all(family(index) in EnumeratedSets() for index in index_set)
     ):
