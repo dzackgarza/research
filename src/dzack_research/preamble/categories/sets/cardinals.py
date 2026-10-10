@@ -427,7 +427,7 @@ class Cardinalities(OwnedCategory):
                 return self.set_category(cardinal(1))
             case _, _ if codomain in FiniteSets() and exponent in FiniteSets():
                 return self.set_category(self.power(codomain.cardinality(), exponent.cardinality()))
-            case _, _ if codomain in FiniteSets() and exponent.is_finite() is True:
+            case _, _ if codomain in FiniteSets() and Sets().is_provably_finite(exponent):
                 # A proved finite exponent gives a finite function set even
                 # before the exponent has acquired its finite-set placement.
                 return FiniteSets()
@@ -477,7 +477,7 @@ class Cardinalities(OwnedCategory):
                     self.power(2, size) if fixed_size is None
                     else cardinal(comb(size.finite_value(), int(fixed_size)))
                 )
-            case _, _ if source.is_finite() is True:
+            case _, _ if Sets().is_provably_finite(source):
                 # Every family of subsets of a finite set is finite, even
                 # before the source has acquired its FiniteSets placement.
                 # Its exact cardinality need not yet be computed.
@@ -514,13 +514,13 @@ class Cardinalities(OwnedCategory):
         match operation:
             case "product":
                 if any(
-                    f.is_finite() is True and f.cardinality() == cardinal(0)
+                    Sets().is_provably_finite(f) and f.cardinality() == cardinal(0)
                     for f in factors
                 ):
                     return self.set_category(cardinal(0))
                 if all(f in FiniteSets() for f in factors):
                     return self.set_category(self.product(*(f.cardinality() for f in factors)))
-                if all(f.is_finite() is True for f in factors):
+                if all(Sets().is_provably_finite(f) for f in factors):
                     return FiniteSets()
                 nonempty = all(
                     f in InfiniteSets()
@@ -539,7 +539,7 @@ class Cardinalities(OwnedCategory):
             case "sum":
                 if all(f in FiniteSets() for f in factors):
                     return self.set_category(self.sum(*(f.cardinality() for f in factors)))
-                if all(f.is_finite() is True for f in factors):
+                if all(Sets().is_provably_finite(f) for f in factors):
                     return FiniteSets()
                 if any(f in UncountableSets() for f in factors):
                     return UncountableSets()
