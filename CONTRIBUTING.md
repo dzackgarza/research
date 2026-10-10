@@ -1584,6 +1584,12 @@ of this specification.
   modules (for example `K/R` and `K/2R`); an integer matrix of
   representatives is only a private realization, never a replacement for
   the form morphism or its chosen generator map.
+  For a finite form module with selected generators, construct the
+  surjection from the free module on those generators, and pull back
+  the bilinear and quadratic forms along that actual morphism. Numerical
+  family contraction takes the pulled-back forms as inputs, not a
+  manually assembled Gram array at the consumer. The value modules of
+  the bilinear pairing and its quadratic refinement remain distinct.
 
   **Mathematical transposition and coordinate transposition are different
   operations.** Determine the receiver's actual owning Mor and the source and

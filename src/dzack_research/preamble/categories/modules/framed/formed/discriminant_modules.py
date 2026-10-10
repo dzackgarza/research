@@ -41,7 +41,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets, finite_ordinal_set
-from dzack_research.preamble.tensors.tensor import _engine_modular_pairing_pullback
+from dzack_research.preamble.tensors.tensor import _engine_quotient_form_family_contractions
 from dzack_research.preamble.owned_category import owned_category_join
 
 
@@ -483,14 +483,17 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             ``O(A,b)``.
             """
 
-            generators = tuple(self.module_generators())
-            gram = tuple(
-                tuple(self.b(left, right) for right in generators)
-                for left in generators
-            )
             unformed = self.unformed_module()
+            # The bilinear refinement is the existing form morphism of the
+            # underlying module, not another table of generator pairings.
+            pairing = unformed.bilinear_forms(self.bilinear_value_module())(
+                lambda left, right: self.b(
+                    self._element_from_unformed_module(left),
+                    self._element_from_unformed_module(right),
+                )
+            )
             return FormModules(unformed.base_ring())(
-                unformed.bilinear_forms(self.bilinear_value_module())(gram),
+                pairing,
                 _extra_categories=(
                     TorsionBilinearFormModules(self.base_ring()),
                     DiscriminantModules(self.base_ring()),
@@ -857,40 +860,28 @@ def _isotropic_subgroups(ambient, quadratic):
     smith_generators = tuple(raised(int(numpy.ravel_multi_index(
         tuple(int(i == j) for j in range(rank)), invariants
     ))) for i in range(rank))
-    # The chosen Smith generators give a surjection u: ZZ^rank -> A.
-    # The family of all elements is the set map c: I -> ZZ^rank supplied
-    # by 'coordinates'. Its bilinear table is (u o c)^*b; in the even
-    # case the diagonal quadratic values are q(u(c(i))) in QQ/2ZZ.
-    # Only the private tensor adapter realizes those pullbacks by
-    # modular matrix contractions; the mathematical pairings are b and q.
-    bilinear = [
-        [_engine_element(value.parent(), value) for value in (ambient.b(left, right).lift() for right in smith_generators)]
-        for left in smith_generators
-    ]
-    if quadratic:
-        diagonal = [_engine_element(value.parent(), value) for value in (ambient.q(generator).lift() for generator in smith_generators)]
-        self_gram = [
-            [diagonal[i] if i == j else bilinear[i][j] for j in range(rank)]
-            for i in range(rank)
-        ]
-        self_modulus = 2
-    else:
-        self_gram = bilinear
-        self_modulus = 1
-    denominator = lcm(1, *(int(entry.denominator()) for row in bilinear + self_gram for entry in row))
-    bilinear_numerators = numpy.array(
-        [[int(entry * denominator) % denominator for entry in row] for row in bilinear], dtype=numpy.int64
-    ).reshape(rank, rank)
-    self_numerators = numpy.array(
-        [[int(entry * denominator) % (self_modulus * denominator) for entry in row] for row in self_gram],
-        dtype=numpy.int64,
-    ).reshape(rank, rank)
-    pairings = _engine_modular_pairing_pullback(
-        bilinear_numerators, coordinates, denominator
+    # Smith generators determine a module morphism
+    # u: ZZ^rank -> underlying(A). Isotropy is computed from u^*b and,
+    # where selected, u^*q. Only the private tensor adapter realizes
+    # these forms over the finite coordinate family.
+    smith_source = ambient.base_ring()._fresh_free_module_on(
+        finite_ordered_set(tuple(range(rank)))
     )
-    self_values = _engine_modular_pairing_pullback(
-        self_numerators, coordinates, self_modulus * denominator,
-        diagonal_only=True,
+    selected_smith_map = smith_source.module_category().Mor(
+        smith_source, unformed
+    )({
+        label: ambient._element_of_unformed_module(generator)
+        for label, generator in zip(
+            smith_source.module_generating_set(), smith_generators, strict=True
+        )
+    })
+    bilinear_form = (
+        ambient.associated_bilinear_form().form() if quadratic else ambient.form()
+    )
+    pairings, self_values = _engine_quotient_form_family_contractions(
+        bilinear_form.pullback(selected_smith_map),
+        ambient.form().pullback(selected_smith_map) if quadratic else None,
+        coordinates,
     )
     width = (order + 7) // 8
 

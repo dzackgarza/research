@@ -1226,6 +1226,59 @@ def _engine_modular_pairing_pullback(form, row_family, modulus, *, diagonal_only
     return (first_contraction @ coordinates.transpose()) % modulus
 
 
+def _engine_quotient_form_family_contractions(bilinear_form, quadratic_form, row_family):
+    r"""Contract pulled-back quotient-valued forms over an engine family.
+
+    Both inputs are owned forms on the same finite free module, obtained by
+    mathematical pullback along the selected Smith-generator morphism.
+    Only here are generator values lowered to rational representatives.
+    The quadratic coefficient form uses q(e_i) on its diagonal and
+    b(e_i,e_j) off the diagonal; it takes values modulo 2, not modulo 1.
+    """
+    import numpy
+    from sage.arith.functions import lcm
+
+    source = bilinear_form.module()
+    if quadratic_form is not None and quadratic_form.module() is not source:
+        raise TypeError("the forms must have the same source module")
+    basis = tuple(source.module_generator(i) for i in source.module_generating_set())
+    rank = len(basis)
+
+    def lifted(value):
+        scalar = value.lift()
+        return _engine_element(scalar.parent(), scalar)
+
+    bilinear = tuple(
+        tuple(lifted(bilinear_form(x, y)) for y in basis) for x in basis
+    )
+    diagonal = (
+        tuple(lifted(quadratic_form(x)) for x in basis)
+        if quadratic_form is not None else None
+    )
+    self_gram = (
+        tuple(tuple(diagonal[i] if i == j else bilinear[i][j]
+                    for j in range(rank)) for i in range(rank))
+        if diagonal is not None else bilinear
+    )
+    denominator = lcm(1, *(int(x.denominator()) for row in (*bilinear, *self_gram)
+                            for x in row))
+    self_period = 2 if diagonal is not None else 1
+    b_coefficients = numpy.asarray(
+        [[int(x * denominator) % denominator for x in row] for row in bilinear],
+        dtype=object,
+    ).reshape(rank, rank)
+    q_coefficients = numpy.asarray(
+        [[int(x * denominator) % (self_period * denominator) for x in row]
+         for row in self_gram], dtype=object,
+    ).reshape(rank, rank)
+    return (
+        _engine_modular_pairing_pullback(b_coefficients, row_family, denominator),
+        _engine_modular_pairing_pullback(
+            q_coefficients, row_family, self_period * denominator, diagonal_only=True,
+        ),
+    )
+
+
 def _engine_row_action_from_images(source_rows, target_rows):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): the row action carrying a family to its images.
 
