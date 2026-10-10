@@ -84,7 +84,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 
@@ -1322,13 +1322,21 @@ class Modules(OwnedCategoryOverBaseRing):
 
             def preimage_on_labels(element):
                 coordinates = codomain(element).to_vector()
-                support = coordinates.support().domain()
-                match all(label in source_labels for label in support):
+                coefficients = coordinates.parent()._selected_module_coefficients(coordinates)
+                match conjunction(
+                    coefficient == self.base_ring().zero()
+                    for label, coefficient in coefficients.items()
+                    if label not in source_labels
+                ):
                     case False:
                         return None
                     case True:
                         return self.linear_combination(
-                            {label: coordinates(label) for label in support}
+                            {label: coefficient for label, coefficient in coefficients.items() if label in source_labels}
+                        )
+                    case _:
+                        raise AssertionError(
+                            "a framing preimage requires decided vanishing of coefficients outside its labels"
                         )
 
             return self.Mono(codomain)._from_constructed_embedding(
@@ -1858,13 +1866,17 @@ class Modules(OwnedCategoryOverBaseRing):
         def _selected_module_coefficients(self, element):
             r"""Read the coefficients of the chosen preimage of ``element`` under the framing.
 
-            Protected contract of ``Modules(R)``: the one caller is
-            :meth:`_framing_lift`, and a level whose elements are not stored as
-            their own finite support -- a localized module, a quotient, a
-            restriction of scalars -- implements it for the representation it
-            constructs.  It returns private label-to-coefficient data keyed by
-            ``module_generating_set()``.  The default reads an element that
-            stores its own finite support.
+            Protected contract of ``Modules(R)``. Permitted callers are
+            :meth:`_framing_lift` and module coordinate-transport or morphism
+            evaluation constructors already holding an owned framing vector.
+            A localized module, quotient or restriction of scalars implements
+            it at the representation it constructs. The result is a finite
+            label-to-owned-coefficient family keyed by
+            ``module_generating_set()``; coefficients outside that family are
+            zero. Its keys contain the support, and stored coefficients need
+            not be proved nonzero. Such a family can be summed and transported
+            without deciding its exact support. Algorithms requiring nonzero
+            coordinates must establish that predicate separately.
             """
             return element._coefficient_data()
 
@@ -2903,19 +2915,16 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 {
                     source_label: self.codomain().linear_combination(
                         {
-                            target_label: coefficient
-                            for target_label in self.codomain().module_generating_set()
-                            if (
-                                coefficient := coordinates(
-                                    assignment_labels(
-                                        lambda index: (
-                                            source_label
-                                            if int(index) == 0
-                                            else target_label
-                                        )
+                            target_label: coordinates(
+                                assignment_labels(
+                                    lambda index: (
+                                        source_label
+                                        if int(index) == 0
+                                        else target_label
                                     )
                                 )
                             )
+                            for target_label in self.codomain().module_generating_set()
                         }
                     )
                     for source_label in self.domain().module_generating_set()
@@ -2932,8 +2941,8 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 image = self.codomain().framing_morphism().lift(
                     morphism(self.domain().module_generator(source_label))
                 )
-                for target_label in image.support().domain():
-                    coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = image(target_label)
+                for target_label, coefficient in image.parent()._selected_module_coefficients(image).items():
+                    coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
             assignment = power.linear_combination(coefficients)
             inclusion = self.inclusion_into_generator_maps()
             if inclusion.has_selected_lift():
@@ -2946,7 +2955,7 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
             coordinates = model.framing_morphism().lift(
                 self._internal_model_from_morphism(self(morphism))
             )
-            return {label: coordinates(label) for label in coordinates.support().domain()}
+            return coordinates.parent()._selected_module_coefficients(coordinates)
 
 
 class ModuleSubobjectConstruction:
@@ -4036,8 +4045,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             )
             framing = self.module_generating_set()
             coefficients = {}
-            for module_label in module_coordinates.support().domain():
-                scalar_coordinates = self._scalar_basis.coordinates(module_coordinates(module_label))
+            for module_label, coefficient in module_coordinates.parent()._selected_module_coefficients(module_coordinates).items():
+                scalar_coordinates = self._scalar_basis.coordinates(coefficient)
                 for scalar_label, value in scalar_coordinates.items():
                     coefficients[framing((scalar_label, module_label))] = self.base_ring()(value)
             return coefficients
@@ -4081,8 +4090,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             }
             denominator = ring.one()
             for coordinates in image_coordinates.values():
-                for label in coordinates.support().domain():
-                    denominator = denominator.lcm(coordinates(label).denominator())
+                for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values():
+                    denominator = denominator.lcm(coefficient.denominator())
             scale = self.ring_map()(denominator)
             cleared_module = ring._fresh_free_module_on(
                 extension.module_generating_set()
@@ -4091,8 +4100,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             def cleared(coordinates):
                 return cleared_module.linear_combination(
                     {
-                        label: ring(scale * coordinates(label))
-                        for label in coordinates.support().domain()
+                        label: ring(scale * coefficient)
+                        for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
                     }
                 )
 
@@ -4154,19 +4163,22 @@ def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
         scalar_generator = scalar_basis.image(scalar_label)
         relation = relations(relations.domain().module_generator(relation_label)).to_vector()
         coefficients = {}
-        for module_label in relation.support().domain():
-            product = extension_ring(scalar_generator * extension_ring(relation(module_label)))
+        for module_label, coefficient in relation.parent()._selected_module_coefficients(relation).items():
+            product = extension_ring(scalar_generator * extension_ring(coefficient))
             for output_scalar_label, value in scalar_basis.coordinates(product).items():
                 label = labels(lambda index: output_scalar_label if int(index) == 0 else module_label)
                 coefficients[label] = coefficients.get(label, ring.zero()) + ring(value)
-        return generators.linear_combination({label: value for label, value in coefficients.items() if value})
+        return generators.linear_combination(coefficients)
 
     restricted = tuple(
         restricted_relation(relation_label, scalar_label)
         for relation_label in relations.domain().module_generating_set()
         for scalar_label in scalar_labels
     )
-    return _morphism_on_elements(generators, tuple(relation for relation in restricted if relation))
+    return _morphism_on_elements(
+        generators,
+        tuple(relation for relation in restricted if (relation == generators.zero()) is not True),
+    )
 
 
 @cached_function(key=lambda module, ring_map, **data: (
@@ -4341,11 +4353,12 @@ def BilinearMap(left, right, codomain, generator_images):
             def evaluation(left_element, right_element):
                 left_coordinates = left.framing_morphism().lift(left_element)
                 right_coordinates = right.framing_morphism().lift(right_element)
-                right_support = right_coordinates.support().domain()
+                left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+                right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
                 return sum(
                     (
-                        left_coordinates(left_label)
-                        * right_coordinates(right_label)
+                        left_coefficient
+                        * right_coefficient
                         * codomain(
                             raw_image(
                                 _tensor_pair(
@@ -4355,8 +4368,8 @@ def BilinearMap(left, right, codomain, generator_images):
                                 )
                             )
                         )
-                        for left_label in left_coordinates.support().domain()
-                        for right_label in right_support
+                        for left_label, left_coefficient in left_coefficients.items()
+                        for right_label, right_coefficient in right_coefficients.items()
                     ),
                     codomain.zero(),
                 )
@@ -4417,14 +4430,14 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
             left_coordinates = left.framing_morphism().lift(left_element)
             right_coordinates = right.framing_morphism().lift(right_element)
-            right_support = right_coordinates.support().domain()
+            left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+            right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
             labels = self.module_generating_set()
             return self.linear_combination(
                 {
-                    _tensor_pair(labels, left_label, right_label): product
-                    for left_label in left_coordinates.support().domain()
-                    for right_label in right_support
-                    if (product := left_coordinates(left_label) * right_coordinates(right_label))
+                    _tensor_pair(labels, left_label, right_label): left_coefficient * right_coefficient
+                    for left_label, left_coefficient in left_coefficients.items()
+                    for right_label, right_coefficient in right_coefficients.items()
                 }
             )
 
@@ -4714,12 +4727,12 @@ def _module_tensor_product_with_data(
             relation = factor_relations(factor_relations.domain().module_generator(relation_label)).to_vector()
             for elsewhere in itertools.product(*elsewhere_sets):
                 coefficients = {}
-                for factor_label in relation.support().domain():
+                for factor_label, coefficient in relation.parent()._selected_module_coefficients(relation).items():
                     section = elsewhere[:position] + (factor_label,) + elsewhere[position:]
                     label = tensor_labels(
                         lambda place, section=section: section[int(ranking(place))]
                     )
-                    coefficients[label] = relation(factor_label)
+                    coefficients[label] = coefficient
                 relations.append(generators.linear_combination(coefficients))
 
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -4904,8 +4917,8 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 coefficients = {}
                 for index in factors.index_set():
                     leg_image = factors.value(index).framing_morphism().lift(legs.value(index)(generator))
-                    for target_label in leg_image.support().domain():
-                        coefficients[_biproduct_label(labels, index, target_label)] = leg_image(target_label)
+                    for target_label, coefficient in leg_image.parent()._selected_module_coefficients(leg_image).items():
+                        coefficients[_biproduct_label(labels, index, target_label)] = coefficient
                 return self.linear_combination(coefficients)
 
             return source.module_category().Mor(source, self)(image)
@@ -5102,7 +5115,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     {
                         row_label: ring(rows[row_position][column_position])
                         for row_position, row_label in enumerate(row_labels)
-                        if ring(rows[row_position][column_position]) != ring.zero()
                     }
                 )
             return self(images)
@@ -5333,8 +5345,8 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     coordinates = inclusion(source_kernel.module_generator(label)).to_vector()
                     return localized_domain.linear_combination(
                         {
-                            column_label: localization_map(coordinates(column_label))
-                            for column_label in coordinates.support().domain()
+                            column_label: localization_map(coefficient)
+                            for column_label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
                         }
                     )
 
@@ -5696,8 +5708,8 @@ def _matrix_coefficients(mor, morphism):
     coefficients = {}
     for column_label in mor.column_index_set():
         column = morphism._matrix_column_coordinates(column_label)
-        for row_label in column.support().domain():
-            coefficients[labels((row_label, column_label))] = column(row_label)
+        for row_label, coefficient in column.parent()._selected_module_coefficients(column).items():
+            coefficients[labels((row_label, column_label))] = coefficient
     return coefficients
 
 

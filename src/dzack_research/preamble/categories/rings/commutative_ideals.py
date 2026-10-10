@@ -151,6 +151,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ideal_generators=None,
             engine_ideal=None,
             localization_source_ideal=None,
+            quotient_preimage_ideal=None,
             **rest,
         ) -> None:
             self._ideal_generators = (
@@ -160,6 +161,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             )
             self._selected_engine_ideal = engine_ideal
             self._localization_source_ideal = localization_source_ideal
+            self._quotient_preimage_ideal = quotient_preimage_ideal
             super().__init__(**rest)
 
         def ring(self):
@@ -175,8 +177,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def __eq__(self, other):
             r"""Two ideals of one ring are equal when each contains the other.
 
-            Over a localization the equality is decided that way rather than by
-            the computation realization.  ``R_p`` is realized by ``Frac(R)``,
+            Over a localization, and for a quotient ideal retaining its exact
+            source preimage, equality is decided by containment. ``R_p`` is
+            realized by ``Frac(R)``,
             where every nonzero ideal is the unit ideal, so an engine
             comparison there would identify ideals that differ; mutual
             containment is decided in ``R`` by the localization criterion in
@@ -184,7 +187,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             """
             if other not in CommutativeIdeals(self.ring()):
                 return False
-            if self.ring() in LocalizationRings():
+            if (
+                self.ring() in LocalizationRings()
+                or self._quotient_preimage_ideal is not None
+                or other._quotient_preimage_ideal is not None
+            ):
                 return conjunction(
                     target.contains_ambient_element(generator)
                     for source, target in ((self, other), (other, self))
@@ -252,6 +259,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _localized_commutative_ideal(self, localization_ring)
 
         def is_prime(self):
+            if self._quotient_preimage_ideal is not None:
+                return self._quotient_preimage_ideal.is_prime()
             if self.ring() in LocalizationRings():
                 # Prime ideals correspond exactly under extension and
                 # contraction along a localization, with properness retained.
@@ -271,6 +280,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def is_maximal(self):
             ring = self.ring()
+            if self._quotient_preimage_ideal is not None:
+                return self._quotient_preimage_ideal.is_maximal()
             if ring in LocalizationRings():
                 from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
 
@@ -333,6 +344,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             this exact ring, never an ideal of its larger computation model.
             """
             ring = self.ring()
+            if self._quotient_preimage_ideal is not None:
+                radical = self._quotient_preimage_ideal._radical_decision()
+                return None if radical is None else _descend_quotient_source_ideal(ring, radical)
             if ring in LocalizationRings():
                 source_ideal = self._localization_source_ideal
                 assert source_ideal is not None, (
@@ -417,6 +431,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             """
             _require_same_ring(self, other)
             ring = self.ring()
+            if self._quotient_preimage_ideal is not None:
+                return self._binary_quotient_source_ideal_result(other, "_colon_decision")
             if ring in LocalizationRings():
                 return self._binary_localized_ideal_result(other, "_colon_decision")
             if self._selected_engine_ideal is None or other._selected_engine_ideal is None:
@@ -484,6 +500,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             """
             _require_same_ring(self, other)
             ring = self.ring()
+            if self._quotient_preimage_ideal is not None:
+                return self._binary_quotient_source_ideal_result(other, "_ideal_saturation_decision")
             if ring in LocalizationRings():
                 return self._binary_localized_ideal_result(other, "_ideal_saturation_decision")
             if self._selected_engine_ideal is None or other._selected_engine_ideal is None:
@@ -639,6 +657,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
+            if self._quotient_preimage_ideal is not None:
+                return self._quotient_preimage_ideal.contains_ambient_element(value.lift())
             source_ideal = self._localization_source_ideal
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
@@ -681,6 +701,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def _binary_engine_ideal_result(self, other, operation):
             r"""Lower a binary ideal operation and return its owned ideal."""
+            if self._quotient_preimage_ideal is not None:
+                return self._binary_quotient_source_ideal_result(other, operation)
             if self.ring() in LocalizationRings():
                 return self._binary_localized_ideal_result(other, operation)
             left, right = self._binary_engine_ideals(other)
@@ -693,6 +715,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             else:
                 raise ValueError(f"unknown binary ideal operation {operation!r}")
             return _from_engine_ideal(self.ring(), result)
+
+        def _binary_quotient_source_ideal_result(self, other, operation):
+            r"""Compute an ideal operation on exact quotient preimages and descend.
+
+            This owner's source transport serves sum, product, intersection,
+            colon and saturation. The result is its image under the actual
+            quotient map. For a product the preimage of that image includes
+            the defining kernel again; preimage does not preserve products.
+            """
+            _require_same_ring(self, other)
+            ring = self.ring()
+            left = self._quotient_preimage_ideal
+            right = other._quotient_preimage_ideal
+            assert left is not None, "quotient ideal arithmetic requires its exact source preimage"
+            if right is None:
+                right = ring.quotient_map().contraction_of_ideal(other)
+            result = getattr(left, operation)(right)
+            return None if result is None else _descend_quotient_source_ideal(ring, result)
 
         def _binary_localized_ideal_result(self, other, operation):
             r"""Compute on the retained source ideals and extend the result.
@@ -722,6 +762,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if exponent < 0:
                 raise ValueError(
                     f"the ideal power I^n needs n >= 0, but n = {exponent} for I = {self}"
+                )
+            if self._quotient_preimage_ideal is not None:
+                return _descend_quotient_source_ideal(
+                    self.ring(), self._quotient_preimage_ideal.power(exponent)
                 )
             if self.ring() in LocalizationRings():
                 source_ideal = self._localization_source_ideal
@@ -763,7 +807,22 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self.quotient_ring().cardinality()
 
         def syzygy_matrix(self):
-
+            r"""Relations on this ideal's selected generators, as owned rows."""
+            if self._quotient_preimage_ideal is not None:
+                presentation = self.presentation()
+                generator_labels = tuple(presentation.codomain().module_generating_set())
+                relation_labels = tuple(presentation.domain().module_generating_set())
+                rows = tuple(
+                    tuple(
+                        coordinates(generator_label)
+                        for generator_label in generator_labels
+                    )
+                    for coordinates in (
+                        presentation(presentation.domain().module_generator(relation_label)).to_vector()
+                        for relation_label in relation_labels
+                    )
+                )
+                return self.ring().matrix_space(len(rows), len(generator_labels)).from_rows(rows)
             backend = self._engine_ideal()
             selected = tuple(backend.gens())
             rows = _engine_ideal_syzygy_rows(self.ring(), backend, selected)
@@ -853,6 +912,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ring = self.ring()
             if ring not in OwnedNoetherianRings():
                 return None
+            if self._quotient_preimage_ideal is not None:
+                return self._finite_quotient_source_ideal_family("_finite_primary_decomposition_decision")
             if ring in LocalizationRings():
                 return self._finite_localized_ideal_family("_finite_primary_decomposition_decision")
             if self._selected_engine_ideal is None:
@@ -900,6 +961,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ring = self.ring()
             if ring not in OwnedNoetherianRings():
                 raise TypeError("finite minimal-prime enumeration requires a Noetherian ring")
+            if self._quotient_preimage_ideal is not None:
+                return self._finite_quotient_source_ideal_family("finite_minimal_primes")
             if ring in LocalizationRings():
                 primes = self._finite_localized_ideal_family("finite_minimal_primes")
                 assert primes is not None, (
@@ -911,6 +974,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     component.radical() for component in self.finite_primary_decomposition()
                 ))
             return self._finite_engine_ideal_family("minimal_associated_primes")
+
+        def _finite_quotient_source_ideal_family(self, operation):
+            r"""Descend a primary or prime family of the retained exact preimage.
+
+            The quotient map induces the ideal correspondence above its
+            defining kernel. Every component here contains that kernel, so
+            no further survival test or contraction-ring isomorphism is used.
+            An unavailable optional primary result remains None.
+            """
+            preimage = self._quotient_preimage_ideal
+            assert preimage is not None, "a quotient ideal family requires its exact source preimage"
+            family = getattr(preimage, operation)()
+            if family is None:
+                return None
+            return finite_ordered_set(tuple(
+                _descend_quotient_source_ideal(self.ring(), component)
+                for component in family
+            ))
 
         def _finite_localized_ideal_family(self, operation):
             r"""Extend the surviving source primary or minimal-prime family.
@@ -1014,6 +1095,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ring = self.ring()
             if ring not in OwnedNoetherianRings():
                 raise TypeError("finite associated-prime enumeration requires a Noetherian ring")
+            if self._quotient_preimage_ideal is not None:
+                return self._finite_quotient_source_ideal_family("finite_associated_primes")
             if ring in LocalizationRings():
                 primes = self._finite_localized_ideal_family("finite_associated_primes")
                 assert primes is not None, (
@@ -1111,6 +1194,90 @@ def _polynomial_syzygy_rows(ideal):
             )
 
 
+def _quotient_ideal_relation_rows(lifted, defining, source_relation_rows, descend):
+    r"""Project augmented source syzygies onto the selected quotient generators.
+
+    If the quotient is A/K and the selected ideal generators lift to a_i,
+    the first n coordinates of the syzygies of (a_1,...,a_n,k_1,...,k_m)
+    generate all relations on their quotient images. A relation modulo K
+    lifts to one source syzygy after adjoining coefficients for the k_j.
+    The callback must retain the ordered augmented family, including zeros
+    and redundant generators; replacing that family by generators of the
+    same ideal would lose the coordinates being projected.
+
+    This is the common relation construction for the exact owned source and
+    the existing selected native quotient algorithm at this ideal owner.
+    """
+    lifted = tuple(lifted)
+    rows = source_relation_rows(lifted + tuple(defining))
+    return tuple(
+        tuple(descend(coefficient) for coefficient in row[:len(lifted)])
+        for row in rows
+    )
+
+
+def _ordered_ideal_relation_rows(ring, generators):
+    r"""Read the kernel relations of an ordered map R^n -> R.
+
+    The free map retains the given coordinates, so an ideal constructor is
+    never allowed to replace this family by a gcd or another generating set.
+    Localization is flat: after one common denominator is cleared, the
+    source kernel generates the localized kernel. Recursing through the
+    actual localization source handles towers without using a larger field
+    realization as though it were the ring. A quotient uses the same
+    augmented relation construction as the native quotient adapter below.
+    At the final source, the existing owned module-map kernel supplies its
+    selected exact algorithm and its ordinary computation frontier.
+    """
+    from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
+    generators = tuple(ring(generator) for generator in generators)
+    if not generators:
+        return ()
+    if ring in LocalizationRings():
+        source = ring.localization_source()
+        fractions = tuple(ring.localization_fraction_data(generator) for generator in generators)
+        cleared = []
+        for position, (numerator, _denominator) in enumerate(fractions):
+            coefficient = source(numerator)
+            for other_position, (_other_numerator, denominator) in enumerate(fractions):
+                if position != other_position:
+                    coefficient *= source(denominator)
+            cleared.append(coefficient)
+        localization = ring.localization_map()
+        return tuple(
+            tuple(localization(coefficient) for coefficient in row)
+            for row in _ordered_ideal_relation_rows(source, tuple(cleared))
+        )
+    if ring in QuotientRings():
+        source = ring.quotient_source()
+        return _quotient_ideal_relation_rows(
+            tuple(generator.lift() for generator in generators),
+            tuple(ring.defining_ideal().ideal_generators()),
+            lambda augmented: _ordered_ideal_relation_rows(source, augmented),
+            ring.quotient_map(),
+        )
+    labels = finite_ordered_set(range(len(generators)))
+    free = ring.free_module(labels)
+    regular = ring.regular_module()
+    relation_map = free.module_category().Mor(free, regular)({
+        label: _regular_module_element(regular, generator)
+        for label, generator in zip(labels, generators, strict=True)
+    })
+    kernel = relation_map.kernel()
+    inclusion = kernel.inclusion()
+    return tuple(
+        tuple(
+            coordinates(label)
+            for label in labels
+        )
+        for coordinates in (
+            inclusion(kernel.module_generator(kernel_label)).to_vector()
+            for kernel_label in kernel.module_generating_set()
+        )
+    )
+
+
 def _engine_ideal_syzygy_rows(ring, backend, selected):
     r"""Return exact relation rows for selected ideal generators.
 
@@ -1130,20 +1297,18 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
             cover = engine.cover_ring()
             defining = engine.defining_ideal()
             lifted = tuple(engine(generator).lift() for generator in selected)
-            augmented_generators = lifted + tuple(defining.gens())
-            if cover is SageZZ:
-                # Keep the ordered augmented family: ZZ.ideal would replace
-                # it by its gcd and lose the relation coordinates. Integral
-                # kernel rows give all relations modulo the defining integer.
-                relation_rows = matrix(
-                    SageZZ, tuple((entry,) for entry in augmented_generators)
-                ).left_kernel().basis()
-            else:
-                augmented = cover.ideal(augmented_generators)
-                relation_rows = _polynomial_syzygy_rows(augmented)
-            rows = tuple(
-                tuple(engine(entry) for entry in row[: len(selected)])
-                for row in relation_rows
+
+            def source_relation_rows(augmented_generators):
+                if cover is SageZZ:
+                    # ZZ.ideal replaces an ordered family by its gcd.
+                    # Its integral matrix kernel retains all coordinates.
+                    return matrix(
+                        SageZZ, tuple((entry,) for entry in augmented_generators)
+                    ).left_kernel().basis()
+                return _polynomial_syzygy_rows(cover.ideal(augmented_generators))
+
+            rows = _quotient_ideal_relation_rows(
+                lifted, tuple(defining.gens()), source_relation_rows, engine
             )
             zero = engine.zero()
             return tuple(
@@ -1197,7 +1362,6 @@ def _relation_element(free_module, row):
             for label, coefficient in zip(
                 free_module.module_generating_set(), row, strict=True
             )
-            if coefficient
         }
     )
 
@@ -1230,6 +1394,76 @@ def _regular_module_element(regular_module, scalar):
     return regular_module.scalar_multiple(
         regular_module.base_ring()(scalar),
         regular_module.module_generator(labels[0]),
+    )
+
+
+def _descend_quotient_source_ideal(ring, source_ideal):
+    r"""Return the image ideal under this quotient's actual defining map.
+
+    The image has preimage source_ideal + K. In particular this operation
+    does not identify the quotient of a contraction ring with a localization
+    quotient, or claim that preimage preserves ideal products.
+    """
+    if source_ideal.ring() is not ring.quotient_source():
+        raise ValueError("a quotient ideal image must start in this quotient's exact source")
+    projection = ring.quotient_map()
+    return ring.ideal(*(projection(generator) for generator in source_ideal.ideal_generators()))
+
+
+def _presented_commutative_ideal(ring, generators, relation_rows, **construction_data):
+    r"""Build an actual ideal submodule from its exact ordered relation rows.
+
+    The caller supplies all relations on the chosen ambient generators.
+    Their cokernel therefore maps injectively to the regular module, with
+    image the desired ideal. Quotient ideals use augmented source syzygies;
+    this is not a scalar extension of a source ideal's inclusion across a
+    generally nonflat quotient map.
+    """
+    generators = tuple(generators)
+    relation_rows = tuple(relation_rows)
+    labels = finite_ordered_set(range(len(generators)))
+    relation_labels = finite_ordered_set(range(len(relation_rows)))
+    free_generators = ring.free_module(labels)
+    free_relations = ring.free_module(relation_labels)
+    presentation = free_relations.module_category().Mor(free_relations, free_generators)({
+        label: _relation_element(free_generators, relation_rows[position])
+        for position, label in enumerate(relation_labels)
+    })
+    ambient = ring.regular_module()
+    return ModulesWithChosenFinitePresentation(ring)(
+        presentation,
+        subobject_ambient=ambient,
+        subobject_generator_images={
+            label: _regular_module_element(ambient, generators[position])
+            for position, label in enumerate(labels)
+        },
+        category=owned_category_join((CommutativeIdeals(ring),)),
+        ideal_generators=generators,
+        **construction_data,
+    )
+
+
+def _quotient_source_commutative_ideal(ring, generators):
+    r"""Construct an ideal of A/K through its exact source A.
+
+    The selected quotient generators f_i retain their original order. If
+    H = K + (lift(f_i)), the ideal is H/K, with its chosen presentation
+    obtained by projecting augmented source syzygies. H is retained as
+    actual mathematical preimage data for ideal operations and predicates.
+    """
+    source = ring.quotient_source()
+    generators = tuple(ring(generator) for generator in generators) or (ring.zero(),)
+    lifted = tuple(generator.lift() for generator in generators)
+    defining = ring.defining_ideal()
+    preimage = defining.sum(source.ideal(*lifted))
+    relations = _quotient_ideal_relation_rows(
+        lifted,
+        tuple(defining.ideal_generators()),
+        lambda augmented: _ordered_ideal_relation_rows(source, augmented),
+        ring.quotient_map(),
+    )
+    return _presented_commutative_ideal(
+        ring, generators, relations, quotient_preimage_ideal=preimage
     )
 
 
@@ -1301,6 +1535,14 @@ def _commutative_ideal(source, generators):
     two entries here, and they compare equal afterwards.
     """
     engine = _engine_ring(source)
+    if engine is source:
+        from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
+        assert source in QuotientRings(), (
+            f"cannot construct a presented ideal of {source}: no selected exact source "
+            "algorithm supplies its ordered relations"
+        )
+        return _quotient_source_commutative_ideal(source, generators)
     values = tuple(_engine_ring_value(source, generator) for generator in generators)
     if not values:
         values = (engine.zero(),)
@@ -1343,43 +1585,15 @@ def _commutative_ideal(source, generators):
         return ideal
 
     syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
-    labels = finite_ordered_set(range(len(selected)))
-    relation_labels = finite_ordered_set(range(len(syzygy_rows)))
-    free_generators = source.free_module(labels)
-    free_relations = source.free_module(relation_labels)
-    presentation = free_relations.module_category().Mor(free_relations, free_generators)(
-        {
-            label: _relation_element(
-                free_generators,
-                tuple(
-                    _owned_engine_value(source, coefficient)
-                    for coefficient in syzygy_rows[position]
-                ),
-            )
-            for position, label in enumerate(relation_labels)
-        }
+    return _presented_commutative_ideal(
+        source,
+        tuple(_owned_engine_value(source, generator) for generator in selected),
+        tuple(
+            tuple(_owned_engine_value(source, coefficient) for coefficient in row)
+            for row in syzygy_rows
+        ),
+        engine_ideal=backend,
     )
-    ambient_module = source.regular_module()
-    ideal = ModulesWithChosenFinitePresentation(source)(
-        presentation,
-        subobject_ambient=ambient_module,
-        subobject_generator_images={
-            label: _regular_module_element(
-                ambient_module,
-                _owned_engine_value(source, selected[position]),
-            )
-            for position, label in enumerate(labels)
-        },
-        category=owned_category_join((CommutativeIdeals(source),)),
-        **{
-            "engine_ideal": backend,
-            "ideal_generators": tuple(
-                _owned_engine_value(source, generator)
-                for generator in selected
-            ),
-        },
-    )
-    return ideal
 
 
 __all__ = ["CommutativeIdeals"]

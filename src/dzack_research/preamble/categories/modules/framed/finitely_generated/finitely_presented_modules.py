@@ -3,7 +3,9 @@
 A presented module is an owned parent.  Over a PID with a Smith form its
 engine is Sage's FGP module over the engine ring; over another Sage ring it
 holds a Sage free cover and relation submodule; over a ring with no Sage
-engine it holds the owned free cover alone and cannot decide equality.  The
+engine it holds the owned free cover. An actual subobject inclusion can
+reflect equality from the ambient module; otherwise its selected relation
+algorithms retain the undecided case. The
 engine is read through the selected-presentation backend method ``_smith_engine``
 and every Smith-form computation is an explicit crossing into it.
 """
@@ -63,7 +65,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, negation
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -165,7 +167,6 @@ def _morphism_on_images(codomain, images):
                 {
                     generator_label: coefficient
                     for generator_label, coefficient in zip(generator_labels, coordinates, strict=True)
-                    if coefficient
                 }
             )
             for coordinates in images
@@ -398,16 +399,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             subgroups = DiscriminantSubmodules(self.base_ring())
             match other:
                 case _ if self in ideals and other in ideals:
-                    return self._engine_ideal() == other._engine_ideal()
+                    return CommutativeIdeals.ParentMethods.__eq__(self, other)
                 case _ if self in subgroups and other in subgroups:
                     return self.has_same_image_as(other)
                 case _:
                     return self._same_selected_presentation_as(other)
 
         def __ne__(self, other):
-            return not self == other
+            return negation(self == other)
 
         def __hash__(self):
+            from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
+
+            if self in CommutativeIdeals(self.base_ring()):
+                return CommutativeIdeals.ParentMethods.__hash__(self)
             return hash((self.base_ring(), self.presentation()))
 
         def _same_presentation_module(
@@ -473,7 +478,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return target.linear_combination(
                     {
                         _biproduct_label(labels, index, generator_label): image(generator_label)
-                        for generator_label in image.support().domain()
+                        for generator_label in image.parent()._selected_module_coefficients(image)
                     }
                 )
 
@@ -557,12 +562,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 presentation(presentation.domain().module_generator(label)).to_vector()
                 for label in source_labels
             )
-            if not all(
-                image(target_labels[position]) != ring.zero()
-                and image.support().domain().cardinality() == cardinal(1)
-                for position, image in enumerate(images)
-            ):
-                return None
+            for position, image in enumerate(images):
+                if (image(target_labels[position]) == ring.zero()) is not False:
+                    return None
+                if not all(
+                    (image(label) == ring.zero()) is True
+                    for label in target_labels
+                    if label != target_labels[position]
+                ):
+                    return None
             return tuple(
                 images[position](target_labels[position]) if position < len(images) else ring.zero()
                 for position in range(len(target_labels))
@@ -706,7 +714,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             def lift_from_ambient(image, element):
                 element = element if element.parent() is self else self(element)
                 coordinates = self._framing_lift(self(element))
-                return image.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
+                return image.linear_combination(coordinates.parent()._selected_module_coefficients(coordinates))
 
             return _presented_module_from_morphism(
                 self.presentation(),
@@ -1826,14 +1834,12 @@ class _GeneralPresentedElement(ModuleElement):
 
     def _repr_(self):
         parent = self.parent()
-        coordinates = parent._cover_coordinates(self)
-        terms = [
-            (label, coefficient)
-            for label in parent.module_generating_set()
-            if (coefficient := coordinates.value(label)) != parent.base_ring().zero()
-        ]
+        terms = tuple(parent._selected_module_coefficients(self).items())
         if not terms:
             return "0"
+        zero = parent.base_ring().zero()
+        if any((coefficient == zero) is not False for _label, coefficient in terms):
+            return " + ".join(f"({coefficient})*[{label}]" for label, coefficient in terms)
         return repr_lincomb(
             terms,
             repr_monomial=lambda label: f"[{label}]",
@@ -1912,13 +1918,13 @@ class _GeneralPresentedModule:
         )
 
     def _selected_module_coefficients(self, element):
-        r"""Return the coefficients of the selected cover representative of ``element``."""
+        r"""Return a finite containing coordinate family of the selected cover representative."""
         coordinates = self._cover_coordinates(element)
         zero = self.base_ring().zero()
         return {
             label: coordinates[label]
             for label in self.module_generating_set()
-            if coordinates[label] != zero
+            if (coordinates[label] == zero) is not True
         }
 
     def _from_coordinates(self, coordinates):
@@ -2012,8 +2018,18 @@ class _GeneralPresentedModule:
         ) is not None
 
     def _relation_contains(self, vector) -> bool | None:
-        r"""Decide membership of ``vector`` in the relation submodule; ``None`` where no procedure decides it."""
-        if vector == self._free_module.zero():
+        r"""Decide relation membership, retaining an unavailable computation as None.
+
+        An actual subobject inclusion is monic, so it reflects zero. Use
+        that mathematical datum before any coefficient-presentation backend;
+        for a quotient ideal its ambient scalar equality is decided in the
+        exact quotient source, even when no polynomial cover is selected.
+        """
+        if self in ModuleSubobjects(self.base_ring()):
+            inclusion = self.inclusion()
+            if inclusion.codomain() is not self:
+                return inclusion(self(vector)) == inclusion.codomain().zero()
+        if (vector == self._free_module.zero()) is True:
             return True
         if self._relation_submodule is None:
             diagonal = self._selected_diagonal_relation_scalars()
@@ -2021,10 +2037,10 @@ class _GeneralPresentedModule:
             if diagonal is not None and ring in PrincipalIdealDomains():
                 labels = tuple(self.module_generating_set())
                 coordinates = vector.to_vector()
-                return all(
+                return conjunction(
                     coordinates(label) == ring.zero()
-                    if scalar == ring.zero()
-                    else coordinates(label) in ring.ideal(scalar)
+                    if (scalar == ring.zero()) is True
+                    else ring.ideal(scalar).contains_ambient_element(coordinates(label))
                     for label, scalar in zip(labels, diagonal, strict=True)
                 )
             return None
@@ -2284,7 +2300,7 @@ def _selected_presentation_kernel(morphism):
         return NotImplemented
     labels = domain.module_generating_set()
     if labels.cardinality().is_finite() and all(
-        morphism(domain.module_generator(label)) == codomain.zero()
+        (morphism(domain.module_generator(label)) == codomain.zero()) is True
         for label in labels
     ):
         return domain.whole_subobject()
@@ -2609,16 +2625,15 @@ def _singular_coefficient_presentation(ring):
     coefficient_field = presentation_ring.base_ring()
     if coefficient_field not in SageFields():
         return None
-    # Singular's module entry points require its multivariate polynomial
-    # parent, including when the chosen presentation has one variable.
-    if isinstance(presentation_ring, PolynomialRing_generic):
-        singular_ring = _SagePolynomialRing(
-            coefficient_field,
-            presentation_ring.variable_names(),
-            implementation="singular",
-        )
-    else:
-        singular_ring = presentation_ring
+    # Use a global order on the same polynomial ring. A local standard
+    # basis computes in a localization and can change module membership.
+    # Singular also needs its multivariate parent for a single variable.
+    singular_ring = _SagePolynomialRing(
+        coefficient_field,
+        presentation_ring.variable_names(),
+        order="degrevlex",
+        implementation="singular",
+    )
 
     def lift_scalar(value):
         lifted = ring._lift_coefficient_to_presentation(value)
@@ -2981,7 +2996,7 @@ def _presented_module_from_morphism(
     # and its presentation, while declaring that basis at the module owner.
     # In particular a free functor must retain this exact module, not replace
     # it by its framing source merely to acquire a Free placement.
-    match all(
+    match conjunction(
         coefficient == base_ring.zero()
         for image in relation_images
         for coefficient in image
@@ -3013,7 +3028,7 @@ def _presented_module_from_morphism(
         def relation_image(relation_label):
             coordinates = images_by_summand[int(relation_label.summand_index())][relation_label.summand_element()]
             return target.linear_combination(
-                {label: coefficient for label, coefficient in zip(labels, coordinates, strict=True) if coefficient}
+                dict(zip(labels, coordinates, strict=True))
             )
 
         selected_presentation = source.module_category().Mor(source, target)(relation_image)
@@ -3043,8 +3058,7 @@ def _presented_module_from_morphism(
                 for other_position, denominator in enumerate(denominators):
                     if other_position != position:
                         multiplier *= denominator
-                if numerator * multiplier != source_ring.zero():
-                    cleared[label] = numerator * multiplier
+                cleared[label] = numerator * multiplier
             return source_generators.linear_combination(cleared)
 
         source_presentation = source_relations.module_category().Mor(source_relations, source_generators)(cleared_image)

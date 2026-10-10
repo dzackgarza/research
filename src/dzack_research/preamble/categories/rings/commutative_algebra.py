@@ -782,34 +782,37 @@ class QuotientRings(OwnedCategory):
             return self._element_constructor_(value)
 
         def _from_engine_element(self, value):
-            r"""Cross one element of the selected quotient engine into this quotient."""
+            r"""Cross the selected realization, or retain an owned source representative."""
             engine = self._preamble_engine_ring
             if engine is not None:
                 return self._element_constructor_(engine(value))
             comparison = self._finite_localized_quotient_isomorphism()
-            assert comparison is not None, (
-                f"cannot convert {value} into the quotient ring {self}: it has no computer-algebra model"
-            )
+            if comparison is None:
+                return self(value)
             return comparison.forward()(_owned_engine_element(comparison.domain(), value))
 
         def _selected_engine_ring(self):
-            r"""Return this quotient's selected private computation realization."""
+            r"""Return the selected quotient realization, or the owned parent itself.
+
+            The latter is the OwnedRings self-realization contract. Exact
+            source representatives and formal module presentations remain
+            available without claiming a finite contraction comparison is
+            an isomorphism when its finiteness hypothesis is unestablished.
+            """
             engine = self._preamble_engine_ring
             if engine is not None:
                 return engine
             comparison = self._finite_localized_quotient_isomorphism()
-            assert comparison is not None, (
-                "this quotient operation requires a selected computation realization"
-            )
+            if comparison is None:
+                return self
             return _engine_ring(comparison.domain())
 
         def _engine_element(self, value):
             engine = self._preamble_engine_ring
             if engine is None:
                 comparison = self._finite_localized_quotient_isomorphism()
-                assert comparison is not None, (
-                    f"cannot compute with {value} in the quotient ring {self}: it has no computer-algebra model"
-                )
+                if comparison is None:
+                    return self(value)
                 return _engine_element(comparison.domain(), comparison.inverse()(self(value)))
             element = self(value)
             source_value = _engine_element(self.quotient_source(), element.lift())
@@ -2632,9 +2635,15 @@ def _quotient_ring(source, defining_ideal):
     whose fraction-field realization would otherwise collapse every nonzero
     ideal to the unit ideal, and it gives every represented localization the
     same construction rule without probing backend quotient capabilities.
+    A source with the OwnedRings self-realization contract likewise retains
+    actual classes. This includes a further quotient of an engine-free
+    quotient; neither its source nor its defining ideal is flattened away.
     """
     finite_order_quotient = False
-    if source in LocalizationRings():
+    exact_source_quotient = (
+        source in LocalizationRings() or _engine_ring(source) is source
+    )
+    if exact_source_quotient:
         quotient_engine = None
     else:
         engine = _engine_ring(source)
@@ -2669,7 +2678,7 @@ def _quotient_ring(source, defining_ideal):
 
     quotient_is_field = False
     quotient_is_domain = False
-    if source not in LocalizationRings():
+    if not exact_source_quotient:
         quotient_is_field = bool(defining_ideal.is_maximal())
         quotient_is_domain = quotient_is_field or bool(defining_ideal.is_prime())
         if quotient_is_domain and dimension == 0:

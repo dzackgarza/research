@@ -109,7 +109,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     return bool(status) if op == op_EQ else not bool(status)
 
         def _repr_(self):
-            if self.denominator() == self.parent().source_ring().one():
+            if (self.denominator() == self.parent().source_ring().one()) is True:
                 return repr(self.numerator())
             return f"({self.numerator()})/({self.denominator()})"
 
@@ -158,8 +158,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             denominator = localization_map(element.denominator())
             denominator_inverse = denominator.inverse_of_unit()
             return {
-                label: localization_map(source_coordinates(label)) * denominator_inverse
-                for label in source_coordinates.support().domain()
+                label: localization_map(coefficient) * denominator_inverse
+                for label, coefficient in source_coordinates.parent()._selected_module_coefficients(source_coordinates).items()
             }
 
         def base_ring(self):
@@ -215,11 +215,12 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
             That holds exactly when ``Ann_R(d)`` meets ``S``.  A module with a
             chosen finite presentation computes ``Ann_R(d)`` as a kernel, so
-            the question is decided there.  A finite module has a finite orbit
-            of ``d`` under the chosen generators of ``S``, searched for zero.
-            A torsion-free module over a domain has ``Ann_R(d) = 0`` for ``d``
-            nonzero, which meets no submonoid of nonzero elements.  Otherwise
-            the answer is the proposition ``equal(x, y)``.
+            the question is decided there. A finite module has a finite orbit
+            under a selected finite generating family of ``S``; the search
+            applies when zero and repeated-point comparisons are decided.
+            A torsion-free module over a domain has ``Ann_R(d) = 0`` when
+            ``d`` is proved nonzero. Otherwise the answer is the proposition
+            ``equal(x, y)``.
             """
             source = self.numerator_module()
             source_ring = self.source_ring()
@@ -227,30 +228,44 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 source.scalar_multiple(right.denominator(), left.numerator())
                 - source.scalar_multiple(left.denominator(), right.numerator())
             )
-            if cross_difference == source.zero():
+            zero_status = cross_difference == source.zero()
+            if zero_status is True:
                 return True
             match source:
                 case _ if source in _SelectedFinitePresentationModules(source_ring):
                     return self.localization_ring().inverted_submonoid_meets(
                         source.annihilator_of(cross_difference)
                     )
-                case _ if source.is_finite() is True:
+                case _ if (
+                    source.is_finite() is True
+                    and self.localization_submonoid()._selected_representation_kind() == "generators"
+                ):
                     generators = tuple(self.inverted_elements())
                     pending = [cross_difference]
                     seen = []
                     while pending:
                         current = pending.pop()
-                        if current == source.zero():
+                        current_zero = current == source.zero()
+                        if current_zero is True:
                             return True
-                        if any(current == old for old in seen):
+                        if current_zero is not False:
+                            return AtomicProposition("equal", left, right)
+                        comparisons = tuple(current == old for old in seen)
+                        if any(comparison is True for comparison in comparisons):
                             continue
+                        if any(comparison is not False for comparison in comparisons):
+                            return AtomicProposition("equal", left, right)
                         seen.append(current)
                         pending.extend(
                             source.scalar_multiple(generator, current)
                             for generator in generators
                         )
                     return False
-                case _ if source_ring in IntegralDomains() and source.is_torsion_free() is True:
+                case _ if (
+                    zero_status is False
+                    and source_ring in IntegralDomains()
+                    and source.is_torsion_free() is True
+                ):
                     return self.localization_ring().inverted_submonoid_meets(source_ring.ideal(source_ring.zero()))
                 case _:
                     return AtomicProposition("equal", left, right)
@@ -463,7 +478,10 @@ def _transported_presentation(numerator_module, localization_ring):
     def localized_relation(relation_label):
         relation = relations(relations.domain().module_generator(relation_label)).to_vector()
         return free_generators.linear_combination(
-            {label: localization_map(relation(label)) for label in relation.support().domain()}
+            {
+                label: localization_map(coefficient)
+                for label, coefficient in relation.parent()._selected_module_coefficients(relation).items()
+            }
         )
 
     return {

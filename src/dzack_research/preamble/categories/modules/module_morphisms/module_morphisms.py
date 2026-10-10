@@ -724,7 +724,7 @@ class ModuleMorphismMethods:
         for relation_label in relations.domain().module_generating_set():
             relation = relations(relations.domain().module_generator(relation_label)).to_vector()
             relation_image = self._linear_combination_of_generator_images(
-                domain.framing_source()({label: relation(label) for label in relation.support().domain()})
+                domain.framing_source()(relation.parent()._selected_module_coefficients(relation))
             )
             relation_holds = relation_image == zero
             if relation_holds is False:
@@ -889,17 +889,20 @@ class ModuleMorphismMethods:
         ``scalar * element`` therefore bypasses the module abstraction.  The
         linear extension is intrinsic: apply the codomain's represented scalar
         action directly to each selected generator image and add the results.
-        No codomain framing is involved.
+        The retained finite coefficient family suffices; evaluating this sum
+        does not require deciding which of its coefficients vanish. No
+        codomain framing is involved.
         """
         codomain = self.codomain()
         ring = codomain.base_ring()
+        coefficients = coordinates.parent()._selected_module_coefficients(coordinates)
         return sum(
             (
                 codomain.scalar_multiple(
-                    ring(coordinates(source_label)),
+                    ring(coefficient),
                     self._generator_image(source_label),
                 )
-                for source_label in coordinates.support().domain()
+                for source_label, coefficient in coefficients.items()
             ),
             codomain.zero(),
         )
@@ -1260,8 +1263,8 @@ class ModuleMorphismMethods:
         denominator = ring.one()
         for vector in source.module_generators():
             coordinates = framing.lift(restricted(vector).underlying_element())
-            for label in coordinates.support().domain():
-                denominator = denominator.lcm(coordinates(label).denominator())
+            for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values():
+                denominator = denominator.lcm(coefficient.denominator())
         return ring.ideal(denominator)
 
     def affine_inverse_image(self, target_inclusion, offset=None):
@@ -1300,7 +1303,7 @@ class ModuleMorphismMethods:
         domain = self.domain()
         codomain = self.codomain()
         element = element if element.parent() is codomain else codomain(element)
-        if element == codomain.zero():
+        if (element == codomain.zero()) is True:
             return domain.zero()
         preimage = self._preimage_or_none(element)
         if preimage is None:
@@ -1581,7 +1584,7 @@ class ModuleMorphismMethods:
 
         def lift_target(element):
             coordinates = target.framing_morphism().lift(element)
-            return target_cover.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
+            return target_cover.linear_combination(coordinates.parent()._selected_module_coefficients(coordinates))
 
         cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
         relation_source = source_presentation.domain()
@@ -1625,7 +1628,7 @@ class ModuleMorphismMethods:
 
         def lift_to_cover(value):
             coordinates = codomain_framing.lift(value)
-            return cover.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
+            return cover.linear_combination(coordinates.parent()._selected_module_coefficients(coordinates))
 
         domain_framing = domain.framing_morphism()
         generator_cover = domain_framing.domain()
@@ -1695,9 +1698,9 @@ class ModuleMorphismMethods:
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
             tuple(
-                coordinates(label)
+                coefficient
                 for coordinates in (*image_coordinates.values(), target_coordinates)
-                for label in coordinates.support().domain()
+                for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values()
             ),
             ring.one(),
         )
@@ -1705,7 +1708,10 @@ class ModuleMorphismMethods:
         cleared_module = ring._fresh_free_module_on(extension.module_generating_set())
 
         def cleared(coordinates):
-            return cleared_module.linear_combination({label: ring(scale * coordinates(label)) for label in coordinates.support().domain()})
+            return cleared_module.linear_combination({
+                label: ring(scale * coefficient)
+                for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
+            })
 
         cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
         return cleared_span._preimage_or_none(cleared(target_coordinates))
@@ -2788,7 +2794,7 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def linear_combination(self, coefficients):
         result = self.zero()
         for label, coefficient in coefficients.items():
-            if coefficient:
+            if (self.base_ring()(coefficient) == self.base_ring().zero()) is not True:
                 result = result + self.scalar_multiple(
                     coefficient,
                     self.module_generator(label),
@@ -2892,12 +2898,13 @@ class TensorProductModuleMorphismMethods:
         codomain = self.codomain()
         left_coordinates = self.left_module().framing_morphism().lift(left_element)
         right_coordinates = self.right_module().framing_morphism().lift(right_element)
-        right_support = right_coordinates.support().domain()
+        left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+        right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
         value = codomain.zero()
-        for left_label in left_coordinates.support().domain():
-            for right_label in right_support:
+        for left_label, left_coefficient in left_coefficients.items():
+            for right_label, right_coefficient in right_coefficients.items():
                 value = value + codomain.scalar_multiple(
-                    left_coordinates(left_label) * right_coordinates(right_label),
+                    left_coefficient * right_coefficient,
                     self._gram_entry(left_label, right_label),
                 )
         return value
