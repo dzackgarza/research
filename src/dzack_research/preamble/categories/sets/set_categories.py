@@ -1832,8 +1832,8 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def union(self, other):
         r"""The finite set of the points of this set and of the finite set ``other``."""
-        assert Sets().is_provably_finite(other), (
-            f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
+        assert other in Sets() and Sets().is_provably_finite(other), (
+            f"the union with {self} requires another finite set, but {other} is not known to be one"
         )
         return _FiniteLiteralSet((*self, *other))
 
