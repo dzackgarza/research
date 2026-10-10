@@ -32,6 +32,8 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
+**Step-3 binary ideal cleanup:** `CommutativeIdeals` now centralizes the repeated base-ring compatibility check, selected engine ingress, and owned-ideal result construction for ideal sum, product, and intersection. Their three distinct public operations retain their respective ring-theoretic calculations.
+
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
 **Full-view reading gate (2026-10-10):** Reviewed all 3,252 lines of `.tmp/step2-constructions.txt` and all 1,139 lines of `.tmp/step2-properties.txt`, including the eight oversized early property-category lists by splitting their comma-separated category declarations and checking their differences. The unchecked list below is the fixed Step-2 repair denominator; repairs proceed at the mathematical owners in listed order. Scanner artifacts and correct edges are excluded.

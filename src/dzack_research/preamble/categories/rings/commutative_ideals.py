@@ -475,22 +475,27 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self.contains_ambient_element(candidate)
 
         def sum(self, other):
-            _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal() + other._engine_ideal()
-            )
+            return self._binary_engine_ideal_result(other, "sum")
 
         def product(self, other):
-            _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal() * other._engine_ideal()
-            )
+            return self._binary_engine_ideal_result(other, "product")
 
         def intersection(self, other):
+            return self._binary_engine_ideal_result(other, "intersection")
+
+        def _binary_engine_ideal_result(self, other, operation):
+            r"""Lower a binary ideal operation and return its owned ideal."""
             _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal().intersection(other._engine_ideal())
-            )
+            left, right = self._engine_ideal(), other._engine_ideal()
+            if operation == "sum":
+                result = left + right
+            elif operation == "product":
+                result = left * right
+            elif operation == "intersection":
+                result = left.intersection(right)
+            else:
+                raise ValueError(f"unknown binary ideal operation {operation!r}")
+            return _from_engine_ideal(self.ring(), result)
 
         def power(self, exponent):
             exponent = int(exponent)
