@@ -5360,6 +5360,19 @@ def _mixed_affine_projective_product(factors, base, placements, level_data):
                 sum(int(factor.relative_dimension()) for factor in schemes),
             )
         )
+        # An affine zero-space is Spec(R), the terminal factor over the base.
+        # Its presence does not destroy projectivity of the other factors.
+        if all(
+            factor in ProjectiveSpaces(base)
+            or (factor in AffineSpaces(base) and int(factor.relative_dimension()) == 0)
+            for factor in schemes
+        ):
+            placements.append(schemes_over_base.Projective())
+            dimension = sum(int(factor.relative_dimension()) for factor in schemes)
+            if base in OwnedFields() and dimension == 2:
+                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+
+                placements.append(ProjectiveSurfaces(base))
     return schemes_over_base.glue_affine_atlas(
         tuple(charts[label] for label in chart_labels),
         transitions,
