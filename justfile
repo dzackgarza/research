@@ -147,6 +147,17 @@ category-constructions *args:
         -m dzack_research.utilities.category_inference -o .tmp/category-inference.json
     just category-graph constructions --inferred .tmp/category-inference.json {{args}}
 
+# Full typed construction grammar: all category/axiom nodes, operation input
+# ports, guarded source-level result alternatives, recursive closure, and
+# unresolved paths. Pure Python source analysis; no Sage or mathematical tests.
+# Open the generated HTML locally; JSON is suitable for machine review.
+construction-universe out=".tmp" depth="6":
+    mkdir -p "{{out}}"
+    PYTHONPATH=src python3 -m dzack_research.utilities.construction_universe \
+        --depth "{{depth}}" --json "{{out}}/construction-universe.json" \
+        --html "{{out}}/construction-universe.html"
+    @echo "Audit browser: {{out}}/construction-universe.html"
+
 # The declared category graph as a rendered image, for reading the shape of it
 category-graph-svg:
     just category-graph dot > docs/declared-category-graph.dot

@@ -14,6 +14,14 @@ direnv allow
 
 The live preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. The previous preamble is archived at `archives/preamble/`.
 
+For a source-only audit of **every declared category, subcategory, method,
+construction route, result-category claim, and recursive reachable type**,
+run `just construction-universe` and open
+`.tmp/construction-universe.html`. The corresponding JSON contains the
+typed operation hypergraph and all unresolved return paths. See
+[`docs/construction-universe.md`](docs/construction-universe.md) for
+interpretation, provenance and completeness limits.
+
 `just test` runs the repository hygiene sweep and the experiment test gates.
 
 ## Repository Layout

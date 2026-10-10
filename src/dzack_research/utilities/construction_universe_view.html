@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preamble · Construction Universe Audit</title>
+<style>
+:root{font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1e293b;background:#f6f8fb;
+  --ink:#1e293b;--muted:#64748b;--paper:#fff;--line:#dfe5ec;--blue:#2456a6;--pale:#edf3fc;--warn:#8a5b16}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}
+header{background:#182c48;color:#fff;padding:19px 26px;border-bottom:3px solid #638bbd}
+.top{max-width:1700px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:24px}
+.brand{font-size:20px;font-weight:650;letter-spacing:-.4px}.brand small{display:block;font-size:12px;font-weight:400;color:#b9cadc;letter-spacing:0}
+.source{font:11px ui-monospace,monospace;color:#cbd5e1}
+.metrics{max-width:1700px;margin:18px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.metric{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:11px 15px}
+.metric strong{display:block;font-size:21px;font-weight:680;font-variant-numeric:tabular-nums}
+.metric small{color:var(--muted);font-size:11px}
+.shell{max-width:1700px;margin:16px auto 40px;padding:0 24px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;align-items:start}
+aside,.main{background:var(--paper);border:1px solid var(--line);border-radius:9px;min-width:0}
+aside{position:sticky;top:8px;max-height:calc(100vh - 20px);overflow:auto}
+.aside-head{padding:15px 13px 9px;border-bottom:1px solid var(--line)}
+.aside-head strong{font-size:12px;letter-spacing:.6px;text-transform:uppercase}
+.search{width:100%;border:1px solid #c9d4e1;border-radius:6px;padding:8px 10px;background:#fff;color:var(--ink)}
+.aside-head input{margin:9px 0 3px}
+#category-list{max-height:calc(100vh - 152px);overflow:auto;padding:7px}
+.cat{display:block;width:100%;padding:7px 8px;text-align:left;border:0;background:none;border-radius:5px;
+  color:var(--ink);font-size:12px;overflow-wrap:anywhere;line-height:1.35}
+.cat:hover{background:#f2f6fb}.cat.active{background:#dfebf9;color:#163a71;font-weight:650}
+.cat span{display:block;color:var(--muted);font-size:10px;font-weight:400}
+.main{min-height:74vh}
+.tabbar{display:flex;align-items:center;gap:3px;border-bottom:1px solid var(--line);padding:9px 16px;flex-wrap:wrap}
+.tab{border:0;border-bottom:2px solid transparent;background:none;padding:9px 14px;color:#52677f}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:650}
+.export{margin-left:auto;color:var(--blue);font-size:12px;text-decoration:none}
+#body{padding:19px 23px 30px}
+h1{font-size:23px;font-weight:660;margin:0 0 6px;letter-spacing:-.4px;overflow-wrap:anywhere}
+h2{font-size:16px;font-weight:650;margin:22px 0 9px}
+h3{font-size:13px;font-weight:650;margin:14px 0 6px}
+.lead{color:#566579;margin:0 0 16px;max-width:92ch}
+.note{border-left:3px solid #8daaca;padding:8px 14px;background:var(--pale);font-size:12px;color:#41546d;margin:12px 0}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:11px 0}
+.row input[type="text"],.row input[type="search"],.row select{padding:7px 9px;border:1px solid #c9d4e1;
+  border-radius:5px;background:#fff;color:var(--ink)}
+.row label{font-size:12px;color:#475569;display:flex;align-items:center;gap:5px}
+.pill{font-size:10px;line-height:1.3;padding:3px 6px;border-radius:4px;display:inline-block;
+  background:#eef2f6;color:#41556e;white-space:nowrap}
+.pill.object{background:#dceee3;color:#23613b}.pill.element{background:#fbecda;color:#875923}
+.pill.morphism{background:#e8e2fb;color:#604099}.pill.category{background:#dceafe;color:#24548d}
+.pill.unknown{background:#fee7dd;color:#993a20}
+.pill.conditional{background:#f8efd8;color:#825e15}
+.muted{color:var(--muted)}.mono{font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{text-align:left;font-weight:650;color:#4d6078;font-size:11px;background:#f2f5f9;white-space:nowrap}
+td,th{padding:9px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+td a{color:var(--blue);text-decoration:none}td a:hover{text-decoration:underline}
+tr:hover td{background:#f8fbff}
+.link{color:var(--blue);text-decoration:none}.link:hover{text-decoration:underline}
+.source-link{white-space:nowrap;font-size:11px}
+.details{background:#f7f9fc;border:1px solid var(--line);border-radius:6px;padding:13px 15px;margin:9px 0}
+.details summary{font-weight:600;cursor:pointer}
+.guard{font:11px ui-monospace,monospace;color:#80581a;overflow-wrap:anywhere}
+.outline{border:1px solid var(--line);border-radius:6px;background:#fff;padding:13px;margin:10px 0}
+.graph-window{border:1px solid var(--line);border-radius:7px;overflow:auto;background:#fbfdff}
+.graph-window svg{display:block;width:100%;min-width:740px}
+.pagination{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin:13px 0}
+.pagination button{border:1px solid var(--line);background:white;color:var(--blue);border-radius:5px;padding:5px 12px}
+.pagination button:disabled{opacity:.35;cursor:default}
+.stack{display:grid;gap:8px}
+.unresolved{border:1px solid #eddfcb;border-left:3px solid #ba8b45;border-radius:6px;padding:10px 13px}
+pre{white-space:pre-wrap;word-break:break-word}
+@media(max-width:920px){.metrics{grid-template-columns:repeat(3,1fr)}.shell{grid-template-columns:1fr}
+ aside{position:static;max-height:250px}#category-list{max-height:150px}.top{flex-direction:column;align-items:flex-start}}
+@media(max-width:620px){.metrics{grid-template-columns:repeat(2,1fr)}#body{padding:13px}
+header{padding:15px}.shell{padding:0 10px}.metrics{padding:0 10px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand">Preamble / Construction Universe
+  <small>Symbolic closure of mathematical objects, morphisms, methods and constructions</small></div>
+  <span id="source-id" class="source"></span></div></header>
+<section class="metrics" id="metrics"></section>
+<div class="shell">
+  <aside><div class="aside-head"><strong>Category families</strong>
+    <input class="search" id="category-search" type="search" placeholder="Find a category or axiom">
+  </div><div id="category-list"></div></aside>
+  <div class="main"><nav class="tabbar" id="tabs">
+    <button class="tab active" data-view="category">Category</button>
+    <button class="tab" data-view="graph">Construction graph</button>
+    <button class="tab" data-view="methods">All operations</button>
+    <button class="tab" data-view="closure">Reachability</button>
+    <button class="tab" data-view="unresolved">Unresolved</button>
+    <a class="export" id="export" href="construction-universe.json">JSON manifest ↗</a>
+  </nav><section id="body"></section></div>
+</div>
+<script type="application/json" id="audit-data"><!--CONSTRUCTION_UNIVERSE_DATA--></script>
+<script>
+"use strict";
+const data=JSON.parse(document.getElementById("audit-data").textContent);
+const byCat=new Map(data.categories.map(c=>[c.id,c]));
+const byRule=new Map(data.rules.map(r=>[r.id,r]));
+const own=new Map();const reach=new Map(data.closure.types.map(t=>[t.type,t]));
+for(const r of data.rules){const k=r.owner; if(!own.has(k))own.set(k,[]);own.get(k).push(r);}
+const state={view:"category",category:byCat.has("Lattices")?"Lattices":data.categories[0].id,
+  catFilter:"",operationFilter:"",unresolvedFilter:"",onlyPublic:true,
+  page:0,showInherited:true};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"}[c]));
+const el=(tag,klass,txt)=>{const e=document.createElement(tag);if(klass)e.className=klass;
+  if(txt!=null)e.textContent=txt;return e;};
+const sourceLink=r=>'<a class="link source-link" href="https://github.com/dzackgarza/research/blob/main/'+
+  encodeURI(r.path)+'#L'+r.line+'" target="_blank" rel="noopener">'+esc(r.path.split("/").slice(-2).join("/"))+':'+r.line+'</a>';
+const typeTag=r=>'<span class="pill '+esc(r.kind)+'">'+esc(r.type||r.kind)+'</span>';
+const expression=r=>r.results.map(x=>
+  typeTag(x)+(x.guards.length?' <span class="guard">if '+esc(x.guards.join(" ∧ "))+'</span>':"")
+).join(" / ");
+const ancestors=id=>{
+  const visited=new Set(),pending=[id];
+  while(pending.length){const key=pending.pop();
+    for(const parent of byCat.get(key)?.parents||[])if(!visited.has(parent)){
+      visited.add(parent);pending.push(parent);
+    }
+  }
+  return visited;
+};
+const visibleRules=id=>{
+  const bases=[id,...(state.showInherited?[...ancestors(id)]:[])];
+  const results=new Map();
+  for(const base of bases)for(const r of own.get(base)||[])
+    if(r.slot!=="function"&&(!state.onlyPublic||r.public))
+      results.set(r.slot+"."+r.name,results.get(r.slot+"."+r.name)||r);
+  return [...results.values()].sort((a,b)=>a.slot.localeCompare(b.slot)||a.name.localeCompare(b.name));
+};
+function metrics(){
+ const s=data.summary;
+ const values=[["Category vertices",s.category_vertices],["Operations inventoried",s.method_rules],
+ ["Source-resolved",s.resolved_methods],["Unresolved",s.unresolved_methods],
+ ["Symbolic reachable types",s.reachable_type_families]];
+ $("#metrics").innerHTML=values.map(([label,value])=>'<div class="metric"><strong>'+
+   Number(value).toLocaleString()+'</strong><small>'+esc(label)+'</small></div>').join("");
+ $("#source-id").textContent="Source SHA-256 · "+data.source_sha256.slice(0,16);
+}
+function categories(){
+ const filter=state.catFilter.toLowerCase(),matches=data.categories.filter(c=>c.id.toLowerCase().includes(filter));
+ const holder=$("#category-list");holder.replaceChildren();
+ const fragment=document.createDocumentFragment();
+ for(const c of matches.slice(0,500)){
+  const b=el("button","cat"+(c.id===state.category?" active":""),c.id);
+  const small=el("span","",((own.get(c.id)||[]).filter(r=>r.slot!=="function").length)+" declared methods"+
+    (c.declared?"":" · computed"));
+  b.appendChild(small);b.onclick=()=>{state.category=c.id;state.page=0;categories();body();};
+  fragment.appendChild(b);
+ }
+ holder.appendChild(fragment);
+ if(matches.length>500)holder.appendChild(el("p","muted",matches.length-500+" additional matches; refine search"));
+}
+function table(rows){
+ return '<table><thead><tr><th>Operation</th><th>Possible results</th><th>Source</th></tr></thead><tbody>'+
+ rows.map(r=>'<tr><td><strong class="mono">'+esc(r.name)+'</strong><div class="muted">'+
+ esc(r.slot)+' · '+esc(r.owner)+'</div></td><td>'+expression(r)+
+ (r.parameters.filter(p=>p.required).length?'<div class="muted">inputs: '+
+ esc(r.parameters.filter(p=>p.required).map(p=>p.name+(p.annotation?": "+p.annotation:"")).join(", "))+'</div>':"")+
+ '</td><td>'+sourceLink(r)+'</td></tr>').join("")+'</tbody></table>';
+}
+function categoryPage(){
+ const c=byCat.get(state.category);
+ const members=visibleRules(c.id),unknown=members.filter(r=>r.results.some(x=>x.kind==="unknown"));
+ const direct=(own.get(c.id)||[]).filter(r=>r.slot!=="function");
+ const witnessed=reach.get("object:"+c.id);
+ $("#body").innerHTML='<h1>'+esc(c.id)+'</h1><p class="lead">'+
+  esc(c.sources.map(x=>x.summary).filter(Boolean).join("; ")||"Computed category/axiom vertex")+
+ '</p><div class="row"><span class="pill category">'+(c.declared?"declared":"derived axiom vertex")+
+ '</span><span class="pill">'+direct.length+' direct operations</span><span class="pill">'+
+ members.length+' visible operations</span><span class="pill unknown">'+unknown.length+
+ ' possibly unresolved</span><span class="pill '+(witnessed?.conditional?"conditional":"")+'">'+
+ (witnessed?(witnessed.conditional?"conditionally constructible":"schematically witnessed"):
+ "no construction witness inferred")+'</span></div>'+
+ '<div class="outline"><strong>Immediate supercategories</strong><div class="row">'+
+ (c.parents.map(n=>'<a class="link mono" href="#" data-cat="'+esc(n)+'">'+esc(n)+'</a>').join(" · ")||"none")+
+ '</div><strong>Declaration provenance</strong><div>'+
+ (c.sources.map(x=>'<div>'+sourceLink(x)+' · '+esc(x.qualified_name)+'</div>').join("")||"generated from declared axiom/inclusion relations")+
+ '</div><div><strong>Parameterization:</strong> '+esc(c.parameterization)+'</div></div>'+
+ '<div class="row"><label><input id="inherited" type="checkbox" '+(state.showInherited?"checked":"")+
+ '> Include inherited methods</label><label><input id="public" type="checkbox" '+
+ (state.onlyPublic?"checked":"")+'> Public names only</label></div>'+
+ '<h2>Operations and possible results</h2>'+table(members);
+ document.querySelectorAll("[data-cat]").forEach(a=>a.onclick=e=>{
+  e.preventDefault();state.category=a.dataset.cat;categories();body();
+ });
+ $("#inherited").onchange=e=>{state.showInherited=e.target.checked;body()};
+ $("#public").onchange=e=>{state.onlyPublic=e.target.checked;body()};
+}
+function graphPage(){
+ const c=byCat.get(state.category);
+ const query=state.operationFilter.toLowerCase();
+ const matching=visibleRules(c.id).filter(r=>r.name.toLowerCase().includes(query));
+ const selected=matching.slice(0,24);
+ const destinations=[...new Set(selected.flatMap(r=>r.results.map(x=>x.type).filter(Boolean)))].slice(0,32);
+ const height=Math.max(330,90+Math.max(selected.length,destinations.length)*42);
+ const columns={subject:155,method:495,result:885};
+ const resultY=new Map(destinations.map((t,i)=>[t,65+i*42]));
+ const methodY=new Map(selected.map((r,i)=>[r.id,65+i*42]));
+ let lines="",boxes="";
+ for(const r of selected){
+  const y=methodY.get(r.id);
+  lines+='<path d="M238 72 C300 72 340 '+y+' 375 '+y+'" stroke="#8fa9c6" stroke-width="1.5" fill="none"/>';
+  boxes+='<rect x="375" y="'+(y-16)+'" width="250" height="33" rx="6" fill="#f2effc" stroke="#b2a3d7"/>'+
+   '<text x="500" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="#43386e">'+
+   esc(r.name.slice(0,34))+'</text>';
+  for(const target of new Set(r.results.map(x=>x.type).filter(t=>resultY.has(t)))){
+   const end=resultY.get(target);
+   lines+='<path d="M625 '+y+' C685 '+y+' 716 '+end+' 757 '+end+
+   '" stroke="#90a3b9" stroke-width="1.2" fill="none"/>';
+  }
+ }
+ boxes+='<rect x="35" y="55" width="205" height="35" rx="6" fill="#e3edfc" stroke="#7898bf"/>'+
+   '<text x="138" y="76" text-anchor="middle" font-size="12" fill="#203e67">'+
+   esc(c.id.slice(0,29))+'</text>';
+ for(const [target,y] of resultY)
+  boxes+='<rect x="757" y="'+(y-16)+'" width="315" height="33" rx="6" fill="#e3f2e9" stroke="#8bbca2"/>'+
+   '<text x="915" y="'+(y+4)+'" font-size="11" text-anchor="middle" fill="#2a6849">'+
+   esc(target.slice(0,47))+'</text>';
+ $("#body").innerHTML='<h1>Construction graph · '+esc(c.id)+'</h1>'+
+ '<p class="lead">A method is a hyperedge with a typed subject, additional argument obligations and potentially several results. Only source-resolved results are connected; no match is silently inferred.</p>'+
+ '<div class="row"><input type="search" class="search" id="graph-filter" placeholder="Filter operations" value="'+esc(state.operationFilter)+'">'+
+ '<span class="muted">'+selected.length+' shown of '+matching.length+' matching methods (first 24)</span></div>'+
+ '<div class="graph-window"><svg viewBox="0 0 1110 '+height+'" xmlns="http://www.w3.org/2000/svg" aria-label="Category construction graph">'+
+ lines+boxes+'</svg></div><h2>Hyperedge contracts</h2>'+table(matching);
+ $("#graph-filter").oninput=e=>{state.operationFilter=e.target.value;graphPage();$("#graph-filter").focus()};
+}
+function methodsPage(){
+ const needle=state.operationFilter.toLowerCase();
+ const relevant=data.rules.filter(r=>(!state.onlyPublic||r.public)&&
+  (r.name+" "+r.owner+" "+r.path+" "+r.results.map(x=>x.type).join(" ")).toLowerCase().includes(needle));
+ const pages=Math.max(1,Math.ceil(relevant.length/90));state.page=Math.min(state.page,pages-1);
+ $("#body").innerHTML='<h1>Complete method inventory</h1><p class="lead">Includes methods on categories, objects, elements, morphisms and module-level functions. Source-inferred alternatives, explicit inputs and unresolved dispatch are all retained.</p>'+
+ '<div class="row"><input class="search" type="search" id="method-filter" placeholder="Search method, category, return type, file" value="'+esc(state.operationFilter)+'">'+
+ '<label><input id="method-public" type="checkbox" '+(state.onlyPublic?"checked":"")+'> Public only</label>'+
+ '<span class="muted">'+relevant.length+' matching rules</span></div>'+
+ table(relevant.slice(state.page*90,(state.page+1)*90))+
+ '<div class="pagination"><button id="prev" '+(state.page===0?"disabled":"")+'>Previous</button>'+
+ 'Page '+(state.page+1)+' of '+pages+'<button id="next" '+(state.page===pages-1?"disabled":"")+'>Next</button></div>';
+ $("#method-filter").onchange=e=>{state.operationFilter=e.target.value;state.page=0;methodsPage()};
+ $("#method-public").onchange=e=>{state.onlyPublic=e.target.checked;state.page=0;methodsPage()};
+ $("#prev").onclick=()=>{state.page--;methodsPage()};
+ $("#next").onclick=()=>{state.page++;methodsPage()};
+}
+function closurePage(){
+ const types=data.closure.types,needle=state.operationFilter.toLowerCase();
+ const filtered=types.filter(t=>t.type.toLowerCase().includes(needle));
+ const pages=Math.max(1,Math.ceil(filtered.length/100));state.page=Math.min(state.page,pages-1);
+ $("#body").innerHTML='<h1>Recursive constructibility</h1>'+
+ '<p class="lead">Least fixed point of symbolic category/type families, not an enumeration of individual objects. A conditional witness uses unproved input admissibility or additional parameter choices.</p>'+
+ '<div class="note">The reachable universe is an <strong>over-approximation</strong> of constructible instances: static source rules may require mathematical hypotheses the analyzer cannot decide. Undecidable or unresolved outputs are never turned into known graph edges.</div>'+
+ '<div class="row"><input class="search" id="closure-filter" type="search" placeholder="Filter type family" value="'+esc(state.operationFilter)+'">'+
+ '<span class="muted">'+filtered.length+' matching / '+types.length+' total</span></div>'+
+ '<table><thead><tr><th>Symbolic type</th><th>Witness</th><th>Admission</th></tr></thead><tbody>'+
+ filtered.slice(state.page*100,(state.page+1)*100).map(t=>
+ '<tr><td class="mono">'+esc(t.type)+'</td><td class="mono">'+esc(t.witness)+'</td><td>'+
+ (t.conditional?'<span class="pill conditional">conditional</span>':'<span class="pill">schematic</span>')+
+ '</td></tr>').join("")+'</tbody></table>'+
+ '<div class="pagination"><button id="prev" '+(state.page===0?"disabled":"")+'>Previous</button>'+
+ 'Page '+(state.page+1)+' of '+pages+'<button id="next" '+(state.page===pages-1?"disabled":"")+'>Next</button></div>';
+ $("#closure-filter").onchange=e=>{state.operationFilter=e.target.value;state.page=0;closurePage()};
+ $("#prev").onclick=()=>{state.page--;closurePage()};
+ $("#next").onclick=()=>{state.page++;closurePage()};
+}
+function unresolvedPage(){
+ const filter=state.unresolvedFilter.toLowerCase();
+ const items=data.unresolved.filter(x=>(x.id+" "+JSON.stringify(x.return_expressions)).toLowerCase().includes(filter));
+ const pages=Math.max(1,Math.ceil(items.length/70));state.page=Math.min(state.page,pages-1);
+ $("#body").innerHTML='<h1>Unresolved source paths</h1>'+
+ '<p class="lead">Every unidentified return alternative remains visible even if another branch was successfully classified. These are audit obligations, not evidence that the method has no valid mathematical result.</p>'+
+ '<div class="row"><input class="search" id="unknown-filter" type="search" placeholder="Filter owner, expression, failure reason" value="'+esc(state.unresolvedFilter)+'">'+
+ '<span class="muted">'+items.length+' matching methods</span></div><div class="stack">'+
+ items.slice(state.page*70,(state.page+1)*70).map(x=>{
+  const r=byRule.get(x.id);
+  return '<div class="unresolved"><strong>'+esc(x.owner+'.'+x.name)+'</strong> <span class="pill">'+esc(x.slot)+'</span>'+
+  ' · '+sourceLink(r)+
+  x.return_expressions.map(p=>'<div class="mono">'+esc(p.expression)+'</div><div class="muted">'+
+   esc(p.reason)+(p.guards.length?' · condition: '+esc(p.guards.join(" ∧ ")):"")+'</div>').join("")+
+  '</div>';
+ }).join("")+'</div><div class="pagination"><button id="prev" '+(state.page===0?"disabled":"")+'>Previous</button>'+
+ 'Page '+(state.page+1)+' of '+pages+'<button id="next" '+(state.page===pages-1?"disabled":"")+'>Next</button></div>';
+ $("#unknown-filter").onchange=e=>{state.unresolvedFilter=e.target.value;state.page=0;unresolvedPage()};
+ $("#prev").onclick=()=>{state.page--;unresolvedPage()};
+ $("#next").onclick=()=>{state.page++;unresolvedPage()};
+}
+function body(){
+ for(const tab of document.querySelectorAll(".tab"))
+  tab.classList.toggle("active",tab.dataset.view===state.view);
+ ({category:categoryPage,graph:graphPage,methods:methodsPage,closure:closurePage,
+   unresolved:unresolvedPage})[state.view]();
+}
+$("#category-search").oninput=e=>{state.catFilter=e.target.value;categories()};
+$("#tabs").addEventListener("click",e=>{const tab=e.target.closest("[data-view]");if(!tab)return;
+ state.view=tab.dataset.view;state.page=0;body();});
+metrics();categories();body();
+</script></body></html>
