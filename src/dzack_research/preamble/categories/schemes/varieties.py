@@ -206,6 +206,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
         @cached_method
         def normalization_morphism(self):
             r"""Corestrict the chosen normalization coordinates to this curve."""
+            assert self._normalization_coordinates is not None, (
+                f"no normalization coordinate formula was given when {self} was constructed"
+            )
             return self.corestriction(
                 self.normalization_curve().projective_morphism_from_coordinates(
                     self.inclusion().codomain(), tuple(self._normalization_coordinates),
