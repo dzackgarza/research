@@ -1508,6 +1508,14 @@ class Algebras(OwnedCategoryOverBaseRing):
             on that submodule; otherwise it is the submodule.
             """
             ring = self.algebra_base_ring()
+            from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
+            from dzack_research.preamble.categories.group.groups import FiniteGroups
+
+            match self:
+                case _ if self in GroupAlgebras(ring) and self.group() in FiniteGroups():
+                    return self._finite_group_algebra_center()
+                case _:
+                    pass
             labels = self.module_generating_set()
             assert labels.cardinality().is_finite(), (
                 f"the centre of {self} is computed from its module generators, which needs finitely many, "

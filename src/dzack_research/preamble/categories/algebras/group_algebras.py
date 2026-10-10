@@ -75,7 +75,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return f"Group algebra of {self.group()} over {self.base_ring()}"
 
         @cached_method
-        def center(self):
+        def _finite_group_algebra_center(self):
             r"""The centre \(Z(R[G])\), the algebra on the span of the conjugacy-class sums.
 
             An element \(\sum a_g g\) is central exactly when \(a\) is a class
