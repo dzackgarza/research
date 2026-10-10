@@ -5737,10 +5737,12 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
         return self(Lattices(self.base_ring())("U"))
 
     def _call_(self, lattice):
+        from dzack_research.preamble.refine import refine
+
         lattice = Lattices(self.base_ring())(lattice)
         if not lattice.is_even() or not lattice.is_nondegenerate() or not lattice.is_p_elementary(self.base_ring()(2)):
             raise ValueError("a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant")
-        return lattice._with_structure((self,), {})
+        return refine(lattice, self)
 
 
 def FiniteRankLattices(base_ring):
