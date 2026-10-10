@@ -472,7 +472,10 @@ class OwnedSetMorphism(SetMorphism):
             return op == op_EQ
         domain = self.domain()
         match domain:
-            case _ if domain in FiniteSets() and domain in EnumeratedSets():
+            case _ if (
+                (domain in FiniteSets() or domain.is_finite() is True)
+                and domain in EnumeratedSets()
+            ):
                 equal = conjunction(self(element) == other(element) for element in domain)
             case _:
                 equal = AtomicProposition("equal", self, other)
@@ -522,7 +525,10 @@ class OwnedSetMorphism(SetMorphism):
 
         domain = self.domain()
         match domain:
-            case _ if domain in FiniteSets() and domain in EnumeratedSets():
+            case _ if (
+                (domain in FiniteSets() or domain.is_finite() is True)
+                and domain in EnumeratedSets()
+            ):
                 return self.image().cardinality() == domain.cardinality()
             case _:
                 return AtomicProposition("is_injective", self)
@@ -538,7 +544,11 @@ class OwnedSetMorphism(SetMorphism):
         domain = self.domain()
         codomain = self.codomain()
         match domain, codomain:
-            case _ if all(end in FiniteSets() and end in EnumeratedSets() for end in (domain, codomain)):
+            case _ if all(
+                (end in FiniteSets() or end.is_finite() is True)
+                and end in EnumeratedSets()
+                for end in (domain, codomain)
+            ):
                 image = self.image()
                 return all(point in image for point in codomain)
             case _:
@@ -619,7 +629,7 @@ class SetMorCategory(CategoricalMor):
     ) -> None:
         placement = (
             FinitelySupportedFunctionSets()
-            if domain in FiniteSets()
+            if (domain in FiniteSets() or domain.is_finite() is True)
             else FunctionSets()
         )
         placement = owned_category_join((
