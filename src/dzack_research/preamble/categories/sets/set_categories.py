@@ -3064,7 +3064,7 @@ class CartesianProductsOfSets(OwnedCategory):
             return (self.component(index) for index in self.parent().index_set())
 
         def _repr_(self) -> str:
-            if not self.parent().has_finite_index_set():
+            if not self.parent().has_finite_index_set() or self.parent().index_set() not in EnumeratedSets():
                 return f"Section of {self.parent()}"
             return "(" + ", ".join(repr(self.component(index)) for index in self.parent().index_set()) + ")"
 
@@ -3075,7 +3075,7 @@ class CartesianProductsOfSets(OwnedCategory):
                 return True
             if element_parent(other) is not self.parent():
                 return False
-            if not self.parent().has_finite_index_set():
+            if not self.parent().has_finite_index_set() or self.parent().index_set() not in EnumeratedSets():
                 return True if self._components is other._components else AtomicProposition("equal", self, other)
             undecided = []
             finite_enumerated = self.parent() in FiniteEnumeratedCartesianProductsOfSets()
@@ -3103,7 +3103,7 @@ class CartesianProductsOfSets(OwnedCategory):
             return negation(self == other)
 
         def __hash__(self) -> int:
-            if not self.parent().has_finite_index_set():
+            if not self.parent().has_finite_index_set() or self.parent().index_set() not in EnumeratedSets():
                 return hash(id(self.parent()))
             if self.parent() in FiniteEnumeratedCartesianProductsOfSets():
                 ranks = tuple(
