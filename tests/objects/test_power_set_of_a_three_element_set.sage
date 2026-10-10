@@ -71,3 +71,15 @@ def test_the_power_set_has_one_endomorphism_category() -> None:
     assert endomorphisms in Cat()
     assert subsets.Mor(subsets) is endomorphisms
     assert identity * identity == identity
+
+
+def test_empty_codomain_exponential_needs_known_nonempty_domain() -> None:
+    empty = Sets.Δ[-1]
+    assert empty.exponential(empty).cardinality() == 1
+    assert empty.exponential(Sets.Δ[0]).cardinality() == 0
+    unknown = Sets().condition_set(NN, lambda point: True)
+    assert unknown not in Sets().Finite()
+    assert unknown not in Sets().Infinite()
+    from dzack_research.preamble.categories.sets.set_categories import _cardinalities
+
+    assert _cardinalities().set_power_category(empty, unknown) is Sets()

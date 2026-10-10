@@ -414,7 +414,14 @@ class Cardinalities(OwnedCategory):
         match codomain, exponent:
             case _, _ if exponent in FiniteSets() and exponent.cardinality() == cardinal(0):
                 return self.set_category(cardinal(1))
-            case _, _ if codomain in FiniteSets() and codomain.cardinality() == cardinal(0):
+            case _, _ if (
+                codomain in FiniteSets()
+                and codomain.cardinality() == cardinal(0)
+                and (
+                    exponent in InfiniteSets()
+                    or (exponent in FiniteSets() and exponent.cardinality() != cardinal(0))
+                )
+            ):
                 return self.set_category(cardinal(0))
             case _, _ if codomain in FiniteSets() and codomain.cardinality() == cardinal(1):
                 return self.set_category(cardinal(1))
