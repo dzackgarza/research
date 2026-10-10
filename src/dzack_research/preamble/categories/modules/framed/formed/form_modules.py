@@ -1608,6 +1608,19 @@ class NondegenerateGenericFibreFormModules(OwnedCategoryOverBaseRing):
             return changed_tensor.raise_index(changed_form, slot)
 
 
+def _primary_form_component_family(form):
+    r"""The primary decomposition indexed by primes of the finite form."""
+    primes = finite_ordered_set(tuple(sorted({
+        prime
+        for invariant in form.invariant_factors()
+        for prime in abs(invariant).prime_divisors()
+    })))
+    return indexed_family(
+        primes, lambda prime: form.primary_part(prime),
+        name=f"Primary components of {form}",
+    )
+
+
 class BilinearFormModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The hyperbolic plane U, with its bilinear form."""
@@ -2028,22 +2041,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 @cached_method
                 def primary_components(self):
                     r"""Return the prime-indexed family of primary form-bearing subobjects."""
-                    primes = finite_ordered_set(
-                        tuple(
-                            sorted(
-                                {
-                                    prime
-                                    for invariant in self.invariant_factors()
-                                    for prime in abs(invariant).prime_divisors()
-                                }
-                            )
-                        )
-                    )
-                    return indexed_family(
-                        primes,
-                        lambda prime: self.primary_part(prime),
-                        name=f"Primary components of {self}",
-                    )
+                    return _primary_form_component_family(self)
 
                 def primary_decomposition(self, *args, **kwargs):
                     return self.primary_components(*args, **kwargs)
@@ -2426,22 +2424,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 @cached_method
                 def primary_components(self):
                     r"""Return the prime-indexed family of primary form-bearing subobjects."""
-                    primes = finite_ordered_set(
-                        tuple(
-                            sorted(
-                                {
-                                    prime
-                                    for invariant in self.invariant_factors()
-                                    for prime in abs(invariant).prime_divisors()
-                                }
-                            )
-                        )
-                    )
-                    return indexed_family(
-                        primes,
-                        lambda prime: self.primary_part(prime),
-                        name=f"Primary components of {self}",
-                    )
+                    return _primary_form_component_family(self)
 
                 def primary_decomposition(self, *args, **kwargs):
                     return self.primary_components(*args, **kwargs)
