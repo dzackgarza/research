@@ -144,36 +144,7 @@ contract reconciliation, and independent acceptance belong to
 
 ### Issue 401 migration does not match the frozen public contract
 
-The live [migration procedure](https://github.com/dzackgarza/research/issues/396)
-requires research to supply the frozen operations already called by the
-port. The research-side source repairs are listed in the audit's
-disposition table. Formal comparisons, group-consumer integration,
-contract reconciliation and execution are still open. Local port branch
-`research-401-primitives` changes consumer names, while the migration
-procedure requires the research-side names and contracts.
-
-The [complete abstraction audit](docs/issue-401-abstraction-audit.md)
-maps every body/comment item and private access to its mathematical
-construction, identifies contract conflicts, and records the disposition
-of the added code. It includes integral descent, similarity embeddings,
-twist transport, lift torsors, and affine-line points, which were missing
-from the prior TODO account. Resolve the formal owners and route the
-mathematically determined frozen-contract corrections through port #33.
-The existing [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives)
-node owns the repair.
-
-The live issue body additionally requests `divisible_sublattice(d)` and
-separates split binary norm fibres, primitive isotropic vectors, and
-anisotropic reduction cycles. The frozen binary row still promises orbit
-representatives from `vectors_of_square(n)`. Reconcile those result types
-through #33: `vectors_of_square(n)` denotes the norm fibre, while the
-orbit quotient belongs to its group action (`LEX-11`). The audit's row 20
-maps the divisibility sublattice to the inverse image of `idealDual`, using
-`toRationalSpan_mem_idealDual_iff`. That pairing condition gives the radical
-at `d=0`; the formalized composite and its public formed inclusion remain
-to be supplied at their mathematical owners.
-The signed shell/sphere amendment already determines the bounds, names
-and `None` result for an exhausted multiplier range.
+Resolved 2026-10-09: research does not answer to a consumer's frozen contract. Each issue-401 operation is placed at its mathematical owner and accepted by true assertions there (`TODO.md#indefinite-port-primitives`). Where the port calls a name or expects a result type that the mathematics does not give, that is the port's correction to make.
 
 ### Hodge-isometry planning did not assign the general Hodge categories
 
@@ -691,24 +662,6 @@ survey, 2026-10-08). The code-wrangling helpers `lmap`, `lzip`, `zipsum` and
 **Consumers:** `tests/lattices/test_vinberg_invariants.sage:145` and
 `tests/user_simulations/test_newcomer_session.sage:126` call `matrix(ZZ, ...)`.
 Repair: `session-objects-are-built-by-their-parents` in TODO.
-
-### A finite cardinal does not convert into the integers
-
-A finite cardinal is a natural number, and the natural numbers include
-into the integers. The session's cardinals are objects of `Cardinalities`
-(parents), so Sage's `parent(c)` returns the cardinal's class, and the
-integers' element constructor (`categories/rings/ring_foundation.py`) passes
-that class to `Modules(ZZ).__contains__`, which raises
-`TypeError: category() needs an argument` (observed 2026-10-07).
-`RegularPolytopes.dimension()` (`categories/schemes/polytopes.py`) converts
-`schlafli_symbol().cardinality() + 1` into `_own_ring(SageZZ)`, so the cube
-has no dimension.
-**Dependency path:** cardinality of a finite set -> the natural number it
-is -> its image under `NN -> ZZ`.
-**Consumers:** `tests/schemes/test_regular_polytope_symmetry.sage`
-(`test_the_cube_is_three_dimensional`) and every caller of
-`RegularPolytopes.dimension()`.
-Repair: `a-finite-cardinal-is-a-natural-number` in TODO.
 
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 

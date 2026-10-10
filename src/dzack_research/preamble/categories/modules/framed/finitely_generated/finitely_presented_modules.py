@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     FreeResolution,
     Modules,
+    ModulesOverIntegralDomains,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
@@ -1223,7 +1224,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
 
         def _finiteness_decision(self):
-            return self.cardinality().is_finite()
+            r"""Use finite generation over finite rings or PID invariant factors.
+
+            A quotient of a finite-rank free module over a finite ring is
+            finite.  Without a finite base or a PID decomposition, the
+            selected presentation does not supply a finiteness decision.
+            """
+            ring = self.base_ring()
+            match ring.is_finite():
+                case True:
+                    return True
+                case _ if ring in PrincipalIdealDomains() or ring in OwnedFields():
+                    return self.cardinality().is_finite()
+                case _:
+                    return AtomicProposition("is_finite", self)
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -1538,7 +1552,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def torsion_submodule(self):
             r"""Return Tor(M) from the invariant-factor quotient over a PID."""
             if self.base_ring() not in PrincipalIdealDomains():
-                return super().torsion_submodule()
+                return ModulesOverIntegralDomains(self.base_ring())(self).generic_fibre_map().kernel()
             return self.torsion_free_quotient_projection().kernel()
 
         def torsion_free_quotient(self):
@@ -1578,6 +1592,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Transport the selected finite presentation along ``R -> S``."""
 
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
             presentation = self.presentation()
             source = presentation.domain().base_change(ring_map)
             target = presentation.codomain().base_change(ring_map)

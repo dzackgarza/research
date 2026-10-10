@@ -75,12 +75,12 @@ def test_a_catalogue_involution_session(name) -> None:
     assert acted.character()(group.one()) == 22
 
     # Nikulin's (r, a, delta) for the invariant lattice.
-    r, a, delta = invariant.two_elementary_invariants()
-    rendered(invariant.two_elementary_invariants())
+    r, a, delta = EvenTwoElementaryLattices(ZZ)(invariant).two_elementary_invariants()
+    rendered(EvenTwoElementaryLattices(ZZ)(invariant).two_elementary_invariants())
     assert r == invariant_rank
     assert invariant.discriminant_group().cardinality() == cardinal(2**a)
-    assert invariant.delta() == delta
-    assert nikulin_invariants(r, a, delta) == invariant.two_elementary_invariants()
+    assert EvenTwoElementaryLattices(ZZ)(invariant).delta() == delta
+    assert nikulin_invariants(r, a, delta) == EvenTwoElementaryLattices(ZZ)(invariant).two_elementary_invariants()
 
 
 def test_the_catalogue_embeddings_and_their_complements() -> None:
@@ -113,10 +113,10 @@ def test_two_elementary_lattices_and_orthogonal_sums() -> None:
     rendered(e8_2)
     assert e8_2.is_p_elementary(2)
     assert e8_2.discriminant_group().cardinality() == cardinal(256)
-    assert e8_2.two_elementary_invariants() == nikulin_invariants(8, 8, 0)
+    assert EvenTwoElementaryLattices(ZZ)(e8_2).two_elementary_invariants() == nikulin_invariants(8, 8, 0)
     assert e8_2.discriminant_quadratic_form().brown_invariant() == 0
-    assert NamedLattices.U_2.two_elementary_invariants() == nikulin_invariants(2, 2, 0)
-    assert NamedLattices.Z_2.two_elementary_invariants() == nikulin_invariants(1, 1, 1)
+    assert EvenTwoElementaryLattices(ZZ)(NamedLattices.U_2).two_elementary_invariants() == nikulin_invariants(2, 2, 0)
+    assert EvenTwoElementaryLattices(ZZ)(NamedLattices.Z_2).two_elementary_invariants() == nikulin_invariants(1, 1, 1)
     sums = two_elementary_orthogonal_sums(signature_pair(1, 9), 10, 0)
     rendered(sums)
     assert sums.cardinality() >= cardinal(1)

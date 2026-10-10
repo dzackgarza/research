@@ -563,7 +563,7 @@ class CoveringFamilyMorCategoryConstruction(MorCategoryConstruction):
         return CoveringFamilyMor
 
 
-def _covering_family(category: Category, target: Parent, members, overlaps, **data):
+def _covering_family(category: Category, target: Parent, members, overlaps, *, _engine=None, **data):
     r"""The covering family of ``target`` by ``members`` in ``category``, a category of covering families.
 
     ``members`` are the cover arrows ``U_i -> U``; ``overlaps`` maps each pair
@@ -668,9 +668,17 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
 
     # The family is its index category ``J`` with the presentation
     # ``J -> C``, an object of ``Cat/C``, together with the cover data.
+    match _engine:
+        case None:
+            object_engine = None
+        case (owner, object_engine, None) if owner is category:
+            pass
+        case _:
+            raise TypeError(f"the private covering realization must serve {category}, got {_engine}")
     return SliceCategory(Cat(), Cat().object(site)).object(
         Cat().arrow(presentation),
         categories=(category,),
+        _engine=object_engine,
         construction_data={
             "covered_object": target,
             "members": family,
@@ -695,6 +703,16 @@ class CoveringFamilies(OwnedCategory):
 
     Unverified specimen: the cover is literally placed over its presentation
     functor, not recognized afterwards from methods on an arbitrary object::
+
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: C = CoveringFamilies(Sets())
+        sage: cover = C.an_object()
+        sage: cover in C and cover in C.presentation_category()
+        True
+        sage: cover.presentation().codomain() is Sets()
+        True
+        sage: C.Mor(cover, cover).identity().domain() is cover
+        True
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set

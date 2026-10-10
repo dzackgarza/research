@@ -35,6 +35,13 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
 
         The fan of ``A^2`` is the single cone spanned by ``e_1`` and ``e_2``;
         its star subdivision at ``e_1 + e_2`` is the blowup described above.
+
+        sage: from dzack_research.preamble.all import QQ, ToricFixedPointBlowups, ToricSchemes, Blowups, Surfaces
+        sage: B = ToricFixedPointBlowups(QQ).an_object()
+        sage: all(B in C(QQ) for C in (ToricFixedPointBlowups, ToricSchemes, Blowups, Surfaces))
+        True
+        sage: B.blowup_morphism().domain() is B and B.blowup_morphism().codomain() is B.blowup_source()
+        True
         """
         cocharacters = _integers().free_module(2)
         plane = RationalPolyhedralFans(cocharacters)(([[1, 0], [0, 1]],)).toric_variety(self.base_ring())

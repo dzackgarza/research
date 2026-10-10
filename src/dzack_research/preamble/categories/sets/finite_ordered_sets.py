@@ -68,7 +68,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
         )
         match index_set:
-            case _ if index_set in FiniteSets():
+            case _ if Sets().is_provably_finite(index_set):
                 return FiniteOrderedSets().from_indexed(
                     index_set, element_at, index_of=index_of, contains=contains, name=name
                 )
@@ -266,9 +266,12 @@ class FiniteOrderedSets(OwnedCategory):
                     contains=lambda element: element in source,
                 )
             case _:
+                # Choose the order once; separately iterating an unordered
+                # source for each position does not retain one enumeration.
+                points = tuple(source)
                 return self.from_indexed(
                     index_set,
-                    lambda position: next(islice(iter(source), int(position), None)),
+                    lambda position: points[int(position)],
                     contains=lambda element: element in source,
                 )
 
@@ -355,7 +358,7 @@ class FiniteOrderedSets(OwnedCategory):
             Ordered as this set, followed by the points of ``other`` not
             already present, in the order of ``other``.
             """
-            assert other in FiniteSets(), (
+            assert other in Sets() and Sets().is_provably_finite(other), (
                 f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
             )
             return FiniteOrderedSets()(chain(self, other))
@@ -386,7 +389,7 @@ class FiniteOrderedSets(OwnedCategory):
                     return self.cardinality() == other.cardinality() and all(
                         left == right for left, right in zip(self, other, strict=True)
                     )
-                case _ if other in Sets() and other in FiniteSets():
+                case _ if other in Sets() and Sets().is_provably_finite(other):
                     return self.cardinality() == cardinal(other.cardinality()) and all(
                         point in other for point in self
                     )
@@ -417,7 +420,7 @@ def _filtered_ordered_set(
     \(S\).  The enumeration is computed from \((S, P)\) here, and the finite
     ordered sets owner constructs the set on it.
     """
-    assert universe in FiniteSets() and universe in EnumeratedSets(), (
+    assert Sets().is_provably_finite(universe) and universe in EnumeratedSets(), (
         f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
         "finite and enumerated"
     )
@@ -497,7 +500,7 @@ def _enumerated_image_set(
     cannot admit values outside the image.
     """
     match source:
-        case _ if source in FiniteSets():
+        case _ if Sets().is_provably_finite(source):
             placement = FiniteOrderedSets()
 
             def contains(value):

@@ -133,4 +133,4 @@ def test_base_change_of_a_cubic_surface_retains_its_projective_surface_owner() -
     assert changed in ProperSurfaces(field)
     assert changed in ProjectiveSurfaces(field)
     assert changed.is_del_pezzo()
-    assert changed.del_pezzo_degree() == 3
+    assert DelPezzoSurfaces(changed.scheme_base_ring())(changed).del_pezzo_degree() == 3

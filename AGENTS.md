@@ -133,6 +133,16 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+## Acceptance is mathematics (owner, 2026-10-09)
+
+Everything here is general mathematics. An operation is accepted by true assertions about pure mathematics at its owner. There are no integration tests: no consumer (`sage-indefinite-port` or any other), migration contract or port run gates a research node, and research never waits on a consumer. A node whose acceptance names a consumer is a defect in the node; rewrite it as mathematical assertions.
+
+## Owner resume — 2026-10-08
+
+The repository owner resumed this workstream on 2026-10-08 after the October stop. Work from
+`HANDOFF.md` first, in the priority order it states, then from the `TODO.md` dependency graph.
+Only a later explicit owner instruction stops the repository again.
+
 ## Owner resume — 2026-09-17
 
 The repository owner resumed this workstream on 2026-09-17. The initial

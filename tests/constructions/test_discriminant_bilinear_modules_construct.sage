@@ -21,7 +21,7 @@ def test_discriminant_bilinear_form_retains_value_module_and_quadratic_refinemen
 
     assert form in DiscriminantBilinearModules(ZZ)
     assert form.bilinear_value_module() is form.value_module()
-    assert form.associated_quadratic_form() == lattice.discriminant_quadratic_form()
+    assert lattice.discriminant_quadratic_form().associated_quadratic_form() == lattice.discriminant_quadratic_form()
     assert form.O() == form.orthogonal_group()
     assert form.automorphism_group() == form.O()
     assert form.invariant_factor_form().is_isomorphism()

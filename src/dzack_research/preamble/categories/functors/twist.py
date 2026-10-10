@@ -16,7 +16,21 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 class TwistFunctor(Functor):
-    r"""The faithful endofunctor ``L |-> L(a)`` of integral lattices."""
+    r"""The faithful endofunctor ``L |-> L(a)`` of integral lattices.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.functors.twist import TwistFunctor
+        sage: U = Lattices(ZZ)("U")
+        sage: T = TwistFunctor(2)
+        sage: g = T(U.Isom(U).identity())
+        sage: g.domain() is T(U) and g.codomain() is T(U)
+        True
+        sage: g.inverse() * g == g.domain().Isom(g.domain()).identity()
+        True
+        sage: U.twist(-1).twist(-1) is U
+        True
+    """
 
     _faithful = True
 

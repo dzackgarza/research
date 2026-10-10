@@ -17,8 +17,8 @@ from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobj
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets, FiniteSets, CountableSets
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 def _held(lattice, element):
@@ -297,9 +297,24 @@ class _IsotropicFlagLocusEngine:
         return f"Totally isotropic flags of ranks {self.ranks()} in {self.lattice()}"
 
 
+def _isotropic_locus_placement(lattice):
+    r"""Finite-rank sublattices of a finite/countable lattice form a finite/countable set.
+
+    A finite-rank sublattice is determined by a finite tuple of vectors;
+    finite flags of such sublattices obey the same cardinality bound.
+    """
+    match lattice in FiniteSets(), lattice in CountableSets():
+        case True, _:
+            return FiniteSets()
+        case _, True:
+            return CountableSets()
+        case _:
+            return Sets()
+
+
 def _primitive_isotropic_sublattice_locus(lattice, rank):
     return _object_of(
-        Sets(),
+        _isotropic_locus_placement(lattice),
         _engine=(Sets(), _PrimitiveIsotropicSublatticeLocusEngine, None),
         lattice=lattice,
         rank=rank,
@@ -309,7 +324,7 @@ def _primitive_isotropic_sublattice_locus(lattice, rank):
 
 def _isotropic_sublattice_locus(lattice, rank):
     return _object_of(
-        Sets(),
+        _isotropic_locus_placement(lattice),
         _engine=(Sets(), _IsotropicSublatticeLocusEngine, None),
         lattice=lattice,
         rank=rank,
@@ -319,7 +334,7 @@ def _isotropic_sublattice_locus(lattice, rank):
 
 def _isotropic_flag_locus(lattice, ranks):
     return _object_of(
-        Sets(),
+        _isotropic_locus_placement(lattice),
         _engine=(Sets(), _IsotropicFlagLocusEngine, None),
         lattice=lattice,
         ranks=tuple(ranks),

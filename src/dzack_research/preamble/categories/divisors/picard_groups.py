@@ -79,7 +79,7 @@ class PicardGroups(Category):
         hyperplane = integers.free_module(finite_ordered_set(("O(1)",)))
         return Modules(integers).biproduct(
             (base_picard_group, hyperplane),
-            extra_categories=(self,),
+            extra_categories=(self, ProjectiveBundlePicardGroups()),
             extra_construction_data={"picard_scheme": projective_space},
         )
 
@@ -146,6 +146,21 @@ class PicardGroups(Category):
             r"""The scheme whose Picard group this presents."""
             return self._picard_scheme
 
+
+class ProjectiveBundlePicardGroups(Category):
+    r"""Picard groups presented by the projective-bundle direct-sum formula."""
+
+    def super_categories(self):
+        return [PicardGroups(), BiproductModules(_integers())]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+        base = _affine_line_over_rationals().scheme_base_ring()
+        projective_line = ProjectiveSpaces(base)(1)
+        return PicardGroups().projective_bundle(projective_line, PicardGroups().trivial(projective_line.base_scheme()))
+
+    class ParentMethods:
         def projective_base_picard_group(self):
             r"""The summand \(\operatorname{Pic}(S)\) of \(\operatorname{Pic}(\mathbb{P}^n_S) = \operatorname{Pic}(S) \oplus \mathbb{Z}[\mathcal{O}(1)]\)."""
             assert self in BiproductModules(_integers()), (
@@ -180,4 +195,4 @@ class PicardGroups(Category):
             return self.injection(1)(factor.module_generator(label))
 
 
-__all__ = ["PicardGroups"]
+__all__ = ["PicardGroups", "ProjectiveBundlePicardGroups"]

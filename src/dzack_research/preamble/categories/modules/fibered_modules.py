@@ -84,12 +84,19 @@ class SemilinearModuleMorphism:
             case None, _:
                 pass
             case _, None:
-                restricted = self.restricted_codomain()
+                restricted = Modules(domain.base_ring()).base_change_adjunction(
+                    scalar_map
+                ).right_adjoint()(codomain)
+                self._restricted_codomain = restricted
                 linear_mor = Modules(domain.base_ring()).Mor(domain, restricted)
                 self._restricted_morphism = linear_mor(restricted_morphism)
-                evaluator = lambda element: codomain(
-                    self._restricted_morphism(element).underlying_element()
-                )
+                match restricted is codomain:
+                    case True:
+                        evaluator = lambda element: codomain(self._restricted_morphism(element))
+                    case False:
+                        evaluator = lambda element: codomain(
+                            self._restricted_morphism(element).underlying_element()
+                        )
             case _, _:
                 raise TypeError(
                     "a semilinear arrow is defined either by its restricted linear morphism "
@@ -284,7 +291,7 @@ class SemilinearModuleMor(CategoricalMor):
                     )
                 else:
                     compatible_map = compatible_mor.elementwise(
-                        lambda element: restricted.wrap(additive(element))
+                        lambda element: restricted(additive(element))
                     )
             case _:
                 compatible_map = compatible_mor(compatible_map)

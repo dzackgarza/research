@@ -13,6 +13,159 @@ arithmetic and of the product functor.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.set_categories import (
+        CartesianProductsOfAdditiveMonoids,
+    )
+
+    factor = AdditiveMonoids().an_object()
+    product = Sets().product((factor, factor))
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert product in AdditiveMonoids()
+    zero = product.zero()
+    point = product(lambda index: factor.one())
+    assert point + zero == point
+    assert zero + point == point
+    assert (point + point).component(product.index_set()(0)) == factor.one() + factor.one()
+    projection = product.projection(product.index_set()(0))
+    assert projection.parent() is AdditiveMonoids().Mor(product, factor)
+    assert projection(zero) == factor.zero()
+    assert projection(point + point) == projection(point) + projection(point)
+    identity = AdditiveMonoids().Mor(factor, factor).identity()
+    induced = product.from_maps(factor, lambda _index: identity)
+    assert induced.parent() is AdditiveMonoids().Mor(factor, product)
+    assert all(product.projection(index)(induced(factor.one())) == factor.one() for index in product.index_set())
+    assert all(product.projection(index)(induced(factor.zero())) == factor.zero() for index in product.index_set())
+    try:
+        product.from_maps(factor, lambda _index: Sets().Mor(factor, factor).identity())
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
+
+
+def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import (
+        CartesianProductsOfAdditiveMonoids,
+    )
+
+    factor = AdditiveMonoids().an_object()
+    family = indexed_family(NN, factor)
+    product = Sets().product(family)
+    assert family.constant_value() is factor
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert product in AdditiveMonoids()
+    varying = product(lambda index: factor(int(index)))
+    unit = product(lambda index: factor.one())
+    zero = product.zero()
+    projection = product.projection(NN(2))
+    assert projection.parent() is AdditiveMonoids().Mor(product, factor)
+    assert projection(varying) != projection(product(lambda index: factor.zero()))
+    assert projection(varying + zero) == projection(varying)
+    assert projection(varying + unit) == projection(varying) + projection(unit)
+    assert projection(zero) == factor.zero()
+
+    nonmonoid = Sets().product(indexed_family(NN, Sets.Δ[1]))
+    assert nonmonoid not in CartesianProductsOfAdditiveMonoids()
+    assert nonmonoid not in AdditiveMonoids()
+    try:
+        indexed_family(NN, Sets.Δ[1], value_category=AdditiveMonoids())
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an infinite constant nonmonoid was admitted as additive")
+
+
+def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+
+    factor = AdditiveMonoids().an_object()
+    for value in (lambda index: factor, lambda index: factor if int(index) % 2 == 0 else Sets.Δ[1]):
+        try:
+            indexed_family(NN, value, value_category=AdditiveMonoids())
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("unchecked infinite callback falsely established category-valued diagram")
+    try:
+        indexed_family(Sets.Δ[0], lambda _index: Sets.Δ[1], value_category=AdditiveMonoids())
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("nonmonoid set admitted to an additive-monoid diagram")
+
+
+def test_unchecked_discrete_diagram_cannot_certify_infinite_factors() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    factor = AdditiveMonoids().an_object()
+    index_category = DiscreteCategory(NN)
+    raw = indexed_family(NN, lambda index: factor if int(index) % 2 == 0 else Sets.Δ[1])
+    unchecked = Cat().Mor(index_category, AdditiveMonoids()).discrete_diagram(raw)
+    try:
+        indexed_family(NN, unchecked)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("unchecked infinite diagram claimed an invalid additive placement")
+
+    selected = Cat().Mor(index_category, AdditiveMonoids()).constant_functor(factor)
+    family = indexed_family(NN, selected)
+    product = Sets().product(family)
+    assert product in AdditiveMonoids()
+    assert product.projection(NN(3))(product.zero()) == factor.zero()
+
+
+def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+
+    labels = Sets.Δ[1]
+    finite_index = DiscreteCategory(labels)
+    infinite_index = DiscreteCategory(NN)
+    even = AdditiveMonoids().an_object()
+    odd = AdditiveGroups().an_object()
+    diagram = Cat().Mor(finite_index, AdditiveMonoids()).discrete_diagram(
+        indexed_family(labels, lambda i: even if i == labels(0) else odd)
+    )
+    parity = Cat().Mor(infinite_index, finite_index).from_object_map(
+        lambda n: labels(int(n) % 2)
+    )
+    selected = diagram.restrict(parity)
+    family = indexed_family(NN, selected)
+    product = Sets().product(family)
+    assert family.selected_diagram() is selected
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert family(NN(0)) is even and family(NN(1)) is odd
+    point = product(lambda n: family(n)(int(n)))
+    unit = product(lambda n: family(n).one())
+    projection = product.projection(NN(3))
+    assert projection.parent() is AdditiveMonoids().Mor(product, odd)
+    assert projection(point + unit) == projection(point) + projection(unit)
+    assert projection(product.zero()) == odd.zero()
+
+    unchecked = Cat().Mor(infinite_index, AdditiveMonoids()).discrete_diagram(
+        indexed_family(NN, lambda n: even if int(n) % 2 == 0 else Sets.Δ[1])
+    )
+    identity = Cat().Mor(infinite_index, infinite_index).from_object_map(lambda n: n)
+    for candidate in (unchecked, unchecked.restrict(identity)):
+        try:
+            indexed_family(NN, candidate)
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("unchecked infinite diagram incorrectly certified additive placement")
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
@@ -30,6 +183,92 @@ def test_the_disjoint_union_of_two_and_three_points_has_five_points() -> None:
 
     assert union.cardinality() == cardinal(5)
     assert sum(1 for _point in union) == 5
+
+
+def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None:
+    source = Sets().coproduct((Sets.Δ[0], Sets.Δ[1]))
+    target = Sets.Δ[1]
+    components = lambda index: Sets().Mor(source.cofactor(index), target)(
+        lambda point: target(0) if index == source.index_set()(0) else target(1)
+    )
+    induced = source.from_maps(target, components)
+    assert induced.parent() is Sets().Mor(source, target)
+    for index in source.index_set():
+        component = components(index)
+        for point in source.cofactor(index):
+            assert induced(source.injection(index)(point)) == component(point)
+
+    wrong = Sets().Mor(target, target).identity()
+    try:
+        source.from_maps(target, lambda _index: wrong)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("coproduct accepted a map with incorrect component endpoints")
+
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    infinite = Sets().coproduct(indexed_family(NN, Sets.Δ[0]))
+    try:
+        infinite.from_maps(
+            Sets.Δ[0],
+            lambda _index: Sets().Mor(Sets.Δ[0], Sets.Δ[0]).identity(),
+        )
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("unchecked infinite coproduct component callback admitted")
+
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+    shape = DiscreteCategory(NN)
+    constant = Cat().Mor(shape, Sets()).constant_functor(Sets.Δ[0])
+    components = NaturalTransformation(
+        constant, constant,
+        lambda _object: Sets().Mor(Sets.Δ[0], Sets.Δ[0]).identity(),
+    )
+    induced = infinite.from_maps(Sets.Δ[0], components)
+    assert induced.parent() is Sets().Mor(infinite, Sets.Δ[0])
+    for index in (NN(0), NN(1), NN(5)):
+        inclusion = infinite.injection(index)
+        assert induced(inclusion(Sets.Δ[0](0))) == components.component(shape.object(index))(Sets.Δ[0](0))
+    bad = NaturalTransformation(
+        constant, constant,
+        lambda _object: Sets().Mor(Sets.Δ[1], Sets.Δ[0])(lambda _value: Sets.Δ[0](0)),
+    )
+    bad_induced = infinite.from_maps(Sets.Δ[0], bad)
+    try:
+        bad_induced(infinite.injection(NN(1))(Sets.Δ[0](0)))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("an incorrectly typed natural-transformation component was admitted")
+
+
+def test_componentwise_coproduct_morphism_checks_its_source_and_target_summands() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import _coproduct_morphism
+
+    left = Sets.Δ[1]
+    right = Sets.Δ[2]
+    source = Sets().coproduct((left, right))
+    target = Sets().coproduct((right, left))
+    index_set = source.index_set()
+    first = Sets().Mor(left, right)(lambda point: right(int(point)))
+    second = Sets().Mor(right, left)(lambda point: left(int(point) % 2))
+    arrow = _coproduct_morphism(source, target, lambda index: first if index == index_set(0) else second)
+    assert arrow.parent() is Sets().Mor(source, target)
+    for index in index_set:
+        component = first if index == index_set(0) else second
+        for point in source.cofactor(index):
+            assert arrow(source.injection(index)(point)) == target.injection(index)(component(point))
+
+    try:
+        _coproduct_morphism(source, target, lambda _index: first)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("a component with wrong coproduct endpoints was admitted")
 
 
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
@@ -72,3 +311,71 @@ def test_the_product_functor_applies_a_transposition_to_the_first_coordinate() -
 
     assert induced(product((two(1), three(2)))) == product((two(0), three(2)))
     assert induced(product((two(0), three(0)))) == product((two(1), three(0)))
+
+
+def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import _cartesian_product_morphism
+
+    small, large = Sets.Δ[1], Sets.Δ[2]
+    source = Sets().product((small, large))
+    target = Sets().product((large, small))
+    labels = source.index_set()
+    first = Sets().Mor(small, large)(lambda x: large(int(x)))
+    second = Sets().Mor(large, small)(lambda x: small(int(x) % 2))
+    induced = _cartesian_product_morphism(source, target, lambda i: first if i == labels(0) else second)
+    assert induced.parent() is Sets().Mor(source, target)
+    corner = source((small(1), large(2)))
+    assert induced(corner).component(labels(0)) == first(small(1))
+    assert induced(corner).component(labels(1)) == second(large(2))
+    try:
+        _cartesian_product_morphism(source, target, lambda _i: first)
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("product admitted a component with incorrect target factor")
+
+
+def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import (
+        _cartesian_product_morphism, _coproduct_morphism,
+    )
+
+    point = Sets.Δ[0]
+    index_category = DiscreteCategory(NN)
+    diagram = Cat().Mor(index_category, Sets()).constant_functor(point)
+    components = NaturalTransformation(
+        diagram, diagram, lambda _index: Sets().Mor(point, point).identity()
+    )
+    family = indexed_family(NN, point)
+    product = Sets().product(family)
+    coproduct = Sets().coproduct(family)
+    product_map = _cartesian_product_morphism(product, product, components)
+    coproduct_map = _coproduct_morphism(coproduct, coproduct, components)
+    section = product(lambda _index: point(0))
+    assert product_map.parent() is Sets().Mor(product, product)
+    assert coproduct_map.parent() is Sets().Mor(coproduct, coproduct)
+    for index in (NN(0), NN(1), NN(5)):
+        assert product_map(section).component(index) == section.component(index)
+        selected = coproduct.injection(index)(point(0))
+        assert coproduct_map(selected) == selected
+    other = Sets.Δ[1]
+    wrong_diagram = Cat().Mor(index_category, Sets()).constant_functor(other)
+    wrong = NaturalTransformation(
+        wrong_diagram, wrong_diagram,
+        lambda _index: Sets().Mor(other, other).identity(),
+    )
+    wrong_product = _cartesian_product_morphism(product, product, wrong)
+    wrong_coproduct = _coproduct_morphism(coproduct, coproduct, wrong)
+    for evaluate in (
+        lambda: wrong_product(section).component(NN(2)),
+        lambda: wrong_coproduct(coproduct.injection(NN(2))(point(0))),
+    ):
+        try:
+            evaluate()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("componentwise arrow accepted a different factor object")

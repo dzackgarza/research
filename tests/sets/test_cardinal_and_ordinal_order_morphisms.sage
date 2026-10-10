@@ -118,3 +118,48 @@ def test_order_type_is_a_functor_from_well_orders_to_ord() -> None:
     assert order_type(labels) is Ordinals()(3)
     assert order_type(standard) is Ordinals()(3)
     assert order_type(isomorphism) == Ord.Mor(3, 3).identity()
+
+
+def test_infinite_well_order_type_uses_its_core_isomorphism() -> None:
+    well_orders = WellOrderedSets()
+    order_type = well_orders.order_type_functor()
+    identity = well_orders.Mor(NN, NN).identity()
+    selected_isomorphism = well_orders.Core().Mor(NN, NN)(identity, identity)
+    assert NN in well_orders
+    assert NN in TotallyOrderedSets()
+    assert order_type(NN) is NN.order_type()
+    assert order_type(selected_isomorphism).is_identity()
+
+
+def test_nonidentity_well_order_maps_compose_with_exact_endpoints() -> None:
+    well_orders = WellOrderedSets()
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    inclusion = well_orders.Mor(source, target)(lambda point: target(int(point) + 1))
+    shift = well_orders.Mor(target, target)(lambda point: target(min(2, int(point) + 1)))
+    composite = shift * inclusion
+    assert composite.parent() is well_orders.Mor(source, target)
+    assert composite.underlying_set_morphism().domain() is source
+    assert composite.underlying_set_morphism().codomain() is target
+    assert tuple(int(composite(point)) for point in source) == (2, 2)
+    try:
+        well_orders.Mor(target, target)(lambda point: target(2 - int(point)))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an order-reversing map was admitted to well-ordered Mor")
+
+
+def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
+    left = finite_ordered_set(("b", "a", "c"))
+    right = finite_ordered_set(("c", "d"))
+    union = left.union(right)
+    intersection = left.intersection(right)
+    difference = left.difference(right)
+    assert tuple(union) == ("b", "a", "c", "d")
+    assert tuple(intersection) == ("c",)
+    assert tuple(difference) == ("b", "a")
+    assert all(result in WellOrderedSets() for result in (union, intersection, difference))
+    assert (union.order_type(), intersection.order_type(), difference.order_type()) == (
+        Ordinals()(4), Ordinals()(1), Ordinals()(2)
+    )

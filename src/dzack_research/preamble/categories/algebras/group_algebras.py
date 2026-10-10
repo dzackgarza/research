@@ -75,7 +75,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return f"Group algebra of {self.group()} over {self.base_ring()}"
 
         @cached_method
-        def center(self):
+        def _finite_group_algebra_center(self):
             r"""The centre \(Z(R[G])\), the algebra on the span of the conjugacy-class sums.
 
             An element \(\sum a_g g\) is central exactly when \(a\) is a class
@@ -105,6 +105,15 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return _center_algebra(self, self.subobject_on(class_sums))
 
         @cached_method
+        def ring_center(self):
+            r"""Use class sums when the group is finite; retain the ring centre otherwise."""
+            match self.group() in FiniteGroups():
+                case True:
+                    return self.center()
+                case _:
+                    return OwnedRings.ParentMethods.ring_center(self)
+
+        @cached_method
         def group_inclusion(self):
             r"""The monoid morphism \(G\to R[G]\), \(g\mapsto g\).
 
@@ -126,6 +135,36 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                 return inclusion(group_element) * self(element)
 
             return Modules(self)(self, left_action)
+
+        @cached_method
+        def regular_representation_basis_isomorphism(self):
+            r"""The selected ``R[G]``-linear isomorphism ``R[G]^1 -> R[G]``.
+
+            The forward arrow sends its sole basis vector to ``1`` and is
+            extended linearly over the *group algebra*, not merely its
+            coefficient ring.  Its inverse sends the selected regular-module
+            basis vector to the free generator, hence sends every original
+            coefficient-module generator ``g`` to ``g`` times that generator.
+            Both composites fix the corresponding generating families,
+            while the original coefficient-module presentation remains
+            retained by the regular representation.
+
+            The underlying Mor owner is the generic category of modules
+            over ``R[G]``; the chosen-action category is an additional
+            structured realization, not the endpoint category of the
+            abstract rank-one free source.
+            """
+            ring = self
+            free = ring.free_module(1)
+            acted = ring.regular_representation()
+            ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, ring)
+            (basis,) = tuple(free.module_generating_set())
+            forward = ordinary.Mor(free, acted)({basis: acted(ring.one())})
+            inverse = ordinary.Mor(acted, free)({
+                label: free.module_generator(basis)
+                for label in acted.module_generating_set()
+            })
+            return ordinary.Core().Mor(free, acted)(forward, inverse)
 
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).

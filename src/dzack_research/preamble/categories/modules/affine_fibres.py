@@ -214,6 +214,19 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
         @cached_method
         def image_point_set(self):
             r"""The affine image, retained separately from its parameter fibre."""
+            if self.image_translation_module().module_rank() == 0:
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                try:
+                    origin = self.base_point()
+                except ValueError:
+                    points = finite_ordered_set(())
+                else:
+                    points = finite_ordered_set((origin,))
+                evaluation = self.evaluation()
+                return Sets().Mor(points, evaluation.codomain())(
+                    lambda point: evaluation(point)
+                ).image()
             return self.evaluation().image()
 
         @cached_method

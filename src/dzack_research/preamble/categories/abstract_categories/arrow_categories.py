@@ -729,6 +729,17 @@ class SliceCategory(_SubcategoryOfArrows):
     Unverified specimens retain equal-but-distinct base sets and keep the
     slice and coslice fixed edges under nonidentity composition::
 
+        sage: from dzack_research.preamble.all import Sets
+        sage: X, T = Sets.Δ[1], Sets.Δ[0]
+        sage: C = SliceCategory(Sets(), T)
+        sage: A = C(Sets().Mor(X, T)(lambda point: T(0)))
+        sage: swap = Sets().Mor(X, X)(lambda point: X(1-int(point)))
+        sage: square = C.Mor(A, A)(swap)
+        sage: square * square == C.Mor(A, A).identity()
+        True
+        sage: square.left() == swap and square.right() == Sets().Mor(T, T).identity()
+        True
+
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -976,7 +987,21 @@ class CosliceMorCategoryConstruction(MorCategoryConstruction):
 
 
 class CosliceCategory(_SubcategoryOfArrows):
-    r"""The coslice category \(X/C\): arrows out of ``X``, with squares whose left edge is ``id_X``."""
+    r"""The coslice category \(X/C\): arrows out of ``X``, with squares whose left edge is ``id_X``.
+
+    A nonidentity idempotent square retains the fixed identity edge::
+
+        sage: from dzack_research.preamble.all import Sets
+        sage: T, X = Sets.Δ[0], Sets.Δ[1]
+        sage: C = CosliceCategory(Sets(), T)
+        sage: A = C(Sets().Mor(T, X)(lambda point: X(0)))
+        sage: collapse = Sets().Mor(X, X)(lambda point: X(0))
+        sage: square = C.Mor(A, A)(collapse)
+        sage: square * square == square
+        True
+        sage: square.left() == Sets().Mor(T, T).identity() and square.right() == collapse
+        True
+    """
 
     _MorCategory = CosliceMorCategoryConstruction
 
@@ -1400,6 +1425,8 @@ class SubobjectCategory(OwnedCategoryBase):
         sage: category = SubobjectCategory(Modules(ZZ), inclusion.codomain())
         sage: submodule in category
         True
+        sage: category.super_categories()[0] is Modules(ZZ)
+        True
         sage: _ = refine(submodule, category)
         sage: submodule in category
         True
@@ -1495,8 +1522,37 @@ class SetSubobjectCategory(SliceCategory):
         Monicity is the admission condition on ``i``; the inclusion into
         the monomorphisms of ``Ar(Set)`` is a functor, not a declaration
         (``CAT-16``, ``CAT-20``).
+
+        A finite ambient set forces each represented subset to be finite;
+        an infinite ambient set does not impose that categorical placement::
+
+            sage: from dzack_research.preamble.all import Sets, NN
+            sage: finite = Sets().Subobjects(Sets.Δ[2])
+            sage: infinite = Sets().Subobjects(NN)
+            sage: Sets().Finite() in finite.super_categories()
+            True
+            sage: Sets().Finite() in infinite.super_categories()
+            False
         """
-        return [SliceCategory(self.base_category(), self.base_object())]
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        categories = [SliceCategory(self.base_category(), self.base_object())]
+        base = self.base_object()
+        if base in FiniteSets() or base.is_finite() is True:
+            categories.append(FiniteSets())
+        return categories
+
+    def object(self, arrow, *, categories=(), construction_data=None, _engine=None):
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        domain = arrow.domain()
+        if domain in FiniteSets() or domain.is_finite() is True:
+            categories = (*categories, FiniteSets())
+        return super().object(
+            arrow, categories=categories, construction_data=construction_data, _engine=_engine
+        )
+
+    __call__ = object
 
     def admits_arrow(self, arrow: Morphism) -> bool:
         return (
@@ -1645,7 +1701,19 @@ class CoveredObjectCategory(CosliceCategory):
 
 
 class FixedWideMorCategory(FixedRestrictedMorCategory):
-    r"""The selected arrows in one existing Mor of the underlying category."""
+    r"""The selected arrows in one existing Mor of the underlying category.
+
+    Its selected underlying fixed Mor has the *same* endpoints; this does
+    not equate the narrower arrow class with all underlying arrows::
+
+        sage: from dzack_research.preamble.all import Sets
+        sage: X = Sets.Δ[1]
+        sage: wide = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+        sage: H = wide.Mor(X, X)
+        sage: K = H.super_categories()[0]
+        sage: K.domain_object() is X and K.codomain_object() is X
+        True
+    """
 
     def arrow_set(self) -> SageHomset:
         return _category_mor_parent(
@@ -1655,6 +1723,34 @@ class FixedWideMorCategory(FixedRestrictedMorCategory):
         )
 
     underlying_mor = arrow_set
+
+    def cardinality(self):
+        r"""Count finite-set injections when this Mor restricts to monomorphisms.
+
+        An injection from an m-element set to an n-element set is a choice
+        of m distinct images in order, numbering n!/(n-m)! for m <= n.
+
+            sage: from dzack_research.preamble.all import Sets
+            sage: X = Sets.Δ[1]
+            sage: wide = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+            sage: wide.Mor(X, X).cardinality()
+            2
+        """
+        from math import factorial
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+
+        wide = self.base_category()
+        source, target = self.domain_object(), self.codomain_object()
+        if (
+            wide.base_category() is Sets()
+            and isinstance(wide.arrow_category(), _MonomorphismArrowCategory)
+            and source in FiniteSets() and target in FiniteSets()
+        ):
+            m, n = int(source.cardinality()), int(target.cardinality())
+            return cardinal(0 if m > n else factorial(n) // factorial(n - m))
+        raise TypeError("the cardinality of this restricted Mor is not determined by a finite injection count")
 
     def super_categories(self) -> list[Category]:
         return [
@@ -1711,6 +1807,10 @@ class _WideSubcategory(OwnedCategoryBase):
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: points = finite_ordered_set(("a", "b"))
         sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+        sage: injections.super_categories()[0] is Sets()
+        True
+        sage: points in injections
+        True
         sage: maps = Sets().Mor(points, points)
         sage: Mor = injections.Mor(points, points)
         sage: Mor is injections.MorCategory().Of(points, points)
@@ -1855,6 +1955,26 @@ class _WideSubcategory(OwnedCategoryBase):
 
 class CoreMor(CategoricalMor):
     Element = CategoricalIsomorphism
+
+    def cardinality(self):
+        r"""The number of bijections between two finite sets.
+
+        For finite sets of cardinality m and n this is m! if m=n,
+        and zero otherwise; no chosen ordering is part of this statement.
+        """
+        from math import factorial
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+
+        source, target = self.domain(), self.codomain()
+        if (
+            self.core_category().base_category() is Sets()
+            and source in FiniteSets() and target in FiniteSets()
+        ):
+            m, n = int(source.cardinality()), int(target.cardinality())
+            return cardinal(factorial(m) if m == n else 0)
+        raise TypeError("the cardinality of this core Mor is not determined by finite-set bijections")
 
     def __init__(
         self,

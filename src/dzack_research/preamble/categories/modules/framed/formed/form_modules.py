@@ -85,6 +85,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
     OwnedRings,
     Zmod,
     _engine_element,
@@ -451,8 +452,9 @@ class FormEmbedding:
             raise ValueError("the clearing factor must generate the denominator ideal and square to the multiplier")
         fraction_map = ring.fraction_field_map()
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        extended = restrict(rational) * source.generic_fibre_map()
-        integral = target.generic_fibre_map()
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesOverIntegralDomains
+        extended = restrict(rational) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
+        integral = ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
         for vector in source.module_generators():
             if integral(self(vector)) != extended.codomain().scalar_multiple(scale, extended(vector)):
                 raise ValueError("the embedding must equal the clearing factor times its retained rational map")
@@ -893,7 +895,17 @@ class FiberedFormedModuleMor(CategoricalMor):
         return self._module_mor
 
     def super_categories(self):
-        r"""The lower arrow theory is the varying-ring semilinear module Mor."""
+        r"""The lower arrow theory is the varying-ring semilinear module Mor.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: C = FiberedFormedModuleMor(L, L.vector_space(), ZZ.fraction_field_map())
+            sage: C.super_categories()[0] is C.module_mor()
+            True
+            sage: C.domain() is L and C.codomain() is L.vector_space()
+            True
+        """
         return [self.module_mor()]
 
     def _element_constructor_(self, datum, *, check=False):
@@ -1475,19 +1487,6 @@ class FormModules(OwnedCategoryOverBaseRing):
             """
             return tensor.raise_index(self, slot)
 
-        def raise_index_over_fraction_field(self, tensor, slot=0):
-            r"""Raise one lower index after the canonical fraction-field extension.
-
-            This is useful when the inverse Gram tensor is not integral.  Both
-            the form and tensor are changed along the same canonical map
-            ``R -> Frac(R)`` before the ordinary index-raising operation is
-            applied.
-            """
-            ring_map = self.base_ring().fraction_field_map()
-            changed_form = self.base_change(ring_map)
-            changed_tensor = tensor.change_ring(changed_form.base_ring())
-            return changed_tensor.raise_index(changed_form, slot)
-
         def lower_index(self, tensor, slot=0):
             r"""Lower one upper tensor index using this formed module."""
             return tensor.lower_index(self, slot)
@@ -1575,6 +1574,38 @@ class FormModules(OwnedCategoryOverBaseRing):
         class ParentMethods:
             def base_change(self, ring_map):
                 return FormBaseChanges(ring_map.codomain())(self, ring_map)
+
+
+class NondegenerateGenericFibreFormModules(OwnedCategoryOverBaseRing):
+    r"""Finite nondegenerate formed modules over an integral domain.
+
+    Their scalar extensions to the fraction field have invertible Gram forms.
+    """
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedIntegralDomains():
+            raise TypeError("generic-fibre formed modules require an integral domain")
+        return [FormModules(self.base_ring()).Nondegenerate().FinitelyGenerated()]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.lattices import Lattices
+        return self(Lattices(self.base_ring())("U"))
+
+    def _call_(self, formed):
+        from dzack_research.preamble.refine import refine
+        if formed not in FormModules(self.base_ring()) or not formed.is_nondegenerate():
+            raise ValueError("generic-fibre index raising needs a nondegenerate form")
+        if formed not in Modules(self.base_ring()).FinitelyGenerated():
+            raise ValueError("generic-fibre index raising needs finite rank")
+        return refine(formed, self)
+
+    class ParentMethods:
+        def raise_index_over_fraction_field(self, tensor, slot=0):
+            r"""Raise a covariant index over the fraction field of the base domain."""
+            ring_map = self.base_ring().fraction_field_map()
+            changed_form = self.base_change(ring_map)
+            changed_tensor = tensor.change_ring(changed_form.base_ring())
+            return changed_tensor.raise_index(changed_form, slot)
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
@@ -1697,6 +1728,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     sage: v.parent() is S and S.inclusion()(v).q() < ZZ(0)
                     True
                     sage: S.vector_of_sign(1) is None
+                    True
+                    sage: T = U.subobject_on((U.basis_vector(0) + U.basis_vector(1), U.basis_vector(0) - U.basis_vector(1)))
+                    sage: p, n = T.positive_vector(), T.negative_vector()
+                    sage: p.parent() is T and n.parent() is T
+                    True
+                    sage: p.q() > 0 and n.q() < 0
+                    True
+                    sage: T.inclusion()(p).q() == p.q() and T.inclusion()(n).q() == n.q()
                     True
                 """
                 if sign not in (-1, 1):
@@ -2829,6 +2868,14 @@ def _scaled_form_module(source, scalar):
 
     ring = source.base_ring()
     categories = [FormValueScalings(ring)]
+    if source in FormModules(ring).Nondegenerate() and (
+        scalar.is_unit() or (ring in OwnedIntegralDomains() and scalar != ring.zero())
+    ):
+        # Multiplication by a unit is injective on every value module;
+        # on an integral domain it is injective on this R-valued form.
+        # Hence both radicals remain zero under the scalar change.
+        if scalar.is_unit() or form.codomain() in OwnedRings():
+            categories.append(FormModules(ring).Nondegenerate())
     data = dict(unscaled_form_module=source, form_scale=scalar)
     if source in Lattices(ring):
         categories.append(Lattices(ring))

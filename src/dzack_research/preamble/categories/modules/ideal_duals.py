@@ -11,7 +11,7 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.affine_fibres import ModuleInverseImages
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.owned_category import _object_of
 
@@ -27,7 +27,7 @@ class IdealMetricDuals(OwnedCategoryOverBaseRing):
         if source.base_ring() is not ring or source.value_module() is not ring:
             raise ValueError("an ideal metric dual requires a scalar-valued bilinear module over its base ring")
         modulus = ring(modulus)
-        inclusion = source.generic_fibre_map()
+        inclusion = ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
         ambient = inclusion.codomain()
         rational = ambient.module_over_extension()
         values = FractionFieldQuotients(ring)(modulus)
@@ -66,7 +66,7 @@ class IdealMetricDuals(OwnedCategoryOverBaseRing):
             if self._ideal_dual_modulus == self.base_ring().zero():
                 kernel = source.algebraic_correlation_morphism().kernel()
             else:
-                kernel = (self.defining_morphism() * source.generic_fibre_map()).kernel()
+                kernel = (self.defining_morphism() * ModulesOverIntegralDomains(self.base_ring())(source).generic_fibre_map()).kernel()
             restricted = source.pullback_form(kernel.inclusion())
 
             def inclusion_factory(formed):
@@ -114,7 +114,7 @@ class IdealDualPullbacks(OwnedCategoryOverBaseRing):
         @cached_method
         def map_to_ideal_dual(self):
             dual = self.defining_ideal_dual()
-            rational_inclusion = dual.source_module().generic_fibre_map()
+            rational_inclusion = ModulesOverIntegralDomains(self.base_ring())(dual.source_module()).generic_fibre_map()
             return Modules(self.base_ring()).Mor(self, dual)(
                 lambda label: dual.inclusion().lift(
                     rational_inclusion(self.inclusion()(self.module_generator(label)))

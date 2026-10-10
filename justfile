@@ -140,6 +140,13 @@ placement *categories:
 category-graph format="table" *args:
     @case "$1" in audit|shape|cells|topology) inspection_python="$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" ;; *) inspection_python=python3 ;; esac; inspection_format="$1"; shift; PYTHONPATH=src "$inspection_python" -m dzack_research.utilities.category_graph --format "$inspection_format" "$@"
 
+# Every category's operations, input category -> output category: traced from source, else read from the returned value's class
+category-constructions *args:
+    mkdir -p .tmp
+    PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
+        -m dzack_research.utilities.category_inference -o .tmp/category-inference.json
+    just category-graph constructions --inferred .tmp/category-inference.json {{args}}
+
 # The declared category graph as a rendered image, for reading the shape of it
 category-graph-svg:
     just category-graph dot > docs/declared-category-graph.dot

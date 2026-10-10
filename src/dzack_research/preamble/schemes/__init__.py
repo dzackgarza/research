@@ -36,6 +36,8 @@ from dzack_research.preamble.categories.schemes.quotients import AffineInvariant
 from dzack_research.preamble.categories.schemes.relative_proj import RelativeProjectivizations
 
 from dzack_research.preamble.categories.schemes.schemes import (
+    SchemesOverIntegralDomains,
+    SchemesOverLocalRings,
     AffineSchemes,
     AffineGSchemes,
     AffineSpaces,
@@ -47,8 +49,10 @@ from dzack_research.preamble.categories.schemes.schemes import (
     IntegralSchemes,
     NormalSchemes,
     OpenImmersions,
+    DistinguishedOpenImmersions,
     ProjectiveSchemes,
     ProjectiveSpaces,
+    ProjectiveLines,
     ProductProjectiveSpaces,
     ProductSchemes,
     Schemes,
@@ -68,11 +72,13 @@ from dzack_research.preamble.categories.schemes.blowups import (
     ProjectivePointBlowups,
 )
 
-from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections
+from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections, SmoothQuarticK3CompleteIntersections
 
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
+    ProjectiveCurves,
     ProjectiveSurfaces,
+    DelPezzoSurfaces,
     ProperSurfaces,
     Surfaces,
     Varieties,
@@ -106,7 +112,7 @@ from dzack_research.preamble.categories.schemes.toric.blowups import ToricFixedP
 
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 
-from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes, SmoothCompleteRationalToricSchemes
 
 from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import FiniteGluedInvariantQuotient
 
@@ -172,14 +178,19 @@ __all__ = [
     'LogPairs',
     'NormalSchemes',
     'OpenImmersions',
+    'DistinguishedOpenImmersions',
     'Blowups',
     'EffectiveCartierDivisors',
     'ProjectivePointBlowups',
     'ProjectiveCompleteIntersections',
+    'SmoothQuarticK3CompleteIntersections',
     'ProjectiveSchemes',
     'ProjectiveSurfaces',
+    'ProjectiveCurves',
+    'DelPezzoSurfaces',
     'ProperSurfaces',
     'ProjectiveSpaces',
+    'ProjectiveLines',
     'ProductProjectiveSpaces',
     'ProductSchemes',
     'QuasiCoherentSheaves',
@@ -191,11 +202,14 @@ __all__ = [
     'zariski_coverage',
     'SchemeMorphism',
     'Schemes',
+    'SchemesOverIntegralDomains',
+    'SchemesOverLocalRings',
     'SmoothSchemes',
     'Surfaces',
     'ToricLogPairs',
     'ToricFixedPointBlowups',
     'ToricSchemes',
+    'SmoothCompleteRationalToricSchemes',
     'ToricGeometricLineBundleCohomologySpaces',
     'GeometricFundamentalGroups',
     'IntegralTopologicalCohomologyGroups',

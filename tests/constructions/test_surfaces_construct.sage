@@ -18,6 +18,6 @@ def test_affine_and_projective_planes_are_surfaces(field) -> None:
     assert projective_plane in ProjectiveSurfaces(field)
     assert pairing(hyperplane, hyperplane) == 1
     assert projective_plane.is_del_pezzo()
-    assert projective_plane.del_pezzo_degree() == 9
+    assert DelPezzoSurfaces(projective_plane.scheme_base_ring())(projective_plane).del_pezzo_degree() == 9
     assert affine_plane.dimension() == 2
     assert projective_plane.dimension() == 2

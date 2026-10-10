@@ -238,6 +238,21 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self._graded_modules)
 
     def super_categories(self):
+        r"""Retain both the algebra structure and the selected graded-module datum.
+
+        EXAMPLES::
+
+            sage: C = GradedAlgebras(ZZ)
+            sage: C.super_categories()[0] is Algebras(ZZ).Associative().Unital()
+            True
+            sage: C.super_categories()[1] is C._graded_modules
+            True
+            sage: A = C.an_object()
+            sage: A in C and A in C._graded_modules
+            True
+            sage: A in C.super_categories()[0]
+            True
+        """
         return [
             Algebras(self.base_ring()).Associative().Unital(),
             self._graded_modules,
@@ -319,6 +334,84 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             return _graded_derivations(self, target=target, shift=shift)
 
+        def _Hom_(self, codomain, category=None):
+            # Object-level Mor defaults to the underlying algebra category.
+            # Degree-preserving maps are selected explicitly through
+            # ``GradedAlgebras(...).Mor``.
+            return super()._Hom_(codomain, category=category)
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
+        if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
+            raise ValueError(
+                f"morphisms in {self} need both algebras over {self.base_ring()}, but they are over "
+                f"{domain.base_ring()} and {codomain.base_ring()}"
+            )
+        if _require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
+            raise ValueError(
+                f"{domain} is graded by {domain.grading_monoid()}, not by {self.grading_monoid()}"
+            )
+        if _require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
+            raise ValueError(
+                f"{codomain} is graded by {codomain.grading_monoid()}, not by {self.grading_monoid()}"
+            )
+        return self.MorCategory().Of(domain, codomain)
+
+    _MorCategory = GradedAlgebraMorCategoryConstruction
+
+    def _call_(self, multiplication):
+        r"""The graded algebra on the graded module ``M`` with multiplication ``m``.
+
+        The unit is recovered from ``m``, and associativity and the unit
+        equations are decided on module generators of ``M``.  That ``m``
+        sends ``M_p (x) M_q`` into ``M_{pq}`` is the hypothesis this entry
+        takes with ``m``: the module layer represents no homogeneous degree on
+        which to decide it.
+        """
+        module = multiplication.codomain()
+        assert module in GradedModules(self.base_ring(), self.grading_monoid()), (
+            f"{module} is not a module graded by {self.grading_monoid()}"
+        )
+        unit = _unit_from_multiplication(multiplication)
+        associativity = _decide_on_module_generators(
+            module, _associativity(multiplication), 3,
+            AtomicProposition("is_associative", multiplication),
+        )
+        unit_laws = _decide_on_module_generators(
+            module, _two_sided_unit(multiplication, unit), 1,
+            AtomicProposition("is_two_sided_unit", multiplication, unit),
+        )
+        _assert_not_refuted(associativity, "associativity", module)
+        _assert_not_refuted(unit_laws, "the two unit equations", module)
+        return _algebra_on_module(
+            module,
+            multiplication,
+            placement=(self,),
+            unit=unit,
+            law_decisions={
+                "associativity": associativity,
+                "unit": unit_laws,
+                "grading": AtomicProposition("respects_grading", multiplication),
+            },
+        )
+
+
+class CommutativeGradedIntegralDomains(GradedAlgebras):
+    r"""Commutative graded integral domains with homogeneous fraction charts."""
+
+    def super_categories(self):
+        return [GradedAlgebras(self.base_ring(), self.grading_monoid(), self.parity_homomorphism()), OwnedIntegralDomains()]
+
+    def _call_(self, algebra):
+        from dzack_research.preamble.refine import refine
+        if algebra not in GradedAlgebras(self.base_ring(), self.grading_monoid(), self.parity_homomorphism()) or algebra not in OwnedIntegralDomains():
+            raise TypeError("degree-zero charts require a commutative graded integral domain")
+        return refine(algebra, self)
+
+    class ParentMethods:
         @cached_method
         def degree_zero_chart(self, localization):
             r"""Return ``(S_f)_0``, the degree-zero part of a graded localization.
@@ -386,69 +479,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                 lambda element: target_chart(restriction(source_localization(element))),
             )
 
-        def _Hom_(self, codomain, category=None):
-            # Object-level Mor defaults to the underlying algebra category.
-            # Degree-preserving maps are selected explicitly through
-            # ``GradedAlgebras(...).Mor``.
-            return super()._Hom_(codomain, category=category)
-
-    def Mor(self, domain, codomain):
-        if domain not in self or codomain not in self:
-            raise TypeError(
-                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
-            )
-        if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
-            raise ValueError(
-                f"morphisms in {self} need both algebras over {self.base_ring()}, but they are over "
-                f"{domain.base_ring()} and {codomain.base_ring()}"
-            )
-        if _require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
-            raise ValueError(
-                f"{domain} is graded by {domain.grading_monoid()}, not by {self.grading_monoid()}"
-            )
-        if _require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
-            raise ValueError(
-                f"{codomain} is graded by {codomain.grading_monoid()}, not by {self.grading_monoid()}"
-            )
-        return self.MorCategory().Of(domain, codomain)
-
-    _MorCategory = GradedAlgebraMorCategoryConstruction
-
-    def _call_(self, multiplication):
-        r"""The graded algebra on the graded module ``M`` with multiplication ``m``.
-
-        The unit is recovered from ``m``, and associativity and the unit
-        equations are decided on module generators of ``M``.  That ``m``
-        sends ``M_p (x) M_q`` into ``M_{pq}`` is the hypothesis this entry
-        takes with ``m``: the module layer represents no homogeneous degree on
-        which to decide it.
-        """
-        module = multiplication.codomain()
-        assert module in GradedModules(self.base_ring(), self.grading_monoid()), (
-            f"{module} is not a module graded by {self.grading_monoid()}"
-        )
-        unit = _unit_from_multiplication(multiplication)
-        associativity = _decide_on_module_generators(
-            module, _associativity(multiplication), 3,
-            AtomicProposition("is_associative", multiplication),
-        )
-        unit_laws = _decide_on_module_generators(
-            module, _two_sided_unit(multiplication, unit), 1,
-            AtomicProposition("is_two_sided_unit", multiplication, unit),
-        )
-        _assert_not_refuted(associativity, "associativity", module)
-        _assert_not_refuted(unit_laws, "the two unit equations", module)
-        return _algebra_on_module(
-            module,
-            multiplication,
-            placement=(self,),
-            unit=unit,
-            law_decisions={
-                "associativity": associativity,
-                "unit": unit_laws,
-                "grading": AtomicProposition("respects_grading", multiplication),
-            },
-        )
 
 
 __all__ = [
@@ -456,4 +486,5 @@ __all__ = [
     "GradedAlgebraMor",
     "GradedAlgebraMorphism",
     "GradedAlgebras",
+    "CommutativeGradedIntegralDomains",
 ]

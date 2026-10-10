@@ -30,6 +30,11 @@ class Varieties(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the affine line over {self.base_ring()} is a variety only when the base is an integral domain"
+        )
         return AffineSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
@@ -58,6 +63,11 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective line, of relative dimension one."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the projective line over {self.base_ring()} is a curve only when the base is integral"
+        )
         return ProjectiveSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
@@ -146,7 +156,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
                     f"{base} is {engine.dimension_relative()}, not 1"
                 )
                 return _projective_closed_subscheme(
-                    ambient, equations, placements=(self, *placements),
+                    ambient, equations, placements=(self, ProjectiveCurves(base), *placements),
                     _engine=engine, **level_data,
                 )
 
@@ -157,27 +167,6 @@ class Curves(_DimensionSubcategoryOfVarieties):
             self._normalization_coordinates = normalization_coordinates
             self._local_delta_contributions = local_delta_contributions
             super().__init__(**rest)
-
-        def arithmetic_genus(self):
-            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
-
-            For a projective curve the Hilbert polynomial is the defining
-            projective invariant whose constant term gives ``1-p_a``.  The
-            computation therefore belongs to the projective presentation and
-            remains distinct from normalization/geometric-genus algorithms.
-            """
-            base = self.scheme_base_ring()
-            assert self in Schemes(base).Projective(), (
-                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
-                f"projective curves, but {self} is not known to be projective over {base}"
-            )
-            integers = _own_ring(SageZZ)
-            if self in ProjectiveSpaces(base):
-                return integers.zero()
-            defining_ideal = self.defining_ideal_owned()
-            return integers.one() - integers(
-                defining_ideal.hilbert_polynomial_value(0)
-            )
 
         @cached_method
         def normalization_data(self):
@@ -193,6 +182,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
         @cached_method
         def normalization_morphism(self):
             r"""Corestrict the chosen normalization coordinates to this curve."""
+            assert self._normalization_coordinates is not None, (
+                f"no normalization coordinate formula was given when {self} was constructed"
+            )
             return self.corestriction(
                 self.normalization_curve().projective_morphism_from_coordinates(
                     self.inclusion().codomain(), tuple(self._normalization_coordinates),
@@ -222,14 +214,24 @@ class Curves(_DimensionSubcategoryOfVarieties):
         def is_geometrically_integral(self) -> bool:
             r"""The selected normalization by ``P^1`` certifies geometric integrality in this representation."""
             normalization = self.normalization_curve()
-            return (
+            assert (
                 normalization in ProjectiveSpaces(self.scheme_base_ring())
                 and int(normalization.relative_dimension()) == 1
+            ), (
+                f"geometric integrality of {self} is not decided by the selected "
+                f"normalization {normalization}: only a projective-line normalization "
+                "has a represented certificate here"
             )
+            return True
 
         def normalization_is_connected(self) -> bool:
-            r"""The selected normalization ``P^1`` is connected."""
-            return self.is_geometrically_integral()
+            r"""A chosen integral normalization is connected, whether or not it is ``P^1``."""
+            normalization = self.normalization_curve()
+            assert normalization in Curves(self.scheme_base_ring()), (
+                f"connectedness of the normalization of {self} requires a selected integral curve, "
+                f"but the chosen normalization {normalization} is not placed in Curves"
+            )
+            return True
 
         @cached_method
         def genus_comparison(self):
@@ -239,6 +241,10 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
         def geometric_genus(self):
             r"""The genus of the normalization, or the arithmetic genus when smooth."""
+            assert self.scheme_base_ring() in OwnedFields(), (
+                f"the geometric genus of {self} by normalization requires a field base, "
+                f"not {self.scheme_base_ring()}"
+            )
             assert self in Schemes(self.scheme_base_ring()).Projective(), (
                 f"the geometric genus is computed only for projective curves, but {self} is not "
                 f"known to be projective over {self.scheme_base_ring()}"
@@ -249,9 +255,10 @@ class Curves(_DimensionSubcategoryOfVarieties):
                         f"the geometric genus of {self} needs its normalization: {self} is not "
                         "known to be smooth and no normalization was given"
                     )
-                    return self.arithmetic_genus()
+                    return ProjectiveCurves(self.scheme_base_ring())(self).arithmetic_genus()
                 case _:
-                    return self.normalization_curve().arithmetic_genus()
+                    normalized = self.normalization_curve()
+                    return ProjectiveCurves(self.scheme_base_ring())(normalized).arithmetic_genus()
 
         def genus(self):
             r"""Return geometric genus, never arithmetic genus by convention."""
@@ -265,6 +272,11 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective plane, of relative dimension two."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the projective plane over {self.base_ring()} is a surface only when the base is integral"
+        )
         return ProjectiveSpaces(self.base_ring())(2)
 
     def _repr_object_names(self):
@@ -313,6 +325,49 @@ class ProperSurfaces(OwnedCategoryOverBaseRing):
             )
 
 
+class ProjectiveCurves(OwnedCategoryOverBaseRing):
+    r"""Integral projective curves over a field."""
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedFields():
+            raise TypeError("projective arithmetic genus requires a field base")
+        return [Curves(self.base_ring()), Schemes(self.base_ring()).Projective()]
+
+    def an_object(self):
+        return self(ProjectiveSpaces(self.base_ring())(1))
+
+    def _call_(self, curve):
+        from dzack_research.preamble.refine import refine
+        if curve not in Curves(self.base_ring()) or curve not in Schemes(self.base_ring()).Projective():
+            raise TypeError("this is not a projective curve over the selected field")
+        return refine(curve, self)
+    class ParentMethods:
+        def arithmetic_genus(self):
+            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
+
+            For a projective curve the Hilbert polynomial is the defining
+            projective invariant whose constant term gives ``1-p_a``.  The
+            computation therefore belongs to the projective presentation and
+            remains distinct from normalization/geometric-genus algorithms.
+            """
+            base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
+            )
+            assert self in Schemes(base).Projective(), (
+                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
+                f"projective curves, but {self} is not known to be projective over {base}"
+            )
+            integers = _own_ring(SageZZ)
+            if self in ProjectiveSpaces(base):
+                return integers.zero()
+            defining_ideal = self.defining_ideal_owned()
+            return integers.one() - integers(
+                defining_ideal.hilbert_polynomial_value(0)
+            )
+
+
+
 class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
     r"""Projective integral surfaces over the stated base.
 
@@ -353,13 +408,6 @@ class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
                 "line bundle is not decided by a represented algorithm here"
             )
 
-        def del_pezzo_degree(self):
-            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
-            assert self.is_del_pezzo(), (
-                f"the Del Pezzo degree (-K)^2 is requested for {self}, but it is not a Del Pezzo surface"
-            )
-            return self._del_pezzo_degree()
-
         def _del_pezzo_degree(self):
             raise AssertionError(
                 f"the Del Pezzo degree of {self} is (-K)^2, but no represented self-intersection "
@@ -367,4 +415,28 @@ class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
             )
 
 
-__all__ = ["Curves", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]
+class DelPezzoSurfaces(OwnedCategoryOverBaseRing):
+    r"""Normal Gorenstein projective surfaces with ample anticanonical class."""
+
+    def parameter_category(self):
+        return OwnedFields()
+
+    def super_categories(self):
+        return [ProjectiveSurfaces(self.base_ring())]
+
+    def an_object(self):
+        return self(ProjectiveSurfaces(self.base_ring()).an_object())
+
+    def _call_(self, surface):
+        from dzack_research.preamble.refine import refine
+        if surface not in ProjectiveSurfaces(self.base_ring()) or not surface.is_del_pezzo():
+            raise ValueError("Del Pezzo surfaces require normal Gorenstein projective surfaces with ample anticanonical class")
+        return refine(surface, self)
+
+    class ParentMethods:
+        def del_pezzo_degree(self):
+            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
+            return self._del_pezzo_degree()
+
+
+__all__ = ["Curves", "ProjectiveCurves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]

@@ -12,7 +12,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
@@ -37,7 +37,7 @@ def _rational_splitting(reduction, plane):
     rational_reduction = reduction.vector_space()
     e, f = witt.isotropic_vector(), witt.dual_isotropic_vector()
     integral_ambient = reduction.isotropic_embedding().codomain()
-    rationalize = integral_ambient.generic_fibre_map()
+    rationalize = ModulesOverIntegralDomains(integral_ambient.base_ring())(integral_ambient).generic_fibre_map()
     perpendicular = reduction.orthogonal_complement().inclusion()
 
     def section_image(label):
@@ -51,7 +51,26 @@ def _rational_splitting(reduction, plane):
 
 
 class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
-    r"""Rational isometry lifts preserving the marked generators of isotropic lines."""
+    r"""Rational isometry lifts preserving the marked generators of isotropic lines.
+
+    The reduction of a hyperbolic plane along a primitive null line has rank
+    zero; its marked-line lift torsor therefore has a rank-zero parameter
+    space, and its selected point already descends to the integral lattice.
+
+    EXAMPLES::
+
+        sage: U = Lattices(ZZ)("U")
+        sage: R = U.basis_vector(0).isotropic_reduction()
+        sage: lifts = R.rational_lifts(R, R.Isom(R).identity())
+        sage: lifts.parameter_space().module_rank() == 0
+        True
+        sage: lifts.integral_base_point().integral_restriction(U, U) is not None
+        True
+        sage: integral = lifts.integral_torsor()
+        sage: origin = integral.base_point()
+        sage: integral.difference(origin, origin) == integral.acting_group().one()
+        True
+    """
 
     def super_categories(self):
         return [Sets()]
@@ -209,7 +228,7 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             source_vector = self.base_point().inverse()(witt.dual_isotropic_vector())
             denominator = _vector_denominator(source_vector, source)
             projection = self.target_splitting().codomain().projection(1) * self.target_splitting()
-            rationalize = target.generic_fibre_map()
+            rationalize = ModulesOverIntegralDomains(target.base_ring())(target).generic_fibre_map()
             parameter_lattice = restricted_parameters.subobject_on(tuple(
                 restricted_parameters(parameters.scalar_multiple(
                     field.one() / field_map(denominator),
@@ -255,7 +274,26 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
 
         @cached_method
         def integral_torsor(self):
-            r"""Trivialize the integral lift locus under its full integral kernel."""
+            r"""Trivialize the integral lift locus under its full integral kernel.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)([[2]])
+                sage: R = L.basis_vector(0).isotropic_reduction()
+                sage: T = R.rational_lifts(R, R.Isom(R).identity())
+                sage: a = T.parameter_space().module_generators()[0]
+                sage: lift = T.parameterization()(a)
+                sage: torsor = T.integral_torsor()
+                sage: coordinate = torsor.trivialization().inverse()(lift)
+                sage: coordinate != torsor.acting_group().one()
+                True
+                sage: torsor.trivialization()(coordinate) == lift
+                True
+                sage: torsor.base_point() == T.integral_base_point()
+                True
+                sage: torsor.difference(lift, torsor.base_point()) == coordinate
+                True
+            """
             from dzack_research.preamble.categories.group.g_sets import Torsors
 
             members = self.integral_members()
@@ -265,4 +303,4 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             forward = Sets().Mor(group, points)(lambda g: points(g * chosen))
             backward = Sets().Mor(points, group)(lambda lift: group(lift * chosen.inverse()))
             trivialization = Sets().Core().Mor(group, points)._from_known_inverse_pair(forward, backward)
-            return Torsors(group).from_trivialization(trivialization)
+            return Torsors(group).from_trivialization(trivialization, base_point=points(chosen))

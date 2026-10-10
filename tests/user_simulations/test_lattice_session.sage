@@ -141,7 +141,7 @@ def test_a_lattice_session(name) -> None:
     assert lattice.is_locally_isometric(lattice, 2)
     assert lattice.level() >= 1
     if even and lattice.is_p_elementary(2):
-        invariants = lattice.two_elementary_invariants()
+        invariants = EvenTwoElementaryLattices(ZZ)(lattice).two_elementary_invariants()
         rendered(invariants)
 
     # Over the rationals and the reals it is a quadratic space.

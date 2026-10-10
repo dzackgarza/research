@@ -25,6 +25,9 @@ def test_subsets_are_characteristic_maps() -> None:
 def test_the_categories_of_the_power_set() -> None:
     assert power() in Sets()
     assert power() in FiniteSets()
+    unrefined = Sets().condition_set(three(), lambda point: True)
+    assert unrefined.is_finite() is True
+    assert unrefined.power_set() in FiniteSets()
 
 
 def test_the_power_set_has_two_to_the_three_elements() -> None:
@@ -53,6 +56,17 @@ def test_the_subsets_of_a_given_size() -> None:
     assert points.subsets_of_size(3).cardinality() == 1
 
 
+def test_subset_cardinality_must_be_a_natural_number() -> None:
+    points = three()
+    for invalid in (-1, 1.5):
+        try:
+            points.subsets_of_size(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"accepted invalid subset cardinality {invalid!r}")
+
+
 def test_the_power_set_has_one_endomorphism_category() -> None:
     subsets = power()
     endomorphisms = subsets.Mor(subsets)
@@ -60,3 +74,15 @@ def test_the_power_set_has_one_endomorphism_category() -> None:
     assert endomorphisms in Cat()
     assert subsets.Mor(subsets) is endomorphisms
     assert identity * identity == identity
+
+
+def test_empty_codomain_exponential_needs_known_nonempty_domain() -> None:
+    empty = Sets.Δ[-1]
+    assert empty.exponential(empty).cardinality() == 1
+    assert empty.exponential(Sets.Δ[0]).cardinality() == 0
+    unknown = Sets().condition_set(NN, lambda point: True)
+    assert unknown not in Sets().Finite()
+    assert unknown not in Sets().Infinite()
+    from dzack_research.preamble.categories.sets.set_categories import _cardinalities
+
+    assert _cardinalities().set_power_category(empty, unknown) is Sets()

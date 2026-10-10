@@ -1236,11 +1236,16 @@ class LocalizationRings(OwnedCategory):
             # by sending the original variables through ``P -> P/I`` and each
             # auxiliary variable to the represented inverse of its selected
             # denominator.  This is exactly the universal localization map.
-            if isinstance(engine, QuotientRing_generic) and isinstance(
-                source_engine, QuotientRing_generic
+            if isinstance(engine, QuotientRing_generic) and (
+                isinstance(source_engine, QuotientRing_generic)
+                or self._localization_engine_source_encoder is not None
             ):
                 engine_cover = engine.cover_ring()
-                source_cover = source_engine.cover_ring()
+                source_cover = (
+                    source_engine.cover_ring()
+                    if isinstance(source_engine, QuotientRing_generic)
+                    else source_engine
+                )
                 source_names = tuple(source_cover.variable_names())
                 inverted = tuple(self.inverted_elements())
                 engine_names = tuple(engine_cover.variable_names())
@@ -1721,7 +1726,11 @@ class _PredicateSubringParent(Parent):
         self._preamble_is_commutative = category.is_subcategory(commutative_rings) or ambient_ring in commutative_rings
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
-        base = self if self._preamble_is_commutative else _own_ring(SageZZ)
+        # The predicate subring is not yet a Parent with a category.  Its
+        # algebra/category placement cannot take this partially initialized
+        # object as the scalar ring: doing so recursively constructs
+        # Algebras(self) before self has a subcategory_class.
+        base = _own_ring(SageZZ)
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         algebra = Algebras(base).Associative().Unital()
@@ -1732,10 +1741,7 @@ class _PredicateSubringParent(Parent):
                     FinitelyGeneratedFreeModules,
                 )
 
-                placements.extend((
-                    algebra.Commutative(),
-                    FinitelyGeneratedFreeModules(self),
-                ))
+                placements.append(algebra.Commutative())
             case False:
                 placements.append(algebra)
         Parent.__init__(self, base=base, category=owned_category_join(tuple(placements)))
@@ -2365,12 +2371,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def spectrum(self):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     PrimeSpectra,
+                    IntegralPrimeSpectra,
                     _PrimeSpectrumTopologyData,
                 )
-                from dzack_research.preamble.owned_category import _object_of
+                from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
                 return _object_of(
-                    PrimeSpectra(),
+                    owned_category_join((PrimeSpectra(), IntegralPrimeSpectra()))
+                    if self in OwnedIntegralDomains() else PrimeSpectra(),
                     ring=self,
                     topology_data=_PrimeSpectrumTopologyData(self),
                 )
@@ -3954,6 +3962,25 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
+        r"""Construct a ring element, including the image of a finite cardinal.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.all import ZZ, finite_ordered_set
+            sage: ZZ(finite_ordered_set((4, 3)).cardinality()) == ZZ(2)
+            True
+        """
+        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+        # A cardinal is an owned parent, not an element with a scalar parent.
+        # Its finite value is the natural number mapped into this ring.
+        match value:
+            case Parent() if value in Cardinalities():
+                if not value.is_finite():
+                    raise TypeError(f"cannot convert infinite cardinal {value} into {self}")
+                return self._from_engine_element(self._engine(value.finite_value()))
+            case _:
+                pass
         parent = element_parent(value)
         if parent is self:
             return value

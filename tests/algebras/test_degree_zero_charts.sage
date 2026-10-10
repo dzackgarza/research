@@ -24,7 +24,7 @@ def _projective_plane_coordinates():
 def test_the_chart_holds_exactly_the_degree_zero_fractions() -> None:
     ring, x, y, z = _projective_plane_coordinates()
     away_from_x = ring.localization(x)
-    chart = ring.degree_zero_chart(away_from_x)
+    chart = CommutativeGradedIntegralDomains(QQ)(ring).degree_zero_chart(away_from_x)
 
     assert away_from_x.fraction(y, x) in chart
     assert away_from_x.fraction(y * z, x * x) in chart
@@ -35,7 +35,7 @@ def test_the_chart_holds_exactly_the_degree_zero_fractions() -> None:
 def test_an_inhomogeneous_numerator_is_not_a_chart_function() -> None:
     ring, x, y, z = _projective_plane_coordinates()
     away_from_x = ring.localization(x)
-    chart = ring.degree_zero_chart(away_from_x)
+    chart = CommutativeGradedIntegralDomains(QQ)(ring).degree_zero_chart(away_from_x)
 
     assert away_from_x.fraction(x + y * z, x) not in chart
 
@@ -45,9 +45,10 @@ def test_the_overlap_map_carries_a_chart_function_to_the_same_fraction() -> None
     away_from_x = ring.localization(x)
     overlap = ring.localization(x, y)
 
-    restriction = ring.degree_zero_chart_restriction(away_from_x, overlap)
+    specialized = CommutativeGradedIntegralDomains(QQ)(ring)
+    restriction = specialized.degree_zero_chart_restriction(away_from_x, overlap)
 
-    assert restriction.domain() is ring.degree_zero_chart(away_from_x)
-    assert restriction.codomain() is ring.degree_zero_chart(overlap)
+    assert restriction.domain() is specialized.degree_zero_chart(away_from_x)
+    assert restriction.codomain() is specialized.degree_zero_chart(overlap)
     assert restriction(away_from_x.fraction(y, x)) == overlap.fraction(y, x)
-    assert overlap.fraction(x, y) in ring.degree_zero_chart(overlap)
+    assert overlap.fraction(x, y) in specialized.degree_zero_chart(overlap)

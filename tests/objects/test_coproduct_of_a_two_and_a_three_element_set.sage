@@ -19,6 +19,21 @@ def test_the_categories_of_the_coproduct() -> None:
     assert coproduct() in FiniteSets()
 
 
+def test_proved_finite_factors_give_finite_products_and_coproducts() -> None:
+    r"""A finite family of finite sets has finite limit and colimit."""
+    subset = Sets().condition_set(Sets.Δ[2], lambda point: True)
+    assert subset.is_finite() is True
+    factors = (subset, Sets.Δ[1])
+    assert Sets().product(factors) in FiniteSets()
+    assert Sets().coproduct(factors) in FiniteSets()
+
+
+def test_zero_factor_annihilates_a_product_with_an_infinite_factor() -> None:
+    product = Sets().product((Sets.Δ[-1], NN))
+    assert product in FiniteSets()
+    assert product.cardinality() == 0
+
+
 def test_the_coproduct_is_the_disjoint_union() -> None:
     assert coproduct().cardinality() == 5
 

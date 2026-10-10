@@ -379,7 +379,9 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
         return _direct_sum_of_modules(
             self.base_ring(), self.grading_index_set(), pieces,
-            extra_categories=placements, construction_data=construction_data,
+            extra_categories=((*placements, IntegerGradedModules(self.base_ring()))
+                              if self.grading_index_set() is _own_ring(SageZZ) else placements),
+            construction_data=construction_data,
         )
 
     def grading_index_set(self) -> SetObject:
@@ -527,26 +529,6 @@ class GradedModules(OwnedCategoryOverBaseRing):
             return self.grading_monoid()(degree)
 
     class ElementMethods:
-        def degree(self):
-            r"""Return the largest degree occurring in the selected finite support.
-
-            The zero element has degree ``-Infinity``.
-            """
-            parent = self.parent()
-            if parent.grading_monoid() is not _own_ring(SageZZ):
-                raise TypeError(
-                    f"cannot give the top degree of {self}: its parent {parent} is graded by "
-                    f"{parent.grading_monoid()}, and top degree is computed only for gradings by the integers"
-                )
-            coordinates = parent.framing_morphism().lift(self)
-            return max(
-                (
-                    parent.degree_on_module_generator(parent.module_generator(label))
-                    for label in coordinates.support().domain()
-                ),
-                default=-_Infinity,
-            )
-
         def is_homogeneous(self) -> bool:
             r"""Whether all nonzero framing terms lie in one degree."""
             parent = self.parent()
@@ -585,3 +567,32 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 if parent.degree_on_module_generator(generator) < degree:
                     result += parent.scalar_multiple(coordinates(label), generator)
             return result
+class IntegerGradedModules(OwnedCategoryOverBaseRing):
+    r"""Modules graded by the totally ordered additive group of integers."""
+
+    def super_categories(self):
+        return [GradedModules(self.base_ring(), _own_ring(SageZZ))]
+
+    def an_object(self):
+        return self(GradedModules(self.base_ring()).an_object())
+
+    def _call_(self, module):
+        from dzack_research.preamble.refine import refine
+
+        if module not in GradedModules(self.base_ring(), _own_ring(SageZZ)):
+            raise TypeError("maximum degree requires an integer-graded module")
+        return refine(module, self)
+
+    class ElementMethods:
+        def degree(self):
+            r"""Maximum of the integer degrees of the finite homogeneous support.
+
+            The zero element has degree negative infinity.
+            """
+            parent = self.parent()
+            coordinates = parent.framing_morphism().lift(self)
+            return max(
+                (parent.degree_on_module_generator(parent.module_generator(label))
+                 for label in coordinates.support().domain()),
+                default=-_Infinity,
+            )

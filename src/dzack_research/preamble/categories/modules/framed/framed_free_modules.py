@@ -73,6 +73,7 @@ def _finitely_generated_free_placement(ring, module_generating_set):
             categories.append(FramedFreeModules(ring).FinitelyGenerated())
         case False:
             pass
+    categories.append(Cardinalities().finite_support_power_category(ring, module_generating_set))
     return categories
 
 
@@ -334,18 +335,34 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical basis map."""
 
     def an_object(self):
-        r"""The hyperbolic plane U, framed by its standard basis."""
-        from dzack_research.preamble.categories.lattices import Lattices
+        r"""The framed free module of rank one over the base ring.
 
-        return Lattices(self.base_ring())("U")
+        A framed module requires no bilinear form; in particular this
+        constructor must not attempt to equip an arbitrary noncommutative
+        coefficient ring with the hyperbolic lattice form ``U``.
+        """
+        return self.base_ring().free_module(1)
 
     @classmethod
     def _repr_object_names(cls):
         return "framed free modules"
 
     def super_categories(self):
+        r"""The chosen free basis refines free modules over the same ring.
 
-        return [Modules(self.base_ring()).Free()]
+            sage: from dzack_research.preamble.all import ZZ, Modules
+            sage: F = FramedFreeModules(ZZ).an_object()
+            sage: F in Modules(ZZ).Free() and F in FramedFreeModules(ZZ)
+            True
+            sage: F.module_rank() == 1 and F.framing_morphism().codomain() is F
+            True
+        """
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+
+        # The Free axiom belongs to Modules; use that base rather than the
+        # group-algebra specialization when constructing the axiom category.
+        ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        return [ordinary.Free()]
 
     class ElementMethods:
         if TYPE_CHECKING:
@@ -528,6 +545,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
             target_ring = _base_change_codomain(self, ring_map)
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
             return target_ring._fresh_free_module_on(
                 self.module_generating_set(),
                 _extra_construction_data=_extra_construction_data,
@@ -564,6 +583,28 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
+            def determinant_line(self):
+                r"""The top exterior power of this finite free module."""
+                from dzack_research.preamble.categories.modules.hodge import _determinant_line
+                return _determinant_line(self)
+
+            def exterior_forms(self, degree):
+                r"""Exterior forms in the selected finite free framing."""
+                from dzack_research.preamble.categories.modules.hodge import _exterior_forms
+                return _exterior_forms(self, degree)
+
+            def volume_trivialization(self, forward, inverse):
+                from dzack_research.preamble.categories.modules.hodge import _volume_trivialization
+                return _volume_trivialization(self, forward, inverse)
+
+            def framing_volume_trivialization(self, unit=None):
+                from dzack_research.preamble.categories.modules.hodge import _framing_volume_trivialization
+                return _framing_volume_trivialization(self, unit=unit)
+
+            def poincare_duality(self, volume, degree):
+                from dzack_research.preamble.categories.modules.hodge import _poincare_duality
+                return _poincare_duality(self, volume, degree)
+
             def _represented_vector_space_dimension(self):
                 return self.module_rank()
 

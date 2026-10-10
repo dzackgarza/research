@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     ModuleMorphismMethods,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules, _engine_matrix
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
@@ -593,11 +593,11 @@ class LatticeIsometryMethods:
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
 
-    def extension_across(self, source_vector, target_vector):
+    def extension_across(self, source_vector, target_vector, *, source_inclusion=None, target_inclusion=None):
         r"""Extend this perpendicular isometry over the common fraction field.
 
-        The endpoints must be represented codimension-one subobjects of the
-        vectors' ambient lattices. The vectors must have the same nonzero
+        The endpoints must admit specified codimension-one embeddings into
+        the vectors' ambient lattices. The vectors must have the same nonzero
         square. Their lines and perpendicular spaces then give orthogonal
         direct sums, so the extension is unique. No signature hypothesis is
         needed. The result retains the scalar-extended ambient endpoints.
@@ -617,6 +617,32 @@ class LatticeIsometryMethods:
             True
             sage: L.integral_isometry(g)(L.basis_vector(1)) == -L.basis_vector(1)
             True
+            sage: a.extension_across(v, v, source_inclusion=P.inclusion(), target_inclusion=P.inclusion()).is_integral_on(L)
+            True
+            sage: w = L.basis_vector(1)
+            sage: Q = L.subobject_on((w,)).orthogonal_complement()
+            sage: P is not Q
+            True
+            sage: between = P.Isom(Q)(lambda s: Q.module_generator(s))
+            sage: between.extension_across(v, w, source_inclusion=P.inclusion(), target_inclusion=Q.inclusion()).is_integral_on(L)
+            True
+            sage: between.extension_across(v, w, source_inclusion=Q.inclusion(), target_inclusion=P.inclusion())
+            Traceback (most recent call last):
+            ...
+            ValueError: the perpendicular embedding must start at the corresponding isometry endpoint
+            sage: neg = P.Isom(P)(lambda s: -P.module_generator(s))
+            sage: j = P.inclusion()
+            sage: twisted = j * neg
+            sage: twisted != j
+            True
+            sage: g = P.Isom(P).identity().extension_across(v, v, source_inclusion=twisted, target_inclusion=j)
+            sage: h = L.integral_isometry(g)
+            sage: all(h(twisted(x)) == j(x) for x in P.module_generators())
+            True
+            sage: a.extension_across(L.zero(), L.zero())
+            Traceback (most recent call last):
+            ...
+            ValueError: orthogonal extension requires equal nonzero vector squares
         """
         source = source_vector.parent()
         target = target_vector.parent()
@@ -625,14 +651,18 @@ class LatticeIsometryMethods:
             raise ValueError("orthogonal extension requires a common base ring")
         if not source_vector.q() or source_vector.q() != target_vector.q():
             raise ValueError("orthogonal extension requires equal nonzero vector squares")
-        source_inclusion = self.domain().inclusion()
-        target_inclusion = self.codomain().inclusion()
-        for inclusion, ambient, vector in (
-            (source_inclusion, source, source_vector),
-            (target_inclusion, target, target_vector),
+        if source_inclusion is None:
+            source_inclusion = self.domain().inclusion()
+        if target_inclusion is None:
+            target_inclusion = self.codomain().inclusion()
+        for inclusion, endpoint, ambient, vector in (
+            (source_inclusion, self.domain(), source, source_vector),
+            (target_inclusion, self.codomain(), target, target_vector),
         ):
             if inclusion.codomain() is not ambient:
                 raise ValueError("the perpendicular inclusion has the wrong ambient lattice")
+            if inclusion.domain() is not endpoint:
+                raise ValueError("the perpendicular embedding must start at the corresponding isometry endpoint")
             if inclusion.domain().module_rank() + 1 != ambient.module_rank():
                 raise ValueError("the perpendicular subobject must have codimension one")
             if any(ambient.b(vector, inclusion(x)) for x in inclusion.domain().module_generators()):
@@ -683,6 +713,18 @@ class LatticeIsometryMethods:
         For an endomorphism, ``target`` defaults to ``source``. Otherwise
         the target integral structure must be supplied: a rational vector
         space alone does not specify an integral lattice.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: V = L.vector_space()
+            sage: labels = tuple(V.module_generating_set())
+            sage: e, f = V.module_generator(labels[0]), V.module_generator(labels[1])
+            sage: phi = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == labels[0] else V.scalar_multiple(QQ(1)/QQ(2), f))
+            sage: phi.is_integral_on(L)
+            False
+            sage: phi.integral_restriction(L, L) is None
+            True
         """
         if target is None:
             target = source
@@ -693,8 +735,8 @@ class LatticeIsometryMethods:
         if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
             raise ValueError("integrality requires the source and target integral structures of this rational map")
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        return (restrict(self) * source.generic_fibre_map()).factor_through_or_none(
-            target.generic_fibre_map()
+        return (restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()).factor_through_or_none(
+            ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
         ) is not None
 
     @cached_method
@@ -724,6 +766,31 @@ class LatticeIsometryMethods:
         isotropic norm correction is the one in sage-indefinite-port at
         709f81a, ``CodimensionOneIsotropicExtension.rational_extension``.
         The extension locus retains the square with the two given inclusions.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U") + Lattices(ZZ)([[2]])
+            sage: V = L.base_change(ZZ.fraction_field_map())
+            sage: e, f, a = tuple(V.module_generators())
+            sage: H = V.subobject_on((e, a))
+            sage: i = H.inclusion()
+            sage: u, v = tuple(H.module_generators())
+            sage: partial = H.Isom(H)((u, -v))
+            sage: extension = partial.witt_extension(i, i)
+            sage: all(extension(i(x)) == i(partial(x)) for x in H.module_generators())
+            True
+            sage: extension.inverse() * extension == V.Isom(V).identity()
+            True
+
+            sage: W = Lattices(QQ)([[1, 0, 0], [0, -1, 0], [0, 0, 0]])
+            sage: e, f, r = tuple(W.module_generators())
+            sage: H = W.subobject_on((e + f, r))
+            sage: u, v = tuple(H.module_generators())
+            sage: swap = H.Isom(H)((v, u))
+            sage: swap.witt_extension(H.inclusion(), H.inclusion())
+            Traceback (most recent call last):
+            ...
+            ValueError: the partial isometry does not identify the ambient radical intersections
         """
         locus = self.witt_extension_locus(source_inclusion, target_inclusion)
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
@@ -752,13 +819,16 @@ class LatticeIsometryMethods:
             for vector in source_radical.module_generators()
             if not source_inclusion.is_in_image(source_radical.inclusion()(vector))
         )
+        target_radical_complements = tuple(
+            target_radical.inclusion()(vector)
+            for vector in target_radical.module_generators()
+            if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
+        )
+        if bool(radical_complements) != bool(target_radical_complements):
+            raise ValueError("the specified hyperplanes have incompatible ambient-radical intersections")
         if radical_complements:
             source_vector = radical_complements[0]
-            target_vector = next(
-                target_radical.inclusion()(vector)
-                for vector in target_radical.module_generators()
-                if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
-            )
+            target_vector = target_radical_complements[0]
         else:
             source_vector = next(
                 vector for vector in source.module_generators()
@@ -835,12 +905,17 @@ class LatticeIsometryMethods:
         if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
             raise ValueError("the isometry must join the selected lattices' fraction-field extensions")
         restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
-        source_inclusion = source.generic_fibre_map()
-        target_inclusion = target.generic_fibre_map()
-        forward = (restrict(self) * source_inclusion).factor_through_or_none(target_inclusion)
+        source_inclusion = ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
+        target_inclusion = ModulesOverIntegralDomains(ring)(target).generic_fibre_map()
+        rational_source = self.domain()
+        rational_target = self.codomain()
+        linear = rational_source.module_category().Mor(rational_source, rational_target)(self)
+        forward = (restrict(linear) * source_inclusion).factor_through_or_none(target_inclusion)
         if forward is None:
             return None
-        backward = (restrict(self.inverse()) * target_inclusion).factor_through_or_none(source_inclusion)
+        inverse = self.inverse()
+        inverse_linear = rational_target.module_category().Mor(rational_target, rational_source)(inverse)
+        backward = (restrict(inverse_linear) * target_inclusion).factor_through_or_none(source_inclusion)
         if backward is None:
             return None
         module_isomorphism = Modules(ring).Core().Mor(source, target)(forward, backward)
@@ -862,13 +937,13 @@ class LatticeIsometryMethods:
         ring = source.base_ring()
         field_map = ring.fraction_field_map()
         restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
-        rational = restrict(self) * source.generic_fibre_map()
+        rational = restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
         scaled = Modules(ring).Mor(source, rational.codomain())(
             lambda label: rational.codomain().scalar_multiple(
                 scale, rational(source.module_generator(label))
             )
         )
-        integral = scaled.factor_through_or_none(target.generic_fibre_map())
+        integral = scaled.factor_through_or_none(ModulesOverIntegralDomains(ring)(target).generic_fibre_map())
         if integral is None:
             raise ArithmeticError("the denominator ideal failed to clear the rational map")
         values = ring.regular_module()
@@ -1450,6 +1525,24 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
 
     def super_categories(self):
+        r"""Retain lattice morphisms and endpoint-admissible inherited monomorphisms.
+
+        Only packets containing both endpoints contribute inherited Mor
+        categories; a lattice embedding is not automatically a morphism in
+        a packet whose objects exclude either endpoint.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)("U")
+            sage: E = L.Mono(L)
+            sage: E.domain() is L and E.codomain() is L and len(E.super_categories()) >= 1
+            True
+            sage: all(C.domain_object() is L and C.codomain_object() is L for C in E.super_categories())
+            True
+            sage: identity = E.identity()
+            sage: identity * identity == identity
+            True
+        """
         packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
@@ -1814,8 +1907,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the subgroup of ``O(A_L)`` generated by the known ``O(L)`` generators."""
         if self.domain() is not self.codomain():
             raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no group, so they have no image in the orthogonal group of a discriminant form")
-        target = self.domain().discriminant_group().orthogonal_group()
-        return target.subgroup_on(tuple(generator.discriminant_morphism() for generator in self.select_group_resolution().group_generators()))
+        group = self.select_group_resolution()
+        generating_subgroup = group.subgroup(tuple(group.group_generators()))
+        return generating_subgroup.image_under(self.discriminant_representation())
 
     def discriminant_lift(self, automorphism):
         r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
@@ -2089,7 +2183,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         return engine_subgroup(self._row_action_matrix(automorphism))
 
     def _engine_subgroup_contains(self, automorphism, engine_subgroup):
-        return self._row_action_matrix(automorphism) in engine_subgroup
+        matrix = self._row_action_matrix(automorphism)
+        # The selected generator and its inverse are members by the
+        # definition of generated subgroup, independently of whether Sage's
+        # matrix-group membership algorithm decides an infinite subgroup.
+        # Orbit-span closure needs precisely these two directions.
+        if any(matrix == generator.matrix() or matrix == generator.matrix().inverse()
+               for generator in engine_subgroup.gens()):
+            return True
+        return matrix in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         r"""Raise an element of a generated matrix subgroup to a live isometry."""
@@ -2130,15 +2232,36 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         """
         _fix_selected_group_resolution_on(self, self._computed_group_generators)
 
-    def select_group_resolution(self):
+    def select_group_resolution(self, *, generators=None):
         r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
 
         It is the degree-zero truncation of a free-group resolution of
         ``O(L)`` (``CAT-29``); after it, ``group_generators()`` answers.
+        A known complete generating family may be supplied explicitly when
+        the indefinite orthogonal-group engine is not yet available. The
+        caller must establish that its family generates the full group.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[0,2],[2,0]])
+            sage: O = L.Aut()
+            sage: exchange = O([[0,1],[1,0]])
+            sage: minus_id = O([[-1,0],[0,-1]])
+            sage: O.select_group_resolution(generators=(exchange, minus_id))
+            Orthogonal group O(Integral lattice of rank 2 and signature (1, 1))
+            sage: rho = L.discriminant_representation()
+            sage: all(rho(g) == rho.codomain().one() for g in L.stable_orthogonal_group().schreier_generators())
+            True
         """
         if self.has_selected_group_resolution():
+            if generators is not None:
+                raise ValueError("the orthogonal group already has a selected generating resolution")
             return self
-        self._select_computed_group_resolution()
+        if generators is None:
+            self._select_computed_group_resolution()
+        else:
+            selected = finite_ordered_set(tuple(self(generator) for generator in generators))
+            _fix_selected_group_resolution_on(self, lambda: selected)
         return self
 
     def structure_description(self):

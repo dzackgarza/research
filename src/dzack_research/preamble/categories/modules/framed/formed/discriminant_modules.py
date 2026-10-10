@@ -269,24 +269,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 raise ValueError(f"the bilinear discriminant form {self} is not metabolic: it has no Lagrangian subgroup")
             return lagrangians[0]
 
-        def associated_quadratic_form(self):
-            r"""Return the canonical quadratic refinement when the source lattice is even.
-
-            A bare bilinear torsion form does not determine a quadratic
-            refinement.  A discriminant bilinear form does retain its source
-            lattice, and for an even source lattice that lattice canonically
-            supplies ``q : A_L -> K/2R``.  The construction therefore goes
-            back through the lattice rather than reinterpreting entries of a
-            ``K/R``-valued Gram matrix.
-            """
-            lattice = self.source_lattice()
-            if not lattice.is_even():
-                raise ValueError(
-                    f"the discriminant quadratic form of {self} requires an even lattice, "
-                    f"but its lattice {lattice} is not even"
-                )
-            return lattice.discriminant_quadratic_form()
-
         def orthogonal_quotient(self, subgroup):
             r"""Return ``H^perp/H`` with its descended bilinear form.
 
@@ -428,6 +410,10 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def associated_quadratic_form(self):
+            r"""Return the canonical quadratic refinement of this even-lattice discriminant module."""
+            return self.source_lattice().discriminant_quadratic_form()
+
         def __init__(self, quadratic_value_module, **rest) -> None:
             self._preamble_quadratic_value_module = quadratic_value_module
             super().__init__(**rest)

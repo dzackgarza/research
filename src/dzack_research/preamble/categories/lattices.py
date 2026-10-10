@@ -154,6 +154,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjectConstruction,
     ModuleSubobjects,
     Modules,
+    ModulesOverIntegralDomains,
     TensorProductModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -1406,12 +1407,19 @@ class Lattices(OwnedCategoryOverBaseRing):
         of rank `n`; ``Lattices(R)(R^{\mathbb N})`` is its colimit.
         A pairing Gram is a lattice: ``C((R^NN).diagonal_gram({0: -1}))``.
         ``module_generators=`` is the generating set of the underlying
-        free module; when omitted, the generators are the formal symbols
-        \(e_i\in\mathrm{SR}\).  The result is an owned lattice.
+        free module; when omitted, its labels are the natural-number ordinal
+        of the rank. The symbols \(e_i\) only print basis vectors.
+        The result is an owned lattice.
 
         EXAMPLES::
 
             sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: A2 = Lattices(ZZ)([[2, 1], [1, 2]])
+            sage: F = A2.unformed_module()
+            sage: tuple(int(key) for key in F.module_generating_set())
+            (0, 1)
+            sage: F.module_generator(0) != F.module_generator(1)
+            True
             sage: Lattices(ZZ)("U")
             Integral lattice of rank 2 and signature (1, 1)
             sage: I2 = Lattices(ZZ)(ZZ^2)
@@ -2007,6 +2015,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: g = L.integral_isometry(phi)
                 sage: all(g(x) == -x for x in L.module_generators())
                 True
+                sage: labels = tuple(V.module_generating_set())
+                sage: e, f = V.module_generator(labels[0]), V.module_generator(labels[1])
+                sage: dilation = V.Isom(V)(lambda j: V.scalar_multiple(QQ(2), e) if j == labels[0] else V.scalar_multiple(QQ(1)/QQ(2), f))
+                sage: L.integral_isometry(dilation)
+                Traceback (most recent call last):
+                ...
+                ValueError: the rational isometry does not map the source integral lattice onto the target
             """
             if source is None:
                 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormBaseChanges
@@ -2120,7 +2135,19 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def discriminant_image(self):
-            r"""Return the computed image of ``rho_L`` when ``O(L)`` generators are known."""
+            r"""Return the computed image of ``rho_L`` when ``O(L)`` generators are known.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("A2")
+                sage: rho = L.discriminant_representation()
+                sage: Q = L.discriminant_group().orthogonal_group()
+                sage: H = rho.preimage_subgroup(Q.subgroup(tuple(Q.group_generators())))
+                sage: all(g in H for g in H.schreier_generators())
+                True
+                sage: H.image_under(rho).cardinality() == Q.cardinality() == 2
+                True
+            """
             return self.Aut().discriminant_image()
 
         @cached_method
@@ -2137,6 +2164,26 @@ class Lattices(OwnedCategoryOverBaseRing):
             :meth:`discriminant_representation`, the first term of
             :meth:`discriminant_reduction_sequence` (Gritsenko--Hulek--Sankaran,
             *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("A2")
+                sage: stable = L.stable_orthogonal_group()
+                sage: generators = stable.schreier_generators()
+                sage: all(g in stable for g in generators)
+                True
+                sage: stable.image_under(L.discriminant_representation()).cardinality() == 1
+                True
+                sage: L = Lattices(ZZ)([[0,2],[2,0]])
+                sage: O = L.Aut()
+                sage: exchange = O([[0,1],[1,0]])
+                sage: minus_id = O([[-1,0],[0,-1]])
+                sage: generators = L.stable_orthogonal_group().schreier_generators(generators=(exchange, minus_id))
+                sage: rho = L.discriminant_representation()
+                sage: all(rho(g) == rho.codomain().one() for g in generators)
+                True
+                sage: L.stable_orthogonal_group().image_under(rho, ambient_generators=(exchange, minus_id)).cardinality() == 1
+                True
             """
             target = self.discriminant_group().orthogonal_group()
             trivial = target.subgroup_on(())
@@ -3193,6 +3240,27 @@ class Lattices(OwnedCategoryOverBaseRing):
             this lattice and ``k=map_to_ideal_dual()`` satisfy ``j*i=u*k``,
             where ``j`` is the generic-fibre inclusion and ``u`` the
             retained ideal-dual inclusion.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[0, 0], [0, 2]])
+                sage: e, f = tuple(L.module_generators())
+                sage: i0 = L.divisible_sublattice(0).inclusion()
+                sage: i2 = L.divisible_sublattice(2).inclusion()
+                sage: i3 = L.divisible_sublattice(3).inclusion()
+                sage: i0.is_in_image(e) and not i0.is_in_image(f)
+                True
+                sage: i2.is_in_image(e) and i2.is_in_image(f)
+                True
+                sage: i3.is_in_image(e) and not i3.is_in_image(f) and i3.is_in_image(L.scalar_multiple(3, f))
+                True
+                sage: D = L.divisible_sublattice(3)
+                sage: j = ModulesOverIntegralDomains(ZZ)(L).generic_fibre_map()
+                sage: i = D.inclusion()
+                sage: k = D.map_to_ideal_dual()
+                sage: u = D.defining_ideal_dual().inclusion()
+                sage: all(j(i(x)) == u(k(x)) for x in D.module_generators())
+                True
             """
             return self.ideal_dual(divisor).integral_pullback()
 
@@ -3878,23 +3946,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             invariants = tuple(abs(invariant) for invariant in self.discriminant_module().invariant_factors() if abs(invariant) > ring.one())
             return all(invariant == prime for invariant in invariants)
 
-        def delta(self):
-            r"""Return Nikulin's ``delta`` for an even 2-elementary lattice.
-
-            This is zero exactly when the discriminant quadratic form is
-            integer-valued, and one otherwise.  It suffices to test Smith
-            generators: on a 2-elementary discriminant group every bilinear
-            value lies in ``(1/2)ZZ/ZZ``, so the cross term ``2b(x,y)`` in
-            ``q(x+y)`` is integral.
-            """
-            if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError(f"{self!r} has no Nikulin invariant delta: delta is defined for lattices over ZZ, and this lattice is over {self.base_ring()}")
-            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
-                raise ValueError(f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
-            discriminant_form = self.discriminant_quadratic_form()
-            ring = self.base_ring()
-            return ring(int(any(discriminant_form.q(element).lift() not in ring for element in discriminant_form.smith_form_module_generators())))
-
         def is_coeven(self) -> bool:
             r"""Return whether the discriminant quadratic form is integer-valued.
 
@@ -3919,19 +3970,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the negation of :meth:`is_coeven`."""
             return not self.is_coeven()
 
-        def two_elementary_invariants(self):
-            r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
-
-            The rank, the length of the discriminant group and \(\delta\) are
-            three natural numbers, so the triple is a point of
-            \(\mathbb N^3\).
-            """
-            if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
-                raise ValueError(
-                    f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
-                )
-            return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
-
         def two_u_eichler_model(self):
             r"""Return the represented ``U + U + self`` Eichler model."""
             from dzack_research.preamble.categories.eichler_criterion import (
@@ -3954,10 +3992,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             Each plane is split by its isotropic reduction. The source is
             their orthogonal biproduct with the second reduction, retaining
             the quotient lattices and their universal injections.
-            It applies when both selected vectors have divisibility one,
-            in particular to even unimodular lattices containing ``2U``.
-            A rationally anisotropic stage returns ``None``; a selected
-            vector of larger divisibility requires another integral search.
+            The genus comparison first decides whether two integral U
+            summands exist. For an even indefinite lattice in such a genus,
+            rank(L) >= length(A_L)+4; uniqueness in that genus follows from
+            Nikulin, Theorem 1.14.2 (Math. USSR-Izv. 14 (1980), 103--167).
+            Therefore exhaustive integral-vector enumeration for a null
+            vector of divisibility one terminates whenever it is invoked.
+            The second reduction similarly has rank >= length(A)+2 and a
+            unimodular hyperbolic summand. Neither selected PARI witness
+            nor an initial Gram framing determines which null line is used.
 
             EXAMPLES::
 
@@ -3966,6 +4009,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: splitting.codomain() is L
                 True
                 sage: splitting.inverse() * splitting == splitting.domain().Isom(splitting.domain()).one()
+                True
+                sage: source = splitting.domain()
+                sage: source.biproduct_factor(0).module_rank() == source.biproduct_factor(1).module_rank() == 2
+                True
+                sage: all(splitting.inverse()(splitting(source.injection(i)(v))) == source.injection(i)(v) for i in (0, 1) for v in source.biproduct_factor(i).module_generators())
+                True
+                sage: splitting * splitting.inverse() == L.Isom(L).identity()
                 True
 
             Recover the splitting after changing the basis of ``2U + E8(-1)``::
@@ -3986,22 +4036,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert _engine_ring(self.base_ring()) is SageZZ and self.is_even(), (
                 f"the integral two-hyperbolic-plane splitting is computed for even ZZ-lattices, not {self}"
             )
-            if not self.is_isotropic():
+            if not self.is_isotropic() or self.integral_hyperbolic_index() < 2:
                 return None
             first = self.isotropic_vector()
-            assert first.div() == self.base_ring().one(), (
-                f"the selected isotropic vector {first} has divisibility {first.div()}; "
-                "splitting off U requires an isotropic vector of divisibility one"
-            )
+            if first.div() != self.base_ring().one():
+                first = lattice_engines._unit_divisibility_isotropic_witness(self)
             first_reduction = first.isotropic_reduction()
             first_splitting = first_reduction.integral_hyperbolic_splitting()
             if not first_reduction.is_isotropic():
                 return None
             second = first_reduction.isotropic_vector()
-            assert second.div() == self.base_ring().one(), (
-                f"the selected isotropic vector {second} has divisibility {second.div()}; "
-                "splitting off the second U requires an isotropic vector of divisibility one"
-            )
+            if second.div() != self.base_ring().one():
+                second = lattice_engines._unit_divisibility_isotropic_witness(first_reduction)
             second_reduction = second.isotropic_reduction()
             second_splitting = second_reduction.integral_hyperbolic_splitting()
             first_sum = first_splitting.codomain()
@@ -4312,6 +4358,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             exponent = abs(self.discriminant_group().exponent())
             return finite_ordered_set(tuple((self.base_ring()(2) * exponent).divisors()))
 
+        def reflective_root_locus(self):
+            r"""Primitive nonisotropic vectors with integral reflections.
+
+            The condition is ``2 b(v,L) / b(v,v)`` integral; the locus can
+            be infinite for an indefinite lattice.
+            """
+            ring = self.base_ring()
+            def reflective(vector):
+                if vector == self.zero() or vector.q() == ring.zero():
+                    return False
+                if not self.subobject_on((vector,)).is_primitive():
+                    return False
+                return all((ring(2) * vector.b(generator)) / vector.b(vector) in ring
+                           for generator in self.module_generators())
+            return self.condition_set(reflective)
+
         @cached_method
         def root_module_generating_set(self):
             r"""Return a set of roots of \(L\) that generates \(L\) as a module.
@@ -4327,18 +4389,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             rows = _roots_generating_lattice(self.gram_tensor(), self.possible_root_lengths())
             return finite_ordered_set(tuple(self(row) for row in rows))
-
-        @cached_method
-        def reflective_roots(self):
-            r"""Return all primitive reflective roots of a definite lattice."""
-            match self.is_positive_definite(), self.is_negative_definite():
-                case True, _:
-                    sign = self.base_ring().one()
-                case _, True:
-                    sign = -self.base_ring().one()
-                case _:
-                    raise ValueError(f"cannot finitely enumerate all reflective roots of {self}: this computational case is available for definite lattices")
-            return finite_ordered_set(tuple(root for length in self.possible_root_lengths() for root in self.roots_of_square(sign * length)))
 
         @cached_method
         def root_sublattice(self):
@@ -4478,6 +4528,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             edgewalk realization follows the frozen cycle contract. The
             period is a lattice isometry; its vector family is a finite
             subset with its inclusion into this lattice.
+
+            EXAMPLES::
+
+                sage: for gram, size in (([[2, 0], [0, -6]], 1), ([[4, 2], [2, -2]], 1), ([[2, 0], [0, -4]], 2)):
+                ....:     L = Lattices(ZZ)(gram)
+                ....:     period, vectors = L.reduction_cycle(ZZ(4), L.basis_vector(0))
+                ....:     assert period.inverse() * period == L.Isom(L).identity()
+                ....:     assert vectors.cardinality() == size
+                ....:     assert all(v.parent() is L and ZZ(0) < v.q() <= ZZ(4) for v in vectors)
+                sage: L = Lattices(ZZ)([[2, 0], [0, -6]])
+                sage: period, vectors = L.reduction_cycle(ZZ(4), L.basis_vector(0))
+                sage: labels = tuple(L.module_generating_set())
+                sage: tuple(tuple(int(period(v).to_vector()(label)) for label in labels) for v in L.module_generators())
+                ((2, 1), (3, 2))
+                sage: tuple(tuple(int(v.to_vector()(label)) for label in labels) for v in vectors)
+                ((2, 1),)
             """
             result = lattice_engines._binary_reduction_cycle(self, bound, start)
             if result is None:
@@ -4863,11 +4929,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ambient = next_inclusion.codomain()
             rational = ambient.base_change(field_map)
             if direction.parent() is ambient:
-                direction = ambient.generic_fibre_map()(direction).underlying_element()
+                direction = ModulesOverIntegralDomains(ring)(ambient).generic_fibre_map()(direction).underlying_element()
             direction = rational(direction)
             scalars = field.regular_module()
             linear = Modules(field).Mor(scalars, rational)(lambda label: direction)
-            integral_inclusion = ambient.generic_fibre_map() * inclusion
+            integral_inclusion = ModulesOverIntegralDomains(ring)(ambient).generic_fibre_map() * inclusion
             return linear.affine_inverse_image(integral_inclusion, offset=base)
 
         def affine_line_points(self, base, direction):
@@ -4877,6 +4943,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``affine_line_fibre(base,direction)``. The generator ``s`` is
             primitive in the intersection with the line. A constant line
             has ``s=0`` when its point is integral and is empty otherwise.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)("U")
+                sage: V = L.vector_space()
+                sage: point, step = L.affine_line_points(V.zero(), V.zero())
+                sage: point == L.zero() and step == L.zero()
+                True
+                sage: L.affine_line_fibre(V.zero(), V.zero()).image_point_set().cardinality() == 1
+                True
             """
             if self.base_ring() is not _own_ring(SageZZ):
                 raise TypeError("an integral affine-line presentation requires ZZ")
@@ -4907,7 +4983,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: L = Lattices(ZZ)([[2]])
                 sage: V = L.vector_space()
-                sage: t = V.linear_combination({0: QQ(1)/QQ(2)})
+                sage: label = next(iter(V.module_generating_set()))
+                sage: t = V.scalar_multiple(QQ(1)/QQ(2), V.module_generator(label))
                 sage: L.first_close_vector_shell(t, QQ(0), NN(1)) is None
                 True
                 sage: m, shell = L.first_close_vector_shell(t, QQ(0), NN(2))
@@ -4928,7 +5005,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             maximum = NN(max_multiplier)
             ambient = self.vector_space()
             if target.parent() is self:
-                target = self.generic_fibre_map()(target).underlying_element()
+                target = ModulesOverIntegralDomains(self.base_ring())(self).generic_fibre_map()(target).underlying_element()
             if target.parent() is not ambient:
                 raise ValueError("the affine target must belong to the lattice or its rational span")
             field = ambient.base_ring()
@@ -5313,6 +5390,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: f = e.hyperbolic_partner()
                 sage: f.parent() is L and f.q() == ZZ(0) and e.b(f) == ZZ(1)
                 True
+                sage: M = Lattices(ZZ)([[0, 2, 0], [2, 2, 0], [0, 0, -2]])
+                sage: u = M.basis_vector(0)
+                sage: h = u.hyperbolic_partner()
+                sage: h.parent() is M and h.q() == ZZ(0) and u.b(h) == ZZ(2)
+                True
                 sage: Lattices(ZZ)([[0, 2], [2, 2]]).basis_vector(0).hyperbolic_partner()
                 Traceback (most recent call last):
                 ...
@@ -5611,6 +5693,85 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                 )
 
             return source.module_category().Mor(source, self)(image)
+
+
+class DefiniteLattices(OwnedCategoryOverBaseRing):
+    r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
+
+    def super_categories(self):
+        return [Lattices(self.base_ring())]
+
+    def an_object(self):
+        return self(Lattices(self.base_ring()).an_object())
+
+    def _call_(self, lattice):
+        from dzack_research.preamble.refine import refine
+
+        if lattice not in Lattices(self.base_ring()) or not (lattice.is_positive_definite() or lattice.is_negative_definite()):
+            raise ValueError("finite reflective-root enumeration requires a definite lattice")
+        return refine(lattice, self)
+
+    class ParentMethods:
+        @cached_method
+        def reflective_roots(self):
+            r"""All primitive reflective roots of this definite lattice."""
+            sign = self.base_ring().one() if self.is_positive_definite() else -self.base_ring().one()
+            return finite_ordered_set(tuple(root for length in self.possible_root_lengths() for root in self.roots_of_square(sign * length)))
+
+
+class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
+    r"""Nondegenerate even integral lattices with 2-elementary discriminant group.
+
+    This is a refinement of lattices, not a property of arbitrary even forms.
+    """
+
+    def super_categories(self):
+        if _engine_ring(self.base_ring()) is not SageZZ:
+            raise TypeError("2-elementary integral lattices require the integer coefficient ring")
+        return [Lattices(self.base_ring()).Even().Nondegenerate()]
+
+    class ParentMethods:
+        def delta(self):
+            r"""Return Nikulin's ``delta`` for an even 2-elementary lattice.
+
+            This is zero exactly when the discriminant quadratic form is
+            integer-valued, and one otherwise.  It suffices to test Smith
+            generators: on a 2-elementary discriminant group every bilinear
+            value lies in ``(1/2)ZZ/ZZ``, so the cross term ``2b(x,y)`` in
+            ``q(x+y)`` is integral.
+            """
+            if _engine_ring(self.base_ring()) is not SageZZ:
+                raise TypeError(f"{self!r} has no Nikulin invariant delta: delta is defined for lattices over ZZ, and this lattice is over {self.base_ring()}")
+            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
+                raise ValueError(f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
+            discriminant_form = self.discriminant_quadratic_form()
+            ring = self.base_ring()
+            return ring(int(any(discriminant_form.q(element).lift() not in ring for element in discriminant_form.smith_form_module_generators())))
+
+        def two_elementary_invariants(self):
+            r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
+
+            The rank, the length of the discriminant group and \(\delta\) are
+            three natural numbers, so the triple is a point of
+            \(\mathbb N^3\).
+            """
+            if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
+                raise ValueError(
+                    f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
+                )
+            return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
+
+
+    def an_object(self):
+        return self(Lattices(self.base_ring())("U"))
+
+    def _call_(self, lattice):
+        from dzack_research.preamble.refine import refine
+
+        lattice = Lattices(self.base_ring())(lattice)
+        if not lattice.is_even() or not lattice.is_nondegenerate() or not lattice.is_p_elementary(self.base_ring()(2)):
+            raise ValueError("a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant")
+        return refine(lattice, self)
 
 
 def FiniteRankLattices(base_ring):

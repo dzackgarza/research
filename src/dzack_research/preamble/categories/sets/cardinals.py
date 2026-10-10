@@ -389,6 +389,179 @@ class CardinalityMorCategoryConstruction(MorCategoryConstruction):
 class Cardinalities(OwnedCategory):
     r"""The thin category associated to the represented cardinal order."""
 
+    def set_category(self, size):
+        r"""Classify a decided cardinal as finite, countably infinite, or uncountable."""
+        from dzack_research.preamble.categories.sets.set_categories import (
+            FiniteSets, CountablyInfiniteSets, UncountableSets,
+        )
+
+        size = cardinal(size)
+        match size.is_finite(), size.is_countably_infinite():
+            case True, _:
+                return FiniteSets()
+            case False, True:
+                return CountablyInfiniteSets()
+            case _:
+                return UncountableSets()
+
+    def set_power_category(self, codomain, exponent):
+        r"""Place `Y^X` using cardinal exponentiation and known cardinal bounds."""
+        from dzack_research.preamble.categories.sets.set_categories import (
+            Sets, FiniteSets, InfiniteSets, CountableSets,
+            CountablyInfiniteSets, UncountableSets,
+        )
+
+        match codomain, exponent:
+            case _, _ if Sets().is_provably_finite(exponent) and exponent.cardinality() == cardinal(0):
+                return self.set_category(cardinal(1))
+            case _, _ if (
+                codomain in FiniteSets()
+                and codomain.cardinality() == cardinal(0)
+                and (
+                    exponent in InfiniteSets()
+                    or (Sets().is_provably_finite(exponent) and exponent.cardinality() != cardinal(0))
+                )
+            ):
+                return self.set_category(cardinal(0))
+            case _, _ if codomain in FiniteSets() and codomain.cardinality() == cardinal(1):
+                return self.set_category(cardinal(1))
+            case _, _ if codomain in FiniteSets() and exponent in FiniteSets():
+                return self.set_category(self.power(codomain.cardinality(), exponent.cardinality()))
+            case _, _ if codomain in FiniteSets() and Sets().is_provably_finite(exponent):
+                # A proved finite exponent gives a finite function set even
+                # before the exponent has acquired its finite-set placement.
+                return FiniteSets()
+            case _, _ if (
+                Sets().is_provably_finite(exponent)
+                and exponent.cardinality() != cardinal(0)
+                and codomain in CountableSets()
+                and codomain in InfiniteSets()
+            ):
+                return CountablyInfiniteSets()
+            case _, _ if Sets().is_provably_finite(exponent) and codomain in CountableSets():
+                return CountableSets()
+            case _, _ if (
+                Sets().is_provably_finite(exponent)
+                and exponent.cardinality() != cardinal(0)
+                and codomain in UncountableSets()
+            ):
+                return UncountableSets()
+            case _, _ if exponent in InfiniteSets() and (
+                codomain in InfiniteSets()
+                or (codomain in FiniteSets() and codomain.cardinality().finite_value() >= 2)
+            ):
+                return UncountableSets()
+            case _:
+                return Sets()
+
+    def finite_support_power_category(self, coefficient_ring, index_set):
+        r"""Place finite-support functions ``index_set -> coefficient_ring``.
+
+        For finite indices these are all functions. For infinite indices the
+        zero ring gives a singleton, and any nonzero ring gives cardinality
+        ``max(|coefficient_ring|, |index_set|)``.
+        """
+        match cardinal(index_set.cardinality()).is_finite(), coefficient_ring.one() == coefficient_ring.zero():
+            case True, _:
+                return self.set_power_category(coefficient_ring, index_set)
+            case False, True:
+                return self.set_category(self.one())
+            case _:
+                return self.set_category(self.supremum(coefficient_ring.cardinality(), index_set.cardinality()))
+
+    def set_subset_category(self, source, *, fixed_size=None):
+        r"""Place finite-subset sets from `2^|X|` or `|[X]^k|`."""
+        from math import comb
+        from dzack_research.preamble.categories.sets.set_categories import (
+            Sets, FiniteSets, InfiniteSets, CountableSets,
+            CountablyInfiniteSets, UncountableSets,
+        )
+
+        match fixed_size, source:
+            case 0, _:
+                return self.set_category(cardinal(1))
+            case _, _ if source in FiniteSets():
+                size = cardinal(source.cardinality())
+                return self.set_category(
+                    self.power(2, size) if fixed_size is None
+                    else cardinal(comb(size.finite_value(), int(fixed_size)))
+                )
+            case _, _ if Sets().is_provably_finite(source):
+                # Every family of subsets of a finite set is finite, even
+                # before the source has acquired its FiniteSets placement.
+                # Its exact cardinality need not yet be computed.
+                return FiniteSets()
+            case _, _ if source in InfiniteSets() and source in CountableSets():
+                return CountablyInfiniteSets()
+            case _, _ if source in UncountableSets():
+                return UncountableSets()
+            case _, _ if source in CountableSets():
+                return CountableSets()
+            case _, _ if source in InfiniteSets():
+                return InfiniteSets()
+            case _:
+                return Sets()
+
+    def set_indexed_category(self, family, *, operation):
+        r"""Place a finite-index product or coproduct by cardinal multiplication or addition.
+
+        Unknown individual cardinalities retain only bounds supplied by their
+        categories. For products, an empty factor dominates every other size.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import (
+            Sets, FiniteSets, InfiniteSets, CountableSets,
+            CountablyInfiniteSets, UncountableSets,
+        )
+
+        index = family.index_set()
+        # Category refinement can lag behind an independently proved
+        # finiteness decision.  The finiteness of the index is the
+        # mathematical hypothesis, not membership in a particular category.
+        if not Sets().is_provably_finite(index):
+            return Sets()
+        factors = tuple(family(i) for i in index)
+        match operation:
+            case "product":
+                if any(
+                    Sets().is_provably_finite(f) and f.cardinality() == cardinal(0)
+                    for f in factors
+                ):
+                    return self.set_category(cardinal(0))
+                if all(f in FiniteSets() for f in factors):
+                    return self.set_category(self.product(*(f.cardinality() for f in factors)))
+                if all(Sets().is_provably_finite(f) for f in factors):
+                    return FiniteSets()
+                nonempty = all(
+                    f in InfiniteSets()
+                    or (f in FiniteSets() and f.cardinality() != cardinal(0))
+                    for f in factors
+                )
+                if nonempty and any(f in UncountableSets() for f in factors):
+                    return UncountableSets()
+                if all(f in CountableSets() for f in factors):
+                    if nonempty and any(f in InfiniteSets() for f in factors):
+                        return CountablyInfiniteSets()
+                    return CountableSets()
+                if nonempty and any(f in InfiniteSets() for f in factors):
+                    return InfiniteSets()
+                return Sets()
+            case "sum":
+                if all(f in FiniteSets() for f in factors):
+                    return self.set_category(self.sum(*(f.cardinality() for f in factors)))
+                if all(Sets().is_provably_finite(f) for f in factors):
+                    return FiniteSets()
+                if any(f in UncountableSets() for f in factors):
+                    return UncountableSets()
+                if all(f in CountableSets() for f in factors):
+                    if any(f in InfiniteSets() for f in factors):
+                        return CountablyInfiniteSets()
+                    return CountableSets()
+                if any(f in InfiniteSets() for f in factors):
+                    return InfiniteSets()
+                return Sets()
+            case _:
+                raise ValueError(f"cardinality of indexed {operation!r} is not a sum or product")
+
     def an_object(self) -> Cardinal:
         r"""The cardinal three."""
         return cardinal(3)

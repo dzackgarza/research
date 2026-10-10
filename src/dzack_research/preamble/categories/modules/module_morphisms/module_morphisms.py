@@ -1243,7 +1243,7 @@ class ModuleMorphismMethods:
         ``Hom_ZZ(source,target)`` inside its rational scalar extension.
         """
         from sage.rings.integer_ring import ZZ as SageZZ
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         ring = source.base_ring()
@@ -1255,7 +1255,7 @@ class ModuleMorphismMethods:
         if not _has_finite_free_framing(source) or not _has_finite_free_framing(target):
             raise NotImplementedError("denominator-ideal computation requires finite integral bases")
         restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
-        restricted = restrict(self) * source.generic_fibre_map()
+        restricted = restrict(self) * ModulesOverIntegralDomains(ring)(source).generic_fibre_map()
         framing = self.codomain().framing_morphism()
         denominator = ring.one()
         for vector in source.module_generators():
@@ -1915,7 +1915,11 @@ class ModuleMorphismMethods:
                     return other
                 if other._is_the_identity():
                     return self
-                mor = source.module_category().Mor(source, target)
+                # Keep the Mor theory in which both arrows were admitted.
+                # Redispatching Modules(R) from the source's scalar ring can
+                # select a stricter chosen-action category on a group algebra,
+                # even when this composite is an ordinary R-linear map.
+                mor = self.parent().mor_category().Mor(source, target)
                 # Composition of linear maps is linear.  Keep that theorem as
                 # construction data instead of rebuilding the composite from
                 # all selected generator images and rechecking the source
@@ -2512,7 +2516,28 @@ class _ModuleMorCommonMethods:
         return morphism
 
     def _apply_pointwise_scalar(self, scalar, element):
-        return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
+        center = self.base_ring()
+        ring = self.codomain().base_ring()
+        coefficient = center(scalar)
+        match center is ring:
+            case True:
+                pass
+            case False:
+                if ring.ring_center() is not center:
+                    raise TypeError(
+                        f"the scalars of {self} lie in {center}, which is not the selected centre of {ring}"
+                    )
+                match hasattr(ring, "center_inclusion"):
+                    case True:
+                        inclusion = ring.center_inclusion()
+                    case False:
+                        inclusion = center.inclusion()
+                if inclusion.domain() is not center or inclusion.codomain() is not ring:
+                    raise TypeError(
+                        f"the selected centre inclusion {inclusion} must have endpoints {center} -> {ring}"
+                    )
+                coefficient = inclusion(coefficient)
+        return self.codomain().scalar_multiple(coefficient, element)
 
     def _scalar_identity(self, scalar):
         r"""The endomorphism ``r . id``, linear by the module axioms."""
@@ -2768,7 +2793,14 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
 
 def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
-    mor = domain.module_category().Mor(domain, codomain)
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+
+    # A framing is linear over the scalar ring, not a map required to retain
+    # a chosen group action. Its free source need not be in the specialized
+    # category Modules(R[G]), although both endpoints are ordinary R[G]-modules.
+    modules = OwnedCategoryOverBaseRing.__classcall__(Modules, domain.base_ring())
+    mor = modules.Mor(domain, codomain)
     return FramingMorphism(mor, generator_morphism)
 
 

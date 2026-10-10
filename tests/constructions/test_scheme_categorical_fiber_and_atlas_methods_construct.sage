@@ -25,10 +25,10 @@ def test_local_family_generic_special_and_ideal_fibres() -> None:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     family = algebra.quotient(algebra.ideal(x * y - t)).affine_spectrum()
-    generic = family.generic_fiber()
-    special = family.special_fiber()
+    generic = SchemesOverIntegralDomains(base)(family).generic_fiber()
+    special = SchemesOverLocalRings(base)(family).special_fiber()
     by_ideal = family.fiber_over_ideal(base.maximal_ideal())
-    comparison = family.special_fiber_comparison()
+    comparison = SchemesOverLocalRings(base)(family).special_fiber_comparison()
     forward = comparison.forward()
     inverse = comparison.inverse()
 

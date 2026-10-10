@@ -60,7 +60,7 @@ def test_the_hyperbolic_plane_has_isotropic_basis_vectors_and_raises_by_swapping
 
 def test_raising_an_index_of_a2_needs_the_rational_inverse_gram_matrix() -> None:
     r"""$G^{-1} = \frac13 [[2, -1], [-1, 2]]$, so raising the covector $(1, 0)$ gives $(2/3, -1/3)$."""
-    raised = a2().raise_index_over_fraction_field(tensor.covector(ZZ, [1, 0]))
+    raised = NondegenerateGenericFibreFormModules(ZZ)(a2()).raise_index_over_fraction_field(tensor.covector(ZZ, [1, 0]))
 
     assert raised == tensor.vector(QQ, [2 / 3, -1 / 3])
 

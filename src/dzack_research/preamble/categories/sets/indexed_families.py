@@ -30,11 +30,16 @@ class IndexedFamily[IndexT, ValueT]:
     def __init__(
         self,
         index_set: Parent,
-        value: Callable[[IndexT], ValueT],
+        value: Callable[[IndexT], ValueT] | Parent,
         *,
+        value_category=None,
         name: str | None = None,
         **rest,
     ) -> None:
+        self._constant_value = value if isinstance(value, Parent) else None
+        if isinstance(value, Parent):
+            selected = value
+            value = lambda _index: selected
         if not callable(value):
             raise TypeError(
                 f"an indexed family over {index_set} needs a map from indices to values, but {value!r} is "
@@ -45,10 +50,19 @@ class IndexedFamily[IndexT, ValueT]:
         self._value_cache: dict[IndexT, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
+        self._diagram = None
+        self._value_category = value_category
         super().__init__(**rest)
 
     def index_set(self) -> SetObject:
         return self._index_set
+
+    def constant_value(self):
+        r"""The defining value of a constant family, or ``None`` otherwise."""
+        return self._constant_value
+
+    def selected_diagram(self):
+        return self._diagram
 
     def cardinality(self) -> Cardinal:
         from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -232,8 +246,9 @@ class IndexedFamily[IndexT, ValueT]:
 
 def indexed_family[IndexT, ValueT](
     index_set: Parent,
-    value: Callable[[IndexT], ValueT],
+    value: Callable[[IndexT], ValueT] | Parent,
     *,
+    value_category=None,
     name: str | None = None,
 ) -> IndexedFamily[IndexT, ValueT]:
     r"""Return the family ``index |-> value(index)`` as an owned mathematical object.
@@ -244,13 +259,64 @@ def indexed_family[IndexT, ValueT](
     therefore lives at the existing root ``Objects()`` rather than being
     misdeclared as a set.
     """
-    return _object_of(
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _DiscreteDiagram
+    from dzack_research.preamble.categories.functors.core import Functor
+
+    selected_functor = value if isinstance(value, Functor) else None
+    if selected_functor is not None:
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.abstract_categories.products import RestrictedDiagram
+
+        provenance = selected_functor
+        while isinstance(provenance, RestrictedDiagram):
+            provenance = provenance.original_diagram()
+        if isinstance(provenance, _DiscreteDiagram) and not Sets().is_provably_finite(
+            provenance.domain().object_set()
+        ):
+            raise TypeError(
+                "a diagram descended from an unchecked infinite object callback "
+                "does not establish that its values belong to its claimed codomain"
+            )
+        index_category = DiscreteCategory(index_set)
+        if selected_functor.domain() is not index_category:
+            raise ValueError("the selected family functor has the wrong discrete index category")
+        if value_category is not None and value_category is not selected_functor.codomain():
+            raise ValueError("the requested category differs from the selected functor codomain")
+        value_category = selected_functor.codomain()
+        value = lambda index: selected_functor(index_category.object(index))
+
+    family = _object_of(
         Objects(),
         _engine=(Objects(), IndexedFamily, None),
         index_set=index_set,
         value=value,
+        value_category=value_category,
         name=name,
     )
+    if value_category is not None:
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        constant = family.constant_value()
+        if constant is not None and constant not in value_category:
+            raise ValueError(
+                f"the constant family has value {constant}, outside its declared category {value_category}"
+            )
+        if not Sets().is_provably_finite(index_set) and family.constant_value() is None and selected_functor is None:
+            raise TypeError(
+                "an infinite nonconstant family cannot establish its value category by declaring one: "
+                "supply a mathematically justified category-valued diagram"
+            )
+        if Sets().is_provably_finite(index_set):
+            for index in index_set:
+                if family(index) not in value_category:
+                    raise ValueError(
+                        f"the selected family has value {family(index)} at {index}, outside {value_category}"
+                    )
+
+        family._diagram = selected_functor or Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
+    return family
 
 
 finite_indexed_family = indexed_family

@@ -391,14 +391,6 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 case False:
                     return bool(self.is_normal() and self.anticanonical_line_bundle().is_ample())
 
-        @cached_method
-        def integral_topology(self):
-            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                _QuarticK3IntegralTopology,
-            )
-
-            return _QuarticK3IntegralTopology(self)
-
         def integral_singular_cohomology(self, degree):
             r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
@@ -411,20 +403,45 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             )
             return self.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
 
-        @cached_method
-        def hodge_structure(self):
-            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                _QuarticK3HodgeData,
-            )
-
-            return _QuarticK3HodgeData(self)
-
         def _del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
             coefficient = self.anticanonical_twist_degree()
             return coefficient**2 * self.projective_degree()
 
 
+class SmoothQuarticK3CompleteIntersections(OwnedCategoryOverBaseRing):
+    r"""Smooth quartic surfaces in projective three-space over QQ."""
+
+    def super_categories(self):
+        if _engine_ring(self.base_ring()) is not SageQQ:
+            raise TypeError("the selected complex K3 realization is over QQ")
+        return [ProjectiveCompleteIntersections(self.base_ring()).Smooth()]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import _require_smooth_quartic_k3_complex_realization
+        ambient = ProjectiveSpaces(self.base_ring())(3)
+        x = tuple(ambient.homogeneous_coordinate_generators())
+        return self(ProjectiveCompleteIntersections(self.base_ring())(ambient, sum(v**4 for v in x)))
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import _require_smooth_quartic_k3_complex_realization
+        _require_smooth_quartic_k3_complex_realization(scheme)
+        return refine(scheme, self)
+
+    class ParentMethods:
+        @cached_method
+        def integral_topology(self):
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3IntegralTopology
+            return _QuarticK3IntegralTopology(self)
+
+        @cached_method
+        def hodge_structure(self):
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
+            return _QuarticK3HodgeData(self)
+
+
 __all__ = [
     "ProjectiveCompleteIntersections",
+    "SmoothQuarticK3CompleteIntersections",
 ]

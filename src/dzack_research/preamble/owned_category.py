@@ -653,6 +653,14 @@ def _owned_implementation_bases(
         )
 
     predecessors = {provider: set() for provider in bases}
+    # Cat's represented endpoints are objects, and their realization has
+    # Cat.ParentMethods before the owned object root.  An intersection with
+    # a catalogue that declares Objects() must retain that same order.
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+    if Cat.ParentMethods in predecessors and Objects.ParentMethods in predecessors:
+        predecessors[Objects.ParentMethods].add(Cat.ParentMethods)
     for producer in bases:
         derived = frozenset(
             getattr(producer, "_derived_construction_parameters", ())
@@ -771,16 +779,16 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         """
         if axiom in self.axioms():
             return (self,)
-        axiom_attribute = getattr(self.__class__, axiom, None)
-        if axiom_attribute is None:
-            return (self,)
         if axiom in self.__class__.__base__.__dict__:
             from sage.categories.category_with_axiom import CategoryWithAxiom
 
+            axiom_attribute = getattr(self.__class__.__base__, axiom)
             if isclass(axiom_attribute) and issubclass(
                 axiom_attribute, CategoryWithAxiom
             ):
                 return (axiom_attribute(self),)
+            return (self,)
+        if not any(axiom in base.__dict__ for base in self.__class__.__mro__):
             return (self,)
 
         result = (self,) + tuple(

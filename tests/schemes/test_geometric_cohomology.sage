@@ -101,7 +101,7 @@ def test_p2_is_simply_connected() -> None:
     plane = _projective_plane()
     cone = next(iter(plane.fan().maximal_cones()))
 
-    assert plane.fundamental_group(cone).cardinality() == 1
+    assert SmoothCompleteRationalToricSchemes(QQ)(plane).fundamental_group(cone).cardinality() == 1
 
 
 def test_the_hodge_diamond_of_p2_is_diagonal() -> None:

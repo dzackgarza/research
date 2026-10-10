@@ -450,7 +450,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 Resolutions,
             )
 
-            modules = Modules(self.base_ring())
+            modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
             match projective_class:
                 case None:
                     projective_class = modules.Projective()
@@ -1093,6 +1093,10 @@ class Modules(OwnedCategoryOverBaseRing):
         if ring not in OwnedRings().Commutative():
             center = ring.ring_center()
             placement = [LinearMorModules(center)]
+            if _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring):
+                placement.append(MatrixSpaces(ring))
+                if domain is codomain:
+                    placement.append(MatrixEndomorphismSpaces(ring))
             if domain is codomain:
                 placement.append(AdditiveEndomorphismRings(center))
             return owned_category_join(tuple(placement))
@@ -1510,46 +1514,6 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
             return _connections(self)
-
-        def determinant_line(self):
-            r"""Return ``det(self) = Lambda^rank(self) self``."""
-            from dzack_research.preamble.categories.modules.hodge import (
-                _determinant_line,
-            )
-
-            return _determinant_line(self)
-
-        def exterior_forms(self, degree):
-            r"""Return ``Lambda^degree(self^vee)``."""
-            from dzack_research.preamble.categories.modules.hodge import (
-                _exterior_forms,
-            )
-
-            return _exterior_forms(self, degree)
-
-        def volume_trivialization(self, forward, inverse):
-            r"""Return the stated isomorphism ``det(self) ~= R``."""
-            from dzack_research.preamble.categories.modules.hodge import (
-                _volume_trivialization,
-            )
-
-            return _volume_trivialization(self, forward, inverse)
-
-        def framing_volume_trivialization(self, unit=None):
-            r"""Trivialize ``det(self)`` using the selected framing."""
-            from dzack_research.preamble.categories.modules.hodge import (
-                _framing_volume_trivialization,
-            )
-
-            return _framing_volume_trivialization(self, unit=unit)
-
-        def poincare_duality(self, volume, degree):
-            r"""Return Poincare duality in exterior degree ``degree``."""
-            from dzack_research.preamble.categories.modules.hodge import (
-                _poincare_duality,
-            )
-
-            return _poincare_duality(self, volume, degree)
 
         def divided_square(self):
             r"""Return ``Gamma^2_R(self)``, the universal target for quadratic maps."""
@@ -2165,16 +2129,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return represented
 
         @cached_method
-        def generic_fibre_map(self):
-            r"""Return the unit ``M -> K tensor_R M`` of scalar extension to ``Frac(R)``."""
-            ring = self.base_ring()
-            assert ring in IntegralDomains(), (
-                f"the generic fibre of {self} is not defined: it is the base change to Frac(R), "
-                f"which needs R to be an integral domain, but R = {ring} is not known to be one"
-            )
-            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
-
-        @cached_method
         def zero_subobject(self):
             r"""The zero module with its unique monomorphism into this module.
 
@@ -2196,22 +2150,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 (ModuleSubobjects(ring),),
                 {"subobject_ambient": self, "subobject_inclusion_factory": inclusion},
             )
-
-        def torsion_submodule(self):
-            r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
-
-            An element is torsion exactly when some nonzero scalar kills it, and
-            over a domain that is exactly when it dies in the generic fibre: the
-            unit of scalar extension along ``R -> K`` inverts every nonzero
-            scalar and nothing else.  So the torsion submodule is that unit's
-            kernel, computed as a kernel rather than read off a decomposition
-            that only a principal ideal domain supplies.
-            """
-            return self.generic_fibre_map().kernel()
-
-        def _torsion_freeness_decision(self) -> bool:
-            r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
-            return self.generic_fibre_map().is_injective()
 
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
@@ -2430,7 +2368,16 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
-            return [Modules(self.base_ring()).FinitelyGenerated()]
+            r"""A finitely presented module is finitely generated over the same ring.
+
+                sage: C = Modules(ZZ)
+                sage: C.FinitelyPresented().extra_super_categories()[0] is C.FinitelyGenerated()
+                True
+                sage: X = ZZ.free_module(1)
+                sage: X in C.FinitelyPresented() and X in C.FinitelyGenerated()
+                True
+            """
+            return [self.base_category().FinitelyGenerated()]
 
         def biproduct_bifunctor(self):
             r"""Return the biproduct bifunctor on finitely presented modules."""
@@ -2714,7 +2661,16 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.base_ring().free_module(1)
 
         def extra_super_categories(self):
-            return [Modules(self.base_ring()).Projective()]
+            r"""A free module is projective over the same scalar ring.
+
+                sage: C = Modules(ZZ)
+                sage: C.Free().extra_super_categories()[0] is C.Projective()
+                True
+                sage: X = ZZ.free_module(1)
+                sage: X in C.Free() and X in C.Projective()
+                True
+            """
+            return [self.base_category().Projective()]
 
     class Projective(CategoryWithAxiom):
         r"""Direct summands of free modules."""
@@ -2755,6 +2711,19 @@ class Modules(OwnedCategoryOverBaseRing):
                     lambda label: localized.module_generator(label)
                 )
 
+            def local_determinant_line(self, point):
+                r"""Top exterior line of a finite projective module at ``point``.
+
+                Compute the exterior power of the actual localization, with
+                the rank determined by the selected local trivialization.
+                Do not substitute the abstract free source for the determinant
+                of the localized module or claim a global basis.
+                """
+                if self not in Modules(self.base_ring()).FinitelyGenerated():
+                    raise TypeError(f"local determinant requires a finitely generated projective module: {self}")
+                trivialization = self.local_free_trivialization(point)
+                return trivialization.codomain().exterior_power(int(trivialization.domain().module_rank()))
+
     class Torsion(CategoryWithAxiom):
         r"""Modules whose generic fibre vanishes."""
 
@@ -2772,6 +2741,39 @@ FinitelyPresentedTorsionModules = Modules.FinitelyPresented.Torsion
 FreeModules = Modules.Free
 ProjectiveModules = Modules.Projective
 TorsionModules = Modules.Torsion
+
+
+class ModulesOverIntegralDomains(OwnedCategoryOverBaseRing):
+    r"""Modules over an integral domain, with their canonical generic fibre."""
+
+    def super_categories(self):
+        if self.base_ring() not in IntegralDomains():
+            raise TypeError("generic-fibre modules require an integral-domain coefficient ring")
+        return [Modules(self.base_ring())]
+
+    def an_object(self):
+        return self(Modules(self.base_ring()).an_object())
+
+    def _call_(self, module):
+        from dzack_research.preamble.refine import refine
+
+        if module not in Modules(self.base_ring()):
+            raise TypeError("the supplied module does not have this integral-domain base")
+        return refine(module, self)
+
+    class ParentMethods:
+        @cached_method
+        def generic_fibre_map(self):
+            r"""The unit ``M -> Frac(R) tensor_R M`` of fraction-field extension."""
+            ring = self.base_ring()
+            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
+
+        def torsion_submodule(self):
+            r"""The kernel of ``M -> Frac(R) tensor_R M``."""
+            return self.generic_fibre_map().kernel()
+
+        def _torsion_freeness_decision(self) -> bool:
+            return self.generic_fibre_map().is_injective()
 
 
 def FinitelyGeneratedFreeModules(base_ring):
@@ -3183,7 +3185,19 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
 
 
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
-    r"""Finitely presented modules carrying one selected finite presentation."""
+    r"""Finitely presented modules carrying one selected finite presentation.
+
+    The selected presentation refines the generic finitely presented module
+    category over precisely the same scalar ring::
+
+        sage: from dzack_research.preamble.all import ZZ, Modules
+        sage: P = ModulesWithChosenFinitePresentation(ZZ)
+        sage: P.super_categories()[0] is Modules(ZZ).FinitelyPresented()
+        True
+        sage: M = P.an_object()
+        sage: M in P and M in Modules(ZZ).FinitelyPresented()
+        True
+    """
 
     def an_object(self):
         r"""The hyperbolic plane U, presented by its Gram matrix."""
@@ -3256,7 +3270,10 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         )
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented()]
+        # FinitelyPresented is declared on Modules, not on the specialized
+        # ModulesOverGroupAlgebra subclass returned by Modules(R[G]).
+        ordinary = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+        return [ordinary.FinitelyPresented()]
 
     @cached_method
     def presentation_category(self):
@@ -3723,20 +3740,21 @@ def _fix_selected_module_resolution(
             pass
 
     def selected_resolution():
+        ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(Modules, base_ring)
         generator_morphism = Sets().Mor(labels, module)(
             lambda label: module(generator_function(label))
         )
         augmentation = _framing_morphism(module, source, generator_morphism)
         match source is module, labels.cardinality().is_finite():
             case (True, True):
-                return Modules(base_ring).FinitelyPresented().resolution_category().selected_constant(
+                return ordinary_modules.FinitelyPresented().resolution_category().selected_constant(
                     module,
                     generating_set=labels,
                     generator_morphism=generator_morphism,
                 )
             case _:
                 pass
-        return Modules(base_ring).resolutions(0).selected_degree_zero(
+        return ordinary_modules.resolutions(0).selected_degree_zero(
             module,
             source,
             augmentation,
@@ -4977,14 +4995,31 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
 
 
 class MatrixSpaces(OwnedCategoryOverBaseRing):
-    r"""Mor objects between finitely generated framed free ``R``-modules."""
+    r"""Mor objects between finitely generated framed free ``R``-modules.
+
+    Over noncommutative ``R`` the Hom is central-linear, not a left
+    ``R``-module. For ``R=M_2(ZZ)`` the center itself is a represented
+    commutative subring and determines that scalar placement.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+        sage: R = MatrixAlgebras(ZZ).an_object()
+        sage: MatrixSpaces(R).super_categories()[0].base_ring() is R.ring_center()
+        True
+    """
 
     def an_object(self):
         r"""The one-by-one matrices over the base ring."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         modules = Modules(self.base_ring())
-        free = modules.an_object()
+        match _is_group_algebra(self.base_ring()):
+            case True:
+                modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+                free = self.base_ring().free_module(1)
+            case False:
+                free = modules.an_object()
         return modules.Mor(free, free)
 
     @classmethod
@@ -4995,11 +5030,17 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FramedFreeModules,
         )
-
-        return [
-            InternalMorModules(self.base_ring()),
-            FramedFreeModules(self.base_ring()).FinitelyGenerated(),
-        ]
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True:
+                return [
+                    InternalMorModules(ring),
+                    FramedFreeModules(ring).FinitelyGenerated(),
+                ]
+            case False:
+                # Hom_R(F,G) is canonically additive and central-linear,
+                # not a left R-module when R is noncommutative.
+                return [LinearMorModules(ring.ring_center())]
 
     class ParentMethods:
         def projectivity_decision(self):
@@ -5458,14 +5499,32 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
 
 class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
-    r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``."""
+    r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+        sage: R = MatrixAlgebras(ZZ).an_object()
+        sage: MatrixEndomorphismSpaces(R).super_categories()[1] is OwnedRings()
+        True
+        sage: E = MatrixEndomorphismSpaces(R).an_object()
+        sage: E in MatrixEndomorphismSpaces(R) and E in MatrixSpaces(R)
+        True
+        sage: E.domain().base_ring() is R and E.domain() is E.codomain()
+        True
+    """
 
     def an_object(self):
         r"""The endomorphisms of the free module of rank one."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         modules = Modules(self.base_ring())
-        free = modules.an_object()
+        match _is_group_algebra(self.base_ring()):
+            case True:
+                modules = OwnedCategoryOverBaseRing.__classcall__(Modules, self.base_ring())
+                free = self.base_ring().free_module(1)
+            case False:
+                free = modules.an_object()
         return modules.Mor(free, free)
 
     @classmethod

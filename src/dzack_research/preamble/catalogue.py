@@ -8,6 +8,7 @@ from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
+    EvenTwoElementaryLattices,
     Lattices,
     _register_indecomposable,
     _register_indecomposable_gram,
@@ -889,7 +890,7 @@ def _two_elementary_blocks():
             block.signature_pair().first(),
             block.signature_pair().second(),
             block.discriminant_length(),
-            block.delta(),
+            EvenTwoElementaryLattices(ZZ)(block).delta(),
         )
         for block in blocks
     )

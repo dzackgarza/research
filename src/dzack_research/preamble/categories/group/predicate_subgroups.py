@@ -99,6 +99,72 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def defining_predicate(self):
             return self._predicate
 
+        def finite_index_schreier_generators(self, *, index_bound, generators=None):
+            r"""Generate a finite-index predicate subgroup by coset traversal.
+
+            The index bound is required: a predicate alone does not certify
+            finite index. Representatives of cosets ``r H`` are recognized
+            by membership of ``r^(-1) x`` in ``H``. The resulting Schreier
+            words ``t_(s r H)^(-1) s r`` generate the subgroup.
+
+            EXAMPLES::
+
+                sage: G = Groups.S(3)
+                sage: H = G.subgroup((G((1, 2)),))
+                sage: P = G.predicate_subgroup(lambda g: g in H, "transposition subgroup")
+                sage: generators = P.finite_index_schreier_generators(index_bound=3)
+                sage: all(g in P for g in generators)
+                True
+                sage: G.subgroup(generators).cardinality() == 2
+                True
+                sage: P.finite_index_schreier_generators(index_bound=2)
+                Traceback (most recent call last):
+                ...
+                ValueError: the subgroup index exceeds the supplied bound
+                sage: P.finite_index_schreier_generators(index_bound=2.5)
+                Traceback (most recent call last):
+                ...
+                ValueError: the subgroup index bound must be an integer
+                sage: F, C = Groups.Free(1), Groups.C(2)
+                sage: s, t = F.group_generators()[0], C.group_generators()[0]
+                sage: phi = F.Mor(C)({next(iter(F.free_basis())): t})
+                sage: P = F.predicate_subgroup(lambda g: phi(g) == C.one(), "even exponent")
+                sage: generators = P.finite_index_schreier_generators(index_bound=2)
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
+            """
+            ambient = self.supergroup()
+            if generators is None:
+                generators = tuple(ambient.group_generators())
+            else:
+                generators = tuple(generators)
+            bound = int(index_bound)
+            if bound != index_bound:
+                raise ValueError("the subgroup index bound must be an integer")
+            if bound < 1:
+                raise ValueError("the subgroup index bound must be positive")
+            representatives = [ambient.one()]
+
+            def representative_of(candidate):
+                for representative in representatives:
+                    if (~representative) * candidate in self:
+                        return representative
+                return None
+
+            for representative in representatives:
+                for generator in generators:
+                    for step in (generator, ~generator):
+                        candidate = step * representative
+                        if representative_of(candidate) is None:
+                            representatives.append(candidate)
+                            if len(representatives) > bound:
+                                raise ValueError("the subgroup index exceeds the supplied bound")
+            return tuple(
+                self((~representative_of(generator * representative)) * generator * representative)
+                for representative in representatives
+                for generator in generators
+            )
+
         def _character_data_snapshot(self):
             r"""Return private finite-character representation metadata."""
             return dict(self._character_data)
@@ -388,6 +454,72 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def kernel_morphism(self):
             return self._kernel_morphism
 
+        def index(self, *, generators=None):
+            r"""The index of a kernel with a represented finite image.
+
+            First isomorphism: ``G/ker(f)`` is the image of ``f``. The
+            finite-image transversal retains a representative of every
+            image element, including when ``G`` is infinite. Explicit
+            generators may be supplied when the ambient group has not
+            selected a generating resolution.
+            """
+            morphism = self.kernel_morphism()
+            return cardinal(len(self.supergroup().finite_image_lifts(morphism, generators=generators)))
+
+        def schreier_generators(self, *, generators=None):
+            r"""Generators of the kernel of a homomorphism with finite image.
+
+            For left image representatives ``t_q`` and each selected source
+            generator ``s``, Schreier's rewriting gives
+            ``t_(f(s)q)^(-1) s t_q``. The finite image and its chosen lifts
+            come from the group owner's ``finite_image_lifts`` construction;
+            no ambient finite-group hypothesis is imposed. Explicit source
+            generators may be provided when the ambient resolution has not
+            been selected.
+
+            EXAMPLES::
+
+                sage: four, two = Groups.C(4), Groups.C(2)
+                sage: s, t = four.group_generators()[0], two.group_generators()[0]
+                sage: kernel = four.Mor(two)({s: t}).kernel()
+                sage: generators = kernel.schreier_generators()
+                sage: all(g in kernel for g in generators)
+                True
+                sage: four.subgroup(generators).cardinality() == kernel.cardinality()
+                True
+                sage: F = Groups.Free(1)
+                sage: label = next(iter(F.free_basis()))
+                sage: s = F.group_generators()[0]
+                sage: reduction = F.Mor(two)({label: t})
+                sage: free_kernel = reduction.kernel()
+                sage: generators = free_kernel.schreier_generators()
+                sage: all(reduction(g) == two.one() for g in generators)
+                True
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
+                sage: G = Groups.S(3)
+                sage: H = G.subgroup((G((1, 2)),))
+                sage: identity_on_generators = G.Mor(G)({g: g for g in G.group_generators()})
+                sage: P = identity_on_generators.preimage_subgroup(H)
+                sage: generators = P.schreier_generators()
+                sage: all(g in P for g in generators)
+                True
+                sage: G.subgroup(generators).cardinality() == H.cardinality() == 2
+                True
+            """
+            morphism = self.kernel_morphism()
+            ambient = self.supergroup()
+            if generators is None:
+                generators = tuple(ambient.group_generators())
+            else:
+                generators = tuple(generators)
+            lifts = ambient.finite_image_lifts(morphism, generators=generators)
+            return tuple(
+                self((~lifts[morphism(s) * image]) * s * representative)
+                for image, representative in lifts.items()
+                for s in generators
+            )
+
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
@@ -433,6 +565,11 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 f"cannot take the preimage of {subgroup} along {morphism} as a subgroup of "
                 f"{group}: the domain of {morphism} is {morphism.domain()}, not {group}"
             )
+        if subgroup not in Subgroups(morphism.codomain()):
+            raise ValueError(
+                f"cannot take the preimage of {subgroup} under {morphism}: "
+                f"the specified target is not a subgroup of {morphism.codomain()}"
+            )
         if predicate is None:
             def predicate(element):
                 return morphism(element) in subgroup
@@ -464,6 +601,53 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
 
         def target_subgroup(self):
             return self._target_subgroup
+
+        def schreier_generators(self, *, generators=None):
+            r"""Generate a finite-index preimage using cosets ``t J`` of its image.
+
+            Let ``Q=f(G)`` and ``J=Q intersect H``. Choose a representative
+            ``t`` for each left coset ``q J`` and lift it to ``G``. For
+            each source generator ``s`` and representative ``t``, the
+            element ``t_(f(s)tJ)^-1 s t`` belongs to the preimage and the
+            resulting Schreier family generates it. The supplied generator
+            family, when present, must generate the whole ambient group.
+
+            EXAMPLES::
+
+                sage: C = Groups.C(4)
+                sage: c = C.group_generators()[0]
+                sage: H = C.subgroup((c*c,))
+                sage: F = Groups.Free(1)
+                sage: s = F.group_generators()[0]
+                sage: phi = F.Mor(C)({next(iter(F.free_basis())): c})
+                sage: P = phi.preimage_subgroup(H)
+                sage: generators = P.schreier_generators()
+                sage: all(g in P for g in generators)
+                True
+                sage: any(g == s*s or g == ~(s*s) for g in generators)
+                True
+            """
+            morphism = self.preimage_morphism()
+            ambient = self.supergroup()
+            target = self.target_subgroup()
+            if generators is None:
+                source_generators = tuple(ambient.group_generators())
+            else:
+                source_generators = tuple(generators)
+            lifts = ambient.finite_image_lifts(morphism, generators=source_generators)
+            representatives = []
+            for image in lifts:
+                if not any((~representative) * image in target for representative in representatives):
+                    representatives.append(image)
+
+            def representative_of(image):
+                return next(rep for rep in representatives if (~rep) * image in target)
+
+            return tuple(
+                self((~lifts[representative_of(morphism(generator) * image)]) * generator * lifts[image])
+                for image in representatives
+                for generator in source_generators
+            )
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):

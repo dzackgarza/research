@@ -49,6 +49,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 1. Isotropic witness — frozen `L.isotropic_vector()`
 
+**Frozen-call reconciliation (2026-10-09):** Research exposes the exact frozen name. It returns a nonzero lattice element, primitive over `ZZ`, with square zero. When the nonzero zero-fibre is empty, it raises `ValueError("the lattice has no nonzero isotropic vector")`; a nonzero radical vector is a valid result. The positive, anisotropic and radical cases are retained as specimens at the owning method. The older discussion of a differently named `isotropic_vector_witness()` is historical, not the current public research call.
+
 **Owner:** the nonzero zero fibre of a quadratic form, with a witness-selection operation on that represented locus. Integral lattices specialize this after scalar extension to their rational quadratic space.
 
 **Contract:** retain the quadratic space, its form, the selected nonzero vector, and the integral inclusion when an integral vector is requested. Over a finite free integer lattice, denominator clearing followed by primitive normalization raises a rational witness. In a degenerate space a radical vector is a valid isotropic witness, but it is insufficient for splitting off a nondegenerate hyperbolic plane.
@@ -56,6 +58,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F0 → F1 → F2 → F3. The zero-fibre predicate is present; the exact formal witness operation and its failure contract need mapping. `qfsolve` is the private realization over rational coefficients. The local `isotropic_vector_witness()` changes both the frozen name and the anisotropic failure behavior and cannot stand as the agreed public entrypoint.
 
 ### 2. Vector content — frozen `v.content()`
+
+**Frozen-call reconciliation (2026-10-09):** `v.content()` is available through the free-module owner and returns the nonnegative generator in `ZZ`, rather than the order-ideal object. `v.order_ideal()` retains that intrinsic ideal separately. The zero vector has content zero, while `primitive_part()` raises `ValueError` at zero. On the lattice with Gram `[[0,6],[6,0]]`, the vector with chosen-frame coordinates `(2,3)` has content one (focused Sage); this operation does not depend on the form. The earlier discussion of coordinate realization is a mathematical ownership caveat, not a missing research method.
 
 **Owner:** the order ideal of an element of a module, obtained from evaluation `M* → R`, `f ↦ f(v)`. On a finite projective module this gives the intrinsic ideal represented by the coordinate ideal in a basis. The nonnegative integer generator is a specialization for free integer modules.
 
@@ -65,6 +69,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 3. Bezout partner — frozen `v.bezout_partner()`
 
+**Frozen-call reconciliation (2026-10-09):** The method is present at the lattice element owner. On `ZZ` lattices it returns a selected lattice vector `h` with `b(v,h)=v.div()` by lifting through the pairing module morphism; zero has selected partner zero. For Gram `[[0,6],[6,0]]` and coordinates `(2,3)`, focused Sage returns pairing six; `L.zero().bezout_partner()==L.zero()` also holds. The full solution fibre is separately retained by `pairing.solution_fibre`, so the selected vector is not substituted for the affine locus. The finite and finite-support infinite-rank branches are separate computational realizations.
+
 **Owner:** lifting a generator of the image of a linear functional. For a formed module, compose its correlation map with evaluation at `v` to obtain `b(v,-): M → R`.
 
 **Contract:** over a PID with a selected generator `d` of the image ideal, return an element of the fibre over `d`. The full fibre is a torsor under the kernel. Over `ZZ`, choose `d ≥ 0`. For `d=0`, zero is a permissible selected lift. Over a nonprincipal image ideal, a single generator and hence this scalar-returning contract need not exist.
@@ -72,6 +78,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F1/F2/F3 → image factorization → fibre and kernel. `divisibility` is already an image ideal in F3. Generic image lifting owns the computation; a lattice-local xgcd loop duplicates that responsibility. The added method and the rational Witt consumer must use the same general lift construction once its presentation is available.
 
 ### 4. Integral hyperbolic partner — frozen `v.hyperbolic_partner()`
+
+**Frozen-call reconciliation (2026-10-09):** The exact frozen name returns a selected integral element `h` satisfying `q(h)=0` and `b(v,h)=v.div()`, rather than the entire locus. That locus with its inclusion is separately available from `v.hyperbolic_partner_locus()`. A primitive isotropic vector outside the radical is required; the caller violates the hypotheses otherwise. A provably empty locus raises `ValueError("the integral hyperbolic partner locus is empty")`, as on Gram `[[0,2],[2,2]]`. The existing positive specimen on Gram `[[0,2,0],[2,2,0],[0,0,-2]]` has pairing two. These owner-local positive and negative specimens are already retained; the general method does not assert primitive implies existence.
 
 **Owner:** the integral point locus cut out by `b(v,w)=d` and `q(w)=0`, where `d` generates the pairing ideal. This is a quadratic locus inside an affine linear fibre, not another linear solver.
 
@@ -81,6 +89,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 5. Integral hyperbolic splitting — frozen `R.integral_hyperbolic_splitting()`
 
+**Frozen-call reconciliation (2026-10-09):** The named research method exists at the isotropic-reduction owner. It returns the actual isometry `L -> U ⊥ R`, with the reduction object `R=I^perp/I` retained as the second orthogonal biproduct factor. The inverse gives the selected comparison arrows, not only an abstract isometry class. An even integral ambient lattice, rank-one isotropic line and divisibility-one generator are required; violating these hypotheses raises `ValueError`. The owner specimen checks the exact source and reduction-factor identities and the two-sided inverse on generating vectors. The output is not a rational Witt decomposition or a pair of arbitrary bases.
+
 **Owner:** a chosen orthogonal summand, specialized to an even integer lattice with a specified primitive isotropic line generated by `e` of divisibility one.
 
 **Contract:** the reduction retains `I → I-perp → L`, the quotient map `I-perp → I-perp/I`, and its descended form. A selected partner gives `L ≅ U ⊥ K`; the result must compare `K` with the given reduction and retain both summand inclusions/projections. The frozen arrow points from `L` to `U ⊕ K`. A rational decomposition or an isomorphic abstract complement without that comparison is insufficient.
@@ -89,13 +99,17 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 6. Recovering two hyperbolic planes
 
+**Frozen-call reconciliation (2026-10-09):** Research `L.two_hyperbolic_plane_splitting()` returns `None` when two integral hyperbolic planes do not split off, or a chosen isometry `U⊥U⊥K -> L` with a two-sided inverse and the defining biproduct injections and quotient comparisons. This reverses the single-reduction splitting arrow's direction because the two-plane construction presents a chosen model *into* `L`; consumers must not infer the direction from the method name. Both scalar rank and genus conditions are checked at the owner, and the represented scrambled `2U + E8(-1)` specimen has passed an inverse-on-generators check. An unavailable computation is not to be reported as a proved absence of planes.
+
 **Owner:** repeated chosen orthogonal decomposition, using row 5 at each stage. A two-plane or Eichler model contains this decomposition; it does not independently compute another lattice and attach splitting labels.
 
 **Contract:** return a chosen isometry and its summand maps for `L ≅ U ⊥ U ⊥ K`. Finding a suitable divisibility-one isotropic vector is a separate integral existence/search problem. A rational witness with larger divisibility does not refute the existence of a splitting. A construction from a supplied complement is not recovery from an arbitrary Gram presentation.
 
-**Trace:** rows 1, 4, 5, with the integral hypotheses retained at both stages. The local `two_hyperbolic_plane_splitting()` bypasses the requested reduction-owned splitting and does not supply the general existence search. Its `TwoUEichlerModel` source is a downstream specialization, not the owner of an orthogonal decomposition. The scrambled `2U + E8(-1)` specimen does not settle that abstraction.
+**Trace:** rows 1, 4, 5, with the integral hypotheses retained at both stages. The current `two_hyperbolic_plane_splitting()` composes two `isotropic_reduction().integral_hyperbolic_splitting()` arrows, their orthogonal-biproduct injections, and an explicit isometry from `U + U + K` to the original lattice. Its `integral_hyperbolic_index()` existence check precedes an exhaustive divisibility-one null-vector search in each reduction when the initial witness is unsuitable. The two summand injections and both inverse identities passed targeted execution on a nontrivial Gram presentation; the scrambled `2U + E8(-1)` specimen is additionally present at the owner. General formal comparison and independent acceptance are not established by these examples. `TwoUEichlerModel` remains a downstream consumer, not this decomposition's owner.
 
 ### 7. Affine integral solution locus — frozen `family.integral_members()`
+
+**Frozen-call reconciliation (2026-10-09):** `AffineModuleFibres.ParentMethods.integral_members(integral_parameters)` retains the frozen name on a represented *solution fibre*, not on an arbitrary family. The argument is the chosen integral parameter inclusion into the restricted-scalars rational parameter module. It returns another `AffineModuleFibres` object with that inclusion, offset, full translation module and torsor action retained; it is not a single integral solution or a Boolean. The method rejects an invalid rational ambient module, and requires the original fibre's target submodule to be zero (`ValueError`). The finite-rank matrix-fibre and affine-line specimens already exercise the integration. A stopped port consumer that calls the method on a general parameterized family must first construct its linear solution fibre; silently treating `integral_members` as an enumeration is a contract mismatch.
 
 **Owner:** inverse image of a chosen integral submodule under an affine map, after restricting scalars. For `F: P → V`, `F(p)=c+A(p)`, and `j: M → Res(V)`, the object is the pullback of `F` and `j` on underlying affine sets.
 
@@ -105,6 +119,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 8. Equation `XA + A-transpose X-transpose = B`
 
+**Frozen-call reconciliation (2026-10-09):** `A.symmetrized_right_multiplication()` returns the based linear operator `X ↦ XA+(XA)^t`, not a solution set. Its `solution_fibre(B)` returns the complete affine fibre and homogeneous translation action; `preimage(B)` selects only one solution and `kernel()` gives only homogeneous solutions. The map is built over a commutative base ring and raises `ValueError` otherwise. On the integral 2-by-2 identity matrix, focused Sage confirms `equation(fibre.base_point())=2I`, the skew generator belongs to the homogeneous kernel, and translating the selected origin by it remains inside the fibre. The research result uses an explicit framing; an unframed general equation requires separate duality data.
+
 **Owner:** a fibre of a linear map between modules of maps/forms. With explicit finite framings, the displayed map is `X ↦ XA+(XA)^t`; without framings, use duality and a correctly typed symmetrization into bilinear forms. An unframed map `V → W` does not canonically identify either space with its dual.
 
 **Contract:** preserve the coefficient map, parameter module, target module, right-hand side, full affine fibre, and homogeneous kernel. Integral solutions are the intersection of that fibre with a chosen integral parameter module, not merely the integral homogeneous kernel. Commutativity suffices for matrix linearity; division by two is not allowed over arbitrary rings.
@@ -112,6 +128,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 **Trace:** F1/F2 → Hom modules and duality → linear map → row 7. The added `symmetrized_right_multiplication()` exposes a based linear operator and is useful as a realization/composite. It is not the shared solution-space abstraction, and `preimage(B)` returns only one point. Matrix coordinates must remain a selected presentation of the general construction.
 
 ### 9. Invariant overlattice — frozen `G.invariant_overlattice(L)`
+
+**Frozen-call reconciliation (2026-10-09):** The exact name is implemented at the group action owner and returns an `OrbitSpanLattices(ZZ)` object, not a matrix or an arbitrary lattice isomorphism. It retains the orbit-generated submodule construction, its ambient inclusion and action. The group must be included in the orthogonal group of the specified rational span; an unrelated action raises `ValueError`. The implementation rejects non-`ZZ` lattices with `TypeError`, and its finite-rank realization reports that limitation explicitly. For a nondegenerate `L` the finite containing bound comes from the metric dual; an orbit exceeding that bound or failing integral-valuedness is rejected rather than falsely claimed to have an integral invariant overlattice. The prior targeted `diag(2,1/2)` action on U verifies that negative boundary. The frozen consumer must not interpret this method as always producing an overlattice for any commensurating rational group action.
 
 **Owner:** the submodule generated by the orbit of a submodule under a represented linear group action: `sum(g(L), g in G)`, equivalently the image of the group-algebra-generated module. The action `G → Aut(V)` and the inclusion `L → Res(V)` are required data.
 
@@ -121,6 +139,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 10. Nonisotropic perpendicular extension — frozen `phi.extension_across(v,w)`
 
+**Frozen-call reconciliation (2026-10-09):** Research now exposes the exact frozen name `extension_across(source_vector,target_vector,*,source_inclusion=None,target_inclusion=None)`. It returns an isometry of the scalar-extended ambient spaces, preserving the selected perpendicular embedding squares. Both canonical inclusions and explicitly specified noncanonical embeddings are supported, including distinct perpendicular endpoints inside one ambient lattice. Unequal or zero vector squares and wrong embedding domains/codomains raise `ValueError`. The source docstring verifies integral descent for `diag(2,2,-2)`, while targeted prior specimens verify that the extension restricts correctly along a twisted embedding `j*(-id)`; this operation itself does not assert integral descent. The earlier trace below describes the *superseded* local `extend_from_perpendicular` implementation and is not the current API.
+
 **Owner:** extension of an isometry between orthogonal summands, composed with chosen orthogonal decompositions. Over a field, a vector of nonzero square splits off its line. An isometry of the complementary spaces together with `v ↦ w` extends uniquely when their squares agree.
 
 **Contract:** retain both perpendicular inclusions and both ambient spaces. The partial isometry need not have subobjects as literal Python endpoints if explicit embedding data is supplied. Scalar extension supplies the rational ambient extension; integral descent is row 12. Definiteness belongs only to an algorithm enumerating the complement isometry torsor.
@@ -129,13 +149,17 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 11. Codimension-one Witt extension — frozen `phi.witt_extension(source_inclusion,target_inclusion)`
 
+**Frozen-call reconciliation (2026-10-09):** Research exposes the exact frozen name on a rational lattice partial isometry. It returns a chosen ambient isometry from `source_inclusion.codomain()` to `target_inclusion.codomain()`, preserving the restriction square. The full extension locus is separately represented by `witt_extension_locus(source_inclusion,target_inclusion)`; the chosen point must not be confused with that fibre. Both embedding domains must match the partial isometry endpoints (`ValueError` otherwise). In the positive codimension-one example over `U+<2>`, the extension restricts to the partial map and has a two-sided inverse. In the degenerate ambient example, a partial map that exchanges an ambient-radical direction with a nonradical null direction raises `ValueError` for radical incompatibility. The owner docstring retains both cases. The research contract does not apply nondegenerate Witt extension indiscriminately to ambient spaces with radicals.
+
 **Owner:** extension of a partial isometry along specified formed embeddings. The isometries of the ambient objects with the required restriction form a fibre of the restriction operation; a selected extension is a point of this fibre.
 
 **Contract:** distinguish a degenerate hyperplane in a nondegenerate ambient quadratic space from an ambient space with radical. Over a field of characteristic different from two, a hyperplane with one-dimensional radical inside a nondegenerate space admits the usual Witt extension. If the ambient form is degenerate, compatibility with the ambient radicals is necessary; the former theorem must not be applied unchanged. Preserve the square formed by the inclusions and extension.
 
-**Trace:** F2 → restriction of isometries → orthogonal complement/radical → extension theorem. The inspected formal sources provide vector reflection transitivity, cancellation, and nonisotropic complement extension, not an identified declaration for this full contract. The port's norm correction requires a nonzero pairing with a complementary vector and therefore cannot establish the unrestricted degenerate-ambient claim. Resolve the ambient hypotheses and formal theorem before migration.
+**Trace:** F2 → restriction of isometries → orthogonal complement/radical → extension theorem. The inspected formal sources provide vector reflection transitivity, cancellation, and nonisotropic complement extension, not an identified declaration for this full contract. Research's `LatticeIsometryMethods.witt_extension` now retains the restriction equalizer and checks ambient-radical intersections before choosing a complementary vector. Targeted execution on `U + <2>` over `QQ` extends the isometry fixing a null direction and negating its norm-two complement on the degenerate hyperplane, preserving both the inclusion square and inverse; on ambient Gram `diag(1,-1,0)` it rejects the partial isometry interchanging the null vector `e+f` and the ambient radical. Both are retained at the owner. The port's norm correction by itself requires a nonzero pairing with a complementary vector and cannot establish the unrestricted degenerate-ambient claim. Formal theorem comparison and independent acceptance remain open.
 
 ### 12. Integral descent — frozen `M.integral_isometry(phi)` and `phi.is_integral_on(L)`
+
+**Frozen-call reconciliation (2026-10-09):** Both names exist. `M.integral_isometry(phi, source=None)` returns an integral lattice isomorphism, not a Boolean or merely an embedding; it infers the source from the retained base-change parent, or from `M.vector_space()` for an endomorphism, and otherwise requires the caller to provide `source`. It raises `ValueError` when either direction fails to factor integrally. `phi.is_integral_on(L, target=None)` is instead a Boolean forward-factorization test, defaulting to the same target lattice. `phi.integral_restriction(L,M)` returns `None` on failed two-sided descent. On U, the rational isometry `diag(2,1/2)` returns `False` for `is_integral_on(U)` and `None` for `integral_restriction(U,U)` and raises the specified `ValueError` for `U.integral_isometry(phi)` (targeted Sage). The frozen port must distinguish these three return/failure contracts.
 
 **Owner:** factorization through specified integral subobject inclusions under scalar extension. For `j_L: L → V`, `j_M: M → W`, factor `phi*j_L` through `j_M`. This gives an integral map. Factor the inverse too to obtain an isomorphism.
 
@@ -145,6 +169,8 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 13. Clearing denominators of a rational isometry — frozen `phi.integral_similarity(L,E)` and `.scale()`
 
+**Frozen-call reconciliation (2026-10-09):** The frozen `phi.integral_similarity(L,E)` is present and returns a formed-module monomorphism, not an isometry onto `E`; `sigma.scale()` is the positive denominator generator `N`, `sigma.multiplier()` is `N^2`, and `sigma.index()` is the cokernel cardinality. With the *actual chosen frame labels* on `U`, the rational isometry `diag(2,1/2)` gives scale `2`, multiplier `4`, and finite index `4` (targeted Sage). Literal integer comparisons against labels construct the wrong map and cannot serve as this specimen. A failure to clear the computed denominator raises `ArithmeticError`; the non-PID or nonprincipal denominator cases require their stated ring hypotheses rather than pretending this integral scalar is universal.
+
 **Owner:** the denominator ideal of a rational module map relative to integral structures, followed by scalar multiplication of the map and transport of its form equation. Over `ZZ`, this ideal has a least positive generator `N` for finite-rank full lattices.
 
 **Contract:** retain the map `sigma=N*phi`, its finite-index image, the denominator factor `N`, and its form multiplier `N^2`. Indeed `b_E(sigma x,sigma y)=N^2*b_L(x,y)`. These are different scalars. `sigma` is generally an embedding, not an isomorphism onto `E`. On `U`, `phi=diag(2,1/2)` has `N=2`; `sigma=diag(4,1)` has index four and form multiplier four.
@@ -153,13 +179,17 @@ Throughout this audit, the issue's square convention is `q(x)=b(x,x)`. Character
 
 ### 14. Twist functor on isometries
 
+**Frozen-call reconciliation (2026-10-09):** The existing `TwistFunctor` transports an isometry and its inverse, preserving isomorphism-specialized endpoints. The lattice method `L.twist(-1)` has normalized parent identity on applying the sign twist twice. Its result is a twisted formed object, not a new underlying abelian group chosen independently. The prior U owner specimen tests inverse composition and literal parent identity. A general nonunit value scaling does not acquire an inverse by virtue of this sign-twist specimen; that formal equivalence boundary remains separate.
+
 **Owner:** change of value of a formed object, by multiplication on its value module. Restrict this functor to the relevant lattice category and its core of isomorphisms.
 
 **Contract:** transport both a map and its inverse; preserve composition. Scaling twice has the comparison with scaling by the product. For the sign twist, the requested Python identity `L.twist(-1).twist(-1) is L` additionally requires constructor normalization of this action. Mathematical functoriality alone does not imply object identity in Python. Nonzero versus invertible scaling must be separated when claiming an equivalence over a general ring.
 
-**Trace:** F2 → F6 `changeValue` and its identity/composition laws → core functor → chosen presentation normalization. `TwistFunctor._apply_morphism` currently calls `source.Mor(target)`, forgetting the isomorphism specialization. Repair belongs to value-change transport and its restriction, not a port-specific matrix retargeting method.
+**Trace:** F2 → F6 `changeValue` and its identity/composition laws → core functor → chosen presentation normalization. `TwistFunctor._apply_morphism` now preserves the isomorphism specialization and transports its inverse pair. Targeted Sage execution confirms that twisting the identity of U yields an isomorphism between the exact twisted endpoints with a two-sided inverse, and that `U.twist(-1).twist(-1) is U`. General formal comparison of value-change composition remains open.
 
 ### 15. Lifts through isotropic reductions — frozen `R.rational_lifts(target,psi)`
+
+**Frozen-call reconciliation (2026-10-09):** The exact `R.rational_lifts(target,isometry)` call is implemented at the isotropic-reduction owner. It returns an `IsotropicReductionLiftTorsors` object over the rational marked-line reduction kernel, not an affine-linear space of matrices or a list of lifts. The selected `base_point()` is additional trivialization data; the group action and evaluation are retained. Integral points belong to the separate `integral_members()` G-object, and parameter integrality does not identify the whole integral kernel with a finite residue quotient. Existing `U+<2>` owner specimens verify the nontrivial integral parameter/inverse and difference actions; the rank-zero boundary has an integral base point. A chosen lift's failure to descend integrally is not a proof that the integral-lift locus is empty.
 
 **Owner:** a fibre of the map from isometries preserving marked isotropic data to isometries of the reductions. When nonempty this fibre is a torsor under the kernel of the restriction/reduction action.
 
@@ -171,6 +201,8 @@ The parameter space can be affine while its evaluation in the space of matrices 
 
 ### 16. Signature-defined directions — frozen `L.positive_vector()`, `S.vector_of_sign(sign)`
 
+**Frozen-call reconciliation (2026-10-09):** Both names exist through the formed-module owner. `positive_vector()` is `vector_of_sign(1)`; `negative_vector()` is `vector_of_sign(-1)`. These return a vector in the *original formed parent*, or `None` if the requested strict sign does not occur. A requested sign other than `-1` or `1` raises `ValueError`. For a formed subobject of `U`, owner specimens verify that positive and negative witnesses retain the subobject parent and their form values agree under its inclusion; a negative-definite line has no positive witness. Neither operation returns an ambient-lattice vector after silently forgetting the selected subobject.
+
 **Owner:** witness selection in a signed locus of an ordered-field-valued quadratic form. For a subspace, first restrict the form along its retained inclusion.
 
 **Contract:** a nonzero vector with the requested strict sign, or the declared absence result; return an element of the specified subspace with its ambient inclusion available. Ordering, or a chosen real place for a number field, is part of the input. Signature can decide existence in a finite-dimensional setting but does not itself choose a vector.
@@ -178,6 +210,8 @@ The parameter space can be affine while its evaluation in the space of matrices 
 **Trace:** F1/F2 → restriction → ordered value predicate → F8 existence → witness. Rational diagonalization is a private realization. The local positive/negative methods expose lattice conveniences; the general signed-locus operation and the frozen subspace method still need their formal and presentation mapping.
 
 ### 17. Binary fixed-norm representations — frozen extension of `L.vectors_of_square(n)`
+
+**Frozen-call reconciliation (2026-10-09):** Research `vectors_of_square(n)` retains the full norm fibre rather than returning orbit representatives. On definite lattices and nonzero split binary fibres this is a finite subset with inclusion; otherwise it retains the represented square-fibre object. The separate `binary_fixed_norm_representatives(n)` returns the selected orbit representatives with the action/quotient data, and `reduction_cycle(bound,start)` returns a period isometry with its bounded vector subset, or `None`. A split binary zero fibre is not finite and the representative method rejects its infinitely many content classes with `ValueError`. The frozen row's interpretation of `vectors_of_square` as orbit representatives conflicts with the actual mathematical return object; the stopped port must take the orbit quotient explicitly rather than changing the norm-fibre API.
 
 **Owner:** the norm fibre as a `G`-set, followed by its orbit quotient for an explicitly selected subgroup of the orthogonal group. Chosen representatives and transporters are data over that quotient.
 
@@ -189,6 +223,8 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 
 ### 18. Affine close-vector shells — frozen shell methods with a multiplier bound
 
+**Frozen-call reconciliation (2026-10-09):** Research exports `first_close_vector_shell(t,B,M)` and `first_close_vector_sphere(t,B,M)` with the frozen names. Each returns `None` if no multiplier in `1..M` succeeds, or a product element `(m, finite_subset)` whose finite subset retains its inclusion into the original lattice. Sphere selection tests the exact boundary, while shell selection tests the whole signed sublevel interval; the shared `scaled_close_vector_shells` retains the fixed-m family. A nondefinite form or a bound of the wrong sign raises `ValueError`, and a target outside the selected rational ambient is rejected. The observed bound-zero shell returns `None`; it is not an unbounded search.
+
 **Owner:** intersection of an affine quadratic sublevel set with a discrete lattice, and an indexed family of such intersections. The least successful multiplier is a selection from the index set of nonempty fibres.
 
 **Contract:** the [shell amendment](https://github.com/dzackgarza/research/issues/401#issuecomment-6065258075) specifies a definite form of either sign, with `B` of that sign. Retain `K`, its rational ambient space, target `t`, and the fibre `{x in K : min(0,m^2*B) <= q(x-m*t) <= max(0,m^2*B)}`. The sphere fibre has equality `q(x-m*t)=m^2*B`. `first_close_vector_shell(t,B,M)` and `first_close_vector_sphere(t,B,M)` return the least successful `1 <= m <= M` and that fibre, or `None`. Exhausting the bound decides only that bounded search. The fixed-m shell is `close_vectors(m*t,m^2*B)`. A denominator `D` with `D*t in K` supplies an unrestricted shell point at `m=D`; it supplies a sphere point by this argument only when `B=0`.
@@ -197,6 +233,8 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 
 ### 19. Integral points on an affine line — frozen `L.affine_line_points(base,direction)`
 
+**Frozen-call reconciliation (2026-10-09):** The frozen callable name is present on the research lattice. It returns `None` for an empty fibre or an element of `Sets().product((L,L))` representing `(point, primitive_step)` for a nonempty affine rank-at-most-one integral image. The full affine point set, translation module, and evaluation map belong to the separate `L.affine_line_fibre(base,direction)` datum; the tuple is presentation data and does not replace that object. At zero direction and integral zero base, focused Sage verifies `(0,0)` and independently verifies the retained image has cardinality one. An empty constant image is represented by `None`, while the parameter fibre must not be identified with its image. The frozen consumer must not treat the pair itself as an object carrying the affine inclusion. This is a return-object distinction to retain at port #33 when that stopped stream resumes, not a request to rename the research operation.
+
 **Owner:** row 7 specialized to the affine map `lambda ↦ base+lambda*direction`, followed by its image in the ambient rational space.
 
 **Contract:** with nonzero rational direction, the integral point set is empty or an affine rank-one lattice; retain its inclusion and a chosen point and primitive integral step. For zero direction, the point set is empty or a singleton, while the parameter preimage is empty or all of `QQ`. Those are different objects. A pair of vectors is useful presentation data only when attached to the appropriate affine point set.
@@ -204,6 +242,8 @@ The current issue body distinguishes the cases explicitly: `vectors_of_square(n)
 **Trace:** F1/F9 → row 7 → image and retained parameterization. This is not a separate coordinate congruence algorithm on lattices. The affine fibre must exist first.
 
 ### 20. Divisibility sublattice — requested `L.divisible_sublattice(d)`
+
+**Frozen-call reconciliation (2026-10-09):** Research implements the exact name as `L.ideal_dual(d).integral_pullback()` and returns a formed subobject of `L`, not an independently presented Gram matrix. Its inclusion `i`, retained ideal-dual morphism `k=map_to_ideal_dual()`, generic-fibre inclusion `j`, and ideal-dual inclusion `u` satisfy `j*i=u*k`. On Gram `diag(0,2)` and divisor `3`, this equality passed on all generators; the divisor-zero case returns the radical with rank one and also passes the square comparison. Divisor zero is not substituted into the nonzero-divisor expression `L intersect d*L^#`.
 
 **Owner:** inverse image of an ideal-valued metric dual along the integral inclusion into the rational span. For `j: L -> L_Q` and `I=(d)`, form the pullback of `idealDual(ZZ,L,I) -> L_Q` along `j`.
 
@@ -227,7 +267,7 @@ The issue's instruction to supply public operations does not authorize exporting
 
 ## Disposition of the code already added
 
-The source now composes the owners described below. These changes remain unexecuted under DEV-58 while the M1 source prerequisites are open; they do not establish correctness acceptance.
+The source now composes the owners described below. Targeted issue-401 engineering specimens have since executed as authorized in `HANDOFF.md`; the remaining source obligations are not thereby discharged, and no run constitutes independent correctness acceptance.
 
 | Added surface | Required architectural disposition |
 | --- | --- |
@@ -252,9 +292,9 @@ The source now composes the owners described below. These changes remain unexecu
 
 ## Unresolved formal and contract work
 
-The source rework above is committed. Python parsing, undefined-name checks on the affected owners, and whitespace checks pass. These are engineering checks. No mathematical specimen or preamble runtime was executed during this source phase. The M1 prerequisites and DEV-58 still govern execution, and correctness acceptance belongs to `lean-cas-dsl`.
+The source rework above is committed. Python parsing, undefined-name checks on the affected owners, and whitespace checks were engineering checks. Subsequent targeted Sage execution verified the integral reduction-lift parameter/inverse and full integral-kernel membership on `U+<2>`, the invariant-overlattice obstruction for `diag(2,1/2)` on U, signed witnesses and the primitive null family of U, a nonzero affine-line torsor action, the integral 2-by-2 matrix symmetrization fibre and its skew translation action, similarity factor/multiplier/index `(2,4,4)`, finite orthogonal-subgroup membership on the `U(2)` discriminant form, and the period map of a binary anisotropic form with Gram `diag(2,-4)`. Direct runtime comparison with the pinned port `709f81a` now additionally agrees exactly on the ordered cycle vectors and period automorphism for `diag(2,-6)`, `[[4,2],[2,-2]]`, and `diag(2,-4)` at bound 4. The exact checks and remaining contracts are recorded in `HANDOFF.md`. These are engineering checks, not independent correctness evidence. The M1 prerequisites and DEV-58 govern broad verification; correctness acceptance belongs to `lean-cas-dsl`.
 
-The listed frozen source operations and the finite-rank point-selection constructions now have implementations. Their integrated execution, port contract reconciliation, and independent acceptance remain open. Infinite-rank quadratic point selection and orbit spans without a finite-generation hypothesis are outside the finite realizations stated above.
+The listed frozen source operations and the finite-rank point-selection constructions now have implementations. Each is accepted by true mathematical assertions at its owner; how a consumer such as `sage-indefinite-port` calls them is not part of research's acceptance. Infinite-rank quadratic point selection and orbit spans without a finite-generation hypothesis are outside the finite realizations stated above.
 
 The dependency traces above cover every issue item. The formal comparisons concern the mathematical definitions, hypotheses, maps, and presentations, independently of the computations. The remaining subjects are:
 
@@ -273,7 +313,7 @@ Formal availability remains unresolved where stated; the inspected declarations 
 
 ## Separating mathematical specimens for the remaining execution phase
 
-These are deductions from the displayed forms and inclusions. They are unexecuted source specimens, not correctness acceptance results.
+These are deductions from the displayed forms and inclusions. Some neighboring and directly matching specimens have been executed as described above and in `HANDOFF.md`; other rows remain unexecuted. None is an independent correctness acceptance result.
 
 | Construction | Mathematical specimen |
 | --- | --- |

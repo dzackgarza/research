@@ -296,37 +296,8 @@ class PrimeSpectra(OwnedCategory):
 
         @cached_method
         def height(self):
-            r"""Return the height of this point, the codimension of its closure.
-
-            The height of ``p`` is the dimension of the local ring ``R_p``, and
-            in a domain that is finitely generated over a field, or of
-            dimension at most one, the dimension formula
-            ``height(p) + dim(R/p) = dim(R)`` holds, because such a ring is
-            catenary and equidimensional.  So the height is read from two
-            dimensions the ring already answers, rather than from a chain of
-            primes nobody can enumerate.
-            """
-
-            ring = self.parent().ring()
-            assert ring in OwnedRings().Commutative().NoZeroDivisors(), (
-                f"the dimension formula that computes height here needs {ring} to be "
-                "an integral domain"
-            )
-            finite_type_source = (
-                ring.quotient_source()
-                if ring in QuotientRings()
-                else ring
-            )
-            assert (
-                ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
-                or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
-            ), (
-                f"the dimension formula that computes height here needs {ring} to be "
-                "a principal ideal domain or finitely generated over a field, which is "
-                "what makes it catenary and equidimensional"
-            )
-            quotient = ring.quotient_ring(self.ideal())
-            return ring.krull_dimension() - quotient.krull_dimension()
+            r"""The intrinsic height ``ht(p) = dim(R_p)`` of a prime ideal."""
+            return self.local_ring().krull_dimension()
 
         @cached_method
         def embedding_dimension(self):
@@ -508,17 +479,23 @@ class PrimeSpectra(OwnedCategory):
 
         D = distinguished_open
 
-        def generic_point(self):
-            engine = _engine_ring(self.ring())
-            zero = engine.ideal(0)
-            if not bool(zero.is_prime()):
-                raise ValueError(
-                    f"{self.ring()} is not an integral domain, so Spec({self.ring()}) has no unique generic point"
-                )
-            return self._element_constructor_(zero)
-
         def _repr_(self):
             return f"Spec({self.ring()})"
+
+
+class IntegralPrimeSpectra(OwnedCategory):
+    r"""Spectra of integral domains, with their distinguished generic point."""
+
+    def super_categories(self):
+        return [PrimeSpectra()]
+
+    def an_object(self):
+        return _own_ring(SageZZ).spectrum()
+
+    class ParentMethods:
+        def generic_point(self):
+            r"""The generic point corresponding to the zero prime ideal."""
+            return self(self.ring().ideal(self.ring().zero()))
 
 
 def _engine_ring_value(ring, value):
@@ -1561,10 +1538,24 @@ class PrimeLocalizations(OwnedCategory):
             The primes of ``R_p`` are the ``qR_p`` for the primes ``q`` of
             ``R`` inside ``p``, in order-preserving bijection, so a chain in
             ``R_p`` is a chain in ``R`` ending at ``p``.
-            The height is asked of the point ``p`` of ``Spec R``.
+            In the dimension-formula regime we can compute this intrinsic
+            dimension from source and quotient dimensions.  Outside that
+            regime no such equality is assumed.
             """
             source = self.localization_source()
-            return source.spectrum()(self.localized_prime()).height()
+            finite_type_source = source.quotient_source() if source in QuotientRings() else source
+            if (
+                source in OwnedRings().Commutative().NoZeroDivisors()
+                and (
+                    source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+                    or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
+                )
+            ):
+                return source.krull_dimension() - source.quotient_ring(self.localized_prime()).krull_dimension()
+            raise NotImplementedError(
+                f"the intrinsic dimension of {self} requires a prime-chain or independent local-dimension "
+                "realization outside the represented dimension-formula regime"
+            )
 
         @cached_method
         def residue_field(self):
@@ -2846,6 +2837,35 @@ def _finite_generated_localization(source, submonoid):
         localization_engine = extended_cover.quotient(
             extended_cover.ideal(relations)
         )
+    elif (
+        bottom is source
+        and hasattr(engine_bottom, "variable_names")
+        and engine_bottom.base_ring().is_integral_domain() is False
+    ):
+        # An arbitrary commutative coefficient ring admits localization,
+        # although Sage's PolynomialRing.localization demands a domain.
+        # The inverse-variable presentation represents the universal ring
+        # without imposing a false no-zero-divisors hypothesis.
+        source_names = tuple(engine_bottom.variable_names())
+        occupied = set(source_names)
+        inverse_names = []
+        for i in range(len(values)):
+            candidate = f"localization_inverse_{i}"
+            while candidate in occupied:
+                candidate += "_"
+            occupied.add(candidate)
+            inverse_names.append(candidate)
+        extended = _SagePolynomialRing(
+            engine_bottom.base_ring(), names=(*source_names, *inverse_names)
+        )
+        relations = tuple(
+            extended.gen(len(source_names) + i) * extended(value) - extended.one()
+            for i, value in enumerate(values)
+        )
+        localization_engine = extended.quotient(extended.ideal(relations))
+        engine_source_encoder = lambda element: localization_engine(
+            extended(_engine_element(source, element))
+        )
     else:
         (
             localization_engine,
@@ -3745,6 +3765,7 @@ def _dual_numbers(base_ring, name="epsilon"):
 
 __all__ = [
     "AdicCompletions",
+    "IntegralPrimeSpectra",
     "DistinguishedOpenSubobjects",
     "GeneratedIdealView",
     "LocalizationRings",

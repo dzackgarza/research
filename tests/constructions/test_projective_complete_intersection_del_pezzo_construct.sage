@@ -17,5 +17,5 @@ def test_fermat_cubic_surface_has_anticanonical_hyperplane_class_and_degree_thre
     assert surface.canonical_line_bundle().degree() == -1
     assert surface.anticanonical_line_bundle().degree() == 1
     assert surface.is_del_pezzo()
-    assert surface.del_pezzo_degree() == 3
+    assert DelPezzoSurfaces(surface.scheme_base_ring())(surface).del_pezzo_degree() == 3
     assert surface.is_normal()

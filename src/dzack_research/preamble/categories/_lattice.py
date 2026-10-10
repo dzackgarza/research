@@ -155,21 +155,21 @@ def _generating_set_from_names(names):
 
 
 def _generating_set_for(rank, module_generators, names):
-    r"""The generating set: explicit, else the named SR symbols, else the formal symbols \(e_i\).
+    r"""The basis labels: explicit, else the natural-number ordinal of the rank.
 
-    Names name the generators of a finite framing only; at infinite rank the
-    generators are the formal symbols.
+    Names select a vector's printed notation, not its free-module labels.
     """
     match module_generators:
         case None:
             pass
         case _:
             return _as_generating_set(module_generators, rank)
-    match names is not None and cardinal(rank).is_finite():
+    size = cardinal(rank)
+    match size.is_finite():
         case True:
-            return _generating_set_from_names(names)
+            return Sets.Δ[int(size) - 1]
         case False:
-            return _formal_generating_set(rank)
+            return NN
 
 
 def _resolve_key(keys, index):
@@ -1692,7 +1692,7 @@ def _lattice(
     ``Lattices(R)((R^NN).diagonal_gram({0: -1}))``.  ``form=`` equips a
     given free module with a finite Gram.  ``module_generators=`` is the
     generating set of that free module; when omitted, the generators
-    are the formal symbols \(e_i\in\mathrm{SR}\).  A matrix (type
+    are indexed by the natural-number ordinal of the rank. A matrix (type
     $(1,1)$) is refused.  Named descriptors (``'U'``, a finite
     crystallographic Cartan type, a Euclidean rank) are Gram tensors.
     """

@@ -741,7 +741,22 @@ class GObjectMorCategoryConstruction(MorCategoryConstruction):
 
 
 class GObjects(CategoryPacketMethods, OwnedCategory):
-    r"""The category of objects of ``C`` with a chosen ``G``-action."""
+    r"""The category of objects of ``C`` with a chosen ``G``-action.
+
+    A represented two-point `C_2`-set retains its set cardinality, and the
+    forgetful functor supplies the exact underlying arrow endpoints::
+
+        sage: from dzack_research.preamble.all import Sets, Groups
+        sage: G, X = Groups.C(2), Sets.Δ[1]
+        sage: C = GObjects(G, Sets())
+        sage: A = C.on_set(X, lambda g, x: X((int(x) + int(g)) % 2))
+        sage: A in C and A in Sets()
+        True
+        sage: C.forgetful_functor()(A).cardinality() == 2
+        True
+        sage: C._mor_endpoints_in_supercategory(Sets(), A, A)[0] is C.forgetful_functor()(A)
+        True
+    """
 
     @staticmethod
     def __classcall__(cls, group, category):
@@ -1018,7 +1033,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             arrows = classifying.Mor(point, point)
             return Sets().Mor(self.acting_group(), endomorphisms)(lambda group_element: functor(arrows(group_element)))
 
-        @cached_method
         def action_of(self, group_element):
             r"""Return the automorphism of ``X`` in ``C`` induced by ``group_element``."""
             assert group_element in self.acting_group(), f"{group_element} is not an element of {self.acting_group()}"
@@ -1156,29 +1170,20 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             automorphism generates, and that common fixed locus is what the
             specialization constructs.
             """
-            return self._cyclic_restriction(group_element).fixed_subscheme()
+            from dzack_research.preamble.categories.schemes.schemes import AffineGSchemes
+            from dzack_research.preamble.categories.sets.set_categories import Sets
 
-        def nontrivial_stabilizer_subscheme(self):
-            r"""Return the locus of points fixed by some nonidentity element.
-
-            This is the union of the ``X^g`` over ``g != 1``, and a union of
-            closed subschemes is cut out by the intersection of their ideals.
-            The action is free exactly when this subscheme is empty, and the
-            quotient morphism is ramified exactly over its image, which is
-            where a quotient singularity of the orbit space can appear.
-            """
-            group = self.acting_group()
-            assert group.is_finite() is True, f"cannot form the locus of points of {self} with nontrivial stabilizer: {group} is not known to be finite"
-            identity = group.one()
-            ideal = None
-            for group_element in group:
-                if group_element == identity:
-                    continue
-                fixed = self._cyclic_restriction(group_element).fixed_ideal()
-                ideal = fixed if ideal is None else ideal.intersection(fixed)
-            if ideal is None:
-                ideal = self.coordinate_algebra().ideal(self.coordinate_algebra().one())
-            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+            underlying = self.underlying_category()
+            if underlying.is_subcategory(Sets()):
+                return self.point_set().filtered(
+                    lambda point: self.act(group_element, point) == point,
+                    name=f"fixed points of {group_element} on {self}",
+                )
+            if self in AffineGSchemes(self.acting_group(), self.base_ring()):
+                return self._cyclic_restriction(group_element).fixed_subscheme()
+            raise NotImplementedError(
+                f"the equalizer of {group_element} on {self} must be constructed in {underlying}"
+            )
 
         def action_is_free(self):
             r"""Decide whether the identity is the only element with a fixed point.
@@ -1198,10 +1203,18 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             group = self.acting_group()
             if group.is_finite() is not True:
                 return AtomicProposition("action_is_free", self)
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+            underlying = self.underlying_category()
             identity = group.one()
             for group_element in group:
                 if group_element == identity:
                     continue
+                if underlying.is_subcategory(Sets()):
+                    if not self.fixed_subobject_of(group_element).is_empty():
+                        return False
+                    continue
+                if not underlying.is_subcategory(Schemes(self.base_ring())):
+                    return AtomicProposition("action_is_free", self)
                 restricted = self._cyclic_restriction(group_element)
                 unit = restricted.coordinate_algebra().one()
                 if not restricted.fixed_ideal().contains_ambient_element(unit):

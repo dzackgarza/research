@@ -168,6 +168,18 @@ class CategoryFunctorMor(CategoricalMor):
         return NaturalTransformationMorCategoryConstruction
 
     def super_categories(self):
+        r"""Retain the actual functor category between the selected endpoints.
+
+        EXAMPLES::
+
+            sage: C = Cat().functor_mor(Sets(), Sets())
+            sage: C.super_categories()[0] is C.functor_category()
+            True
+            sage: C.domain().represented_category() is Sets()
+            True
+            sage: C.codomain().represented_category() is Sets()
+            True
+        """
         # This runtime Mor object represents exactly the functors and natural
         # transformations of [C,D], not a discretization of those functors.
         return [self.functor_category()]

@@ -9,6 +9,8 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.modules.free_module_element import vector as sage_vector
+from itertools import combinations_with_replacement
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -144,6 +146,38 @@ def _isotropic_vector_witness(lattice):
     if isinstance(solution, Matrix):
         solution = solution.column(0)
     return _raise_rational_lattice_vector(lattice, solution)
+
+
+def _unit_divisibility_isotropic_witness(lattice):
+    r"""Select a primitive integral null vector of divisibility one.
+
+    Enumerate integral vectors by increasing l1-height.  If the lattice
+    splits a hyperbolic plane, the basis image of either null generator
+    occurs at finite height, so the search terminates under that existence
+    hypothesis.  The scalar Gram calculation is a private exact engine
+    realization; the result is raised in the original lattice.
+    """
+    gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
+    rank = gram.nrows()
+    directions = tuple((coordinate, sign) for coordinate in range(rank) for sign in (-1, 1))
+    height = 1
+    while True:
+        for selected in combinations_with_replacement(directions, height):
+            entries = [SageZZ.zero()] * rank
+            for coordinate, sign in selected:
+                entries[coordinate] += sign
+            if sum(abs(entry) for entry in entries) != height:
+                continue
+            vector = sage_vector(SageZZ, entries)
+            pairings = gram * vector
+            if vector.dot_product(pairings) != 0:
+                continue
+            divisor = SageZZ.zero()
+            for pairing in pairings:
+                divisor = divisor.gcd(pairing)
+            if divisor == 1:
+                return _raise_rational_lattice_vector(lattice, vector)
+        height += 1
 
 
 def _binary_form_discriminant(lattice):

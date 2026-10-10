@@ -21,5 +21,5 @@ def test_two_elementary_delta_is_the_specialized_coeven_condition() -> None:
         NamedLattices.E10_2,
         NamedLattices.TEn,
     ):
-        assert lattice.is_coeven() == (lattice.delta() == 0)
-        assert lattice.is_coodd() == (lattice.delta() == 1)
+        assert lattice.is_coeven() == (EvenTwoElementaryLattices(ZZ)(lattice).delta() == 0)
+        assert lattice.is_coodd() == (EvenTwoElementaryLattices(ZZ)(lattice).delta() == 1)

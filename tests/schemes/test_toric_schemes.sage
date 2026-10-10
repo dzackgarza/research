@@ -19,6 +19,16 @@ def _plane_fans():
     return _PLANE_FANS
 
 
+def test_projective_toric_line_over_a_ring_with_zero_divisors() -> None:
+    r"""The fan gluing of P^1_R exists for R=Z/4 without domain placement."""
+    R = ZZ.quotient_ring(ZZ.ideal(4))
+    line = ToricSchemes(R).an_object()
+    assert line in ToricSchemes(R)
+    assert line not in Varieties(R)
+    assert line.scheme_base_ring() is R
+    assert line.fan().cocharacter_lattice().module_rank() == 1
+
+
 def test_the_projective_plane_of_its_fan_is_a_smooth_complete_toric_surface() -> None:
     plane = _plane_fans().projective_space_fan().toric_variety(QQ)
 

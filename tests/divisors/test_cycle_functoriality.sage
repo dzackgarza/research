@@ -34,7 +34,7 @@ def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves
     cycle = ZZ(2) * cycle_group.prime_cycle(x_axis) + ZZ(5) * cycle_group.prime_cycle(y_axis)
     away_from_y_axis = plane.distinguished_open(x)
 
-    pulled = away_from_y_axis.flat_pullback_cycle(cycle)
+    pulled = DistinguishedOpenImmersions(plane)(away_from_y_axis).flat_pullback_cycle(cycle)
     away_ring = away_from_y_axis.coordinate_algebra()
     x_axis_away = away_from_y_axis.underlying_space()(away_ring.ideal(away_ring(y)))
 

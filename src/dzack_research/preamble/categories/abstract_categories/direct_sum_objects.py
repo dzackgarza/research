@@ -27,7 +27,20 @@ LabelT = TypeVar("LabelT")
 
 
 class DirectSumObjects(OwnedCategory):
-    r"""Objects of ``C`` carrying a selected ordered family of direct summands."""
+    r"""Objects of ``C`` carrying a selected ordered family of direct summands.
+
+    The direct-sum object retains its ordinary module placement and the
+    source and target of every selected biproduct structure arrow::
+
+        sage: from dzack_research.preamble.all import ZZ, Modules
+        sage: C = Modules(ZZ)
+        sage: D = DirectSumObjects(C)
+        sage: X = D.an_object()
+        sage: X in D and X in C and X.number_of_summands() == 2
+        True
+        sage: all(X.injection(i).codomain() is X and X.projection(i).domain() is X for i in X.summand_index_set())
+        True
+    """
 
     @staticmethod
     def __classcall__(cls, base_category: Category):

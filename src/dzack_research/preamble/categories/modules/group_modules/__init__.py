@@ -4,6 +4,9 @@ from importlib import import_module as _import_module
 
 _EXPORTS = {'GroupModuleMor': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
                        'GroupModuleMor'),
+ 'FiniteFreeGroupRepresentations': ('dzack_research.preamble.categories.modules.group_modules.group_modules', 'FiniteFreeGroupRepresentations'),
+ 'OrdinaryCharacterRepresentations': ('dzack_research.preamble.categories.modules.group_modules.group_modules', 'OrdinaryCharacterRepresentations'),
+ 'BrauerCharacterRepresentations': ('dzack_research.preamble.categories.modules.group_modules.group_modules', 'BrauerCharacterRepresentations'),
  'GroupModuleMorphism': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
                          'GroupModuleMorphism'),
  'ModulesOverGroupAlgebra': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
@@ -12,6 +15,9 @@ _EXPORTS = {'GroupModuleMor': ('dzack_research.preamble.categories.modules.group
                              'LatticesOverGroupAlgebra')}
 
 __all__ = ['GroupModuleMor',
+ 'FiniteFreeGroupRepresentations',
+ 'OrdinaryCharacterRepresentations',
+ 'BrauerCharacterRepresentations',
  'GroupModuleMorphism',
  'ModulesOverGroupAlgebra',
  'LatticesOverGroupAlgebra',

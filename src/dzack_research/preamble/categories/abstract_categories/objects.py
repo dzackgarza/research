@@ -51,12 +51,18 @@ def _realization_with_caller_engine(
     """
     from sage.structure.dynamic_class import dynamic_class
 
+    root = Objects()
+    # A newly constructed subobject takes its operations from its selected
+    # category; its received representation supplies computation beneath those
+    # methods, rather than overriding them. Not every Sage-backed target has
+    # the owned root among its declared ancestors.
+    owner = root if root in target._set_of_super_categories else target
     match engine:
         case None:
-            return (target, received_type, received_element_type)
+            return (owner, received_type, received_element_type)
         case _:
             return (
-                target,
+                owner,
                 dynamic_class(engine.__name__, (engine, received_type)),
                 received_element_type,
             )

@@ -390,7 +390,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         return self.parameter()
 
     def super_categories(self):
-        return [FiniteGSets(self.subgroup().supergroup())]
+        return [GObjects(self.subgroup().supergroup(), Sets())]
 
     def an_object(self):
         subgroup = self.subgroup()
@@ -424,10 +424,13 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         def regular_g_set(self):
             r"""Return ``G`` with its left regular action."""
             group = self.acting_group()
-            points = finite_ordered_set(tuple(group))
-            return FiniteGSets(group)(
-                points,
-                lambda group_element, point: group_element * point,
+            if group.is_finite() is True:
+                return FiniteGSets(group)(
+                    finite_ordered_set(tuple(group)),
+                    lambda group_element, point: group_element * point,
+                )
+            return GObjects(group, Sets()).on_set(
+                group, lambda group_element, point: group_element * point,
             )
 
         @cached_method
@@ -808,6 +811,11 @@ def _left_coset_g_set(group, subgroup):
         raise ValueError(
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
         )
+    if group.is_finite() is not True:
+        raise NotImplementedError(
+            f"the possibly infinite coset G-set of {subgroup} in {group} "
+            "requires a coset-equivalence quotient representation"
+        )
     cosets = _engine_cosets(group, subgroup, "left")
 
     def coset_of(element):
@@ -885,17 +893,22 @@ class Torsors(OwnedParameterizedCategory):
             permutation_representation=candidate.permutation_representation(),
         )
 
-    def from_trivialization(self, trivialization):
+    def from_trivialization(self, trivialization, *, base_point=None):
         r"""Transport the regular torsor along a chosen set isomorphism ``G -> T``.
 
         This works for infinite groups. The inverse is part of the given
-        isomorphism; a selected point alone is not a trivialization.
+        isomorphism; a selected point alone is not a trivialization. When
+        the chosen point defining the trivialization is already available,
+        retain it rather than evaluating the group identity through the
+        potentially costly realization a second time. The supplied point
+        must be the image of the identity under the selected trivialization.
         """
         if trivialization.domain() is not self.group():
             raise ValueError("a torsor trivialization must start at its acting group")
         return _object_of(
             TrivializedTorsors(self.group()),
             trivialization=trivialization,
+            selected_base_point=base_point,
         )
 
     class ParentMethods:
@@ -991,8 +1004,9 @@ class TrivializedTorsors(OwnedParameterizedCategory):
     class ParentMethods:
         _derived_construction_parameters = ("acting_group", "action", "underlying_category")
 
-        def __init__(self, trivialization, **rest):
+        def __init__(self, trivialization, selected_base_point=None, **rest):
             self._trivialization = trivialization
+            self._selected_base_point = selected_base_point
             group = trivialization.domain()
             points = trivialization.codomain()
             inverse = trivialization.inverse()
@@ -1011,6 +1025,8 @@ class TrivializedTorsors(OwnedParameterizedCategory):
             return self.trivialization().codomain()
 
         def base_point(self):
+            if self._selected_base_point is not None:
+                return self._selected_base_point
             return self.trivialization()(self.acting_group().one())
 
         def an_element(self):
