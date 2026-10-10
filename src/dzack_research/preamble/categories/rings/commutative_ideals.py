@@ -342,10 +342,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             _require_same_ring(self, other)
             ring = self.ring()
             if _realized_as_quotient(ring):
-                return _descend_cover_ideal(
-                    ring,
-                    _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
-                )
+                return self._binary_cover_ideal_result(other, "colon")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                 numerator = _pid_principal_ideal_generator(self)
                 denominator = _pid_principal_ideal_generator(other)
@@ -382,10 +379,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             _require_same_ring(self, other)
             ring = self.ring()
             if _realized_as_quotient(ring):
-                saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
-                    _cover_lifted_ideal(other)
-                )
-                return _descend_cover_ideal(ring, saturated)
+                return self._binary_cover_ideal_result(other, "saturation")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                 numerator = _pid_principal_ideal_generator(self)
                 denominator = _pid_principal_ideal_generator(other)
@@ -415,6 +409,19 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 other._engine_ideal()
             )
             return _from_engine_ideal(ring, saturated)
+
+        def _binary_cover_ideal_result(self, other, operation):
+            r"""Compute colon or saturation on quotient preimages, then descend."""
+            _require_same_ring(self, other)
+            ring = self.ring()
+            left, right = _cover_lifted_ideal(self), _cover_lifted_ideal(other)
+            if operation == "colon":
+                result = left.quotient(right)
+            elif operation == "saturation":
+                result, _exponent = left.saturation(right)
+            else:
+                raise ValueError(f"unknown quotient-ideal operation {operation!r}")
+            return _descend_cover_ideal(ring, result)
 
         saturation = ideal_saturation
 
