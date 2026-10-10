@@ -3105,6 +3105,12 @@ class CartesianProductsOfSets(OwnedCategory):
         def __hash__(self) -> int:
             if not self.parent().has_finite_index_set():
                 return hash(id(self.parent()))
+            if self.parent() in FiniteEnumeratedCartesianProductsOfSets():
+                ranks = tuple(
+                    int(self.parent().factor(index).ranking_map()(self.component(index)))
+                    for index in self.parent().index_set()
+                )
+                return hash((id(self.parent()), ranks))
             components = tuple(
                 self.component(index) for index in self.parent().index_set()
             )
