@@ -13,6 +13,23 @@ arithmetic and of the product functor.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.set_categories import (
+        CartesianProductsOfAdditiveMonoids,
+    )
+
+    factor = AdditiveMonoids().an_object()
+    product = Sets().product((factor, factor))
+    assert product in CartesianProductsOfAdditiveMonoids()
+    assert product in AdditiveMonoids()
+    zero = product.zero()
+    point = product(lambda index: factor.one())
+    assert point + zero == point
+    assert zero + point == point
+    assert (point + point).component(product.index_set()(0)) == factor.one() + factor.one()
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
