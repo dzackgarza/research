@@ -9,11 +9,13 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
     SmoothCompleteRationalToricSchemes,
     ToricSchemes,
+    ToricProjectiveSpaces,
 )
 
 __all__ = [
     "RationalPolyhedralFans",
     "ToricFixedPointBlowups",
     "ToricSchemes",
+    "ToricProjectiveSpaces",
     "SmoothCompleteRationalToricSchemes",
 ]

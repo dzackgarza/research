@@ -426,6 +426,7 @@ _lazy_import(
         "ToricIntegralSingularCohomologyGroups",
         "ToricLogPairs",
         "ToricSchemes",
+        "ToricProjectiveSpaces",
         "SmoothCompleteRationalToricSchemes",
         "ToricWeightCohomologyComplexes",
         "Varieties",

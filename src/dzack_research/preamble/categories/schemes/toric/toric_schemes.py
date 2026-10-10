@@ -1597,30 +1597,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 associated_divisor=divisor,
             )
 
-        @cached_method
-        def hyperplane_divisor(self):
-            r"""Return a torus-invariant hyperplane divisor on toric ``P^n``.
-
-            Every ray divisor on the standard projective-space fan represents
-            the positive generator of ``Pic(P^n)``.  Thus after the exact fan
-            identification performed by ``is_projective_space``, selecting the
-            first ray gives one distinguished representative of that class.
-            """
-            assert self.is_projective_space(), (
-                f"a hyperplane divisor is defined here only on projective space, but {self} is not "
-                "a toric projective space"
-            )
-            ray = next(iter(self.fan().cones(1)))
-            return self.torus_invariant_prime_divisor(ray)
-
-        @cached_method
-        def hyperplane_line_bundle(self):
-            r"""Return ``O_{P^n}(1)`` from the selected hyperplane divisor."""
-            return self.invertible_sheaf_of_divisor(self.hyperplane_divisor())
-
-        def O1(self, *args, **kwargs):
-            return self.hyperplane_line_bundle(*args, **kwargs)
-
         def ample_divisor_self_intersection(self, divisor):
             r"""Return ``D^2`` from the normalized area of ``P_D``.
 
@@ -2023,6 +1999,9 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
         f"a toric variety is built from a rational polyhedral fan, but {fan} is in {fan.category()}"
     )
     decided = [ToricSchemes(base)]
+    projective_fan = RationalPolyhedralFans(fan.cocharacter_lattice()).projective_space_fan()
+    if fan.is_isomorphic(projective_fan):
+        decided.append(ToricProjectiveSpaces(base))
     if fan.is_smooth():
         decided.append(Schemes(base).Smooth())
     if base in OwnedFields() and fan.is_complete():
@@ -2061,6 +2040,48 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     )
 
 
+class ToricProjectiveSpaces(OwnedCategoryOverBaseRing):
+    r"""Toric projective spaces with a distinguished fan realization."""
+
+    def super_categories(self):
+        return [ToricSchemes(self.base_ring())]
+
+    def an_object(self):
+        return self(ToricSchemes(self.base_ring()).an_object())
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+
+        if scheme not in ToricSchemes(self.base_ring()) or not scheme.is_projective_space():
+            raise ValueError("the chosen toric fan must be projective space")
+        return refine(scheme, self)
+    class ParentMethods:
+        @cached_method
+        def hyperplane_divisor(self):
+            r"""Return a torus-invariant hyperplane divisor on toric ``P^n``.
+
+            Every ray divisor on the standard projective-space fan represents
+            the positive generator of ``Pic(P^n)``.  Thus after the exact fan
+            identification performed by ``is_projective_space``, selecting the
+            first ray gives one distinguished representative of that class.
+            """
+            assert self.is_projective_space(), (
+                f"a hyperplane divisor is defined here only on projective space, but {self} is not "
+                "a toric projective space"
+            )
+            ray = next(iter(self.fan().cones(1)))
+            return self.torus_invariant_prime_divisor(ray)
+
+        @cached_method
+        def hyperplane_line_bundle(self):
+            r"""Return ``O_{P^n}(1)`` from the selected hyperplane divisor."""
+            return self.invertible_sheaf_of_divisor(self.hyperplane_divisor())
+
+        def O1(self, *args, **kwargs):
+            return self.hyperplane_line_bundle(*args, **kwargs)
+
+
+
 class SmoothCompleteRationalToricSchemes(OwnedCategoryOverBaseRing):
     r"""Smooth complete toric varieties over the chosen rational realization.
 
@@ -2091,4 +2112,4 @@ class SmoothCompleteRationalToricSchemes(OwnedCategoryOverBaseRing):
             return _toric_fundamental_group(self, base_point_cone)
 
 
-__all__ = ["ToricSchemeMorphism", "ToricSchemes", "SmoothCompleteRationalToricSchemes"]
+__all__ = ["ToricSchemeMorphism", "ToricSchemes", "ToricProjectiveSpaces", "SmoothCompleteRationalToricSchemes"]
