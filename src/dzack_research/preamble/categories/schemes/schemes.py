@@ -6209,6 +6209,21 @@ class OpenImmersions(_SchemeSubobjectsOf):
         return base_object.distinguished_open(next(iter(base_object.coordinate_algebra().algebra_generators())))
 
     class ParentMethods:
+        def flat_pullback_cycle(self, cycle):
+            r"""Restrict a cycle to this open subscheme, preserving multiplicities.
+
+            Integral cycle components restrict to their intersection with
+            the open; an empty intersection contributes zero. This is valid
+            for every open immersion, not merely a principal localization.
+            """
+            return self._flat_pullback_cycle(cycle)
+
+        def _flat_pullback_cycle(self, cycle):
+            raise NotImplementedError(
+                f"the flat pullback of {cycle} along {self.inclusion()} requires "
+                "a represented restriction of prime cycles through this open's atlas"
+            )
+
         def is_distinguished_open(self):
             r"""Whether this open is ``D(f)`` for an element ``f`` of the coordinate algebra of its affine codomain.
 
@@ -6329,7 +6344,7 @@ class DistinguishedOpenImmersions(_SchemeSubobjectsOf):
         return refine(opened, self)
 
     class ParentMethods:
-        def flat_pullback_cycle(self, cycle):
+        def _flat_pullback_cycle(self, cycle):
             r"""Pull back a cycle through the selected localization ``D(f)``."""
             from dzack_research.preamble.categories.divisors.chow_groups import _distinguished_open_cycle_pullback
             return _distinguished_open_cycle_pullback(self, cycle)
