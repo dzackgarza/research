@@ -63,6 +63,11 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective line, of relative dimension one."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the projective line over {self.base_ring()} is a curve only when the base is integral"
+        )
         return ProjectiveSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
@@ -270,6 +275,11 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective plane, of relative dimension two."""
+        from dzack_research.preamble.categories.schemes.schemes import _integral_placement
+
+        assert _integral_placement(self.base_ring()), (
+            f"the projective plane over {self.base_ring()} is a surface only when the base is integral"
+        )
         return ProjectiveSpaces(self.base_ring())(2)
 
     def _repr_object_names(self):
