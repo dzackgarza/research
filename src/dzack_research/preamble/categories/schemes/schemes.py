@@ -5184,6 +5184,12 @@ def _scheme_product(*schemes, placements=(), **level_data):
             )
         case _ if all(scheme in ProjectiveSpaces(base) for scheme in scheme_values):
             widths = tuple(int(scheme.relative_dimension()) + 1 for scheme in scheme_values)
+            dimension = sum(width - 1 for width in widths)
+            projective_surface_placement = ()
+            if base in OwnedFields() and dimension == 2:
+                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+
+                projective_surface_placement = (ProjectiveSurfaces(base),)
             names = tuple(
                 f"x{factor}_{coordinate}"
                 for factor, width in enumerate(widths)
@@ -5196,7 +5202,7 @@ def _scheme_product(*schemes, placements=(), **level_data):
             )
             offsets = tuple(sum(widths[:position]) for position in range(len(widths)))
             return _object_of(
-                owned_category_join((ProductProjectiveSpaces(base), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
+                owned_category_join((ProductProjectiveSpaces(base), *_space_placements(base, dimension), *projective_surface_placement, *placements)),
                 scheme_base_ring=base,
                 scheme_engine=engine,
                 factors=factors,
