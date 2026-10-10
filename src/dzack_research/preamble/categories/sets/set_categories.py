@@ -2586,6 +2586,8 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
+        if source not in Sets():
+            raise ValueError(f"fixed-cardinality subsets require a set source, not {source!r}")
         selected_size = int(subset_cardinality)
         if selected_size < 0 or subset_cardinality != selected_size:
             raise ValueError(
@@ -2691,6 +2693,8 @@ class FinitePowerSets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
+        if source not in Sets():
+            raise ValueError(f"finite subsets require a set source, not {source!r}")
         placements = [self, _cardinalities().set_subset_category(source)]
         engine = None
         if source in EnumeratedSets():

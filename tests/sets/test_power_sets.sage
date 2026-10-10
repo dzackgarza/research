@@ -1,6 +1,26 @@
 r"""Direct and inverse images of subsets along maps of sets."""
 
 from dzack_research.preamble.all import *
+from dzack_research.preamble.categories.sets.set_categories import (
+    FinitePowerSets, FixedCardinalitySubsetSets,
+)
+
+
+def test_subset_family_constructors_require_a_set_source() -> None:
+    source = Sets.Δ[2]
+    assert FinitePowerSets()(source) in Sets()
+    assert FixedCardinalitySubsetSets()(source, 0) in Sets()
+    nonset = object()
+    for constructor in (
+        lambda: FinitePowerSets()(nonset),
+        lambda: FixedCardinalitySubsetSets()(nonset, 0),
+    ):
+        try:
+            constructor()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("subset family constructed on a non-set source")
 
 
 def test_finite_subobject_boolean_operations_retain_the_ambient_inclusion() -> None:
