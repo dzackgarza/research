@@ -58,8 +58,13 @@ class CyclicGroups(OwnedCategory):
         """
         supergroup = _owned_group(generator.parent())
         placement = [self, Subgroups(supergroup), *placements]
-        if supergroup in FiniteGroups() or generator == supergroup.one():
-            placement.append(FiniteAbelianGroups())
+        match supergroup:
+            case _ if supergroup in FiniteGroups() or generator == supergroup.one():
+                placement.append(FiniteAbelianGroups())
+            case _ if cardinal(generator.order()).is_finite():
+                placement.append(FiniteAbelianGroups())
+            case _:
+                pass
         return _object_of(
             Cat().meet(placement),
             supergroup=supergroup,
