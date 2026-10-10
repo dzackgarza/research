@@ -382,7 +382,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                 return _from_engine_ideal(ring, self._engine_ideal().radical())
             engine = _engine_ring(ring)
-            if isinstance(engine, MPolynomialRing_libsingular) and engine.base_ring().is_field():
+            if isinstance(engine, MPolynomialRing_libsingular) and (
+                engine.base_ring() is SageZZ or engine.base_ring().is_field()
+            ):
                 return _from_engine_ideal(ring, self._engine_ideal().radical())
             return None
 
@@ -391,14 +393,34 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
             Where the ring is realized as a quotient ``P/K``, the colon is
             computed on preimages.  Taking preimages along ``P -> P/K`` is a
-            bijection onto the ideals of ``P`` containing ``K`` and it respects
-            products, so ``a J <= I`` upstairs says the same thing as it does
-            downstairs and ``(I : J)`` is ``(I~ : J~)/K``.  Singular computes a
-            colon for an ideal of ``P``, and Sage's quotient-ring ideal offers
-            none, so the computation is lifted and the result descended.
+            bijection onto the ideals containing ``K``. Since ``K <= I~``,
+            ``a J <= I`` is equivalent to ``a~ J~ <= I~``, and the result is
+            ``(I~ : J~)/K``. Preimages of products generally include an added
+            ``K``; no preservation of products by preimage is asserted.
+
+            Localization commutes with this colon because J has the selected
+            finite generating family: one product of denominators clears
+            the finitely many containment equations.
+            """
+            result = self._colon_decision(other)
+            assert result is not None, (
+                f"the colon of {self} by {other} requires a selected exact source-ideal algorithm"
+            )
+            return result
+
+        def _colon_decision(self, other):
+            r"""Owner-local exact colon result, or None at its algorithm frontier.
+
+            Used by colon, localized ideal membership and this ideal owner's
+            localization/quotient-cover transports. The two inputs and every
+            returned ideal belong to the same exact ring.
             """
             _require_same_ring(self, other)
             ring = self.ring()
+            if ring in LocalizationRings():
+                return self._binary_localized_ideal_result(other, "_colon_decision")
+            if self._selected_engine_ideal is None or other._selected_engine_ideal is None:
+                return None
             if _realized_as_quotient(ring):
                 return self._binary_cover_ideal_result(other, "colon")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
@@ -409,6 +431,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     case False:
                         common = numerator.gcd(denominator)
                         quotient, remainder = numerator.quo_rem(common)
+                    case _:
+                        return None
                 match remainder == ring.zero():
                     case True:
                         return ring.ideal(quotient)
@@ -416,6 +440,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         raise ArithmeticError(
                             "a PID gcd did not divide the ideal generator exactly"
                         )
+                    case _:
+                        return None
+            engine = self._selected_engine_ideal.ring()
+            if not (
+                isinstance(engine, MPolynomialRing_libsingular)
+                and (engine.base_ring() is SageZZ or engine.base_ring().is_field())
+            ):
+                return None
             left, right = self._binary_engine_ideals(other)
             return _from_engine_ideal(ring, left.quotient(right))
 
@@ -430,9 +462,32 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ``(I~ : J~^infinity)/K``.  Sage answers with the ideal and the
             exponent that reached it; the exponent is a fact about the
             computation, not about the ideal.
+
+            Localization commutes with the union of ``I:J^n`` because each
+            J^n is finitely generated. Noetherianity supplies stabilization
+            for a finite algorithm, not the mathematical localization identity.
+            """
+            result = self._ideal_saturation_decision(other)
+            assert result is not None, (
+                f"saturating {self} by {other} requires a selected exact source-ideal algorithm"
+            )
+            return result
+
+        def _ideal_saturation_decision(self, other):
+            r"""Protected exact saturation result, or None when unavailable.
+
+            Owner: CommutativeIdeals.ParentMethods. Permitted callers are
+            ideal_saturation, this owner's contraction and source/cover
+            transports, and LocalizationRings.inverted_submonoid_meets.
+            Inputs are ideals of one exact ring; a result is their saturation
+            in that same ring. None preserves a predicate's undecided case.
             """
             _require_same_ring(self, other)
             ring = self.ring()
+            if ring in LocalizationRings():
+                return self._binary_localized_ideal_result(other, "_ideal_saturation_decision")
+            if self._selected_engine_ideal is None or other._selected_engine_ideal is None:
+                return None
             if _realized_as_quotient(ring):
                 return self._binary_cover_ideal_result(other, "saturation")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
@@ -444,6 +499,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         return ring.ideal(ring.zero())
                     case (False, False):
                         current = numerator
+                    case _:
+                        return None
 
                 while True:
                     common = current.gcd(denominator)
@@ -459,6 +516,16 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                                     raise ArithmeticError(
                                         "a PID gcd did not divide the ideal generator exactly"
                                     )
+                                case _:
+                                    return None
+                        case _:
+                            return None
+            engine = self._selected_engine_ideal.ring()
+            if not (
+                isinstance(engine, MPolynomialRing_libsingular)
+                and (engine.base_ring() is SageZZ or engine.base_ring().is_field())
+            ):
+                return None
             left, right = self._binary_engine_ideals(other)
             saturated, _reached_at_exponent = left.saturation(right)
             return _from_engine_ideal(ring, saturated)
@@ -470,17 +537,25 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     _pid_principal_ideal_generator(other))
 
         def _binary_cover_ideal_result(self, other, operation):
-            r"""Compute colon or saturation on quotient preimages, then descend."""
+            r"""Compute colon or saturation at the owned cover, then descend.
+
+            Both input preimages contain the defining kernel, as does the
+            resulting colon or saturation. An integer cover therefore uses
+            the existing owned PID algorithm, not a generic engine ideal.
+            """
             _require_same_ring(self, other)
             ring = self.ring()
             left, right = _cover_lifted_ideal(self), _cover_lifted_ideal(other)
+            cover = _own_ring(left.ring())
+            left_ideal = _from_engine_ideal(cover, left)
+            right_ideal = _from_engine_ideal(cover, right)
             if operation == "colon":
-                result = left.quotient(right)
+                result = left_ideal._colon_decision(right_ideal)
             elif operation == "saturation":
-                result, _exponent = left.saturation(right)
+                result = left_ideal._ideal_saturation_decision(right_ideal)
             else:
                 raise ValueError(f"unknown quotient-ideal operation {operation!r}")
-            return _descend_cover_ideal(ring, result)
+            return None if result is None else _descend_cover_ideal(ring, result._engine_ideal())
 
         saturation = ideal_saturation
 
@@ -553,29 +628,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if not generators:
                 return source_ideal
 
-            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-
-            if source_ring not in OwnedNoetherianRings():
-                return None
-            selected = source_ideal._selected_engine_ideal
-            if selected is None:
-                return None
-            engine = selected.ring()
-            if isinstance(engine, QuotientRing_generic):
-                engine = engine.cover_ring()
-            if not (
-                source_ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
-                or (
-                    isinstance(engine, MPolynomialRing_libsingular)
-                    and engine.base_ring().is_field()
-                )
-            ):
-                return None
-
             product = source_ring.one()
             for generator in generators:
                 product *= source_ring(generator)
-            return source_ideal.ideal_saturation(source_ring.ideal(product))
+            return source_ideal._ideal_saturation_decision(source_ring.ideal(product))
 
         contraction = contraction_from_localization
 
@@ -588,10 +644,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 numerator, _denominator = ring.localization_fraction_data(value)
                 structure = ring.localization_submonoid()._structure_data()
                 if structure.get("kind") == "prime_complement":
-                    from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-
-                    if source_ideal.ring() not in OwnedNoetherianRings():
-                        return AtomicProposition("contains_ambient_element", self, value)
                     # ``a/s`` lies in ``I R_p`` exactly when some element
                     # outside ``p`` carries ``a`` into ``I``, and the elements
                     # that carry ``a`` into ``I`` are the colon ideal
@@ -601,7 +653,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     # finite generating set. This membership criterion needs
                     # no selected primary decomposition of the source ideal.
                     source = source_ideal.ring()
-                    colon_ideal = source_ideal.colon(source.ideal(numerator))
+                    colon_ideal = source_ideal._colon_decision(source.ideal(numerator))
+                    if colon_ideal is None:
+                        return AtomicProposition("contains_ambient_element", self, value)
                     return ring.inverted_submonoid_meets(colon_ideal)
                 contracted = self._localization_contraction_decision()
                 if contracted is None:
@@ -627,6 +681,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def _binary_engine_ideal_result(self, other, operation):
             r"""Lower a binary ideal operation and return its owned ideal."""
+            if self.ring() in LocalizationRings():
+                return self._binary_localized_ideal_result(other, operation)
             left, right = self._binary_engine_ideals(other)
             if operation == "sum":
                 result = left + right
@@ -637,6 +693,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             else:
                 raise ValueError(f"unknown binary ideal operation {operation!r}")
             return _from_engine_ideal(self.ring(), result)
+
+        def _binary_localized_ideal_result(self, other, operation):
+            r"""Compute on the retained source ideals and extend the result.
+
+            Owner-local transport for sum, product, finite intersection,
+            and the colon/saturation decisions. Localization is exact;
+            the latter operations also use the second ideal's selected
+            finite generating family. Equal extensions need not have equal
+            retained source ideals, and no contraction is required here.
+            """
+            _require_same_ring(self, other)
+            left = self._localization_source_ideal
+            right = other._localization_source_ideal
+            assert left is not None and right is not None, (
+                "localized ideal arithmetic requires both retained source ideals"
+            )
+            result = getattr(left, operation)(right)
+            return None if result is None else result.extension_to_localization(self.ring())
 
         def _binary_engine_ideals(self, other):
             r"""Return compatible selected engine ideals for a binary operation."""
@@ -649,6 +723,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"the ideal power I^n needs n >= 0, but n = {exponent} for I = {self}"
                 )
+            if self.ring() in LocalizationRings():
+                source_ideal = self._localization_source_ideal
+                assert source_ideal is not None, (
+                    "a localized ideal power requires its retained source ideal"
+                )
+                return source_ideal.power(exponent).extension_to_localization(self.ring())
             return _from_engine_ideal(self.ring(), self._engine_ideal() ** exponent)
 
         def quotient_ring(self):
@@ -800,7 +880,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if _realized_as_quotient(ring):
                 return self._finite_engine_ideal_family("primary_decomposition")
             engine = _engine_ring(ring)
-            if isinstance(engine, MPolynomialRing_libsingular) and engine.base_ring().is_field():
+            if isinstance(engine, MPolynomialRing_libsingular) and (
+                engine.base_ring() is SageZZ or engine.base_ring().is_field()
+            ):
                 return self._finite_engine_ideal_family("primary_decomposition")
             return None
 

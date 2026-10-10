@@ -1073,8 +1073,13 @@ class LocalizationRings(OwnedCategory):
                         for generator in ideal.ideal_generators()
                     ))
                 case _:
+                    if self.localization_submonoid()._selected_representation_kind() != "generators":
+                        return AtomicProposition("inverted_submonoid_meets", self, ideal)
                     element = prod(self.inverted_elements(), ring.one())
-                    return ideal.ideal_saturation(ring.ideal(element)).contains_ambient_element(ring.one())
+                    saturated = ideal._ideal_saturation_decision(ring.ideal(element))
+                    if saturated is None:
+                        return AtomicProposition("inverted_submonoid_meets", self, ideal)
+                    return saturated.contains_ambient_element(ring.one())
 
         def __init__(
             self,
