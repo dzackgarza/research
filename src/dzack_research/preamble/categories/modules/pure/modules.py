@@ -2718,6 +2718,17 @@ class Modules(OwnedCategoryOverBaseRing):
                     lambda label: localized.module_generator(label)
                 )
 
+            def local_determinant_line(self, point):
+                r"""Top exterior line of a finite projective module at ``point``.
+
+                This uses the local free trivialization, not a globally
+                selected basis or an assumed globally constant rank.
+                """
+                if self not in Modules(self.base_ring()).FinitelyGenerated():
+                    raise TypeError(f"local determinant requires a finitely generated projective module: {self}")
+                trivialization = self.local_free_trivialization(point)
+                return trivialization.domain().determinant_line()
+
     class Torsion(CategoryWithAxiom):
         r"""Modules whose generic fibre vanishes."""
 
