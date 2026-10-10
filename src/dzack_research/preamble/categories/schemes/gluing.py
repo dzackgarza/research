@@ -82,6 +82,16 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
+def _ordered_transition_images(datum, transition_data, source_index, target_index):
+    r"""Return the selected transition and inverse in the requested chart order."""
+    pair = datum._ordered_pair(source_index, target_index)
+    forward, backward = transition_data[pair]
+    if pair == (datum.normalize_chart_index(source_index),
+                datum.normalize_chart_index(target_index)):
+        return forward, backward
+    return backward, forward
+
+
 def _chart_pair(cover, left_index, right_index):
     r"""The two chart labels in the atlas order, which is how descent data is keyed."""
 
@@ -2555,15 +2565,9 @@ class _FiniteAtlasModuleGluingDatumEngine:
         return module
 
     def _transition_images(self, source_index, target_index):
-        datum = self.gluing_datum()
-        pair = datum._ordered_pair(source_index, target_index)
-        pullback_images, inverse_images = self._transition_data[pair]
-        if pair == (
-            datum.normalize_chart_index(source_index),
-            datum.normalize_chart_index(target_index),
-        ):
-            return pullback_images, inverse_images
-        return inverse_images, pullback_images
+        return _ordered_transition_images(
+            self.gluing_datum(), self._transition_data, source_index, target_index
+        )
 
     @staticmethod
     def _images_from_coordinates(domain, codomain, specification):
@@ -3851,12 +3855,9 @@ class _FiniteAtlasAlgebraGluingDatumEngine:
         return algebra
 
     def _transition_images(self, source_index, target_index):
-        datum = self.gluing_datum()
-        pair = datum._ordered_pair(source_index, target_index)
-        pullback_images, inverse_images = self._transition_data[pair]
-        if pair == (datum.normalize_chart_index(source_index), datum.normalize_chart_index(target_index)):
-            return pullback_images, inverse_images
-        return inverse_images, pullback_images
+        return _ordered_transition_images(
+            self.gluing_datum(), self._transition_data, source_index, target_index
+        )
 
     @staticmethod
     def _images(domain, codomain, specification):
