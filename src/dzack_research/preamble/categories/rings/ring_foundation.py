@@ -494,6 +494,19 @@ def _ringlike_mor_element(parent, datum, provider_type):
     )
 
 
+def _engine_ring_value(ring, value):
+    """Lower an owned or already-engine ring element to the selected engine."""
+    from sage.categories.rings import Rings as SageRings
+    from sage.structure.element import parent as element_parent
+
+    source = _own_ring(ring)
+    engine = _engine_ring(source)
+    value_parent = element_parent(value)
+    if value_parent is engine or value_parent in SageRings():
+        return engine(value)
+    return engine(_engine_element(source, source(value)))
+
+
 def _ringlike_mor_identity(mor):
     """Identity of a fixed ring-like Mor, retaining its identity datum."""
     if mor.domain() is not mor.codomain():

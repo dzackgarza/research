@@ -57,6 +57,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _krull_dimension_of_engine,
     _engine_quotient_cover_ideal,
     _engine_ring,
+    _engine_ring_value,
     _install_local_ring_construction,
     _own_ring,
     _ring_morphism_with_engine,
@@ -496,16 +497,6 @@ class IntegralPrimeSpectra(OwnedCategory):
         def generic_point(self):
             r"""The generic point corresponding to the zero prime ideal."""
             return self(self.ring().ideal(self.ring().zero()))
-
-
-def _engine_ring_value(ring, value):
-    r"""Cross one owned/ordinary ring value to ``ring``'s private engine."""
-    source = _own_ring(ring)
-    engine = _engine_ring(source)
-    parent = element_parent(value)
-    if parent is engine or parent in SageRings():
-        return engine(value)
-    return engine(_engine_element(source, source(value)))
 
 
 def _engine_ideal(ring, ideal):

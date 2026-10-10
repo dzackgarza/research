@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_quotient_cover_ideal,
     _engine_ring,
+    _engine_ring_value,
     _integral_polynomial_ideal_is_maximal,
     _integral_polynomial_ideal_is_prime,
     _is_integral_multivariate_ideal,
@@ -836,16 +837,6 @@ def _from_engine_ideal(ring, engine_ideal):
     return source.ideal(
         *(_owned_engine_value(source, generator) for generator in engine_ideal.gens())
     )
-
-
-def _engine_ring_value(ring, value):
-    r"""Cross one ring element to the private engine of ``ring``."""
-    source = _own_ring(ring)
-    engine = _engine_ring(source)
-    parent = element_parent(value)
-    if parent is engine:
-        return engine(value)
-    return engine(_engine_element(source, source(value)))
 
 
 def _owned_engine_value(ring, value):
