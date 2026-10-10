@@ -3945,23 +3945,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             invariants = tuple(abs(invariant) for invariant in self.discriminant_module().invariant_factors() if abs(invariant) > ring.one())
             return all(invariant == prime for invariant in invariants)
 
-        def delta(self):
-            r"""Return Nikulin's ``delta`` for an even 2-elementary lattice.
-
-            This is zero exactly when the discriminant quadratic form is
-            integer-valued, and one otherwise.  It suffices to test Smith
-            generators: on a 2-elementary discriminant group every bilinear
-            value lies in ``(1/2)ZZ/ZZ``, so the cross term ``2b(x,y)`` in
-            ``q(x+y)`` is integral.
-            """
-            if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError(f"{self!r} has no Nikulin invariant delta: delta is defined for lattices over ZZ, and this lattice is over {self.base_ring()}")
-            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
-                raise ValueError(f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
-            discriminant_form = self.discriminant_quadratic_form()
-            ring = self.base_ring()
-            return ring(int(any(discriminant_form.q(element).lift() not in ring for element in discriminant_form.smith_form_module_generators())))
-
         def is_coeven(self) -> bool:
             r"""Return whether the discriminant quadratic form is integer-valued.
 
@@ -3985,19 +3968,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         def is_coodd(self) -> bool:
             r"""Return the negation of :meth:`is_coeven`."""
             return not self.is_coeven()
-
-        def two_elementary_invariants(self):
-            r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
-
-            The rank, the length of the discriminant group and \(\delta\) are
-            three natural numbers, so the triple is a point of
-            \(\mathbb N^3\).
-            """
-            if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
-                raise ValueError(
-                    f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
-                )
-            return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
 
         def two_u_eichler_model(self):
             r"""Return the represented ``U + U + self`` Eichler model."""
@@ -5718,6 +5688,59 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                 )
 
             return source.module_category().Mor(source, self)(image)
+
+
+class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
+    r"""Nondegenerate even integral lattices with 2-elementary discriminant group.
+
+    This is a refinement of lattices, not a property of arbitrary even forms.
+    """
+
+    def super_categories(self):
+        if _engine_ring(self.base_ring()) is not SageZZ:
+            raise TypeError("2-elementary integral lattices require the integer coefficient ring")
+        return [Lattices(self.base_ring()).Even().Nondegenerate()]
+
+    class ParentMethods:
+        def delta(self):
+            r"""Return Nikulin's ``delta`` for an even 2-elementary lattice.
+
+            This is zero exactly when the discriminant quadratic form is
+            integer-valued, and one otherwise.  It suffices to test Smith
+            generators: on a 2-elementary discriminant group every bilinear
+            value lies in ``(1/2)ZZ/ZZ``, so the cross term ``2b(x,y)`` in
+            ``q(x+y)`` is integral.
+            """
+            if _engine_ring(self.base_ring()) is not SageZZ:
+                raise TypeError(f"{self!r} has no Nikulin invariant delta: delta is defined for lattices over ZZ, and this lattice is over {self.base_ring()}")
+            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
+                raise ValueError(f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
+            discriminant_form = self.discriminant_quadratic_form()
+            ring = self.base_ring()
+            return ring(int(any(discriminant_form.q(element).lift() not in ring for element in discriminant_form.smith_form_module_generators())))
+
+        def two_elementary_invariants(self):
+            r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
+
+            The rank, the length of the discriminant group and \(\delta\) are
+            three natural numbers, so the triple is a point of
+            \(\mathbb N^3\).
+            """
+            if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
+                raise ValueError(
+                    f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
+                )
+            return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
+
+
+    def an_object(self):
+        return self(Lattices(self.base_ring())("U"))
+
+    def _call_(self, lattice):
+        lattice = Lattices(self.base_ring())(lattice)
+        if not lattice.is_even() or not lattice.is_nondegenerate() or not lattice.is_p_elementary(self.base_ring()(2)):
+            raise ValueError("a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant")
+        return lattice._with_structure((self,), {})
 
 
 def FiniteRankLattices(base_ring):
