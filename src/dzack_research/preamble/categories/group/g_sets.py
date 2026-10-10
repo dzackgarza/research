@@ -995,19 +995,23 @@ class Torsors(OwnedParameterizedCategory):
 
 
 class OrbitRepresentativeSets(OwnedParameterizedCategory):
-    r"""Finite selected transversals with their action and quotient maps."""
+    r"""Selected orbit transversals, with no universal finiteness claim."""
 
     def parameter_category(self):
         return OwnedGroups()
 
     def super_categories(self):
-        return [FiniteSets()]
+        return [Sets()]
 
     def _call_(self, action, points):
         if action.acting_group() is not self.base():
             raise ValueError("the transversal and action must use the same group")
-        points = finite_ordered_set(tuple(action(point) for point in points))
-        return _object_of(self, action=action, points=points)
+        if points in Sets():
+            selected = points
+        else:
+            selected = finite_ordered_set(tuple(action(point) for point in points))
+        category = owned_category_join((self, FiniteSets())) if selected in FiniteSets() else self
+        return _object_of(category, action=action, points=selected)
 
     class ParentMethods:
         def __init__(self, action, points, **rest):
