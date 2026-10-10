@@ -259,6 +259,19 @@ def indexed_family[IndexT, ValueT](
     therefore lives at the existing root ``Objects()`` rather than being
     misdeclared as a set.
     """
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import Functor
+
+    selected_functor = value if isinstance(value, Functor) else None
+    if selected_functor is not None:
+        index_category = DiscreteCategory(index_set)
+        if selected_functor.domain() is not index_category:
+            raise ValueError("the selected family functor has the wrong discrete index category")
+        if value_category is not None and value_category is not selected_functor.codomain():
+            raise ValueError("the requested category differs from the selected functor codomain")
+        value_category = selected_functor.codomain()
+        value = lambda index: selected_functor(index_category.object(index))
+
     family = _object_of(
         Objects(),
         _engine=(Objects(), IndexedFamily, None),
@@ -272,7 +285,7 @@ def indexed_family[IndexT, ValueT](
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
-        if not Sets().is_provably_finite(index_set) and family.constant_value() is None:
+        if not Sets().is_provably_finite(index_set) and family.constant_value() is None and selected_functor is None:
             raise TypeError(
                 "an infinite nonconstant family cannot establish its value category by declaring one: "
                 "supply a mathematically justified category-valued diagram"
@@ -284,7 +297,7 @@ def indexed_family[IndexT, ValueT](
                         f"the selected family has value {family(index)} at {index}, outside {value_category}"
                     )
 
-        family._diagram = Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
+        family._diagram = selected_functor or Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
     return family
 
 

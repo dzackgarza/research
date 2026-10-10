@@ -83,6 +83,30 @@ def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:
         raise AssertionError("nonmonoid set admitted to an additive-monoid diagram")
 
 
+def test_selected_functor_places_an_infinite_indexed_additive_product() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+
+    factor = AdditiveMonoids().an_object()
+    alternate = AdditiveGroups().an_object()
+    index_category = DiscreteCategory(NN)
+    values = indexed_family(NN, lambda index: factor if int(index) % 2 == 0 else alternate)
+    selected = Cat().Mor(index_category, AdditiveMonoids()).discrete_diagram(values)
+    family = indexed_family(NN, selected)
+    product = Sets().product(family)
+    assert family.selected_diagram() is selected
+    assert product in CartesianProductsOfAdditiveMonoids()
+    varying = product(lambda index: family(index)(int(index)))
+    unit = product(lambda index: family(index).one())
+    projection = product.projection(NN(3))
+    assert family(NN(3)) is alternate
+    assert projection.parent() is AdditiveMonoids().Mor(product, alternate)
+    assert projection(varying + unit) == projection(varying) + projection(unit)
+    assert projection(product.zero()) == alternate.zero()
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]

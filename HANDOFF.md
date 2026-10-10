@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Actual selected functor for nonconstant infinite products (2026-10-10):** The indexed-family owner now accepts a preexisting typed `Functor` from `DiscreteCategory(I)` to its actual codomain category, and reads values by applying it to its selected index objects. The product retains precisely this functor through `selected_diagram()` and places it in `CartesianProductsOfAdditiveMonoids` when the selected codomain is a subcategory of `AdditiveMonoids`. Targeted Sage checks alternate an additive monoid and an additive group over `NN`; the resulting product has additive placement, nonconstant sections, a projection in `AdditiveMonoids().Mor` at an odd index, and correct addition/zero after projection. Unsupported raw infinite callbacks declaring a category are still rejected. The mathematical legitimacy of the supplied typed functor belongs to its formal owner; a declaration in this preamble is not independent acceptance evidence.
+
+
 **Infinite family evidence firewall corrected (2026-10-10):** A supplied Python callback and `value_category=C` do not constitute a mathematical functor into `C` on an infinite index set. The initial selected-diagram code at `768a737e77` incorrectly accepted this self-asserted codomain; a callback returning an ordinary set on odd indices can claim `AdditiveMonoids`. The owner now rejects nonconstant infinite callback/category claims with `TypeError`. Focused Sage confirms rejection of both a homogeneous callback and a dishonest mixed callback, while constant infinite additive products remain admitted and their additive projections pass. A true nonconstant infinite typed functor must be supplied and retained at its categorical owner before this placement can close.
 
 
