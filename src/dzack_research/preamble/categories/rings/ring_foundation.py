@@ -1110,33 +1110,29 @@ class LocalizationRings(OwnedCategory):
             self._localization_submonoid = submonoid
             self._localization_engine_source_decoder = _engine_source_decoder
             self._localization_engine_source_encoder = _engine_source_encoder
-            self._localization_algebra_source = algebra_source
             self._fraction_field_realization = fraction_field_realization
             self._preamble_engine_ring = _engine_ring
             from dzack_research.preamble.categories.algebras.algebras import Algebras
             from dzack_research.preamble.owned_category import owned_category_join
 
+            coefficient_base = (
+                algebra_source.base_ring()
+                if algebra_source is not None
+                else source.base_ring()
+            )
             algebra = (
-                Algebras(self.algebra_base_ring())
+                Algebras(coefficient_base)
                 .Associative()
                 .Unital()
                 .Commutative()
             )
             rest["category"] = owned_category_join((rest["category"], algebra))
             super().__init__(
-                base_ring=self.algebra_base_ring(),
+                base_ring=coefficient_base,
                 _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
                 _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
                 _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
                 **rest,
-            )
-
-        def algebra_base_ring(self):
-            algebra_source = self._localization_algebra_source
-            return (
-                algebra_source.base_ring()
-                if algebra_source is not None
-                else self.localization_source().base_ring()
             )
 
         def _selected_engine_ring(self):
@@ -1591,8 +1587,8 @@ class LocalizationRings(OwnedCategory):
             r"""Return the canonical owned field privately realizing this localization."""
             if not self.is_fraction_field_localization():
                 raise ValueError(
-                    f"{self} is not the fraction field of {self.localization_source()}: it does not invert "
-                    "all nonzero elements"
+                    f"the selected fraction-field realization for {self} requires the "
+                    "nonzero-element localization presentation"
                 )
             field = self._fraction_field_realization
             if field is None:
@@ -1607,8 +1603,8 @@ class LocalizationRings(OwnedCategory):
             r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
             if not self.is_fraction_field_localization():
                 raise ValueError(
-                    f"there is no map {self} -> Frac(R): {self} is not the localization of "
-                    f"{self.localization_source()} at all nonzero elements"
+                    f"the selected comparison from {self} to its fraction-field realization "
+                    "requires the nonzero-element localization presentation"
                 )
             from dzack_research.preamble.categories.rings.commutative_algebra import (
                 _canonical_map,
@@ -1624,18 +1620,18 @@ class LocalizationRings(OwnedCategory):
                 denominator = source_to_field(fraction.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return self.Mor(self.fraction_field_realization())(image)
+            return OwnedRings().Mor(self, self.fraction_field_realization())(image)
 
         @cached_method
         def fraction_field_comparison_inverse(self):
             r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
             if not self.is_fraction_field_localization():
                 raise ValueError(
-                    f"there is no map Frac(R) -> {self}: {self} is not the localization of "
-                    f"{self.localization_source()} at all nonzero elements"
+                    f"the selected inverse comparison into {self} from its fraction-field realization "
+                    "requires the nonzero-element localization presentation"
                 )
             field = self.fraction_field_realization()
-            return field.Mor(self)(
+            return OwnedRings().Mor(field, self)(
                 lambda element: self._from_engine_element(_engine_element(field, element)),
             )
 
@@ -1871,10 +1867,11 @@ class LocalizationRings(OwnedCategory):
 
             Between two prime localizations the containment ``S <= T`` is
             ``R \\ q <= R \\ p``, that is ``p <= q``, so ``R_q -> R_p`` exists
-            exactly when ``p`` specializes to ``q``: the germ at a point maps
-            to the germ at any point whose closure contains it.  Neither
-            complement has a finite generating set, so the containment is
-            decided on the primes rather than on inverted elements.
+            exactly when ``p`` generalizes ``q``: the germ at a point maps
+            to the germ at any point whose closure contains it. These
+            presentations do not select finite generating sets, so the
+            containment is decided on the primes rather than on inverted
+            elements.
             """
 
             from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -1907,11 +1904,11 @@ class LocalizationRings(OwnedCategory):
                         pass
                     case False:
                         raise ValueError(
-                            f"{self} inverts the complement of the prime {self.localized_prime()}, which has no finite "
-                            f"generating set, so a map to {target} is constructed only when {target} is also a localization "
-                            "at a prime"
+                            f"{self} inverts the complement of the prime {self.localized_prime()}, whose presentation "
+                            f"has no chosen finite generating family; this selected restriction construction to {target} "
+                            "requires a prime localization as target"
                         )
-                match all(
+                match conjunction(
                     self.localized_prime().contains_ambient_element(generator)
                     for generator in target.localized_prime().ideal_generators()
                 ):
@@ -1922,6 +1919,12 @@ class LocalizationRings(OwnedCategory):
                             f"{target.localized_prime()} is not contained in {self.localized_prime()}, "
                             f"so {target} does not invert everything {self} inverts and the universal "
                             "property of localization gives no map between them"
+                        )
+                    case _:
+                        assert False, (
+                            f"the containment of {target.localized_prime()} in {self.localized_prime()} "
+                            f"is unresolved; constructing the selected restriction {self} -> {target} "
+                            "requires that containment to be established"
                         )
             else:
                 for inverted in self.inverted_elements():
@@ -1934,9 +1937,9 @@ class LocalizationRings(OwnedCategory):
                                 f"property of localization gives no map from {self}"
                             )
                         case _:
-                            raise ValueError(
-                                f"invertibility of {inverted} in {target} is unresolved, so the "
-                                f"universal property of localization does not admit a map from {self}"
+                            assert False, (
+                                f"invertibility of {inverted} in {target} is unresolved; constructing the selected "
+                                f"restriction from {self} requires that unit-image hypothesis to be established"
                             )
 
             def image(element):
@@ -1944,7 +1947,7 @@ class LocalizationRings(OwnedCategory):
                 denominator = target(element.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return self.Mor(target)(image)
+            return OwnedRings().Mor(self, target)(image)
 
         def localization_fraction_data(self, element):
             r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
