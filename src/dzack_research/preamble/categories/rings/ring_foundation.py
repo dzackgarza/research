@@ -1271,6 +1271,46 @@ class LocalizationRings(OwnedCategory):
                 case _:
                     return value in source
 
+        def _inverse_variable_engine_cover(self):
+            r"""Return the current cover admitted by the inverse-variable decoder.
+
+            Private localization-owner contract. The only callers are this
+            owner's element decoder and exact-coefficient capability check.
+            The source, inverted family and native engine are fixed defining
+            data. Return the engine's cover when its variables consist of
+            the source variables followed by the represented inverses;
+            ``None`` means that this particular crossing is not selected.
+            Other existing element-decoder cases remain available.
+            """
+            engine = self._preamble_engine_ring
+            if not isinstance(engine, QuotientRing_generic):
+                return None
+            source_engine = _engine_ring(self.localization_source())
+            if not (
+                isinstance(source_engine, QuotientRing_generic)
+                or self._localization_engine_source_encoder is not None
+            ):
+                return None
+            engine_cover = engine.cover_ring()
+            source_cover = (
+                source_engine.cover_ring()
+                if isinstance(source_engine, QuotientRing_generic)
+                else source_engine
+            )
+            source_names = tuple(source_cover.variable_names())
+            inverted = tuple(self.inverted_elements())
+            engine_names = tuple(engine_cover.variable_names())
+            if (
+                engine_names[: len(source_names)] == source_names
+                and len(engine_names) == len(source_names) + len(inverted)
+                and all(
+                    name.startswith("localization_inverse_")
+                    for name in engine_names[len(source_names) :]
+                )
+            ):
+                return engine_cover
+            return None
+
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
             assert engine is not None, (
@@ -1292,11 +1332,7 @@ class LocalizationRings(OwnedCategory):
             # by sending the original variables through ``P -> P/I`` and each
             # auxiliary variable to the represented inverse of its selected
             # denominator.  This is exactly the universal localization map.
-            if isinstance(engine, QuotientRing_generic) and (
-                isinstance(source_engine, QuotientRing_generic)
-                or self._localization_engine_source_encoder is not None
-            ):
-                engine_cover = engine.cover_ring()
+            if self._inverse_variable_engine_cover() is not None:
                 source_cover = (
                     source_engine.cover_ring()
                     if isinstance(source_engine, QuotientRing_generic)
@@ -1304,31 +1340,22 @@ class LocalizationRings(OwnedCategory):
                 )
                 source_names = tuple(source_cover.variable_names())
                 inverted = tuple(self.inverted_elements())
-                engine_names = tuple(engine_cover.variable_names())
-                if (
-                    engine_names[: len(source_names)] == source_names
-                    and len(engine_names) == len(source_names) + len(inverted)
-                    and all(
-                        name.startswith("localization_inverse_")
-                        for name in engine_names[len(source_names) :]
+                result = self.zero()
+                for exponents, coefficient in represented.lift().dict().items():
+                    source_monomial = source_cover(coefficient)
+                    for position, exponent in enumerate(exponents[: len(source_names)]):
+                        source_monomial *= source_cover.gen(position) ** int(exponent)
+                    term = self.fraction(
+                        _owned_engine_element(source, source_engine(source_monomial))
                     )
-                ):
-                    result = self.zero()
-                    for exponents, coefficient in represented.lift().dict().items():
-                        source_monomial = source_cover(coefficient)
-                        for position, exponent in enumerate(exponents[: len(source_names)]):
-                            source_monomial *= source_cover.gen(position) ** int(exponent)
-                        term = self.fraction(
-                            _owned_engine_element(source, source_engine(source_monomial))
-                        )
-                        for position, exponent in enumerate(exponents[len(source_names) :]):
-                            if exponent:
-                                term *= self.fraction(
-                                    source.one(),
-                                    inverted[position],
-                                ) ** int(exponent)
-                        result += term
-                    return result
+                    for position, exponent in enumerate(exponents[len(source_names) :]):
+                        if exponent:
+                            term *= self.fraction(
+                                source.one(),
+                                inverted[position],
+                            ) ** int(exponent)
+                    result += term
+                return result
             return self.fraction(
                 _owned_engine_element(source, source_engine(represented.numerator())),
                 _owned_engine_element(source, source_engine(represented.denominator())),
@@ -1358,6 +1385,69 @@ class LocalizationRings(OwnedCategory):
                 "only for a quotient source with canonical polynomial lifts"
             )
             return engine(numerator.lift()) / engine(denominator.lift())
+
+        def _has_selected_exact_coefficient_presentation(self) -> bool:
+            r"""Whether the current inverse-variable quotient is an exact cover.
+
+            This implements the inherited ring-owner contract for module
+            algorithms. Only a finite-generator localization using its
+            admitted polynomial quotient crossing and source encoding is
+            selected. For ``L=S^-1(P/I)``, the existing realization is
+            ``P[u]/(I,u_i f_i-1)``. Its descent sends ``u_i`` to ``1/f_i``;
+            descent after the selected coefficient lift is the identity of L.
+            Prime and fraction-field models, flattened localization towers,
+            decoder overrides and all-unit source-engine reuse do not supply
+            this capability. Their existing element crossings are unchanged.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                QuotientRings,
+            )
+
+            if self.localization_submonoid()._selected_representation_kind() != "generators":
+                return False
+            source = self.localization_source()
+            if (
+                source in LocalizationRings()
+                or self._localization_engine_source_decoder is not None
+                or (
+                    source not in QuotientRings()
+                    and self._localization_engine_source_encoder is None
+                )
+            ):
+                return False
+            cover = self._inverse_variable_engine_cover()
+            return (
+                isinstance(cover, (MPolynomialRing_base, PolynomialRing_generic))
+                and self._preamble_engine_ring is not _engine_ring(source)
+            )
+
+        def _exact_coefficient_presentation_ring(self):
+            if self._has_selected_exact_coefficient_presentation():
+                return _own_ring(self._preamble_engine_ring.cover_ring())
+            return super()._exact_coefficient_presentation_ring()
+
+        def _exact_coefficient_presentation_relations(self):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                return owned_sets.finite_ordered_set(tuple(
+                    _owned_engine_element(cover, relation)
+                    for relation in self._preamble_engine_ring.defining_ideal().gens()
+                ))
+            return super()._exact_coefficient_presentation_relations()
+
+        def _lift_coefficient_to_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                represented = self._preamble_engine_ring(self._engine_element(value))
+                return _owned_engine_element(cover, represented.lift())
+            return super()._lift_coefficient_to_presentation(value)
+
+        def _descend_coefficient_from_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                represented = self._preamble_engine_ring(_engine_element(cover, value))
+                return self._from_engine_element(represented)
+            return super()._descend_coefficient_from_presentation(value)
 
         def zero(self):
             return self.fraction(self.localization_source().zero())
