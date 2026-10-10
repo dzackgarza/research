@@ -419,40 +419,99 @@ test-universe:
     fi
     echo "The proof surface stays inside the universe."
 
-# Reject coordinate conventions written outside the tensor package (OWN-24).
-# The specifically reviewed transpose in Modules.Mor's
-# symmetrized_right_multiplication is an owned framed-morphism operation,
-# not a Sage matrix transpose. All other occurrences remain violations.
+# Detect coordinate conventions written outside the tensor package (OWN-24).
+# AST provenance, not identical source-line text, exempts the typed Mor
+# transpose. Encoding Smith coordinates as ordinal indices is not a pairing.
+# The scan is necessary but not sufficient: semantic ownership needs review.
 tensor-boundary:
     #!/usr/bin/env bash
     set -uo pipefail
     files=$(git ls-files 'src/dzack_research/preamble/*.py' 'lattice-database/src/*.py' \
-        | grep -v '^src/dzack_research/preamble/tensors/')
+        | grep -v '^src/dzack_research/preamble/tensors/') || exit 1
     total=0
-    for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)'; do
-        findings=$(ast-grep run --lang python --pattern "$pattern" --json $files 2>/dev/null \
-            | python3 -c '
-    import json, sys
+    for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)' '$X.einsum($$$A)' 'einsum($$$A)' '$X.matmul($$$A)' 'matmul($$$A)' '$X.dot($$$A)' '$X @ $Y'; do
+        matches=$(ast-grep run --lang python --pattern "$pattern" --json $files)
+        status=$?
+        # ast-grep returns 1 for a valid query with zero matches.
+        if [ "$status" -gt 1 ]; then
+            echo "tensor-boundary scanner failed (status $status) for $pattern" >&2
+            exit "$status"
+        fi
+        if ! findings=$(printf '%s\n' "$matches" | python3 -c '
+    import ast, json, pathlib, sys
     for hit in json.load(sys.stdin):
-        # This product is constructed by the owned module Mor in the enclosing
-        # method; its transpose is another owned Mor element, not a matrix action.
-        if (hit["file"] == "src/dzack_research/preamble/categories/modules/pure/modules.py"
-                and hit["text"] == "product.transpose()"
-                and hit["lines"].strip() == "return product + product.transpose()"):
-            continue
-        print("{}:{}: {}".format(hit["file"], hit["range"]["start"]["line"] + 1,
-                                 hit["lines"].strip()))
-    ')
+        path = hit["file"]
+        line = hit["range"]["start"]["line"] + 1
+        source = pathlib.Path(path).read_text()
+        tree = ast.parse(source, filename=path)
+
+        # The owned MatrixSpaces.ElementMethods implementation makes product
+        # by composing two elements of the module Mor. Its transpose is a Mor
+        # element with reversed endpoints, not a Sage-matrix convention.
+        if (path == "src/dzack_research/preamble/categories/modules/pure/modules.py"
+                and hit["text"] == "product.transpose()"):
+            owned_transpose = False
+            for method in ast.walk(tree):
+                if not isinstance(method, ast.FunctionDef) or method.name != "symmetrized_right_multiplication":
+                    continue
+                has_mor = any(isinstance(n, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "parameters" for t in n.targets)
+                    and ast.unparse(n.value) == "modules.Mor(self.codomain(), self.domain())"
+                    for n in method.body)
+                for image in method.body:
+                    if not isinstance(image, ast.FunctionDef) or image.name != "image":
+                        continue
+                    has_composition = any(isinstance(n, ast.Assign)
+                        and any(isinstance(t, ast.Name) and t.id == "product" for t in n.targets)
+                        and ast.unparse(n.value) == "parameters.module_generator(label) * self"
+                        for n in image.body)
+                    has_call = any(isinstance(n, ast.Call) and n.lineno == line
+                        and isinstance(n.func, ast.Attribute) and n.func.attr == "transpose"
+                        and isinstance(n.func.value, ast.Name) and n.func.value.id == "product"
+                        for n in ast.walk(image))
+                    if has_mor and has_composition and has_call:
+                        owned_transpose = True
+                        break
+                if owned_transpose:
+                    break
+            if owned_transpose:
+                continue
+
+        # The three existing @ strides calls encode finite tuples as their
+        # mixed-radix ordinal: this is indexing, not a bilinear contraction.
+        if (path == "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py"
+                and hit["metaVariables"]["single"].get("Y", {}).get("text") == "strides"):
+            ordinal_index = False
+            for method in ast.walk(tree):
+                if not isinstance(method, ast.FunctionDef) or method.name != "_isotropic_subgroups":
+                    continue
+                has_strides = any(isinstance(n, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "strides" for t in n.targets)
+                    and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == "numpy.array"
+                    for n in method.body)
+                if has_strides and method.lineno <= line <= method.end_lineno:
+                    ordinal_index = True
+                    break
+            if ordinal_index:
+                continue
+
+        print("{}:{}: {}".format(path, line, hit["lines"].strip()))
+    '); then
+            echo "tensor-boundary could not classify $pattern" >&2
+            exit 1
+        fi
         n=$(printf '%s\n' "$findings" | grep -c . || true)
         total=$((total + n))
         printf '%4d  %s\n' "$n" "$pattern"
-        [ "$n" -gt 0 ] && printf '%s\n' "$findings" | head -40
+        if [ "$n" -gt 0 ]; then
+            printf '%s\n' "$findings" | head -40
+        fi
     done
     if [ "$total" -gt 0 ]; then
-        echo "$total coordinate conventions outside preamble/tensors/: state pullback, composition, inverse or application instead."
+        echo "$total suspected coordinate operations outside preamble/tensors/: state the owned pullback, contraction, composition, inverse or application instead."
         exit 1
     fi
-    echo "Every coordinate convention lives in preamble/tensors/."
+    echo "No prohibited syntax detected; categorical ownership still requires source review."
 
 # Assemble the LLM-review context packet (review-packet.tar).
 #

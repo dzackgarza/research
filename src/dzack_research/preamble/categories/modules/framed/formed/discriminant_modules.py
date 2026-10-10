@@ -871,6 +871,12 @@ def _isotropic_subgroups(ambient, quadratic):
     smith_generators = tuple(raised(int(numpy.ravel_multi_index(
         tuple(int(i == j) for j in range(rank)), invariants
     ))) for i in range(rank))
+    # The chosen Smith generators give a surjection u: ZZ^rank -> A.
+    # The family of all elements is the set map c: I -> ZZ^rank supplied
+    # by 'coordinates'. Its bilinear table is (u o c)^*b; in the even
+    # case the diagonal quadratic values are q(u(c(i))) in QQ/2ZZ.
+    # Only the private tensor adapter realizes those pullbacks by
+    # modular matrix contractions; the mathematical pairings are b and q.
     bilinear = [
         [_engine_element(value.parent(), value) for value in (ambient.b(left, right).lift() for right in smith_generators)]
         for left in smith_generators

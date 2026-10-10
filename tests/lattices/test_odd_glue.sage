@@ -115,6 +115,14 @@ def test_a_bilinear_isotropic_class_of_u2_gives_the_odd_overlattice() -> None:
     # U(2) up to the odd unimodular lattice ZZ e + ZZ f.
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     discriminant = lattice.discriminant_module()
+    bilinear = discriminant.associated_bilinear_form()
+
+    # Peters--Sterk, Example 1.7.5.1: including the zero subgroup, the
+    # bilinear form admits four isotropic subgroups and its quadratic
+    # refinement only three. The two enumeration paths contract different
+    # quotient-valued forms on the same underlying finite group.
+    assert bilinear.isotropic_subgroups().cardinality() == 4
+    assert discriminant.isotropic_subgroups().cardinality() == 3
     e, f = lattice.module_generator(0), lattice.module_generator(1)
     # e + f has divisibility 2 in U(2), so its divided class is the class of (e + f)/2.
     odd_class = (e + f).divided_discriminant_class()

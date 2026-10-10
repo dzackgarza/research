@@ -899,9 +899,11 @@ def _roots_generating_lattice(gram, lengths):
     r"""Return coordinate rows of roots that generate \(\mathbb Z^n\) under the integral form ``gram``.
 
     A root is a vector \(r\) with \(b(r,r)\ne 0\) dividing \(2b(r,x)\) for every
-    \(x\); its \(|b(r,r)|\) lies in ``lengths``.  With
-    \(T^{t}GT=D\) a rational diagonalization, \(T^{-t}|D|T^{-1}\) is a positive
-    definite majorant \(M\) of \(G\), so each ball of \(M\) holds finitely many
+    \(x\); its \(|b(r,r)|\) lies in ``lengths``. For a nondegenerate
+    Gram form \(G\), Sage supplies a rational diagonalization
+    \(T^{t}(2G)T=D\). The pullback \(M=(T^{-1})^*|D|\) is positive
+    definite and satisfies \(|2G(x,x)|\le M(x,x)\), by the triangle
+    inequality in the diagonal basis. Thus each ball of \(M\) holds finitely many
     vectors.  The annuli between radii \(R\) and \(2R\) are searched in turn,
     and a root is kept when it enlarges the span of those kept.  The search
     returns once they span \(\mathbb Z^n\), and runs without end, in memory

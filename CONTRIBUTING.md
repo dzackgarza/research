@@ -1571,6 +1571,29 @@ of this specification.
   and is not banned.  Thus `M^t G M` and `M G M^t` cannot be written as raw
   matrix equations at their consumers, and no caller chooses between them.
 
+  **The semantic operation is the requirement, not a permitted spelling.**
+  Before changing an offending site, identify its mathematical domain,
+  codomain, selected morphism or family, the tensor/form it acts on, and the
+  actual categorical construction (pullback, evaluation, contraction or
+  composition). Route the operation through that owner; only its private
+  numerical realization may choose matrices, NumPy operations or einsum
+  subscripts. Replacing `@` with `einsum`, `.transpose()` with a helper that
+  still chooses a side, or a pairing loop with another hand-written
+  contraction at the consumer **does not** repair a boundary violation.
+  Quotient-valued bilinear and quadratic forms retain their actual target
+  modules (for example `K/R` and `K/2R`); an integer matrix of
+  representatives is only a private realization, never a replacement for
+  the form morphism or its chosen generator map.
+
+  **Mathematical transposition and coordinate transposition are different
+  operations.** Determine the receiver's actual owning Mor and the source and
+  target of the transposed arrow before classifying a `.transpose()` call.
+  A checker match is not evidence that a Sage matrix was transposed. Conversely
+  a checker miss, or a different spelling such as `@`, `dot`, `matmul` or
+  `einsum`, is not evidence that the computation crosses the right boundary.
+  Do not move a public morphism operation to an engine package, change its
+  API, or weaken a rule merely to satisfy a textual checker.
+
   One equation has one owner.  A second statement of the same invariant, such
   as a loop of form evaluations beside a pullback, is deleted.
 - **Rationale:** An imperative loop over elements re-enters the preamble's
@@ -1591,10 +1614,18 @@ of this specification.
   in a reduced basis is the pullback along the reducing automorphism; the
   Gram tensor of a family of roots is the pullback along the map that
   sends the standard basis to the roots.
-- **Enforcement:** `just tensor-boundary` rejects coordinate transposes and
-  matrix actions outside `preamble/tensors/`.  Its one reviewed exception
-  identifies the owned morphism transpose in `symmetrized_right_multiplication`;
-  a textual match alone is not a mathematical type judgment.
+- **Enforcement:** `just tensor-boundary` detects several *syntactic*
+  manifestations of coordinate operations outside `preamble/tensors/`.
+  Its retained exceptions must be justified by the mathematical receiver
+  and construction, never by an identical line of text. It is a necessary
+  regression check, not a complete checker for semantic ownership. At every
+  affected site the reviewer separately traces the mathematical operation,
+  its categorical owner, the lowering/raising boundary and its consumers;
+  this source review is required even when the recipe reports zero matches.
+  A failure of an existing whole-tree gate on unchanged source does not create
+  a dependency of an unrelated worktree integration: apply the repository's
+  stage-scoped commit/verification rules, and repair the violation at its own
+  mathematical owner under the appropriate task.
 
 ### Construction-chain review protocol
 
