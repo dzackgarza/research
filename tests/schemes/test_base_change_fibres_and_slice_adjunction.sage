@@ -23,7 +23,7 @@ def _gaussian_integers():
 
 def test_the_generic_fibre_of_the_gaussian_integers_is_one_point_of_degree_two() -> None:
     r"""``Spec ZZ[i] x_ZZ Spec QQ = Spec QQ(i)``: one point, degree 2 over ``QQ``."""
-    generic = _gaussian_integers().generic_fiber()
+    generic = SchemesOverIntegralDomains(ZZ)(_gaussian_integers()).generic_fiber()
 
     assert generic.scheme_base_ring() is QQ
     assert generic.dimension() == 0

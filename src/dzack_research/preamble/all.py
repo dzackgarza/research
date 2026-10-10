@@ -403,6 +403,8 @@ _lazy_import(
         "SchemeMonomorphisms",
         "SchemeMorphism",
         "Schemes",
+        "SchemesOverIntegralDomains",
+        "SchemesOverLocalRings",
         "SheafObjects",
         "SheafedSpaces",
         "SideDecoration",

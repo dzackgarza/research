@@ -36,6 +36,8 @@ from dzack_research.preamble.categories.schemes.quotients import AffineInvariant
 from dzack_research.preamble.categories.schemes.relative_proj import RelativeProjectivizations
 
 from dzack_research.preamble.categories.schemes.schemes import (
+    SchemesOverIntegralDomains,
+    SchemesOverLocalRings,
     AffineSchemes,
     AffineGSchemes,
     AffineSpaces,
@@ -191,6 +193,8 @@ __all__ = [
     'zariski_coverage',
     'SchemeMorphism',
     'Schemes',
+    'SchemesOverIntegralDomains',
+    'SchemesOverLocalRings',
     'SmoothSchemes',
     'Surfaces',
     'ToricLogPairs',

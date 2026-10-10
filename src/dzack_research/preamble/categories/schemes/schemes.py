@@ -2673,27 +2673,6 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""The fibre over the closed subscheme ``V(I) <= Spec R`` of an ideal ``I`` of ``R``."""
             return self.fiber(self.base_scheme().closed_subscheme(tuple(ideal.ideal_generators())).inclusion())
 
-        def generic_fiber(self):
-            r"""``X x_{Spec R} Spec Frac(R)``, the base change to the fraction field of a domain."""
-            return self.base_change(self.scheme_base_ring().fraction_field_map())
-
-        def special_fiber(self):
-            r"""``X x_{Spec R} Spec R/m``, the base change to the residue field of a local base."""
-            return self.base_change(self.scheme_base_ring().residue_map())
-
-        def base_change_to_completion(self):
-            r"""``X x_{Spec R} Spec R^``, the base change to the ``m``-adic completion of a local base."""
-            base = self.scheme_base_ring()
-            return self.base_change(base.adic_completion(base.maximal_ideal()).completion_map())
-
-        def special_fiber_comparison(self):
-            r"""The isomorphism ``(X_{R^})_k -> X_k`` of the two special fibres over a local base."""
-            from dzack_research.preamble.categories.schemes.families import (
-                _special_fiber_comparison,
-            )
-
-            return _special_fiber_comparison(self)
-
         @cached_method
         def diagonal_morphism(self):
             r"""``Delta: X -> X x_S X``, the cone map with both legs the identity."""
@@ -6382,6 +6361,59 @@ class SchemeMonomorphisms(_MonoCategoryOf):
                 return arrow.is_open_immersion()
 
 
+class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
+    r"""Schemes with a canonical generic fibre over an integral base."""
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedIntegralDomains():
+            raise TypeError("a canonical generic fibre requires an integral-domain base")
+        return [Schemes(self.base_ring())]
+
+    def an_object(self):
+        return self(Schemes(self.base_ring()).an_object())
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+        if scheme not in Schemes(self.base_ring()):
+            raise TypeError("a scheme must have the selected integral-domain base")
+        return refine(scheme, self)
+
+    class ParentMethods:
+        def generic_fiber(self):
+            r"""Base change to the function field of the integral base."""
+            return self.base_change(self.scheme_base_ring().fraction_field_map())
+
+
+class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
+    r"""Schemes over a local base with its distinguished closed point."""
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedRings().Local():
+            raise TypeError("a canonical special fibre requires a local base ring")
+        return [Schemes(self.base_ring())]
+
+    def an_object(self):
+        return self(Schemes(self.base_ring()).an_object())
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+        if scheme not in Schemes(self.base_ring()):
+            raise TypeError("a scheme must have the selected local base")
+        return refine(scheme, self)
+
+    class ParentMethods:
+        def special_fiber(self):
+            return self.base_change(self.scheme_base_ring().residue_map())
+
+        def base_change_to_completion(self):
+            base = self.scheme_base_ring()
+            return self.base_change(base.adic_completion(base.maximal_ideal()).completion_map())
+
+        def special_fiber_comparison(self):
+            from dzack_research.preamble.categories.schemes.families import _special_fiber_comparison
+            return _special_fiber_comparison(self)
+
+
 __all__ = [
     "AffineSchemes",
     "AffineSpaces",
@@ -6398,6 +6430,8 @@ __all__ = [
     "ProductSchemes",
     "SchemeMonomorphisms",
     "Schemes",
+    "SchemesOverIntegralDomains",
+    "SchemesOverLocalRings",
     "SchemeMorphism",
     "SmoothSchemes",
 ]
