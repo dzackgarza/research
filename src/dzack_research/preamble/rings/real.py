@@ -372,9 +372,8 @@ class ExactRealNumber(FieldElement):
     def __invert__(self):
         return self.parent().one() / self
 
-    def inverse_of_unit(self):
+    def _unit_inverse_decision(self):
         r"""``x^{-1}``: every nonzero real number is a unit."""
-        assert not self.is_zero(), f"0 is not a unit of {self.parent()}"
         return ~self
 
     def __pow__(self, exponent, modulus=None):
@@ -627,8 +626,8 @@ class ExactRealField(UniqueRepresentation, Field):
     def one(self) -> ExactRealNumber:
         return self(ZZ.one())
 
-    def characteristic(self):
-        return ZZ.zero()
+    def _characteristic_decision(self):
+        return _own_ring(ZZ).zero()
 
     def is_exact(self) -> bool:
         return True

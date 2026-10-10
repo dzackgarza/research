@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.semirings import (
     OwnedRngs,
     OwnedSemirings,
@@ -75,7 +76,7 @@ from dzack_research.preamble.categories.rings.semirings import (
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category
 
 
 class _OwnedRingBootstrapParent(metaclass=ABCMeta):
@@ -899,7 +900,7 @@ class LocalizationRings(OwnedCategory):
                 return other_parent.scalar_multiple(self, other)
             return NotImplemented
 
-        def inverse_of_unit(self):
+        def _unit_inverse_decision(self):
             r"""Return the inverse of a unit ``a/s``.
 
             An inverse is ``sb/u`` for any ``b`` in ``R`` and ``u`` in ``S``
@@ -914,15 +915,15 @@ class LocalizationRings(OwnedCategory):
                 case True:
                     pass
                 case False:
-                    raise ValueError(f"{self} is not a unit of {parent}")
+                    raise ZeroDivisionError(f"{self} is not a unit of {parent}")
                 case _:
-                    raise ValueError(f"cannot decide whether {self} is a unit of {parent}")
+                    return None
             engine = parent._selected_engine_ring()
             represented = parent._engine_element(self)
             inverse = engine(represented) ** -1
             return _owned_engine_element(parent, inverse)
 
-        def is_unit(self):
+        def _unit_decision(self):
             r"""Return whether ``a/s`` is invertible in ``S^{-1}R``.
 
             An inverse is a fraction ``b/t`` with ``ab/st = 1``, and the
@@ -953,7 +954,7 @@ class LocalizationRings(OwnedCategory):
             match structure.get("kind"):
                 case "prime_complement":
                     prime = structure["prime_ideal"]
-                    return not prime.contains_ambient_element(self.numerator())
+                    return negation(prime.contains_ambient_element(self.numerator()))
                 case "nonzero_elements":
                     return self.numerator() != source.zero()
                 case _:
@@ -977,19 +978,13 @@ class LocalizationRings(OwnedCategory):
                 inverted_ideal
             ).contains_ambient_element(bottom.one())
 
-        def __truediv__(self, other):
-            other = self.parent()(other)
-            return self * other.inverse_of_unit()
+        __truediv__ = Monoids.ElementMethods.divide_by_unit
 
         def _neg_(self):
             return self.parent().fraction(
                 -self.numerator(),
                 self.denominator(),
             )
-
-        def _sub_(self, other):
-            r"""Subtraction in the additive group of ``S^{-1}R``."""
-            return self._add_(-other)
 
         def equality_status(self, other):
             if other.parent() is not self.parent() or other.parent() is not self.parent():
@@ -1953,6 +1948,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""A division ring has ``1 != 0`` (Mathlib ``DivisionRing.toNontrivial``)."""
             return [OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial()]
 
+        class ElementMethods:
+            def _unit_decision(self):
+                r"""In a division ring, precisely the nonzero elements are units."""
+                return self != self.parent().zero()
+
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
 
@@ -1993,7 +1993,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return GF(2)
 
             class ParentMethods:
-                def krull_dimension(self):
+                def _krull_dimension_decision(self):
                     r"""``0``: the only prime ideal of a field is ``(0)``."""
                     return _own_ring(SageZZ).zero()
 
@@ -2252,6 +2252,30 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def is_reduced(self) -> bool:
                 return self._reducedness_decision()
 
+            @RealizationHook
+            def _normality_decision(self):
+                r"""Protected normality decision, whose only caller is is_normal.
+
+                Owned realizations and more specific categories may decide the
+                local-normal-domain predicate. Otherwise retain that proposition;
+                no computed normalization or finite presentation is presumed.
+                """
+                return AtomicProposition("is_normal", self)
+
+            def is_normal(self):
+                r"""Whether every prime localization is a normal domain.
+
+                This is the definition for a general commutative ring
+                (Stacks, Section 10.37, Definition 10.37.11). Normal domains
+                are integrally closed in their fraction fields. The zero ring
+                has no prime ideals; fields already satisfy the definition.
+                """
+                if (self.one() == self.zero()) is True:
+                    return True
+                if self in OwnedRings().Division().Commutative():
+                    return True
+                return self._normality_decision()
+
             @cached_method
             def square_class_group(self):
                 r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.
@@ -2266,7 +2290,21 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _square_class_group(self)
 
+            @RealizationHook
+            def _krull_dimension_decision(self):
+                r"""Protected selected dimension computation, or None.
+
+                Only krull_dimension calls this hook. A more specific category
+                or owned ring realization supplies its exact owned dimension;
+                otherwise the common selected ring-engine adapter is used.
+                """
+                return None
+
             def krull_dimension(self):
+                r"""Return the supremum of lengths of chains of prime ideals."""
+                dimension = self._krull_dimension_decision()
+                if dimension is not None:
+                    return dimension
                 return _engine_krull_dimension(self)
 
             def as_algebra_over(self, base_ring):
@@ -2395,6 +2433,104 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     topology_data=_PrimeSpectrumTopologyData(self),
                 )
 
+            def prime_ideal_locus(self):
+                r"""All prime ideals as subsets of this commutative ring.
+
+                The full power set includes ideals without a finite generating
+                presentation. The predicate does not assert a decision algorithm.
+                """
+                return self.power_set().condition_set(
+                    lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
+                )
+
+            def minimal_prime_locus(self):
+                r"""All prime-ideal subsets minimal under inclusion."""
+                return self.prime_ideal_locus().condition_set(
+                    lambda ideal_subset: AtomicProposition(
+                        "is_minimal_prime_ideal_subset", ideal_subset, self
+                    )
+                )
+
+            @RealizationHook
+            def _finite_minimal_primes(self):
+                r"""Protected finite minimal-prime computation, or None.
+
+                Only minimal_primes calls this hook. An owned realization or
+                more specific category may return a finite owned set of ideals
+                of this exact ring when finiteness is established. The default
+                supplies no enumeration and leaves the general locus intact.
+                """
+                return None
+
+            @cached_method
+            def minimal_primes(self):
+                r"""The minimal-prime locus, with a finite realization when supplied."""
+                primes = self._finite_minimal_primes()
+                return self.minimal_prime_locus() if primes is None else primes
+
+            def irreducible_component_locus(self):
+                r"""The possibly infinite family of closed components of Spec R.
+
+                Each is V(p) for a minimal prime p. Reducedness is unnecessary
+                (Stacks, Section 10.26, Lemma 10.26.1).
+                """
+                from dzack_research.preamble.categories.sets.set_categories import Sets
+
+                prime_subsets = self.prime_ideal_locus()
+                return Sets().image_set(
+                    lambda minimal_prime: prime_subsets.condition_set(
+                        lambda prime: AtomicProposition(
+                            "contains_ideal_subset", prime, minimal_prime
+                        )
+                    ),
+                    self.minimal_prime_locus(),
+                )
+
+            @RealizationHook
+            def _finite_irreducible_components(self):
+                r"""Protected finite component-ring computation, or None.
+
+                Only irreducible_components calls this hook. An owned ring
+                realization may retain a finite set of component domains R/p
+                for its minimal primes, including their selected presentations.
+                This preserves the existing computational ring-valued route;
+                the general component locus consists of closed subsets.
+                """
+                return None
+
+            @cached_method
+            def irreducible_components(self):
+                r"""Selected finite component domains, or the general closed-component locus."""
+                components = self._finite_irreducible_components()
+                return self.irreducible_component_locus() if components is None else components
+
+            @RealizationHook
+            def _total_quotient_map_decision(self):
+                r"""Protected selected regular-element localization map, or None.
+
+                Only total_quotient_map calls this hook. An owned realization
+                or more specific category returns an owned ring morphism from
+                this exact ring to its total quotient ring, retaining the
+                canonical injection and its target together. It must establish
+                the hypotheses of its localization computation; a product of
+                component fields requires the corresponding finite reduced case.
+                """
+                return None
+
+            @cached_method
+            def total_quotient_map(self):
+                r"""The canonical injection into the localization at all regular elements."""
+                if (self.one() == self.zero()) is True:
+                    return OwnedRings().Mor(self, self).identity()
+                if self in OwnedRings().Commutative().NoZeroDivisors():
+                    return self.fraction_field_map()
+                morphism = self._total_quotient_map_decision()
+                assert morphism is not None, (
+                    f"the total quotient ring of {self} is defined, but no regular-element localization "
+                    "computation is available for this ring"
+                )
+                return morphism
+
             def total_quotient_ring(self):
                 r"""Return ``Q(R) = S^{-1}R`` for ``S`` the regular elements of ``R``.
 
@@ -2405,11 +2541,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 the fraction field.
                 """
 
-                assert self in OwnedRings().Commutative().NoZeroDivisors(), (
-                    f"the total quotient ring of {self} is computed here only for an integral domain, where it is "
-                    f"Frac(R), but {self} is not known to be an integral domain"
-                )
-                return self.fraction_field()
+                return self.total_quotient_map().codomain()
 
         class ElementMethods:
             def is_regular(self) -> bool:
@@ -3520,12 +3652,17 @@ class _OwnedRingElement(RingElement):
     def is_one(self):
         return bool(self._backend() == self.parent()._engine.one())
 
-    def is_unit(self):
+    def _unit_decision(self):
         return bool(self._backend().is_unit())
 
-    def inverse_of_unit(self):
-        if not self.is_unit():
-            raise ZeroDivisionError(f"{self} is not a unit")
+    def _unit_inverse_decision(self):
+        match self.is_unit():
+            case True:
+                pass
+            case False:
+                raise ZeroDivisionError(f"{self} is not a unit")
+            case _:
+                return None
         return _owned_engine_element(self.parent(), self._backend() ** -1)
 
     def __invert__(self):
@@ -3804,17 +3941,15 @@ class _PredicateSubringElement(_OwnedRingElement):
     def is_one(self):
         return self == self.parent().one()
 
-    def is_unit(self):
+    def _unit_decision(self):
         if (self == self.parent().one()) is True or (self == -self.parent().one()) is True:
             return True
         value = self.parent().inclusion()(self)
         decision = value.is_unit()
         if decision is False:
             return False
-        assert decision is True, (
-            f"cannot decide whether {self} is a unit: it is undecided whether its image {value} is a unit "
-            f"in {value.parent()}"
-        )
+        if decision is not True:
+            return AtomicProposition("is_unit", self)
         return value.inverse_of_unit() in self.parent()
 
 
@@ -4086,7 +4221,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def an_element(self):
         return self._from_engine_element(self._engine.an_element())
 
-    def characteristic(self):
+    def _characteristic_decision(self):
         integers = _own_ring(SageZZ)
         return _owned_engine_element(integers, SageZZ(self._engine.characteristic()))
 
@@ -4412,7 +4547,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     constructor received: the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
     ring and the number of indeterminates of a polynomial, Laurent, power
     series or free algebra, the cover of a quotient, the ring of a fraction
-    field, the size and entries of a matrix ring.  A constituent ring the
+    field, the factors of a finite product, the size and entries of a matrix ring.  A constituent ring the
     preamble already owns is read by its placement.  The theorem that places
     the result is stated in the case.  No answer the engine computes about the
     ring itself -- ``is_field``, ``is_commutative``, ``is_noetherian``, its
@@ -4445,6 +4580,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
     from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.sets.cartesian_product import CartesianProduct
 
     from dzack_research.preamble.categories.rings.number_fields import (
         NumberFieldsWithChosenPrimitiveElement,
@@ -4586,6 +4722,32 @@ def _presented_ring_category(engine: Ring) -> Category:
                 case False:
                     inherited = ()
             placements = (*inherited, _size_of_finitely_supported_families(coefficients, engine.ngens()))
+        case CartesianProduct():
+            # Finite products use coordinatewise ring operations. Commutative,
+            # Noetherian and Artinian factors give the corresponding product;
+            # a product of fields is not thereby a field or a domain.
+            factors = tuple(_own_ring(factor) for factor in engine.cartesian_factors())
+            commutative = (
+                (OwnedRings().Commutative(),)
+                if all(factor in OwnedRings().Commutative() for factor in factors)
+                else ()
+            )
+            product_noetherian = (
+                (noetherian,)
+                if all(factor in noetherian for factor in factors)
+                else ()
+            )
+            artinian = (
+                (OwnedRings().Artinian(),)
+                if all(factor in OwnedRings().Artinian() for factor in factors)
+                else ()
+            )
+            finite = (
+                (owned_sets.FiniteSets(),)
+                if all(factor in owned_sets.FiniteSets() for factor in factors)
+                else ()
+            )
+            placements = (*commutative, *product_noetherian, *artinian, *finite)
         case MatrixSpace():
             # M_n(R) is commutative exactly when n <= 1 and R is; it is a
             # finitely generated R-module, so Noetherian when R is; it is

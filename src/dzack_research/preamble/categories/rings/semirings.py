@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
     Semigroups,
 )
+from dzack_research.preamble.refine import RealizationHook
 
 
 class SemiringMorphism:
@@ -109,6 +110,41 @@ class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
 
     def super_categories(self):
         return [Monoids(), AdditiveMonoids().AdditiveCommutative()]
+
+    class ParentMethods:
+        @RealizationHook
+        def _characteristic_decision(self):
+            r"""Protected exact characteristic of this semiring, or None.
+
+            Only characteristic calls this hook. An owned parent realization
+            or a more specific category supplies the nonnegative owned integer
+            n for which m*1 = 0 exactly when n divides the natural number m.
+            None means that no characteristic computation has been supplied;
+            it does not mean characteristic zero.
+            """
+            return None
+
+        def characteristic(self):
+            r"""Return the characteristic determined by the natural-number map.
+
+            This needs the semiring's zero, one and addition. The value is one
+            for the zero semiring and zero when no positive multiple of one
+            vanishes. For semirings, characteristic zero alone does not assert
+            that the natural-number map is injective.
+
+            Definition: Mathlib Algebra/CharP/Defs, ringChar.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+            )
+
+            if (self.one() == self.zero()) is True:
+                return _own_ring(SageZZ).one()
+            characteristic = self._characteristic_decision()
+            assert characteristic is not None, (
+                f"characteristic is defined for {self}, but no computation of its natural-number kernel is available"
+            )
+            return characteristic
 
     def initial_object(self):
         """Return the natural numbers, initial among unital semirings."""

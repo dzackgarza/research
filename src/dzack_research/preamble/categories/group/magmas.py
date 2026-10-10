@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
 
 
 class MagmaMorphism:
@@ -209,17 +210,49 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
         return [Semigroups(), Magmas().Unital()]
 
     class ElementMethods:
+        @RealizationHook
         def _unit_decision(self):
-            r"""Protected decision procedure for invertibility in the ambient monoid."""
-            return NotImplemented
+            r"""Protected monoid-unit decision supplied by an element realization.
+
+            Only is_unit calls this hook. More specific categories and owned
+            element realizations may return a Boolean or the proposition that
+            this element has a two-sided inverse; an undecided proposition is
+            not a negative answer.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_unit", self)
 
         def is_unit(self):
             r"""Return whether this element has a two-sided inverse in its monoid."""
-            decision = self._unit_decision()
-            assert decision is not NotImplemented, (
-                f"invertibility is defined for every monoid element, but no decision procedure is available for {self}"
+            return self._unit_decision()
+
+        @RealizationHook
+        def _unit_inverse_decision(self):
+            r"""Protected computation of the inverse in this exact monoid.
+
+            Only inverse_of_unit calls this hook. An owned element realization
+            or a more specific category returns the owned two-sided inverse in
+            the same parent, or None when it supplies no computation. It raises
+            ZeroDivisionError only for an established nonunit. Computing an
+            inverse need not require a separately decidable unit predicate.
+            An applied procedure may propagate its explicit unresolved-
+            computation error; that does not establish that the element is a
+            nonunit.
+            """
+            return None
+
+        def inverse_of_unit(self):
+            r"""Return the unique two-sided inverse of this monoid unit."""
+            inverse = self._unit_inverse_decision()
+            assert inverse is not None, (
+                f"no inverse computation is available for {self} in its ambient monoid {self.parent()}"
             )
-            return decision
+            return inverse
+
+        def divide_by_unit(self, other):
+            r"""Return the right quotient by a unit in the same ambient monoid."""
+            return self * self.parent()(other).inverse_of_unit()
 
         def _pow_int(self, exponent):
             r"""Integer powers by repeated squaring, from the monoid law."""
@@ -390,6 +423,11 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
 
     def super_categories(self):
         return [AdditiveMonoids()]
+
+    class ElementMethods:
+        def _sub_(self, other):
+            r"""The right difference, from addition and the additive inverse."""
+            return self + (-other)
 
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""

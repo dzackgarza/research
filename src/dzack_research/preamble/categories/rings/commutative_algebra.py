@@ -75,7 +75,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     UncountableSets,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -683,11 +683,7 @@ class QuotientRings(OwnedCategory):
         def _neg_(self):
             return self.parent()(-self.lift())
 
-        def _sub_(self, other):
-            r"""Subtraction in the additive group of ``R/I``."""
-            return self._add_(-other)
-
-        def is_unit(self):
+        def _unit_decision(self):
             parent = self.parent()
             source = parent.quotient_source()
             unit_ideal = source.ideal(
@@ -696,29 +692,20 @@ class QuotientRings(OwnedCategory):
             )
             return unit_ideal.contains_ambient_element(source.one())
 
-        def inverse_of_unit(self):
-            parent = self.parent()
-            assert parent._preamble_engine_ring is not None, (
-                f"cannot compute the inverse of the unit {self} in {parent}: this quotient ring has no "
-                "computer-algebra model in which to compute inverses"
-            )
-            represented = parent._engine_element(self)
-            if not represented.is_unit():
-                raise ZeroDivisionError(f"{self} is not a unit in {parent}")
-            return parent(represented**-1)
+        def _unit_inverse_decision(self):
+            return self.parent()._quotient_unit_inverse(self)
 
-        def __truediv__(self, other):
-            return self * self.parent()(other).inverse_of_unit()
+        __truediv__ = Monoids.ElementMethods.divide_by_unit
 
         def _richcmp_(self, other, op):
-            if other.parent() is not self.parent() or other.parent() is not self.parent():
+            if other.parent() is not self.parent():
                 return NotImplemented
             if op not in (op_EQ, op_NE):
                 return NotImplemented
             equal = self.parent().defining_ideal().contains_ambient_element(
                 self.lift() - other.lift()
             )
-            return equal if op == op_EQ else not equal
+            return equal if op == op_EQ else negation(equal)
 
         def _repr_(self):
             return f"{self.lift()} mod {self.parent().defining_ideal()}"
@@ -816,6 +803,23 @@ class QuotientRings(OwnedCategory):
                 return quotient_map(source_value)
             return engine(source_value)
 
+        def _quotient_unit_inverse(self, element):
+            r"""Private parent computation for the monoid unit-inverse hook.
+
+            Owner: QuotientRings.ParentMethods. The permitted caller is this
+            category's element realization implementing _unit_inverse_decision.
+            The input and result are owned elements of this exact quotient;
+            only this parent inspects its selected quotient engine. None means
+            it has no inverse computation, and a proved nonunit raises
+            ZeroDivisionError.
+            """
+            if self._preamble_engine_ring is None:
+                return None
+            represented = self._engine_element(element)
+            if not represented.is_unit():
+                raise ZeroDivisionError(f"{element} is not a unit in {self}")
+            return self._from_engine_element(represented**-1)
+
         def zero(self):
             return self(self.quotient_source().zero())
 
@@ -825,12 +829,14 @@ class QuotientRings(OwnedCategory):
         def an_element(self):
             return self.one()
 
-        def _is_zero_ring(self) -> bool:
+        def _is_zero_ring(self):
             r"""Whether this is ``R/R``, the zero ring."""
-            return bool(_engine_ideal(self.quotient_source(), self.defining_ideal()).is_one())
+            return self.defining_ideal().contains_ambient_element(
+                self.quotient_source().one()
+            )
 
         def _finiteness_decision(self):
-            if self._is_zero_ring():
+            if self._is_zero_ring() is True:
                 return True
             if self._preamble_engine_ring is not None:
                 return bool(self._preamble_engine_ring.is_finite())
@@ -841,10 +847,10 @@ class QuotientRings(OwnedCategory):
                 ).is_zero()
             return AtomicProposition("is_finite", self)
 
-        def cardinality(self):
+        def _cardinality_decision(self):
             # Sage's generic quotient of a field by its unit ideal has no
             # cardinality method; R/R has exactly one element.
-            if self._is_zero_ring():
+            if self._is_zero_ring() is True:
                 return cardinal(1)
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
@@ -856,7 +862,11 @@ class QuotientRings(OwnedCategory):
                 if not defining.is_zero():
                     return cardinal(SageZZ(defining.norm()))
             source = self.quotient_source()
-            if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals() and source in OwnedRings().Commutative().Local():
+            if (
+                source not in LocalizationRings()
+                and source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+                and source in OwnedRings().Commutative().Local()
+            ):
                 valuations = []
                 for generator in self.defining_ideal().ideal_generators():
                     backend = _engine_ring_value(source, generator)
@@ -866,22 +876,29 @@ class QuotientRings(OwnedCategory):
                 if valuations:
                     residue_size = source.residue_field().cardinality()
                     return residue_size ** min(valuations)
-            assert False, (
-                f"cannot compute the cardinality of the quotient ring {self}: no algorithm applies to "
-                f"{self.quotient_source()} modulo {self.defining_ideal()}"
-            )
+            return None
 
         def _field_decision(self):
             r"""Return whether R/I is a field, equivalently whether I is maximal."""
+            if self._is_zero_ring() is True:
+                return False
+            if self.quotient_source() in LocalizationRings():
+                return AtomicProposition("is_field", self)
             return bool(self.defining_ideal().is_maximal())
 
         def _integral_domain_decision(self):
+            if self._is_zero_ring() is True:
+                return False
+            if self.quotient_source() in LocalizationRings():
+                return AtomicProposition("is_integral_domain", self)
             return bool(self.defining_ideal().is_prime())
 
-        def krull_dimension(self):
+        def _krull_dimension_decision(self):
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
             source = self.quotient_source()
+            if source in LocalizationRings():
+                return None
             backend = _engine_ideal(source, self.defining_ideal())
             source_engine = _engine_ring(source)
             if isinstance(source_engine, SageNumberFieldOrder) and not backend.is_zero():
@@ -890,9 +907,6 @@ class QuotientRings(OwnedCategory):
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
-
-        def algebra_base_ring(self):
-            return self.quotient_source()
 
         def quotient_source(self):
             return self._quotient_source
@@ -966,28 +980,24 @@ class QuotientRings(OwnedCategory):
                 precision=precision,
             )
 
-        def characteristic(self):
+        def _characteristic_decision(self):
             source = self.quotient_source()
-            source_engine = _engine_ring(source)
-            defining = self.defining_ideal()
-            if source_engine is SageZZ:
-                generators = tuple(defining.ideal_generators())
-                generator = abs(
-                    SageZZ(_engine_element(source, generators[0]))
-                    if generators
-                    else SageZZ.zero()
-                )
+            if source is _own_ring(SageZZ):
+                # The selected integer ideal is canonicalized by Sage from
+                # its entire generating family, not its first written entry.
+                generator = abs(_engine_ideal(source, self.defining_ideal()).gen())
                 return _owned_engine_element(SageZZ, generator)
-            coefficient_ring = _engine_coefficient_ring(source_engine)
-            if coefficient_ring in SageFields():
-                return _owned_engine_element(
-                    SageZZ,
-                    SageZZ(coefficient_ring.characteristic()),
-                )
-            return _owned_engine_element(
-                SageZZ,
-                SageZZ(_engine_ring(self).characteristic()),
-            )
+            if (
+                source in OwnedRings().Division().Commutative()
+                and self._is_zero_ring() is False
+            ):
+                return source.characteristic()
+            engine = self._preamble_engine_ring
+            if engine is not None:
+                return _owned_engine_element(SageZZ, SageZZ(engine.characteristic()))
+            # A localization's fraction-field model need not have the
+            # characteristic of its quotient by the selected ideal.
+            return None
 
         @cached_method
         def _affine_normalization_data(self):
@@ -1015,24 +1025,31 @@ class QuotientRings(OwnedCategory):
             r"""Return the normalized irreducible components with their maps."""
             return self._affine_normalization_data().components
 
-        def _reducedness_decision(self) -> bool:
+        def _reducedness_decision(self):
+            if self._is_zero_ring() is True:
+                return True
+            if self.quotient_source() in LocalizationRings():
+                return AtomicProposition("is_reduced", self)
             defining = _engine_ideal(self.quotient_source(), self.defining_ideal())
             return defining.radical() == defining
 
         @cached_method
         def _presentation_minimal_primes(self):
-            r"""Return the minimal primes upstairs in the chosen presentation ring."""
+            r"""The exact finite minimal primes upstairs, or no selected computation.
+
+            A Noetherian presentation has finitely many minimal primes.
+            Localized-source quotients still need an exact ideal transport:
+            their source's fraction-field model can turn a proper ideal into
+            the unit ideal, so it cannot supply this finite enumeration.
+            """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-            if self.quotient_source() not in OwnedNoetherianRings():
-                raise NotImplementedError(
-                    f"the minimal-prime locus of {self} is not necessarily finite; "
-                    "the represented enumeration requires a Noetherian presentation ring"
-                )
+            source = self.quotient_source()
+            if source not in OwnedNoetherianRings() or source in LocalizationRings():
+                return None
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 _from_engine_ideal,
             )
 
-            source = self.quotient_source()
             defining = _engine_ideal(source, self.defining_ideal())
             return finite_ordered_set(
                 tuple(
@@ -1042,101 +1059,50 @@ class QuotientRings(OwnedCategory):
             )
 
         @cached_method
-        def minimal_primes(self):
-            r"""Minimal prime ideals, with finite enumeration in the Noetherian regime."""
-            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-            if self.quotient_source() not in OwnedNoetherianRings():
-                return self.minimal_prime_locus()
+        def _finite_minimal_primes(self):
+            r"""Transport the selected finite minimal primes into this quotient."""
+            primes = self._presentation_minimal_primes()
+            if primes is None:
+                return None
             return finite_ordered_set(
                 tuple(
                     self.ideal(
                         *(self(generator) for generator in prime.ideal_generators())
                     )
-                    for prime in self._presentation_minimal_primes()
+                    for prime in primes
                 )
-            )
-
-        def minimal_prime_locus(self):
-            r"""All minimal prime *subsets* of this ring, including non-finitely generated primes.
-
-            The full ideal universe is a predicate subset of ``P(R)``. In
-            particular, this does not rely on points built from the finite
-            generator presentations used by the computational spectrum.
-            """
-            prime_subsets = self.prime_ideal_locus()
-            return prime_subsets.condition_set(
-                lambda ideal_subset: AtomicProposition(
-                    "is_minimal_prime_ideal_subset", ideal_subset, self
-                )
-            )
-
-        def prime_ideal_locus(self):
-            r"""All prime ideals of this ring as subsets, not finite presentations."""
-            return self.power_set().condition_set(
-                lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
             )
 
         @cached_method
-        def irreducible_components(self):
-            r"""Return component domains in the Noetherian finite realization.
-
-            For arbitrary spectra, component closures instead form the
-            nonenumerated ``irreducible_component_locus``.
-            """
-            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
-            if self.quotient_source() not in OwnedNoetherianRings():
-                return self.irreducible_component_locus()
-            if not self.is_reduced():
-                raise ValueError(
-                    f"irreducible components R/p are computed here only for a reduced ring, but {self} is not reduced"
-                )
+        def _finite_irreducible_components(self):
+            r"""The selected component domains, also for nonreduced quotients."""
+            primes = self._presentation_minimal_primes()
+            if primes is None:
+                return None
             return finite_ordered_set(
                 tuple(
                     self.quotient_source().quotient_ring(prime)
-                    for prime in self._presentation_minimal_primes()
+                    for prime in primes
                 )
             )
 
-        def irreducible_component_locus(self):
-            r"""Possibly infinite set of irreducible closed components of ``Spec R``.
+        @cached_method
+        def _total_quotient_map_decision(self):
+            r"""The product-of-fields realization for a reduced Noetherian quotient.
 
-            Each component is the closure of one minimal prime point.
-            This does not assume a finite list of prime ideals.
+            Finitely many minimal primes are required for this product formula
+            (Stacks, Section 10.25). The common owner handles domains and the
+            zero ring separately and retains this map together with its target.
             """
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-            prime_subsets = self.prime_ideal_locus()
-            return Sets().image_set(
-                lambda minimal_prime: prime_subsets.condition_set(
-                    lambda prime: AtomicProposition(
-                        "contains_ideal_subset", prime, minimal_prime
-                    )
-                ),
-                self.minimal_prime_locus(),
-            )
-
-        @cached_method
-        def total_quotient_ring(self):
-            r"""Return the total quotient ring of this supported reduced affine quotient."""
-            if self in OwnedRings().Commutative().NoZeroDivisors():
-                return self.fraction_field()
-            assert self.is_reduced(), (
-                f"the total quotient ring of {self} is computed here as the product of the fraction fields of "
-                f"its irreducible components, which needs a reduced ring, but {self} is not reduced"
-            )
-            fields = tuple(
-                component.fraction_field() for component in self.irreducible_components()
-            )
-            return _finite_product_ring(fields)
-
-        @cached_method
-        def total_quotient_map(self):
-            r"""Return the canonical injection ``A -> Q(A)`` in the supported reduced case."""
-            if self in OwnedRings().Commutative().NoZeroDivisors():
-                return self.fraction_field_map()
+            if (
+                self.is_reduced() is not True
+                or self._presentation_minimal_primes() is None
+            ):
+                return None
             components = tuple(self.irreducible_components())
             fields = tuple(component.fraction_field() for component in components)
             field_maps = tuple(component.fraction_field_map() for component in components)
-            target = self.total_quotient_ring()
+            target = _finite_product_ring(fields)
             target_engine = _engine_ring(target)
 
             def image(element):
@@ -1145,6 +1111,8 @@ class QuotientRings(OwnedCategory):
                     field_map(component(lift))
                     for component, field_map in zip(components, field_maps, strict=True)
                 )
+                if len(values) == 1:
+                    return values[0]
                 backend = target_engine(
                     tuple(
                         _engine_element(field, value)
@@ -1153,7 +1121,7 @@ class QuotientRings(OwnedCategory):
                 )
                 return _owned_engine_element(target, backend)
 
-            return self.Mor(target)(image)
+            return OwnedRings().Mor(self, target)(image)
 
         @cached_method
         def conductor_ideal(self):
@@ -1166,10 +1134,21 @@ class QuotientRings(OwnedCategory):
             delta = self._affine_normalization_data().delta
             return Infinity if delta < 0 else delta
 
-        @cached_method
-        def is_normal(self) -> bool:
-            r"""Return whether this affine domain equals its integral closure."""
-            return bool(self._affine_normalization_data().is_normal)
+        def _normality_decision(self):
+            r"""Selected finite affine normality computation at the common owner."""
+            reduced = self.is_reduced()
+            if reduced is False:
+                return False
+            source = self.quotient_source()
+            base = source.base_ring()
+            if (
+                reduced is True
+                and base in OwnedRings().Division().Commutative()
+                and source in SymmetricAlgebras(base)
+                and source.algebra_generating_set() in FiniteSets()
+            ):
+                return self._affine_normalization_data().is_normal
+            return AtomicProposition("is_normal", self)
 
     def super_categories(self):
         return [OwnedRings().Commutative()]
@@ -1522,15 +1501,20 @@ class PrimeLocalizations(OwnedCategory):
         return [LocalizationRings(), OwnedRings().Commutative().Local()]
 
     class ElementMethods:
-        def is_unit(self):
+        def _unit_decision(self):
             parent = self.parent()
-            return not parent.localized_prime().contains_ambient_element(
+            return negation(parent.localized_prime().contains_ambient_element(
                 self.numerator()
-            )
+            ))
 
-        def inverse_of_unit(self):
-            if not self.is_unit():
-                raise ZeroDivisionError(f"{self} is not a unit in {self.parent()}")
+        def _unit_inverse_decision(self):
+            match self.is_unit():
+                case True:
+                    pass
+                case False:
+                    raise ZeroDivisionError(f"{self} is not a unit in {self.parent()}")
+                case _:
+                    return None
             return self.parent().fraction(
                 self.denominator(),
                 self.numerator(),
@@ -1576,7 +1560,7 @@ class PrimeLocalizations(OwnedCategory):
             )
             return represented
 
-        def krull_dimension(self):
+        def _krull_dimension_decision(self):
             r"""Return ``dim R_p``, the height of ``p``.
 
             The primes of ``R_p`` are the ``qR_p`` for the primes ``q`` of
@@ -2264,10 +2248,10 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
     def is_one(self):
         return self._completion_equal(self.parent().one())
 
-    def is_unit(self):
+    def _unit_decision(self):
         return bool(self._backend().is_unit())
 
-    def inverse_of_unit(self):
+    def _unit_inverse_decision(self):
         if not self.is_unit():
             raise ZeroDivisionError(f"{self} is not a unit in {self.parent()}")
         return _owned_engine_element(self.parent(), self._backend() ** -1)
