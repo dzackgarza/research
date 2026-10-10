@@ -23,7 +23,7 @@ def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() ->
     a2 = Lattices(ZZ)("A2")
     fraction_map = a2.base_ring().fraction_field_map()
     rationalized = a2.base_change(fraction_map)
-    raised = a2.raise_index_over_fraction_field(a2.gram_tensor(), 0)
+    raised = NondegenerateGenericFibreFormModules(ZZ)(a2).raise_index_over_fraction_field(a2.gram_tensor(), 0)
 
     assert raised.base_ring() is rationalized.base_ring()
     assert raised.tensor_valence() == (1, 1)

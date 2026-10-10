@@ -1486,19 +1486,6 @@ class FormModules(OwnedCategoryOverBaseRing):
             """
             return tensor.raise_index(self, slot)
 
-        def raise_index_over_fraction_field(self, tensor, slot=0):
-            r"""Raise one lower index after the canonical fraction-field extension.
-
-            This is useful when the inverse Gram tensor is not integral.  Both
-            the form and tensor are changed along the same canonical map
-            ``R -> Frac(R)`` before the ordinary index-raising operation is
-            applied.
-            """
-            ring_map = self.base_ring().fraction_field_map()
-            changed_form = self.base_change(ring_map)
-            changed_tensor = tensor.change_ring(changed_form.base_ring())
-            return changed_tensor.raise_index(changed_form, slot)
-
         def lower_index(self, tensor, slot=0):
             r"""Lower one upper tensor index using this formed module."""
             return tensor.lower_index(self, slot)
@@ -1586,6 +1573,38 @@ class FormModules(OwnedCategoryOverBaseRing):
         class ParentMethods:
             def base_change(self, ring_map):
                 return FormBaseChanges(ring_map.codomain())(self, ring_map)
+
+
+class NondegenerateGenericFibreFormModules(OwnedCategoryOverBaseRing):
+    r"""Finite nondegenerate formed modules over an integral domain.
+
+    Their scalar extensions to the fraction field have invertible Gram forms.
+    """
+
+    def super_categories(self):
+        if self.base_ring() not in OwnedIntegralDomains():
+            raise TypeError("generic-fibre formed modules require an integral domain")
+        return [FormModules(self.base_ring()).Nondegenerate().FinitelyGenerated()]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.lattices import Lattices
+        return self(Lattices(self.base_ring())("U"))
+
+    def _call_(self, formed):
+        from dzack_research.preamble.refine import refine
+        if formed not in FormModules(self.base_ring()) or not formed.is_nondegenerate():
+            raise ValueError("generic-fibre index raising needs a nondegenerate form")
+        if formed not in Modules(self.base_ring()).FinitelyGenerated():
+            raise ValueError("generic-fibre index raising needs finite rank")
+        return refine(formed, self)
+
+    class ParentMethods:
+        def raise_index_over_fraction_field(self, tensor, slot=0):
+            r"""Raise a covariant index over the fraction field of the base domain."""
+            ring_map = self.base_ring().fraction_field_map()
+            changed_form = self.base_change(ring_map)
+            changed_tensor = tensor.change_ring(changed_form.base_ring())
+            return changed_tensor.raise_index(changed_form, slot)
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):

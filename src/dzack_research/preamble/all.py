@@ -291,6 +291,7 @@ from dzack_research.preamble.categories.modules import (
     FormedModuleMorphism,
     FormEmbedding,
     FormModules,
+    NondegenerateGenericFibreFormModules,
     FractionalIdeals,
     FractionFieldQuotients,
     FramedFreeModules,

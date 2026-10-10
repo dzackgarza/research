@@ -44,7 +44,7 @@ def test_form_index_raising_lowering_twist_and_fraction_field_raise() -> None:
     vector = tensor.vector(ZZ, [3, 7])
     covector = tensor.covector(ZZ, [3, 7])
     twisted = form.twist(3)
-    rational = form.raise_index_over_fraction_field(covector)
+    rational = NondegenerateGenericFibreFormModules(ZZ)(form).raise_index_over_fraction_field(covector)
 
     assert form.lower_index(vector) == tensor.covector(ZZ, [7, 3])
     assert form.raise_index(covector) == tensor.vector(ZZ, [7, 3])
