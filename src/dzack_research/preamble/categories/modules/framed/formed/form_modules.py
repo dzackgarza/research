@@ -1621,6 +1621,30 @@ def _primary_form_component_family(form):
     )
 
 
+def _finite_form_orbit(form, element, group=None):
+    acting = form.automorphism_group() if group is None else group
+    return acting.orbit(form(element))
+
+
+def _finite_form_orbits(form, group=None):
+    acting = form.automorphism_group() if group is None else group
+    action = _torsion_form_element_action(form, acting)
+    return finite_ordered_set(tuple(orbit.points() for orbit in action.orbits()))
+
+
+def _finite_form_subobject_orbits(form, isotropic=False, group=None):
+    acting = form.automorphism_group() if group is None else group
+    subobjects = form.isotropic_subobjects() if isotropic else form.subobjects()
+    return _torsion_form_subobject_orbits(form, subobjects, acting)
+
+
+def _finite_form_metabolizer(form):
+    lagrangians = form.lagrangian_subobjects()
+    if lagrangians.cardinality() == 0:
+        raise ValueError(f"{form} is not metabolic: it has no Lagrangian submodule")
+    return lagrangians[0]
+
+
 class BilinearFormModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The hyperbolic plane U, with its bilinear form."""
@@ -2054,31 +2078,20 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
                 def orbit(self, element, group=None):
                     r"""Return the orbit of ``element`` under ``group`` or the full orthogonal group."""
-                    acting = self.automorphism_group() if group is None else group
-                    return acting.orbit(self(element))
+                    return _finite_form_orbit(self, element, group)
 
                 @cached_method
                 def orbits(self, group=None):
                     r"""Return the orbit partition of the finite underlying module."""
-                    acting = self.automorphism_group() if group is None else group
-                    action = _torsion_form_element_action(self, acting)
-                    return finite_ordered_set(
-                        tuple(orbit.points() for orbit in action.orbits())
-                    )
+                    return _finite_form_orbits(self, group)
 
                 def orbits_on_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
-                    acting = self.automorphism_group() if group is None else group
-                    return _torsion_form_subobject_orbits(
-                        self, self.subobjects(), acting
-                    )
+                    return _finite_form_subobject_orbits(self, group=group)
 
                 def orbits_on_isotropic_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on isotropic subobjects."""
-                    acting = self.automorphism_group() if group is None else group
-                    return _torsion_form_subobject_orbits(
-                        self, self.isotropic_subobjects(), acting
-                    )
+                    return _finite_form_subobject_orbits(self, isotropic=True, group=group)
 
                 def is_anisotropic(self) -> bool:
                     zero = self.zero()
@@ -2101,10 +2114,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     return self.lagrangian_subobjects().cardinality() != 0
 
                 def metabolizer(self):
-                    lagrangians = self.lagrangian_subobjects()
-                    if lagrangians.cardinality() == 0:
-                        raise ValueError(f"{self} is not metabolic: it has no Lagrangian submodule")
-                    return lagrangians[0]
+                    return _finite_form_metabolizer(self)
 
                 def restricted_form(self, subobject):
                     if subobject.inclusion().codomain() is not self:
@@ -2437,31 +2447,20 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
                 def orbit(self, element, group=None):
                     r"""Return the orbit of ``element`` under ``group`` or the full orthogonal group."""
-                    acting = self.automorphism_group() if group is None else group
-                    return acting.orbit(self(element))
+                    return _finite_form_orbit(self, element, group)
 
                 @cached_method
                 def orbits(self, group=None):
                     r"""Return the orbit partition of the finite underlying module."""
-                    acting = self.automorphism_group() if group is None else group
-                    action = _torsion_form_element_action(self, acting)
-                    return finite_ordered_set(
-                        tuple(orbit.points() for orbit in action.orbits())
-                    )
+                    return _finite_form_orbits(self, group)
 
                 def orbits_on_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
-                    acting = self.automorphism_group() if group is None else group
-                    return _torsion_form_subobject_orbits(
-                        self, self.subobjects(), acting
-                    )
+                    return _finite_form_subobject_orbits(self, group=group)
 
                 def orbits_on_isotropic_subobjects(self, group=None):
                     r"""Return the orthogonal-group orbits on isotropic subobjects."""
-                    acting = self.automorphism_group() if group is None else group
-                    return _torsion_form_subobject_orbits(
-                        self, self.isotropic_subobjects(), acting
-                    )
+                    return _finite_form_subobject_orbits(self, isotropic=True, group=group)
 
                 @cached_method
                 def isotropic_elements(self):
@@ -2488,10 +2487,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     return self.lagrangian_subobjects().cardinality() != 0
 
                 def metabolizer(self):
-                    lagrangians = self.lagrangian_subobjects()
-                    if lagrangians.cardinality() == 0:
-                        raise ValueError(f"{self} is not metabolic: it has no Lagrangian submodule")
-                    return lagrangians[0]
+                    return _finite_form_metabolizer(self)
 
                 def restricted_form(self, subobject):
                     if subobject.inclusion().codomain() is not self:
