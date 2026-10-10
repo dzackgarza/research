@@ -3832,6 +3832,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     for representative, value in zip(representatives, supplied, strict=True)
                     for element in _conjugacy_class_elements(self, representative)
                 }
+                # The domain carries its inclusion into G as selected set data.
                 domain = (
                     self if len(table) == int(self.order())
                     else self.condition_set(lambda element: element in table)
