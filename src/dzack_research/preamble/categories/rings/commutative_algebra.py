@@ -1583,7 +1583,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 )
                 return _owned_engine_element(normalization, backend)
 
-            normalization_map = quotient.Mor(normalization)(into_product)
+            normalization_map = OwnedRings().Mor(quotient, normalization)(into_product)
 
         component_indices = finite_ordered_set(range(len(normalizations)))
         components = finite_indexed_family(
@@ -1609,9 +1609,9 @@ def _affine_reduced_quotient_normalization_data(quotient):
         def component_projection(position):
             component = normalizations[int(position)]
             if len(normalizations) == 1:
-                return normalization.Mor(component)(lambda element: element)
+                return OwnedRings().Mor(normalization, component)(lambda element: element)
             projection_engine = product_engine.cartesian_projection(int(position))
-            return normalization.Mor(component)(
+            return OwnedRings().Mor(normalization, component)(
                 lambda element: _owned_engine_element(
                     component,
                     projection_engine(_engine_element(normalization, element)),

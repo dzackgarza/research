@@ -1937,6 +1937,22 @@ class Modules(OwnedCategoryOverBaseRing):
         def _represented_annihilator_ideal(self):
             return NotImplemented
 
+        def _scalar_restriction_data(self, ring_map):
+            r"""A represented field dimension and optional basis along ``ring_map``.
+
+            Protected module-owner contract. The restriction constructor and
+            ``finite_length_at_closed_point`` are the callers; a
+            selected-presentation owner may return
+            ``(dimension, basis)`` for the actual scalar action. ``dimension``
+            is an owned cardinal, and ``basis`` is a ``_NativeModuleBasis``
+            whose images are elements of this module, or ``None`` when no
+            finite basis is supplied. A return value of ``None`` means that
+            this owner has no represented calculation along the given map;
+            it never means that a proved infinite dimension may be discarded.
+            """
+            _ = ring_map
+            return None
+
         def _represented_vector_space_dimension(self):
             return NotImplemented
 
@@ -3298,6 +3314,22 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
+        def _scalar_restriction_data(self, ring_map):
+            r"""Retain one exact coefficient-field dimension and its finite basis.
+
+            The private polynomial-presentation adapter owns the calculation.
+            Its result is cached together, so the restriction constructor,
+            vector-space dimension, and ``finite_length_at_closed_point``
+            share one standard basis and one selected monomial basis of this
+            module's quotient.
+            """
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _singular_scalar_restriction_data,
+            )
+
+            return _singular_scalar_restriction_data(self, ring_map)
+
+        @cached_method
         def tensor_mor_adjunction(self):
             r"""Return ``- tensor self ⊣ Hom_R(self,-)`` on chosen finite presentations."""
             from dzack_research.preamble.categories.functors.tensor_mor import (
@@ -3788,7 +3820,11 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
     ``(m_j)``, the products ``s_i m_j`` frame ``Res_f(M)``, and a chosen
     finite presentation of ``M`` induces one of ``Res_f(M)``.  The basis
     ``(s_i)`` is selected by ``S`` along ``f`` and retained as
-    ``scalar_basis``.
+    ``scalar_basis``. Independently, a finite presentation of ``M`` over a
+    polynomial quotient may supply its dimension and a finite basis over the
+    coefficient field even when ``S`` itself is infinite dimensional. These
+    data belong to the actual pair ``(M, f)`` and are retained as
+    ``restriction_data``.
     """
 
     def an_object(self):
@@ -3855,11 +3891,18 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         )
 
         def __init__(
-            self, module_over_extension, ring_map, framing_source=None, scalar_basis=None, **rest
+            self,
+            module_over_extension,
+            ring_map,
+            framing_source=None,
+            scalar_basis=None,
+            restriction_data=None,
+            **rest,
         ) -> None:
             self._module_over_extension = module_over_extension
             self._ring_map = ring_map
             self._scalar_basis = scalar_basis
+            self._restriction_data = restriction_data
             ring = _owned_ring(ring_map.domain())
             framing = {}
             if framing_source is not None:
@@ -3972,6 +4015,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             extension_ring = self.extension_ring()
             module = self.module_over_extension()
             match self:
+                case _ if self._restriction_data is not None:
+                    return self._restriction_data[0]
                 case _ if (
                     self._scalar_basis is not None
                     and ring in OwnedRings().Commutative()
@@ -3982,6 +4027,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                     return self._scalar_basis.source().module_rank() * module.module_rank()
                 case _:
                     return Unknown
+
+        def _represented_vector_space_dimension(self):
+            r"""Read the dimension retained for this module and this scalar map."""
+            if self._restriction_data is not None:
+                return self._restriction_data[0]
+            return super()._represented_vector_space_dimension()
 
         def _underlying_additive_element(self, element):
             element = self(element)
@@ -4025,10 +4076,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             return value in self.module_over_extension()
 
         def _restricted_scalar_generator(self, label):
-            r"""Return ``s_i m_j`` for the framing label ``(i, j)``."""
+            r"""Return the retained basis image, or ``s_i m_j`` in the scalar tower."""
             labels = self.module_generating_set()
             assert label in labels, f"{label!r} does not index a generator of {self}; its generators are indexed by {labels}"
             label = labels(label)
+            if self._restriction_data is not None and self._restriction_data[1] is not None:
+                return self.wrap(self._restriction_data[1].image(label))
             extension_module = self.module_over_extension()
             scalar = self._scalar_basis.image(label.component(0))
             module_generator = extension_module.module_generator(label.component(1))
@@ -4040,6 +4093,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def _selected_module_coefficients(self, element):
             r"""``m = sum_j t_j m_j`` and ``t_j = sum_i c_ij s_i`` give ``m = sum_ij c_ij s_i m_j``."""
             element = self(element)
+            if self._restriction_data is not None and self._restriction_data[1] is not None:
+                return self._restriction_data[1].coordinates(element.underlying_element())
             module_coordinates = self.module_over_extension().framing_morphism().lift(
                 element.underlying_element()
             )
@@ -4200,6 +4255,8 @@ def _restricted_scalars_view(
     ``S``; a selected inclusion places it among the subobjects.  The basis of
     ``Res_f(S)`` is the one ``S`` selects along ``f``, so it is taken along
     the given map and never from ``S``'s structure over its own base ring.
+    A basis of ``Res_f(M)`` supplied by the module's selected presentation
+    gives a second framing route without requiring ``Res_f(S)`` to be finite.
     """
     assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
         f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the base ring "
@@ -4208,10 +4265,15 @@ def _restricted_scalars_view(
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
     )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
 
     base_ring = _owned_ring(ring_map.domain())
     extension_ring = _owned_ring(module.base_ring())
     placement = [RestrictedScalarsModules(base_ring)]
+    if base_ring in OwnedFields():
+        placement.append(VectorSpaces(base_ring))
     data = {"module_over_extension": module, "ring_map": ring_map}
 
     finitely_framed = module.has_selected_module_resolution() and module in Modules(extension_ring).FinitelyGenerated()
@@ -4219,6 +4281,11 @@ def _restricted_scalars_view(
     framed_over_finite_free_scalars = scalar_basis is not None and scalar_basis.source() in FinitelyGeneratedFreeModules(
         base_ring
     )
+    restriction_data = None
+    if not framed_over_finite_free_scalars:
+        restriction_data = module._scalar_restriction_data(ring_map)
+        if restriction_data is not None:
+            data["restriction_data"] = restriction_data
     match module:
         case _ if framed_over_finite_free_scalars and module in ModulesWithChosenFinitePresentation(extension_ring):
             presentation = _restricted_scalar_presentation(
@@ -4241,6 +4308,9 @@ def _restricted_scalars_view(
                 ),
                 scalar_basis=scalar_basis,
             )
+        case _ if restriction_data is not None and restriction_data[1] is not None:
+            placement.append(FramedFreeModules(base_ring).FinitelyGenerated())
+            data["framing_source"] = restriction_data[1].source()
 
     if _subobject_inclusion_factory is not None or (
         _subobject_ambient is not None and _subobject_generator_images is not None

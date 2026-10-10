@@ -874,15 +874,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def finite_length_at_closed_point(self, point):
             r"""Return ``length_{R_p}(M_p)`` when ``M`` is supported only at ``p``.
 
-            In the represented polynomial-over-a-field regime, Singular's
-            ``vdim`` computes the base-field dimension of the quotient of the
-            selected free cover by the selected relation module. If the support
+            In the represented polynomial-over-a-field regime, the cached
+            coefficient-restriction calculation supplies the base-field
+            dimension of the selected presentation quotient. If the support
             is the single closed point ``p``, every composition factor is
             ``kappa(p)``, so dividing by ``[kappa(p):k]`` gives the local
             composition length.
             """
             from sage.categories.fields import Fields as SageFields
-            from sage.libs.singular.function import singular_function
 
             if self.is_zero():
                 return _own_ring(SageZZ).zero()
@@ -896,25 +895,27 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"cannot take the length of {self} at {point}: the length is finite only when the "
                 f"support of {self} is exactly this point"
             )
-            # Engine adapter (``OWN-06``): Singular's ``std``/``vdim`` over a
-            # multivariate polynomial ring over a field.
+            # Engine applicability (``OWN-06``): retain this operation's
+            # represented multivariate-polynomial-over-a-field regime.
             engine = _engine_ring(ring)
             assert engine.base_ring() in SageFields() and "multi_polynomial" in type(engine).__module__, (
                 f"cannot compute the length of {self} at {point}: this is implemented only over a "
                 f"polynomial ring over a field, and the base ring is {ring}"
             )
-            # Singular reads the columns of a matrix as the generators of a
-            # submodule of the free module; the columns of the relation
-            # morphism's matrix are the relations r(e_i).
-            relations = _engine_matrix(_relation_morphism(self))
-            standard_basis = singular_function("std")(relations, ring=engine)
-            vector_dimension = int(
-                singular_function("vdim")(standard_basis, ring=engine)
+            coefficient_map = ring.algebra_structure_morphism()
+            if coefficient_map.codomain() is not ring:
+                coefficient_map = coefficient_map.codomain().inclusion() * coefficient_map
+            restriction_data = self._scalar_restriction_data(coefficient_map)
+            assert restriction_data is not None, (
+                f"cannot compute the length of {self} at {point}: no exact coefficient-field "
+                f"restriction of its selected presentation over {ring} is represented"
             )
-            assert vector_dimension >= 0, (
+            dimension = restriction_data[0]
+            assert dimension.is_finite(), (
                 f"{self} has infinite dimension over the coefficient field of {ring}, "
                 f"so it is not supported only at {point}"
             )
+            vector_dimension = int(dimension.finite_value())
             residue_degree = int(point.residue_degree())
             assert residue_degree > 0 and vector_dimension % residue_degree == 0, (
                 f"{self} has dimension {vector_dimension} over the coefficient field, which is not a "
@@ -2601,9 +2602,10 @@ def _flattened_submodule_membership(presentation_engine, lifted, lifted_submodul
 def _singular_coefficient_presentation(ring):
     r"""Select exact polynomial coefficient data for module computations.
 
-    Private adapter shared by this owner's relation, kernel and preimage
-    algorithms.  Return ``(P, I, lift, descend)`` in the Singular realization,
-    or ``None`` if the ring has no selected polynomial cover over a field.
+    Private adapter shared by this owner's relation, kernel, preimage and
+    scalar-restriction algorithms. Return ``(P, I, lift, descend)`` in the
+    Singular realization, or ``None`` if the ring has no selected polynomial
+    cover over a field with at least one variable.
     The cover and its relations come from the ring owner's exact-coefficient
     contract; a localization's larger fraction field is not such a cover.
     """
@@ -2621,6 +2623,10 @@ def _singular_coefficient_presentation(ring):
     coefficient_presentation = ring._exact_coefficient_presentation_ring()
     presentation_ring = _engine_ring(coefficient_presentation)
     if not isinstance(presentation_ring, (MPolynomialRing_base, PolynomialRing_generic)):
+        return None
+    # Sage's libSingular polynomial parent requires at least one variable.
+    # Field scalar restrictions retain the existing finite-basis route.
+    if presentation_ring.ngens() == 0:
         return None
     coefficient_field = presentation_ring.base_ring()
     if coefficient_field not in SageFields():
@@ -2653,10 +2659,10 @@ def _singular_coefficient_presentation(ring):
 def _singular_relation_module(relation_images, width, context):
     r"""Lift module relations and ``I e_j`` to the selected polynomial cover.
 
-    Private adapter for this owner's exact relation, kernel and preimage
-    computations.  Images are ordered coefficient tuples in the actual
-    scalar ring.  The resulting Singular module generates their full inverse
-    image under ``P^width -> (P/I)^width``.
+    Private adapter for this owner's exact relation, kernel, preimage and
+    scalar-restriction computations. Images are ordered coefficient tuples
+    in the actual scalar ring. The resulting Singular module generates their
+    full inverse image under ``P^width -> (P/I)^width``.
     """
     from sage.modules.free_module import FreeModule as SageFreeModule
     from sage.structure.sequence import Sequence
@@ -2691,6 +2697,136 @@ def _singular_module_matrix(module_vectors, ring, width):
         ring, width, len(vectors),
         [vectors[column][row] for row in range(width) for column in range(len(vectors))],
     )
+
+
+def _singular_scalar_restriction_data(module, ring_map):
+    r"""The dimension and finite monomial basis of a coefficient restriction.
+
+    Private engine adapter for the cached chosen-presentation module hook
+    ``_scalar_restriction_data``. For ``A=P/I`` over a field ``k`` and a
+    selected presentation ``A^r -> A^n -> M``, lift the relation columns and
+    all ``I e_j`` to ``P^n``. Their quotient is the actual ``Res_k(M)`` even
+    when ``A`` is infinite dimensional over ``k``. The supplied scalar map
+    must equal the coefficient inclusion through the exact selected cover.
+
+    A single global standard basis supplies dimension, the finite ``kbase``
+    family, and inverse coordinates by normal form. A negative ``vdim``
+    gives ``aleph0``: finitely many polynomial variables and module generators
+    give a countable spanning family, and the quotient has no finite basis.
+    No finite framing is supplied in that case. Field restrictions already
+    supplied by the scalar ring's finite basis keep their existing route.
+    """
+    from sage.libs.singular.function_factory import ff
+    from sage.modules.free_module import FreeModule as SageFreeModule
+    from dzack_research.preamble.categories.modules.native_modules import (
+        _NativeModuleBasis,
+    )
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        OwnedRings,
+        _ring_morphisms_equal,
+    )
+    from dzack_research.preamble.categories.sets.cardinals import aleph0
+
+    ring = _owned_ring(module.base_ring())
+    field = _owned_ring(ring_map.domain())
+    if field not in OwnedFields() or _owned_ring(ring_map.codomain()) is not ring:
+        return None
+    if module not in ModulesWithChosenFinitePresentation(ring):
+        return None
+    if module._selected_relation_morphism() is None:
+        return None
+    context = _singular_coefficient_presentation(ring)
+    if context is None:
+        return None
+
+    presentation = ring._exact_coefficient_presentation_ring()
+    coefficient_inclusion = presentation.algebra_structure_morphism()
+    if coefficient_inclusion.codomain() is not presentation:
+        coefficient_inclusion = coefficient_inclusion.codomain().inclusion() * coefficient_inclusion
+    cover = OwnedRings().Mor(presentation, ring)(
+        lambda value: ring._descend_coefficient_from_presentation(value)
+    )
+    if _ring_morphisms_equal(ring_map, cover * coefficient_inclusion) is not True:
+        return None
+
+    module_labels = tuple(module.module_generating_set())
+    width = len(module_labels)
+    if width == 0:
+        return cardinal(0), _NativeModuleBasis(
+            field.free_module(finite_ordered_set(())),
+            lambda label: module.zero(),
+            lambda element: {},
+        )
+
+    singular_ring, _, lift_scalar, descend_scalar = context
+    free = SageFreeModule(singular_ring, width)
+    relations = _singular_relation_module(_relation_images(module), width, context)
+
+    standard = ff.std(relations, ring=singular_ring)
+    leading = ff.lead(standard, ring=singular_ring)
+    leading_components = {
+        position
+        for vector in leading
+        for position, coefficient in enumerate(vector)
+        if coefficient != 0
+    }
+    # Singular's staircase routines may read the largest component in
+    # the polynomials rather than the retained ambient module rank. A
+    # component with no leading monomial has infinitely many standard
+    # monomials; decide it here before asking vdim or kbase.
+    if any(position not in leading_components for position in range(width)):
+        return aleph0, None
+    dimension = int(ff.vdim(standard, ring=singular_ring))
+    if dimension < 0:
+        return aleph0, None
+    basis_vectors = () if dimension == 0 else tuple(
+        tuple(vector) for vector in ff.kbase(standard, ring=singular_ring)
+    )
+
+    if len(basis_vectors) != dimension:
+        raise ArithmeticError("the selected monomial basis has a different size from the computed dimension")
+    labels = finite_ordered_set(range(dimension))
+    basis_terms = {}
+    for label, vector in zip(labels, basis_vectors, strict=True):
+        terms = tuple(
+            ((position, tuple(exponent)), coefficient)
+            for position, polynomial in enumerate(vector)
+            for exponent, coefficient in polynomial.dict().items()
+        )
+        if len(terms) != 1:
+            raise ArithmeticError("a selected monomial module basis vector must have exactly one term")
+        (term, coefficient), = terms
+        if term in basis_terms:
+            raise ArithmeticError("the selected monomial module basis repeats a term")
+        basis_terms[term] = label, coefficient
+
+    def image(label):
+        vector = basis_vectors[int(label)]
+        return module.linear_combination({
+            module_labels[position]: descend_scalar(coefficient)
+            for position, coefficient in enumerate(vector)
+            if coefficient != 0
+        })
+
+    def coordinates(element):
+        framing_vector = module.framing_morphism().lift(module(element))
+        selected = framing_vector.parent()._selected_module_coefficients(framing_vector)
+        requested = free(tuple(
+            lift_scalar(selected.get(label, ring.zero())) for label in module_labels
+        ))
+        remainder = ff.reduce(requested, standard, ring=singular_ring)
+        result = {}
+        for position, polynomial in enumerate(remainder):
+            for exponent, coefficient in polynomial.dict().items():
+                term = position, tuple(exponent)
+                if term not in basis_terms:
+                    raise ArithmeticError("a module normal form contains a term outside its selected monomial basis")
+                label, basis_coefficient = basis_terms[term]
+                result[label] = _owned_engine_element(field, coefficient / basis_coefficient)
+        return result
+
+    basis = _NativeModuleBasis(field.free_module(labels), image, coordinates)
+    return cardinal(dimension), basis
 
 
 def _singular_presentation_preimage(morphism, element):
