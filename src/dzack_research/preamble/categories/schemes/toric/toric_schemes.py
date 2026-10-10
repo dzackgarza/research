@@ -1545,15 +1545,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return _toric_middle_cohomology_form(self)
 
         @cached_method
-        def fundamental_group(self, base_point_cone=None):
-            r"""Return the pointed fundamental group of the supported complex realization."""
-            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                _toric_fundamental_group,
-            )
-
-            return _toric_fundamental_group(self, base_point_cone)
-
-        @cached_method
         def hodge_structure(self):
             r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
@@ -2070,4 +2061,34 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     )
 
 
-__all__ = ["ToricSchemeMorphism", "ToricSchemes"]
+class SmoothCompleteRationalToricSchemes(OwnedCategoryOverBaseRing):
+    r"""Smooth complete toric varieties over the chosen rational realization.
+
+    The pointed fundamental-group realization uses a torus-fixed basepoint
+    and computes the trivial group only in this regime.
+    """
+
+    def super_categories(self):
+        if _engine_ring(self.base_ring()) is not SageQQ:
+            raise TypeError("this topological realization is defined over QQ")
+        return [ToricSchemes(self.base_ring())]
+
+    def an_object(self):
+        return self(ToricSchemes(self.base_ring()).an_object())
+
+    def _call_(self, scheme):
+        from dzack_research.preamble.refine import refine
+
+        if scheme not in ToricSchemes(self.base_ring()) or not (scheme.fan().is_smooth() and scheme.fan().is_complete()):
+            raise ValueError("smooth complete rational toric realization requires a smooth complete fan")
+        return refine(scheme, self)
+
+    class ParentMethods:
+        @cached_method
+        def fundamental_group(self, base_point_cone=None):
+            r"""Pointed fundamental group of this smooth complete toric realization."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import _toric_fundamental_group
+            return _toric_fundamental_group(self, base_point_cone)
+
+
+__all__ = ["ToricSchemeMorphism", "ToricSchemes", "SmoothCompleteRationalToricSchemes"]

@@ -414,6 +414,7 @@ _lazy_import(
         "ToricIntegralSingularCohomologyGroups",
         "ToricLogPairs",
         "ToricSchemes",
+        "SmoothCompleteRationalToricSchemes",
         "ToricWeightCohomologyComplexes",
         "Varieties",
         "ZariskiCoveringFamilies",

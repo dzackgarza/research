@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
 )
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+    SmoothCompleteRationalToricSchemes,
     ToricSchemes,
 )
 
@@ -14,4 +15,5 @@ __all__ = [
     "RationalPolyhedralFans",
     "ToricFixedPointBlowups",
     "ToricSchemes",
+    "SmoothCompleteRationalToricSchemes",
 ]
