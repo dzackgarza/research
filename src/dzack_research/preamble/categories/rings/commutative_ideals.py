@@ -354,10 +354,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         raise ArithmeticError(
                             "a PID gcd did not divide the ideal generator exactly"
                         )
-            return _from_engine_ideal(
-                ring,
-                self._engine_ideal().quotient(other._engine_ideal()),
-            )
+            left, right = self._binary_engine_ideals(other)
+            return _from_engine_ideal(ring, left.quotient(right))
 
         ideal_quotient = colon
 
@@ -399,9 +397,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                                     raise ArithmeticError(
                                         "a PID gcd did not divide the ideal generator exactly"
                                     )
-            saturated, _reached_at_exponent = self._engine_ideal().saturation(
-                other._engine_ideal()
-            )
+            left, right = self._binary_engine_ideals(other)
+            saturated, _reached_at_exponent = left.saturation(right)
             return _from_engine_ideal(ring, saturated)
 
         def _binary_pid_generators(self, other):
@@ -492,8 +489,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def _binary_engine_ideal_result(self, other, operation):
             r"""Lower a binary ideal operation and return its owned ideal."""
-            _require_same_ring(self, other)
-            left, right = self._engine_ideal(), other._engine_ideal()
+            left, right = self._binary_engine_ideals(other)
             if operation == "sum":
                 result = left + right
             elif operation == "product":
@@ -503,6 +499,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             else:
                 raise ValueError(f"unknown binary ideal operation {operation!r}")
             return _from_engine_ideal(self.ring(), result)
+
+        def _binary_engine_ideals(self, other):
+            r"""Return compatible selected engine ideals for a binary operation."""
+            _require_same_ring(self, other)
+            return self._engine_ideal(), other._engine_ideal()
 
         def power(self, exponent):
             exponent = int(exponent)
