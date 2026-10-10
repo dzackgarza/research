@@ -21,7 +21,12 @@ from dzack_research.preamble.owned_category import owned_category_join
 
 
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
-    r"""Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``."""
+    r"""Modules ``Omega^1_{A/R}``, without a universal finiteness hypothesis.
+
+    A selected conormal presentation can place a particular differential
+    module in ``ModulesWithChosenFinitePresentation(A)``; arbitrary Kähler
+    modules need not be finitely generated.
+    """
 
     def an_object(self):
         r"""``Omega^1_{A/R}`` for the coefficient algebra ``A`` of this category."""
@@ -47,7 +52,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-        return [ModulesWithChosenFinitePresentation(self.base_ring())]
+        return [Modules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
