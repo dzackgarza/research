@@ -494,6 +494,17 @@ def _ringlike_mor_element(parent, datum, provider_type):
     )
 
 
+def _ringlike_mor_identity(mor):
+    """Identity of a fixed ring-like Mor, retaining its identity datum."""
+    if mor.domain() is not mor.codomain():
+        raise ValueError(
+            f"the identity morphism exists only on Mor(R, R), but this is Mor({mor.domain()}, {mor.codomain()})"
+        )
+    identity = mor.elementwise(lambda element: element)
+    identity._preamble_is_identity = True
+    return identity
+
+
 class RngMor(CategoricalMor):
     r"""The owned set ``Hom_Rng(A,B)`` of maps preserving sum and product."""
 
@@ -520,13 +531,7 @@ class RngMor(CategoricalMor):
         )
 
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(R, R), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        identity = self.elementwise(lambda element: element)
-        identity._preamble_is_identity = True
-        return identity
+        return _ringlike_mor_identity(self)
 
     def _repr_(self):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
@@ -746,13 +751,7 @@ class RingMor(CategoricalMor):
         )
 
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(R, R), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        identity = self.elementwise(lambda element: element)
-        identity._preamble_is_identity = True
-        return identity
+        return _ringlike_mor_identity(self)
 
     def embeddings(self):
         r"""The elements of ``Mor(K, L)`` for fields ``K`` and ``L``, in the engine's deterministic order.
