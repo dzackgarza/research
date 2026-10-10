@@ -505,7 +505,10 @@ class Cardinalities(OwnedCategory):
         )
 
         index = family.index_set()
-        if index not in FiniteSets():
+        # Category refinement can lag behind an independently proved
+        # finiteness decision.  The finiteness of the index is the
+        # mathematical hypothesis, not membership in a particular category.
+        if index not in FiniteSets() and index.is_finite() is not True:
             return Sets()
         factors = tuple(family(i) for i in index)
         match operation:

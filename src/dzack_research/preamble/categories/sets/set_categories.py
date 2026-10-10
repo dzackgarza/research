@@ -2949,7 +2949,7 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    if index_set in FiniteSets():
+    if index_set in FiniteSets() or index_set.is_finite() is True:
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
         if all(family(index) in AdditiveMonoids() for index in index_set):
@@ -3672,7 +3672,7 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
         _cardinalities().set_indexed_category(family, operation="sum"),
     ]
     if (
-        index_set in FiniteSets()
+        (index_set in FiniteSets() or index_set.is_finite() is True)
         and index_set in EnumeratedSets()
         and all(family(index) in EnumeratedSets() for index in index_set)
     ):
