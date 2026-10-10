@@ -3392,6 +3392,8 @@ class CoproductsOfSets(OwnedCategory):
         return _coproduct_of_indexed_family(family)
 
     class ParentMethods:
+        _absent_value = object()
+
         def __init__(self, family: IndexedFamily, **rest) -> None:
             assert family.index_set() in Sets(), (
                 f"a coproduct of sets needs the index of the family to be a set, but {family.index_set()} is "
@@ -3423,14 +3425,14 @@ class CoproductsOfSets(OwnedCategory):
             r"""Construct through the owned set representation directly."""
             return self._element_constructor_(*args, **kwargs)
 
-        def _element_constructor_(self, datum, value=None):
+        def _element_constructor_(self, datum, value=_absent_value):
             if isinstance(datum, self.category().ElementType):
                 if datum.parent() is self:
                     return datum
                 raise ValueError(
                     f"{datum} is an element of {datum.parent()}, not of the coproduct {self}"
                 )
-            if value is None:
+            if value is self._absent_value:
                 index, value = datum
             else:
                 index = datum
