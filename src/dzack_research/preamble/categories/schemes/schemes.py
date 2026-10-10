@@ -6310,12 +6310,28 @@ class OpenImmersions(_SchemeSubobjectsOf):
             )
             return inclusion
 
-        def flat_pullback_cycle(self, cycle):
-            r"""Pull ``cycle`` back along this flat open immersion."""
-            from dzack_research.preamble.categories.divisors.chow_groups import (
-                _distinguished_open_cycle_pullback,
-            )
+class DistinguishedOpenImmersions(_SchemeSubobjectsOf):
+    r"""Open immersions represented by a distinguished localization ``D(f)``."""
 
+    immersion_name = "distinguished open immersions"
+
+    def super_categories(self):
+        return [OpenImmersions(self.base_object())]
+
+    def an_object(self):
+        return self(self.base_object().distinguished_open(next(iter(self.base_object().coordinate_algebra().algebra_generators()))))
+
+    def _call_(self, opened):
+        from dzack_research.preamble.refine import refine
+
+        if opened not in OpenImmersions(self.base_object()) or opened.is_distinguished_open() is not True:
+            raise ValueError("the localization-based pullback requires a distinguished open D(f)")
+        return refine(opened, self)
+
+    class ParentMethods:
+        def flat_pullback_cycle(self, cycle):
+            r"""Pull back a cycle through the selected localization ``D(f)``."""
+            from dzack_research.preamble.categories.divisors.chow_groups import _distinguished_open_cycle_pullback
             return _distinguished_open_cycle_pullback(self, cycle)
 
 
@@ -6425,6 +6441,7 @@ __all__ = [
     "IntegralSchemes",
     "NormalSchemes",
     "OpenImmersions",
+    "DistinguishedOpenImmersions",
     "ProjectiveSchemes",
     "ProjectiveSpaces",
     "ProjectiveLines",

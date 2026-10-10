@@ -383,6 +383,7 @@ _lazy_import(
         "NodalCubicNormalization",
         "NormalSchemes",
         "OpenImmersions",
+        "DistinguishedOpenImmersions",
         "PGL2IntegralTopology",
         "PointedAnalyticFundamentalGroup",
         "ProductProjectiveSpaces",

@@ -29,7 +29,7 @@ def test_distinguished_open_flat_pullback_preserves_the_meeting_cycle() -> None:
     y_axis = plane.underlying_space()(ring.ideal(x))
     cycle = ZZ(2) * cycles.prime_cycle(x_axis) + ZZ(5) * cycles.prime_cycle(y_axis)
     open_set = plane.distinguished_open(x)
-    pulled = open_set.flat_pullback_cycle(cycle)
+    pulled = DistinguishedOpenImmersions(plane)(open_set).flat_pullback_cycle(cycle)
     open_ring = open_set.coordinate_algebra()
     x_axis_open = open_set.underlying_space()(open_ring.ideal(open_ring(y)))
 
