@@ -3,6 +3,8 @@ r"""Modules equipped as localizations of modules over the source ring."""
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.modules.general_modules import _module_element_scalar_action
+
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _relation_morphism,
     _SelectedFinitePresentationModules,
@@ -88,13 +90,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            _ = self_on_left
-            parent = self.parent()
-            match actor:
-                case _ if actor in parent.base_ring():
-                    return parent.scalar_multiple(actor, self)
-                case _:
-                    return None
+            return _module_element_scalar_action(self, actor, self_on_left)
 
         def equality_status(self, other):
             r"""Return ``True``, ``False``, or the proposition ``equal(x, y)`` for fraction equality."""

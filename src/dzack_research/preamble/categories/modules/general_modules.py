@@ -36,6 +36,17 @@ from dzack_research.preamble.owned_category import _object_of
 _LOGGER = logging.getLogger(__name__)
 
 
+def _module_element_scalar_action(element, actor, self_on_left):
+    """Dispatch the scalar-ring action of an owned module element."""
+    _ = self_on_left
+    parent = element.parent()
+    match actor:
+        case _ if actor in parent.base_ring():
+            return parent.scalar_multiple(actor, element)
+        case _:
+            return None
+
+
 class GeneralModules(OwnedCategoryOverBaseRing):
     r"""Modules presented by an abelian group and a ring morphism ``rho : R -> End(A)``."""
 
@@ -71,13 +82,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            _ = self_on_left
-            parent = self.parent()
-            match actor:
-                case _ if actor in parent.base_ring():
-                    return parent.scalar_multiple(actor, self)
-                case _:
-                    return None
+            return _module_element_scalar_action(self, actor, self_on_left)
 
         def _richcmp_(self, other, op):
             if other.parent() is not self.parent():
