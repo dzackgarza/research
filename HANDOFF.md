@@ -22,6 +22,8 @@ Do the work in this order. Do not start a later step while an earlier step has r
    Step 2 is about methods placed on the wrong categories, and methods that do not place their results in the correct category. No tool can determine this automatically: read the code and think about the mathematics. The views help you see it; they do not decide it.
 
    Read each line as a mathematical statement. A line that is obviously false is a defect. For example, an element of the power set of a finite set that is not placed in finite sets is a defect. Repair the placement at its owner, and file a TODO node when the repair is not immediate.
+
+   Step 2's completion is measured against one list: run the complete `constructions` and `properties` views once, read every line, and write each false statement as an unchecked item under "Step-2 false statements" below. Then repair down that list. Inspecting an edge that turns out correct, validating arguments, and rejecting malformed inputs are not step-2 items and are not progress on it.
 3. **Duplication.** Reduce duplicate implementations only after steps 1 and 2. A duplicate that blocks the port or causes a wrong placement belongs to the earlier step.
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
