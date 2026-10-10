@@ -3487,14 +3487,36 @@ class CoproductsOfSets(OwnedCategory):
             maps: Callable[[IndexT], SetMorphism],
         ) -> SetMorphism:
             r"""Return the induced set map from a compatible family of component maps."""
+            from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
             if target not in Sets():
                 raise TypeError(f"a set coproduct map requires a set target, not {target}")
             index_set = self.index_set()
             if not Sets().is_provably_finite(index_set):
-                raise TypeError(
-                    "a map from an infinite coproduct needs a selected family of set morphisms, "
-                    "not an unchecked component callback"
-                )
+                if not isinstance(maps, NaturalTransformation):
+                    raise TypeError(
+                        "a map from an infinite coproduct needs a selected family of set morphisms, "
+                        "not an unchecked component callback"
+                    )
+                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+
+                index_category = DiscreteCategory(index_set)
+                if maps.source().domain() is not index_category or maps.target().domain() is not index_category:
+                    raise ValueError("the component transformation must use the coproduct's exact discrete index category")
+                if maps.source().codomain() is not Sets() or maps.target().codomain() is not Sets():
+                    raise TypeError("the component transformation must be set-valued")
+                if maps.target().constant_value() is not target:
+                    raise ValueError("the component transformation must target the selected constant target set")
+
+                def induced(element):
+                    label = element.summand_index()
+                    selected = index_category.object(label)
+                    component = maps.component(selected)
+                    if component.domain() is not self.cofactor(label):
+                        raise TypeError("the selected component has the wrong coproduct summand")
+                    return component(element.summand_element())
+
+                return Sets().Mor(self, target)(induced)
             components = tuple((index, maps(index)) for index in index_set)
             for index, morphism in components:
                 if morphism.parent() is not Sets().Mor(self.cofactor(index), target):

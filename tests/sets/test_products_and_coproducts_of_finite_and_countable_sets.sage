@@ -219,6 +219,32 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     else:
         raise AssertionError("unchecked infinite coproduct component callback admitted")
 
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+    shape = DiscreteCategory(NN)
+    constant = Cat().Mor(shape, Sets()).constant_functor(Sets.Δ[0])
+    components = NaturalTransformation(
+        constant, constant,
+        lambda _object: Sets().Mor(Sets.Δ[0], Sets.Δ[0]).identity(),
+    )
+    induced = infinite.from_maps(Sets.Δ[0], components)
+    assert induced.parent() is Sets().Mor(infinite, Sets.Δ[0])
+    for index in (NN(0), NN(1), NN(5)):
+        inclusion = infinite.injection(index)
+        assert induced(inclusion(Sets.Δ[0](0))) == components.component(shape.object(index))(Sets.Δ[0](0))
+    bad = NaturalTransformation(
+        constant, constant,
+        lambda _object: Sets().Mor(Sets.Δ[1], Sets.Δ[0])(lambda _value: Sets.Δ[0](0)),
+    )
+    bad_induced = infinite.from_maps(Sets.Δ[0], bad)
+    try:
+        bad_induced(infinite.injection(NN(1))(Sets.Δ[0](0)))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("an incorrectly typed natural-transformation component was admitted")
+
 
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
