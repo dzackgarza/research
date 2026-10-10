@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Discrete diagram finite codomain checked at its owner (2026-10-10):** `_DiscreteDiagram` now rejects a family with a different exact index object set and verifies every object image lies in its declared codomain when the index set is provably finite. The focused owner specimen constructs a valid two-index set-valued diagram, rejects a callback returning nonsets, and rejects a family on another finite ordinal. General infinite callback-based diagrams remain unverified and cannot establish product placement; independent typed mathematical families are still required. The older diagram-cone specimen itself fails at the unrelated missing `diagram.limit()` method, so its limit/colimit assertions were not claimed.
+
+
 **Unchecked infinite diagram codomain rejected (2026-10-10):** The earlier nonconstant `DiscreteCategory(NN) -> AdditiveMonoids` specimen was built by `_DiscreteDiagram` from an arbitrary `IndexedFamily` callback. That constructor does not establish the callback values lie in its codomain; the odd-index return can actually be an ordinary two-point set. `indexed_family` now rejects such an unchecked infinite `_DiscreteDiagram`, even when wrapped in a `Functor`, rather than treating its claimed codomain as mathematical evidence. Focused Sage checks verify rejection of the dishonest diagram and admission of the actual constant functor with additive projection. General nonconstant infinite families still require independently justified typed functors; the previous positive nonconstant assertion is withdrawn.
 
 
