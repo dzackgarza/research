@@ -390,7 +390,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         return self.parameter()
 
     def super_categories(self):
-        return [FiniteGSets(self.subgroup().supergroup())]
+        return [GObjects(self.subgroup().supergroup(), Sets())]
 
     def an_object(self):
         subgroup = self.subgroup()
@@ -424,10 +424,13 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         def regular_g_set(self):
             r"""Return ``G`` with its left regular action."""
             group = self.acting_group()
-            points = finite_ordered_set(tuple(group))
-            return FiniteGSets(group)(
-                points,
-                lambda group_element, point: group_element * point,
+            if group.is_finite() is True:
+                return FiniteGSets(group)(
+                    finite_ordered_set(tuple(group)),
+                    lambda group_element, point: group_element * point,
+                )
+            return GObjects(group, Sets()).on_set(
+                group, lambda group_element, point: group_element * point,
             )
 
         @cached_method
@@ -807,6 +810,11 @@ def _left_coset_g_set(group, subgroup):
     if subgroup.supergroup() is not group:
         raise ValueError(
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
+        )
+    if group.is_finite() is not True:
+        raise NotImplementedError(
+            f"the possibly infinite coset G-set of {subgroup} in {group} "
+            "requires a coset-equivalence quotient representation"
         )
     cosets = _engine_cosets(group, subgroup, "left")
 
