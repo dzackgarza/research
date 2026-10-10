@@ -35,7 +35,7 @@ class _DualizationFunctor(Functor):
             for domain_label in morphism.domain().module_generating_set():
                 image_coordinates = morphism.codomain().framing_morphism().lift(morphism(morphism.domain().module_generator(domain_label)))
                 coefficient = image_coordinates(codomain_label)
-                if coefficient:
+                if (coefficient == target_dual.base_ring().zero()) is not True:
                     coefficients[domain_label] = coefficient
             images[codomain_label] = target_dual.linear_combination(coefficients)
         return source_dual.module_category().Mor(source_dual, target_dual)(images)
@@ -168,8 +168,8 @@ class _OrthogonalDirectSumBifunctor(Functor):
         target_labels = target.module_generating_set()
         return target.linear_combination(
             {
-                target_labels[offset + int(summand_labels.ranking_map()(label))]: coordinates(label)
-                for label in coordinates.support().domain()
+                target_labels[offset + int(summand_labels.ranking_map()(label))]: coefficient
+                for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
             }
         )
 

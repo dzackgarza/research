@@ -25,7 +25,7 @@ def _base_change_element(module, changed_module, ring_map, element):
     coordinates = module.framing_morphism().lift(module(element))
     return changed_module.linear_combination(
         {
-            label: _base_change_scalar(ring_map, coordinates(label))
-            for label in coordinates.support().domain()
+            label: _base_change_scalar(ring_map, coefficient)
+            for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
         }
     )
