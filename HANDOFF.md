@@ -36,6 +36,8 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 **Step-3 quotient-ideal cleanup:** `CommutativeIdeals.colon()` and `ideal_saturation()` share one private quotient-presentation transport path: lift both ideals to the cover, compute their distinct ideal operations, and descend the result. Their PID and nonquotient branches remain separate and unchanged.
 
+**Step-3 PID ingress cleanup:** The same two operations now share the owner-local principal-generator ingress for their PID branches. Their quotient arithmetic and saturation iteration remain mathematically distinct.
+
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
 **Full-view reading gate (2026-10-10):** Reviewed all 3,252 lines of `.tmp/step2-constructions.txt` and all 1,139 lines of `.tmp/step2-properties.txt`, including the eight oversized early property-category lists by splitting their comma-separated category declarations and checking their differences. The unchecked list below is the fixed Step-2 repair denominator; repairs proceed at the mathematical owners in listed order. Scanner artifacts and correct edges are excluded.

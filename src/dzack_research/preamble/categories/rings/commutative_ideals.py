@@ -344,8 +344,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if _realized_as_quotient(ring):
                 return self._binary_cover_ideal_result(other, "colon")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-                numerator = _pid_principal_ideal_generator(self)
-                denominator = _pid_principal_ideal_generator(other)
+                numerator, denominator = self._binary_pid_generators(other)
                 match denominator == ring.zero():
                     case True:
                         return ring.ideal(ring.one())
@@ -381,8 +380,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if _realized_as_quotient(ring):
                 return self._binary_cover_ideal_result(other, "saturation")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-                numerator = _pid_principal_ideal_generator(self)
-                denominator = _pid_principal_ideal_generator(other)
+                numerator, denominator = self._binary_pid_generators(other)
                 match (numerator == ring.zero(), denominator == ring.zero()):
                     case (_, True):
                         return ring.ideal(ring.one())
@@ -409,6 +407,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 other._engine_ideal()
             )
             return _from_engine_ideal(ring, saturated)
+
+        def _binary_pid_generators(self, other):
+            r"""Selected principal generators of two ideals of the same PID."""
+            _require_same_ring(self, other)
+            return (_pid_principal_ideal_generator(self),
+                    _pid_principal_ideal_generator(other))
 
         def _binary_cover_ideal_result(self, other, operation):
             r"""Compute colon or saturation on quotient preimages, then descend."""
