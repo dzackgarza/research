@@ -2950,7 +2950,7 @@ class _ImageSetEngine:
 
     def _repr_(self) -> str:
         match self.source_set():
-            case source if source in FiniteSets():
+            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 return "{" + ", ".join(repr(value) for value in self) + "}"
             case source:
                 return f"Image of {source} under {self.image_map()}"
