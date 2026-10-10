@@ -2399,7 +2399,7 @@ class PowerSets(OwnedCategory):
             if candidate is self.base_set():
                 return self.from_predicate(lambda _member: True)
             if candidate in Sets():
-                assert candidate in FiniteSets() and candidate in EnumeratedSets(), (
+                assert Sets().is_provably_finite(candidate) and candidate in EnumeratedSets(), (
                     f"cannot read {candidate} as a subset of {self.base_set()}: a set is read as a subset here only "
                     "through its elements, which needs it finite and enumerated"
                 )
@@ -2426,7 +2426,7 @@ class PowerSets(OwnedCategory):
                     return True
                 case _ if candidate in Sets():
                     return (
-                        candidate in FiniteSets()
+                        Sets().is_provably_finite(candidate)
                         and candidate in EnumeratedSets()
                         and all(point in base for point in candidate)
                     )
