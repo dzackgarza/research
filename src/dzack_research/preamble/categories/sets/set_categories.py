@@ -2567,7 +2567,12 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
-        subset_cardinality = int(subset_cardinality)
+        selected_size = int(subset_cardinality)
+        if selected_size < 0 or subset_cardinality != selected_size:
+            raise ValueError(
+                f"the cardinality of a subset must be a nonnegative integer, not {subset_cardinality!r}"
+            )
+        subset_cardinality = selected_size
         placements = [self, _cardinalities().set_subset_category(source, fixed_size=subset_cardinality)]
         engine = None
         if source in EnumeratedSets():

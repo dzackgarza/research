@@ -53,6 +53,17 @@ def test_the_subsets_of_a_given_size() -> None:
     assert points.subsets_of_size(3).cardinality() == 1
 
 
+def test_subset_cardinality_must_be_a_natural_number() -> None:
+    points = three()
+    for invalid in (-1, 1.5):
+        try:
+            points.subsets_of_size(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"accepted invalid subset cardinality {invalid!r}")
+
+
 def test_the_power_set_has_one_endomorphism_category() -> None:
     subsets = power()
     endomorphisms = subsets.Mor(subsets)
