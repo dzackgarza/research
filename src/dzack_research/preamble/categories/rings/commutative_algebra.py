@@ -297,37 +297,8 @@ class PrimeSpectra(OwnedCategory):
 
         @cached_method
         def height(self):
-            r"""Return the height of this point, the codimension of its closure.
-
-            The height of ``p`` is the dimension of the local ring ``R_p``, and
-            in a domain that is finitely generated over a field, or of
-            dimension at most one, the dimension formula
-            ``height(p) + dim(R/p) = dim(R)`` holds, because such a ring is
-            catenary and equidimensional.  So the height is read from two
-            dimensions the ring already answers, rather than from a chain of
-            primes nobody can enumerate.
-            """
-
-            ring = self.parent().ring()
-            assert ring in OwnedRings().Commutative().NoZeroDivisors(), (
-                f"the dimension formula that computes height here needs {ring} to be "
-                "an integral domain"
-            )
-            finite_type_source = (
-                ring.quotient_source()
-                if ring in QuotientRings()
-                else ring
-            )
-            assert (
-                ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
-                or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
-            ), (
-                f"the dimension formula that computes height here needs {ring} to be "
-                "a principal ideal domain or finitely generated over a field, which is "
-                "what makes it catenary and equidimensional"
-            )
-            quotient = ring.quotient_ring(self.ideal())
-            return ring.krull_dimension() - quotient.krull_dimension()
+            r"""The intrinsic height ``ht(p) = dim(R_p)`` of a prime ideal."""
+            return self.local_ring().krull_dimension()
 
         @cached_method
         def embedding_dimension(self):
@@ -1562,10 +1533,24 @@ class PrimeLocalizations(OwnedCategory):
             The primes of ``R_p`` are the ``qR_p`` for the primes ``q`` of
             ``R`` inside ``p``, in order-preserving bijection, so a chain in
             ``R_p`` is a chain in ``R`` ending at ``p``.
-            The height is asked of the point ``p`` of ``Spec R``.
+            In the dimension-formula regime we can compute this intrinsic
+            dimension from source and quotient dimensions.  Outside that
+            regime no such equality is assumed.
             """
             source = self.localization_source()
-            return source.spectrum()(self.localized_prime()).height()
+            finite_type_source = source.quotient_source() if source in QuotientRings() else source
+            if (
+                source in OwnedRings().Commutative().NoZeroDivisors()
+                and (
+                    source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+                    or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
+                )
+            ):
+                return source.krull_dimension() - source.quotient_ring(self.localized_prime()).krull_dimension()
+            raise NotImplementedError(
+                f"the intrinsic dimension of {self} requires a prime-chain or independent local-dimension "
+                "realization outside the represented dimension-formula regime"
+            )
 
         @cached_method
         def residue_field(self):
