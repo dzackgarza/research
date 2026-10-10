@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
     _category_mor_parent,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     _fix_selected_resolution,
@@ -2944,20 +2945,28 @@ class AlgebraMorphism:
         return equal if op == op_EQ else negation(equal)
 
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
+        r"""Compose in the scalar-algebra Mor that owns these arrows.
+
+        A self-based algebra may choose ring maps for its unqualified Mor.
+        Composition of its algebra arrows still belongs to the selected
+        scalar-algebra Mor, including when a diagram reads those arrows
+        through the forgetful functor to rings.
+        """
+        if not _precomposable(self, other):
             return NotImplemented
         source = other.domain()
         target = self.codomain()
+        composite_mor = self.parent().mor_category().Mor(source, target)
         if source.is_framed_algebra():
-            return source.Mor(target)(
+            return composite_mor(
                 lambda label: self(other(source.algebra_generator(label)))
             )
         if source.has_selected_module_resolution():
             module_map = source.module_category().Mor(source, target)(
                 lambda label: self(other(source.module_generator(label)))
             )
-            return source.Mor(target)(module_map)
-        return source.Mor(target)(
+            return composite_mor(module_map)
+        return composite_mor(
             SetMorphism(
                 Sets().Mor(source, target),
                 lambda element: self(other(element)),

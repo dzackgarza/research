@@ -6,13 +6,17 @@ from itertools import combinations, permutations
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     CategoryPacketMethods,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -46,6 +50,7 @@ from dzack_research.preamble.categories.modules.fibered_modules import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
+    OwnedRings,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     AlgebraSheaves,
@@ -77,6 +82,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family_from_values,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -3236,6 +3242,13 @@ class FiniteAtlasModuleGluingMorphismMethods:
                     f"{local_map} on chart {index} must be {source.local_module(index)} -> "
                     f"{target.local_module(index)}, but it is {local_map.domain()} -> {local_map.codomain()}"
                 )
+            local_mor = source.local_module(index).module_category().Mor(
+                source.local_module(index), target.local_module(index)
+            )
+            if local_map not in local_mor:
+                raise TypeError(
+                    f"the local map on chart {index} must be an arrow of {local_mor}, but it is {local_map}"
+                )
         self._verify_overlap_compatibility()
 
     def source_datum(self):
@@ -3251,39 +3264,48 @@ class FiniteAtlasModuleGluingMorphismMethods:
         index = self.source_datum().gluing_datum().normalize_chart_index(index)
         return self.local_maps()[index]
 
-    def __mul__(self, other):
-        match other:
-            case FiniteAtlasModuleGluingMorphismMethods() if other.codomain() is self.domain():
-                return self.domain().category().Mor(other.domain(), self.codomain())(
-                    {
-                        index: self.local_map(index) * other.local_map(index)
-                        for index in other.source_datum().chart_indices()
-                    }
-                )
-            case _:
-                return NotImplemented
+    @cached_method
+    def local_transformation(self):
+        r"""The local module maps as one natural transformation.
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteAtlasModuleGluingMorphismMethods)
-            and other.parent() is self.parent()
-            and all(
-                other.local_map(index) == self.local_map(index)
-                for index in self.source_datum().chart_indices()
+        The diagram Mor admits the original component arrows through their
+        declared Mor ancestry and retains them unchanged.  In particular,
+        their multiplication is still composition in each selected scalar
+        fibre; no component is reconstructed as a weaker map.
+        """
+        source = self.domain().local_diagram()
+        target = self.codomain().local_diagram()
+        return source.natural_transformations_to(target)(
+            lambda chart: self.local_map(chart.value())
+        )
+
+    def __mul__(self, other):
+        if not _precomposable(self, other):
+            return NotImplemented
+        category = self.parent().mor_category()
+        if other in category.Core().Mor(other.domain(), other.codomain()):
+            other = other.forward()
+        composite = self.local_transformation() * other.local_transformation()
+        shape = composite.parent().source().domain()
+        return category.Mor(other.domain(), self.codomain())(
+            finite_indexed_family(
+                shape.object_set(),
+                lambda index: composite.component(shape(index)),
+                name="Local maps of a composite module descent morphism",
             )
         )
 
-    def __ne__(self, other) -> bool:
-        return not self == other
-
     def _richcmp_(self, other, op):
-        match op:
-            case _ if op == op_EQ:
-                return self.__eq__(other)
-            case _ if op == op_NE:
-                return not self.__eq__(other)
-            case _:
-                return NotImplemented
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        equal = (
+            element_parent(other) is self.parent()
+            and self.local_maps() == other.local_maps()
+        )
+        return equal if op == op_EQ else negation(equal)
+
+    def __hash__(self):
+        return hash(id(self.parent()))
 
     @staticmethod
     def _base_changed_map(local_map, ring_map, source, target):
@@ -3663,6 +3685,20 @@ class FiniteAtlasModuleGluingData(CategoryPacketMethods, OwnedParameterizedCateg
 
     _MorCategory = FiniteAtlasModuleGluingMorCategoryConstruction
 
+    class ParentMethods:
+        @cached_method
+        def local_diagram(self):
+            r"""The chart modules as a diagram in varying-ring modules.
+
+            This is the forgetful image of the descent datum on the discrete
+            chart category.  It retains the exact chart index set and module
+            objects; the transition and cocycle data stay on this datum.
+            """
+            values = self.local_modules()
+            return Cat().Mor(
+                DiscreteCategory(values.index_set()), ModulesOverCommutativeRings()
+            ).discrete_diagram(values)
+
     @staticmethod
     def __classcall__(cls, atlas):
         return OwnedParameterizedCategory.__classcall__(cls, atlas)
@@ -3994,6 +4030,11 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
                     f"{local_map} on chart {index} must be {source.local_algebra(index)} -> "
                     f"{target.local_algebra(index)}, but it is {local_map.domain()} -> {local_map.codomain()}"
                 )
+            local_mor = _algebra_mor(source.local_algebra(index), target.local_algebra(index))
+            if local_map not in local_mor:
+                raise TypeError(
+                    f"the local map on chart {index} must be an arrow of {local_mor}, but it is {local_map}"
+                )
         self._verify_overlap_compatibility()
 
     def source(self):
@@ -4008,30 +4049,48 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
     def local_map(self, index):
         return self.local_maps()[self.source().gluing_datum().normalize_chart_index(index)]
 
-    def __mul__(self, other):
-        match other:
-            case FiniteAtlasAlgebraGluingMorphism() if other.codomain() is self.domain():
-                return self.domain().category().Mor(other.domain(), self.codomain())(
-                    {
-                        index: self.local_map(index) * other.local_map(index)
-                        for index in other.source().chart_indices()
-                    }
-                )
-            case _:
-                return NotImplemented
+    @cached_method
+    def local_transformation(self):
+        r"""The local algebra maps as one natural transformation.
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteAtlasAlgebraGluingMorphism)
-            and other.parent() is self.parent()
-            and all(
-                other.local_map(index) == self.local_map(index)
-                for index in self.source().chart_indices()
+        The diagram Mor admits the original component arrows through their
+        declared Mor ancestry and retains them unchanged.  In particular,
+        their multiplication is still composition in each selected scalar
+        fibre; no component is reconstructed as a weaker map.
+        """
+        source = self.domain().local_diagram()
+        target = self.codomain().local_diagram()
+        return source.natural_transformations_to(target)(
+            lambda chart: self.local_map(chart.value())
+        )
+
+    def __mul__(self, other):
+        if not _precomposable(self, other):
+            return NotImplemented
+        category = self.parent().mor_category()
+        if other in category.Core().Mor(other.domain(), other.codomain()):
+            other = other.forward()
+        composite = self.local_transformation() * other.local_transformation()
+        shape = composite.parent().source().domain()
+        return category.Mor(other.domain(), self.codomain())(
+            finite_indexed_family(
+                shape.object_set(),
+                lambda index: composite.component(shape(index)),
+                name="Local maps of a composite algebra descent morphism",
             )
         )
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        equal = (
+            element_parent(other) is self.parent()
+            and self.local_maps() == other.local_maps()
+        )
+        return equal if op == op_EQ else negation(equal)
+
+    def __hash__(self):
+        return hash(id(self.parent()))
 
     def _verify_overlap_compatibility(self) -> None:
         for source_index, target_index in self.source().gluing_datum().transition_index_set():
@@ -4112,6 +4171,20 @@ class FiniteAtlasAlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCate
     r"""Unital associative algebra descent data on one finite affine atlas."""
 
     _MorCategory = FiniteAtlasAlgebraGluingMorCategoryConstruction
+
+    class ParentMethods:
+        @cached_method
+        def local_diagram(self):
+            r"""The chart algebras under the faithful forgetful functor to rings.
+
+            The diagram retains the exact chart index set and ring objects.
+            Its descent morphisms supply the original scalar-algebra arrows
+            as components, so composition retains their finer Mor parents.
+            """
+            values = self.local_algebras()
+            return Cat().Mor(
+                DiscreteCategory(values.index_set()), OwnedRings()
+            ).discrete_diagram(values)
 
     @staticmethod
     def __classcall__(cls, atlas):
