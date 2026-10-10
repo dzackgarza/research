@@ -254,12 +254,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_prime())
-            backend = self._engine_ideal()
-            match _realized_as_quotient(self.ring()):
-                case True:
-                    selected = _cover_lifted_ideal(self)
-                case False:
-                    selected = backend
+            selected = self._ideal_primality_engine()
             match selected:
                 case _ if _is_integral_multivariate_ideal(selected):
                     return _integral_polynomial_ideal_is_prime(selected)
@@ -270,12 +265,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             number_field_ideal = _maximal_order_number_field_ideal(self)
             if number_field_ideal is not None:
                 return bool(number_field_ideal.is_maximal())
-            backend = self._engine_ideal()
-            match _realized_as_quotient(self.ring()):
-                case True:
-                    selected = _cover_lifted_ideal(self)
-                case False:
-                    selected = backend
+            selected = self._ideal_primality_engine()
             selected_ring = selected.ring()
             match selected_ring:
                 case _ if _is_integral_multivariate_ideal(selected):
@@ -287,6 +277,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(selected.is_prime() and selected.dimension() == 0)
                 case _:
                     return bool(selected.is_maximal())
+
+        def _ideal_primality_engine(self):
+            r"""Ideal in the ring where primality and maximality are decided."""
+            if _realized_as_quotient(self.ring()):
+                return _cover_lifted_ideal(self)
+            return self._engine_ideal()
 
         def radical(self):
             r"""Return ``sqrt(I)``.
@@ -342,13 +338,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             _require_same_ring(self, other)
             ring = self.ring()
             if _realized_as_quotient(ring):
-                return _descend_cover_ideal(
-                    ring,
-                    _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
-                )
+                return self._binary_cover_ideal_result(other, "colon")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-                numerator = _pid_principal_ideal_generator(self)
-                denominator = _pid_principal_ideal_generator(other)
+                numerator, denominator = self._binary_pid_generators(other)
                 match denominator == ring.zero():
                     case True:
                         return ring.ideal(ring.one())
@@ -382,13 +374,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             _require_same_ring(self, other)
             ring = self.ring()
             if _realized_as_quotient(ring):
-                saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
-                    _cover_lifted_ideal(other)
-                )
-                return _descend_cover_ideal(ring, saturated)
+                return self._binary_cover_ideal_result(other, "saturation")
             if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-                numerator = _pid_principal_ideal_generator(self)
-                denominator = _pid_principal_ideal_generator(other)
+                numerator, denominator = self._binary_pid_generators(other)
                 match (numerator == ring.zero(), denominator == ring.zero()):
                     case (_, True):
                         return ring.ideal(ring.one())
@@ -415,6 +403,25 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 other._engine_ideal()
             )
             return _from_engine_ideal(ring, saturated)
+
+        def _binary_pid_generators(self, other):
+            r"""Selected principal generators of two ideals of the same PID."""
+            _require_same_ring(self, other)
+            return (_pid_principal_ideal_generator(self),
+                    _pid_principal_ideal_generator(other))
+
+        def _binary_cover_ideal_result(self, other, operation):
+            r"""Compute colon or saturation on quotient preimages, then descend."""
+            _require_same_ring(self, other)
+            ring = self.ring()
+            left, right = _cover_lifted_ideal(self), _cover_lifted_ideal(other)
+            if operation == "colon":
+                result = left.quotient(right)
+            elif operation == "saturation":
+                result, _exponent = left.saturation(right)
+            else:
+                raise ValueError(f"unknown quotient-ideal operation {operation!r}")
+            return _descend_cover_ideal(ring, result)
 
         saturation = ideal_saturation
 
@@ -475,22 +482,27 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self.contains_ambient_element(candidate)
 
         def sum(self, other):
-            _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal() + other._engine_ideal()
-            )
+            return self._binary_engine_ideal_result(other, "sum")
 
         def product(self, other):
-            _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal() * other._engine_ideal()
-            )
+            return self._binary_engine_ideal_result(other, "product")
 
         def intersection(self, other):
+            return self._binary_engine_ideal_result(other, "intersection")
+
+        def _binary_engine_ideal_result(self, other, operation):
+            r"""Lower a binary ideal operation and return its owned ideal."""
             _require_same_ring(self, other)
-            return _from_engine_ideal(
-                self.ring(), self._engine_ideal().intersection(other._engine_ideal())
-            )
+            left, right = self._engine_ideal(), other._engine_ideal()
+            if operation == "sum":
+                result = left + right
+            elif operation == "product":
+                result = left * right
+            elif operation == "intersection":
+                result = left.intersection(right)
+            else:
+                raise ValueError(f"unknown binary ideal operation {operation!r}")
+            return _from_engine_ideal(self.ring(), result)
 
         def power(self, exponent):
             exponent = int(exponent)
@@ -550,7 +562,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
-            r"""A chosen primary decomposition, when one is represented."""
+            r"""A selected primary decomposition when one exists and is represented.
+
+            Outside the Noetherian case, existence is not asserted.
+            """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise NotImplementedError(
@@ -559,17 +574,42 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 )
             return self.finite_primary_decomposition()
 
+        def primary_decomposition_locus(self):
+            r"""Finite primary presentations of ``I``, possibly an empty set.
+
+            An element of this set is a finite family of ideal *subsets*
+            ``Q_i`` of the underlying set of ``R``, each primary, whose
+            intersection equals ``I``. The definition makes no Noetherian
+            assertion and does not equate existence with a finite algorithm.
+            The ideal and primary predicates are mathematical propositions;
+            a computation that cannot decide them does not return false.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            ring = self.ring()
+            ideal_subsets = ring.power_set().condition_set(
+                lambda subset: AtomicProposition("is_ideal_subset", subset, ring)
+            )
+            finite_families = ideal_subsets.finite_subsets()
+            return finite_families.condition_set(
+                lambda family: AtomicProposition(
+                    "is_primary_decomposition_of", family, self
+                )
+            )
+
         def finite_primary_decomposition(self):
             r"""Selected finite primary decomposition over a Noetherian ring."""
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise TypeError("finite primary decomposition requires a Noetherian ring")
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().primary_decomposition()
-                )
-            )
+            return self._finite_engine_ideal_family("primary_decomposition")
+
+        def _finite_engine_ideal_family(self, operation):
+            r"""Read one finite engine ideal family through the owned ideal ingress."""
+            return finite_ordered_set(tuple(
+                _from_engine_ideal(self.ring(), ideal)
+                for ideal in getattr(self._engine_ideal(), operation)()
+            ))
 
         def hilbert_polynomial_value(self, argument):
             r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
@@ -615,12 +655,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
             if self.ring() not in OwnedNoetherianRings():
                 raise TypeError("finite associated-prime enumeration requires a Noetherian ring")
-            return finite_ordered_set(
-                tuple(
-                    _from_engine_ideal(self.ring(), ideal)
-                    for ideal in self._engine_ideal().associated_primes()
-                )
-            )
+            return self._finite_engine_ideal_family("associated_primes")
 
         def _repr_(self):
             listed = ", ".join(str(generator) for generator in self.ideal_generators())

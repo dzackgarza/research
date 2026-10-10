@@ -28,7 +28,17 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2 is current.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator is complete; Step 3 (duplication) is current.
+
+**Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
+
+**Step-3 binary ideal cleanup:** `CommutativeIdeals` now centralizes the repeated base-ring compatibility check, selected engine ingress, and owned-ideal result construction for ideal sum, product, and intersection. Their three distinct public operations retain their respective ring-theoretic calculations.
+
+**Step-3 quotient-ideal cleanup:** `CommutativeIdeals.colon()` and `ideal_saturation()` share one private quotient-presentation transport path: lift both ideals to the cover, compute their distinct ideal operations, and descend the result. Their PID and nonquotient branches remain separate and unchanged.
+
+**Step-3 PID ingress cleanup:** The same two operations now share the owner-local principal-generator ingress for their PID branches. Their quotient arithmetic and saturation iteration remain mathematically distinct.
+
+**Step-3 ideal-property ingress cleanup:** Primality and maximality checks share the same quotient-cover ideal selection. Their distinct prime/maximal criteria remain separate, including the selected number-field and multivariate polynomial cases.
 
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
@@ -128,15 +138,19 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
   The unrestricted nonenumerated set representation is supplied by the set image construction over the annihilator predicate.
 
   The Noetherian enumeration is also separately exposed as `finite_associated_primes()`; the unrestricted `associated_primes()` operation delegates to it only under the established finiteness hypothesis.
-- [ ] `CommutativeIdeals.X.primary_decomposition()` unconditionally returns `FiniteOrderedSets()` (`categories/rings/commutative_ideals.py:552`), without a Noetherian hypothesis. Primary decompositions of arbitrary ideals over non-Noetherian commutative rings need not exist, much less have finitely many components. The operation must distinguish the locus of primary presentations and existence of a finite primary decomposition from the selected finite engine calculation; the latter is only a justified case, not a theorem for all `CommutativeIdeals(R)`.
+- [x] `CommutativeIdeals.X.primary_decomposition()` no longer returns a finite family without the Noetherian hypothesis. A separate `primary_decomposition_locus()` now constructs the possibly empty predicate set of finite families of primary ideal subsets of `R` whose intersection is `I`. This formulation distinguishes existence of a primary decomposition from selection of one, and retains the mathematical family locus without enumerating arbitrary ideals. The Noetherian backend remains independently exposed as `finite_primary_decomposition()`; membership in the general locus is proposition-valued where no decision procedure exists.
 
-  The finite primary-decomposition calculation now requires the Noetherian category. The general existence/presentation locus remains to be expressed independently of the finite algorithm; leave unchecked.
+  A general primary decomposition need not exist; the presentation locus may be empty, and no engine assertion is used to declare its existence.
 
   The selected Noetherian algorithm is separately exposed as `finite_primary_decomposition()`, so its finite result is distinguished from the general primary-decomposition existence problem.
 
-- [ ] `QuotientRings.X.minimal_primes()` and `X.irreducible_components()` are unconditionally placed in `FiniteOrderedSets()` (`categories/rings/commutative_algebra.py:1072–1095`), although `QuotientRings` imposes no Noetherian hypothesis. For example, the zero-ideal quotient of the infinite product of fields `A=∏_{n∈ℕ} F_2` has infinitely many distinct minimal prime ideals (the kernels of its coordinate projections, among others), and `Spec(A)` has infinitely many irreducible components. The finite realization at `_presentation_minimal_primes` assumes a finite engine enumeration without placing a Noetherian hypothesis on the mathematical operation. The underlying representation issue is that `CommutativeIdeals(R)` admits finitely generated ideals through `ideal_generators`, but arbitrary non-Noetherian prime ideals need not be finitely generated. `TODO.md` records the exact general-minimal-prime-locus prerequisite: realize all ideals and the complete minimal points of `Spec(R)` before selecting finite enumeration only where justified.
+- [x] `QuotientRings.X.minimal_primes()` and `irreducible_components()` now select nonenumerated loci outside the Noetherian regime rather than `FiniteOrderedSets()`. The `prime_ideal_locus()` is a predicate subset of the **full power set of the underlying ring**, so even non-finitely-generated prime ideals are represented abstractly; `minimal_prime_locus()` selects minimal prime subsets, and `irreducible_component_locus()` maps each such prime to the closed subset of all prime subsets containing it. Computation of the associated predicates is deliberately not asserted. The finite Noetherian presentation route retains its existing algorithms and placements, without assuming that arbitrary prime ideals have generators.
 
-  The internal finite minimal-prime enumeration now requires its presentation ring to be Noetherian, so neither it nor its downstream component enumeration silently asserts finiteness in the unrestricted regime. The complete prime-ideal universe and non-enumerated minimal-point locus remain necessary to finish this step-2 item.
+  The internal finite minimal-prime enumeration requires the presentation ring to be Noetherian. In the general regime the full prime-ideal universe is represented by its set-theoretic ideal predicate rather than enumerated or forced into the finitely-generated ideal class.
+
+  `QuotientRings.minimal_primes()` selects the predicate locus of minimal prime subsets outside the Noetherian regime, with no false enumeration.
+
+  `irreducible_component_locus()` is the image of those minimal primes under Zariski closure, using prime-subset containment rather than incomplete finite-generated prime points. Further computational realization of these general predicates remains a separate `TODO.md` concern.
 
 - [x] `Lattices.X.vectors_of_square_and_divisibility` claimed `FiniteOrderedSets()` for every lattice. On the indefinite lattice `U ⊕ ⟨-2⟩`, the vectors `(n²+1,1,n)` have square `2` and divisibility `1` for every nonnegative integer `n`, so this locus is infinite. The defining helper in `categories/definite_lattices.py` now retains the full predicate subobject of the square fibre unless the fibre is known finite. Focused Sage confirms membership of four distinct such vectors in the retained locus; on `⟨-2⟩`, the finite shell remains in `Sets().Finite()` and has cardinality two.
 

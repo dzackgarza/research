@@ -1052,7 +1052,10 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def minimal_primes(self):
-            r"""Return the minimal prime ideals of this quotient ring."""
+            r"""Minimal prime ideals, with finite enumeration in the Noetherian regime."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.quotient_source() not in OwnedNoetherianRings():
+                return self.minimal_prime_locus()
             return finite_ordered_set(
                 tuple(
                     self.ideal(
@@ -1062,9 +1065,36 @@ class QuotientRings(OwnedCategory):
                 )
             )
 
+        def minimal_prime_locus(self):
+            r"""All minimal prime *subsets* of this ring, including non-finitely generated primes.
+
+            The full ideal universe is a predicate subset of ``P(R)``. In
+            particular, this does not rely on points built from the finite
+            generator presentations used by the computational spectrum.
+            """
+            prime_subsets = self.prime_ideal_locus()
+            return prime_subsets.condition_set(
+                lambda ideal_subset: AtomicProposition(
+                    "is_minimal_prime_ideal_subset", ideal_subset, self
+                )
+            )
+
+        def prime_ideal_locus(self):
+            r"""All prime ideals of this ring as subsets, not finite presentations."""
+            return self.power_set().condition_set(
+                lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
+            )
+
         @cached_method
         def irreducible_components(self):
-            r"""Return the component domains ``R/p`` for the minimal primes ``p``."""
+            r"""Return component domains in the Noetherian finite realization.
+
+            For arbitrary spectra, component closures instead form the
+            nonenumerated ``irreducible_component_locus``.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.quotient_source() not in OwnedNoetherianRings():
+                return self.irreducible_component_locus()
             if not self.is_reduced():
                 raise ValueError(
                     f"irreducible components R/p are computed here only for a reduced ring, but {self} is not reduced"
@@ -1074,6 +1104,23 @@ class QuotientRings(OwnedCategory):
                     self.quotient_source().quotient_ring(prime)
                     for prime in self._presentation_minimal_primes()
                 )
+            )
+
+        def irreducible_component_locus(self):
+            r"""Possibly infinite set of irreducible closed components of ``Spec R``.
+
+            Each component is the closure of one minimal prime point.
+            This does not assume a finite list of prime ideals.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+            prime_subsets = self.prime_ideal_locus()
+            return Sets().image_set(
+                lambda minimal_prime: prime_subsets.condition_set(
+                    lambda prime: AtomicProposition(
+                        "contains_ideal_subset", prime, minimal_prime
+                    )
+                ),
+                self.minimal_prime_locus(),
             )
 
         @cached_method
