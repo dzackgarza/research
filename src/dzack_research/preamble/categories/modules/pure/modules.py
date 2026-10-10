@@ -2024,14 +2024,8 @@ class Modules(OwnedCategoryOverBaseRing):
                 f"cannot construct {self} again with the computation class {engine}: the module "
                 "owner selects the realization of a module with added structure"
             )
-            added_categories, added_data = self._added_structure()
-            assert added_data.keys().isdisjoint(construction_data), (
-                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
-                f"the data {sorted(added_data)} of the same names"
-            )
-            return self._module_with_structure(
-                (*added_categories, *categories), {**added_data, **construction_data},
-            )
+            added_categories, added_data = self._added_structure(construction_data)
+            return self._module_with_structure((*added_categories, *categories), added_data)
 
         def _module_with_structure(self, categories, construction_data):
             r"""Construct further structure on this exact module's data.
