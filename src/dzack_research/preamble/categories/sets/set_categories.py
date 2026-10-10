@@ -774,7 +774,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         )
 
         match universe:
-            case _ if universe in FiniteSets() and universe in EnumeratedSets():
+            case _ if Sets().is_provably_finite(universe) and universe in EnumeratedSets():
                 return _filtered_ordered_set(universe, predicate)
             case _:
                 return _condition_set(universe, predicate)
@@ -2234,10 +2234,10 @@ class SetInclusion(OwnedSetMorphism):
     def __le__(self, other) -> bool:
         self._check_common_base(other)
         domain = self.domain()
-        if domain in FiniteSets() and domain in EnumeratedSets():
+        if Sets().is_provably_finite(domain) and domain in EnumeratedSets():
             return all(member in other for member in domain)
         base = self.codomain()
-        assert base in FiniteSets() and base in EnumeratedSets(), (
+        assert Sets().is_provably_finite(base) and base in EnumeratedSets(), (
             f"cannot decide whether {domain} is contained in {other.domain()}: containment is decided here "
             f"only when {domain} or {base} is finite and enumerated"
         )
@@ -2279,10 +2279,10 @@ class SetInclusion(OwnedSetMorphism):
             return False
         other = self.codomain().power_set()(other)
         base = self.codomain()
-        if base in FiniteSets() and base in EnumeratedSets():
+        if Sets().is_provably_finite(base) and base in EnumeratedSets():
             return all((member in self) == (member in other) for member in base)
         left, right = self.domain(), other.domain()
-        if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
+        if all(Sets().is_provably_finite(side) and side in EnumeratedSets() for side in (left, right)):
             return left.cardinality() == right.cardinality() and all(member in other for member in left)
         return AtomicProposition("equal", self, other)
 
