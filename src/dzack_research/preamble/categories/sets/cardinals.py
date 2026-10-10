@@ -431,11 +431,20 @@ class Cardinalities(OwnedCategory):
                 # A proved finite exponent gives a finite function set even
                 # before the exponent has acquired its finite-set placement.
                 return FiniteSets()
-            case _, _ if exponent in FiniteSets() and codomain in CountableSets() and codomain in InfiniteSets():
+            case _, _ if (
+                Sets().is_provably_finite(exponent)
+                and exponent.cardinality() != cardinal(0)
+                and codomain in CountableSets()
+                and codomain in InfiniteSets()
+            ):
                 return CountablyInfiniteSets()
             case _, _ if Sets().is_provably_finite(exponent) and codomain in CountableSets():
                 return CountableSets()
-            case _, _ if exponent in FiniteSets() and codomain in UncountableSets():
+            case _, _ if (
+                Sets().is_provably_finite(exponent)
+                and exponent.cardinality() != cardinal(0)
+                and codomain in UncountableSets()
+            ):
                 return UncountableSets()
             case _, _ if exponent in InfiniteSets() and (
                 codomain in InfiniteSets()
