@@ -427,6 +427,10 @@ class Cardinalities(OwnedCategory):
                 return self.set_category(cardinal(1))
             case _, _ if codomain in FiniteSets() and exponent in FiniteSets():
                 return self.set_category(self.power(codomain.cardinality(), exponent.cardinality()))
+            case _, _ if codomain in FiniteSets() and exponent.is_finite() is True:
+                # A proved finite exponent gives a finite function set even
+                # before the exponent has acquired its finite-set placement.
+                return FiniteSets()
             case _, _ if exponent in FiniteSets() and codomain in CountableSets() and codomain in InfiniteSets():
                 return CountablyInfiniteSets()
             case _, _ if exponent in FiniteSets() and codomain in CountableSets():

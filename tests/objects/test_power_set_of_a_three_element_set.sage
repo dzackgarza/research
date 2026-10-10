@@ -25,6 +25,9 @@ def test_subsets_are_characteristic_maps() -> None:
 def test_the_categories_of_the_power_set() -> None:
     assert power() in Sets()
     assert power() in FiniteSets()
+    unrefined = Sets().condition_set(three(), lambda point: True)
+    assert unrefined.is_finite() is True
+    assert unrefined.power_set() in FiniteSets()
 
 
 def test_the_power_set_has_two_to_the_three_elements() -> None:
