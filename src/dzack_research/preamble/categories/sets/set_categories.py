@@ -3485,24 +3485,17 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
 
         @staticmethod
         def _factor_point_at(factor, position):
-            from itertools import islice
-
-            if factor in EnumeratedSets():
-                return factor.ranking_map().inverse()(position)
-            absent = object()
-            point = next(islice(iter(factor), position, position + 1), absent)
-            if point is absent:
-                raise IndexError(f"position {position} is out of range for {factor}")
-            return point
+            assert factor in EnumeratedSets(), (
+                f"a ranked coproduct needs its summand {factor} to have an enumeration"
+            )
+            return factor.ranking_map().inverse()(position)
 
         @staticmethod
         def _factor_position_of(factor, value):
-            if factor in EnumeratedSets():
-                return int(factor.ranking_map()(value))
-            for position, candidate in enumerate(factor):
-                if candidate == value:
-                    return position
-            raise ValueError(f"{value!r} is not an element of {factor}")
+            assert factor in EnumeratedSets(), (
+                f"a ranked coproduct needs its summand {factor} to have an enumeration"
+            )
+            return int(factor.ranking_map()(value))
 
         def _factor_has_position(self, factor, position) -> bool:
             r"""Whether the summand ``factor`` has a point at rank ``position``."""
