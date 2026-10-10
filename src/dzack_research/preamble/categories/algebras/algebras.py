@@ -1816,8 +1816,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-                    presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
-                    return presentation.quotient_by_relations(("x^2",))
+                    return _dual_numbers_example(self.base_ring())
 
                 class ParentMethods:
                     def is_finitely_presented_as_algebra(self) -> bool:
@@ -2291,13 +2290,18 @@ def _require_matrix_algebra(mor):
     return mor
 
 
+def _dual_numbers_example(base_ring):
+    """The algebra R[x]/(x²) from its one-generator presentation."""
+    presentation = base_ring.free_module(("x",)).symmetric_algebra()
+    return presentation.quotient_by_relations(("x^2",))
+
+
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented algebras carrying one selected finite presentation."""
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
-        return presentation.quotient_by_relations(("x^2",))
+        return _dual_numbers_example(self.base_ring())
 
     @classmethod
     def _repr_object_names(cls):
