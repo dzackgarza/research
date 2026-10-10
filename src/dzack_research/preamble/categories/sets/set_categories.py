@@ -2880,7 +2880,9 @@ class _ImageSetEngine:
         match self.source_set():
             case _ if self._image_inverse is not None:
                 return True
-            case source if source in FiniteSets():
+            case source if source in FiniteSets() or (
+                source.is_finite() is True and source in EnumeratedSets()
+            ):
                 return cardinal(sum(1 for _value in self._distinct_values())) == cardinal(
                     source.cardinality()
                 )
@@ -2912,7 +2914,9 @@ class _ImageSetEngine:
         return SageSet(self._distinct_values())
 
     def __iter__(self):
-        assert self.source_set() in FiniteSets(), (
+        assert self.source_set() in FiniteSets() or (
+            self.source_set().is_finite() is True and self.source_set() in EnumeratedSets()
+        ), (
             f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
             "to be finite; for an infinite image use Sets().image_set with an inverse on the image"
         )
@@ -2922,7 +2926,9 @@ class _ImageSetEngine:
         r"""Whether ``element`` is a value \(f(a)\) for a point \(a\) of the source."""
         source = self.source_set()
         match source:
-            case _ if source in FiniteSets():
+            case _ if source in FiniteSets() or (
+                source.is_finite() is True and source in EnumeratedSets()
+            ):
                 return element in self._finite_image()
             case _ if self._image_inverse is not None:
                 preimage = self._image_inverse(element)
