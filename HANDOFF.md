@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Finite diagram universal limit/colimit route corrected (2026-10-10):** The existing `Sets().Limits(index).construction(diagram)` and `Sets().Colimits(index).object(diagram)` are the canonical construction owners; the old `diagram.limit()`/`.colimit()` test calls had no such methods. The finite-shape adapter wrongly used the shape's *indexed family* of arrows as a set of indices for its arrow-target product. It now constructs the actual finite ordered set of arrows. Focused Sage on a discrete two-object diagram with two- and three-point values returns limit cardinality six and colimit cardinality five, and checks all six point-apex cones factor with both defining triangles commuting through the selected cone morphism's apex map. The old `Cones().Mor(point)` assertion was invalid because Mor requires source and target cones; it has been replaced by the actual universal factorization comparisons.
+
+
 **Discrete diagram finite codomain checked at its owner (2026-10-10):** `_DiscreteDiagram` now rejects a family with a different exact index object set and verifies every object image lies in its declared codomain when the index set is provably finite. The focused owner specimen constructs a valid two-index set-valued diagram, rejects a callback returning nonsets, and rejects a family on another finite ordinal. General infinite callback-based diagrams remain unverified and cannot establish product placement; independent typed mathematical families are still required. The older diagram-cone specimen itself fails at the unrelated missing `diagram.limit()` method, so its limit/colimit assertions were not claimed.
 
 

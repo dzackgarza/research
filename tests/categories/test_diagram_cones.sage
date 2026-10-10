@@ -37,6 +37,19 @@ def test_limit_and_colimit_of_a_discrete_diagram_are_product_and_disjoint_union(
     two, three = Sets.Δ[1], Sets.Δ[2]
     diagram = Cat().Mor(index, Sets()).discrete_diagram(lambda position: two if position == 0 else three)
 
-    assert diagram.limit().cardinality() == 6
-    assert diagram.colimit().cardinality() == 5
-    assert diagram.Cones().Mor(Sets.Δ[0]).cardinality() == 6
+    selected_limit = Sets().Limits(index).construction(diagram)
+    assert selected_limit.object().cardinality() == 6
+    assert Sets().Colimits(index).object(diagram).cardinality() == 5
+    point = Sets.Δ[0]
+    assert Sets().Mor(point, selected_limit.object()).cardinality() == 6
+    for left in two:
+        for right in three:
+            cone = diagram.Cones().cone(
+                point,
+                lambda object_, left=left, right=right: Sets().Mor(point, diagram(object_))(
+                    lambda _: left if object_ is index.object(Sets.Δ[1](0)) else right
+                ),
+            )
+            factor = selected_limit.factor(cone)
+            assert selected_limit.structure_morphism(index.object(Sets.Δ[1](0))) * factor.apex_map() == cone.structure_morphism(index.object(Sets.Δ[1](0)))
+            assert selected_limit.structure_morphism(index.object(Sets.Δ[1](1))) * factor.apex_map() == cone.structure_morphism(index.object(Sets.Δ[1](1)))

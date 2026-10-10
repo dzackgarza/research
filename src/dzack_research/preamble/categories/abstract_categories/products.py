@@ -1623,7 +1623,9 @@ class _LimitsOfCategory(OwnedCategoryBase):
             f"this limit is computed from products and equalizers only over a finite index category, but "
             f"{shape} has infinitely many arrows"
         )
-        return object_set, objects, arrows
+        # A diagram's arrow collection is an indexed family, not itself a set.
+        # The finite products below index their factors by actual arrows.
+        return object_set, objects, finite_ordered_set(tuple(arrows))
 
     @staticmethod
     def _extremal_shape_object(objects, arrows, *, terminal: bool):
