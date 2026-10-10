@@ -1009,6 +1009,19 @@ class LocalizationRings(OwnedCategory):
     def super_categories(self):
         return [OwnedRings().Commutative()]
 
+    class Local(CategoryWithAxiom):
+        r"""Local rings retaining their selected localization source and submonoid."""
+
+        def an_object(self):
+            r"""The localization of the integers at all nonzero elements."""
+            return _own_ring(SageZZ).fraction_field_localization()
+
+        class ParentMethods:
+            @cached_method
+            def source_residue_map(self):
+                r"""Return ``R -> kappa(m)`` through this local localization ``S^-1 R``."""
+                return self.residue_map() * self.localization_map()
+
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
 
@@ -2052,20 +2065,59 @@ def _predicate_subring(ambient_ring, predicate, description, category=None):
 
 
 class LocalRingConstruction:
-    r"""The selected maximal ideal and residue quotient data of a local ring."""
+    r"""The selected maximal ideal and residue quotient data of a local ring.
 
-    def __init__(self, maximal_ideal, residue_field, residue_map=None) -> None:
+    A construction owner may supply a value or a fixed zero-argument factory
+    for each datum. The factories return an owned maximal ideal, its owned
+    residue field, and an owned quotient map from the same local ring, with
+    that ideal as kernel. The accessors cache their results independently;
+    requesting the maximal ideal need not compute a residue field.
+    """
+
+    def __init__(
+        self,
+        maximal_ideal=None,
+        residue_field=None,
+        residue_map=None,
+        *,
+        maximal_ideal_factory=None,
+        residue_field_factory=None,
+        residue_map_factory=None,
+    ) -> None:
+        for name, value, factory in (
+            ("maximal ideal", maximal_ideal, maximal_ideal_factory),
+            ("residue field", residue_field, residue_field_factory),
+            ("residue map", residue_map, residue_map_factory),
+        ):
+            if value is not None and factory is not None:
+                raise ValueError(f"the selected {name} needs one value or factory, not both")
+        if maximal_ideal is None and maximal_ideal_factory is None:
+            raise ValueError("a local-ring construction needs its maximal ideal or a factory for it")
+        if residue_field is None and residue_field_factory is None:
+            raise ValueError("a local-ring construction needs its residue field or a factory for it")
         self._maximal_ideal = maximal_ideal
         self._residue_field = residue_field
         self._residue_map = residue_map
+        self._maximal_ideal_factory = maximal_ideal_factory
+        self._residue_field_factory = residue_field_factory
+        self._residue_map_factory = residue_map_factory
 
+    @cached_method
     def maximal_ideal(self):
+        if self._maximal_ideal_factory is not None:
+            return self._maximal_ideal_factory()
         return self._maximal_ideal
 
+    @cached_method
     def residue_field(self):
+        if self._residue_field_factory is not None:
+            return self._residue_field_factory()
         return self._residue_field
 
+    @cached_method
     def residue_map(self):
+        if self._residue_map_factory is not None:
+            return self._residue_map_factory()
         return self._residue_map
 
 
@@ -2248,7 +2300,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self
 
                 def residue_map(self):
-                    return self.Mor(self).identity()
+                    return OwnedRings().Mor(self, self).identity()
 
                 def absolute_galois_group(self):
                     r"""Return the absolute Galois group ``G_K`` of this field ``K``.
@@ -2332,12 +2384,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     when it is nonzero.
                     """
                     if self in OwnedRings().Division().Commutative():
-                        return self.Mor(self).identity()
+                        return OwnedRings().Mor(self, self).identity()
                     localization = self.fraction_field_localization()
                     return (
                         localization.fraction_field_comparison()
                         * localization.localization_map()
                     )
+
+                def fraction_field(self):
+                    r"""Return the fraction field through its nonzero-element localization."""
+                    if self in OwnedRings().Division().Commutative():
+                        return self
+                    return self.fraction_field_localization().fraction_field_realization()
 
     class Noetherian(CategoryWithAxiom):
         r"""Noetherian rings: the ascending chain condition on ideals."""
@@ -2418,8 +2476,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 def local_ring_construction(self):
                     construction = self._selected_local_ring_construction()
                     assert construction is not None, (
-                        f"{self} is in the category of local rings that are not fields, but its maximal ideal and "
-                        "residue field are missing"
+                        f"the local ring {self} has no selected maximal-ideal and residue-field data"
                     )
                     return construction
 
@@ -2436,6 +2493,20 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         f"the residue map R -> R/m of the local ring {self} is missing"
                     )
                     return selected
+
+                def _field_decision(self):
+                    r"""A local ring is a field exactly when its maximal ideal is zero."""
+                    construction = self._selected_local_ring_construction()
+                    if construction is None:
+                        return super()._field_decision()
+                    from dzack_research.preamble.categories.rings.commutative_ideals import (
+                        CommutativeIdeals,
+                    )
+
+                    maximal_ideal = construction.maximal_ideal()
+                    if maximal_ideal not in CommutativeIdeals(self):
+                        return super()._field_decision()
+                    return maximal_ideal.is_zero()
 
             class Complete(CategoryWithAxiom):
                 r"""Complete local rings: complete and separated for the maximal-ideal topology."""
@@ -2904,13 +2975,19 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._field_decision()
 
         def _selected_local_ring_construction(self):
-            r"""Return an installed local-ring datum, or ``None``.
+            r"""Return selected local-ring quotient data, or ``None``.
 
-            Protected ring-construction contract under OWN-05. Ordinary local
-            rings such as fields and prime localizations compute their residue
-            data through their mathematical owners and therefore return
-            ``None`` here. Native/adically completed/dual-number parents that
-            retain a selected maximal-ideal quotient override this endpoint.
+            Protected ring-construction contract under OWN-05. The callers
+            are the local-ring datum accessor, the local field decision, and
+            the local-ring installation adapter. A construction owner returns
+            a ``LocalRingConstruction`` for this exact ring: its selected
+            maximal ideal, the owned residue field, and its quotient map when
+            selected. The local field decision uses the ideal's zero predicate
+            only when that datum is an owned commutative ideal.
+            Fixed factories may compute these data independently on demand.
+            ``None`` means no such datum is selected; it does not deny locality.
+            Native/completed parents retain installed values, while a prime
+            localization supplies its actual source-quotient construction.
             """
             return None
 
@@ -3256,17 +3333,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 "z commutes with every element",
                 OwnedRings().Commutative(),
             )
-
-        def fraction_field(self):
-            r"""Return the fraction field through its nonzero-element localization."""
-            if self in OwnedRings().Division().Commutative():
-                return self
-            if self not in OwnedRings().Commutative().NoZeroDivisors():
-                raise ValueError(
-                    f"{self} is not an integral domain, so it has no fraction field; "
-                    "inverting its regular elements is the total quotient-ring construction"
-                )
-            return self.fraction_field_localization().fraction_field_realization()
 
 
 class OwnedOrderedRings(OwnedCategory):

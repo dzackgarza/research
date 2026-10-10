@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalRingConstruction,
     LocalizationRings,
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
@@ -2180,15 +2181,9 @@ class PrimeLocalizations(OwnedCategory):
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
-        return [LocalizationRings(), OwnedRings().Commutative().Local()]
+        return [LocalizationRings().Local()]
 
     class ElementMethods:
-        def _unit_decision(self):
-            parent = self.parent()
-            return negation(parent.localized_prime().contains_ambient_element(
-                self.numerator()
-            ))
-
         def _unit_inverse_decision(self):
             match self.is_unit():
                 case True:
@@ -2207,12 +2202,10 @@ class PrimeLocalizations(OwnedCategory):
             self,
             source,
             submonoid,
-            fraction_field=None,
             *,
             engine_ring=None,
             **rest,
         ) -> None:
-            self._preamble_fraction_field = fraction_field
             base = source.base_ring()
             algebra_source = (
                 source
@@ -2227,21 +2220,6 @@ class PrimeLocalizations(OwnedCategory):
                 **rest,
             )
 
-        def fraction_field(self):
-            r"""Return ``Frac(R_p)``, which is ``Frac(R)``.
-
-            Localizing does not change the fraction field: ``R -> R_p`` is
-            injective for a domain and every nonzero element of ``R_p`` is
-            already invertible in ``Frac(R)``.  A ring with zero divisors has
-            no fraction field, and neither has its localization.
-            """
-            represented = self._preamble_fraction_field
-            assert represented is not None, (
-                f"{self.localization_source()} has zero divisors, so neither it nor {self} "
-                "has a fraction field"
-            )
-            return represented
-
         def _krull_dimension_decision(self):
             r"""Return ``dim R_p``, the height of ``p``.
 
@@ -2254,80 +2232,63 @@ class PrimeLocalizations(OwnedCategory):
             """
             source = self.localization_source()
             finite_type_source = source.quotient_source() if source in QuotientRings() else source
+            finite_type_base = finite_type_source.base_ring()
             if (
                 source in OwnedRings().Commutative().NoZeroDivisors()
                 and (
                     source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
-                    or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
+                    or (
+                        finite_type_base in OwnedRings().Division().Commutative()
+                        and finite_type_source in (
+                            Algebras(finite_type_base).Associative().Unital().FinitelyGeneratedAsAlgebra()
+                        )
+                    )
                 )
             ):
                 return source.krull_dimension() - source.quotient_ring(self.localized_prime()).krull_dimension()
-            raise NotImplementedError(
+            assert False, (
                 f"the intrinsic dimension of {self} requires a prime-chain or independent local-dimension "
                 "realization outside the represented dimension-formula regime"
             )
 
         @cached_method
-        def residue_field(self):
-            r"""Return ``kappa(p) = R_p / p R_p``.
+        def _selected_local_ring_construction(self):
+            r"""Supply the actual local quotient datum of ``R_p`` lazily.
 
-            ``R/p`` is a domain because ``p`` is prime, and the classes of
-            ``R \\ p`` are exactly its nonzero elements, so inverting them gives
-            ``Frac(R/p)`` and killing ``p R_p`` afterwards changes nothing.
-            When ``p`` is maximal that fraction field is ``R/p`` itself, which
-            is what a closed point of the spectrum has.
+            Implements the protected ring-construction contract. The maximal
+            ideal is the extension ``p R_p``. Its residue field is
+            ``Frac(R/p)`` because the images of ``R \\ p`` in the domain
+            ``R/p`` are precisely the nonzero elements. This needs no fraction
+            field of R, even when R is reducible or nonreduced.
 
-            This asks ``R`` for a quotient and a fraction field and never for a
-            fraction field of its own, so a reducible or nonreduced ``R``,
-            which has none, still has a residue field at every point.
+            The existing datum stores fixed factories separately: asking for
+            ``p R_p`` does not construct the residue field. The residue-map
+            factory uses the actual source quotient directly, so it never
+            calls ``source_residue_map`` recursively.
             """
-            quotient = self.localization_source().quotient_ring(self.localized_prime())
-            if quotient in OwnedRings().Division().Commutative():
-                return quotient
-            return quotient.fraction_field()
+            source = self.localization_source()
+            prime = self.localized_prime()
 
-        @cached_method
-        def source_residue_map(self):
-            r"""Return ``R -> kappa(p)``, the value of a function at this point."""
-            quotient = self.localization_source().quotient_ring(self.localized_prime())
-            residue = self.residue_field()
-            if residue is quotient:
-                return quotient.quotient_map()
-            return _canonical_map(quotient, residue) * quotient.quotient_map()
+            def residue_field():
+                quotient = source.quotient_ring(prime)
+                if quotient in OwnedRings().Division().Commutative():
+                    return quotient
+                return quotient.fraction_field()
 
-        @cached_method
-        def residue_map(self):
-            r"""Return ``R_p -> kappa(p)``, the quotient by the maximal ideal.
+            def residue_map():
+                quotient = source.quotient_ring(prime)
+                residue = construction.residue_field()
+                source_map = quotient.quotient_map()
+                if residue is not quotient:
+                    source_map = _canonical_map(quotient, residue) * source_map
+                return self.induced_morphism(source_map)
 
-            ``R -> kappa(p)`` carries every ``s`` outside ``p`` to a nonzero
-            class of the domain ``R/p``, hence to a unit of its fraction field.
-            So it inverts ``R \\ p`` and the universal property of ``R_p``
-            factors it uniquely through this ring; that factorization is the
-            residue map, and its kernel is ``p R_p``.
-            """
-            return self.induced_morphism(self.source_residue_map())
-
-        @cached_method
-        def maximal_ideal(self):
-            r"""Return ``p R_p``, the extension of ``p`` along ``R -> R_p``.
-
-            The maximal ideal of a local ring is its non-units, and ``a/s`` is
-            a non-unit of ``R_p`` exactly when ``a`` lies in ``p``, so the
-            non-units are the ideal ``p`` generates here.  Constructing it as
-            the extension of ``p`` is what gives it the operations of an ideal
-            rather than a name and a generating set.
-            """
-            return self.localized_prime().extension_to_localization(self)
-
-        def localize_module(self, module):
-            r"""Return ``R_p tensor_R M`` through the module-localization theory."""
-
-            if module.base_ring() is not self.localization_source():
-                raise ValueError(
-                    f"cannot localize {module} at {self}: it is a module over {module.base_ring()}, but the "
-                    f"localization is of {self.localization_source()}"
-                )
-            return self.localization_functor()(module)
+            construction = LocalRingConstruction(
+                maximal_ideal_factory=lambda: prime.extension_to_localization(self),
+                residue_field_factory=residue_field,
+                residue_map_factory=residue_map,
+            )
+            return construction
 
         def localized_prime(self):
             structure = self.localization_submonoid()._structure_data()
@@ -2342,13 +2303,6 @@ class PrimeLocalizations(OwnedCategory):
                     f"{self} is a localization R_p at the complement of a prime, but the prime ideal p is missing"
                 )
             return prime
-
-        def _field_decision(self):
-            r"""Return whether the maximal ideal ``p R_p`` vanishes."""
-            return all(
-                self(generator) == self.zero()
-                for generator in self.localized_prime().ideal_generators()
-            )
 
 
 class IdealExtensionData(SageObject):
@@ -3969,13 +3923,12 @@ def _residue_field_at(source, ideal):
 def _PrimeLocalizationFromSubmonoid(source, submonoid):
     r"""Return ``R_p`` for a submonoid represented as the complement of ``p``.
 
-    ``R -> R_p`` is injective exactly when ``R`` is a domain, and then ``R_p``
-    is the subring of ``Frac(R)`` whose denominators avoid ``p``, which is the
-    realization selected below.  A reducible or nonreduced ``R`` has no
-    fraction field to sit in, so it selects none: the represented fractions are
-    the object, and every question about them -- which are units, when two are
-    equal, which lie in an ideal -- is an ideal computation in ``R`` against
-    ``p`` rather than a question put to a realization.
+    When R is a domain, ``R -> R_p`` is injective and the localization embeds
+    in ``Frac(R)``; that field supplies its computation model below. Otherwise
+    this constructor selects no source fraction-field model. This makes no
+    claim that ``R_p`` has zero divisors: localization can remove a component.
+    The owned fractions and ideal computations in R against p remain the
+    actual localization in either case.
     """
     structure = submonoid._structure_data()
     prime_ideal = structure.get("prime_ideal")
@@ -3992,10 +3945,8 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         if source in OwnedRings().Commutative().NoZeroDivisors():
             placements.append(OwnedRings().Commutative().NoZeroDivisors())
     if source in OwnedRings().Commutative().NoZeroDivisors():
-        fraction_field = source.fraction_field()
-        fraction_engine = _engine_ring(fraction_field)
+        fraction_engine = _engine_ring(source.fraction_field())
     else:
-        fraction_field = None
         fraction_engine = None
     base = source.base_ring()
     algebra_source = (
@@ -4011,7 +3962,6 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         owned_category_join([PrimeLocalizations(), *placements]),
         source=source,
         submonoid=submonoid,
-        fraction_field=fraction_field,
         engine_ring=fraction_engine,
     )
 
