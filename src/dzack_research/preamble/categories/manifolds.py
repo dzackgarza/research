@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
+    indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
@@ -355,6 +356,7 @@ class TopologicalManifolds(OwnedCategory):
             manifold_structure,
             differentiability_degree,
             manifold_field="real",
+            chart_index_set=None,
             **rest,
         ) -> None:
             self._preamble_engine_manifold = engine_manifold
@@ -368,6 +370,7 @@ class TopologicalManifolds(OwnedCategory):
             )
             self._preamble_manifold_field = str(manifold_field)
             self._preamble_charts = {}
+            self._preamble_chart_index_set = chart_index_set
             self._preamble_transitions = {}
             super().__init__(**rest)
 
@@ -443,11 +446,17 @@ class TopologicalManifolds(OwnedCategory):
             return self(coordinates, chart_label)
 
         def chart_labels(self):
+            if self._preamble_chart_index_set is not None:
+                return self._preamble_chart_index_set
+            return self.selected_finite_chart_labels()
+
+        def selected_finite_chart_labels(self):
+            r"""Labels in the currently registered finite chart realization."""
             return finite_ordered_set(tuple(self._preamble_charts))
 
         def atlas(self):
             labels = self.chart_labels()
-            return finite_indexed_family(
+            return indexed_family(
                 labels,
                 lambda label: self._preamble_charts[label],
                 name=f"Atlas charts of {self}",
