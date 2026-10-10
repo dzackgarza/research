@@ -392,7 +392,8 @@ def _reflective_root_system_components(lattice):
     """
     from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
-    simple = _simple_roots(lattice, tuple(lattice.reflective_roots()))
+    from dzack_research.preamble.categories.lattices import DefiniteLattices
+    simple = _simple_roots(lattice, tuple(DefiniteLattices(lattice.base_ring())(lattice).reflective_roots()))
     match simple:
         case ():
             return finite_ordered_set(())

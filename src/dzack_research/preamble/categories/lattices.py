@@ -4358,6 +4358,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             exponent = abs(self.discriminant_group().exponent())
             return finite_ordered_set(tuple((self.base_ring()(2) * exponent).divisors()))
 
+        def reflective_root_locus(self):
+            r"""Primitive nonisotropic vectors with integral reflections.
+
+            The condition is ``2 b(v,L) / b(v,v)`` integral; the locus can
+            be infinite for an indefinite lattice.
+            """
+            ring = self.base_ring()
+            def reflective(vector):
+                if vector == self.zero() or vector.q() == ring.zero():
+                    return False
+                if not self.subobject_on((vector,)).is_primitive():
+                    return False
+                return all((ring(2) * vector.b(generator)) / vector.b(vector) in ring
+                           for generator in self.module_generators())
+            return self.condition_set(reflective)
+
         @cached_method
         def root_module_generating_set(self):
             r"""Return a set of roots of \(L\) that generates \(L\) as a module.
@@ -4373,18 +4389,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             rows = _roots_generating_lattice(self.gram_tensor(), self.possible_root_lengths())
             return finite_ordered_set(tuple(self(row) for row in rows))
-
-        @cached_method
-        def reflective_roots(self):
-            r"""Return all primitive reflective roots of a definite lattice."""
-            match self.is_positive_definite(), self.is_negative_definite():
-                case True, _:
-                    sign = self.base_ring().one()
-                case _, True:
-                    sign = -self.base_ring().one()
-                case _:
-                    raise ValueError(f"cannot finitely enumerate all reflective roots of {self}: this computational case is available for definite lattices")
-            return finite_ordered_set(tuple(root for length in self.possible_root_lengths() for root in self.roots_of_square(sign * length)))
 
         @cached_method
         def root_sublattice(self):
@@ -5689,6 +5693,30 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                 )
 
             return source.module_category().Mor(source, self)(image)
+
+
+class DefiniteLattices(OwnedCategoryOverBaseRing):
+    r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
+
+    def super_categories(self):
+        return [Lattices(self.base_ring())]
+
+    def an_object(self):
+        return self(Lattices(self.base_ring()).an_object())
+
+    def _call_(self, lattice):
+        from dzack_research.preamble.refine import refine
+
+        if lattice not in Lattices(self.base_ring()) or not (lattice.is_positive_definite() or lattice.is_negative_definite()):
+            raise ValueError("finite reflective-root enumeration requires a definite lattice")
+        return refine(lattice, self)
+
+    class ParentMethods:
+        @cached_method
+        def reflective_roots(self):
+            r"""All primitive reflective roots of this definite lattice."""
+            sign = self.base_ring().one() if self.is_positive_definite() else -self.base_ring().one()
+            return finite_ordered_set(tuple(root for length in self.possible_root_lengths() for root in self.roots_of_square(sign * length)))
 
 
 class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):

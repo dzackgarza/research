@@ -66,7 +66,7 @@ def test_the_roots_and_isometries_of_a2() -> None:
     assert Lattices(ZZ)("A1").Emb(lattice).cardinality() == 6
     assert lattice.root_sublattice().module_rank() == 2
     assert lattice.root_sublattice().determinant() == 3
-    reflective = lattice.reflective_roots()
+    reflective = DefiniteLattices(ZZ)(lattice).reflective_roots()
     assert int(reflective.cardinality()) == 12
     assert {int(root.q()) for root in reflective} == {-2, -6}
 
