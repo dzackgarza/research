@@ -108,6 +108,8 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Additive product assembly Mor verified (2026-10-10):** For a finite family of additive monoids, `CartesianProductsOfAdditiveMonoids.from_maps` now requires component arrows in their exact `AdditiveMonoids().Mor(source,factor)` parents and returns an arrow in `AdditiveMonoids().Mor(source,product)`. Focused Sage checks the assembled arrow's parent, both projections on the source unit and zero, and rejection of untyped set-map components (`29861e51df`). Infinite component families still require typed morphism-family data, not a callback declaration.
+
 **Constant-family categorical admission repaired (2026-10-10):** `indexed_family(NN, Sets.Δ[1], value_category=AdditiveMonoids())` previously passed a false selected-value-category claim, causing its product to enter `CartesianProductsOfAdditiveMonoids` even though the two-point set is not an additive monoid. The indexed-family owner now checks the actual selected constant object against the declared category before constructing its diagram. Focused Sage verifies rejection of the false claim while both the valid infinite constant additive product and the parity-restricted nonconstant additive product still pass.
 
 
