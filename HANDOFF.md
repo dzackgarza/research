@@ -44,6 +44,13 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 
 **Step-3 engine pair ingress cleanup:** Sum, product, intersection, colon, and saturation now reuse compatible engine ideal-pair ingress on their selected backend routes. This changes no mathematical operation or quotient-cover handling.
 
+## Step-3 duplicates (survey 2026-10-10; inventory in progress)
+
+**Survey evidence:** `.tmp/step3-duplicates.txt` (identical AST body groups) and `.tmp/step3-same-name.txt` (same-name operation survey), both from the full default `src, tests` population, source digest `fd4d76d2650d0baf2d906a065c1fe7c77482292db180547bd2f68f95063d482b`. Classification is mathematical, not syntactic; do not consolidate until every group in both reports has been reviewed and the denominator is frozen.
+
+- [ ] The exterior-degree word normalization `degree=0 -> (), degree=1 -> (label,), higher -> tuple(label)` is independently implemented by `algebras/cartan_calculus.py:_exterior_word`, `functors/de_rham.py:_exterior_word`, and `modules/hodge.py:_power_word`; these are the same encoding operation used by exterior/Hodge construction labels. Establish one owner and route all three callers through it.
+- [ ] `BilinearFormModules.FinitelyPresented.Torsion.ParentMethods.primary_components` and `QuadraticFormModules.FinitelyPresented.Torsion.ParentMethods.primary_components` independently construct the same prime-indexed primary part family from invariant factors (in `modules/framed/formed/form_modules.py`). Place the underlying primary-family construction at their common form-bearing owner while retaining the quadratic/bilinear specializations of each primary part.
+
 ## Step-2 false statements from the complete construction/property views (2026-10-09)
 
 **Full-view reading gate (2026-10-10):** Reviewed all 3,252 lines of `.tmp/step2-constructions.txt` and all 1,139 lines of `.tmp/step2-properties.txt`, including the eight oversized early property-category lists by splitting their comma-separated category declarations and checking their differences. The unchecked list below is the fixed Step-2 repair denominator; repairs proceed at the mathematical owners in listed order. Scanner artifacts and correct edges are excluded.
