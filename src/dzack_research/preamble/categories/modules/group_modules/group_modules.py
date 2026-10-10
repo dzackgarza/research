@@ -732,11 +732,14 @@ class ModulesOverGroupAlgebra(Modules):
             ``QQ``; a character is present when its isotypic component is
             nonzero.
             """
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
+            group = self.group()
+            coefficient_module = self.unformed_module()
+            if group.is_finite() is True and coefficient_module in FinitelyGeneratedFreeModules(self.coefficient_ring()):
+                return FiniteFreeGroupRepresentations(self.group_algebra())(self).finite_isotypic_characters()
+            raise NotImplementedError(
+                f"the possibly infinite isotypic-character support of {self} "
+                "requires a represented character universe and component-nonvanishing locus"
             )
-
-            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if self.isotypic_component(character).module_rank() != 0))
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""
@@ -1630,6 +1633,16 @@ class FiniteFreeGroupRepresentations(OwnedCategoryOverBaseRing):
         if module.group().is_finite() is not True or module.unformed_module() not in FinitelyGeneratedFreeModules(coefficient_ring):
             raise TypeError("a finite free representation requires a finite group and finite free coefficient module")
         return refine(module, self)
+
+    class ParentMethods:
+        def finite_isotypic_characters(self):
+            r"""Enumerate supported irreducible characters in the finite-free realization."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            return finite_ordered_set(tuple(
+                character for character in _split_irreducible_characters(self)
+                if self.isotypic_component(character).module_rank() != 0
+            ))
 
 
 class OrdinaryCharacterRepresentations(FiniteFreeGroupRepresentations):
