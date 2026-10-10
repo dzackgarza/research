@@ -1444,6 +1444,13 @@ class ModuleMorphismMethods:
             f"cannot compute a preimage of {element} under {domain} -> {codomain}: the domain must be finitely "
             f"generated, but its generating set {domain.module_generating_set()} is infinite"
         )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _singular_presentation_preimage,
+        )
+
+        polynomial_preimage = _singular_presentation_preimage(self, element)
+        if polynomial_preimage is not NotImplemented:
+            return polynomial_preimage
         match codomain:
             case _ if _has_finite_free_framing(domain) and _has_finite_free_framing(codomain):
                 pass

@@ -956,6 +956,44 @@ class QuotientRings(OwnedCategory):
         def defining_ideal(self):
             return self._quotient_defining_ideal
 
+        def _has_selected_exact_coefficient_presentation(self) -> bool:
+            r"""Whether the actual quotient cover is an available exact coefficient presentation.
+
+            The inherited module-algorithm contract reads the fixed source
+            and defining ideal of this quotient.  A polynomial cover over an
+            actual field, or the integer cover, supplies these data directly;
+            a larger computation field of a localization does not.
+            """
+            source = self.quotient_source()
+            if source is _own_ring(SageZZ):
+                return True
+            base = source.base_ring()
+            return (
+                base in OwnedRings().Division().Commutative()
+                and source in SymmetricAlgebras(base)
+                and source.algebra_generating_set() in FiniteSets()
+            )
+
+        def _exact_coefficient_presentation_ring(self):
+            if self._has_selected_exact_coefficient_presentation():
+                return self.quotient_source()
+            return super()._exact_coefficient_presentation_ring()
+
+        def _exact_coefficient_presentation_relations(self):
+            if self._has_selected_exact_coefficient_presentation():
+                return self.defining_ideal().ideal_generators()
+            return super()._exact_coefficient_presentation_relations()
+
+        def _lift_coefficient_to_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                return self(value).lift()
+            return super()._lift_coefficient_to_presentation(value)
+
+        def _descend_coefficient_from_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                return self(value)
+            return super()._descend_coefficient_from_presentation(value)
+
         @cached_method
         def quotient_map(self):
             morphism = self._quotient_map_factory()

@@ -1979,49 +1979,37 @@ class _GeneralPresentedModule:
         return lifted_free, lifted_submodule
 
     def _singular_polynomial_relation_contains(self, vector):
-        r"""Decide direct polynomial relation membership through Singular.
+        r"""Decide relation membership over an exact polynomial coefficient cover.
 
-        Sage's generic free-submodule membership over a polynomial ring uses
-        the ambient fraction-field span, so, for example, it reports
-        ``e in <x e>`` over ``QQ[x,y]``.  Singular's module ``lift`` asks the
-        actual polynomial-module membership question.
-
-        Engine adapter (``OWN-06``): its caller is :meth:`_relation_contains`;
-        it returns ``NotImplemented`` for a computation ring that is not a
-        polynomial ring over a field, and otherwise the membership of the
-        cover vector in the relation submodule.
+        Engine adapter (``OWN-06``), called by :meth:`_relation_contains`.
+        For ``A=P/I``, lift both the module relations and ``I e_j`` to
+        ``P^n``.  Reduction there decides polynomial submodule membership,
+        whereas the ambient fraction-field span can contain extra vectors.
+        ``NotImplemented`` leaves other exact coefficient algorithms active.
         """
-        from sage.categories.fields import Fields as SageFields
         from sage.matrix.constructor import matrix
 
-        engine = _engine_ring(self.base_ring())
-        if "polynomial" not in type(engine).__module__ or engine.base_ring() not in SageFields():
+        ring = self.base_ring()
+        context = _singular_coefficient_presentation(ring)
+        if context is None:
             return NotImplemented
-        coefficient_field = engine.base_ring()
-
-        if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
-            singular_ring = _SagePolynomialRing(
-                coefficient_field,
-                engine.variable_names(),
-                implementation="singular",
-            )
-            to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
-        else:
-            singular_ring = engine
-            to_singular = singular_ring
-
+        singular_ring, _, lift_scalar, _ = context
         width = int(self.module_generating_set().cardinality())
-        # Singular reads the columns, the images r(e_i), as module generators.
-        relations = _engine_matrix(_relation_morphism(self)).apply_map(to_singular, singular_ring)
-        if relations.ncols() == 0:
-            return False
+        if width == 0:
+            return True
+        relations = _singular_relation_module(_relation_images(self), width, context)
         requested = matrix(
             singular_ring,
             width,
             1,
-            [to_singular(coefficient) for coefficient in tuple(vector)],
+            [
+                lift_scalar(_owned_engine_element(ring, coefficient))
+                for coefficient in tuple(vector)
+            ],
         )
-        return _singular_module_lift(relations, requested) is not None
+        return _singular_module_lift(
+            _singular_module_matrix(relations, singular_ring, width), requested
+        ) is not None
 
     def _relation_contains(self, vector) -> bool | None:
         r"""Decide membership of ``vector`` in the relation submodule; ``None`` where no procedure decides it."""
@@ -2040,11 +2028,11 @@ class _GeneralPresentedModule:
                     for label, scalar in zip(labels, diagonal, strict=True)
                 )
             return None
+        polynomial_contains = self._singular_polynomial_relation_contains(vector)
+        if polynomial_contains is not NotImplemented:
+            return polynomial_contains
         lifted_backend = self._lifted_relation_backend()
         if lifted_backend is None:
-            polynomial_contains = self._singular_polynomial_relation_contains(vector)
-            if polynomial_contains is not NotImplemented:
-                return polynomial_contains
             return vector in self._relation_submodule
 
         lifted_free, lifted_submodule = lifted_backend
@@ -2264,6 +2252,10 @@ def _relation_morphism(module):
 
 def _selected_presentation_kernel(morphism):
     r"""Compute a kernel from the selected finite presentations of both endpoints.
+
+    Private construction adapter for the selected-presentation and finite
+    framed-free kernel dispatchers.  Both endpoints retain their chosen
+    finite presentations; the result retains its actual domain inclusion.
 
     The zero map has the whole domain for kernel.  Over a principal ideal
     domain the preimage of the target relations is free; over a polynomial
@@ -2590,6 +2582,159 @@ def _flattened_submodule_membership(presentation_engine, lifted, lifted_submodul
     return flattened in flattened_relations
 
 
+def _singular_coefficient_presentation(ring):
+    r"""Select exact polynomial coefficient data for module computations.
+
+    Private adapter shared by this owner's relation, kernel and preimage
+    algorithms.  Return ``(P, I, lift, descend)`` in the Singular realization,
+    or ``None`` if the ring has no selected polynomial cover over a field.
+    The cover and its relations come from the ring owner's exact-coefficient
+    contract; a localization's larger fraction field is not such a cover.
+    """
+    from sage.categories.fields import Fields as SageFields
+    from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+    from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+    from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+
+    ring = _owned_ring(ring)
+    if (
+        not ring._has_selected_exact_coefficient_presentation()
+        and ring not in SymmetricAlgebras(ring.base_ring())
+    ):
+        return None
+    coefficient_presentation = ring._exact_coefficient_presentation_ring()
+    presentation_ring = _engine_ring(coefficient_presentation)
+    if not isinstance(presentation_ring, (MPolynomialRing_base, PolynomialRing_generic)):
+        return None
+    coefficient_field = presentation_ring.base_ring()
+    if coefficient_field not in SageFields():
+        return None
+    # Singular's module entry points require its multivariate polynomial
+    # parent, including when the chosen presentation has one variable.
+    if isinstance(presentation_ring, PolynomialRing_generic):
+        singular_ring = _SagePolynomialRing(
+            coefficient_field,
+            presentation_ring.variable_names(),
+            implementation="singular",
+        )
+    else:
+        singular_ring = presentation_ring
+
+    def lift_scalar(value):
+        lifted = ring._lift_coefficient_to_presentation(value)
+        return singular_ring(_engine_element(coefficient_presentation, lifted))
+
+    def descend_scalar(value):
+        lifted = _owned_engine_element(coefficient_presentation, presentation_ring(value))
+        return ring._descend_coefficient_from_presentation(lifted)
+
+    coefficient_relations = tuple(
+        singular_ring(_engine_element(coefficient_presentation, relation))
+        for relation in ring._exact_coefficient_presentation_relations()
+    )
+    return singular_ring, coefficient_relations, lift_scalar, descend_scalar
+
+
+def _singular_relation_module(relation_images, width, context):
+    r"""Lift module relations and ``I e_j`` to the selected polynomial cover.
+
+    Private adapter for this owner's exact relation, kernel and preimage
+    computations.  Images are ordered coefficient tuples in the actual
+    scalar ring.  The resulting Singular module generates their full inverse
+    image under ``P^width -> (P/I)^width``.
+    """
+    from sage.modules.free_module import FreeModule as SageFreeModule
+    from sage.structure.sequence import Sequence
+
+    singular_ring, coefficient_relations, lift_scalar, _ = context
+    free = SageFreeModule(singular_ring, width)
+    vectors = [
+        free(tuple(lift_scalar(entry) for entry in image))
+        for image in relation_images
+    ]
+    for coefficient in coefficient_relations:
+        for position in range(width):
+            vectors.append(free(tuple(
+                coefficient if index == position else singular_ring.zero()
+                for index in range(width)
+            )))
+    if not vectors:
+        vectors.append(free.zero())
+    return Sequence(vectors, universe=free, check=False, immutable=True)
+
+
+def _singular_module_matrix(module_vectors, ring, width):
+    r"""The column matrix of the selected Singular module generators.
+
+    Engine-format adapter used by this owner's relation, kernel and preimage
+    computations; ``width`` retains the ambient rank even for zero modules.
+    """
+    from sage.matrix.constructor import matrix
+
+    vectors = tuple(module_vectors)
+    return matrix(
+        ring, width, len(vectors),
+        [vectors[column][row] for row in range(width) for column in range(len(vectors))],
+    )
+
+
+def _singular_presentation_preimage(morphism, element):
+    r"""Select a preimage using exact finite polynomial presentations.
+
+    The permitted caller is ``ModuleMorphismMethods._preimage_or_none``
+    after establishing linearity.  For ``f:A^n/D -> A^m/Q`` and ``A=P/I``,
+    solve ``F x + Q y + I z = v`` over ``P`` and descend the first ``n``
+    coefficients to the domain.  Source relations do not change existence
+    because the morphism is well defined.  The selected preimage need not be
+    unique.  ``None`` is proved nonmembership; ``NotImplemented`` means this
+    adapter has no selected exact coefficient algorithm for the endpoints.
+    """
+    from sage.matrix.constructor import matrix
+
+    domain, codomain = morphism.domain(), morphism.codomain()
+    ring = _owned_ring(domain.base_ring())
+    if _owned_ring(codomain.base_ring()) is not ring:
+        return NotImplemented
+    selected = ModulesWithChosenFinitePresentation(ring)
+    if domain not in selected or codomain not in selected:
+        return NotImplemented
+    if domain._selected_relation_morphism() is None or codomain._selected_relation_morphism() is None:
+        return NotImplemented
+    context = _singular_coefficient_presentation(ring)
+    if context is None:
+        return NotImplemented
+    singular_ring, _, lift_scalar, descend_scalar = context
+    source_labels = tuple(domain.module_generating_set())
+    target_labels = tuple(codomain.module_generating_set())
+    n, m = len(source_labels), len(target_labels)
+    if m == 0:
+        return domain.zero()
+    columns = []
+    for label in source_labels:
+        coordinates = codomain.framing_morphism().lift(morphism(domain.module_generator(label)))
+        columns.append(tuple(lift_scalar(coordinates(target)) for target in target_labels))
+    images = matrix(
+        singular_ring, m, n,
+        [columns[column][row] for row in range(m) for column in range(n)],
+    )
+    relations = _singular_relation_module(_relation_images(codomain), m, context)
+    spanning = images.augment(_singular_module_matrix(relations, singular_ring, m))
+    coordinates = codomain.framing_morphism().lift(codomain(element))
+    requested = matrix(
+        singular_ring, m, 1,
+        [lift_scalar(coordinates(label)) for label in target_labels],
+    )
+    coefficients = _singular_module_lift(spanning, requested)
+    if coefficients is None:
+        return None
+    coefficients = matrix(singular_ring, coefficients)
+    return domain.linear_combination({
+        label: descend_scalar(coefficients[position, 0])
+        for position, label in enumerate(source_labels)
+        if coefficients[position, 0] != 0
+    })
+
+
 def _singular_presentation_kernel(morphism):
     r"""Return ``ker(morphism)`` for polynomial-presentation coefficient rings.
 
@@ -2614,8 +2759,6 @@ def _singular_presentation_kernel(morphism):
     """
     from sage.libs.singular.function_factory import ff
     from sage.matrix.constructor import matrix
-    from sage.modules.free_module import FreeModule as SageFreeModule
-    from sage.structure.sequence import Sequence
 
     domain = morphism.domain()
     codomain = morphism.codomain()
@@ -2626,45 +2769,12 @@ def _singular_presentation_kernel(morphism):
             f"over {codomain.base_ring()}, but a module morphism has one base ring"
         )
 
-    coefficient_presentation = ring._exact_coefficient_presentation_ring()
-    presentation_ring = _engine_ring(coefficient_presentation)
-    coefficient_relations = ring._exact_coefficient_presentation_relations()
-
-    def backend_coefficient_relation(relation):
-        return _engine_element(coefficient_presentation, relation)
-
-    def lift_scalar(value):
-        lifted = ring._lift_coefficient_to_presentation(value)
-        return _engine_element(coefficient_presentation, lifted)
-
-    def descend_scalar(value):
-        lifted = _owned_engine_element(coefficient_presentation, presentation_ring(value))
-        return ring._descend_coefficient_from_presentation(lifted)
-
-    from sage.categories.fields import Fields as SageFields
-
-    coefficient_field = presentation_ring.base_ring()
-    assert coefficient_field in SageFields(), (
-        f"cannot compute the kernel of {morphism} with this algorithm: {ring} must be a "
-        f"quotient of a polynomial ring over a field, and here the coefficients are {coefficient_field}"
+    context = _singular_coefficient_presentation(ring)
+    assert context is not None, (
+        f"cannot compute the kernel of {morphism} with this algorithm: {ring} needs "
+        "a selected exact polynomial coefficient presentation over a field"
     )
-
-    # Singular's syz entry point requires a multivariate polynomial parent,
-    # even in one variable.  Cross only this backend representation.
-    if presentation_ring.ngens() == 1 and "multi_polynomial" not in type(presentation_ring).__module__:
-        singular_ring = _SagePolynomialRing(
-            coefficient_field,
-            presentation_ring.variable_names(),
-            implementation="singular",
-        )
-    else:
-        singular_ring = presentation_ring
-
-    def to_singular(value):
-        return singular_ring(presentation_ring(value))
-
-    def from_singular(value):
-        return descend_scalar(presentation_ring(value))
+    singular_ring, _, lift_scalar, from_singular = context
 
     source_labels = tuple(domain.module_generating_set())
     target_labels = tuple(codomain.module_generating_set())
@@ -2677,53 +2787,19 @@ def _singular_presentation_kernel(morphism):
         f"generators and its codomain {m}, and both must be nonzero"
     )
 
-    def singular_relation_module(relation_images, width):
-        free = SageFreeModule(singular_ring, width)
-        vectors = [
-            free(tuple(to_singular(lift_scalar(entry)) for entry in image))
-            for image in relation_images
-        ]
-        for relation in coefficient_relations:
-            coefficient = to_singular(backend_coefficient_relation(relation))
-            for position in range(width):
-                vectors.append(
-                    free(
-                        tuple(
-                            coefficient if index == position else singular_ring.zero()
-                            for index in range(width)
-                        )
-                    )
-                )
-        if not vectors:
-            vectors.append(free.zero())
-        return Sequence(vectors, universe=free, check=False, immutable=True)
-
-    def singular_module_matrix(module_vectors, width):
-        vectors = tuple(module_vectors)
-        return matrix(
-            singular_ring,
-            width,
-            len(vectors),
-            [
-                vectors[column][row]
-                for row in range(width)
-                for column in range(len(vectors))
-            ],
-        )
-
     coordinate_columns = []
     for source_label in source_labels:
         image = morphism(domain.module_generator(source_label))
         coordinates = codomain.framing_morphism().lift(image)
-        coordinate_columns.append(tuple(to_singular(lift_scalar(coordinates(label))) for label in target_labels))
+        coordinate_columns.append(tuple(lift_scalar(coordinates(label)) for label in target_labels))
     f_matrix = matrix(
         singular_ring,
         m,
         n,
         [coordinate_columns[column][row] for row in range(m) for column in range(n)],
     )
-    source_relation_module = singular_relation_module(source_relations, n)
-    target_relation_module = singular_relation_module(target_relations, m)
+    source_relation_module = _singular_relation_module(source_relations, n, context)
+    target_relation_module = _singular_relation_module(target_relations, m, context)
     # ``mor_kernel`` internally computes the same ``modulo(f_matrix, N)``
     # before quotienting by the source relations.  Repeat only that first
     # maintained operation so the owned kernel can retain the corresponding
@@ -2781,10 +2857,10 @@ def _singular_presentation_kernel(morphism):
             singular_ring,
             n,
             1,
-            [to_singular(lift_scalar(coordinates(label))) for label in source_labels],
+            [lift_scalar(coordinates(label)) for label in source_labels],
         )
         spanning = kernel_columns.augment(
-            singular_module_matrix(source_relation_module, n)
+            _singular_module_matrix(source_relation_module, singular_ring, n)
         )
         coefficients_in_spanning = _singular_module_lift(spanning, requested)
         if coefficients_in_spanning is None:

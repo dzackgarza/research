@@ -645,6 +645,15 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 codomain_is_zero = morphism.codomain().is_zero()
                 if codomain_is_zero is True:
                     return self.whole_subobject()
+                if self.base_ring() not in PrincipalIdealDomains():
+                    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                        _selected_presentation_kernel,
+                    )
+
+                    # A kernel over a polynomial quotient need not be free.
+                    # Retain its finite presentation and inclusion through
+                    # the common presentation owner, not a PID span basis.
+                    return _selected_presentation_kernel(morphism)
                 coordinate_matrix = self.module_category().Mor(
                     self, morphism.codomain()
                 )(morphism)
