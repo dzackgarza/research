@@ -259,11 +259,18 @@ def indexed_family[IndexT, ValueT](
     therefore lives at the existing root ``Objects()`` rather than being
     misdeclared as a set.
     """
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _DiscreteDiagram
     from dzack_research.preamble.categories.functors.core import Functor
 
     selected_functor = value if isinstance(value, Functor) else None
     if selected_functor is not None:
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        if isinstance(selected_functor, _DiscreteDiagram) and not Sets().is_provably_finite(index_set):
+            raise TypeError(
+                "a diagram on an infinite index set assembled from an unchecked object callback "
+                "does not establish that its values belong to its claimed codomain"
+            )
         index_category = DiscreteCategory(index_set)
         if selected_functor.domain() is not index_category:
             raise ValueError("the selected family functor has the wrong discrete index category")

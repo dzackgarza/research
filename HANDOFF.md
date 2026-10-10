@@ -108,6 +108,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
+**Unchecked infinite diagram codomain rejected (2026-10-10):** The earlier nonconstant `DiscreteCategory(NN) -> AdditiveMonoids` specimen was built by `_DiscreteDiagram` from an arbitrary `IndexedFamily` callback. That constructor does not establish the callback values lie in its codomain; the odd-index return can actually be an ordinary two-point set. `indexed_family` now rejects such an unchecked infinite `_DiscreteDiagram`, even when wrapped in a `Functor`, rather than treating its claimed codomain as mathematical evidence. Focused Sage checks verify rejection of the dishonest diagram and admission of the actual constant functor with additive projection. General nonconstant infinite families still require independently justified typed functors; the previous positive nonconstant assertion is withdrawn.
+
+
 **Actual selected functor for nonconstant infinite products (2026-10-10):** The indexed-family owner now accepts a preexisting typed `Functor` from `DiscreteCategory(I)` to its actual codomain category, and reads values by applying it to its selected index objects. The product retains precisely this functor through `selected_diagram()` and places it in `CartesianProductsOfAdditiveMonoids` when the selected codomain is a subcategory of `AdditiveMonoids`. Targeted Sage checks alternate an additive monoid and an additive group over `NN`; the resulting product has additive placement, nonconstant sections, a projection in `AdditiveMonoids().Mor` at an odd index, and correct addition/zero after projection. Unsupported raw infinite callbacks declaring a category are still rejected. The mathematical legitimacy of the supplied typed functor belongs to its formal owner; a declaration in this preamble is not independent acceptance evidence.
 
 
