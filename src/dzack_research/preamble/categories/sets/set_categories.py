@@ -2652,12 +2652,13 @@ class _EnumeratedFixedCardinalitySubsetSetEngine:
         def position_of(subset):
             subset = self(subset)
             needed = self.subset_cardinality()
+            point_at_source_rank = self.source().ranking_map().inverse()
 
             def source_positions():
                 found = 0
                 source_position = 0
                 while found < needed:
-                    if self.source()[source_position] in subset:
+                    if point_at_source_rank(source_position) in subset:
                         yield source_position
                         found += 1
                     source_position += 1
