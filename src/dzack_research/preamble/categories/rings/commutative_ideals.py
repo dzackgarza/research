@@ -550,6 +550,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
+            r"""A chosen finite primary decomposition over a Noetherian ring."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.ring() not in OwnedNoetherianRings():
+                raise NotImplementedError(
+                    f"a finite primary decomposition of {self} is not guaranteed "
+                    "outside the Noetherian regime"
+                )
             return finite_ordered_set(
                 tuple(
                     _from_engine_ideal(self.ring(), ideal)
@@ -571,6 +578,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _owned_engine_element(SageZZ, SageZZ(value))
 
         def associated_primes(self):
+            r"""Associated primes of ``R/I``; finite enumeration in the Noetherian regime."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.ring() not in OwnedNoetherianRings():
+                raise NotImplementedError(
+                    f"the associated-prime locus of {self} is not necessarily finite; "
+                    "this realization enumerates it only over a Noetherian ring"
+                )
             return finite_ordered_set(
                 tuple(
                     _from_engine_ideal(self.ring(), ideal)

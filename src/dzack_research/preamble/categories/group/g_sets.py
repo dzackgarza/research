@@ -12,6 +12,8 @@ from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
+from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -409,6 +411,8 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             r"""Return the unique left coset containing ``element``."""
             group = self.acting_group()
             element = group(element)
+            if group.is_finite() is not True:
+                return self.point_set()(element)
             for coset in self.point_set():
                 if element in coset:
                     return coset
@@ -449,7 +453,9 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             quotient = inclusion.cokernel()
             quotient_projection = inclusion.cokernel_projection()
             forward = Sets().Mor(self, quotient)(
-                lambda coset: quotient_projection(next(iter(coset)))
+                lambda coset: quotient_projection(
+                    coset.representative() if isinstance(coset, _LeftCosetPoint) else next(iter(coset))
+                )
             )
             inverse = Sets().Mor(quotient, self)(
                 lambda quotient_element: self.coset_of(
@@ -804,6 +810,55 @@ def _finite_g_set_from_action(
     )
 
 
+class _LeftCosetPoint(SageObject):
+    r"""An equivalence class ``gH`` represented by ``g``; no coset enumeration."""
+
+    def __init__(self, parent, representative):
+        self._parent = parent
+        self._representative = representative
+
+    def parent(self):
+        return self._parent
+
+    def representative(self):
+        return self._representative
+
+    def __eq__(self, other):
+        return (isinstance(other, _LeftCosetPoint) and other.parent() is self.parent()
+                and self.representative().inverse() * other.representative() in self.parent().subgroup())
+
+    def __hash__(self):
+        return hash(id(self.parent()))
+
+    def _repr_(self):
+        return f"{self.representative()} * {self.parent().subgroup()}"
+
+
+class _LeftCosetPointSet(Parent):
+    r"""The quotient set of ``G`` under ``g ~ h`` iff ``g^-1 h in H``.
+
+    This is a private representation of the selected points of the owned
+    left-``G``-set ``G/H``; the action and quotient map belong to
+    ``LeftCosetGSets(H)``, not to this point representation.
+    """
+
+    def __init__(self, group, subgroup):
+        self._group = group
+        self._subgroup = subgroup
+        Parent.__init__(self, category=Sets())
+
+    def subgroup(self):
+        return self._subgroup
+
+    def _element_constructor_(self, representative):
+        if isinstance(representative, _LeftCosetPoint) and representative.parent() is self:
+            return representative
+        return _LeftCosetPoint(self, self._group(representative))
+
+    def __contains__(self, point):
+        return isinstance(point, _LeftCosetPoint) and point.parent() is self
+
+
 def _left_coset_g_set(group, subgroup):
     r"""Return ``G/H`` as its pointed transitive left ``G``-set."""
     group = _owned_group(group)
@@ -812,9 +867,19 @@ def _left_coset_g_set(group, subgroup):
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
         )
     if group.is_finite() is not True:
-        raise NotImplementedError(
-            f"the possibly infinite coset G-set of {subgroup} in {group} "
-            "requires a coset-equivalence quotient representation"
+        points = _LeftCosetPointSet(group, subgroup)
+        category = LeftCosetGSets(subgroup)
+        return _object_of(
+            category,
+            _engine=(category, _GSetOnPoints, None),
+            point_set=points,
+            orbit_relation=lambda _left, _right: True,
+            stabilizer=None,
+            acting_group=group,
+            action=lambda element: (lambda coset: points(element * points(coset).representative())),
+            underlying_category=Sets(),
+            facade=points,
+            coset_subgroup=subgroup,
         )
     cosets = _engine_cosets(group, subgroup, "left")
 
@@ -935,19 +1000,23 @@ class Torsors(OwnedParameterizedCategory):
 
 
 class OrbitRepresentativeSets(OwnedParameterizedCategory):
-    r"""Finite selected transversals with their action and quotient maps."""
+    r"""Selected orbit transversals, with no universal finiteness claim."""
 
     def parameter_category(self):
         return OwnedGroups()
 
     def super_categories(self):
-        return [FiniteSets()]
+        return [Sets()]
 
     def _call_(self, action, points):
         if action.acting_group() is not self.base():
             raise ValueError("the transversal and action must use the same group")
-        points = finite_ordered_set(tuple(action(point) for point in points))
-        return _object_of(self, action=action, points=points)
+        if points in Sets():
+            selected = points
+        else:
+            selected = finite_ordered_set(tuple(action(point) for point in points))
+        category = owned_category_join((self, FiniteSets())) if selected in FiniteSets() else self
+        return _object_of(category, action=action, points=selected)
 
     class ParentMethods:
         def __init__(self, action, points, **rest):

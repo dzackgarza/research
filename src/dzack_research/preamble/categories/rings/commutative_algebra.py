@@ -1031,6 +1031,12 @@ class QuotientRings(OwnedCategory):
         @cached_method
         def _presentation_minimal_primes(self):
             r"""Return the minimal primes upstairs in the chosen presentation ring."""
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings
+            if self.quotient_source() not in OwnedNoetherianRings():
+                raise NotImplementedError(
+                    f"the minimal-prime locus of {self} is not necessarily finite; "
+                    "the represented enumeration requires a Noetherian presentation ring"
+                )
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 _from_engine_ideal,
             )

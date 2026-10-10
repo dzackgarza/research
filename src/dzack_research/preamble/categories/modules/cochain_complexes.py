@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     LinearEndCategoryConstruction,
+    Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -176,8 +177,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         return "cohomology modules"
 
     def super_categories(self):
-
-        return [FinitelyPresentedModules(self.base_ring())]
+        return [Modules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -759,6 +759,11 @@ def _cohomology(complex_, degree):
     cycles = complex_.cycles(degree)
     boundaries = complex_.boundaries(degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
+    if cycles not in FinitelyPresentedModules(ring):
+        raise NotImplementedError(
+            f"H^{degree} of {complex_} is ker(d)/im(d), but this chosen "
+            "finite-presentation realization requires finitely presented cycles"
+        )
     result = ModulesWithChosenFinitePresentation(ring)(
         boundary_in_cycles,
         category=owned_category_join((CohomologyModules(ring),)),
