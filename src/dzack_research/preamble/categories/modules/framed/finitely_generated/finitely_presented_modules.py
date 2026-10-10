@@ -60,7 +60,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
-    SetInclusion,
     Sets,
 )
 from dzack_research.preamble.logic import AtomicProposition, negation
@@ -1000,9 +999,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             spectrum = self.base_ring().spectrum()
             at_least = self.fiber_dimension_at_least(rank)
             above = self.fiber_dimension_at_least(rank + 1)
-            return SetInclusion(
-                spectrum.condition_set(lambda point: point in at_least and point not in above),
-                spectrum,
+            return spectrum.power_set().from_predicate(
+                lambda point: point in at_least and point not in above
             )
 
         def local_freeness_locus(self):
@@ -1023,10 +1021,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             is the zero ideal and localizes to zero everywhere.
             """
             spectrum = self.base_ring().spectrum()
-            return SetInclusion(
-                spectrum.condition_set(self._is_free_at_point),
-                spectrum,
-            )
+            return spectrum.power_set().from_predicate(self._is_free_at_point)
 
         def local_free_trivialization_at(self, point):
             r"""Return an explicit free trivialization of ``M_p`` when ``p`` lies in the free locus.

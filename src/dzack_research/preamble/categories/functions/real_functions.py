@@ -75,7 +75,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     PairedModules,
     SymmetricBilinearFormModules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -83,18 +82,6 @@ from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.rings.real import RR, ExactRealNumber
-
-
-class _LebesgueIntegrationMorphism(ModuleMorphism):
-    r"""Integration on ``L^1`` as the represented linear functional."""
-
-    def __init__(self, parent, evaluate) -> None:
-        super().__init__(parent, evaluate, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        # Additivity and scalar compatibility are the linearity theorem for the
-        # Lebesgue integral on integrable real-valued functions.
-        return True
 
 
 def _regularity(k):
@@ -1230,7 +1217,9 @@ class _LebesgueSpace(_FunctionSpace):
                 return RR.zero()
             return RR(function.expression().integrate(space.indeterminate(), -Infinity, Infinity))
 
-        return _LebesgueIntegrationMorphism(Modules(RR).Mor(self, RR), evaluate)
+        # Additivity and scalar compatibility are the linearity theorem for the
+        # Lebesgue integral on integrable real-valued functions.
+        return Modules(RR).Mor(self, RR)._from_constructed_element_map(evaluate)
 
     @cached_method
     def pairing_module(self):

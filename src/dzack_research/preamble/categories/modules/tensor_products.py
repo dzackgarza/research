@@ -1,31 +1,8 @@
 r"""Categorical tensor products and bilinear maps of represented modules."""
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    TensorProductModuleMorphism,
-    _combined_linearity_decision,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules, _tensor_pair
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class _TensorProductOfMorphisms(TensorProductModuleMorphism):
-    r"""The tensor map ``f tensor g``; its linearity decision conjoins those of ``f`` and ``g``."""
-
-    def __init__(self, parent, classified, left_morphism, right_morphism) -> None:
-        self._classified_tensor_map = classified
-        self._left_morphism = left_morphism
-        self._right_morphism = right_morphism
-        super().__init__(
-            parent,
-            lambda element: classified(element),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return _combined_linearity_decision(
-            (self._left_morphism, self._right_morphism)
-        )
 
 
 def _nested_tensor_label(module, word):
@@ -109,16 +86,15 @@ def _tensor_product_morphism(left_morphism, right_morphism, source=None, target=
             f"the codomains {left_morphism.codomain()} and {right_morphism.codomain()}"
         )
 
-
     classified = source.from_bilinear_map(
         target,
         lambda left, right: target.pure_tensor(left_morphism(left), right_morphism(right)),
     )
-    return _TensorProductOfMorphisms(
-        classified.parent(),
-        classified,
-        left_morphism,
-        right_morphism,
+    # ``f tensor g`` is the image of ``(f, g)`` under the tensor bifunctor,
+    # so it is linear exactly when ``f`` and ``g`` are.
+    return classified.parent()._from_constructed_element_map(
+        lambda element: classified(element),
+        premises=(left_morphism, right_morphism),
     )
 
 

@@ -12,50 +12,12 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
-
-
-class UnderlyingAlgebraModuleMorphism(ModuleMorphism):
-    r"""An algebra morphism read as its underlying linear map.
-
-    \(U\) changes neither an element nor its image; it changes which
-    operations the map answers to.  So this is constructed as an ordinary
-    module morphism, on the framing of its domain when there is one and
-    elementwise otherwise, and the kernel, cokernel, matrix and composites of
-    the module level are then computed from the algebra morphism rather than
-    from state a bare ``Morphism`` never established.
-
-    Linearity is not re-established here.  An \(R\)-algebra morphism is
-    \(R\)-linear by definition, so the module level is told the theorem rather
-    than asked to test it.
-    """
-
-    def __init__(self, parent, algebra_morphism) -> None:
-        self._algebra_morphism = algebra_morphism
-        super().__init__(
-            parent,
-            self._underlying_image,
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        # R-linearity is part of the defining datum of an R-algebra morphism.
-        return True
-
-    def _underlying_image(self, element):
-        r"""Return the image of one element under the algebra morphism."""
-        return self._algebra_morphism(element)
-
-    def algebra_morphism(self):
-        return self._algebra_morphism
 
 
 class _AlgebraUnderlyingModuleFunctor(Functor):
@@ -80,12 +42,16 @@ class _AlgebraUnderlyingModuleFunctor(Functor):
         return algebra
 
     def _apply_morphism(self, morphism):
-        r"""Return the algebra morphism read as a module morphism between the same objects."""
+        r"""Return the algebra morphism read as a module morphism between the same objects.
+
+        \(U\) changes neither an element nor its image; it changes which
+        operations the map answers to.  An \(R\)-algebra morphism is
+        \(R\)-linear by definition, so the construction alone gives linearity.
+        """
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return UnderlyingAlgebraModuleMorphism(
-            source.module_category().Mor(source, target),
-            morphism,
+        return source.module_category().Mor(source, target)._from_constructed_element_map(
+            lambda element: morphism(element)
         )
 
     def _repr_(self):
@@ -100,6 +66,4 @@ def _algebra_underlying_module_functor(
     return _AlgebraUnderlyingModuleFunctor(base_ring, algebra_category)
 
 
-__all__ = [
-    "UnderlyingAlgebraModuleMorphism",
-]
+__all__ = []

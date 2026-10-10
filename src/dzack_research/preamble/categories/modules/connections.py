@@ -560,8 +560,9 @@ def _connections(module) -> ConnectionSpace:
 class ConnectionMorphism(Element):
     r"""An ``A``-linear map horizontal for the selected connections."""
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, images, *, horizontality_premises=None) -> None:
         Element.__init__(self, parent)
+        self._horizontality_premises = horizontality_premises
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
             parent.arrow_set(),
             self,
@@ -569,8 +570,17 @@ class ConnectionMorphism(Element):
         )
 
     def _horizontality_derivation(self):
-        r"""Return a construction-derived horizontality decision, or ``None``."""
-        return None
+        r"""Return a construction-derived horizontality decision, or ``None``.
+
+        A map built by an operation of its Mor from horizontal maps (an
+        identity, a composite) is horizontal when every premise is; the empty
+        family means the construction alone makes it horizontal.
+        """
+        match self._horizontality_premises:
+            case None:
+                return None
+            case premises:
+                return conjunction(premise.horizontality_decision() for premise in premises)
 
     @validator
     def validate_linearity(self) -> None:
@@ -629,7 +639,9 @@ class ConnectionMorphism(Element):
             case False:
                 return NotImplemented
         underlying = self.underlying_linear_morphism() * other.underlying_linear_morphism()
-        return other.domain().Mor(self.codomain())._from_horizontal_morphism(underlying)
+        return other.domain().Mor(self.codomain())._from_horizontal_morphism(
+            underlying, premises=(self, other)
+        )
 
     def _horizontal_on_generators(self) -> bool:
         domain_connection = self.domain().connection()
@@ -645,11 +657,15 @@ class ConnectionMorphism(Element):
 
         domain_module = domain_connection.module()
         codomain_module = codomain_connection.module()
-        underlying = _ConnectionCoefficientViewMorphism(
-            Modules(domain_connection.algebra()).Mor(domain_module, codomain_module),
-            self.underlying_linear_morphism(),
-            self.domain(),
-            self.codomain(),
+        # The structured map read on the modules that carry the connections
+        # is linear exactly when the structured map is.
+        structured = self.underlying_linear_morphism()
+        structured_source = self.domain()
+        underlying = Modules(domain_connection.algebra()).Mor(
+            domain_module, codomain_module
+        )._from_constructed_element_map(
+            lambda element: codomain_module(structured(structured_source(element))),
+            premises=(structured,),
         )
         induced = underlying.tensor_product_map(
             identity_omega,
@@ -690,33 +706,6 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
         return self._connection_morphism
 
 
-class _ConnectionCoefficientViewMorphism(ModuleMorphism):
-    r"""A structured connection map read on the exact modules carrying its connections."""
-
-    def __init__(self, parent, structured_morphism, structured_source, structured_target) -> None:
-        self._structured_morphism = structured_morphism
-        self._structured_source = structured_source
-        self._structured_target = structured_target
-        target = parent.codomain()
-        super().__init__(
-            parent,
-            lambda element: target(
-                structured_morphism(structured_source(element))
-            ),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._structured_morphism.linearity_decision()
-
-
-class _ConstructedHorizontalConnectionMorphism(ConnectionMorphism):
-    r"""A horizontal map whose construction already gives the connection square."""
-
-    def _horizontality_derivation(self):
-        return True
-
-
 class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
@@ -753,13 +742,14 @@ class ConnectionMor(RestrictedMorCategoryParent):
             structured = images.connection_morphism()
             if structured.parent() is self:
                 return structured
-        morphism = ConnectionMorphism(self, images)
+        morphism = self.element_class(self, images)
         morphism.validate_linearity(check=check)
         morphism.validate_horizontality(check=check)
         return morphism
 
-    def _from_horizontal_morphism(self, underlying):
-        return _ConstructedHorizontalConnectionMorphism(self, underlying)
+    def _from_horizontal_morphism(self, underlying, premises=()):
+        r"""The arrow on ``underlying``, horizontal when every premise is horizontal."""
+        return self.element_class(self, underlying, horizontality_premises=premises)
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():

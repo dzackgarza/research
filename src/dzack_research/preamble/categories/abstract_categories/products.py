@@ -1086,21 +1086,6 @@ class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
     def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = True) -> None:
-        self._initialize_apex_map(parent, apex_map)
-        match verify:
-            case True:
-                match _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
-                    case True:
-                        pass
-                    case False:
-                        raise ValueError(
-                            f"{apex_map} is not a morphism of cones {self.domain()} -> {self.codomain()}: it does not "
-                            "commute with the legs of the cones"
-                        )
-            case False:
-                pass
-
-    def _initialize_apex_map(self, parent: ConeMor, apex_map: Morphism) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError(
@@ -1121,6 +1106,11 @@ class ConeMorphism(Morphism):
             raise ValueError(
                 f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
                 f"{self.codomain().apex()} of the category the diagram takes values in"
+            )
+        if verify and not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
+            raise ValueError(
+                f"{apex_map} is not a morphism of cones {self.domain()} -> {self.codomain()}: it does not "
+                "commute with the legs of the cones"
             )
         self._apex_map = apex_map
 
@@ -1147,16 +1137,9 @@ class ConeMorphism(Morphism):
             return NotImplemented
         # Each leg satisfies r_i g = q_i and q_i f = p_i, hence r_i(gf)=p_i.
         parent = self.parent().cone_category().Mor(other.domain(), self.codomain())
-        return ConeMorphism(
+        return parent.element_class(
             parent, self.apex_map() * other.apex_map(), verify=False
         )
-
-
-class _ConstructedConeMorphism(ConeMorphism):
-    r"""A cone morphism whose commuting triangles follow from its construction."""
-
-    def __init__(self, parent: ConeMor, apex_map: Morphism) -> None:
-        self._initialize_apex_map(parent, apex_map)
 
 
 class CoconeMorphism(Morphism):
@@ -1216,7 +1199,7 @@ class CoconeMorphism(Morphism):
             return NotImplemented
         # Dually, g q_i = r_i and f p_i = q_i imply (gf)p_i = r_i.
         parent = self.parent().cocone_category().Mor(other.domain(), self.codomain())
-        return CoconeMorphism(
+        return parent.element_class(
             parent, self.apex_map() * other.apex_map(), verify=False
         )
 
@@ -1248,11 +1231,11 @@ class ConeMor(CategoricalMor):
                         f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
                     )
                 apex_map = apex_map.apex_map()
-        return ConeMorphism(self, apex_map)
+        return self.element_class(self, apex_map)
 
     def _from_commuting_apex_map(self, apex_map):
         r"""Construct from an apex map whose cone equations are structural."""
-        return _ConstructedConeMorphism(self, apex_map)
+        return self.element_class(self, apex_map, verify=False)
 
     def identity(self) -> ConeMorphism:
         if self.domain() is not self.codomain():
@@ -1260,7 +1243,7 @@ class ConeMor(CategoricalMor):
                 f"the identity morphism exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
             )
         apex = self.domain().apex()
-        return ConeMorphism(
+        return self.element_class(
             self,
             _category_mor_parent(self.cone_category().target_category(), apex, apex).identity(),
             verify=False,
@@ -1294,7 +1277,7 @@ class CoconeMor(CategoricalMor):
                         f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
                     )
                 apex_map = apex_map.apex_map()
-        return CoconeMorphism(self, apex_map)
+        return self.element_class(self, apex_map)
 
     def identity(self) -> CoconeMorphism:
         if self.domain() is not self.codomain():
@@ -1302,7 +1285,7 @@ class CoconeMor(CategoricalMor):
                 f"the identity morphism exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
             )
         apex = self.domain().apex()
-        return CoconeMorphism(
+        return self.element_class(
             self,
             _category_mor_parent(self.cocone_category().target_category(), apex, apex).identity(),
             verify=False,

@@ -473,9 +473,7 @@ class _FilteredOrderedSetEngine:
     @cached_method
     def inclusion(self):
         r"""The inclusion \(\{x\in S : P(x)\}\hookrightarrow S\)."""
-        from dzack_research.preamble.categories.sets.set_categories import SetInclusion
-
-        return SetInclusion(self, self.universe())
+        return Sets().Mono(self, self.universe())._from_subset_inclusion()
 
     def __iter__(self):
         return (point for point in self.universe() if self.predicate()(point))

@@ -18,44 +18,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _FramedTensorBilinearEvaluationMorphism,
-)
-from dzack_research.preamble.categories.modules.tensor_quotients import (
-    _TensorQuotientClassifierMorphism,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class _NativeRingProductClassifierMorphism(_TensorQuotientClassifierMorphism):
-    r"""The tensor classifier of the product already supplied by a native ring.
-
-    ``_RingModulePresentation`` receives one ring's primitive product together
-    with the scalar action induced by the same ring datum.  Distributivity and
-    compatibility with those scalars are therefore construction data, not
-    properties inferred from sample equalities in the codomain.  In the
-    unframed case the tensor quotient still supplies the universal evaluator;
-    this named construction supplies the missing bilinearity derivation.
-    """
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
-class _NativeFramedRingProductClassifierMorphism(
-    _FramedTensorBilinearEvaluationMorphism
-):
-    r"""The direct framed classifier of a native ring product.
-
-    The primitive product is already bilinear for the scalar action retained
-    by the same native ring datum.  Keep its direct two-variable evaluation
-    while using the selected tensor framing to represent the induced linear
-    map.
-    """
-
-    def linearity_decision(self):
-        return True
 
 
 class _NativeModuleFrame:
@@ -247,14 +211,19 @@ class _RingModulePresentation:
     def multiplication(self):
         module = self.module()
         tensor = Modules(self.base_ring()).tensor_product((module, module))
+        # The ring's product and the scalar action come from one ring datum,
+        # so distributivity and compatibility with scalars are construction
+        # data: the classifier is linear with no premise.
+        mor = tensor.module_category().Mor(tensor, module)
+        product = self._product
         match module.has_selected_module_resolution():
             case True:
-                return _NativeFramedRingProductClassifierMorphism(
-                    tensor.module_category().Mor(tensor, module),
-                    self._product,
-                )
+                return mor._from_bilinear_evaluation(product, premises=())
             case False:
-                return _NativeRingProductClassifierMorphism(
-                    tensor.module_category().Mor(tensor, module),
-                    self._product,
+                return mor._from_constructed_element_map(
+                    lambda value: tensor.underlying_set().evaluate(
+                        tensor(value).underlying_element(),
+                        module,
+                        product,
+                    )
                 )
