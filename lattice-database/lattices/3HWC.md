@@ -38,6 +38,10 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:619.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:783.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:619` names `G2(3)S3.2`.
+
+Catalogue of Lattices archive entry `union:783` names `G2(3)S3.2`.

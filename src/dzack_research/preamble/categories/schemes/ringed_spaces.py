@@ -784,8 +784,7 @@ class DistinguishedAffineCovers(OwnedCategory):
         def overlap_data(left, right):
             overlap = scheme.distinguished_open(defining_elements[left] * defining_elements[right])
             apex = site.object(overlap.inclusion())
-            return (
-                apex,
+            return site.span(
                 site.Mor(apex, charts[left])(overlap.inclusion_into(opens[left])),
                 site.Mor(apex, charts[right])(overlap.inclusion_into(opens[right])),
             )
@@ -921,8 +920,7 @@ class DistinguishedAffineCovers(OwnedCategory):
                 name="Čech cover arrows",
             )
             overlaps = {
-                (left_index, right_index): (
-                    site(self.intersection_indices(left_index, right_index)),
+                (left_index, right_index): site.span(
                     site.Mor(site(self.intersection_indices(left_index, right_index)), site((left_index,))).unique(),
                     site.Mor(site(self.intersection_indices(left_index, right_index)), site((right_index,))).unique(),
                 )

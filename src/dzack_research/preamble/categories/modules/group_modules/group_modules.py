@@ -855,8 +855,9 @@ class ModulesOverGroupAlgebra(Modules):
                 )
 
             # Sage maintains the Teichmuller-lift computation on a private
-            # finite-basis representation.  Only the resulting exact values
-            # cross back into the owned class-function object.
+            # finite-basis representation. The resulting values determine a
+            # map on the p-regular conjugacy-class union, not a partially
+            # defined map whose domain is the whole group.
 
             engine_group = _engine_group(group)
 

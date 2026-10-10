@@ -885,6 +885,19 @@ class Torsors(OwnedParameterizedCategory):
             permutation_representation=candidate.permutation_representation(),
         )
 
+    def from_trivialization(self, trivialization):
+        r"""Transport the regular torsor along a chosen set isomorphism ``G -> T``.
+
+        This works for infinite groups. The inverse is part of the given
+        isomorphism; a selected point alone is not a trivialization.
+        """
+        if trivialization.domain() is not self.group():
+            raise ValueError("a torsor trivialization must start at its acting group")
+        return _object_of(
+            TrivializedTorsors(self.group()),
+            trivialization=trivialization,
+        )
+
     class ParentMethods:
         def an_element(self):
             r"""Return the selected point trivializing this represented torsor.
@@ -906,6 +919,113 @@ class Torsors(OwnedParameterizedCategory):
         def cardinality(self):
             r"""``|T| = |G|`` for a ``G``-torsor."""
             return self.acting_group().cardinality()
+
+
+class OrbitRepresentativeSets(OwnedParameterizedCategory):
+    r"""Finite selected transversals with their action and quotient maps."""
+
+    def parameter_category(self):
+        return OwnedGroups()
+
+    def super_categories(self):
+        return [FiniteSets()]
+
+    def _call_(self, action, points):
+        if action.acting_group() is not self.base():
+            raise ValueError("the transversal and action must use the same group")
+        points = finite_ordered_set(tuple(action(point) for point in points))
+        return _object_of(self, action=action, points=points)
+
+    class ParentMethods:
+        def __init__(self, action, points, **rest):
+            self._action = action
+            self._points = points
+            super().__init__(facade=points, **rest)
+
+        def action(self):
+            return self._action
+
+        def orbit_quotient(self):
+            return self.action().orbits()
+
+        def __iter__(self):
+            return iter(self._points)
+
+        def cardinality(self):
+            return self._points.cardinality()
+
+        def __contains__(self, point):
+            return point in self._points
+
+        def _element_constructor_(self, point):
+            return self._points(point)
+
+        @cached_method
+        def inclusion(self):
+            return Sets().Mor(self, self.action())(lambda point: point)
+
+        @cached_method
+        def projection(self):
+            return self.orbit_quotient().projection() * self.inclusion()
+
+        @cached_method
+        def section(self):
+            def representative(orbit):
+                for point in self:
+                    if (self.projection()(point) == orbit) is True:
+                        return point
+                raise ValueError("the selected family has no decidable representative of this orbit")
+
+            return Sets().Mor(self.orbit_quotient(), self)(representative)
+
+
+class TrivializedTorsors(OwnedParameterizedCategory):
+    r"""Torsors presented by an isomorphism from the regular group action."""
+
+    def parameter_category(self):
+        return OwnedGroups()
+
+    def super_categories(self):
+        return [Torsors(self.base())]
+
+    class ParentMethods:
+        _derived_construction_parameters = ("acting_group", "action", "underlying_category")
+
+        def __init__(self, trivialization, **rest):
+            self._trivialization = trivialization
+            group = trivialization.domain()
+            points = trivialization.codomain()
+            inverse = trivialization.inverse()
+            super().__init__(
+                acting_group=group,
+                action=lambda g: lambda x: trivialization(g * inverse(x)),
+                underlying_category=Sets(),
+                facade=points,
+                **rest,
+            )
+
+        def trivialization(self):
+            return self._trivialization
+
+        def point_set(self):
+            return self.trivialization().codomain()
+
+        def base_point(self):
+            return self.trivialization()(self.acting_group().one())
+
+        def an_element(self):
+            return self.base_point()
+
+        def difference(self, left, right):
+            r"""Return the unique ``g`` with ``g * right = left``."""
+            inverse = self.trivialization().inverse()
+            return inverse(left) * inverse(right).inverse()
+
+        def __contains__(self, point):
+            return point in self.point_set()
+
+        def _element_constructor_(self, point):
+            return self.point_set()(point)
 
 
 __all__ = [

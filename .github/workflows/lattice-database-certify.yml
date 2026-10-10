@@ -1,18 +1,13 @@
 name: lattice-database-certify
 'on':
   schedule:
-  - cron: 17 3 * * *
+    - cron: 17 3 * * *
   workflow_dispatch:
     inputs:
       tag:
         description: 'Certify one lattice tag while debugging this workflow; omit for the full corpus.'
         required: false
         type: string
-      seconds:
-        description: 'Per-computation timeout for a manual debug run.'
-        required: false
-        default: 600
-        type: number
 permissions:
   contents: write
 concurrency:
@@ -27,79 +22,109 @@ jobs:
         working-directory: lattice-database
         shell: bash -el {0}
     steps:
-    - name: Check out (actions/checkout v4)
-      id: checkout
-      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      with:
-        fetch-depth: 0
-        ref: main
-    - name: Start the canonical research Sage environment
-      working-directory: ${{ github.workspace }}
-      run: |
-        docker run --detach --name sage-env \
-          --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
-          --workdir "$GITHUB_WORKSPACE" \
-          ghcr.io/dzackgarza/sage:develop sleep infinity
-        docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
-          /sage/.venv/bin/python -c \
-          'import sys, sage.version; assert sys.version_info >= (3, 14); print(sys.version); print(sage.version.version)'
-    - name: Install current research and lattice database checkouts
-      working-directory: ${{ github.workspace }}
-      run: |
-        docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
-          /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --no-deps --editable "$GITHUB_WORKSPACE"
-        docker exec -i -w "$GITHUB_WORKSPACE/lattice-database" sage-env \
-          /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --editable . pytest
-    - name: Compute and certify uncertified card values
-      env:
-        LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
-        LATTICEDB_SECONDS: ${{ github.event.inputs.seconds || 600 }}
-      run: |
-        args=(--seconds "$LATTICEDB_SECONDS")
-        if [[ -n "$LATTICEDB_TAG" ]]; then
-          args+=(--tag "$LATTICEDB_TAG")
-        fi
-        timeout 330m docker exec -i \
-          --env "PYTHONPATH=$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/lattice-database/src" \
-          --workdir "$GITHUB_WORKSPACE/lattice-database" \
-          sage-env /sage/.venv/bin/python -m latticedb certify "${args[@]}"
-    - name: Commit completed computations to main
-      if: ${{ always() && steps.checkout.outcome == 'success' }}
-      working-directory: ${{ github.workspace }}
-      shell: bash --noprofile --norc -e -o pipefail {0}
-      run: |
-        git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        git add lattice-database/lattices lattice-database/certificates.yaml
-        if git diff --cached --quiet; then
-          echo "No newly completed computations."
-          exit 0
-        fi
-
-        git config user.name 'github-actions[bot]'
-        git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git commit -m 'feat(lattice-database): certify computed card values'
-
-        staging_branch="lattice-database/certify-${GITHUB_RUN_ID}"
-        git push origin "HEAD:refs/heads/${staging_branch}"
-
-        for attempt in 1 2 3 4 5; do
-          git fetch origin main
-          if ! git rebase origin/main; then
-            git rebase --abort || true
-            echo "::error::Computed values conflict with current main; durable result remains on ${staging_branch}."
-            exit 1
+      - name: Check out (actions/checkout v4)
+        id: checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: Restore the Julia depot
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ${{ runner.temp }}/julia
+          key: julia-1.10.11-oscar-${{ github.run_id }}
+          restore-keys: julia-1.10.11-oscar-
+      - name: Start the canonical research Sage environment
+        working-directory: ${{ github.workspace }}
+        run: |-
+          mkdir -p "$RUNNER_TEMP/julia"
+          docker run --detach --name sage-env \
+            --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
+            --volume "$RUNNER_TEMP/julia:/julia" \
+            --env JULIA_DEPOT_PATH=/julia/depot \
+            --env SAGE_JULIA_COMMAND=/julia/julia-1.10.11/bin/julia \
+            --workdir "$GITHUB_WORKSPACE" \
+            ghcr.io/dzackgarza/sage:develop sleep infinity
+          docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
+            /sage/.venv/bin/python -c \
+            'import sys, sage.version; assert sys.version_info >= (3, 14); print(sys.version); print(sage.version.version)'
+      - name: Install current research and lattice database checkouts
+        working-directory: ${{ github.workspace }}
+        run: |
+          docker exec -i -w "$GITHUB_WORKSPACE" sage-env \
+            /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --no-deps --editable "$GITHUB_WORKSPACE"
+          docker exec -i -w "$GITHUB_WORKSPACE/lattice-database" sage-env \
+            /sage/.venv/bin/uv pip install --python /sage/.venv/bin/python --editable . pytest
+      - name: Install Julia and the Oscar project of sage-julia-bridge
+        working-directory: ${{ github.workspace }}
+        run: |-
+          # The preamble reaches Oscar through sage-julia-bridge, which starts Julia in
+          # the bridge's own project (`julia_env`, pinned to Julia 1.10.11). The Sage
+          # image has no Julia, so the job installs that release and instantiates the
+          # project into the cached depot.
+          docker exec -i sage-env bash -euc '
+            if [ ! -x /julia/julia-1.10.11/bin/julia ]; then
+              curl -fsSL https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.11-linux-x86_64.tar.gz \
+                | tar -xz -C /julia
+            fi
+            project="$(/sage/.venv/bin/python -c "import pathlib, sage_julia_bridge; print(pathlib.Path(sage_julia_bridge.__file__).with_name(\"julia_env\"))")"
+            /julia/julia-1.10.11/bin/julia --project="$project" --startup-file=no --color=no -e "
+              using Pkg; Pkg.instantiate(); Pkg.precompile(); using Oscar
+              println(\"Oscar \", Oscar.VERSION_NUMBER)"
+          '
+      - name: Compute and certify uncertified card values
+        env:
+          LATTICEDB_TAG: ${{ github.event.inputs.tag || '' }}
+        run: |
+          # The job allows 350 minutes; the run gets 330 of them, and the rest commits its results.
+          minutes=330
+          args=(--minutes "$minutes")
+          if [[ -n "$LATTICEDB_TAG" ]]; then
+            args+=(--tag "$LATTICEDB_TAG")
           fi
-          if git push origin HEAD:main; then
-            git push origin --delete "${staging_branch}"
+          # The timeout runs inside the container, so it ends the certify process itself
+          # before the commit step reads the cards and `exceeded.yaml`.
+          docker exec -i \
+            --env "PYTHONPATH=$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE/lattice-database/src" \
+            --workdir "$GITHUB_WORKSPACE/lattice-database" \
+            sage-env timeout "${minutes}m" /sage/.venv/bin/python -m latticedb certify "${args[@]}"
+      - name: Commit completed computations to main
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        working-directory: ${{ github.workspace }}
+        shell: bash --noprofile --norc -e -o pipefail {0}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git add lattice-database/lattices lattice-database/certificates.yaml lattice-database/exceeded.yaml
+          if git diff --cached --quiet; then
+            echo "No newly completed computations."
             exit 0
           fi
-          echo "main advanced during push attempt ${attempt}; rebasing and retrying."
-        done
 
-        echo "::error::Could not integrate computed values into main after 5 attempts; durable result remains on ${staging_branch}."
-        exit 1
-    - name: Stop the Sage environment
-      if: always()
-      working-directory: ${{ github.workspace }}
-      shell: bash --noprofile --norc -e -o pipefail {0}
-      run: docker rm --force sage-env >/dev/null 2>&1 || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(lattice-database): certify computed card values'
+
+          staging_branch="lattice-database/certify-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/${staging_branch}"
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::error::Computed values conflict with current main; durable result remains on ${staging_branch}."
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              git push origin --delete "${staging_branch}"
+              exit 0
+            fi
+            echo "main advanced during push attempt ${attempt}; rebasing and retrying."
+          done
+
+          echo "::error::Could not integrate computed values into main after 5 attempts; durable result remains on ${staging_branch}."
+          exit 1
+      - name: Stop the Sage environment
+        if: always()
+        working-directory: ${{ github.workspace }}
+        shell: bash --noprofile --norc -e -o pipefail {0}
+        run: docker rm --force sage-env >/dev/null 2>&1 || true

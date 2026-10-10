@@ -39,6 +39,10 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:11.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:617.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:11` names `overlattice(E7xD4)`.
+
+Catalogue of Lattices archive entry `union:617` names `overlattice(E7xD4)`.

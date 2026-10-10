@@ -49,6 +49,10 @@ related: []
 references:
 - citation: G. Nipp, Tables of Quaternary and Quinary Quadratic Forms, d777.html:4097.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/d777.html
+- citation: Watson, primitive lattices of class number one, 4:62.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
 ---
 
 The Gram tensor is the integral bilinear form of the quadratic form at line 4097 of Nipp's table `d777.html`. The source form is the twist of this lattice by 2.
+
+Source entry `watson:4:62` gives this Gram tensor.

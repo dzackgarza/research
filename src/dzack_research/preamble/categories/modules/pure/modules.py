@@ -3,6 +3,7 @@
 import itertools
 import operator
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from sage.categories.action import Action
 from sage.categories.category import Category
@@ -83,9 +84,13 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.owned_category import ConstructionData
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -1132,6 +1137,27 @@ class Modules(OwnedCategoryOverBaseRing):
     class ElementMethods:
         __add__ = Element.__add__
 
+        def order_ideal(self):
+            r"""Return ``O_M(v) = {phi(v) : phi in Hom_R(M,R)}``.
+
+            This is the image ideal of evaluation at this element. The
+            represented computation uses generators of the linear dual;
+            it does not require a chosen basis of ``M``.
+            """
+            module = self.parent()
+            ring = module.base_ring()
+            dual = module.dual_module()
+            regular = dual.codomain()
+            evaluation = Modules(ring).Mor(dual, regular)(
+                lambda label: dual.module_generator(label)(self)
+            )
+            image = evaluation.image()
+            regular_label = regular.module_generating_set()[0]
+            return ring.ideal(*(
+                image.inclusion()(generator).to_vector()(regular_label)
+                for generator in image.module_generators()
+            ))
+
         def __rmul__(self, scalar):
             r"""Return ring multiplication or the left module scalar action.
 
@@ -2004,6 +2030,28 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return element
 
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
+            r"""The protected construction contract of ``Objects``, supplied by the module owner.
+
+            Contract, roles and the reason no public operation does this: see
+            ``Objects.ParentMethods._with_structure`` (``OWN-05``).  The module
+            owner constructs on this exact module's data (``OWN-16``) and
+            keeps the structure this module already adds.  It selects its own
+            realization, so it takes no further computation class.
+            """
+            assert engine is None, (
+                f"cannot construct {self} again with the computation class {engine}: the module "
+                "owner selects the realization of a module with added structure"
+            )
+            added_categories, added_data = self._added_structure(construction_data)
+            return self._module_with_structure((*added_categories, *categories), added_data)
+
         def _module_with_structure(self, categories, construction_data):
             r"""Construct further structure on this exact module's data.
 
@@ -2126,6 +2174,29 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
 
+        @cached_method
+        def zero_subobject(self):
+            r"""The zero module with its unique monomorphism into this module.
+
+            This construction does not require generators of the ambient
+            module: its image is the singleton consisting of zero.
+            """
+            ring = self.base_ring()
+            zero = ring._fresh_free_module_on(Sets.Δ[-1])
+
+            def inclusion(source):
+                arrow = Modules(ring).Mor(source, self)._from_constructed_element_map(
+                    lambda element: self.zero()
+                )
+                return Modules(ring).Mono(source, self)._subobject_inclusion(
+                    arrow, lift=lambda value: source.zero() if value == self.zero() else None,
+                )
+
+            return zero._module_with_structure(
+                (ModuleSubobjects(ring),),
+                {"subobject_ambient": self, "subobject_inclusion_factory": inclusion},
+            )
+
         def torsion_submodule(self):
             r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
 
@@ -2165,6 +2236,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
             return self.module_category().Mor(self, ring.regular_module())
 
+        @cached_method
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
             return _restricted_scalars_view(self, ring_map)
@@ -2606,6 +2678,37 @@ class Modules(OwnedCategoryOverBaseRing):
     class Free(CategoryWithAxiom):
         r"""Modules admitting a basis."""
 
+        class ElementMethods:
+            def content(self):
+                r"""Return the nonnegative generator of ``O_M(self)`` over ``ZZ``.
+
+                The order ideal is intrinsic to the module element. Its
+                computation in a basis yields the gcd of the coordinates.
+                The zero element has content zero.
+                """
+                ring = self.parent().base_ring()
+                if _engine_ring(ring) is not SageZZ:
+                    raise TypeError("integer content requires a free module over ZZ")
+                generator = ring.zero()
+                for value in self.order_ideal().ideal_generators():
+                    generator = generator.gcd(value)
+                return abs(generator)
+
+            def primitive_part(self):
+                r"""Return the unique ``w`` with ``content(self)*w = self``.
+
+                This is the preimage under scalar multiplication by the
+                nonzero content, which is injective on a free ZZ-module.
+                """
+                content = self.content()
+                if not content:
+                    raise ValueError("the zero vector has no primitive part")
+                module = self.parent()
+                multiplication = Modules(module.base_ring()).Mor(module, module)(
+                    lambda label: module.scalar_multiple(content, module.module_generator(label))
+                )
+                return multiplication.preimage(self)
+
         def an_object(self):
             r"""The free module of rank one."""
             return self.base_ring().free_module(1)
@@ -2951,7 +3054,13 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             )
 
         def is_primitive(self) -> bool:
-            return self.inclusion().is_primitive()
+            r"""Return whether the cokernel of the inclusion is torsion-free.
+
+            The inclusion is the subobject's chosen monomorphism, so the
+            injectivity that ``Mor``-level primitivity decides first is
+            part of the datum.
+            """
+            return self.inclusion().cokernel().is_torsion_free()
 
         is_saturated = is_primitive
 
@@ -3742,6 +3851,35 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return the original ``S``-module before restriction of scalars."""
             return self._module_over_extension
 
+        def subobject_on(self, module_generators) -> "ModuleSubobjects.ParentMethods":
+            r"""Return the finite span over the restricted base ring, with its inclusion.
+
+            For restriction from the fraction field of a PID, Sage computes
+            the span over the PID, retaining fractional generator entries.
+
+            EXAMPLES::
+
+                sage: V = QQ**2
+                sage: M = V.restrict_scalars(ZZ.fraction_field_map())
+                sage: a = M(V.linear_combination({0: QQ(1)/QQ(2)}))
+                sage: b = M(V.linear_combination({0: QQ(1)/QQ(3)}))
+                sage: S = M.subobject_on((a, b))
+                sage: c = M(V.linear_combination({0: QQ(1)/QQ(6)}))
+                sage: S.inclusion().is_in_image(c)
+                True
+                sage: S.inclusion().is_in_image(M(V.linear_combination({0: QQ(1)/QQ(12)})))
+                False
+            """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+                _module_subobject_on,
+                _restricted_fraction_field_subobject_on,
+            )
+
+            if self in FramedFreeModules(self.base_ring()):
+                return _module_subobject_on(self, module_generators)
+            return _restricted_fraction_field_subobject_on(self, module_generators)
+
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
 
@@ -3911,6 +4049,11 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             ):
                 return NotImplemented
 
+            if not _coordinate_framed_free_module(extension, fractions):
+                coordinates = extension.finite_free_trivialization().forward()
+                restricted = Modules(fractions).restriction_of_scalars(self.ring_map())(coordinates)
+                return (restricted * morphism).kernel()
+
             framing = extension.framing_morphism()
             image_coordinates = {
                 label: framing.lift(
@@ -3935,7 +4078,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            cleared_morphism = domain.Mor(cleared_module)(
+            cleared_morphism = Modules(ring).Mor(domain, cleared_module)(
                 {
                     label: cleared(coordinates)
                     for label, coordinates in image_coordinates.items()
@@ -4008,6 +4151,9 @@ def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
     return _morphism_on_elements(generators, tuple(relation for relation in restricted if relation))
 
 
+@cached_function(key=lambda module, ring_map, **data: (
+    id(module), id(ring_map), tuple(sorted((name, id(value)) for name, value in data.items()))
+))
 def _restricted_scalars_view(
     module,
     ring_map,
@@ -5167,6 +5313,54 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 ),
                 name=f"Kernel spanning family of {self}",
             )
+
+        def symmetrized_right_multiplication(self):
+            r"""Return the linear map ``X |-> X*A + (X*A).transpose()``.
+
+            Here ``A`` is this matrix, from ``V`` to ``W``. Parameters lie
+            in ``Hom(W,V)`` and values in ``End(V)``. Transpose uses the
+            chosen finite framings. The base ring must be commutative.
+
+            ``equation.solution_fibre(B)`` retains the whole affine solution
+            set, its translation module and its torsor when nonempty.
+            After scalar extension, ``fibre.integral_members(j)`` intersects
+            that fibre with the chosen integral parameter inclusion ``j``.
+            Its kernel alone supplies only the homogeneous solutions.
+
+            This presents the linear operator used by
+            ``sage-indefinite-port.indefinite.isotropic_lifts`` through
+            module composition, transpose, kernel and preimage.
+
+            EXAMPLES::
+
+                sage: A = ZZ.matrix_space(2).from_rows(((1, 0), (0, 1)))
+                sage: equation = A.symmetrized_right_multiplication()
+                sage: equation.kernel().module_rank() == NN(1)
+                True
+                sage: B = A + A
+                sage: equation(equation.preimage(B)) == B
+                True
+                sage: fibre = equation.solution_fibre(B)
+                sage: fibre.base_point() in fibre
+                True
+                sage: X = A.parent().from_rows(((0, 1), (-1, 0)))
+                sage: equation(X) == equation.codomain().zero()
+                True
+                sage: fibre.base_point() + X in fibre
+                True
+            """
+            ring = self.parent().base_ring()
+            if ring not in OwnedRings().Commutative():
+                raise ValueError("symmetrized multiplication requires a commutative base ring")
+            modules = Modules(ring)
+            parameters = modules.Mor(self.codomain(), self.domain())
+            values = modules.Mor(self.domain(), self.domain())
+
+            def image(label):
+                product = parameters.module_generator(label) * self
+                return product + product.transpose()
+
+            return modules.Mor(parameters, values)(image)
 
         def transpose(self):
 

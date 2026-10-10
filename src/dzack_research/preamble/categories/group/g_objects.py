@@ -793,6 +793,36 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
         return self.functor_category().object(action_functor)
 
+    def on_set(self, points, action, *, orbit_relation=None):
+        r"""Present a set action through its retained functor ``BG -> Sets``.
+
+        An optional orbit decision realizes the quotient relation. Its
+        absence leaves that relation as a proposition, not a negative answer.
+        """
+        from dzack_research.preamble.categories.group.g_sets import _g_set_on_points
+
+        if self.underlying_category() is not Sets():
+            raise ValueError("on_set requires an action in the category of sets")
+        group = self.acting_group()
+        return _g_set_on_points(
+            group, points, action,
+            (lambda left, right: Unknown) if orbit_relation is None else orbit_relation,
+            lambda point: group.predicate_subgroup(
+                lambda element: action(element, point) == point,
+                f"stabilizer of {point}",
+            ),
+        )
+
+    def orbit_generated_submodule(self, action, seed, *, containing=None):
+        r"""Construct the least submodule containing the seed and stable under this action."""
+        from dzack_research.preamble.categories.modules.orbit_spans import OrbitSpanConstructions
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        ring = seed.domain().base_ring()
+        if self.underlying_category() is not Modules(ring) or action.group() is not self.acting_group():
+            raise ValueError("the orbit span requires an action in this module category")
+        return OrbitSpanConstructions(ring)(action, seed, containing=containing)
+
     def Mor(self, source, target):
         r"""Equivariant morphisms, as natural transformations on generic actions."""
         functors = self.functor_category()
@@ -1049,6 +1079,12 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"the orbit object of {self} under {self.acting_group()} is a colimit "
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
+
+        def orbit_representatives(self, points):
+            r"""Retain selected representatives together with their orbit projection."""
+            from dzack_research.preamble.categories.group.g_sets import OrbitRepresentativeSets
+
+            return OrbitRepresentativeSets(self.acting_group())(self, points)
 
         @RealizationHook
         def _named_stabilizer(self, point):

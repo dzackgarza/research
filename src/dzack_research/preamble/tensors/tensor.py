@@ -1162,6 +1162,37 @@ def _engine_dual_row_family(row_family):
     return row_family.inverse().transpose()
 
 
+def _engine_inverse_form_pullback(form, isomorphism):
+    r"""Private engine adapter (``OWN-24``): pull a form back along an inverse map.
+
+    ``isomorphism`` uses coordinate columns: it sends the standard basis
+    to its columns.  The returned Gram matrix represents
+    ``(isomorphism^{-1})^* form``.  The inverse, transpose and action
+    conventions are confined to this tensor boundary.
+    """
+    return _engine_row_family_gram(form, _engine_dual_row_family(isomorphism))
+
+
+def _engine_modular_pairing_pullback(form, row_family, modulus, *, diagonal_only=False):
+    r"""Private engine adapter (``OWN-24``): a finite-family pairing contraction.
+
+    ``form`` gives integer representatives of a bilinear pairing valued in
+    ``ZZ/modulus``, and row ``i`` of ``row_family`` is the coordinate
+    vector of the ``i``-th member of the chosen family.  Return the
+    pullback pairing on that family, modulo ``modulus``.  For
+    ``diagonal_only``, return just its diagonal without constructing the
+    full pairing table (the self-pairings of the family).
+
+    This is the private NumPy realization of a tensor contraction; no caller
+    chooses where the family transpose belongs or how to contract indices.
+    """
+    import numpy
+
+    if diagonal_only:
+        return numpy.einsum("ij,jk,ik->i", row_family, form, row_family) % modulus
+    return ((row_family @ form) % modulus) @ row_family.transpose() % modulus
+
+
 def _engine_row_action_from_images(source_rows, target_rows):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): the row action carrying a family to its images.
 

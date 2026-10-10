@@ -42,8 +42,12 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:349.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:732.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:349` names `L_32,2`.
 
 CycloQuaternionic lattice of type Delta2 The first 4 generators generate the automorphism group of ^((5+sqrt(17))/2)L_32,2 (see file DL_32.2).
+
+Catalogue of Lattices archive entry `union:732` names `SL2(17)SS3.2a`.

@@ -3,6 +3,19 @@
 Fix the variance and universal properties of the categorical constructions used by the algebraic and lattice chapters.
 Core and groupoid completion are defined in @def:core.
 
+::: {.definition #def:groupoid-cardinality title="Groupoid cardinality"}
+
+An ordinary groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
+Its **groupoid cardinality** is
+$$
+\cardinality{\mathcal G}
+\definedas
+\sum_{[x]\in\pi_0(\mathcal G)}
+\frac{1}{\cardinality{\Aut_{\mathcal G}(x)}}
+\in\bQ_{\geq0}.
+$$
+:::
+
 ::: {.definition #def:category-of-elements title="Category of elements"}
 
 Let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf.
@@ -186,8 +199,14 @@ For a presheaf $F\colon C^{\opop}\to\mathbf{Set}$, an element $x\in F(T)$ is an 
 
 ::: {.definition #def:representable-presheaf title="Representable presheaves"}
 
-The presheaf $F$ is *representable* if there is an object $X$ and a natural isomorphism $F\cong\Hom_C(-,X)$.
-Under this isomorphism, $\id_X$ corresponds to the universal element.
+Let $C$ be locally small and let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf.
+A **representation** of $F$ is a pair $(X,u)$ with $X\in C$ and $u\in F(X)$ for which the maps
+$$
+\theta^u_T\colon\Hom_C(T,X)\too F(T),\qquad f\longmapsto F(f)(u)
+$$
+are bijections for every $T\in C$; equivalently, $\theta^u\colon\Hom_C(-,X)\isoto F$ is a natural isomorphism.
+The element $u$ is the **universal element** of the representation.
+The presheaf $F$ is **representable** if it admits a representation.
 The dual convention applies to corepresentable covariant functors.
 :::
 
@@ -212,7 +231,15 @@ $$
 are fully faithful: natural transformations between represented functors correspond to morphisms between the representing objects [@Rie16, Corollary 2.2.8].
 :::
 
-A representation is therefore determined by its universal element, and two representations of the same functor are related by a unique isomorphism compatible with the universal elements.
+::: {.corollary #cor:representations-unique title="Uniqueness of representations"}
+
+Let $F\colon C^{\opop}\to\mathbf{Set}$ be a presheaf. For any two representations $(X,u)$ and $(Y,v)$ of $F$, there is a unique isomorphism $\varphi\colon X\isoto Y$ satisfying $F(\varphi)(v)=u$.
+:::
+
+::: {.proof}
+The natural isomorphism $(\theta^v)^{-1}\circ\theta^u\colon\Hom_C(-,X)\isoto\Hom_C(-,Y)$ corresponds by @thm:yoneda to a unique isomorphism $\varphi\colon X\isoto Y$.
+Evaluating at $\id_X$ gives $F(\varphi)(v)=u$.
+:::
 
 ::: {.definition #def:el-convention title="The $\int_C F$ convention"}
 []{#sec-el}

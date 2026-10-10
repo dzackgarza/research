@@ -1154,8 +1154,9 @@ the category states. Every construction in the tree moves to this shape;
   `Tensor.pullback` holds the only `A^t G A`. Everywhere else, code states
   pullback, composition `f * g`, inverse `~f` and application `f(v)`, so
   `M^t G M` and `M G M^t` cannot be written, and no call site chooses between
-  them. `just tensor-boundary` lists every transpose and matrix action
-  outside the package.
+  them. An owned morphism's framing-dependent `transpose()` is a morphism
+  operation, not a Sage coordinate transpose. `just tensor-boundary` rejects
+  unowned coordinate transposes and matrix actions outside the package.
 
 Some conditions cannot be checked at all. The Fourier transform is an isometry
 of `L^2(RR)`, and no finite computation confirms it. A construction that
@@ -1527,6 +1528,7 @@ This governs the rules below:
 - Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
 - Where Sage has no algorithm, the operation keeps its name. A missing capability is a stated gap on the interface, never a second spelling and never a silent absence.
+- An engine defect is the preamble's to repair, now, in the owned route. When Sage's routine is wrong, partial or missing, the preamble computes the operation correctly itself: it repairs the result, uses the routine only where it is measured correct, or implements the cited mathematics with the engine's routine as a reference implementation. It never waits for an upstream fix, and no node, ruling or gap is ever "wait for Sage". Reporting the defect upstream is courtesy and is never a dependency. A consumer such as lattice-db never sees the engine and never routes around it; it calls the preamble operation, and that operation is correct. On 2026-10-09 a TODO node offered "wait on a repair of Sage's `siegel_product`" as an option for the Siegel product, and the owner ruled it out.
 - A session is a Sage session with the preamble loaded on top: Sage's names stay in scope and the preamble's shadow them. A session's numbers never enter Sage's symbolic ring. The preamble binds `pi`, `e` and the elementary functions (`sqrt`, `exp`, `log`, the trigonometric and hyperbolic functions, `sgn`, `zeta`) to its own real-number implementation (ruled 2026-09-23); applied to anything that is not a real number, each is Sage's function of the same name.
 
 # A missing foundation parks the work that found it (always-on)
@@ -1715,6 +1717,8 @@ just category-graph foreign             # owned categories declaring a Sage cate
 just category-graph shape               # breadth, depth, shortcut declarations
 just category-graph cells               # homology, and the cycles owing a 2-cell
 just category-graph-svg                 # the literal graph, rendered
+just category-graph constructions       # each construction on objects, and where its result is placed
+just category-graph routes              # where objects reach an operation's fallback assertion
 ```
 
 The `by-supercategory` view is the audit surface: a large group under one
@@ -1725,6 +1729,20 @@ than the single row it adds. `just category-graph audit` reports what needs no
 reading of the objects: a name declared as a supercategory and defined nowhere,
 a declaration computed from a local expression so the edge is not stated at
 all, a category declaring its own name, and cycles.
+
+`just category-graph constructions` is the audit surface for placement of
+results. For each category it lists every operation on its objects that builds
+an object, with the category the source places the result in and the property
+of an input that changes that placement. Each line is a statement a
+mathematician reads and rejects on sight when it is wrong: under `PowerSets`,
+`X.from_predicate(predicate)` is an object of a slice category that places no
+property of its base object, so a subset of a finite set is not placed finite.
+The view does not decide which placement is correct; the reader does, and needs
+no prior knowledge of a defect to see one. Run it with `--select CATEGORY` after
+any change to a construction, and read every line of the categories the change
+touches. `just category-graph routes --operation NAME` then shows which
+categories' objects reach the fallback assertion of an operation such as
+`cardinality`. `docs/architecture-inspection.md` gives the full list of views.
 
 The live survey (`just preamble-megadoc`) answers a different question -- what a
 session *does* -- and its `supers` field is empty for parameterized categories,
@@ -2224,9 +2242,11 @@ Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lat
 
 A standalone `XFunctor(...)`, `x_adjunction(...)`, `Ext(n, M, N)` or `finite_g_set(...)` in the session surface is a placement defect; the name belongs on the category or object above and the function is retired, not aliased.
 
-**No standalone function constructs an object, and a shortcut is no exception.** A homomorphism is constructed by its homspace: `M.Mor(N)(data)`. A matrix is an element of the topological `R`-module `Mat_{n x m}(R)`. It is constructed by that module's constructor, by `GL_n(R)`'s, or by `tensor.matrix(R, rows)`. A matrix is not a linear map. The map `Mat_{n x m}(R) -> Hom_R(R^m, R^n)` is neither injective nor surjective in general, so reading a matrix as a map is a construction on the homspace, never an identification. A bare `matrix(...)`, or any other free session function that returns a new object, is the same placement defect as `finite_g_set(...)` (ruled 2026-10-08).
+**No standalone function constructs an object, and a shortcut is no exception.** A homomorphism is constructed by its homspace: `M.Mor(N)(data)`. A matrix is an element of the topological `R`-module `Mat_{n x m}(R)`. It is constructed by that module's constructor, by `GL_n(R)`'s, or by `tensor.matrix(R, rows)`. A matrix is not a linear map. The map `Mat_{n x m}(R) -> Hom_R(R^m, R^n)` is neither injective nor surjective in general, so reading a matrix as a map is a construction on the homspace, never an identification. A bare `matrix(...)`, or any other free session function that returns a new object, is the same placement defect as `finite_g_set(...)` (ruled 2026-10-08). Two kinds of free function are admitted. Basic mathematical primitives such as `factorial` and `binomial` may be free, but each should preferably read a method of the number it acts on. The owner's code-wrangling helpers (`lmap`, `lzip`, `zipsum`, `to_var_names`) stay; what they owe is precise types.
 
 **Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the group law is composition.  These are presentations of `lean-categories`' definitions and conventions; where it states them differently, it governs.
+
+**Object and category are not exclusive.** Every set is a discrete category, and every hom is a category, so a subset of a hom is a subcategory of that hom-category, and the same set is also an object of whatever category its structure places it in. The space of modular forms `M_k(Γ, χ)` is the standard case. It is the subset of the function space of holomorphic functions on the upper half-plane cut out by weight-`k` automorphy for `Γ` with character `χ` and the cusp condition. That function space is a hom, so `M_k(Γ, χ)` is a subcategory of it. The same set with its inclusion is a subobject of the function space in topological `C`-modules, here finite-dimensional with a rational structure, and `S_k(Γ, χ)` and the Eisenstein subspace are subobjects of it. Present such a space through the hom it is cut out of. Never write "X is an object, never a category". What does not exist is a category whose objects are the individual forms, with morphisms invented between them. *The tell:* "an object, not a category"; "a category of modular forms"; a new category class whose objects are the elements of one function space. Ruled 2026-10-09.
 
 ## 4. One source of truth, stated once, inline
 
@@ -2342,9 +2362,14 @@ Banned outright, each observed and removed on 2026-09-16: `Sets()` or
 `Objects()` declared because the real parent is missing; a class named for a
 combination of properties; a class for a property that Sage's axiom mechanism
 states; a `super_categories` override on an axiom class; a category declaring
-its own name over a lower base; `__contains__` deciding membership by a
-predicate, a base tower or an attribute probe; a declaration computed from a
-local variable; a second class for a notion the tree already presents.
+its own name over a lower base; `__contains__` deciding membership by a base
+tower or an attribute probe; a declaration computed from a local variable; a
+second class for a notion the tree already presents. Membership of a property
+subcategory is the property's proposition, asked only when needed
+(`CON-07`): `I in Ideals(R).Maximal()` asks whether `R/I` is a field. The
+answer goes to the caller and never changes the object's category or its
+operations; placement comes only from construction, including routing on a
+`lean-categories` theorem, so no engine answer selects what an object can do.
 
 Banned on 2026-09-17 (`CAT-28`): a category declared for the class of objects
 an engine or a construction produces (a condition set is a class; the groups

@@ -58,7 +58,6 @@ from dzack_research.preamble.categories.sets.set_categories import EnumeratedSet
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
-
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
 
@@ -352,6 +351,51 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         if TYPE_CHECKING:
             def __call__(self, label) -> RingElement: ...
 
+        def order_ideal(self):
+            r"""Compute the module order ideal using the chosen free basis.
+
+            Coordinate functionals show that every coordinate belongs to
+            the evaluation image. Conversely every linear functional on a
+            finite-support vector is a linear combination of its nonzero
+            coordinates. Thus these generate the intrinsic order ideal,
+            including for an infinite basis.
+
+            EXAMPLES::
+
+                sage: M = ZZ**2
+                sage: v = M.linear_combination({0: ZZ(-6), 1: ZZ(9)})
+                sage: v.order_ideal() == ZZ.ideal(3) and v.content() == ZZ(3)
+                True
+                sage: M.zero().order_ideal() == ZZ.ideal(0)
+                True
+            """
+            ring = self.parent().base_ring()
+            if ring not in OwnedRings().Commutative():
+                raise TypeError("the module order ideal requires a commutative scalar ring")
+            coordinates = self.to_vector()
+            return ring.ideal(*(
+                coordinates(label) for label in coordinates.support().domain()
+            ))
+
+        def primitive_part(self) -> "FramedFreeModules.ElementMethods":
+            r"""Return ``v/content(v)`` for a nonzero vector over ``ZZ``.
+
+            EXAMPLES::
+
+                sage: M = ZZ**2
+                sage: v = M.linear_combination({0: ZZ(-6), 1: ZZ(9)})
+                sage: v.primitive_part() == M.linear_combination({0: ZZ(-2), 1: ZZ(3)})
+                True
+            """
+            content = self.content()
+            if not content:
+                raise ValueError("the zero vector has no primitive part")
+            coordinates = self.to_vector()
+            return self.parent().linear_combination({
+                label: coordinates(label) // content
+                for label in coordinates.support().domain()
+            })
+
         def to_vector(self) -> "FramedFreeModules.ElementMethods":
             r"""The coordinates of this element in the chosen basis ``I``.
 
@@ -479,6 +523,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return whether the underlying free module is finite."""
             return self.cardinality().is_finite()
 
+        @cached_method
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
@@ -722,8 +767,12 @@ def _finite_support_labels(module, elements):
 
     This is a private finite-coordinate boundary.  The ambient framing may be
     infinite and need not admit a ranking map; only labels that actually occur
-    in the supplied finite family are retained.
+    in the supplied finite family are retained.  A finite framing is its own
+    finite window, so its labels are taken whole and no two labels are compared.
     """
+    framing = module.module_generating_set()
+    if cardinal(framing.cardinality()).is_finite():
+        return finite_ordered_set(framing)
     support = []
     for candidate in elements:
         element = candidate if candidate.parent() is module else module(candidate)
@@ -810,6 +859,77 @@ def _module_subobject_on(module, module_generating_set):
     """
     basis = _span_basis_elements(module, module_generating_set)
     return _module_subobject_spanning(module, basis)
+
+
+def _restricted_fraction_field_subobject_on(module, module_generators):
+    r"""Compute a PID span in a restricted fraction-field module with Sage ``span``.
+
+    This replaces the denominator clearing and row-module computation in
+    ``sage-indefinite-port.groups.integral_structures._span_embedding``.
+    Sage ``FreeModule_generic.span`` accepts fractional entries over a PID;
+    the owned result retains the inclusion and its integral lift.
+    """
+    ring = module.base_ring()
+    fractions = module.extension_ring()
+    extension = module.module_over_extension()
+    assert ring in PrincipalIdealDomains() and fractions is ring.fraction_field(), (
+        f"finite restricted spans require a PID and its fraction field, not {ring} and {fractions}"
+    )
+    assert module.ring_map() == ring.fraction_field_map(), (
+        f"finite restricted spans use the canonical fraction-field map, not {module.ring_map()}"
+    )
+    assert extension in FramedFreeModules(fractions), (
+        f"finite restricted spans require a framed free module over {fractions}, not {extension}"
+    )
+    generators = _known_finite_generator_family(module_generators)
+    underlying = tuple(module(element).underlying_element() for element in generators)
+    support = _finite_support_labels(extension, underlying)
+    support_points = tuple(support)
+    engine_fractions = _engine_ring(fractions)
+    engine_ambient = _SageFreeModule(engine_fractions, len(support_points))
+
+    def engine_coordinates(element):
+        coordinates = element.to_vector()
+        return tuple(
+            _engine_element(fractions, coordinates(label)) for label in support_points
+        )
+
+    engine_span = engine_ambient.span(
+        tuple(engine_coordinates(element) for element in underlying),
+        base_ring=_engine_ring(ring),
+    )
+    labels = Sets.Δ[engine_span.rank() - 1]
+
+    def embedded(label):
+        coordinates = engine_span.basis()[int(label)]
+        return module(extension.linear_combination({
+            point: _owned_engine_element(fractions, coordinate)
+            for point, coordinate in zip(support_points, coordinates, strict=True)
+            if coordinate
+        }))
+
+    def lift(source, element):
+        underlying_element = module(element).underlying_element()
+        coordinates = underlying_element.to_vector()
+        if any(label not in support for label in coordinates.support().domain()):
+            return None
+        candidate = engine_ambient(engine_coordinates(underlying_element))
+        if candidate not in engine_span:
+            return None
+        coefficients = engine_span.coordinate_vector(candidate)
+        return source.linear_combination({
+            label: _owned_engine_element(ring, _engine_ring(ring)(coefficient))
+            for label, coefficient in zip(labels, coefficients, strict=True)
+            if coefficient
+        })
+
+    return _new_sparse_free_module(
+        ring,
+        labels,
+        subobject_ambient=module,
+        subobject_generator_images=embedded,
+        subobject_lift=lift,
+    )
 
 
 @cached_function(key=lambda module, basis: (id(module), tuple(basis)))

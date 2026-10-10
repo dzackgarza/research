@@ -43,8 +43,14 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:118.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:344.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:118` names `LL32`.
+
+Called LAMBDA_32 in Bachoc-Nebe
+
+Catalogue of Lattices archive entry `union:344` names `LL32`.
 
 Called LAMBDA_32 in Bachoc-Nebe

@@ -160,10 +160,10 @@ class _AnalyticDiscFamilyEngine:
         return self._analytified_family
 
     def analytic_base(self):
-        return self.target_object()
+        return self.arrow().codomain()
 
     def analytic_total_space(self):
-        return self.source_object()
+        return self.arrow().domain()
 
     def analytic_family_morphism(self):
         return self.arrow()

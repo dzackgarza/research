@@ -19,6 +19,7 @@ def run(root: Path) -> tuple[int, list[str]]:
     loaded = corpus.load(root)
     held = certificates.load(root)
     problems = [
+        *records.shared_gram_problems(loaded),
         *records.problems(loaded, held),
         *relations.problems(loaded, root),
         *catalogues.problems(loaded),

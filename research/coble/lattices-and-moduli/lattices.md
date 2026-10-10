@@ -77,8 +77,8 @@ E_{10} \injects \generators{-1}\oplus E_{10}
 $$
 
 This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
-A primitively embedded unimodular sublattice splits its ambient lattice (the unimodular-splitting proposition (@prop:unimodular-splits)), so the codomain of any primitive embedding of $E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
-The gluing datum of such an embedding is the graph of an isometry between a subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$ (the embedding-gluing description (@cons:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is trivial and the embedding is determined by the isometry class of the complement.
+For a primitive embedding $\iota\colon E_{10}\injects L$, @prop:unimodular-splits gives $L\isoto E_{10}\perp E_{10}^{\perp L}$.
+By @cons:embedding-gluing-data, its gluing datum is the graph of an isometry between a subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^{\perp L}}$; since $A_{E_{10}}=0$, the datum is trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm. 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
 
@@ -103,7 +103,7 @@ Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_
 $$
 f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En = \fen
 $$
-be the map induced by the embedding $\eta$ of the primitive-embedding lemma (@lem:primitive_embedding_eta). The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
+be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
 
 The gluing datum.
 Put $K\definedas \eta(T_\Co)^{\perp T_\En}$.
@@ -113,7 +113,7 @@ Because $\tilde e = \frac12\bigl(\eta(h)+k\bigr)$, the overlattice $T_\En$ of $T
 $$
 H = \generators{\bigl(h/2,\; k/2\bigr)}\ \leq\ A_{T_\Co}\oplus A_K
 $$
-in the sense of the gluing-datum definition (@def:gluing-datum-of-a-pair).
+in the sense of @def:gluing-datum-of-a-pair.
 It has order $2$ and is isotropic, since $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12 = 0$.
 
 Two features of $A_{T_\Co} = \generators{h/2}\oplus A_{E_{10}(2)}$ are used below.
@@ -124,8 +124,8 @@ The stabilizer.
 We claim that restriction to $T_\Co$ carries $\Stab_{\Gamma_\En}(T_\Co)$ onto $\Gamma_\Co$.
 
 Let $g\in\Gamma_\En$ satisfy $g(T_\Co) = T_\Co$.
-Then $g$ preserves $K = T_\Co^{\perp}$ as well, so $g = \varphi\oplus\eps$ with $\varphi\definedas\restrictionof{g}{T_\Co}\in\Orth(T_\Co)$ and $\eps = \pm 1$ on $K$.
-By the automorphism-lifting criterion (@thm:automorphism-lifting-criterion), $g$ preserves $T_\En$ only if $(\bar\varphi\oplus\bar\eps)(H) = H$.
+Then $g$ preserves $K = T_\Co^{\perp T_\En}$ as well, so $g = \varphi\oplus\eps$ with $\varphi\definedas\restrictionof{g}{T_\Co}\in\Orth(T_\Co)$ and $\eps = \pm 1$ on $K$.
+By @thm:automorphism-lifting-criterion, $g$ preserves $T_\En$ only if $(\bar\varphi\oplus\bar\eps)(H) = H$.
 The group $A_K$ has order $2$, so $\bar\eps = \id$, and the condition on the generator of $H$ reads $\bigl(\bar\varphi(h/2),\,k/2\bigr)\in H$.
 The only element of $H$ with second coordinate $k/2$ is the generator, so
 $$
@@ -133,34 +133,34 @@ $$
 .
 $$
 Next let $x\in A_{E_{10}(2)}$.
-Then $(x,0)\in H^{\perp}$, because $x$ is orthogonal to $h/2$.
-By Nikulin's gluing theorem (@thm:nikulin-gluing) the discriminant group of $T_\En$ is $H^{\perp}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
+Then $(x,0)\in H^{\perp_{A_{T_\Co}\oplus A_K}}$, because $x$ is orthogonal to $h/2$.
+By Nikulin's gluing theorem (@thm:nikulin-gluing) the discriminant group of $T_\En$ is $H^{\perp_{A_{T_\Co}\oplus A_K}}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
 Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so $\bar\varphi(x) = x$.
 The two displays give $\bar\varphi = \id$ on all of $A_{T_\Co}$, that is $\varphi\in\tilde\Orth(T_\Co)$.
 Finally $g$ preserves the component $\bD(T_\En)$, and $\bD(T_\Co) = \bD(T_\En)\intersect\PP(T_\Co\tensor_\ZZ\CC)$, so $\varphi$ preserves $\bD(T_\Co)$ and lies in $\Orth^+(T_\Co)$.
 Therefore $\varphi\in\Gamma_\Co$.
 
 Conversely let $\varphi\in\Gamma_\Co$ and put $g\definedas\varphi\oplus\id_K$.
-Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and extends to $T_\En$ by the automorphism-lifting criterion (@thm:automorphism-lifting-criterion).
-The extension acts trivially on $H^{\perp}/H = A_{T_\En}$ and preserves $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to $\varphi$ there.
+Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and extends to $T_\En$ by @thm:automorphism-lifting-criterion.
+The extension acts trivially on $H^{\perp_{A_{T_\Co}\oplus A_K}}/H = A_{T_\En}$ and preserves $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to $\varphi$ there.
 
 In particular the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality, so $f$ is defined.
 
 Fibres.
-For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice of $T_\En$ whose complexification contains $\omega$, namely $T(x)\definedas\bigl(T_\En\intersect\omega^{\perp}\bigr)^{\perp}$.
+For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice of $T_\En$ whose complexification contains $\omega$, namely $T(x)\definedas\bigl(T_\En\intersect\omega^{\perp_{T_\En\tensor_\ZZ\CC}}\bigr)^{\perp T_\En}$.
 For a primitive sublattice $M\leq T_\En$ of signature $(2,\ast)$ one has $x\in\bD(M)$ if and only if $T(x)\iscontainedin M$.
 
 Fix $y\in F_\En$ and a lift $\tilde y\in\bD(T_\En)$.
 A point of $\inverseof{f}(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma_\En$ and $x\in\bD(T_\Co)$.
 Writing $M'\definedas \inverseof{g}(T_\Co)$, that last condition says $T(\tilde y)\iscontainedin M'$.
-Now $M'^{\perp} = \inverseof{g}(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
-The space $T(\tilde y)\tensor_\ZZ\RR$ contains a positive definite plane and $T_\En$ has signature $(2,10)$, so $T_\En\intersect T(\tilde y)^{\perp}$ is negative definite and contains only finitely many vectors of square $-2$.
-Each such $v$ determines $M' = v^{\perp}$, so only finitely many $M'$ occur.
+Now $M'^{\perp T_\En} = \inverseof{g}(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
+The space $T(\tilde y)\tensor_\ZZ\RR$ contains a positive definite plane and $T_\En$ has signature $(2,10)$, so $T(\tilde y)^{\perp T_\En}$ is negative definite and contains only finitely many vectors of square $-2$.
+Each such $v$ determines $M' = v^{\perp T_\En}$, so only finitely many $M'$ occur.
 For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma_\En}(T_\Co)$, whose restrictions to $T_\Co$ all lie in $\Gamma_\Co$ by the previous step; the corresponding points $x$ therefore form a single $\Gamma_\Co$-orbit.
-Hence $\inverseof{f}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
+Hence $\inverseof{f}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T(\tilde y)^{\perp T_\En}$.
 
 Properness and finiteness.
-By the Baily--Borel extension lemma (@lem:locally_closed_embedding_BB) the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
+By @lem:locally_closed_embedding_BB, the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
 So $\bar f$ carries boundary to boundary, giving $\inverseof{\bar f}(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
 A proper morphism with finite fibres is finite ([Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS)), so $f$ is finite.
@@ -179,14 +179,14 @@ A finite birational morphism from a normal variety onto a reduced irreducible va
 
 ::: {.remark #rmk:normalization-enriques-analogue title="The same statement one level up"}
 
-The normalization theorem (@thm:normalization) is the Coble analogue of [@AEGS25 Lem. 2.8], which asserts that $\fentwo$ is the normalization of a closed subvariety of $\fttz$.
+@thm:normalization is the Coble analogue of [@AEGS25 Lem. 2.8], which asserts that $\fentwo$ is the normalization of a closed subvariety of $\fttz$.
 There the stabilizer step is run through $T_\dP$: the isometry group $\Orth(T_\dP)$ is the image of $\theset{g\in\Orth(\lkt)\mid g(T_\dP) = T_\dP,\; g(h) = h}$, because the order-two group $\Orth(q_{S_\dP})$ preserves the class of $\tfrac12 h$ in $A_{S_\dP}\cong A_{U(2)}\cong(\ZZ/2)^2$, and the stabilizer of $T_\En$ in $\Gamma_\dP$ is then $\Gamma_{\En,2}$.
 The proof above replaces that detour by the direct gluing computation, which is available here because $T_\Co^{\perp T_\En}\cong\generators{-2}$ is of rank one.
 :::
 
 ::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
 
-The stabilizer step of the normalization theorem (@thm:normalization) is one instance of a general criterion for descending a map to a pair of quotients.
+The stabilizer step of @thm:normalization is one instance of a general criterion for descending a map to a pair of quotients.
 Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be groups acting on $A$ and on $B$.
 Then $f$ descends to a map of orbit spaces
 $$

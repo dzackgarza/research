@@ -383,17 +383,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             A selected finite presentation determines the represented cokernel,
             so refinements such as localization or a chosen subobject inclusion
-            do not create a new underlying module.  Ideals retain their stronger
-            extensional equality as submodules of the ambient ring.
+            do not create a new underlying module.  Ideals and subgroups of a
+            discriminant module are subobjects, compared by their images.
             """
+            from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
+                DiscriminantSubmodules,
+            )
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 CommutativeIdeals,
             )
 
             ideals = CommutativeIdeals(self.base_ring())
-            if self in ideals and other in ideals:
-                return self._engine_ideal() == other._engine_ideal()
-            return self._same_selected_presentation_as(other)
+            subgroups = DiscriminantSubmodules(self.base_ring())
+            match other:
+                case _ if self in ideals and other in ideals:
+                    return self._engine_ideal() == other._engine_ideal()
+                case _ if self in subgroups and other in subgroups:
+                    return self.has_same_image_as(other)
+                case _:
+                    return self._same_selected_presentation_as(other)
 
         def __ne__(self, other):
             return not self == other
@@ -1099,28 +1107,23 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _invariants_with_units(self):
-            r"""Read the diagonal presentation, retaining unit and free coordinates."""
-            normalization = self.invariant_factor_presentation()
-            diagonal = normalization.codomain().arrow()
+            r"""Read the invariant factors, retaining unit and free coordinates.
+
+            The invariant factors are the diagonal ``D`` of the Smith form
+            ``D = U A V`` of the selected relation matrix, one per generator
+            of ``F_0``, with ``0`` past the diagonal.  They need neither basis
+            change, so they are read from ``D`` itself; the basis changes as
+            owned isomorphisms are ``invariant_factor_presentation``.
+            """
             ring = self.base_ring()
-            source = diagonal.domain()
-            target = diagonal.codomain()
-            source_labels = tuple(source.module_generating_set())
-            target_labels = tuple(target.module_generating_set())
-            diagonal_rank = min(len(source_labels), len(target_labels))
-            invariants = []
-            for position, target_label in enumerate(target_labels):
-                if position >= diagonal_rank:
-                    invariants.append(ring.zero())
-                    continue
-                image = diagonal(source.module_generator(source_labels[position]))
-                invariants.append(
-                    _canonical_pid_associate(
-                        ring,
-                        target.framing_morphism().lift(image)(target_label),
-                    )
-                )
-            return tuple(invariants)
+            diagonal, _, _ = self._selected_presentation_smith_backend()
+            diagonal_rank = min(diagonal.nrows(), diagonal.ncols())
+            return tuple(
+                _canonical_pid_associate(ring, _owned_engine_element(ring, diagonal[position, position]))
+                if position < diagonal_rank
+                else ring.zero()
+                for position in range(diagonal.nrows())
+            )
 
         def module_rank(self):
             r"""Return the rank of the free summand over a PID."""
@@ -1218,6 +1221,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 if invariant != 0 and not invariant.is_unit()
             )
             return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
+
+        def _finiteness_decision(self):
+            return self.cardinality().is_finite()
 
         @cached_method
         def invariant_factor_presentation(self):

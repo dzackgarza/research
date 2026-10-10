@@ -1,4 +1,4 @@
-# Enriques to Coble correspondence
+,# Enriques to Coble correspondence
 
 ::: {.theorem #thm:cusp_correspondence}
 
@@ -58,8 +58,8 @@ We then have $\div_{\ten}(w_1) = 2$.
 
 ::: {.proof}
 
-By the divisibility lemma (@lem:divisibilityAlwaysTwoTco), we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (the unpolarized-cusp theorem (@thm:unpolarized-cusps), the split maximal hypothesis being the split-maximal proposition (@prop:tco-split-maximal)), so $v_1$ represents the unique full-group $0$-cusp of $\fco$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
+By @lem:divisibilityAlwaysTwoTco, $v_1$ has divisibility $2$ in $T_\Co$; moreover it is isotropic.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them. Hence $v_1$ represents the unique full-group $0$-cusp of $\fco$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
@@ -113,7 +113,7 @@ The 1-cusp $(7,7,1)_0$ in $\fco$ maps to the 1-cusp $(8, 6, 0)_0$ in $\fen$.
 
 ::: {.proof}
 
-The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ (the unpolarized-cusp theorem (@thm:unpolarized-cusps) and the split-maximal proposition (@prop:tco-split-maximal)). It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$. It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $\ten$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 
@@ -154,12 +154,12 @@ On the other hand, cusp $(8,8,0)$ does not satisfy this property -- the vector $
 
 The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $\fen$ are isomorphic to the modular curves $X_0(2)$ and $X \definedas \overline{\bH / \SL_2(\bZ)}$ respectively, and by [@CDL25 Cor. 5.9.10] the 1-cusp $(7,7,1)$ in $\fco$ is isomorphic to $X$.
 This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $\ten$, and thus the corresponding modular curves are both isomorphic to $X$.
-We conjecture that general correspondences on 1-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of the one-cusp correspondence lemma (@lem:1_cusp_correspondence).
+We conjecture that general correspondences on $1$-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of @lem:1_cusp_correspondence.
 :::
 
 ::: {.lemma #lem:cusp_map_dP}
 
-Let $\tilde w_i$ be the images of $v_i$ in $\tdp$ under the embedding described in the sequence-of-embeddings lemma (@lem:sequence_of_embeddings). Then
+Let $\tilde w_i$ be the images of $v_i$ in $\tdp$ under the embedding of @lem:sequence_of_embeddings. Then
 
 $$
 \begin{aligned}
@@ -203,7 +203,7 @@ Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 
 ::: {.proposition #prop:rank_16_cusp_D16}
 
-The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)_0$ of the del Pezzo cusp-map lemma (@lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
+The negative-definite lattice $\tilde w_2^{\perp \tdp}/\tilde w_2 \cong (16,0,0)_0$ of @lem:cusp_map_dP is isometric to $D_{16}^+$; among the two even negative-definite unimodular lattices of rank $16$, this specifies the $D_{16}^+$ class.
 :::
 
 ::: {.proof}

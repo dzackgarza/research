@@ -2,12 +2,14 @@
 
 import json
 import sys
+import time
 from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
 from urllib.request import Request, urlopen
 
 import frontmatter
+import yaml
 from cyclopts import App, Parameter
 
 from latticedb import (
@@ -18,6 +20,7 @@ from latticedb import (
     corpus,
     genus,
     records,
+    regular_ternaries,
     seed,
     site,
     summands,
@@ -40,9 +43,7 @@ Aliases = Annotated[
 ]
 Families = Annotated[
     tuple[str, ...],
-    Parameter(
-        name="--family", help="A family that contains the lattice; repeat for each one."
-    ),
+    Parameter(name="--family", help="A family that contains the lattice; repeat for each one."),
 ]
 
 
@@ -67,9 +68,7 @@ def new(
     *,
     gram: Annotated[
         str,
-        Parameter(
-            help="The components b(e_i, e_j) as JSON rows of integers or strings `p/q`: `[[2, 1], [1, 2]]`."
-        ),
+        Parameter(help="The components b(e_i, e_j) as JSON rows of integers or strings `p/q`: `[[2, 1], [1, 2]]`."),
     ],
     name: Annotated[str, Parameter(help="Name as plain text.")],
     latex: Annotated[str, Parameter(help="Name as TeX, without math delimiters.")],
@@ -79,9 +78,7 @@ def new(
         tuple[str, ...],
         Parameter(help="A bibliographic citation as plain text; repeat for each one."),
     ] = (),
-    prose: Annotated[
-        str, Parameter(help="The notes of the record, in Pandoc Markdown.")
-    ] = "",
+    prose: Annotated[str, Parameter(help="The notes of the record, in Pandoc Markdown.")] = "",
     root: Root = Path(),
 ) -> None:
     """Write a lattice card from authored fields, without computation or verification.
@@ -134,10 +131,32 @@ def bulk_index_write(root: Root = Path()) -> None:
 @app.command(name="seed")
 def seed_cards(*, limit: int | None = None, root: Root = Path()) -> None:
     """Write permanent lattice cards from stored source rows without verification or enrichment."""
-    seeded, without_gram = seed.run(root, limit)
-    print(
-        f"{seeded} lattice cards written; {len(without_gram)} source rows need a defining Gram tensor"
-    )
+    seeded, attached, without_gram = seed.run(root, limit)
+    print(f"{seeded} lattice cards written; {attached} source rows joined the card that states their Gram tensor; {len(without_gram)} source rows need a defining Gram tensor")
+
+
+@app.command(name="regular-ternaries")
+def regular_ternaries_seed(root: Root = Path()) -> None:
+    """Write a card for each form of the stored regular and spinor regular ternary tables, its value certified by the table's citation.
+
+    A form whose exact Gram tensor a card already states gets the value and the
+    citation on that card, so the corpus still records each tensor once.
+    """
+    index = corpus.gram_index(root)
+    held = certificates.load(root)
+    written = 0
+    for entry in regular_ternaries.entries():
+        key = corpus.gram_key(records.gram_tensor(entry.gram_tensor))
+        if key not in index:
+            path = _author(root, *regular_ternaries.record(entry))
+            corpus.append_index(root, path.stem, records.gram_tensor(entry.gram_tensor))
+            index[key] = [path.stem]
+            written += 1
+        for tag in index[key]:
+            for field, reference in entry.certified.items():
+                genus.cite(root / "lattices" / f"{tag}.md", field, entry.proved, reference, held)
+    certificates.save(root, held)
+    print(f"{written} lattice cards written; {len(regular_ternaries.entries())} table rows certified by citation")
 
 
 @app.command
@@ -145,35 +164,23 @@ def morphism(
     source: Annotated[str, Parameter(help="Tag of the source lattice.")],
     target: Annotated[str, Parameter(help="Tag of the target lattice.")],
     *,
-    name: Annotated[
-        str, Parameter(help="Name as plain text; TeX between `$` signs is rendered.")
-    ],
+    name: Annotated[str, Parameter(help="Name as plain text; TeX between `$` signs is rendered.")],
     matrix: Annotated[
         str,
-        Parameter(
-            help="JSON rows of integers, rank(target) rows by rank(source) columns: column j is the image of e_j."
-        ),
+        Parameter(help="JSON rows of integers, rank(target) rows by rank(source) columns: column j is the image of e_j."),
     ],
-    description: Annotated[
-        str | None, Parameter(help="One or two sentences on the morphism.")
-    ] = None,
+    description: Annotated[str | None, Parameter(help="One or two sentences on the morphism.")] = None,
     scale: Annotated[
         int,
-        Parameter(
-            help="The integer c with b_T(phi x, phi y) = c b_S(x, y): a morphism S(c) -> T."
-        ),
+        Parameter(help="The integer c with b_T(phi x, phi y) = c b_S(x, y): a morphism S(c) -> T."),
     ] = 1,
     row_subdivisions: Annotated[
         str,
-        Parameter(
-            help="JSON list of the lines between rows, as SageMath's `M.subdivisions()[0]`."
-        ),
+        Parameter(help="JSON list of the lines between rows, as SageMath's `M.subdivisions()[0]`."),
     ] = "[]",
     column_subdivisions: Annotated[
         str,
-        Parameter(
-            help="JSON list of the lines between columns, as SageMath's `M.subdivisions()[1]`."
-        ),
+        Parameter(help="JSON list of the lines between columns, as SageMath's `M.subdivisions()[1]`."),
     ] = "[]",
     root: Root = Path(),
 ) -> None:
@@ -221,9 +228,51 @@ def duplicates(root: Root = Path()) -> None:
     for tags in found.values():
         print(f"{' '.join(tags)}")
     if found:
-        print(f"{sum(len(tags) for tags in found.values())} cards share a Gram tensor", file=sys.stderr)
+        print(
+            f"{sum(len(tags) for tags in found.values())} cards share a Gram tensor",
+            file=sys.stderr,
+        )
         sys.exit(1)
     print(f"{sum(len(tags) for tags in index.values())} lattice cards have distinct Gram tensors")
+
+
+@app.command
+def deduplicate(root: Root = Path()) -> None:
+    """Merge every card into the earliest card that states its Gram tensor, and retire its tag.
+
+    The merged card's references, families, related lattices and prose join the
+    earliest card, whose stated values they must agree with. Its certificates
+    leave `certificates.yaml`: a value it certified is already on the earliest
+    card under that card's own certificate.
+    """
+    loaded = corpus.load(root)
+    held = certificates.load(root)
+    retired: corpus.Retired = {}
+    for tags in corpus.duplicate_grams(loaded.entries).values():
+        earliest, *later = sorted(tags)
+        survivor = root / "lattices" / f"{earliest}.md"
+        kept = corpus.front_matter(frontmatter.load(str(survivor)))
+        for tag in later:
+            path = root / "lattices" / f"{tag}.md"
+            document = frontmatter.load(str(path))
+            fields = corpus.front_matter(document)
+            cited = fields.get("certifications")
+            for certified in cited if isinstance(cited, dict) else {}:
+                block, _, field = certified.partition(".")
+                stated = kept.get(block)
+                assert certified == "derive" or (isinstance(stated, dict) and stated.get(field) is not None), (
+                    f"{tag}: {certified} is certified and {earliest} does not state it"
+                )
+            seed.attach(survivor, fields, document.content.strip())
+            path.unlink()
+            for name in [name for name in held if name.startswith(f"{tag} ")]:
+                del held[name]
+            retired[tag] = f"{fields['name']}; its Gram tensor is stated by lattice card {earliest}"
+    certificates.save(root, held)
+    with (root / corpus.RETIRED_FILE).open("a") as output:
+        output.write(yaml.safe_dump(retired, sort_keys=False, allow_unicode=True, width=100000) if retired else "")
+    corpus.gram_index(root)
+    print(f"{len(retired)} cards merged into the earliest card that states their Gram tensor")
 
 
 @app.command
@@ -231,13 +280,9 @@ def enrich(
     *,
     tag: Annotated[
         tuple[str, ...],
-        Parameter(
-            help="Tag of a card to compute; repeat for each one. All cards when absent."
-        ),
+        Parameter(help="Tag of a card to compute; repeat for each one. All cards when absent."),
     ] = (),
-    summand_maps: Annotated[
-        bool, Parameter(help="Compute orthogonal summand maps over the corpus.")
-    ] = False,
+    summand_maps: Annotated[bool, Parameter(help="Compute orthogonal summand maps over the corpus.")] = False,
     root: Root = Path(),
 ) -> None:
     """Compute ordinary derived card fields without certifying them."""
@@ -269,12 +314,14 @@ def certify(
         tuple[str, ...],
         Parameter(help="Tag of a card to certify; repeat for each one. All cards when absent."),
     ] = (),
-    seconds: Annotated[
-        int, Parameter(help="Time limit of SageMath for one value of one record.")
-    ] = 120,
+    minutes: Annotated[
+        int,
+        Parameter(help="Minutes until the job's timeout ends this run; a computation still running then stays in `exceeded.yaml`."),
+    ],
     root: Root = Path(),
 ) -> None:
     """Compute uncertified card values, replace disagreements, and certify the computed results."""
+    deadline = time.time() + 60 * minutes
     loaded = corpus.load(root)
     held = certificates.load(root)
     selected = set(tag)
@@ -287,30 +334,24 @@ def certify(
         computation = f"{lattice.tag} derive"
         cited = metadata.get("certifications")
         cited_hash = cited.get("derive") if isinstance(cited, dict) else None
-        expected_hash = certificates.certification_hash(
-            computation, lattice, records.derived_projection(metadata)
-        )
+        expected_hash = certificates.certification_hash(computation, lattice, records.derived_projection(metadata))
         if certificates.is_certified(held, computation, cited_hash, expected_hash):
             continue
         computed = records.derive(metadata)
-        certificate_hash = certificates.certification_hash(
-            computation, lattice, records.derived_projection(computed)
-        )
+        certificate_hash = certificates.certification_hash(computation, lattice, records.derived_projection(computed))
         card_certifications = dict(computed.get("certifications") or {})
         card_certifications["derive"] = certificate_hash
         computed["certifications"] = card_certifications
         entry.path.write_text(records.record_text(computed, document.content))
         held[computation] = certificates.Certificate(hash=certificate_hash, by=LATTICEDB)
         certificates.save(root, held)
-    genus.certify(root, corpus.load(root), held, tag, seconds)
+    genus.certify(root, corpus.load(root), held, tag, deadline)
 
 
 @app.command
 def build(
     root: Root = Path(),
-    target: Annotated[
-        Path, Parameter(help="Directory for the site. The command replaces it.")
-    ] = Path("_site"),
+    target: Annotated[Path, Parameter(help="Directory for the site. The command replaces it.")] = Path("_site"),
 ) -> None:
     """Build the site from the corpus."""
     count = site.build(root, target)
@@ -324,13 +365,9 @@ def deploy(root: Root = Path()) -> None:
     site.build(root, target)
     if not SERVED.is_symlink():
         SERVED.symlink_to(target)
-    assert SERVED.resolve() == target, (
-        f"{SERVED} links to {SERVED.resolve()}, not to {target}"
-    )
+    assert SERVED.resolve() == target, f"{SERVED} links to {SERVED.resolve()}, not to {target}"
     with urlopen(Request(ADDRESS, headers={"Host": HOST})) as response:
-        assert response.status == 200, (
-            f"{ADDRESS} with host {HOST} returned {response.status}"
-        )
+        assert response.status == 200, f"{ADDRESS} with host {HOST} returned {response.status}"
     print(f"http://{HOST}/")
 
 

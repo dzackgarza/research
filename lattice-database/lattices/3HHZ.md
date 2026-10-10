@@ -38,8 +38,14 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:102.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:779.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:102` names `LL28`.
 
 Called LAMBDA_28 in Bachoc-Nebe
+
+Catalogue of Lattices archive entry `union:779` names `2.J2SL2(3).2`.
+
+Even sublattice of a unimodular lattice with no roots.

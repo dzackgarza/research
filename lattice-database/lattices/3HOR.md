@@ -30,8 +30,12 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:346.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:459.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:346` names `L_20,4`.
 
 CycloQuaternionic lattice of type Delta4
+
+Catalogue of Lattices archive entry `union:459` names `(SL(2,11) Y SL(2,3)).C2`.

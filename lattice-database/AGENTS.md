@@ -31,8 +31,9 @@ job, not because database code is forbidden from importing the preamble.
 ## Independent workflows
 
 Seeding reads a stored source and writes a permanent `lattices/<TAG>.md` card from its defining
-data, source identity and citation. It uses the assigned tag. It does not load other cards, derive
-invariants or run verification.
+data, source identity and citation. It uses the assigned tag. A row whose Gram tensor a card already
+states joins that card instead, because a Gram tensor determines its lattice and a lattice has one
+card. Seeding does not derive invariants or run verification.
 
 Authoring writes or edits the same card format without a stored source row. It does not run
 verification. A sparse card is a site card.
@@ -45,7 +46,9 @@ Certification is a separate CI phase. It asks the preamble to compute each uncer
 the card's defining mathematical input. If an authored or seeded value disagrees, the preamble
 result replaces it. The
 resulting card value then receives a certificate hash, and `certificates.yaml` records that hash
-with computation provenance.
+with computation provenance. A value that a seeded source proves, such as the regularity of a form
+in the Jagy–Kaplansky–Schiemann list, is certified when it is seeded: its certificate names the
+source's citation as provenance, and certification never computes it.
 
 Verification is read-only. The modules in `src/latticedb/checks/` inspect stored cards and relations,
 check structural/reference/certificate coherence, and may construct the corresponding preamble
@@ -85,9 +88,40 @@ When a result has no place in the schema, the schema gains one: a field in `mode
 validator, its row in `README.md`, and the value on every record that the computation covers.
 It is never left in a scratch script, a terminal or a chat.
 
+**The schema lands first.** Work that adds invariants to the database starts with the schema: each
+field in `model.py` with its validator, its `README.md` row, and its certificate name and request
+wiring, committed before any preamble operation is probed or implemented. The committed schema is
+the specification that the preamble work then fills. A worker that probes the preamble or an engine
+before that commit is selecting work by what already computes, not by what the database must store.
+On 2026-10-09 a worker on `definite-theta-series-modular-decomposition` spent its first hours
+reading Sage's local-density and Siegel-product sources with no field committed.
+
 A script that produced stored data is itself part of the database. Its source reader can seed
 cards. Source-intake tests may check that the importer copied or transformed that source as intended;
 agreement with the archived source is not evidence that the resulting mathematical claim is true.
+
+## Certification certifies values; a procedure need not terminate
+
+An invariant is computable here when a procedure produces its value. The procedure does not have
+to decide the general problem or terminate on every input. Vinberg's algorithm computes
+`hyperbolic.reflective`; the search of `L.is_regular()` computes `definite.regular`.
+
+Certification certifies the values that appear. A value that a procedure produced, or that a cited
+source proves, gets a certificate. A field with no value claims nothing: its value is unknown, and
+that is a correct card state. A procedure that does not terminate on a card certifies nothing for
+that card, so it can never put a false claim on it.
+
+So these are never reasons to call an invariant uncomputable, to request it on fewer cards, to remove
+or weaken its operation, or to report it as a gap:
+
+- the general problem is undecidable or not known to be decidable;
+- the procedure does not terminate on some cards;
+- the procedure is slow.
+
+A gap is an invariant for which no procedure produces the value that a card would state. The CI
+certification job, about six hours, is the only time bound, and each run certifies more values. A
+local run only shows correct values on small nontrivial specimens, or finds a performance defect
+after a CI timeout.
 
 ## A certified computation never runs again
 
@@ -96,7 +130,9 @@ certificate hash that commits to the computation name, the Gram tensor and that 
 `certificates.yaml` stores the same hash with computation provenance, never a second copy of the
 result. A matching completed certificate is permanent: implementation/version changes do not make
 it stale. Changing the Gram tensor or result breaks the hash and requires a new computation.
-A timeout or unfinished computation has no certificate.
+A timeout or unfinished computation has no certificate. A computation that ran for a whole
+certification job without finishing is logged in `exceeded.yaml` and is never requested again,
+so the nightly job does not spend each run on the same computation.
 
 The scheduled certification job runs in CI, never during seeding, authoring, enrichment or site
 rendering. A test computes on one small specimen, such as $A_2$ (record `0012`); the full

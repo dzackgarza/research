@@ -48,7 +48,7 @@ Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of 
 Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
 Then $v^* \definedas v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
 
-In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc(L)}$.
+In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc{L}}$.
 :::
 
 ::: {.remark}

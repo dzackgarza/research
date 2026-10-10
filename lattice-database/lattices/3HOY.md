@@ -46,8 +46,14 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:353.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:735.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:353` names `L_36,4sup2`.
 
 CycloQuaternionic lattice of type Delta4
+
+Catalogue of Lattices archive entry `union:735` names `Sl2(19)C3,2mod`.
+
+strongly modular lattice

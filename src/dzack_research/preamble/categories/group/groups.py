@@ -124,7 +124,9 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
 # ``_from_engine(engine_element)``; a group whose subgroups are generated in
 # its engine also supplies ``_engine_subgroup_from_generators(generators)``,
 # ``_to_subgroup_engine(element, engine_subgroup)`` and
-# ``_from_subgroup_engine(engine_element)``.  Implementers:
+# ``_from_subgroup_engine(engine_element)``. Membership uses
+# ``_engine_subgroup_contains(element, engine_subgroup)`` and returns a
+# Boolean without requiring an engine for the full containing group. Implementers:
 # :class:`_GroupEngine`, selected privately at ``OwnedGroups``; the
 # group-automorphism, lattice orthogonal-group and torsion-form
 # orthogonal-group Mor parents; and predicate subgroups of a finite group,
@@ -216,6 +218,55 @@ def _encodes_elements_in_gap(engine) -> bool:
             return True
         case _:
             return False
+
+
+class _AdditiveGroupForGroupExp(Parent):
+    r"""The Sage additive-parent interface required by ``sage.groups.group_exp``.
+
+    Operations and elements are those of the given owned abelian group;
+    this private parent supplies Sage's runtime category to GroupExp.
+    """
+
+    def __init__(self, additive_group):
+        from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+
+        self._additive_group = additive_group
+        Parent.__init__(self, category=CommutativeAdditiveGroups(), facade=additive_group)
+
+    def _element_constructor_(self, value):
+        return self._additive_group(value)
+
+    def __contains__(self, value):
+        return value in self._additive_group
+
+    def zero(self):
+        return self._additive_group.zero()
+
+    def _repr_(self):
+        return repr(self._additive_group)
+
+
+@cached_function
+def _additive_group_exponential(additive_group):
+    r"""Realize multiplicative notation by Sage's maintained ``GroupExp`` functor.
+
+    The adapter owns the two crossings; both public endpoints and every
+    value of the identification are owned objects. Sage reference:
+    ``sage.groups.group_exp.GroupExp``.
+    """
+    from sage.groups.group_exp import GroupExp
+
+    engine = GroupExp()(_AdditiveGroupForGroupExp(additive_group))
+    group = _own_group(engine)
+    forward = Sets().Mor(additive_group, group)(
+        lambda element: group._from_engine(engine._element_constructor_(element))
+    )
+    backward = Sets().Mor(group, additive_group)(
+        lambda element: additive_group(group._to_engine(element).value)
+    )
+    # GroupExp wraps an additive element; reading its value reverses that
+    # constructor. This inverse pair belongs to the notation-change functor.
+    return Sets().Core().Mor(additive_group, group)._from_known_inverse_pair(forward, backward)
 
 
 def _element_to_engine(group, element):
@@ -335,7 +386,7 @@ def _engine_subgroup_admits(subgroup, element) -> bool:
     engine subgroup whether that engine element belongs to it.  Membership is
     therefore a predicate, not exception-driven control flow.
     """
-    return subgroup.supergroup()._to_engine(element) in _engine_group(subgroup)
+    return subgroup.supergroup()._engine_subgroup_contains(element, _engine_group(subgroup))
 
 
 def _engine_cosets(group, subgroup, side):
@@ -1045,6 +1096,9 @@ class _GroupEngine:
 
     def _to_subgroup_engine(self, element, engine_subgroup):
         return engine_subgroup(self._to_engine(element))
+
+    def _engine_subgroup_contains(self, element, engine_subgroup):
+        return self._to_engine(element) in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         return self._from_engine(engine_element)
@@ -2505,6 +2559,9 @@ class GroupAutomorphismGroups(OwnedCategory):
         def _to_subgroup_engine(self, automorphism, engine_subgroup):
             return engine_subgroup(self._to_engine(automorphism))
 
+        def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+            return self._to_engine(automorphism) in engine_subgroup
+
         def _from_subgroup_engine(self, engine_automorphism):
             return self(engine_automorphism.gap(), check=False)
 
@@ -3147,6 +3204,57 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 name="Group generators"
             )
 
+        def invariant_overlattice(self, lattice):
+            r"""Return the least integral invariant overlattice for this rational orthogonal action.
+
+            The group must be a retained subgroup of the orthogonal group
+            of the chosen rational span. For a nondegenerate lattice L,
+            every integral overlattice is contained in L-sharp and hence
+            in ``(1/abs(det L))*L``. This finite bound makes orbit-span
+            closure terminate even for an infinite finitely generated group.
+            A degenerate L requires a finite group for this realization.
+            """
+            from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.modules.orbit_spans import OrbitSpanLattices
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            ring = lattice.base_ring()
+            if ring is not _own_ring(ZZ):
+                raise TypeError("an integral invariant overlattice requires a lattice over ZZ")
+            if not lattice.module_rank().is_finite():
+                raise NotImplementedError("the invariant overlattice construction requires finite rank")
+            field_map = ring.fraction_field_map()
+            rational = lattice.base_change(field_map)
+            seed = lattice.generic_fibre_map()
+            ambient = seed.codomain()
+            group = self
+            group_inclusion = OwnedGroups().Mor(self, self).identity()
+            while group.supergroup() is not group:
+                inclusion = group.inclusion()
+                group_inclusion = OwnedGroups().Mor(group, inclusion.codomain())(inclusion) * group_inclusion
+                group = group.supergroup()
+            if group is not rational.Aut():
+                raise ValueError("the group must be included in the orthogonal group of this rational span")
+            restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
+            action = GroupActionFunctor(
+                self, Modules(ring), ambient,
+                lambda g: restrict(Modules(field_map.codomain()).Mor(rational, rational)(group_inclusion(g))),
+            )
+            determinant = abs(lattice.determinant())
+            bound = None
+            if determinant != ring.zero():
+                inverse = field_map.codomain().one() / field_map(determinant)
+                containing = ambient.subobject_on(tuple(
+                    ambient(rational.scalar_multiple(inverse, seed(v).underlying_element()))
+                    for v in lattice.module_generators()
+                ))
+                bound = containing.inclusion()
+            construction = GObjects(self, Modules(ring)).orbit_generated_submodule(
+                action, seed, containing=bound
+            )
+            return OrbitSpanLattices(ring)(construction, rational)
+
         def number_of_group_generators(self):
             return self.selected_group_resolution().generator_count()
 
@@ -3697,13 +3805,16 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
 
             def class_function(self, codomain, values, *, representatives=None):
-                r"""The class function ``G -> A`` with ``values`` on the conjugacy classes of ``representatives``.
+                r"""The conjugacy-invariant map on the classes of the given representatives.
 
                 A class function is constant on conjugacy classes, so it is
-                the map ``G -> A`` sending ``g`` to the value of its class.
-                It is an element of ``Sets().Mor(G, A)``; the table on ``G``
-                is expanded once, class by class.  The representatives
-                default to the group's own.
+                the map from the union of those classes into ``A``, sending
+                each member to its class value. If the representatives cover
+                all of ``G``, its domain is exactly ``G``. A proper union,
+                such as the ``p``-regular locus of a Brauer character, is
+                an owned subset of ``G``, not a partial map with domain ``G``.
+                The representatives default to the group's entire conjugacy
+                class framing.
                 """
                 if representatives is None:
                     representatives = self.conjugacy_classes_representatives()
@@ -3721,16 +3832,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     for representative, value in zip(representatives, supplied, strict=True)
                     for element in _conjugacy_class_elements(self, representative)
                 }
+                domain = (
+                    self if len(table) == int(self.order())
+                    else self.condition_set(lambda element: element in table)
+                )
 
                 def value_of_class(element):
-                    if element not in table:
-                        raise ValueError(
-                            f"the class function on {self} has no value at {element}: it was given on the "
-                            f"conjugacy classes of {representatives}"
-                        )
                     return table[element]
 
-                return Sets().Mor(self, codomain)(value_of_class)
+                return Sets().Mor(domain, codomain)(value_of_class)
 
             @cached_method
             def character_set(self):

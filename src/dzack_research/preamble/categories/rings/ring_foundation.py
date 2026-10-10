@@ -98,6 +98,8 @@ if "PrincipalIdeals" not in all_axioms:
     all_axioms.add("PrincipalIdeals")
 if "Prime" not in all_axioms:
     all_axioms.add("Prime")
+if "Nontrivial" not in all_axioms:
+    all_axioms.add("Nontrivial")
 
 
 class RngMorphism:
@@ -1903,6 +1905,21 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return this category with the descending chain condition on ideals."""
             return self._with_axiom("Artinian")
 
+        def Nontrivial(self):
+            r"""Return this category with the axiom ``1 != 0`` (Mathlib ``Nontrivial``)."""
+            return self._with_axiom("Nontrivial")
+
+    class Nontrivial(CategoryWithAxiom):
+        r"""Nontrivial rings: ``1 != 0``, so every ring except the zero ring (Mathlib ``Nontrivial``)."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "nontrivial rings"
+
+        def an_object(self):
+            r"""The integers."""
+            return _own_ring(SageZZ)
+
     class Division(CategoryWithAxiom):
         r"""Division rings: every nonzero element is a unit."""
 
@@ -1915,7 +1932,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return GF(2)
 
         def extra_super_categories(self):
-            return [OwnedRings().NoZeroDivisors()]
+            r"""A division ring has ``1 != 0`` (Mathlib ``DivisionRing.toNontrivial``)."""
+            return [OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial()]
 
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
@@ -2140,6 +2158,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def an_object(self):
                 r"""The integers localized at the prime (2)."""
                 return _own_ring(SageZZ).localize_at_prime(2)
+
+            def extra_super_categories(self):
+                r"""A local ring has ``1 != 0`` (Mathlib ``IsLocalRing.toNontrivial``)."""
+                return [OwnedRings().Nontrivial()]
 
             class SubcategoryMethods:
                 def Complete(self):
@@ -4275,14 +4297,14 @@ def _size_of_finitely_supported_families(coefficients, indeterminates) -> Catego
 def _placed_nonzero(ring) -> bool:
     r"""Whether the placement of ``ring`` states ``1 != 0``.
 
-    A domain, a division ring and a local ring have ``1 != 0`` by definition,
-    and an infinite ring has more than one element.  The zero ring ``ZZ/1ZZ``
-    is the finite ring these exclude.
+    A nontrivial ring states it: division rings, local rings and ``ZZ/nZZ``
+    for ``n >= 2`` are placed there by their categories and constructor.  A
+    domain has ``1 != 0`` by definition, and an infinite ring has more than
+    one element.  The zero ring ``ZZ/1ZZ`` is the finite ring these exclude.
     """
     return (
-        ring in OwnedRings().Commutative().NoZeroDivisors()
-        or ring in OwnedRings().Division()
-        or ring in OwnedRings().Commutative().Local()
+        ring in OwnedRings().Nontrivial()
+        or ring in OwnedRings().Commutative().NoZeroDivisors()
         or ring in owned_sets.CountablyInfiniteSets()
         or ring in owned_sets.UncountableSets()
     )
@@ -4375,6 +4397,7 @@ def _presented_ring_category(engine: Ring) -> Category:
         pAdicField,
         pAdicRing,
     )
+    from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.rings.finite_rings.finite_field_base import FiniteField
     from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
@@ -4422,12 +4445,19 @@ def _presented_ring_category(engine: Ring) -> Category:
             # its degree over F_p, a datum of GF(p^k), is k = 1.
             prime_field = (PrimeFields(),) if engine.degree() == 1 else ()
             placements = (*field, *prime_field, owned_sets.FiniteSets())
+        case AlgebraicClosureFiniteField_generic():
+            # An algebraic closure of F_p is a field, and it is the union of
+            # the finite fields F_{p^n}, so countably infinite.
+            placements = (*field, owned_sets.CountablyInfiniteSets())
         case IntegerModRing_generic():
             # ZZ/nZZ is a quotient of ZZ, so commutative and Noetherian, and
-            # it has n elements.  Whether n is prime or a prime power is
-            # computed, never a datum of the construction, so it places
-            # nothing here.
-            placements = (OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets())
+            # it has n elements.  The modulus n is the datum of the
+            # construction, and for n >= 2 the ring has 1 != 0 (Mathlib
+            # ``ZMod.nontrivial`` under ``Fact (1 < n)``).  Whether n is
+            # prime or a prime power is computed, never a datum of the
+            # construction, so it places nothing here.
+            nontrivial = (OwnedRings().Nontrivial(),) if engine.order() >= 2 else ()
+            placements = (OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(), *nontrivial)
         case NumberField():
             # A number field K = QQ[x]/(f) with f irreducible, presented by
             # its chosen generator.

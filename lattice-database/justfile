@@ -24,6 +24,10 @@ morphism SOURCE TARGET *ARGS:
 seed *ARGS:
     just _latticedb seed {{ARGS}}
 
+# Seed the regular and spinor regular ternary forms, their values certified by citation
+regular-ternaries *ARGS:
+    just _latticedb regular-ternaries {{ARGS}}
+
 # Compute and store derived fields on existing cards
 enrich *ARGS:
     just _latticedb enrich {{ARGS}}
@@ -64,3 +68,7 @@ test-source-intake:
 # List the tags that share a Gram tensor
 duplicates:
     just _latticedb duplicates
+
+# Merge each card into the earliest card that states its Gram tensor, retiring its tag
+deduplicate:
+    just _latticedb deduplicate

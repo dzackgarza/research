@@ -30,7 +30,7 @@ For every
 $$
 \iota\in\operatorname{PrimEmb}(U^{\perp n},L),
 $$
-the unimodular-splitting proposition @prop:unimodular-splits gives
+@prop:unimodular-splits gives
 $$
 U^{\perp n}\perp(U^{\perp n})^{\perp L}
 \isoto

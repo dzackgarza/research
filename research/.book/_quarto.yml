@@ -80,6 +80,7 @@ book:
         - coble/introduction/000-introduction.md
         - coble/surfaces-and-moduli/surface-types.md
         - coble/surfaces-and-moduli/k3-covers-and-involutions.md
+        - coble/surfaces-and-moduli/k3-automorphisms.md
         - coble/surfaces-and-moduli/polarizations-and-loci.md
         - coble/coble-surfaces/coble-surface-basics.md
         - coble/coble-surfaces/k3-covers-of-coble-surfaces.md

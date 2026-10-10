@@ -1,4 +1,4 @@
-# Constructions of the moduli space {#sec-moduli-construction}
+Ma# Constructions of the moduli space {#sec-moduli-construction}
 
 We summarize the relevant moduli spaces:
 
@@ -23,7 +23,7 @@ F_{\Nod, 2} &= ???
 $$
 
 where $\tdp$ is described in [@AEGS25].
-Note that we implicitly use the embedding $\eta: T_\Co \injects \ten$ of the primitive-embedding lemma (@lem:primitive_embedding_eta).
+Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.
 
 ::: {.question}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?)
@@ -123,7 +123,7 @@ For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
 
 ::: {.proof}
 
-The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$, and $T$ has signature $(2, 20 - \rank(M))$; apply the type-IV dimension proposition (@prop:type-iv-dimension).
+The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$, and $T$ has signature $(2, 20 - \rank(M))$; apply @prop:type-iv-dimension.
 :::
 
 Letting $E_{10} \definedas U \oplus E_8$, one can similarly consider the Enriques lattices $\sen := E_{10}(2)$ with $\ten = U \oplus E_{10}(2)$.
@@ -149,7 +149,7 @@ where surfaces along the divisor $\mch_{-2}$ in $\fen$ correspond precisely to C
 ::: {#fig-period-domain-hyperplanes .figure}
 \input{tikz/fig_type_iv_hsd.tex}
 
-The period domain $D_{\ten}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm.
+The period domain $D_{\ten}$ together with the hyperplanes $v_i^{\perp\ten}$ cut out by vectors $v_i$ of fixed negative norm.
 The Coble surfaces are precisely the periods lying on the hyperplanes of $\mch_{-2}$.
 :::
 
@@ -194,13 +194,13 @@ $$
 for the moduli space of such curves, the quotient being taken in the sense of geometric invariant theory [@YZZ25 §2.1].
 Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its minimal resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of the line class, so $H^2 = 2$.
 The exceptional curves of $X\to\wh X$ span a copy $L\iscontainedin\Pic(X)$ of the root lattice $R$, with the exceptional classes as a base $\Delta$.
-Write $P$ for the primitive hull of $\generators H\oplus L$ in $H^2(X;\ZZ)$ and $Q \definedas P^{\perp}$, of signatures $(1,\rank R)$ and $(2, 19 - \rank R)$ [@YZZ25 §2.3].
+Write $P$ for the primitive hull of $\generators H\oplus L$ in $H^2(X;\ZZ)$ and $Q \definedas P^{\perp H^2(X;\ZZ)}$, of signatures $(1,\rank R)$ and $(2, 19 - \rank R)$ [@YZZ25 §2.3].
 For a general member of $\mcv_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
 :::
 
 ::: {.proposition #prop:coble-is-the-ten-nodal-sextic-type title="The Coble lattices are the lattices of the type $10A_1$"}
 
-Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by the ten-nodal-sextic lemma (@lem:rational_sextic_ten_nodes), and $X$ is the K3 cover of the Coble surface $S = X/\iota$.
+Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by @lem:rational_sextic_ten_nodes, and $X$ is the K3 cover of the Coble surface $S = X/\iota$.
 Then
 $$
 P = \generators{H}\oplus A_1^{\oplus 10} \cong \latI_{1,10}(2) = S_\Co,
@@ -214,7 +214,7 @@ In particular $\dim D(Q) = 9$.
 ::: {.proof}
 
 The saturation of $\generators H\oplus L$ inside $H^2(X;\ZZ)$ is $(\ZZ/2)^{l'-1}$, where $l'$ is the number of irreducible components of $Z$ [@YZZ25 §5.3]; for an irreducible sextic $l' = 1$, so no saturation occurs and $P = \generators H\oplus L$.
-With $H^2 = 2$ and $L = A_1^{\oplus 10} = \generators{-2}^{\oplus 10}$ this is $\generators 2\oplus\generators{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by the Coble invariant-lattice proposition (@prop:coble-invariant-lattice).
+With $H^2 = 2$ and $L = A_1^{\oplus 10} = \generators{-2}^{\oplus 10}$ this is $\generators 2\oplus\generators{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by @prop:coble-invariant-lattice.
 Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and the polarized-K3 dimension corollary (@cor:m-polarized-k3-dimension) gives the dimension.
 :::
 
@@ -237,7 +237,7 @@ The **occult period map**
 $$
 \per_T\colon \mcm_T \too \Gamma_T\backslash D(Q)
 $$
-is an algebraic open embedding with image $\Gamma_T\backslash\bigl(D(Q) - \mch_T\bigr)$, where $\mch_T$ is the arrangement of hyperplanes $r^{\perp}$ for roots $r$ orthogonal to $H$ and not lying in $L$.
+is an algebraic open embedding with image $\Gamma_T\backslash\bigl(D(Q) - \mch_T\bigr)$, where $\mch_T$ is the arrangement of hyperplanes $r^{\perp Q}$ for roots $r$ orthogonal to $H$ and not lying in $L$.
 When $T$ is a nodal type, $\per_T$ is moreover an isomorphism of orbifolds onto $P\Gamma_T\backslash(D(Q) - \mch_T)$ [@YZZ25 §1, §3.2, §3.3, §6.2].
 The description of the image restates, at the level of moduli spaces, the equisingular deformation theory of Urabe [@Ura88].
 :::
@@ -255,7 +255,7 @@ Then $\per_T$ extends to an isomorphism
 $$
 \wh{\mcm}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\mch^{*}_T}
 $$
-between the GIT compactification of $\mcm_T$ and the Looijenga compactification (the Looijenga-compactification definition (@def:looijenga-compactification)) of $\Gamma_T\backslash(D(Q) - \mch^{*}_T)$, compatibly with the corresponding statement of Shah and Looijenga for the whole space of sextics, $\overline{\mcm}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\mch_\infty}$ [@Sha80; @Loo02]; the two vertical maps of the resulting square are normalizations onto their images [@YZZ25 §4.2].
+between the GIT compactification of $\mcm_T$ and the Looijenga compactification of @def:looijenga-compactification applied to $\Gamma_T\backslash(D(Q) - \mch^{*}_T)$, compatibly with the corresponding statement of Shah and Looijenga for the whole space of sextics, $\overline{\mcm}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\mch_\infty}$ [@Sha80; @Loo02]; the two vertical maps of the resulting square are normalizations onto their images [@YZZ25 §4.2].
 :::
 
 ::: {.remark title="The arithmetic group as a normalizer"}
@@ -297,7 +297,7 @@ The Coble families with $n$ boundary components are indexed by the number of irr
 
 ::: {.remark}
 
-By the Baily--Borel extension lemma (@lem:locally_closed_embedding_BB), there are morphisms $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and $\overline{\fco}^{\bb} \to \overline{\fttz}^{\bb}$ which induce correspondences between the boundary cusps.
+By @lem:locally_closed_embedding_BB, there are morphisms $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and $\overline{\fco}^{\bb} \to \overline{\fttz}^{\bb}$ which induce correspondences between the boundary cusps.
 :::
 
 ::: {.remark}

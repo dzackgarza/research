@@ -38,7 +38,7 @@ The following conditions are equivalent.
 
 4. Every $\ZZ$-basis of $S$ extends along $\iota$ to a $\ZZ$-basis of $L$.
 
-5. The restriction morphism $\iota^\vee\colon\Hom_\ZZ(L,\ZZ)\to\Hom_\ZZ(S,\ZZ)$ is surjective.
+5. The restriction morphism $\iota^\vee\colon\Hom_\ZZ(L,\ZZ)\twoheadrightarrow\Hom_\ZZ(S,\ZZ)$ is an epimorphism in $\bZ\text{-}\mathbf{Mod}$.
 
 6. The canonical morphism $S\to(S^{\perp L})^{\perp L}$ is an isomorphism.
 
@@ -48,14 +48,12 @@ A morphism satisfying these conditions is a **primitive embedding**.
 ::: {.proof}
 
 Tensor the cokernel sequence with $\QQ$.
-The saturation pullback of @def:saturation identifies with the kernel of the composite
-$$
-L\too L_\QQ\too (Q_\iota)_\QQ.
-$$
+The universal property of @def:saturation gives
+$\Sat_L(\iota)\isoto\ker\qty{L\too L_\QQ\too(Q_\iota)_\QQ}$.
 The induced sequence
 $$
 0\too S\too\Sat_L(\iota)
-\too\ker\bigl(Q_\iota\to(Q_\iota)_\QQ\bigr)
+\too\ker\qty{Q_\iota\to(Q_\iota)_\QQ}
 \too0
 $$
 is exact.
@@ -72,10 +70,9 @@ For $(5)\Longrightarrow(1)$, the Smith normal form of $\iota$ shows that a nonze
 Hence $Q_\iota$ is torsion-free.
 
 Over $\QQ$, nondegeneracy gives
-$$
-\bigl((S_\QQ)^{\perp L_\QQ}\bigr)^{\perp L_\QQ}=S_\QQ.
-$$
-Pulling this identity back along $L\to L_\QQ$ identifies $(S^{\perp L})^{\perp L}$ canonically with $\Sat_L(\iota)$.
+$\qty{(S_\QQ)^{\perp L_\QQ}}^{\perp L_\QQ}=S_\QQ$.
+Pulling this identity back along $L\to L_\QQ$ gives the canonical isomorphism
+$(S^{\perp L})^{\perp L}\isoto\Sat_L(\iota)$.
 Hence $(2)\Longleftrightarrow(6)$.
 :::
 
@@ -96,22 +93,11 @@ M_1 \arrow[rr,"\varphi"'] && M_2
 commutes.
 
 For a fixed target $L$, write
-$$
-\Emb(S,L)\definedas\operatorname{PrimEmb}(S,L)
-$$
-for the set of primitive embedding morphisms.
-Postcomposition gives a left action of $\Orth(L)$ on $\Emb(S,L)$, and the isomorphism
-classes in the fixed-target subgroupoid are therefore
-$$
-\Orth(L)\backslash\Emb(S,L).
-$$
-Precomposition gives the commuting right action of $\Orth(S)$.
-Consequently the $\Orth(L)$-orbits of primitive subobjects of $L$ isometric to $S$ are
-classified by the double quotient
-$$
-\Orth(L)\backslash\Emb(S,L)/\Orth(S),
-$$
-which is not the same object as $\Emb(S,L)$ or as $\Orth(L)\backslash\Emb(S,L)$.
+$\Emb(S,L)\definedas\operatorname{PrimEmb}(S,L)$ for the set of primitive embedding morphisms.
+Postcomposition by $\Orth(L)$ gives the fixed-target isomorphism classes
+$\Orth(L)\backslash\Emb(S,L)$.
+The commuting right action of $\Orth(S)$ gives the primitive-subobject orbit set
+$\Orth(L)\backslash\Emb(S,L)/\Orth(S)$.
 
 Nikulin's primitive-embedding classification [@Nik80 Prop. 1.15.1] classifies the
 fixed-source isomorphism classes $\Orth(L)\backslash\Emb(S,L)$ by the corresponding
@@ -124,26 +110,16 @@ $\Orth(S)$-action.
 ::: {.definition #def:overlattice title="Overlattices and their discriminant subobjects"}
 
 An **overlattice** of a lattice $S$ is a lattice morphism
-$$
-\iota\colon S\injects L
-$$
-whose carrier cokernel $H_\iota$ is a finite-length $\bZ$-module:
+$\iota\colon S\injects L$ whose cokernel $H_\iota$ is finite length, with exact sequence
 $$
 0\too S\xrightarrow{\iota}L\xrightarrow{c_\iota}H_\iota\too0.
 $$
-Since $\iota_\QQ\colon S_\QQ\isoto L_\QQ$ is an isomorphism, its inverse induces a canonical monomorphism
-$$
-\lambda_\iota\colon L\injects S^\#
-$$
-with $\lambda_\iota\circ\iota=\iota_S$.
-Functoriality of the bilinear cokernel gives an isotropic bilinear subobject
-$$
-\bar\lambda_\iota\colon(H_\iota,0)\injects A_S.
-$$
-If $S$ is even, the overlattice $L$ is even exactly when the same carrier monomorphism refines to an isotropic quadratic subobject
-$$
-\bar\lambda_{\iota,q}\colon(H_\iota,0)\injects A_{S,q}.
-$$
+Since $\iota_\QQ\colon S_\QQ\isoto L_\QQ$, its inverse induces
+$\lambda_\iota\colon L\injects S^\#$ with $\lambda_\iota\circ\iota=\iota_S$.
+Functoriality of the bilinear cokernel gives
+$\bar{\lambda}_\iota\colon(H_\iota,0)\injects A_S$.
+If $S$ is even, $L$ is even exactly when this refines to
+$\bar{\lambda}_{\iota,q}\colon(H_\iota,0)\injects A_{S,q}$.
 :::
 
 ::: {.theorem #thm:nikulin-gluing title="Nikulin's gluing correspondence"}
@@ -151,10 +127,7 @@ $$
 Let $S$ be an even lattice.
 Let $\operatorname{Over}^{\mathrm{ev}}(S)$ be the poset of even overlattice morphisms $S\injects L$, ordered by morphisms over $S$.
 Let $\operatorname{IsoSub}(A_{S,q})$ be the poset of isotropic quadratic subobjects
-$$
-h_q\colon(H,0)\injects A_{S,q},
-$$
-ordered by factorization.
+$h_q\colon(H,0)\injects A_{S,q}$, ordered by factorization.
 Then
 $$
 \operatorname{Over}^{\mathrm{ev}}(S)
@@ -163,15 +136,12 @@ $$
 $$
 as posets [@Nik80, §1.4].
 
-For $h_q$ with carrier monomorphism $h\colon H\injects S^\#/S$, let
-$$
-\pi_S\colon S^\#\twoheadrightarrow S^\#/S
-$$
-be the carrier quotient.
+For $h_q$ with bilinear monomorphism $h\colon H\injects A_S^\sharp$, let
+$\pi_S\colon S^\#\twoheadrightarrow A_S^\sharp$ be the cokernel morphism.
 The corresponding overlattice is the pullback in $\bZ\text{-}\mathbf{Mod}$
-```tikzcd id="overlattice-from-isotropic-subobject"
+```tikzcd
 L_h \arrow[r] \arrow[d] & S^\# \arrow[d,"\pi_S"] \\
-H \arrow[r,hook,"h"'] & S^\#/S .
+H \arrow[r,hook,"h"'] & A_S^\sharp .
 ```
 It fits into
 $$
@@ -180,94 +150,95 @@ $$
 
 Let
 $$
-(H^\perp,\bar\beta_S|_{H^\perp})\injects A_S
+\kappa_h\colon
+H^{\perp_{A_S}}
+\injects
+A_S
 $$
-be the bilinear orthogonal-complement subobject of the underlying isotropic bilinear subobject $(H,0)\injects A_S$.
-Then the bilinear discriminant form of $L_h$ is the bilinear cokernel
+be the right orthogonal-complement kernel of the underlying isotropic bilinear subobject $h\colon(H,0)\injects A_S$.
+Since $h$ is isotropic, the universal property of the orthogonal-complement kernel gives the unique monomorphism
+$$
+\lambda_h\colon(H,0)\injects H^{\perp_{A_S}},
+\qquad
+\kappa_h\circ\lambda_h=h.
+$$
+Then
 $$
 A_{L_h}
 \isoto
-\coker_{\mathbf{BilMod}_{\bZ}}\bigl((H,0)\injects H^\perp\bigr),
+\coker_{\mathbf{BilMod}_{\bZ}}(\lambda_h),
 $$
-while $A_{L_h,q}$ is the induced quadratic quotient of $A_{S,q}$.
+while $A_{L_h,q}$ is the corresponding quadratic cokernel of the induced isotropic quadratic subobject.
 Moreover,
 $$
-[L_h:S]=\abs H,
+[L_h:S]=\cardinality{H},
 \qquad
-\disc L_h=\frac{\disc S}{\abs H^2}.
+\disc{L_h}=\frac{\disc{S}}{\cardinality{H}^2}.
 $$
 The natural $\Orth(S)$-actions on the two posets are intertwined by this correspondence.
 :::
 
 ::: {.proof}
 
-For an overlattice $\iota\colon S\injects L$, the morphism $\bar\lambda_\iota\colon H_\iota\injects A_S$ is isotropic precisely because the rational extension of the form on $S$ restricts to an even integral form on $L$.
-If
-$$
-S\xrightarrow{\iota_1}L_1\xrightarrow{f}L_2
-$$
-is a morphism of overlattices, functoriality of cokernels gives a factorization of $\bar\lambda_{\iota_1}$ through $\bar\lambda_{\iota_2}$.
+For an overlattice $\iota\colon S\injects L$, the morphism $\bar{\lambda}_\iota\colon H_\iota\injects A_S$ is isotropic precisely because the rational extension of the form on $S$ restricts to an even integral form on $L$.
+If $S\xrightarrow{\iota_1}L_1\xrightarrow{f}L_2$ is a morphism of overlattices, functoriality of cokernels gives the unique morphism
+$\bar{f}\colon H_{\iota_1}\too H_{\iota_2}$ satisfying
+$\bar{\lambda}_{\iota_2}\circ\bar{f}=\bar{\lambda}_{\iota_1}$.
 Thus the construction is order-preserving.
 
 Conversely, the displayed pullback defining $L_h$ has kernel $S$ and cokernel $H$.
 Isotropy of $h$ is exactly the condition that the rational extension of the form on $S$ restrict to an even integral form on $L_h$.
 The two constructions are inverse by the universal properties of the cokernel and pullback.
 
-The orthogonal-complement construction identifies $A_{L_h}$ with the cokernel of $H\to H^\perp$, giving the displayed short exact sequence.
-The index equality follows from $0\to S\to L_h\to H\to0$, and the determinant formula follows from
+The bilinear discriminant object is therefore the cokernel sequence
 $$
-\abs{\disc S}=[L_h:S]^2\abs{\disc L_h}.
+0
+\too
+(H,0)
+\xrightarrow{\lambda_h}
+H^{\perp_{A_S}}
+\too
+A_{L_h}
+\too
+0
 $$
+in $\mathbf{BilMod}_{\bZ}$.
+The index equality follows from the exact sequence
+$$
+0\to S\to L_h\to H\to0,
+$$
+and
+$\abs{\disc{S}}=[L_h:S]^2\abs{\disc{L_h}}$.
 Equivariance under $\Orth(S)$ follows from functoriality of $S\mapsto(S^\#,A_S,q_S)$.
 :::
 
 ::: {.construction #cons:embedding-gluing-data title="Gluing data of a primitive embedding"}
 
-Let
+Let $\iota_S\colon S\injects L$ be a primitive embedding of even lattices with $L$ even, and let
+$\iota_T\colon T\injects L$ represent its orthogonal complement.
+Then $j\definedas\iota_S\perp\iota_T\colon S\perp T\injects L$ is an even overlattice, with cokernel sequence
 $$
-\iota\colon S\injects L
+0\too S\perp T\xrightarrow{j}L\too H_j\too0.
 $$
-be a primitive embedding of even lattices with $L$ even, and let
-$\kappa\colon T\injects L$ represent the orthogonal-complement subobject.
-The induced morphism
-$$
-j\definedas\iota\perp\kappa\colon S\perp T\injects L
-$$
-is an even overlattice.
-Let
-$$
-0\too S\perp T\xrightarrow{j}L\too H_j\too0
-$$
-be its carrier cokernel sequence, and let
-$$
-h_{j,q}\colon(H_j,0)\injects A_{S,q}\perp A_{T,q}
-$$
-be the isotropic quadratic subobject of @thm:nikulin-gluing.
+Let $h_{j,q}\colon(H_j,0)\injects A_{S,q}\perp A_{T,q}$ be its isotropic quadratic subobject from @thm:nikulin-gluing.
 
-Primitivity implies that the two carrier projections of $h_{j,q}$ are monomorphisms.
+Primitivity implies that the two projections of $h_{j,q}$ are monomorphisms.
 Write the induced quadratic subobjects as
 $$
 h_{S,q}\colon H_{S,q}\injects A_{S,q},
 \qquad
 h_{T,q}\colon H_{T,q}\injects A_{T,q}.
 $$
-Then there is a unique quadratic anti-isometry
-$$
-\gamma_q\colon H_{S,q}\isoto -H_{T,q}
-$$
-whose graph is $h_{j,q}$.
+Then there is a unique isometry $\gamma_q\colon H_{S,q}\isoto H_{T,q}(-1)$ whose graph is $h_{j,q}$.
 Thus the gluing construction attached to $\iota$ is $(h_{S,q},h_{T,q},\gamma_q)$.
 
 The index/discriminant relation gives
 $$
-\abs{\disc T}
+\abs{\disc{T}}
 =
-\frac{\abs{\disc L}\,\abs{H_j}^2}{\abs{\disc S}}.
+\frac{\abs{\disc{L}}\,\cardinality{H_j}^2}{\abs{\disc{S}}}.
 $$
-If $L$ is unimodular, the two projections are isomorphisms and
-$$
-A_{S,q}\isoto -A_{T,q}.
-$$
+If $L$ is unimodular, the two projections are isomorphisms and $A_{S,q}\isoto A_{T,q}(-1)$.
 This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
 :::
 
@@ -275,13 +246,13 @@ This is the primitive-embedding gluing construction of [@Nik80, §1.4--1.5].
 
 ::: {.definition #def:lattice-split title="Orthogonal splitting"}
 
-Let $\iota\colon S\injects L$ be a primitive embedding, and let
-$\kappa\colon T\injects L$ represent its orthogonal-complement subobject.
+Let $\iota_S\colon S\injects L$ be a primitive embedding, and let
+$\iota_T\colon T\injects L$ represent its orthogonal-complement subobject.
 The pair induces the orthogonal-sum morphism
 $$
-j_\iota\colon S\oplus T\too L,
+j_{\iota_S}\colon S\oplus T\too L,
 \qquad
-(s,t)\longmapsto\iota(s)+\kappa(t).
+(s,t)\longmapsto\iota_S(s)+\iota_T(t).
 $$
 The embedding $\iota$ **splits** when $j_\iota$ is an isomorphism.
 :::
@@ -289,20 +260,14 @@ The embedding $\iota$ **splits** when $j_\iota$ is an isomorphism.
 ::: {.proposition #prop:unimodular-splits title="Unimodular sublattices split"}
 
 Let $\iota\colon S\injects L$ be a primitive embedding with $S$ unimodular and $L$ nondegenerate.
-Then the orthogonal-sum morphism $j_\iota$ of @def:lattice-split is an isometry
-$$
-j_\iota\colon S\oplus S^{\perp L}\isoto L.
-$$
+Then the orthogonal-sum morphism of @def:lattice-split is an isometry
+$j_\iota\colon S\oplus S^{\perp L}\isoto L$.
 If $L$ is unimodular, then $S^{\perp L}$ is unimodular.
 :::
 
 ::: {.proof}
 
-Let
-$$
-\beta_S^\sharp\colon S\isoto S^\vee
-$$
-be the adjoint isomorphism of the unimodular lattice $S$, and let
+Let $\beta_S^\sharp\colon S\isoto S^\vee$ be the adjoint isomorphism of the unimodular lattice $S$, and let
 $\iota^\vee\colon L^\vee\to S^\vee$ be restriction along $\iota$.
 Define
 $$
@@ -312,25 +277,17 @@ r\definedas
 \circ\beta_L^\sharp
 \colon L\too S.
 $$
-Since $\iota$ preserves the bilinear forms,
-$$
-r\circ\iota=\id_S.
-$$
+Since $\iota$ preserves the bilinear forms, $r\circ\iota=\id_S$.
 Moreover, $\ker r$ is exactly the orthogonal-complement subobject $S^{\perp L}\injects L$.
 Hence
 $$
 0\too S^{\perp L}\too L\xrightarrow{r}S\too0
 $$
-is split by $\iota$, and the induced map
-$$
-S\oplus S^{\perp L}\isoto L
-$$
-is an isometry.
+is split by $\iota$, and
+$j_\iota\colon S\oplus S^{\perp L}\isoto L$ is an isometry.
 
-If $L$ is unimodular, additivity of the discriminant functor for orthogonal direct sums gives
-$$
-A_L\isoto A_S\perp A_{S^{\perp L}}.
-$$
+If $L$ is unimodular, additivity of the discriminant functor gives
+$A_L\isoto A_S\perp A_{S^{\perp L}}$.
 Since $A_L=0=A_S$, one has $A_{S^{\perp L}}=0$.
 Thus $S^{\perp L}$ is unimodular.
 :::
@@ -369,7 +326,7 @@ $$
 ::: {.proof}
 
 Let $e\in L$ be a primitive isotropic vector.
-By the unimodular-divisibility lemma (@lem:unimodular-divisibility) choose $w\in L$ with $\beta_L(e, w) = 1$, and set $k\definedas w^2$.
+By @lem:unimodular-divisibility choose $w\in L$ with $\beta_L(e, w) = 1$, and set $k\definedas w^2$.
 The sublattice $P\definedas\generators{e, w}$ has Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular sublattice is saturated by the primitive-sublattice characterization (@prop:primitive-characterization).
 The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice) when $k$ is odd.
 We adjust $w$ within its coset to realize the parity dictated by $L$; note that adding to $w$ any vector of $\generators{e}^{\perp L}$ preserves $\beta_L(e, w) = 1$.
@@ -382,22 +339,17 @@ Were $\generators{e}^{\perp L}$ to consist entirely of even-norm vectors and $w^
 Hence either $w^2$ is already odd, or $\generators{e}^{\perp L}$ contains a vector $u$ of odd norm; in the latter case replace $w$ by $w + u$, which preserves $\beta_L(e, w) = 1$ and gives $(w + u)^2 = w^2 + 2\beta_L(w, u) + u^2$ odd.
 Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
 
-Since $P$ is unimodular, the unimodular-splitting proposition (@prop:unimodular-splits) gives $L\cong P\oplus P^{\perp L}$.
+Since $P$ is unimodular, @prop:unimodular-splits gives $L\cong P\oplus P^{\perp L}$.
 :::
 
 ## Maximal and split maximal lattices
 
 ::: {.definition #def:maximal-lattice title="Maximal lattices"}
 
-An even lattice $L'$ is **maximal** if its quadratic discriminant form $A_{L',q}$ has no nonzero isotropic quadratic subobject
-$$
-(H,0)\injects A_{L',q}.
-$$
+An even lattice $L'$ is **maximal** if $A_{L',q}$ has no nonzero isotropic quadratic subobject
+$(H,0)\injects A_{L',q}$.
 A maximal overlattice of $L$ is an even overlattice morphism
-$$
-\iota\colon L\injects L'
-$$
-whose target is maximal.
+$\iota\colon L\injects L'$ whose target is maximal.
 :::
 
 ::: {.lemma #lem:maximal-overlattice-exists}
@@ -408,29 +360,22 @@ A unimodular lattice is maximal.
 
 ::: {.proof}
 
-Nikulin's correspondence is an isomorphism of posets when even overlattices of $L$
-are ordered by embedding morphisms over $L$ and isotropic subgroups of $A_L$ are
-ordered by inclusion.
-Indeed, if $\eta\colon \dualof{L}\to A_L$ is the quotient map, then
+By @thm:nikulin-gluing,
 $$
-H_1\leq H_2
-\quad\Longleftrightarrow\quad
-\inverseof{\eta}(H_1)\injects\inverseof{\eta}(H_2)
+\operatorname{Over}^{\mathrm{ev}}(L)
+\isoto
+\operatorname{IsoSub}(A_{L,q})
 $$
-by the canonical inclusion over $L$.
-Choose an isotropic subgroup maximal under inclusion; it exists because $A_L$ is finite.
-The corresponding even overlattice admits no proper even overlattice, hence is maximal.
-A unimodular lattice has $A_L = 0$, so the condition is vacuous.
+as posets, with overlattices ordered by morphisms over $L$ and isotropic quadratic subobjects ordered by factorization.
+The discriminant module $A_L^\sharp$ has finite length, so $\operatorname{IsoSub}(A_{L,q})$ is a finite poset and has a maximal element.
+Its corresponding even overlattice admits no proper even overlattice, hence is maximal.
+For a unimodular lattice $A_{L,q}=0$, so the zero subobject is maximal.
 :::
 
 ::: {.definition #def:split-maximal title="Maximal lattices with two hyperbolic summands"}
 
-A maximal lattice $L'$ of signature $(2,n)$ is **$U^{\oplus2}$-decomposable** if there is
-an isometry
-$$
-U^{\oplus2}\oplus L_0\isoto L'
-$$
-for some lattice $L_0$.
+A maximal lattice $L'$ of signature $(2,n)$ is **$U^{\oplus2}$-decomposable** if
+$U^{\oplus2}\oplus L_0\isoto L'$ for some lattice $L_0$.
 Dawes uses the term *split maximal* for this decomposition hypothesis [@Daw22 §3.1].
 :::
 
@@ -471,27 +416,16 @@ orbit statement.
 ::: {.proposition #prop:embedding-finiteness title="Finiteness of primitive-embedding orbits into an even unimodular lattice"}
 
 Let $S$ and $L$ be even lattices with $L$ unimodular.
-Then
-$$
-\Orth(L)\backslash\Emb(S,L)
-$$
-is finite.
+Then $\Orth(L)\backslash\Emb(S,L)$ is finite.
 :::
 
 ::: {.proof}
 
 Fix $\iota\colon S\injects L$ and put $T\definedas S^{\perp L}$.
-Unimodularity of $L$ gives a quadratic anti-isometry
-$$
-A_{S,q}\isoto -A_{T,q}.
-$$
+Unimodularity of $L$ gives an isometry $A_{S,q}\isoto A_{T,q}(-1)$.
 The signature of $T$ together with $A_{T,q}$ is therefore fixed, so $T$ belongs to a fixed genus; that genus contains finitely many integral isometry classes.
 
-For each such $T$, the set
-$$
-\operatorname{AntiIso}(A_{S,q},A_{T,q})
-$$
-is finite because the common carrier modules have finite length over $\bZ$ and therefore finite cardinality.
+For each such $T$, the set $\operatorname{Iso}\qty{A_{S,q},A_{T,q}(-1)}$ is finite because the discriminant modules $A_S^\sharp$ and $A_T^\sharp$ have finite cardinality.
 Nikulin's equivalence relation on these gluing data is induced by isometries of the target and complement [@Nik80, Prop. 1.15.1].
 Hence only finitely many $\Orth(L)$-orbits of primitive embeddings occur.
 :::
@@ -499,27 +433,27 @@ Hence only finitely many $\Orth(L)$-orbits of primitive embeddings occur.
 ::: {.proposition #prop:scaled-discriminant-ses title="Bilinear discriminant form of a scaled lattice"}
 
 Let $L$ be an integral lattice and let $m>0$.
-Define the finite value submodule
+Define the finite-length value module
 $$
 W_m(L)
 \definedas
-\operatorname{im}\!\left(
-L\tensor_\bZL
+\operatorname{im}\!\qty{
+L\tensor_\bZ L
 \xrightarrow{\ (x,y)\mapsto\beta_L(x,y)/m+\bZ\ }
 \bQ/\bZ
-\right),
+},
 $$
 and define the bilinear module
 $$
 K_m(L)
 \definedas
-\left(
+\qty{
 L/mL,
 W_m(L),
 \kappa_m
-\right),
+},
 \qquad
-\kappa_m(\bar x,\bar y)
+\kappa_m(\bar{x},\bar{y})
 =
 \frac{\beta_L(x,y)}{m}+\bZ.
 $$
@@ -535,14 +469,7 @@ A_L
 \too
 0.
 $$
-If $L$ is unimodular, then
-$$
-A_{L(m)}\isoto K_m(L),
-$$
-whose carrier is
-$$
-L/mL\isoto(\bZ/m\bZ)^{\rank L}.
-$$
+If $L$ is unimodular, then $A_{L(m)}\isoto K_m(L)$ and $A_{L(m)}^\sharp\isoto L/mL\isoto(\bZ/m\bZ)^{\rank L}$.
 :::
 
 ::: {.proof}
@@ -553,34 +480,27 @@ L(m)^\#
 \isoto
 \tfrac1mL^\#.
 $$
-Multiplication by $m$ on $L_\QQ$ induces the carrier morphism
+Multiplication by $m$ on $L_\QQ$ induces $U(F_m)\colon A_{L(m)}^\sharp\too A_L^\sharp$, characterized by
 $$
-\tfrac1mL^\#/L
-\too
-L^\#/L,
-\qquad
-x+L
-\longmapsto
-mx+L.
-$$
-Together with multiplication by $m$ on the finite value modules, this defines the bilinear-module morphism
-$$
-F_m\colon A_{L(m)}\too A_L,
-$$
-because
-$$
-\bar\beta_L(mx,my)
+U(F_m)\circ\pi_{L(m)}
 =
-m\,\bar\beta_{L(m)}(x,y).
+\pi_L\circ[m]_{L_\QQ}.
+$$
+Together with multiplication by $m$ on the value modules, this defines
+$F_m\colon A_{L(m)}\too A_L$ in $\mathbf{BilMod}_{\bZ}$, because
+$$
+\bar{\beta}_L(mx,my)
+=
+m\,\bar{\beta}_{L(m)}(x,y).
 $$
 
-The kernel of $F_m$ in $\mathbf{BilMod}_{\bZ}$ has carrier
+The forgetful functor gives
 $$
-\tfrac1mL/L
+U\qty{\ker_{\mathbf{BilMod}_{\bZ}}(F_m)}
 \isoto
-L/mL
+L/mL,
 $$
-and induced pairing $\kappa_m$ with exact value submodule $W_m(L)$.
+and the induced pairing is $\kappa_m$ with value submodule $W_m(L)$.
 Hence
 $$
 \ker_{\mathbf{BilMod}_{\bZ}}(F_m)
@@ -588,13 +508,12 @@ $$
 K_m(L),
 $$
 which gives the displayed short exact sequence.
-If $L$ is unimodular, then $A_L=0$, so the sequence identifies $A_{L(m)}$ with $K_m(L)$.
+If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto K_m(L)$.
 :::
 
-The Miranda--Morrison exact sequence and Nikulin stable-range vanishing are @thm:miranda-morrison and @cor:nikulin-mm-vanishing.
 ::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel"}
 For signature $(2,n)$, let $\Orth^+(L)\injects\Orth(L)$ denote the spinor kernel. Define $\widetilde\Orth^+(L)$ by the pullback
-```tikzcd id="disc-spinor-kernel-pullback"
+```tikzcd
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L).
 ```

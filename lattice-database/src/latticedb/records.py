@@ -175,16 +175,7 @@ def _theta_series_prefix(lattice, minimum: Fraction, existing_length: int) -> tu
     6 in rank at most 12 and 4 above, never fewer than the minimum asks for and never
     fewer than a prefix already stored on the card.
     """
-    rank = int(lattice.module_rank())
-    match rank:
-        case _ if rank <= 4:
-            default = 12
-        case _ if rank <= 8:
-            default = 8
-        case _ if rank <= 12:
-            default = 6
-        case _:
-            default = 4
+    default = model.series_bound(int(lattice.module_rank()))
     bound = max(int(minimum), default, max(0, existing_length - 1))
     series = lattice.theta_series(precision=bound + 1)
     return tuple(int(series[index]) for index in range(bound + 1))
@@ -207,12 +198,29 @@ def _norm_two_root_types(lattice) -> tuple[str, ...]:
     return tuple(name for _rank, name in ranked)
 
 
-def _smith_factors(rows: tuple[tuple[int, ...], ...], rank: int) -> tuple[int, ...]:
-    """The nonzero invariant factors of the integer matrix with these rows."""
-    if not rows:
+def _root_span_factors(formed, roots: tuple[tuple[int, ...], ...]) -> tuple[int, ...]:
+    """The invariant factors of the inclusion of the span of these roots.
+
+    They are the units up to the rank of the span, followed by the torsion
+    invariant factors of the cokernel of the inclusion.
+    """
+    if not roots:
         return ()
-    matrix = ZZ.matrix_space(len(rows), rank).from_rows(rows)
-    return tuple(abs(int(factor)) for factor in matrix.invariant_factors())
+    span = formed.subobject_on(tuple(formed(root) for root in roots))
+    torsion = tuple(
+        abs(int(factor))
+        for factor in span.inclusion().cokernel().invariant_factors()
+        if factor != 0
+    )
+    return (1,) * (int(span.module_rank()) - len(torsion)) + torsion
+
+
+def card_level(lattice) -> int:
+    """The least k with k b(x,x) even on L^*, for a nondegenerate integral lattice.
+
+    L(2) is even with L(2)^* = L^*/2 and b_{L(2)}(x/2, x/2) = b(x,x)/2, so this k is half the level of L(2).
+    """
+    return int(lattice.twist(2).level()) // 2
 
 
 def _integral(
@@ -241,6 +249,7 @@ def _integral(
             block["quadratic_character"] = int(
                 lattice.discriminant_character_discriminant()
             )
+        block["level"] = card_level(lattice)
         # Other stored invariants are preserved; their computation has separate preamble owners.
         for field in model.IntegralData.model_fields:
             if field not in block and field in declared:
@@ -284,6 +293,7 @@ def _definite(
     integral_lattice=None,
 ) -> dict[str, Yaml]:
     declared = _block(record, "definite")
+    labels = tuple(computation_lattice.module_generating_set())
     minimum_value = computation_lattice.minimum()
     minimum = Fraction(
         int(abs(minimum_value.numerator())),
@@ -292,6 +302,12 @@ def _definite(
     block: dict[str, Yaml] = {
         "minimum": rational(minimum),
         "kissing_number": int(computation_lattice.kissing_number()),
+        # A twist L(m) has the vectors of L and rescales the form, so it keeps the minimal shell and perfection.
+        "minimal_vectors": sorted(
+            [int(vector.to_vector()(label)) for label in labels]
+            for vector in computation_lattice.shortest_vectors()
+        ),
+        "perfect": bool(computation_lattice.is_voronoi_perfect()),
     }
     if integral_lattice is not None:
         stored_theta = declared.get("theta_series")
@@ -338,7 +354,7 @@ def _root_sublattice(formed, roots) -> dict[str, Yaml]:
     """
     rank = int(formed.module_rank())
     norm_of = {root: _fraction_of(formed(root).q()) for root in roots}
-    factors = _smith_factors(roots, rank)
+    factors = _root_span_factors(formed, roots)
     block: dict[str, Yaml] = {"invariant_factors": list(factors)}
     unimodular_span = (1,) * rank
     if factors != unimodular_span:
@@ -348,7 +364,7 @@ def _root_sublattice(formed, roots) -> dict[str, Yaml]:
         subset
         for size in range(1, len(norms) + 1)
         for subset in combinations(norms, size)
-        if _smith_factors(tuple(root for root in roots if norm_of[root] in subset), rank)
+        if _root_span_factors(formed, tuple(root for root in roots if norm_of[root] in subset))
         == unimodular_span
     )
     block["norms"] = [rational(norm) for norm in selected]
@@ -363,8 +379,9 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     """Return the card with selected fields supplied by preamble-owned operations.
 
     The adapter serializes rank, signature, determinant, definiteness, the dual
-    Gram tensor, selected integral invariants, definite minimum/kissing number
-    indefinite isotropy, theta prefixes and root-system/root-sublattice data from
+    Gram tensor, selected integral invariants including the level of an even
+    lattice, the definite minimum, kissing number, minimal shell and Voronoi
+    perfection, indefinite isotropy, theta prefixes and root-system/root-sublattice data from
     preamble objects.
 
     A field not returned by these preamble calls is preserved when already present.
@@ -476,11 +493,20 @@ def derived_projection(record: Mapping[str, Yaml]) -> dict[str, Yaml]:
                 "delta",
                 "bad_reduction_primes",
                 "quadratic_character",
+                "level",
             ),
         ),
         (
             "definite",
-            ("minimum", "kissing_number", "theta_series", "root_system", "roots"),
+            (
+                "minimum",
+                "kissing_number",
+                "minimal_vectors",
+                "perfect",
+                "theta_series",
+                "root_system",
+                "roots",
+            ),
         ),
         ("indefinite", ("isotropic",)),
     ):
@@ -549,7 +575,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         else:
             owned = Lattices(ZZ)(gram)
             if owned.determinant() != 0:
-                if integral.level is not None and integral.level != int(owned.level()):
+                if integral.level is not None and integral.level != card_level(owned):
                     found.append(
                         "integral.level: the stated level does not equal the preamble-computed level"
                     )

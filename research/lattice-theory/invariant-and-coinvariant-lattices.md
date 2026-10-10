@@ -1,27 +1,14 @@
 # Invariant and coinvariant lattices
 
-
 ::: {.definition #def:invariant_coinvariant_lattices title="Invariant and coinvariant lattices"}
 
-Let
-$$
-\rho\colon G\injects\Orth(L)
-$$
-be a faithful action.
-Define
-$$
-\iota^G\colon L^G\injects L
-$$
-to be the common equalizer in $\bZ\text{-}\mathbf{Mod}$ of
+Let $\rho\colon G\injects\Orth(L)$ be a faithful action.
+Define $\iota^G\colon L^G\injects L$ to be the common equalizer in $\bZ\text{-}\mathbf{Mod}$ of
 $$
 \rho(g),\id_L\colon L\rightrightarrows L,
 \qquad g\in G.
 $$
-Define
-$$
-\iota_G\colon L_G\injects L
-$$
-to be the orthogonal-complement subobject of $\iota^G$.
+Define $\iota_G\colon L_G\injects L$ to be the orthogonal-complement subobject of $\iota^G$.
 These are the **invariant lattice** and **coinvariant lattice** of the action.
 :::
 
@@ -45,12 +32,9 @@ $$
 ,
 $$
 so $\beta_{L_\QQ}(v, w) = 0$.
-Hence the inclusion $V_-\injects L_\QQ$ factors through the orthogonal-complement subobject $V_+^{\perp}\injects L_\QQ$.
-The induced monomorphism
-$$
-V_-\injects V_+^{\perp}
-$$
-is an isomorphism by equality of dimensions, and $V_+^{\perp}\isoto(L_G)_\QQ$.
+Let $\iota_-\colon V_-\injects L_\QQ$ denote the eigenspace monomorphism and $\kappa_+\colon V_+^{\perp}\injects L_\QQ$ the orthogonal-complement kernel.
+The equality $\beta_{L_\QQ}(V_+,V_-)=0$ induces the unique monomorphism $\lambda_-\colon V_-\injects V_+^{\perp}$ with $\kappa_+\circ\lambda_-=\iota_-$.
+Equality of dimensions gives $\lambda_-\colon V_-\isoto V_+^{\perp}$, and $V_+^{\perp}\isoto(L_G)_\QQ$.
 :::
 
 ::: {.proposition #prop:invariant_coinvariant_primitive}
@@ -76,7 +60,7 @@ $$
 
 ::: {.proof}
 
-Orthogonality and primitivity are the case $G = \generators{I}$ of the primitivity proposition (@prop:invariant_coinvariant_primitive), and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
+By @prop:invariant_coinvariant_primitive, $L^G$ and $L_G$ are primitive; by definition, $L_G = (L^G)^{\perp L}$, so they are orthogonal.
 For the decomposition, fix $v\in L$ and set $v_+ \definedas v + I(v)$ and $v_- \definedas v - I(v)$, both of which lie in $L$.
 Applying $I$ and using $I^2 = \id$,
 $$
@@ -85,11 +69,15 @@ I(v_+) = I(v) + I^2(v) = I(v) + v = v_+,
 I(v_-) = I(v) - v = -v_-
 ,
 $$
-so $v_+$ factors through $L^G\injects L$. By @prop:involution_eigenspaces, $v_-$ factors through $(L_G)_\QQ\injects L_\QQ$. Since $L_G\injects L$ is primitive by @prop:invariant_coinvariant_primitive, @def:saturation identifies $L_G$ with the pullback
+so $v_+\in L^G$.
+By @prop:involution_eigenspaces, $v_-\in(L_G)_\QQ$.
+Since $L_G\injects L$ is primitive by @prop:invariant_coinvariant_primitive, @def:saturation gives
 $$
+L_G
+\isoto
 L\mathbin{\times}_{L_\QQ}(L_G)_\QQ.
 $$
-Therefore $v_-$ factors through $L_G\injects L$.
+Because $v_-\in L\cap(L_G)_\QQ$, this pullback isomorphism gives $v_-\in L_G$.
 Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogonal since $v_+\in L^G$ and $v_-\in L_G = (L^G)^{\perp L}$.
 :::
 
@@ -101,40 +89,38 @@ Then both the invariant lattice $L^I$ and the coinvariant lattice $L_I$ are agai
 
 ::: {.proof}
 
-Write $\pi_\pm\colon L\tensor_\ZZ\QQ \to L^{\pm}\tensor_\ZZ\QQ$ for the projections $\pi_\pm(v) = \tfrac12(v \pm I v)$, where $L^{+} = L^I$ and $L^{-} = L_I$.
+Write $\pi_\pm\colon L\tensor_\ZZ\QQ\to L^\pm\tensor_\ZZ\QQ$ for
+$$
+\pi_\pm(v)=\tfrac12(v\pm Iv),
+\qquad
+L^+=L^I,
+\qquad
+L^-=L_I.
+$$
+Both $L^\pm\injects L$ are primitive.
+Restriction therefore gives an epimorphism $\dualof{L}\twoheadrightarrow\dualof{L^\pm}$, which is $\pi_\pm$ under the form-induced maps.
+Thus each $x\in\dualof{L^\pm}$ has $x=\pi_\pm(w)$ for some $w\in\dualof{L}$, and $2x=w\pm Iw$.
 
-Both $L^{\pm}$ are primitive in $L$: if $nv \in L^I$ for some $v \in L$ and $n \neq 0$ then $nIv = nv$, so $Iv = v$; and $L_I = (L^I)^{\perp}$ is primitive because an orthogonal complement always is.
-A primitive sublattice is a direct summand as a $\ZZ$-module, so restriction $\dualof{L} \to \dualof{(L^{\pm})}$ is surjective, and under the identifications made by the form it is $\pi_{\pm}$.
-Hence every $x \in \dualof{(L^{\pm})}$ is $x = \pi_{\pm}(w)$ for some $w \in \dualof{L}$, and
+Let $\pi_L\colon L^\#\twoheadrightarrow A_L^\sharp$ be the cokernel morphism of @def:metric-dual.
+Since $I\in\widetilde\Orth(L)$, $\pi_L\circ I=\pi_L$, and since $L$ is $2$-elementary, $2\,\id_{A_L^\sharp}=0$.
+Hence
 $$
-2x = w \pm Iw .
-$$
-
-Let
-$$
-\pi_L\colon L^\#\twoheadrightarrow L^\#/L
-$$
-be the carrier quotient of the bilinear discriminant object $A_L$.
-Since $I\in\widetilde\Orth(L)$, the induced carrier automorphism of $L^\#/L$ is the identity, hence
-$$
-\pi_L(Iw-w)=0.
-$$
-Since $L$ is $2$-elementary, multiplication by $2$ on $L^\#/L$ is zero, hence
-$$
+\pi_L(Iw-w)=0,
+\qquad
 \pi_L(2w)=0.
 $$
-Therefore $Iw-w$ and $2w$ both factor through the carrier monomorphism $L\injects L^\#$.
-It follows that $2x=w-Iw$ in the $-$ case and $2x=w+Iw$ in the $+$ case both factor through $L\injects L_\QQ$.
+Exactness of
+$$
+0\too L\xrightarrow{\iota_L}L^\#\xrightarrow{\pi_L}A_L^\sharp\too0
+$$
+therefore gives unique $a_w,b_w\in L$ with $\iota_L(a_w)=Iw-w$ and $\iota_L(b_w)=2w$.
 
-At the same time $2x$ factors through $(L^{\pm})_\QQ\injects L_\QQ$.
-Since $L^{\pm}\injects L$ is primitive, @def:saturation identifies it with the pullback
-$$
-L\mathbin{\times}_{L_\QQ}(L^{\pm})_\QQ.
-$$
-Hence $2x$ factors through $L^{\pm}\injects L$.
-Thus multiplication by $2$ annihilates the carrier
-$$
-(L^{\pm})^\#/L^{\pm}
-$$
-of $A_{L^{\pm}}$, which is precisely the $2$-elementary condition of @def:p-elementary.
+Primitivity of $L^\pm\injects L$ gives the pullback square
+```tikzcd
+L^\pm \arrow[r] \arrow[d] & L \arrow[d] \\
+(L^\pm)_\QQ \arrow[r] & L_\QQ .
+```
+
+Since $2x\in L$ and $2x\in(L^\pm)_\QQ$, the pullback square gives a unique element $y_\pm\in L^\pm$ mapping to $2x$.
+Thus multiplication by $2$ annihilates $A_{L^\pm}^\sharp$, so $L^\pm$ is $2$-elementary by @def:p-elementary.
 :::

@@ -2,11 +2,16 @@ r"""Private exact computational realizations for owned lattice constructions."""
 
 from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
+from sage.matrix.matrix0 import Matrix
+from sage.quadratic_forms.binary_qf import BinaryQF
+from sage.quadratic_forms.qfsolve import qfsolve
 from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
     _engine_ring,
     _owned_engine_element,
 )
@@ -15,6 +20,7 @@ from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_column_matrix_from_row_action,
     _engine_component_matrix,
+    _engine_inverse_form_pullback,
     _engine_row_action_matrix,
     tensor,
 )
@@ -45,12 +51,12 @@ def validate_even_unimodular_gram(gram):
         raise ValueError(f"the form {gram} is not even: some diagonal entry is odd")
 
 
-def _rational_positive_vector(gram):
-    r"""Return one exact rational positive vector for signature ``(1,n)``.
+def _rational_signed_direction(gram, sign):
+    r"""Select a column of Sage's rational diagonalization with the requested sign.
 
-    Sage supplies the rational diagonalization privately.  The returned value
-    is immediately re-entered into the preamble as a type-``(1,0)`` tensor;
-    the transformation matrix itself is never public API.
+    This is the shared diagonalization step of the port's positive-direction
+    and negative-direction-in-span computations. A subspace supplies its own
+    restricted Gram tensor through its formed subobject construction.
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
@@ -60,17 +66,293 @@ def _rational_positive_vector(gram):
         2 * engine_gram,
     ).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
-    positive = [index for index in range(diagonal_matrix.nrows()) if diagonal_matrix[index, index] > 0]
-    if len(positive) != 1:
-        raise ValueError(
-            f"the form with Gram tensor {gram} has {len(positive)} positive directions, but its positive cone has two components only for signature (1, n), with exactly one"
-        )
-    column = change.column(positive[0])
+    index = next((
+        index for index in range(diagonal_matrix.nrows())
+        if sign * diagonal_matrix[index, index] > 0
+    ), None)
+    return None if index is None else change.column(index)
+
+
+def _rational_positive_vector(gram):
+    r"""Return one rational positive vector as a type-``(1,0)`` tensor."""
+    column = _rational_signed_direction(gram, 1)
+    if column is None:
+        raise ValueError(f"the form with Gram tensor {gram} has no positive direction")
     rationals = gram.base_ring().fraction_field()
     return tensor.vector(
         rationals,
         tuple(_owned_engine_element(rationals, entry) for entry in column),
     )
+
+
+def _raise_rational_lattice_vector(lattice, coordinates):
+    r"""Raise a rational direction, primitively over ZZ, in its given lattice."""
+    ring = lattice.base_ring()
+    engine_ring = _engine_ring(ring)
+    if engine_ring is SageZZ:
+        coordinates = coordinates * coordinates.denominator()
+    vector = lattice.linear_combination({
+        label: _owned_engine_element(ring, engine_ring(coordinate))
+        for label, coordinate in zip(lattice.module_generating_set(), coordinates, strict=True)
+        if coordinate
+    })
+    return vector.primitive_part() if engine_ring is SageZZ else vector
+
+
+def _signed_vector_witness(lattice, sign):
+    r"""Realize a finite symmetric formed module's signed-vector operation.
+
+    Private computation for ``BilinearFormModules.Symmetric.vector_of_sign``.
+    The input retains its own form and selected framing; the raised vector
+    belongs to that same module, including a represented formed submodule.
+    Return None if the requested sign is absent.
+    """
+    ring = lattice.base_ring()
+    assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
+        f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.module_rank().is_finite(), (
+        f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
+    )
+    if lattice.module_rank() == 0:
+        return None
+    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
+    return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
+
+
+def _isotropic_vector_witness(lattice):
+    r"""Raise PARI's rational isotropic vector into the given lattice.
+
+    Migrated from ``sage-indefinite-port``'s ``find_hyperbolic_pair``.
+    Sage's ``quadratic_forms.qfsolve.qfsolve`` returns an integer obstruction,
+    a vector, or a matrix whose columns span the radical. Integral inputs
+    receive a primitive integral vector after clearing denominators.
+    """
+    ring = lattice.base_ring()
+    engine_ring = _engine_ring(ring)
+    assert engine_ring is SageZZ or engine_ring is SageQQ, (
+        f"isotropic witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.module_rank().is_finite(), (
+        f"PARI isotropic witnesses require finite rank, not {lattice.module_rank()}"
+    )
+    if lattice.module_rank() == 0:
+        return None
+    solution = qfsolve(_engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ))
+    if isinstance(solution, SageInteger):
+        return None
+    if isinstance(solution, Matrix):
+        solution = solution.column(0)
+    return _raise_rational_lattice_vector(lattice, solution)
+
+
+def _binary_form_discriminant(lattice):
+    r"""Private binary-form datum for the lattice square-fibre operations."""
+    if _engine_ring(lattice.base_ring()) is not SageZZ or lattice.module_rank() != 2:
+        raise ValueError("binary square-fibre computation requires a rank-two ZZ-lattice")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    return gram[0, 1] ** 2 - gram[0, 0] * gram[1, 1]
+
+
+def _split_binary_vectors_of_square(lattice, square):
+    r"""All vectors of nonzero square for a split nondegenerate binary form.
+
+    SymPy's BinaryQuadratic.solve handles the finite square-discriminant
+    case by its maintained factor/divisor algorithm; unlike qfbsolve this
+    returns the full fibre here. See sympy/solvers/diophantine/diophantine.py,
+    BinaryQuadratic, case (3), and its Alpertron reference.
+    """
+    from sympy import symbols
+    from sympy.solvers.diophantine.diophantine import BinaryQuadratic
+
+    discriminant = _binary_form_discriminant(lattice)
+    if not square or discriminant <= 0 or not discriminant.is_square():
+        raise ValueError("a finite split binary square fibre requires nonzero square and positive square discriminant")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    x, y = symbols("x y", integer=True)
+    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y - int(square)
+    solutions = BinaryQuadratic(polynomial, free_symbols=[x, y]).solve()
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    return tuple(
+        lattice.linear_combination({label: ring(int(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
+        for solution in sorted(solutions)
+    )
+
+
+def _binary_primitive_isotropic_vectors(lattice):
+    r"""Raise the primitive generators of the rational linear factors, with both signs."""
+    from sympy import Poly, factor_list, symbols
+
+    discriminant = _binary_form_discriminant(lattice)
+    if not discriminant:
+        raise ValueError("this finite null-line computation requires a nondegenerate binary form")
+    if discriminant < 0 or not discriminant.is_square():
+        return ()
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    x, y = symbols("x y", integer=True)
+    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    points = []
+    for factor, _multiplicity in factor_list(polynomial)[1]:
+        line = Poly(factor, x, y)
+        coefficients = (-int(line.coeff_monomial(y)), int(line.coeff_monomial(x)))
+        vector = lattice.linear_combination(dict(zip(labels, (ring(c) for c in coefficients), strict=True))).primitive_part()
+        points.extend((vector, -vector))
+    return tuple(points)
+
+
+def _rational_representation_witness(lattice, value):
+    r"""Return a vector ``x`` of the nondegenerate ``QQ``-lattice with ``b(x, x) = value``, or ``None``.
+
+    ``value`` is a nonzero element of the base ring, so ``b perp <-value>`` is
+    nondegenerate and ``qfsolve`` returns either PARI's integer obstruction
+    or one isotropic vector, never a matrix spanning a radical.  The space represents
+    ``a != 0`` exactly when ``b perp <-a>`` represents 0 (Serre, *A Course
+    in Arithmetic*, Ch. IV, 1.6, Cor. 1 of Prop. 3'), and PARI's
+    ``qfsolve`` decides that isotropy (Hasse--Minkowski, Ch. IV, 3.2,
+    Thm. 8).  A zero ``(x, z)`` with ``z != 0`` gives ``b(x/z, x/z) = a``.
+    A zero with ``z = 0`` is a nonzero isotropic ``x`` of ``L``, and then
+    every value is represented (Ch. IV, 1.3, Cor. of Prop. 3): with Gram
+    matrix ``G``, ``y = G x`` has ``b(x, y) = (G x) . (G x) != 0``, and
+    ``y + t x`` with ``t = (a - b(y, y)) / (2 b(x, y))`` has square ``a``.
+    """
+    assert _engine_ring(lattice.base_ring()) is SageQQ, (
+        f"the rational representation witness is computed over QQ, not {lattice.base_ring()}"
+    )
+    gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
+    rank = gram.nrows()
+    augmented = gram.block_sum(engine_matrix(SageQQ, [[-SageQQ(_engine_element(lattice.base_ring(), value))]]))
+    solution = qfsolve(augmented)
+    if solution in SageZZ:
+        return None
+    last = solution[rank]
+    isotropic = solution[:rank]
+    if last:
+        return _raise_rational_lattice_vector(lattice, isotropic / last)
+    partner = gram * isotropic
+    pairing = isotropic * gram * partner
+    shift = (SageQQ(_engine_element(lattice.base_ring(), value)) - partner * gram * partner) / (2 * pairing)
+    return _raise_rational_lattice_vector(lattice, partner + shift * isotropic)
+
+
+def _binary_special_orthogonal_representatives(lattice, square):
+    r"""Raise PARI representatives for a nonsplit indefinite binary form.
+
+    PARI ``qfbsolve`` flag 3 includes imprimitive solutions and returns
+    every class modulo the integral special orthogonal group:
+    https://pari.math.u-bordeaux.fr/dochtml/html-stable/Arithmetic_functions.html#qfbsolve
+    """
+    ring = lattice.base_ring()
+    if _engine_ring(ring) is not SageZZ or lattice.module_rank() != 2:
+        raise ValueError("binary representation classes require a rank-two ZZ-lattice")
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    form = BinaryQF((gram[0, 0], 2 * gram[0, 1], gram[1, 1]))
+    discriminant = form.discriminant()
+    if discriminant <= 0 or discriminant.is_square():
+        raise ValueError("this binary representation computation requires positive nonsquare discriminant")
+    if not square:
+        return (lattice.zero(),)
+    labels = tuple(lattice.module_generating_set())
+    return tuple(
+        lattice.linear_combination({label: _owned_engine_element(ring, SageZZ(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
+        for solution in form.solve_integer(SageZZ(int(square)), _flag=3)
+    )
+
+
+def _binary_reduction_cycle(lattice, bound, start):
+    r"""Realize the specified binary edgewalk cycle and raise its period map.
+
+    The computation is the frozen provider in sage-indefinite-port commit
+    709f81a, indefinite/edgewalk_rank2.py: canonical_companion, promised_step,
+    shorter_pair, reduced_start_pair, and anisotropic_cycle. It is kept
+    private here; its rows are raised through the lattice Mor constructor.
+    """
+    from sage.modules.free_module_element import vector
+
+    discriminant = _binary_form_discriminant(lattice)
+    if discriminant <= 0 or discriminant.is_square():
+        raise ValueError("a binary reduction cycle requires a rationally anisotropic indefinite form")
+    if start.parent() is not lattice or start.content() != lattice.base_ring().one() or start.q() <= 0:
+        raise ValueError("the cycle start must be a primitive positive vector of the lattice")
+    rational_bound = lattice.base_ring().fraction_field()(bound)
+    bound = SageQQ(int(rational_bound.numerator())) / int(rational_bound.denominator())
+    if bound <= 0:
+        return None
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    labels = tuple(lattice.module_generating_set())
+
+    def pairing(left, right):
+        return left * gram * right
+
+    def square(point):
+        return pairing(point, point)
+
+    def companion(limit, right, left):
+        rr, rl, ll = square(right), pairing(right, left), square(left)
+        radicand = SageQQ(rl*rl - rr*(ll-limit))
+        root = SageZZ(radicand.floor()).isqrt()
+        multiple = SageZZ((SageQQ(-rl + root) / rr).floor())
+        return left + multiple*right
+
+    def step(limit, right, left):
+        while True:
+            middle = right + left
+            if square(middle) <= limit or pairing(middle, right) < 0:
+                left = middle
+            elif square(left) >= 0 and pairing(right, left) > 0:
+                return left, -right
+            else:
+                right = middle
+
+    def characteristic(right, left):
+        return square(right), pairing(right, left), square(left)
+
+    def shorter(right, left):
+        initial_square = square(right)
+        initial = characteristic(right, left)
+        while True:
+            right, left = step(square(right), right, left)
+            left = companion(square(right), right, left)
+            if square(right) < initial_square:
+                return right, left
+            if characteristic(right, left) == initial:
+                return None
+
+    coordinates = start.to_vector()
+    right = vector(SageZZ, [SageZZ(int(coordinates(label))) for label in labels])
+    _gcd, s, t = right[0].xgcd(right[1])
+    left = companion(bound, right, vector(SageZZ, [-t, s]))
+    if square(right) <= bound:
+        right, left = step(bound, right, left)
+        left = companion(bound, right, left)
+    else:
+        while square(right) > bound:
+            pair = shorter(right, left)
+            if pair is None:
+                return None
+            right, left = pair
+        left = companion(bound, right, left)
+
+    initial = characteristic(right, left)
+    frame = engine_matrix(SageQQ, [right, left])
+    cycle = []
+    while True:
+        cycle.append(right)
+        right, left = step(bound, right, left)
+        left = companion(bound, right, left)
+        if characteristic(right, left) == initial:
+            period = (frame.inverse() * engine_matrix(SageQQ, [right, left])).change_ring(SageZZ)
+            break
+
+    ring = lattice.base_ring()
+
+    def raise_vector(point):
+        return lattice.linear_combination({label: _owned_engine_element(ring, coordinate) for label, coordinate in zip(labels, point, strict=True)})
+
+    automorphism = lattice.Isom(lattice)(tuple(raise_vector(row) for row in period.rows()))
+    return automorphism, tuple(raise_vector(point) for point in cycle)
 
 
 def _integer_engine_matrix(value):
@@ -598,3 +880,54 @@ class _OscarLatticeAdapter:
 _oscar_lattices = _OscarLatticeAdapter()
 
 __all__: list[str] = []
+
+
+_ROOTS_IN_ANNULUS = (
+    "(form, majorant, inner, outer, lengths) -> my(found = List());"
+    " forqfvec(v, majorant, outer, if(v~ * majorant * v > inner,"
+    " my(square = v~ * form * v);"
+    " if(square && setsearch(lengths, abs(square)) && content(2 * form * v) % square == 0, listput(found, v))));"
+    " Vec(found)"
+)
+r"""PARI closure listing, one of each pair \(\pm v\), the roots \(v\) with ``inner < M(v) <= outer``.
+
+``forqfvec`` visits the ball without storing it, so memory holds only the roots found.
+"""
+
+
+def _roots_generating_lattice(gram, lengths):
+    r"""Return coordinate rows of roots that generate \(\mathbb Z^n\) under the integral form ``gram``.
+
+    A root is a vector \(r\) with \(b(r,r)\ne 0\) dividing \(2b(r,x)\) for every
+    \(x\); its \(|b(r,r)|\) lies in ``lengths``.  With
+    \(T^{t}GT=D\) a rational diagonalization, \(T^{-t}|D|T^{-1}\) is a positive
+    definite majorant \(M\) of \(G\), so each ball of \(M\) holds finitely many
+    vectors.  The annuli between radii \(R\) and \(2R\) are searched in turn,
+    and a root is kept when it enlarges the span of those kept.  The search
+    returns once they span \(\mathbb Z^n\), and runs without end, in memory
+    bounded by the roots found, when \(\mathbb Z\Phi(L)\ne L\).
+    """
+    from sage.arith.functions import lcm
+    from sage.libs.pari import pari
+
+    form = _engine_component_matrix(gram).change_ring(SageZZ)
+    rank = form.nrows()
+    diagonal, change = QuadraticForm(SageQQ, 2 * form).rational_diagonal_form(return_matrix=True)
+    majorant = _engine_inverse_form_pullback(diagonal.matrix().apply_map(abs), change)
+    majorant = (lcm(entry.denominator() for entry in majorant.list()) * majorant).change_ring(SageZZ)
+    roots_in_annulus = pari(_ROOTS_IN_ANNULUS)
+    lengths = pari(sorted(int(length) for length in lengths))
+    identity = engine_matrix.identity(SageZZ, rank)
+    kept = []
+    span = engine_matrix(SageZZ, 0, rank)
+    inner, outer = 0, max(majorant.diagonal())
+    while span != identity:
+        for column in roots_in_annulus(pari(form), pari(majorant), inner, outer, lengths):
+            vector = tuple(int(entry) for entry in column)
+            enlarged = engine_matrix(SageZZ, [*span.rows(), vector]).echelon_form()
+            enlarged = enlarged.matrix_from_rows([row for row in range(enlarged.nrows()) if not enlarged.row(row).is_zero()])
+            if enlarged != span:
+                kept.append(vector)
+                span = enlarged
+        inner, outer = outer, 2 * outer
+    return tuple(kept)

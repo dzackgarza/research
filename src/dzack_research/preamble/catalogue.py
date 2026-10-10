@@ -9,15 +9,19 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     Lattices,
+    _register_indecomposable,
     _register_indecomposable_gram,
     nikulin_invariants,
-    _register_indecomposable,
     signature_pair,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
@@ -32,10 +36,7 @@ def _gram_from_engine_matrix(engine_matrix):
         ZZ,
         (),
         (rows, columns),
-        [
-            [_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)]
-            for i in range(rows)
-        ],
+        [[_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)] for i in range(rows)],
     )
 
 
@@ -47,11 +48,7 @@ def _block_gram(*grams):
     offset = 0
     for gram, rank in zip(grams, ranks, strict=True):
         shape = gram.tensor_shape()
-        if (
-            gram.tensor_valence() != (NN**2)((0, 2))
-            or shape[0] != rank
-            or shape[1] != rank
-        ):
+        if gram.tensor_valence() != (NN**2)((0, 2)) or shape[0] != rank or shape[1] != rank:
             raise TypeError(
                 f"{gram} cannot be a block of an orthogonal direct sum: a Gram block must be "
                 f"a square tensor of type (0, 2), but it has type {gram.tensor_valence()} "
@@ -262,9 +259,7 @@ def _catalogue_entry(name):
     return lazy_class_attribute(entry)
 
 
-_NAMED_LATTICE_NAMES = frozenset(
-    name for name, entry in vars(NamedLattices).items() if isinstance(entry, lazy_class_attribute)
-)
+_NAMED_LATTICE_NAMES = frozenset(name for name, entry in vars(NamedLattices).items() if isinstance(entry, lazy_class_attribute))
 
 
 def _named_lattice_block(name):
@@ -390,11 +385,7 @@ def _orthogonal_sum(recipe):
     realization by five blocks has five summands, not a nest of two-summand
     sums that ``indecomposable_summands`` would have to walk back apart.
     """
-    blocks = tuple(
-        _named_lattice_block(name)
-        for name, multiplicity in recipe
-        for _index in range(multiplicity)
-    )
+    blocks = tuple(_named_lattice_block(name) for name, multiplicity in recipe for _index in range(multiplicity))
     match blocks:
         case ():
             return NamedLattices.Zero
@@ -838,10 +829,7 @@ def _negative_two_elementary_row(key):
             coefficients = rest[0]
             labels = tuple(lattice.module_generating_set())
             if len(coefficients) != len(labels):
-                raise RuntimeError(
-                    f"the Nikulin table row {key} records a glue vector with "
-                    f"{len(coefficients)} coefficients for {lattice}, which has rank {len(labels)}"
-                )
+                raise RuntimeError(f"the Nikulin table row {key} records a glue vector with {len(coefficients)} coefficients for {lattice}, which has rank {len(labels)}")
             vector = lattice.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             discriminant_class = vector.divided_discriminant_class()
             if lattice.discriminant_module().q(discriminant_class) != 0:
@@ -878,8 +866,18 @@ class _NegativeDefTwoElementaryTable(Mapping):
 NegativeDefTwoElementary = _NegativeDefTwoElementaryTable()
 
 
-
-_TWO_ELEMENTARY_BLOCK_NAMES = ("A1", "D4", "D6", "D8", "E7", "E8", "E8_2", "Z_2", "U", "U_2")
+_TWO_ELEMENTARY_BLOCK_NAMES = (
+    "A1",
+    "D4",
+    "D6",
+    "D8",
+    "E7",
+    "E8",
+    "E8_2",
+    "Z_2",
+    "U",
+    "U_2",
+)
 
 
 @cache
@@ -904,20 +902,11 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
     target_a = int(a)
     target_delta = int(delta)
     if min(positive_target, negative_target, target_a) < 0:
-        raise ValueError(
-            f"there is no 2-elementary lattice of signature {target_signature} and "
-            f"discriminant length a = {a}: the signature and a must be nonnegative"
-        )
+        raise ValueError(f"there is no 2-elementary lattice of signature {target_signature} and discriminant length a = {a}: the signature and a must be nonnegative")
     if positive_target + negative_target == 0:
-        raise ValueError(
-            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
-            f"of blocks: it is the zero lattice, and the sum must be nonempty"
-        )
+        raise ValueError(f"cannot write a lattice of signature {target_signature} as an orthogonal sum of blocks: it is the zero lattice, and the sum must be nonempty")
     if target_delta not in (0, 1):
-        raise ValueError(
-            f"there is no 2-elementary lattice with delta = {delta}: Nikulin's invariant "
-            f"delta is 0 or 1"
-        )
+        raise ValueError(f"there is no 2-elementary lattice with delta = {delta}: Nikulin's invariant delta is 0 or 1")
 
     block_data = _two_elementary_blocks()
     realizations = []
@@ -927,11 +916,7 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
             return
         if index == len(block_data):
             if positive == negative == length == 0 and realized_delta == target_delta:
-                recipe = tuple(
-                    (name, count)
-                    for name, count in zip(_TWO_ELEMENTARY_BLOCK_NAMES, counts, strict=True)
-                    if count
-                )
+                recipe = tuple((name, count) for name, count in zip(_TWO_ELEMENTARY_BLOCK_NAMES, counts, strict=True) if count)
                 realizations.append(_orthogonal_sum(recipe))
             return
         _block, block_positive, block_negative, block_length, block_delta = block_data[index]
@@ -963,24 +948,20 @@ def signature_orthogonal_sums(target_signature, blocks):
     positive_target = int(target_signature.first())
     negative_target = int(target_signature.second())
     if min(positive_target, negative_target) < 0:
-        raise ValueError(
-            f"there is no lattice of signature {target_signature}: both entries of a "
-            f"signature must be nonnegative"
-        )
+        raise ValueError(f"there is no lattice of signature {target_signature}: both entries of a signature must be nonnegative")
     if positive_target + negative_target == 0:
-        raise ValueError(
-            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
-            f"of blocks: it is the zero lattice, and the sum must be nonempty"
-        )
+        raise ValueError(f"cannot write a lattice of signature {target_signature} as an orthogonal sum of blocks: it is the zero lattice, and the sum must be nonempty")
     block_data = tuple(
-        (block, int(block.signature_pair().first()), int(block.signature_pair().second()))
+        (
+            block,
+            int(block.signature_pair().first()),
+            int(block.signature_pair().second()),
+        )
         for block in blocks
     )
     if any(positive + negative == 0 for _block, positive, negative in block_data):
         raise ValueError(
-            f"cannot enumerate orthogonal sums of the blocks {blocks} with signature "
-            f"{target_signature}: some block has rank zero, so there are infinitely many "
-            f"such sums"
+            f"cannot enumerate orthogonal sums of the blocks {blocks} with signature {target_signature}: some block has rank zero, so there are infinitely many such sums"
         )
     realizations = []
 
@@ -1006,7 +987,6 @@ def signature_orthogonal_sums(target_signature, blocks):
 
     extend(0, positive_target, negative_target, ())
     return finite_ordered_set(tuple(realizations))
-
 
 
 def _generators(lattice):
@@ -1057,16 +1037,12 @@ class Embeddings:
     @lazy_class_attribute
     def E8_2_into_TdP(cls):
         tdp = _generators(NamedLattices.TdP)
-        return NamedLattices.E8_2.Emb(NamedLattices.TdP)(
-            tuple(tdp[4 + index] + tdp[12 + index] for index in range(8))
-        )
+        return NamedLattices.E8_2.Emb(NamedLattices.TdP)(tuple(tdp[4 + index] + tdp[12 + index] for index in range(8)))
 
     @lazy_class_attribute
     def TCo_into_TEn(cls):
         ten = _generators(NamedLattices.TEn)
-        return NamedLattices.Tco.Emb(NamedLattices.TEn)(
-            (ten[0] + ten[1], ten[2], ten[3], *ten[4:12])
-        )
+        return NamedLattices.Tco.Emb(NamedLattices.TEn)((ten[0] + ten[1], ten[2], ten[3], *ten[4:12]))
 
     @lazy_class_attribute
     def TEn_into_TdP(cls):

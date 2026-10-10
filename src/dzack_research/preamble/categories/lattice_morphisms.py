@@ -49,6 +49,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -521,14 +522,6 @@ class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
         return True
 
 
-class _TransportedLatticeEmbedding(LatticeEmbedding):
-    r"""A represented module embedding read in the corresponding lattice Mono."""
-
-    def __init__(self, parent, embedding) -> None:
-        self._underlying_module_embedding = embedding
-        super().__init__(parent, embedding)
-
-
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
@@ -599,6 +592,293 @@ class LatticeIsometryMethods:
         )
         homset = source.Isom(target)
         return homset.element_class(homset, module_isomorphism)
+
+    def extension_across(self, source_vector, target_vector):
+        r"""Extend this perpendicular isometry over the common fraction field.
+
+        The endpoints must be represented codimension-one subobjects of the
+        vectors' ambient lattices. The vectors must have the same nonzero
+        square. Their lines and perpendicular spaces then give orthogonal
+        direct sums, so the extension is unique. No signature hypothesis is
+        needed. The result retains the scalar-extended ambient endpoints.
+
+        The defining splitting is
+        ``LeanCategories.Lattices.Valued.isCompl_span_anisotropicComplement``
+        in ``Lattices/Valued/OrthogonalSplitting.lean``.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[2, 0, 0], [0, 2, 0], [0, 0, -2]])
+            sage: v = L.basis_vector(0)
+            sage: P = L.subobject_on((v,)).orthogonal_complement()
+            sage: a = P.Isom(P)(lambda s: -P.module_generator(s))
+            sage: g = a.extension_across(v, v)
+            sage: g.is_integral_on(L) and L.integral_isometry(g)(v) == v
+            True
+            sage: L.integral_isometry(g)(L.basis_vector(1)) == -L.basis_vector(1)
+            True
+        """
+        source = source_vector.parent()
+        target = target_vector.parent()
+        ring = source.base_ring()
+        if target.base_ring() is not ring:
+            raise ValueError("orthogonal extension requires a common base ring")
+        if not source_vector.q() or source_vector.q() != target_vector.q():
+            raise ValueError("orthogonal extension requires equal nonzero vector squares")
+        source_inclusion = self.domain().inclusion()
+        target_inclusion = self.codomain().inclusion()
+        for inclusion, ambient, vector in (
+            (source_inclusion, source, source_vector),
+            (target_inclusion, target, target_vector),
+        ):
+            if inclusion.codomain() is not ambient:
+                raise ValueError("the perpendicular inclusion has the wrong ambient lattice")
+            if inclusion.domain().module_rank() + 1 != ambient.module_rank():
+                raise ValueError("the perpendicular subobject must have codimension one")
+            if any(ambient.b(vector, inclusion(x)) for x in inclusion.domain().module_generators()):
+                raise ValueError("the subobject is not perpendicular to the selected vector")
+        fraction_map = ring.fraction_field_map()
+        rational_source = source.base_change(fraction_map)
+        rational_target = target.base_change(fraction_map)
+        source_embedding = source_inclusion.base_change(fraction_map)
+        target_embedding = target_inclusion.base_change(fraction_map)
+        restriction = self.base_change(fraction_map)
+        source_coordinates = source_vector.to_vector()
+        target_coordinates = target_vector.to_vector()
+        v = rational_source.linear_combination(
+            {label: fraction_map(source_coordinates(label)) for label in source_coordinates.support().domain()}
+        )
+        w = rational_target.linear_combination(
+            {label: fraction_map(target_coordinates(label)) for label in target_coordinates.support().domain()}
+        )
+        source_line = rational_source.subobject_on((v,))
+        target_line = rational_target.subobject_on((w,))
+        source_splitting = rational_source.orthogonal_decomposition(
+            (source_line.inclusion(), source_embedding)
+        )
+        target_splitting = rational_target.orthogonal_decomposition(
+            (target_line.inclusion(), target_embedding)
+        )
+
+        def line_image(label):
+            x = source_line.inclusion()(source_line.module_generator(label))
+            coefficient = rational_source.b(x, v) / v.q()
+            return target_line.inclusion().lift(rational_target.scalar_multiple(coefficient, w))
+
+        line_isometry = source_line.Isom(target_line)(line_image)
+        source_sum = source_splitting.codomain()
+        target_sum = target_splitting.codomain()
+        assembled = source_sum.from_coproduct_cocone((
+            target_sum.injection(0) * line_isometry,
+            target_sum.injection(1) * restriction,
+        ))
+        sum_isometry = source_sum.Isom(target_sum)(
+            lambda label: assembled(source_sum.module_generator(label))
+        )
+        return target_splitting.inverse() * sum_isometry * source_splitting
+
+    def is_integral_on(self, source, target=None):
+        r"""Decide whether this rational map sends ``source`` into ``target``.
+
+        For an endomorphism, ``target`` defaults to ``source``. Otherwise
+        the target integral structure must be supplied: a rational vector
+        space alone does not specify an integral lattice.
+        """
+        if target is None:
+            target = source
+        ring = source.base_ring()
+        fraction_map = ring.fraction_field_map()
+        if target.base_ring() is not ring:
+            raise ValueError("integrality requires a common integral scalar ring")
+        if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
+            raise ValueError("integrality requires the source and target integral structures of this rational map")
+        restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
+        return (restrict(self) * source.generic_fibre_map()).factor_through_or_none(
+            target.generic_fibre_map()
+        ) is not None
+
+    @cached_method
+    def witt_extension_locus(self, source_inclusion, target_inclusion):
+        r"""The full locus of ambient isometries extending this partial isometry."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        if source_inclusion.domain() is not self.domain() or target_inclusion.domain() is not self.codomain():
+            raise ValueError("the inclusions must start at the endpoints of the partial isometry")
+        source, target = source_inclusion.codomain(), target_inclusion.codomain()
+        maps = Modules(source.base_ring()).Mor(self.domain(), target)
+        isometries = source.Isom(target)
+        restriction = Sets().Mor(isometries, maps)(
+            lambda extension: Modules(source.base_ring()).Mor(source, target)(extension) * source_inclusion
+        )
+        prescribed = Modules(source.base_ring()).Mor(self.codomain(), target)(target_inclusion) * self
+        constant = Sets().Mor(isometries, maps)(lambda extension: prescribed)
+        return Sets().equalizer_construction(restriction, constant)
+
+    def witt_extension(self, source_inclusion, target_inclusion):
+        r"""Extend a codimension-one partial rational isometry when compatible with radicals.
+
+        The affine pairing fibre supplies the image of a complementary vector.
+        Its norm equation is linear for an isotropic normal, and quadratic
+        otherwise. A complementary ambient radical vector is handled as a
+        radical vector. This is the codimension-one Witt construction; the
+        isotropic norm correction is the one in sage-indefinite-port at
+        709f81a, ``CodimensionOneIsotropicExtension.rational_extension``.
+        The extension locus retains the square with the two given inclusions.
+        """
+        locus = self.witt_extension_locus(source_inclusion, target_inclusion)
+        source, target = source_inclusion.codomain(), target_inclusion.codomain()
+        field = source.base_ring()
+        if field is not _own_ring(SageQQ) or target.base_ring() is not field:
+            raise TypeError("this codimension-one extension requires rational quadratic spaces")
+        for inclusion in (source_inclusion, target_inclusion):
+            if inclusion.domain().module_rank() + 1 != inclusion.codomain().module_rank():
+                raise ValueError("the specified subspaces must have codimension one")
+        source_radical = source.metric_map().kernel()
+        target_radical = target.metric_map().kernel()
+        if source_radical.module_rank() != target_radical.module_rank():
+            raise ValueError("isometric ambient spaces must have radicals of equal dimension")
+        for partial, first, second, ambient in (
+            (self, source_inclusion, target_inclusion, target),
+            (self.inverse(), target_inclusion, source_inclusion, source),
+        ):
+            intersection = (first.codomain().metric_map() * first).kernel()
+            for vector in intersection.module_generators():
+                image = second(partial(intersection.inclusion()(vector)))
+                if ambient.metric_map()(image) != ambient.metric_map().codomain().zero():
+                    raise ValueError("the partial isometry does not identify the ambient radical intersections")
+
+        radical_complements = tuple(
+            source_radical.inclusion()(vector)
+            for vector in source_radical.module_generators()
+            if not source_inclusion.is_in_image(source_radical.inclusion()(vector))
+        )
+        if radical_complements:
+            source_vector = radical_complements[0]
+            target_vector = next(
+                target_radical.inclusion()(vector)
+                for vector in target_radical.module_generators()
+                if not target_inclusion.is_in_image(target_radical.inclusion()(vector))
+            )
+        else:
+            source_vector = next(
+                vector for vector in source.module_generators()
+                if not source_inclusion.is_in_image(vector)
+            )
+            scalars = field.regular_module()
+            functionals = Modules(field).Mor(self.domain(), scalars)
+            pairing = Modules(field).Mor(target, functionals)(
+                lambda label: functionals(
+                    lambda index: scalars(target.b(
+                        target.module_generator(label),
+                        target_inclusion(self(self.domain().module_generator(index))),
+                    ))
+                )
+            )
+            prescribed = functionals(
+                lambda label: scalars(source.b(
+                    source_vector, source_inclusion(self.domain().module_generator(label))
+                ))
+            )
+            target_vector = pairing.solution_fibre(prescribed).base_point()
+            perpendicular = pairing.kernel()
+            normal = next(
+                perpendicular.inclusion()(vector)
+                for vector in perpendicular.module_generators()
+                if not target_radical.inclusion().is_in_image(perpendicular.inclusion()(vector))
+            )
+            a = target.q(normal)
+            b = field(2) * target.b(target_vector, normal)
+            c = target.q(target_vector) - source.q(source_vector)
+            if a == field.zero():
+                if b == field.zero():
+                    if c != field.zero():
+                        raise ValueError("the complementary norm equation has no solution")
+                    parameters = (field.zero(), field.one())
+                else:
+                    parameters = (-c / b,)
+            else:
+                discriminant = b * b - field(4) * a * c
+                if not discriminant.is_square():
+                    raise ValueError("the complementary norm equation has no rational solution")
+                root = discriminant.sqrt()
+                parameters = ((-b + root) / (field(2) * a), (-b - root) / (field(2) * a))
+            candidates = tuple(target_vector + target.scalar_multiple(t, normal) for t in parameters)
+            target_vector = next(
+                (vector for vector in candidates if not target_inclusion.is_in_image(vector)), None
+            )
+            if target_vector is None:
+                raise ValueError("no norm-compatible complementary vector extends the partial isometry")
+
+        scalars = field.regular_module()
+        frame = Modules(field).biproduct((self.domain(), scalars))
+        source_map = frame.from_summands(
+            source_inclusion, Modules(field).Mor(scalars, source)(lambda label: source_vector)
+        )
+        target_map = frame.from_summands(
+            target_inclusion * self, Modules(field).Mor(scalars, target)(lambda label: target_vector)
+        )
+        extension = source.Isom(target)(target_map * source_map.section())
+        points = locus.object()
+        return points.inclusion()(points(extension))
+
+    def integral_restriction(self, source, target):
+        r"""Return the induced lattice isometry, or ``None`` if it is not integral.
+
+        ``self`` must have the fraction-field extensions of ``source`` and
+        ``target`` as endpoints. Both the map and its inverse must preserve
+        the respective lattices; an integral embedding alone is insufficient.
+        """
+        ring = source.base_ring()
+        if target.base_ring() is not ring:
+            raise ValueError("integral restriction requires a common base ring")
+        fraction_map = ring.fraction_field_map()
+        if self.domain() is not source.base_change(fraction_map) or self.codomain() is not target.base_change(fraction_map):
+            raise ValueError("the isometry must join the selected lattices' fraction-field extensions")
+        restrict = Modules(fraction_map.codomain()).restriction_of_scalars(fraction_map)
+        source_inclusion = source.generic_fibre_map()
+        target_inclusion = target.generic_fibre_map()
+        forward = (restrict(self) * source_inclusion).factor_through_or_none(target_inclusion)
+        if forward is None:
+            return None
+        backward = (restrict(self.inverse()) * target_inclusion).factor_through_or_none(source_inclusion)
+        if backward is None:
+            return None
+        module_isomorphism = Modules(ring).Core().Mor(source, target)(forward, backward)
+        homset = source.Isom(target)
+        return homset.element_class(homset, module_isomorphism)
+
+    def integral_similarity(self, source, target):
+        r"""Clear the least integral denominator, retaining ``sigma=N*self``.
+
+        The result is a formed module embedding from source to target with
+        form multiplier ``N^2``. Its ``scale()`` is ``N`` and its image
+        is the integral image submodule, which may have nontrivial index.
+        For ``diag(2,1/2)`` on U, these are 2, 4, and index 4 respectively.
+        """
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+        ideal = self.denominator_ideal(source, target)
+        (scale,) = tuple(ideal.ideal_generators())
+        ring = source.base_ring()
+        field_map = ring.fraction_field_map()
+        restrict = Modules(field_map.codomain()).restriction_of_scalars(field_map)
+        rational = restrict(self) * source.generic_fibre_map()
+        scaled = Modules(ring).Mor(source, rational.codomain())(
+            lambda label: rational.codomain().scalar_multiple(
+                scale, rational(source.module_generator(label))
+            )
+        )
+        integral = scaled.factor_through_or_none(target.generic_fibre_map())
+        if integral is None:
+            raise ArithmeticError("the denominator ideal failed to clear the rational map")
+        values = ring.regular_module()
+        value_map = Modules(ring).Mor(values, values)(
+            lambda label: values.scalar_multiple(scale * scale, values.module_generator(label))
+        )
+        return FormModules(ring).Mono(source, target)(
+            integral, value_morphism=value_map,
+            denominator_clearing=(self, ideal, scale),
+        )
 
     def inverse(self):
         r"""Return the inverse isometry."""
@@ -1139,7 +1419,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                     f"{images.codomain()}, so it is not a lattice embedding of "
                     f"{self.domain()} into {self.codomain()}"
                 )
-            return _TransportedLatticeEmbedding(self, images)
+            return self.element_class(self, images)
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
@@ -1766,7 +2046,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 sum(
                     (
                         codomain.scalar_multiple(
-                            _owned_engine_element(ring, SageZZ(coefficient)),
+                            _owned_engine_element(ring, _engine_ring(ring)(coefficient)),
                             generator,
                         )
                         for coefficient, generator in zip(column, generators, strict=True)
@@ -1807,6 +2087,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def _to_subgroup_engine(self, automorphism, engine_subgroup):
         r"""Cross a live isometry directly into a generated matrix subgroup."""
         return engine_subgroup(self._row_action_matrix(automorphism))
+
+    def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+        return self._row_action_matrix(automorphism) in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         r"""Raise an element of a generated matrix subgroup to a live isometry."""

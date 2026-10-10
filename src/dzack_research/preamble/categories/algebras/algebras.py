@@ -16,6 +16,7 @@ algebra -- computes \((M, m)\) and reaches the same construction,
 
 import itertools
 from functools import reduce
+from typing import TYPE_CHECKING
 
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.map import Map
@@ -81,6 +82,12 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.validation import validator
+
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 if "Lie" not in all_axioms:
@@ -1305,6 +1312,33 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             return _algebra_structure_morphism(self)
 
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
+            r"""Construct this algebra again with the categories and data of further levels.
+
+            The protected construction contract of ``Objects`` (``OWN-05``,
+            ``OWN-16``); its roles and the reason no public operation does
+            this are stated at ``Objects.ParentMethods._with_structure``.
+            Supplied by the algebra owner: the new object is the
+            ``R``-algebra on the data of this exact ring and its structure
+            morphism, with the structure this algebra already has and the
+            given ``categories`` and ``construction_data``.  Callers are the
+            levels that add structure on a received object (slices, coslices).
+            """
+            added_categories, added_data = self._added_structure(construction_data)
+            return _algebra_structure_on(
+                self,
+                self.algebra_structure_morphism(),
+                categories=(*added_categories, *categories),
+                construction_data=added_data,
+                engine=engine,
+            )
+
         def affine_equation_family(self, relative_variables, equations):
             r"""Return the relative affine family defined over this parameter algebra."""
             from dzack_research.preamble.categories.schemes.families import (
@@ -2027,6 +2061,7 @@ def _algebra_on_module(
     multiplication,
     *,
     placement,
+    categories=(),
     unit=None,
     construction_data=None,
     law_decisions=None,
@@ -2050,10 +2085,13 @@ def _algebra_on_module(
     ``placement`` lists the categories the caller established for ``(M, m)``:
     an identity an axiom entry decided, or the theorem of a construction,
     cited where it is called.  ``unit``, an element of ``M``, is required
-    exactly when the placement is unital.  ``construction_data`` carries the
-    datum of a data category in ``placement``.  ``law_decisions`` carries the
-    exact premises supporting axiom placements: ``True``, or the proposition
-    of a law stated as a hypothesis.
+    exactly when the placement is unital.  ``categories`` lists further
+    categories, not themselves categories of algebras, whose levels add their
+    own data to this algebra: a slice or coslice over a category of rings.
+    ``construction_data`` carries the datum of a data category in
+    ``placement`` or ``categories``.  ``law_decisions`` carries the exact
+    premises supporting axiom placements: ``True``, or the proposition of a
+    law stated as a hypothesis.
     """
     ring = module.base_ring()
     tensor = multiplication.domain()
@@ -2070,7 +2108,7 @@ def _algebra_on_module(
         f"ends at {multiplication.codomain()}"
     )
     multiplication = module.module_category().Mor(tensor, module)(multiplication)
-    categories = (Algebras(ring), *placement)
+    categories = (Algebras(ring), *placement, *categories)
     selected_category = Cat().meet(categories)
     law_decisions = dict(law_decisions or {})
     for decision in law_decisions.values():
@@ -3404,15 +3442,48 @@ class _ScalarAlgebraEngine:
         return f"{self._native_ring} as an algebra over {self.base_ring()}"
 
 
+@cached_function
+def _scalar_algebra_engine(engine):
+    r"""The computation class of an algebra view, with a caller's ``engine`` before it.
+
+    Engine adapter (``OWN-06``).  ``_ScalarAlgebraEngine`` translates elements
+    between the view and its native ring; a caller that adds structure to the
+    view (a slice or coslice level) may supply further computation, which
+    precedes that translation.
+    """
+    from sage.structure.dynamic_class import dynamic_class
+
+    if engine is None:
+        return _ScalarAlgebraEngine
+    return dynamic_class(engine.__name__, (engine, _ScalarAlgebraEngine))
+
+
 @cached_function(key=lambda ring, structure_map: (id(ring), id(structure_map)))
 def _algebra_structure_view(ring, structure_map):
-    r"""The R-algebra defined by the central ring map ``R -> ring``.
+    r"""The R-algebra defined by the central ring map ``R -> ring``, once for each map."""
+    return _algebra_structure_on(ring, structure_map)
+
+
+def _algebra_structure_on(
+    ring,
+    structure_map,
+    *,
+    categories=(),
+    construction_data=None,
+    engine=None,
+):
+    r"""The R-algebra defined by the central ring map ``R -> ring``, with the data of further levels.
 
     First construct its R-module from the additive group and the given scalar
     action.  The product of the original ring is R-bilinear because the scalar
     image is central.  Classify it at the tensor owner and supply that module,
     classifier and unit to the single algebra entry.  Native conversion is a
     private realization of this result, not a second algebra constructor.
+
+    ``categories`` and ``construction_data`` are the categories and data of
+    the levels a caller adds on the data of ``ring`` (``OWN-16``), and
+    ``engine`` is that caller's private computation class.  Every call
+    constructs a new object: two slice objects on one ring are distinct.
     """
     from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring_category
 
@@ -3453,11 +3524,12 @@ def _algebra_structure_view(ring, structure_map):
         algebras, _owned_ring_category(_engine_ring(selected_ring), scalar_base=base),
     ))
     return _algebra_on_module(
-        module, multiplication, placement=(category,),
+        module, multiplication, placement=(category,), categories=categories,
         unit=module(selected_ring.one()),
         construction_data={
-            "_engine": (Algebras(base), _ScalarAlgebraEngine, None),
+            "_engine": (OwnedRings(), _scalar_algebra_engine(engine), None),
             "native_ring": selected_ring,
+            **dict(construction_data or {}),
         },
         law_decisions=law_decisions,
     )

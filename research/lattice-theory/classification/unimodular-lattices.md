@@ -28,6 +28,7 @@ $$
 \definedas
 \begin{cases}
 U^{\perp p}\perp E_8^{\perp(q-p)/8},&p<q,\\
+U^{\perp p},&p=q,\\
 U^{\perp q}\perp E_8(-1)^{\perp(p-q)/8},&p>q.
 \end{cases}
 $$
@@ -38,7 +39,7 @@ Thus signature and parity determine the integral isometry class [@Ser73, Ch. V; 
 
 Let $0\neq L$ be unimodular with
 $$
-\rank_\bZL\leq4.
+\rank_\bZ L\leq4.
 $$
 If $L$ is odd, then
 $$
@@ -51,5 +52,5 @@ L\isoto U
 \qquad\text{or}\qquad
 L\isoto U^{\perp2},
 $$
-according as $\rank_\bZL=2$ or $4$ [@MH73, Ch. II; @CS10, Ch. 15].
+according as $\rank_\bZ L=2$ or $4$ [@MH73, Ch. II; @CS10, Ch. 15].
 :::

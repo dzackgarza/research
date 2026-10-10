@@ -17,6 +17,12 @@ related: []
 references:
 - citation: Watson, primitive lattices of class number one, 4:20.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Classi/watson
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:176.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Source entry `watson:4:20` gives this Gram tensor.
+
+Catalogue of Lattices archive entry `union:176` names `D4 as a Hurwitzian lattice`.
+
+Normform of the Hurwitz order, D4=F4

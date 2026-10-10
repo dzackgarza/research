@@ -1,31 +1,23 @@
 r"""Continuous cyclotomic and quadratic characters of absolute Galois groups."""
 
 from math import gcd
-from typing import Any, cast
 
 from sage.categories.morphism import Morphism
-from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
+from sage.groups.generic import discrete_log
 from sage.misc.functional import cyclotomic_polynomial
-from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
-
-
-def _unit_group_element(unit_group, residue):
-    residue = unit_group.values_group()(residue)
-    for element in unit_group:
-        if element.value() == residue:
-            return element
-    raise ValueError(
-        f"the residue {residue} is not an element of the unit group {unit_group}"
-    )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    Zmod,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+    _owned_engine_element,
+)
 
 
 class RestrictedProfiniteCharacter(Morphism):
@@ -109,23 +101,23 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 f"characteristic, but the base field has characteristic {characteristic}"
             )
         self._modulus = n
-        target = Integers(n).unit_group()
+        self._residues = Zmod(n)
+        target = self._residues.unit_group()
         closure = _engine_ring(domain.algebraic_closure())
         root = closure.zeta(n)
         self._root = _owned_engine_element(domain.algebraic_closure(), root)
 
         if domain._is_finite_field():
-            q_mod_n = Integers(n)(int(domain.base_field_order()))
-            degree = ZZ(q_mod_n.multiplicative_order())
-            stage = domain.finite_extension(degree)
+            q = target(self._residues(int(domain.base_field_order())))
+            stage = domain.finite_extension(q.multiplicative_order())
             self._root_at_stage = _finite_root_at_stage(root, stage)
         elif _engine_ring(domain.base_field()) is SageQQ:
             if n == 2:
                 stage = domain.extension_data(domain.base_field())
                 self._root_at_stage = domain.base_field()(-1)
             else:
-                base = cast(Any, _engine_ring(domain.base_field()))
-                polynomial = cast(Any, cyclotomic_polynomial(n)).change_ring(base)
+                base = _engine_ring(domain.base_field())
+                polynomial = cyclotomic_polynomial(n).change_ring(base)
                 field = base.extension(polynomial, f"zeta_{n}")
                 owned_field = _own_ring(field)
                 backend = field.hom([root], closure)
@@ -145,37 +137,32 @@ class CyclotomicCharacter(ProfiniteCharacter):
     def primitive_root(self):
         return self._root
 
-    def _exponent_image(self, exponent):
-        modulus = int(self._modulus)
-        residue = pow(int(self.domain().base_field_order()), int(exponent), modulus)
-        return _unit_group_element(self.codomain(), residue)
-
     def _call_(self, element):
-        r"""``chi_n(sigma)``: the unit ``a`` with ``sigma(zeta) = zeta^a`` for the chosen root ``zeta``."""
+        r"""``chi_n(sigma)``: the unit ``a`` with ``sigma(zeta) = zeta^a`` for the chosen root ``zeta``.
+
+        The ``q``-Frobenius raises every root of unity to its ``q``-th power, so
+        ``chi_n(Frob^e)`` is the residue of ``q^e``. For any other element the
+        exponent ``a`` is the discrete logarithm of ``sigma(zeta)`` to the base
+        ``zeta`` in the cyclic group ``mu_n``.
+        """
         element = self.domain()(element)
+        units = self.codomain()
         exponent = element.frobenius_exponent()
         if exponent is not None:
-            return self._exponent_image(exponent)
+            q = self._residues(int(self.domain().base_field_order()))
+            return units(q ** int(exponent))
         coordinate = element.restriction_coordinate(self.factor_extension())
         if coordinate is not None:
             image = self.factor_extension().embedding()(coordinate(self._root_at_stage))
         else:
             image = element(self._root)
-        modulus = int(self._modulus)
-        residue = next(
-            (
-                residue
-                for residue in range(modulus)
-                if gcd(residue, modulus) == 1 and image == self._root**residue
-            ),
-            None,
+        closure = self.domain().algebraic_closure()
+        residue = discrete_log(
+            _engine_element(closure, image),
+            _engine_element(closure, self._root),
+            ord=self._modulus,
         )
-        assert residue is not None, (
-            f"{element} sends the primitive {modulus}-th root of unity {self._root} to {image}, "
-            f"which is not a primitive {modulus}-th root of unity, so {element} is not a "
-            f"field automorphism"
-        )
-        return _unit_group_element(self.codomain(), residue)
+        return units(self._residues(int(residue)))
 
     def _repr_(self) -> str:
         return f"Cyclotomic character chi_{self._modulus}: {self.domain()} -> {self.codomain()}"
@@ -222,8 +209,8 @@ class QuadraticCharacter(ProfiniteCharacter):
             stage = domain.extension_data(owned_field, embedding=embedding)
             self._root_at_stage = _owned_engine_element(owned_field, field.gen())
 
-        target = _own_group(CyclicPermutationGroup(2))
-        super().__init__(domain, target, stage)
+        self._integers = _own_ring(ZZ)
+        super().__init__(domain, self._integers.unit_group(), stage)
 
     def square_class(self):
         return self._square_class
@@ -232,7 +219,7 @@ class QuadraticCharacter(ProfiniteCharacter):
         return self._root
 
     def _call_(self, element):
-        r"""``+1`` when ``sigma`` fixes ``sqrt(a)``, the generator of ``C_2`` when it negates it."""
+        r"""The sign ``e`` in ``ZZ^x`` with ``sigma(sqrt(a)) = e sqrt(a)``."""
         element = self.domain()(element)
         coordinate = element.restriction_coordinate(self.factor_extension())
         if coordinate is not None:
@@ -240,9 +227,9 @@ class QuadraticCharacter(ProfiniteCharacter):
         else:
             image = element(self._root)
         if image == self._root:
-            return self.codomain().one()
+            return self.codomain()(self._integers(1))
         if image == -self._root:
-            return self.codomain().group_generators()[0]
+            return self.codomain()(self._integers(-1))
         raise ValueError(
             f"{element} sends sqrt({self._square_class}) = {self._root} to {image}, which is "
             f"neither sqrt({self._square_class}) nor its negative, so {element} does not "

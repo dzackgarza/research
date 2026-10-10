@@ -37,20 +37,33 @@ class TwistFunctor(Functor):
         return lattice.twist(self.scale())
 
     def _apply_morphism(self, morphism):
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalIsomorphism
+        from dzack_research.preamble.categories.lattice_morphisms import (
+            LatticeEmbeddingMethods,
+            LatticeIsometryMethods,
+        )
+
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        original_target = morphism.codomain()
 
-        def image(label):
-            original_image = morphism(
-                morphism.domain().module_generator(label)
-            )
-            coordinates = original_target.framing_morphism().lift(original_image)
-            return target.linear_combination(
-                {basis_label: coordinates(basis_label) for basis_label in coordinates.support().domain()}
-            )
+        def transported(arrow, domain, codomain):
+            def image(label):
+                original_image = arrow(arrow.domain().module_generator(label))
+                coordinates = arrow.codomain().framing_morphism().lift(original_image)
+                return codomain.linear_combination(
+                    {basis_label: coordinates(basis_label) for basis_label in coordinates.support().domain()}
+                )
 
-        return source.Mor(target)(image)
+            return domain.module_category().Mor(domain, codomain)(image)
+
+        forward = transported(morphism, source, target)
+        if isinstance(morphism, (LatticeIsometryMethods, CategoricalIsomorphism)):
+            backward = transported(morphism.inverse(), target, source)
+            inverse_pair = source.module_category().Core().Mor(source, target)(forward, backward)
+            return source.Isom(target)(inverse_pair)
+        if isinstance(morphism, LatticeEmbeddingMethods):
+            return source.Emb(target)(forward)
+        return source.Mor(target)(forward)
 
     def _repr_(self):
         return f"Twist by {self.scale()}"

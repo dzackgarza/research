@@ -319,15 +319,50 @@ The `qfauto(init)` column comes from a second run, in which `qfisominit` took 2.
 
 Sage's `GenusSymbol_global_ring.__eq__` compares the local symbols and never the signature, and the class defines no `__hash__`, so genera cannot key a dictionary.
 Sage decides neither which spinor genus of a genus a lattice lies in nor isometry of indefinite lattices of rank at least 3 when the genus has more than one spinor genus; `Genus.spinor_generators(proper=False)` only says whether it has more than one.
+Sage's `Genus` exposes the group of spinor operators and the improper spinor kernel only through the private `_improper_spinor_kernel()` (`sage/quadratic_forms/genera/genus.py`, line 2586 in `sage-dev-allopts`); `spinor_generators(proper)` returns primes whose operators generate the quotient and cannot decide whether a given prime's operator lies in the kernel. `_genus_classes` in `lattices.py` calls the private method to choose a neighbour prime whose operator lies in the kernel, so that `QuadraticForm.neighbor_iteration` stays in one spinor genus.
 Hecke's `is_isometric(::ZZLat, ::ZZLat)` decides every case, the indefinite one by `p`-adic approximation and the spinor operators.
 
 Reproduce with `~/.local/bin/sage probe.sage`, where the probe builds the specimens above and times each call.
-Route chosen: `_isometry_class_representatives` in `src/dzack_research/preamble/categories/lattices.py` computes each lattice's rank, determinant, signature, `qfrep(G, 4, 0)` and canonical local symbols once and groups by them, then decides only inside a genus with more than one member.
+Route chosen: `_isometry_class_representatives` in `src/dzack_research/preamble/categories/lattices.py` computes each lattice's rank, determinant, signature and `qfrep(G, 4, 0)` once and groups by them, then groups by the owned genus `L.genus()`, whose equality compares the signature, the determinant and the canonical local symbols, and decides only inside a genus with more than one member.
 A definite genus of three or more members with `mass · |O(L)| = 1` is one class and needs no comparison; otherwise `qfisominit` runs once per class representative and `qfisom` tests each member against them.
 An indefinite genus of rank at least 3 with one spinor genus is one class; otherwise each member goes to Hecke `is_isometric` through `_OscarLatticeAdapter.integer_lattices_are_isometric` in `lattice_engines.py`.
 The PARI stack is left at Sage's default, so a lattice like `D_20^+` that reaches a comparison raises PARI's stack error rather than growing a process-wide setting.
 The wall time of the whole partition as a function of the number of lattices is untested.
 Depends on this: `Lattices(ZZ).isometry_classes`, and through it lattice-db duplicate detection.
+
+### `IntegralLattice.short_vectors` enumerates a rank-8 shell of 66,805 vectors in about a second; a preamble element per vector costs about 2 ms
+
+`IntegralLattice(G).short_vectors(n)` returns every vector of norm below `n`, grouped by norm, through fplll.
+On `K8` (lattice-db record `0096`: rank 8, minimum 4, discriminant group `(Z/2)^2 + (Z/12)^2`), SageMath 10.10.beta8, 2026-10-08, one run each:
+
+| bound `n` | vectors of norm below `n` | `short_vectors(n)` |
+| --- | --- | --- |
+| 9 | 1,153 | 0.09 s |
+| 13 | 5,101 | 0.16 s |
+| 25 | 66,805 | 1.34 s |
+
+The preamble's cost is above the engine.  Raising one engine vector into the lattice by `_element_from_coordinates` costs about 1.8 ms (132, 828 and 2,796 vectors in 0.27, 1.24 and 5.04 s).  The element predicate `is_root()` costs about 32 ms, most of it in the pairings `b(v, e_i)` against each generator, each a separate form evaluation.
+`reflective_roots` asks every vector of norm dividing `2 exp(A_L)`, up to norm 24 on `K8`, so testing each element took about 35 min.
+Sage ships no reflective-root routine: `free_quadratic_module_integer_symmetric.py` has no root method.
+
+Reproduce with `.tmp/`-local probes that build `Lattices(ZZ)(G)` from the card and time `short_vectors`, `vectors_of_square` and `is_root`.
+Route chosen: `_roots_of_square` in `src/dzack_research/preamble/categories/definite_lattices.py` takes the shell from `short_vectors`, pairs it against the basis in one product with the symmetric Gram matrix, keeps the rows where `b(v,v)` divides `2 b(v,w)`, and raises only the roots.  `reflective_roots` on `K8` then takes 5.3 s, and its derive 11.9 s.
+Depends on this: `reflective_roots`, `reflective_root_system_components`, and through them the lattice-db `root_system` of a definite card.
+
+### Two distinct symbolic variables take about 0.3 ms to compare, so a lattice basis label comparison is a symbolic decision
+
+The basis labels of a preamble lattice are the symbolic variables `e_i = SR.var("e_i")` (`_formal_symbol` in `src/dzack_research/preamble/categories/_lattice.py`).
+`bool(e_0 == e_1)` decides a symbolic relation, and for two distinct symbols Sage runs its numerical test with random interval values before it returns `False`; `bool(e_0 == SR.var("e_0"))` returns at once.
+SageMath 10.10.beta8, no preamble in the process, 2026-10-08:
+
+| comparisons | distinct symbols | equal symbols |
+| --- | --- | --- |
+| 100 | 0.038 s | 0.000 s |
+| 1,000 | 0.289 s | 0.012 s |
+
+`_finite_support_labels` (`framed_free_modules.py`) took the union of the supports of the spanning vectors by comparing labels pairwise, and each `support()` built its finite subset by the same comparisons.  On `E8` (lattice-db record `0094`) with its 240 roots, `L.subobject_on(roots)` took 5.9 s, almost all of it in those comparisons.
+Route chosen: a finite framing is its own finite coordinate window, so its labels are taken whole and none are compared.  `subobject_on` then takes 0.36 s.  A framing of infinite cardinality still forms the union, and still pays per comparison.
+Depends on this: every span, saturation and sublattice of a finite-rank lattice, and through them the lattice-db `root_sublattice` field.
 
 ### The rational spinor norm costs nothing per isometry; reaching it through OSCAR costs about 25 s once per process
 
@@ -357,6 +392,115 @@ Reproduce with `direnv exec /home/dzack/research /home/dzack/gitclones/sage-dev-
 Route chosen: `_gap_rational_spinor_norm_class` in `src/dzack_research/preamble/categories/lattice_engines.py` computes the rational spinor norm by libgap `WallForm`; the number-field spinor norm stays on OSCAR, since GAP has no general number fields.
 On that route, one run each, `L.spinor_kernel().cardinality()` took 1.87 s for `A1+A1` (`|spinor kernel| = 4`, the eight spinor-norm calls 0.10 s together) and 1.74 s for `A1+A1+A1` (`|spinor kernel| = 24`, the 48 calls 0.85 s together), with no Julia process started.
 Depends on this: `spinor_norm`, `spinor_norm_class`, `spinor_kernel` and `spinorial_kernel` of a lattice over `ZZ` or `QQ`.
+
+### `QuadraticForm.siegel_product` is correct in ranks 4 and 8, halves the value in rank 2, and raises or is wrong in odd rank
+
+By the Siegel–Weil formula, the coefficient of `q^m` in the genus theta series `theta_gen = sum theta_{L_i}/|O(L_i)| / sum 1/|O(L_i)|` equals the Siegel product of the real density and the local densities.
+`siegel_product(m)` should therefore agree with `theta_gen`, which the probe computes from `Genus(G).representatives()`, `theta_series` and `number_of_automorphisms()`.
+The forms are `QuadraticForm(ZZ, 2*G)`, so `Q(x) = x^T G x`, for `m = 1, ..., 32`, SageMath 10.10.beta8, 2026-10-09:
+
+| `G` | rank | classes | agreement with `theta_gen` | time of `siegel_product`, `m` up to 8 / 16 / 32 |
+| --- | --- | --- | --- | --- |
+| identity | 4 | 1 | every `m`; equals `r_4(m)` | 0.049 s / 0.113 s / 0.236 s |
+| identity | 8 | 1 | every `m`; equals `r_8(m)` | 0.776 s for 32 |
+| `[[2,-1],[-1,2]]` (`A_2`) | 2 | 1 | exactly half at every represented `m`: `m = 2` gives 3 for 6, `m = 6` 3 for 6, `m = 14` 6 for 12 | |
+| `diag(1,1,1)` | 3 | 1 | most `m` raise `TypeError: unable to convert 1/32*sqrt(2) to a rational`; the rest are wrong: `m = 2` gives 9/4 for 12, `m = 8` 9/8 for 12, `m = 18` 9/2 for 36, `m = 32` 9/16 for 12 | |
+| `diag(1,1,16)` | 3 | 2 | the same `TypeError` for most `m`; `m = 2` gives 3/16 for 4, `m = 8` 3/32 for 4, `m = 18` 3/8 for 12, `m = 32` 9/64 for 12 | |
+
+The source divides by 2 when `n == 2`, which accounts for the binary case.
+`theta_gen` of `diag(1,1,16)` through `q^16` is `1, 2, 4, 0, 4, 8, 0, 0, 4, 10, 8, 0, 0, 8, 0, 0, 6`, in 1.18 s; since `r_L(1) = 4`, its cuspidal component is nonzero.
+Reproduce with `sage probe.sage`, where the probe computes `theta_gen` from the genus representatives and compares `siegel_product(m)` with it for each specimen.
+Route chosen: the preamble forms Siegel's product itself in `Genus.siegel_eisenstein_coefficient` (`src/dzack_research/preamble/categories/lattices.py`), and no route uses `siegel_product`. The factors at `p | 2 m det L` are `Genus.local_density`; the product of the remaining factors is a quotient of the exact values of `quadratic_L_function__exact` and `zeta__exact` (`sage.quadratic_forms.special_values`) with their Euler factors at `2 m det L` removed; the real density is Siegel's Hilfssatz 26; and the product is halved in rank 2. The whole product is formed in `SR` before `QQ(...)`, so the square roots and powers of `pi` cancel: on 2026-10-09 the conversion succeeded for `A_2`, `-A_2`, `diag(1,1,1)`, `diag(1,1,16)` and the identity of rank 4 at every `m` up to 12, and each value equals `theta_gen`, in 0.1 s to 0.26 s per specimen for the 12 coefficients.
+Depends on this: `Genus.siegel_eisenstein_coefficient`, and `definite.siegel_eisenstein_coefficients` in lattice-db.
+
+### `QuadraticForm.local_density(p, m)` drops the factor `p^v` of the content
+
+For `Q = p^v f` with `f` primitive at `p`, the local density is `beta_p(Q, m) = lim p^{k(1-n)} #{x mod p^k : Q(x) = m mod p^k} = p^v beta_p(f, m/p^v)`.
+`local_density` returns `beta_p(f, m/p^v)`: it divides out the content and does not multiply back.
+Against a direct count of solutions modulo `p^k`, forms `QuadraticForm(ZZ, 2*G)`, SageMath 10.10.beta8, 2026-10-09:
+
+| `G` | `(p, m)` | `local_density` | count modulo `p^k` |
+| --- | --- | --- | --- |
+| `diag(1,1,16)` (content 1) | `(2, 1)`, `(2, 2)`, `(3, 2)`, `(2, 17)` | 2, 2, 4/3, 2 | 2 (`k = 5`), 2 (`k = 5`), 4/3 (`k = 3`), 2 (`k = 6`) |
+| `A_2` (content 2 at `p = 2`) | `(2, 2)` | 3/2 | 3 (`k = 5`) |
+
+Reproduce with `sage probe.sage`, where the probe counts `x` in `(Z/p^k)^n` with `x^T G x = m mod p^k` and divides by `p^{k(n-1)}`.
+Route chosen: `Genus.local_density` in `src/dzack_research/preamble/categories/lattices.py` multiplies Sage's value by `p^v`, with `v` the `p`-adic valuation of the content of `x^T G x`.
+Depends on this: `integral.local_densities` in lattice-db.
+
+### `QuadraticForm.is_locally_represented_number` contradicts `local_representation_conditions` on an imprimitive form
+
+For `E_8` with `QuadraticForm(ZZ, 2*G)`, so `Q(x) = x^T G x` takes only even values, `is_locally_represented_number(m)` answers `True` for `m = 21` and `m = 31` among `m < 40`.
+The same form's `local_representation_conditions()` says, at `p = 2`, that the classes `1, 3, 5, 7` are represented only from valuation 2, so no odd `m` is represented.
+On the primitive form `QuadraticForm(ZZ, G)`, `Q(x) = x^T G x / 2`, every `m` is answered `True`, which is correct; on `A_2` with `2*G` the answers are correct.
+SageMath 10.10.beta8, 2026-10-09.
+
+`local_representation_conditions()` returns, for each exceptional prime, one entry per square class of `Q_p^x`, in the order `1, 3, 5, 7, 2, 6, 10, 14` for `p = 2` and `1, u, p, u p` for odd `p` with `u` the least quadratic nonresidue.
+An entry is not a valuation: entry `e` means the class is represented by `r p^{2e}` and every `r p^{2(e+j)}`, where `r` is the listed representative, so the least represented valuation is `v_p(r) + 2e`; `+Infinity` means no element of the class.
+Specimens, conditions at `p = 2`, with times: `x^2 + y^2 + 16 z^2` `[0, 2, 0, +Inf, 0, 1, 0, 1]` (0.19 s); `A_2` `[+Inf, +Inf, +Inf, +Inf, 0, 0, 0, 0]` and at `p = 3` `[+Inf, 0, +Inf, 0]` (0.13 s); `E_8` `[1, 1, 1, 1, 0, 0, 0, 0]` (0.41 s).
+Reproduce with `sage probe.sage`, where the probe compares the values represented by `x^T G x` below 40 with both methods.
+Route chosen: `_least_represented_valuations` in `src/dzack_research/preamble/categories/lattices.py`, behind `Genus.local_representations`, reads `local_representation_conditions()` at each prime where Sage records a condition, converts each entry to the least valuation `v_p(r) + 2e`, and omits the classes marked `+Infinity`; no route calls `is_locally_represented_number`.
+Depends on this: `integral.local_representations` in lattice-db.
+
+### `anisotropic_primes` and `local_representation_conditions` inspect only the primes dividing `2 det`, which is wrong below rank 3
+
+For rank at least 3 a form unimodular at `p` is isotropic over `Q_p` and represents every `p`-adic integer, so every anisotropic or exceptional prime divides `2 det`.
+For a binary form this fails: `x^T G x` for `A_2` is twice the norm form of `Q(sqrt(-3))`, anisotropic at every prime inert in it, such as 5, and representing only elements of even valuation there.
+`QuadraticForm(ZZ, 2*G).anisotropic_primes()` returns `[2, 3, -1]` for `A_2`, and `local_representation_conditions()` lists only 2 and 3.
+Other specimens, `-1` standing for the real place: `x^2 + y^2 + 16 z^2` `[2, -1]` in 0.0078 s; `E_8` `[-1]`.
+SageMath 10.10.beta8, 2026-10-09.
+
+The class `QuadraticFormLocalRepresentationConditions` (`sage/quadratic_forms/quadratic_form__local_representation_conditions.py`, Sage checkout `4b7841fd01a`) has three further defects below rank 3. They were read in the source and not measured.
+
+- In dimension 1, `__init__` stores only the coefficient (lines 132--134). `local_conditions_vector_for_prime(p)` builds the vector at lines 346--353 and does not return it, so every call reaches `raise RuntimeError("the stored dimension should be a nonnegative integer")` at line 360. The built vector also marks the represented class `None`, not `0`.
+- In dimension 2, at a prime outside `exceptional_primes`, `local_conditions_vector_for_prime` returns `[p, 0, 0, +Inf, +Inf]` at odd `p` and `[2, 0, 0, 0, 0, +Inf, +Inf, +Inf, +Inf]` at 2 (lines 341--344). That is the answer of a unimodular anisotropic form. At a prime where the form is isotropic it is wrong, because there the form represents every class from valuation `v_p(r)`.
+- In dimension at least 2, a prime of the level is omitted from `exceptional_primes` when every entry it computed is `0` or `None` (lines 189--198). In dimension 2 such a prime then receives the wrong vector of the previous item.
+
+`is_anisotropic(p)` (`quadratic_form__local_field_invariants.py`, lines 662--682) decides each dimension at any `p` from the determinant and the Hasse invariant. `anisotropic_primes` is wrong below rank 3 only because it tests `prime_divisors(2 * det) + [-1]` (lines 757--758).
+
+The preamble route was measured on 2026-10-09:
+
+| Specimen | Anisotropic, among 2, 3, 5, 7, 11, 13 | Least valuations | Time for all calls |
+| --- | --- | --- | --- |
+| `A_2` | 2, 3, 5, 11 | at 2: `2, 6, 10, 14` from 1; at 3: `2` from 0 and `6` from 1; at 5 and 11: `1, 2` from 0 | 0.24 s |
+| `<1>` | every listed prime | at every listed prime: `1` from 0 | 0.02 s |
+| `x^T G x` with `G = diag(2, 6)` | 2, 3, 5, 11 | the same as `A_2` | 0.07 s |
+
+In all three specimens the primes of the level of `QuadraticForm(ZZ, 2*G)` are the primes of `2 det G`.
+
+Route chosen: `Genus.anisotropic_primes` in `src/dzack_research/preamble/categories/lattices.py`:
+
+- In rank at least 3, it returns the finite set from `anisotropic_primes()`.
+- In rank 1 and 2, it returns the condition set of primes `p` of `ZZ` at which `is_anisotropic(p)` holds.
+
+`Genus.local_representations` reads, through `_least_represented_valuations`:
+
+- in rank 1, the class of the coefficient `c`, from `v_p(c)`;
+- in rank 2, at a prime that Sage omits and that does not divide the level, the classes `1, u` from valuation 0 when the form is anisotropic there, and every class from `v_p(r)` otherwise (Serre, *A Course in Arithmetic*, Ch. IV, 1.7, Prop. 4; Ch. II, 2.2, Cor. 2 of Thm. 1);
+- in rank 2, at an omitted prime of the level, every class from `v_p(r)`;
+- otherwise, Sage's stored vector.
+
+In rank 1 and 2 the index set is the condition set of primes at which some class is not represented from `v_p(r)`. lattice-db stores both fields at the primes dividing `2 det L`. Its schema states the rule at the other primes.
+Depends on this: `integral.anisotropic_primes` and `integral.local_representations` in lattice-db.
+
+### Isotropy through the Witt index starts Julia; PARI's `qfsolve` decides it in hundredths of a second
+
+Over `QQ` the preamble's `witt_index()` calls OSCAR's `rational_witt_index` through `sage-julia-bridge`.
+A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call.
+In a fresh process after the session import, `(Lattices(ZZ)("U") + Lattices(ZZ)("U")).represents(0)` on that route took 48.59 s and 45.19 s in two runs, and a later isotropy call in the same process took 2.58 s.
+PARI's `qfsolve`, which the preamble already calls for an isotropic vector (`_isotropic_vector_witness` in `lattice_engines.py`), returns a zero or an obstruction and decides the same question (Serre, *A Course in Arithmetic*, Ch. IV, 3.2, Thm. 8).
+`is_isotropic()` on that route, one run each, 2026-10-09:
+
+| Gram matrix | rank | answer | time |
+| --- | --- | --- | --- |
+| `diag(1, -1)` | 2 | True | 0.063 s |
+| `diag(1, 1, -3)` | 3 | False | 0.019 s |
+| `diag(1, 1, 1, 1, -7)` | 5 | True | 0.032 s |
+| `U + U` | 4 | True | 0.02 s, with `U + U + U` 0.02 s |
+
+Reproduce with `direnv exec /home/dzack/research env PYTHONPATH=<worktree>/src sage -python probe.py`, where the probe times `is_isotropic()` on the specimens above in a fresh process.
+Route chosen: `is_isotropic` in `src/dzack_research/preamble/categories/lattices.py` decides isotropy over `ZZ` and `QQ` from `_isotropic_vector_witness`; over number fields it keeps `witt_index()`.
+Depends on this: `is_isotropic`, `isotropic_vector`, `represents(0)` and `representation_vector(0)` of a lattice over `ZZ` or `QQ`.
 
 ## mypy
 

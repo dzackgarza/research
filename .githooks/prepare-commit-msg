@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+# Unlike commit-msg, this Git hook runs with --no-verify, before any editor.
+# https://git-scm.com/docs/githooks#_prepare_commit_msg
+if [ "${GIT_EDITOR-}" != ':' ]; then
+    printf '%s\n' 'Commit rejected: supply the complete attested message with -F or -m; see CONTRIBUTING.md, COMMIT-01.' >&2
+    exit 1
+fi
+exec "$(dirname "$0")/commit-msg" "$1"

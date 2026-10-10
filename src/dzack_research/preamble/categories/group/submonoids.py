@@ -142,7 +142,6 @@ def _generated_submonoid(ambient, generators, *, description=None, structure_dat
         structure_data=structure_data,
     )
 
-
 def _predicate_submonoid(
     ambient,
     predicate,
@@ -160,4 +159,3 @@ def _predicate_submonoid(
         description=description,
         structure_data=structure_data,
     )
-

@@ -95,11 +95,9 @@ def Set(iterable):
     return owned_set(iterable)
 
 
-def factorial(value):
-    integer = Integer(value)
-    from math import factorial as python_factorial
-
-    return integer.parent()(python_factorial(int(integer)))
+def factorial(value: int | str | _OwnedIntegerElement) -> _OwnedIntegerElement:
+    r"""The factorial \(n!\) of the integer ``value``, read from the integer's own method."""
+    return Integer(value).factorial()
 
 
 def ellipsis_range(*args):

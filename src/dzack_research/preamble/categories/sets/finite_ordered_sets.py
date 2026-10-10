@@ -67,12 +67,17 @@ class OrderedEnumeratedSets(OwnedCategory):
         assert index_set in EnumeratedSets(), (
             f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
         )
-        if index_set in FiniteSets():
-            return FiniteOrderedSets().from_indexed(
-                index_set, element_at, index_of=index_of, contains=contains, name=name
-            )
+        match index_set:
+            case _ if index_set in FiniteSets():
+                return FiniteOrderedSets().from_indexed(
+                    index_set, element_at, index_of=index_of, contains=contains, name=name
+                )
+            case _ if index_set in Sets().Infinite():
+                placement = owned_category_join((self, Sets().Infinite()))
+            case _:
+                placement = self
         return _object_of(
-            self,
+            placement,
             index_set=index_set,
             element_at=element_at,
             index_of=index_of,
@@ -89,7 +94,6 @@ class OrderedEnumeratedSets(OwnedCategory):
             index_of: Callable[[PointT], IndexT | None],
             contains: Callable[[PointT], bool] | None = None,
             name: str | None = None,
-            category=None,
             **rest,
         ) -> None:
             assert callable(element_at), (
@@ -105,13 +109,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
-            placement = category if category is not None else OrderedEnumeratedSets()
-            match index_set:
-                case _ if index_set in FiniteSets():
-                    placement = owned_category_join((placement, FiniteSets()))
-                case _ if index_set in Sets().Infinite():
-                    placement = owned_category_join((placement, Sets().Infinite()))
-            super().__init__(category=placement, facade=True, **rest)
+            super().__init__(facade=True, **rest)
 
         def index_set(self) -> Sets().ObjectType:
             return self._index_set
@@ -349,7 +347,7 @@ class FiniteOrderedSets(OwnedCategory):
     class ParentMethods:
         def filtered(self, predicate, *, name=None):
             r"""Return the ordered subset of this set cut out by ``predicate``."""
-            return _FilteredOrderedSet(self, predicate, name=name)
+            return _filtered_ordered_set(self, predicate, name=name)
 
         def union(self, other):
             r"""The finite set of the points of this set and of the finite set ``other``.
@@ -406,53 +404,63 @@ class FiniteOrderedSets(OwnedCategory):
             return "{" + ", ".join(repr(element) for element in self) + "}"
 
 
-class _FilteredOrderedSet(FiniteOrderedSets().ObjectType):
+def _filtered_ordered_set(
+    universe: Parent,
+    predicate: Callable[[PointT], bool],
+    *,
+    name: str | None = None,
+) -> FiniteOrderedSets().ObjectType:
     r"""The subset \(\{x\in S : P(x)\}\) of a finite enumerated set \(S\), in the order of \(S\).
 
     A finite ordered set, enumerated over the ordinal counting the points
     satisfying \(P\), the \(k\)-th point being the \(k\)-th such point of
-    \(S\).  The datum this level introduces is \((S, P)\); the enumeration
-    is computed from it when the object is constructed, and the inclusion
-    into \(S\) is the subobject the set is.
+    \(S\).  The enumeration is computed from \((S, P)\) here, and the finite
+    ordered sets owner constructs the set on it.
+    """
+    assert universe in FiniteSets() and universe in EnumeratedSets(), (
+        f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
+        "finite and enumerated"
+    )
+
+    def survivors():
+        return (point for point in universe if predicate(point))
+
+    def element_at(index):
+        return next(islice(survivors(), int(index), None))
+
+    def index_of(element):
+        if element not in universe or not predicate(universe(element)):
+            return None
+        return next(
+            position
+            for position, point in enumerate(survivors())
+            if point == element
+        )
+
+    return _object_of(
+        FiniteOrderedSets(),
+        _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
+        universe=universe,
+        predicate=predicate,
+        index_set=finite_ordinal_set(sum(1 for _point in survivors())),
+        element_at=element_at,
+        index_of=index_of,
+        contains=lambda element: element in universe and bool(predicate(universe(element))),
+        name=name,
+    )
+
+
+class _FilteredOrderedSetEngine:
+    r"""Private computation class (``OWN-06``) of the ordered subset \(\{x\in S : P(x)\}\).
+
+    The datum this class keeps is \((S, P)\); the inclusion into \(S\) is
+    the subobject the set is.
     """
 
-    def __init__(
-        self,
-        universe: Parent,
-        predicate: Callable[[PointT], bool],
-        *,
-        name: str | None = None,
-    ) -> None:
-        assert universe in FiniteSets() and universe in EnumeratedSets(), (
-            f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
-            "finite and enumerated"
-        )
+    def __init__(self, universe: Parent, predicate: Callable[[PointT], bool], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
-
-        def survivors():
-            return (point for point in universe if predicate(point))
-
-        def element_at(index):
-            return next(islice(survivors(), int(index), None))
-
-        def index_of(element):
-            if element not in universe or not predicate(universe(element)):
-                return None
-            return next(
-                position
-                for position, point in enumerate(survivors())
-                if point == element
-            )
-
-        super().__init__(
-            index_set=finite_ordinal_set(sum(1 for _point in survivors())),
-            element_at=element_at,
-            index_of=index_of,
-            contains=lambda element: element in universe and bool(predicate(universe(element))),
-            name=name,
-            category=FiniteOrderedSets(),
-        )
+        super().__init__(**rest)
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(S\) this subset is cut out of."""
@@ -474,43 +482,50 @@ class _FilteredOrderedSet(FiniteOrderedSets().ObjectType):
         return self._name or f"Ordered subset of {self.universe()}"
 
 
-class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
-    r"""An injective image realized by the ordered-enumeration engine.
+def _enumerated_image_set(
+    source: Sets().ObjectType,
+    map_: Callable[[IndexT], PointT],
+    inverse: Callable[[PointT], IndexT | None],
+) -> OrderedEnumeratedSets().ObjectType:
+    r"""An injective image, constructed by the ordered enumerated sets owner.
 
     No category of images is introduced.  The source, map and inverse are
-    exactly the index set and the two directions of the enumeration, stored
-    by that owner.  In the infinite case the supplied inverse is a decision
-    extension: it returns ``None`` on candidates for which no preimage is
-    represented.  Membership also checks the forward equation, so a total
-    extension of an inverse cannot admit values outside the image.
+    exactly the index set and the two directions of the enumeration.  In the
+    infinite case the supplied inverse is a decision extension: it returns
+    ``None`` on candidates for which no preimage is represented.  Membership
+    also checks the forward equation, so a total extension of an inverse
+    cannot admit values outside the image.
     """
+    match source:
+        case _ if source in FiniteSets():
+            placement = FiniteOrderedSets()
 
-    def __init__(
-        self,
-        source: Sets().ObjectType,
-        map_: Callable[[IndexT], PointT],
-        inverse: Callable[[PointT], IndexT | None],
-    ) -> None:
-        match source:
-            case _ if source in FiniteSets():
-                placement = FiniteOrderedSets()
+            def contains(value):
+                return any(map_(point) == value for point in source)
+        case _:
+            # The image of an infinite set under an injection is infinite.
+            placement = (
+                owned_category_join((OrderedEnumeratedSets(), Sets().Infinite()))
+                if source in Sets().Infinite()
+                else OrderedEnumeratedSets()
+            )
 
-                def contains(value):
-                    return any(map_(point) == value for point in source)
-            case _:
-                placement = OrderedEnumeratedSets()
+            def contains(value):
+                preimage = inverse(value)
+                return preimage in source and map_(source(preimage)) == value
 
-                def contains(value):
-                    preimage = inverse(value)
-                    return preimage in source and map_(source(preimage)) == value
+    return _object_of(
+        placement,
+        _engine=(placement, _EnumeratedImageSetEngine, None),
+        index_set=source,
+        element_at=map_,
+        index_of=inverse,
+        contains=contains,
+    )
 
-        super().__init__(
-            index_set=source,
-            element_at=map_,
-            index_of=inverse,
-            contains=contains,
-            category=placement,
-        )
+
+class _EnumeratedImageSetEngine:
+    r"""Private computation class (``OWN-06``) of an injective image enumerated by its source."""
 
     def source_set(self) -> Sets().ObjectType:
         r"""The source of the injective map presenting this image."""

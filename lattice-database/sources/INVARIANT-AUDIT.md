@@ -81,8 +81,6 @@ Conway–Sloane, *Sphere Packings, Lattices and Groups* (Zotero `T2WVLTDB`, with
 | Unimodular lattices | $E_8,D_{16}^+,D_{24}^+,E_8^2,E_8^3$ and $Z^n=I_{n,0}$ for $n=2$–$26$ present. Mordell–Weil lattices and $II_{25,1}$ have no record under any name searched. |
 | Kappa lattices | Catalogue `KAPPA7/8/9` entries present as union-seeded cards. |
 
-Seeded union cards duplicate full records with byte-identical Gram tensors: `N(A24)` twice (`029C`, `3HQ1`) and $A_1$ twice (`<2>`, `A1 (union:33)`). The other `N(...)`/`N(...) (union:...)` pairs follow the same seeding pattern and need the same Gram comparison. The corpus records a lattice once; a seeded card whose Gram equals a held record is not a second record.
-
 ## Remaining intake
 
 1. Compute $MM(L)$ from the Gram matrix using the Miranda–Morrison local formula for nondegenerate even indefinite lattices of rank greater than $3$. Store its $\mathbb F_2$-dimension and `mm_trivial`. Keep $E(L)$ and the genus group distinct when the computation exposes them.

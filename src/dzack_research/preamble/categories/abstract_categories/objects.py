@@ -1,6 +1,6 @@
 """Dependency-light bases for the owned mathematical category graph."""
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -15,12 +15,51 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
     OwnedParent,
+    _object_of,
+    owned_category_join,
 )
 from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
     CategoryWithAxiom,
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
+
+# The private realization of an object: its owner category, its object class
+# and its element class, as ``_object_of`` receives it (``OWN-06``).
+type Realization = tuple[Category, type, type | None]
+
+
+def _realization_with_caller_engine(
+    target: Category,
+    received_type: type,
+    received_element_type: type,
+    engine: type | None,
+) -> Realization:
+    r"""The computation of an object constructed again in ``target``.
+
+    Engine adapter (``OWN-06``) of ``Objects.ParentMethods._with_structure``,
+    and called by nothing else.  ``received_type`` and
+    ``received_element_type`` realize the received object and its elements;
+    they consume its defining data and compute on it, and they serve
+    ``target``, which places the result.  ``engine`` is the class of the
+    caller's added level, and it precedes the received realization.  The
+    inputs and the result are engine classes, which no public operation
+    exchanges, so this stays inside the construction contract.
+    """
+    from sage.structure.dynamic_class import dynamic_class
+
+    match engine:
+        case None:
+            return (target, received_type, received_element_type)
+        case _:
+            return (
+                target,
+                dynamic_class(engine.__name__, (engine, received_type)),
+                received_element_type,
+            )
 
 
 class _PendingResolution:
@@ -199,6 +238,89 @@ class Objects(OwnedCategory):
         belongs here and nowhere above.  A level declares its own datum and
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
+
+        def _with_structure(
+            self,
+            categories: tuple[Category, ...],
+            construction_data: dict[str, ConstructionData],
+            *,
+            engine: type | None = None,
+        ) -> ObjectOfCategory:
+            r"""Construct, on the data of this exact object, an object of further categories.
+
+            Protected construction contract (``OWN-05``, ``OWN-16``).  Owner:
+            the category whose constructor builds this object.  Permitted
+            callers: a level that adds chosen structure to a received object,
+            as the slice ``C/X`` adds ``p: A -> X`` to an object ``A`` of
+            ``C``.  ``categories`` are the categories of the added levels, the
+            first of them the level that ``engine`` serves; ``construction_data``
+            is their data, and ``engine`` an optional private computation class
+            (``OWN-06``).  The result is a new object of the join of
+            ``categories`` and of their supercategories, and of nothing else:
+            placement follows construction (``ARC-08``, ``CON-07``), and the
+            categories finer than ``C`` that hold this object are facts about
+            this object, not about the result.  ``C/X`` declares ``C``, so the
+            result has the operations of ``C``.
+
+            No public operation can do this: the caller holds only the
+            received object, and the data that construct it again (its
+            owner's constructor, its defining data, its realization) belong to
+            its owner.  A public constructor of the meet would make the caller
+            restate that data, which is the parallel construction ``OWN-16``
+            forbids.
+
+            Here the result is constructed in the join of ``categories`` on
+            the defining data of this object and the data of ``categories``.
+            The class that realizes this object and its elements is the
+            private computation of the result (``OWN-06``): it consumes the
+            defining data and computes on them, and ``engine`` precedes it.
+            An owner whose objects are built otherwise
+            (an algebra on its engine ring, a module on its presentation)
+            supplies its own construction.
+            """
+            construction = self._defining_construction
+            assert construction is not None, (
+                f"cannot construct {self} with the further structure of {categories}: it was not built by its "
+                "category's constructor, so no owner constructs it again on its data"
+            )
+            _, _, data = construction
+            _, level_data = self._added_structure({})
+            owner_data = {name: datum for name, datum in data.items() if name not in level_data}
+            added_categories, added_data = self._added_structure(construction_data)
+            assert owner_data.keys().isdisjoint(added_data), (
+                f"cannot add the data {sorted(construction_data)} to {self}: it already has "
+                f"the data {sorted(owner_data)} of the same names"
+            )
+            target = owned_category_join((*added_categories, *categories))
+            return _object_of(
+                target,
+                _engine=_realization_with_caller_engine(
+                    target, type(self), self.element_class, engine
+                ),
+                **owner_data,
+                **added_data,
+            )
+
+        def _added_structure(
+            self,
+            construction_data: dict[str, ConstructionData],
+        ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""The categories and data that levels above this object's owner add to it, with ``construction_data``.
+
+            Protected companion of :meth:`_with_structure` (``OWN-05``).
+            Implementing roles: a level that adds structure on a received
+            object extends this cooperatively.  It returns its categories and
+            its data merged with the data of the same level in
+            ``construction_data``, so constructing the object again with
+            further structure keeps the structure it has: an object of
+            ``C/X`` constructed in ``C/Y`` is an object of both slices, with
+            one arrow in each.  Calling roles: an owner's
+            :meth:`_with_structure`, and the arrow levels' ``arrow()``, which
+            read the categories of the levels.  The root adds nothing and
+            passes ``construction_data`` on.  The result is construction
+            data, which no public operation returns.
+            """
+            return (), dict(construction_data)
 
         @cached_method
         def _selected_resolution_registry(self):

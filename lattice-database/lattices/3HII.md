@@ -43,8 +43,14 @@ related: []
 references:
 - citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:121.
   url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
+- citation: G. Nebe and N. J. A. Sloane, Catalogue of Lattices, archive entry union:138.
+  url: https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/union.gz
 ---
 
 Catalogue of Lattices archive entry `union:121` names `BW32`.
+
+As Z-lattice isometric to the Barnes-Wall lattice.
+
+Catalogue of Lattices archive entry `union:138` names `BW32`.
 
 As Z-lattice isometric to the Barnes-Wall lattice.

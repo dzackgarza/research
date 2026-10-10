@@ -381,6 +381,15 @@ class _OwnedCategoryComparisonKey:
     always compares below its owned supercategory; a digest of the category
     graph resolves siblings reproducibly.
 
+    The structural integer does not separate two categories of one family whose
+    parameter is an object rather than a category: ``C/X`` and ``C/Y`` have the
+    same declaring class, the same supercategory ``C`` and the same base
+    category.  Sage's C3 merge (``C3_sorted_merge`` in
+    ``sage/misc/c3_controlled.pyx``) keys its tails by ``_cmp_key``, so two such
+    categories in one join -- an object of ``C/X`` and of ``C/Y`` at once --
+    need distinct keys.  Sage's session counter is kept as the last component;
+    it orders only categories whose structural keys agree.
+
     This is a non-data descriptor.  Its first use writes the resulting tuple to
     the category instance, exactly as Sage's Cython descriptor does, after which
     normal instance lookup is the fast path.
@@ -392,11 +401,11 @@ class _OwnedCategoryComparisonKey:
     def __get__(self, category: Category | None, owner=None):
         if category is None:
             return self
-        # Ask Sage's original descriptor for the flags.  It temporarily stores
-        # its session counter on the instance; the assignment below immediately
-        # replaces that value with the owned structural key.
+        # Ask Sage's original descriptor for the flags and its session counter.
+        # It temporarily stores them on the instance; the assignment below
+        # immediately replaces that value with the owned structural key.
         native_descriptor = Category.__dict__["_cmp_key"]
-        flags, _session_counter = native_descriptor.__get__(category, type(category))
+        flags, session_counter = native_descriptor.__get__(category, type(category))
         depth = _category_graph_depth(category)
         signature = (
             _category_graph_signature(category),
@@ -407,7 +416,7 @@ class _OwnedCategoryComparisonKey:
             + (depth << self._DEPTH_SHIFT)
             + _stable_signature_integer(signature)
         )
-        result = (flags, structural)
+        result = (flags, structural, session_counter)
         category._cmp_key = result
         return result
 
@@ -1307,11 +1316,23 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
         # such base, preserving the same semantic precedence as the ordinary
         # subclass path below: stronger providers first, engine computation,
         # then the owner's defaults and the weaker structure underneath it.
-        owner_mro = frozenset(owner.__mro__)
+        # The owner of a category that Sage builds (``Cat``) copies each
+        # method provider into its own class rather than inheriting it, and
+        # records the provider as ``_doccls`` (``dynamic_class_internal``,
+        # sage/structure/dynamic_class.py).  An owned join lists the provider
+        # class itself among its bases, so both name the owner's providers.
+        # The engine also precedes every base it specializes: a join may
+        # place the root ``Objects.ParentMethods``, which an engine of a
+        # Sage-built owner names as its base, before that owner's providers.
+        owner_mro = frozenset(owner.__mro__) | frozenset(
+            provider.__dict__["_doccls"][0]
+            for provider in owner.__mro__
+            if "_doccls" in provider.__dict__
+        )
         anchors = tuple(
             index
             for index, base in enumerate(implementation.__bases__)
-            if base in owner_mro
+            if base in owner_mro or issubclass(engine, base)
         )
         assert anchors, (
             f"cannot insert the computation class {engine.__name__} for objects of type "
@@ -1462,7 +1483,11 @@ def _object_of(
     _construction_contract_from_type(
         category, implementation, owned_object_chain=True
     ).validate(data)
-    return implementation(category=category, **data)
+    return implementation(
+        category=category,
+        _defining_construction=(category, _engine, data),
+        **data,
+    )
 
 
 def _cat() -> Category:
@@ -1496,8 +1521,15 @@ class OwnedParent:
     enters such a parent's MRO and cannot shadow it.
     """
 
-    def __init__(self, category=None, **rest) -> None:
+    def __init__(self, category=None, _defining_construction=None, **rest) -> None:
         r"""Initialize the host shell without a second class rewrite.
+
+        ``_defining_construction`` is the category, private computation class
+        and data that :func:`_object_of` constructed this object from.  The
+        root retains it, so the owner can construct an object with added
+        structure on the data of this exact object (``OWN-16``,
+        ``Objects.ParentMethods._with_structure``).  It is ``None`` for an
+        object that its category's constructor did not build.
 
         A chain-built parent already *is* ``category.ObjectType``, which is the
         category's ``parent_class``.  ``Parent.__init__`` would rewrite
@@ -1516,6 +1548,7 @@ class OwnedParent:
             run_construction_hooks,
         )
 
+        self._defining_construction = _defining_construction
         with construction_scope(self) as reached:
             SageParent.__init__(self, category=category, **rest)
             realize_owned_category(self)

@@ -641,7 +641,7 @@ class ParallelPairDiagram(Functor):
         raise ValueError(f"{morphism} is not an arrow of the walking parallel pair")
 
 
-@cached_function
+@cached_function(key=lambda left, right, target_category: (id(left), id(right), id(target_category)))
 def _parallel_pair_diagram(left: Morphism, right: Morphism, target_category: Category) -> ParallelPairDiagram:
     r"""Return the selected diagram object for one represented parallel pair.
 

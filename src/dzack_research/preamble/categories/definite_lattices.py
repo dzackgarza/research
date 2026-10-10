@@ -25,7 +25,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopes
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets, finite_ordinal_set
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -67,7 +71,7 @@ def _element_from_coordinates(lattice, coordinates):
             return coefficient
         return _owned_engine_element(ring, coefficient)
 
-    return lattice.linear_combination(
+    return lattice(
         {
             label: owned(coefficient)
             for label, coefficient in zip(
@@ -75,6 +79,41 @@ def _element_from_coordinates(lattice, coordinates):
             )
             if coefficient
         }
+    )
+
+
+def _shell(lattice, square, coordinate_rows):
+    r"""Return the finite ordered set of the vectors of ``lattice`` with these coordinates.
+
+    The engine enumerates each vector of a shell once, so the rows are
+    distinct and need no identification.  A vector is raised into the
+    lattice when it is first asked for, and membership is the lookup of its
+    coordinates.
+    """
+    index_set = finite_ordinal_set(len(coordinate_rows))
+    positions = {
+        tuple(int(coordinate) for coordinate in row): position
+        for position, row in enumerate(coordinate_rows)
+    }
+
+    @cache
+    def element_at(position):
+        return _element_from_coordinates(lattice, coordinate_rows[int(position)])
+
+    def index_of(element):
+        if element_parent(element) is not lattice:
+            return None
+        position = positions.get(tuple(int(coordinate) for coordinate in element))
+        if position is None:
+            return None
+        return index_set(position)
+
+    return FiniteOrderedSets().from_indexed(
+        index_set,
+        element_at,
+        index_of=index_of,
+        contains=lambda element: index_of(element) is not None,
+        name=f"vectors of square {square} in {lattice}",
     )
 
 
@@ -231,10 +270,7 @@ def _vectors_of_square(lattice, square):
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
         return finite_ordered_set(())
-    return finite_ordered_set(tuple(
-        _element_from_coordinates(lattice, coordinates)
-        for coordinates in lists[int(target)]
-    ))
+    return _shell(lattice, square, tuple(lists[int(target)]))
 
 
 def _roots(lattice):
@@ -243,11 +279,28 @@ def _roots(lattice):
 
 
 def _roots_of_square(lattice, square):
+    r"""Return the vectors ``v`` with ``b(v,v) = square`` whose reflection is integral.
+
+    The reflection ``w - 2 b(v,w)/b(v,v) v`` is integral exactly when
+    ``b(v,v)`` divides ``2 b(v,w)`` for every basis vector ``w``.  The
+    pairings of the whole shell against the basis are one product with the
+    symmetric Gram tensor, so only the roots are raised into the lattice.
+    """
     square = lattice.base_ring()(square)
-    if square == 0:
+    sign, positive_gram = _positive_gram(lattice)
+    target = int(sign * square)
+    if target <= 0:
         return finite_ordered_set(())
-    return finite_ordered_set(tuple(
-        vector for vector in lattice.vectors_of_square(square) if vector.is_root()
+    gram = _engine_component_matrix(positive_gram)
+    shells = IntegralLattice(gram).short_vectors(target + 1)
+    if target >= len(shells) or not shells[target]:
+        return finite_ordered_set(())
+    shell = engine_matrix(SageZZ, shells[target])
+    pairings = shell * gram
+    return _shell(lattice, square, tuple(
+        coordinates
+        for coordinates, row in zip(shell.rows(), pairings.rows(), strict=True)
+        if all((2 * pairing) % target == 0 for pairing in row)
     ))
 
 
@@ -309,17 +362,20 @@ def _simple_roots(lattice, roots):
     when it is not the sum of two positive roots (Humphreys, *Introduction to
     Lie Algebras and Representation Theory*, §10.1).
     """
-    coordinates = {root: _coordinate_tuple(lattice, root) for root in roots}
     zero = (SageZZ.zero(),) * int(lattice.module_rank())
-    positive = tuple(root for root in roots if coordinates[root] > zero)
-    positive_coordinates = {coordinates[root] for root in positive}
+    positive = tuple(
+        (root, coordinates)
+        for root in roots
+        if (coordinates := _coordinate_tuple(lattice, root)) > zero
+    )
+    positive_coordinates = {coordinates for _root, coordinates in positive}
     return tuple(
         candidate
-        for candidate in positive
+        for candidate, candidate_coordinates in positive
         if not any(
-            tuple(left - right for left, right in zip(coordinates[candidate], coordinates[other], strict=True)) in positive_coordinates
-            for other in positive
-            if other is not candidate
+            tuple(left - right for left, right in zip(candidate_coordinates, other_coordinates, strict=True)) in positive_coordinates
+            for other_coordinates in positive_coordinates
+            if other_coordinates != candidate_coordinates
         )
     )
 
@@ -448,15 +504,13 @@ class _ExactCVPEngine:
         return SageQQ(_engine_element(self.rationals, owned))
 
     def _engine_target_coordinates(self, target):
-        if self.lattice is not None and element_parent(target) is self.lattice:
+        if self.lattice is not None and (
+            element_parent(target) is self.lattice
+            or element_parent(target) is self.lattice.vector_space()
+        ):
             coordinates = target.to_vector()
             return tuple(
-                SageQQ(
-                    _engine_element(
-                        self.ring,
-                        coordinates(label),
-                    )
-                )
+                self._engine_scalar(coordinates(label))
                 for label in self.lattice.module_generating_set()
             )
         coordinates = tuple(target)
@@ -521,6 +575,33 @@ class _ExactCVPEngine:
             exact_distance=exact_distance,
         )
         return None if result is None else result[0]
+
+    def first_close_vectors(self, target, square_bound, max_multiplier, *, exact_distance=False):
+        r"""Select a member or its boundary from the shared affine shell family."""
+        family = self.lattice.scaled_close_vector_shells(target, square_bound, max_multiplier)
+        if element_parent(target) is not self.lattice and element_parent(target) is not self.lattice.vector_space():
+            raise TypeError(
+                f"the affine target must belong to {self.lattice} or its rational span, "
+                f"not {element_parent(target)}"
+            )
+        coordinates = self._engine_target_coordinates(target)
+        positive_bound = self.engine_sign * self._engine_scalar(square_bound)
+        if positive_bound < 0:
+            raise ValueError("the affine shell bound must have the sign of the definite form")
+        result = self.first_close_vector_scale_coordinates(
+            coordinates, square_bound, max_multiplier, exact_distance=exact_distance
+        )
+        if result is None:
+            return None
+        multiplier, _candidates = result
+        subsets = self.lattice.finite_subsets()
+        distances = family.value(NN(multiplier))
+        boundary_value = self.rationals(multiplier * multiplier) * self.rationals(square_bound)
+        shell = subsets(tuple(
+            vector for vector in distances.index_set()
+            if not exact_distance or distances.value(vector) == boundary_value
+        ))
+        return Sets().product((NN, subsets))((NN(multiplier), shell))
 
     def first_close_vector_scale_coordinates(
         self,
@@ -1116,3 +1197,35 @@ def _kissing_number(lattice):
 __all__ = [
     "LatticeReduction",
 ]
+
+
+def _first_unrepresented_value(lattice, classes, max_value, predicate):
+    r"""Answer ``False`` at the least value a lattice of ``classes`` represents and ``lattice`` does not.
+
+    ``classes`` holds more than the class of ``lattice``; the callers answer
+    ``True`` for a genus or spinor genus of one class.
+
+    The value \(n\) is represented by a definite lattice exactly when the
+    coefficient of \(q^{|n|}\) in its theta series is nonzero.  The search
+    reads the theta series to a precision that doubles from 64.  Without
+    ``max_value`` it does not stop while no such value appears; a search
+    that reaches ``max_value`` answers the proposition ``predicate``.
+    """
+    from dzack_research.preamble.logic import AtomicProposition
+
+    precision = 64
+    while True:
+        searched = precision if max_value is None else min(precision, int(max_value))
+        own = lattice.theta_series(precision=searched + 1)
+        others = tuple(other.theta_series(precision=searched + 1) for other in classes)
+        found = next(
+            (value for value in range(1, searched + 1) if own[value] == 0 and any(series[value] != 0 for series in others)),
+            None,
+        )
+        match found, max_value is not None and searched >= int(max_value):
+            case None, True:
+                return AtomicProposition(predicate, lattice)
+            case None, False:
+                precision *= 2
+            case _:
+                return False

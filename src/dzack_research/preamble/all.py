@@ -250,7 +250,6 @@ from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
 from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
-    Genus,
     IsotropicReductions,
     Lattices,
     NotPrimitiveError,

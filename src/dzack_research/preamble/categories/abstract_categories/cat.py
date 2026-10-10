@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_mor_parent,
     _precomposable,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedParent
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
     _CompositeFunctor,
     Functor,
@@ -40,36 +40,32 @@ if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
 
 
-class CategoryObject(OwnedParent, Parent):
+class CategoryObject(Objects.ParentMethods):
     r"""A category regarded as a Mor endpoint, retaining its placement in ``Cat``.
 
-    A represented discrete category remains an object of
-    ``DiscreteCategories`` at a functor endpoint.  This is selected when the
-    endpoint is constructed, not recovered by a containment predicate.
-    A Mor parent's independent set/module enrichment is not a category of
-    categories and must not be transferred to this endpoint.  Its constructed
-    placement among ``MorCategories`` is retained instead.  The endpoint
-    represents that exact category; it does not select another fixed Mor.
+    The private computation class (``OWN-06``) of the objects that
+    :meth:`Cat.object` constructs through ``_object_of``; its datum is the
+    represented category.  A category is an object, so its host runtime is
+    the root of the owned chain.  ``Cat`` cannot declare the owned
+    ``Objects`` (see :meth:`Cat.super_categories`), so this class names that
+    root.  Constructed this way, the endpoint records its defining
+    construction, so a level that adds structure to a category (the slice
+    ``Cat/C`` adds a functor to ``C``) constructs on the data of that exact
+    category (``OWN-16``).
+
+    The endpoint represents that exact category; it does not select another
+    fixed Mor.
     """
 
     def __init__(
         self,
         category_of_categories: Cat,
         represented_category: Category,
+        **rest,
     ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
-        placement = represented_category.category()
-        match placement.is_subcategory(category_of_categories):
-            case True:
-                super().__init__(category=placement)
-            case False if (
-                MorCategories().is_subcategory(category_of_categories)
-                and represented_category in MorCategories()
-            ):
-                super().__init__(category=MorCategories())
-            case False:
-                super().__init__(category=category_of_categories)
+        super().__init__(**rest)
 
     def category_of_categories(self) -> Cat:
         return self._category_of_categories
@@ -297,9 +293,12 @@ class Cat(CategoryPacketMethods, Category):
         # A category is an object.  This one edge names Sage's ``Objects`` and
         # not the owned one: every owned category is an object of ``Cat``, so
         # an owned supercategory here would have to be constructed while
-        # ``Cat`` itself is still under construction.  The owned ``Objects``
-        # is a category like any other and is an object of ``Cat``; it is this
-        # Sage runtime edge that is Sage's.
+        # ``Cat`` itself is still under construction.  Measured 2026-10-07:
+        # declaring the owned ``Objects`` recurses at import, because Sage's
+        # ``Category.__init__`` builds ``subcategory_class`` from the
+        # supercategories, and ``Objects()`` records ``Cat()`` when it is
+        # built.  The objects of ``Cat`` reach the owned root through
+        # :class:`CategoryObject` instead.
         return [SageObjects()]
 
     def category(self) -> Cat:
@@ -339,7 +338,29 @@ class Cat(CategoryPacketMethods, Category):
 
     @cached_method(key=lambda self, category: id(category))
     def _object_on(self, category):
-        return CategoryObject(self, category)
+        r"""The object of ``Cat`` on the datum ``category``, in its constructed placement.
+
+        A represented discrete category remains an object of
+        ``DiscreteCategories`` at a functor endpoint.  This is selected when
+        the endpoint is constructed, not recovered by a containment
+        predicate.  A Mor parent's independent set/module enrichment is not a
+        category of categories and is not transferred to this endpoint; its
+        constructed placement among ``MorCategories`` is retained instead.
+        """
+        placement = category.category()
+        match placement.is_subcategory(self):
+            case True:
+                pass
+            case False if MorCategories().is_subcategory(self) and category in MorCategories():
+                placement = MorCategories()
+            case False:
+                placement = self
+        return _object_of(
+            placement,
+            _engine=(placement, CategoryObject, None),
+            category_of_categories=self,
+            represented_category=category,
+        )
 
     @cached_method(key=lambda self, domain, codomain: (id(self.object(domain)), id(self.object(codomain))))
     def functor_mor(
@@ -1135,15 +1156,15 @@ class NaturalTransformationMorphism(Morphism):
         transformation: NaturalTransformation,
     ) -> None:
         Morphism.__init__(self, parent)
-        if transformation.source() is not self.domain().functor():
+        if transformation.source() is not parent.source():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
-                f"transformation from {self.domain().functor()}, but {transformation} starts at {transformation.source()}"
+                f"transformation from {parent.source()}, but {transformation} starts at {transformation.source()}"
             )
-        if transformation.target() is not self.codomain().functor():
+        if transformation.target() is not parent.target():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
-                f"transformation to {self.codomain().functor()}, but {transformation} ends at {transformation.target()}"
+                f"transformation to {parent.target()}, but {transformation} ends at {transformation.target()}"
             )
         self._transformation = transformation
 
@@ -1188,8 +1209,8 @@ class NaturalTransformationMorphism(Morphism):
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        source = other.domain().functor()
-        target = self.codomain().functor()
+        source = other.parent().source()
+        target = self.parent().target()
 
         composite = NaturalTransformation(
             source,
@@ -1238,7 +1259,7 @@ class NaturalTransformationMor(CategoricalMor):
                 pass
             case _:
                 transformation = NaturalTransformation(
-                    self.domain().functor(), self.codomain().functor(), transformation
+                    self.source(), self.target(), transformation
                 )
         selected = NaturalTransformationMorphism if element_class is None else element_class
         return selected(self, transformation, **dict(construction_data or {}))
@@ -1250,9 +1271,7 @@ class NaturalTransformationMor(CategoricalMor):
                 f"the identity natural transformation exists only on Mor(F, F), but this is "
                 f"Mor({self.domain()}, {self.codomain()})"
             )
-        functor = self.domain().functor()
-
-
+        functor = self.source()
         return self(
             NaturalTransformation(
                 functor,
