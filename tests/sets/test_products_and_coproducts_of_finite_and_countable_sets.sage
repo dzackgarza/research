@@ -206,6 +206,19 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     else:
         raise AssertionError("coproduct accepted a map with incorrect component endpoints")
 
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    infinite = Sets().coproduct(indexed_family(NN, Sets.Δ[0]))
+    try:
+        infinite.from_maps(
+            Sets.Δ[0],
+            lambda _index: Sets().Mor(Sets.Δ[0], Sets.Δ[0]).identity(),
+        )
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("unchecked infinite coproduct component callback admitted")
+
 
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
