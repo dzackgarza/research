@@ -321,6 +321,25 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 case _:
                     return AtomicProposition("is_zero", self)
 
+        def _represented_annihilator_ideal(self):
+            r"""Localize the annihilator of a represented finite source module.
+
+            For finitely generated M,
+            ``Ann_(S^-1 A)(S^-1 M) = S^-1 Ann_A(M)``
+            (Stacks, Tag 07T8). Finiteness is essential: a common
+            denominator can be chosen for the finitely many generators.
+            The public module annihilator and the selected-presentation
+            provider delegate here; no conductor-specific calculation is
+            introduced. Return ``NotImplemented`` outside this source regime.
+            """
+            source = self.numerator_module()
+            if source not in FinitelyGeneratedModules(self.source_ring()):
+                return NotImplemented
+            annihilator = source._represented_annihilator_ideal()
+            if annihilator is NotImplemented:
+                return NotImplemented
+            return annihilator.extension_to_localization(self.localization_ring())
+
         def _repr_(self):
             return (
                 f"{self.numerator_module()} localized along "

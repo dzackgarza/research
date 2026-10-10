@@ -1935,6 +1935,12 @@ class Modules(OwnedCategoryOverBaseRing):
             return NotImplemented
 
         def _represented_annihilator_ideal(self):
+            r"""An exact scalar-action kernel, or ``NotImplemented``.
+
+            The public module annihilator reads this result. The localized
+            module owner also reads it for a finitely generated source,
+            whose annihilator commutes with localization.
+            """
             return NotImplemented
 
         def _scalar_restriction_data(self, ring_map):
@@ -4039,6 +4045,11 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Read the dimension retained for this module and this scalar map."""
             if self._restriction_data is not None:
                 return self._restriction_data[0]
+            # Restriction preserves the underlying additive group. A proved
+            # zero module therefore has dimension zero over any field,
+            # without a coefficient-presentation algorithm or a new framing.
+            if self.module_over_extension().is_zero() is True:
+                return cardinal(0)
             return super()._represented_vector_space_dimension()
 
         def _underlying_additive_element(self, element):

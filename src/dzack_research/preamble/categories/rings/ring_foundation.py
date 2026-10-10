@@ -1157,6 +1157,44 @@ class LocalizationRings(OwnedCategory):
                 )
             return self.localization_functor()(module)
 
+        @cached_method
+        def _normalization_data(self):
+            r"""Transport a retained finite normalization to this localization.
+
+            The selected computation currently requires finitely many
+            inverted elements, an ordered finite component family, a chosen finite
+            normalization-module presentation over the source, and decided
+            component-survival tests. It retains the source localization,
+            actual component maps, and the localized unit and cokernel.
+            No finite normalization is inferred for an arbitrary source.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                ModulesWithChosenFinitePresentation,
+            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _localized_affine_normalization_data,
+            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+            if self.localization_submonoid()._selected_representation_kind() != "generators":
+                return None
+            source = self.localization_source()
+            data = source._normalization_data()
+            if data is None:
+                return None
+            if (data.normalization_module in ModulesWithChosenFinitePresentation(source)) is not True:
+                return None
+            if (data.components.index_set() in FiniteOrderedSets()) is not True:
+                return None
+            return _localized_affine_normalization_data(self, data)
+
+        def _normality_decision(self):
+            r"""Read normality when the retained finite normalization is localized."""
+            data = self._normalization_data()
+            if data is not None:
+                return data.is_normal
+            return super()._normality_decision()
+
         def _valid_denominator(self, denominator) -> bool:
             source = self.localization_source()
             if denominator == source.one():
@@ -2383,7 +2421,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 Protected computation contract for ``normalization``,
                 ``normalization_map``, ``normalization_components``,
                 ``conductor_ideal`` and the coefficient-bearing algebra's
-                ``delta_invariant``. The convention is
+                ``delta_invariant``, for the finite-localization producer
+                reading its source's retained data, and for
+                ``LocalizationRings._normality_decision``. The convention is
                 ``A -> A_red -> B``, where ``B`` is the integral closure of
                 ``A_red`` in its total quotient ring in the represented case
                 of finitely many minimal primes (Stacks, Tag 035P).

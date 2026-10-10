@@ -1271,6 +1271,12 @@ class _AffineNormalizationData(SageObject):
     The native conductor and delta are private computation diagnostics.
     The corresponding mathematical values come from the retained actual
     normalization cokernel and its chosen coefficient restriction.
+
+    A localization producer also retains the actual ring map ``B -> S^-1 B``
+    and the module isomorphisms
+    ``S^-1(A.regular_module()) -> (S^-1 A).regular_module()`` and
+    ``S^-1 M -> coker(eta_S)``. These optional data are absent on a packet
+    produced directly by the affine normalization computation.
     """
 
     def __init__(
@@ -1289,6 +1295,9 @@ class _AffineNormalizationData(SageObject):
         component_projections,
         reduction_map,
         reduced_normalization_map,
+        normalization_localization_map=None,
+        normalization_regular_comparison=None,
+        normalization_cokernel_comparison=None,
     ) -> None:
         self.normalization = normalization
         self.normalization_map = normalization_map
@@ -1305,6 +1314,15 @@ class _AffineNormalizationData(SageObject):
         self.component_projections = component_projections
         self.reduction_map = reduction_map
         self.reduced_normalization_map = reduced_normalization_map
+        self.normalization_localization_map = normalization_localization_map
+        self.normalization_regular_comparison = normalization_regular_comparison
+        self.normalization_cokernel_comparison = normalization_cokernel_comparison
+        if normalization_localization_map is not None:
+            assert normalization_localization_map.codomain() is normalization
+        if normalization_regular_comparison is not None:
+            assert normalization_regular_comparison.codomain() is normalization_unit_map.domain()
+        if normalization_cokernel_comparison is not None:
+            assert normalization_cokernel_comparison.codomain() is self.normalization_cokernel
 
     @property
     def conductor(self):
@@ -1365,6 +1383,257 @@ def _finite_product_ring(factors):
         return factors[0]
     engines = tuple(_engine_ring(factor) for factor in factors)
     return _own_ring(engines[0].cartesian_product(*engines[1:]))
+
+
+def _localized_affine_normalization_data(localization, source_data):
+    r"""Localize a retained finite normalization along finitely many elements.
+
+    The only caller is ``LocalizationRings._normalization_data``. It supplies
+    the actual localization ``L=S^-1 A`` and a normalization packet over A
+    with a chosen finite module presentation and an ordered finite component
+    family.
+    An undecided component-survival test returns ``None``; it is never read
+    as permission to discard that component.
+
+    Integral closure commutes with localization (Stacks, Tag 0307). For the
+    retained finite product ``B=prod B_i``, its localization is represented
+    by the product of the surviving ``C_i=(nu_i(S))^-1 B_i``. The actual
+    map ``B -> prod C_i`` is retained. This does not ask a Cartesian-product
+    computation engine to localize at zero divisors, nor identify this
+    target with a separately constructed localization parent.
+
+    Exact module localization carries N and the one diagonal unit map to
+    L. The regular-source and cokernel comparisons are actual module
+    isomorphisms. In particular the cokernel is ``S^-1(B/image(A))``. A
+    proved normal L retains this normalized target; choosing L itself as
+    target would additionally require a computed inverse of the unit map.
+    """
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        _isomorphism_from_known_inverse_pair,
+    )
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+    from dzack_research.preamble.logic import conjunction
+
+    source = localization.localization_source()
+    assert source_data.normalization_map.domain() is source
+    assert source_data.normalization_unit_map.domain() is source.regular_module()
+    localization_map = localization.localization_map()
+    inverted = tuple(localization.inverted_elements())
+    surviving = []
+    for index in source_data.components.index_set():
+        prime, _, _ = source_data.components.value(index)
+        match localization.inverted_submonoid_meets(prime):
+            case True:
+                pass
+            case False:
+                surviving.append(index)
+            case _:
+                return None
+    indices = finite_ordered_set(tuple(surviving))
+
+    localized_components = {}
+    component_localizations = {}
+    component_maps = {}
+    for index in indices:
+        _, component, component_map = source_data.components.value(index)
+        localized_component = component.localization(
+            *(component_map(element) for element in inverted)
+        )
+        component_localization = (
+            OwnedRings().Mor(component, component).identity()
+            if localized_component is component
+            else localized_component.localization_map()
+        )
+        localized_components[index] = localized_component
+        component_localizations[index] = component_localization
+        component_maps[index] = localization.induced_morphism(
+            component_localization * component_map
+        )
+
+    # If every minimal component is killed, a power of an element of S is
+    # zero in A. Thus L itself is the zero ring and represents the empty
+    # product; _finite_product_ring deliberately requires a nonempty family.
+    component_values = tuple(localized_components[index] for index in indices)
+    normalization = _finite_product_ring(component_values) if component_values else localization
+    normalization_engine = _engine_ring(normalization)
+
+    def in_product(values):
+        if not component_values:
+            return localization.zero()
+        if len(component_values) == 1:
+            return component_values[0](values[0])
+        return _owned_engine_element(
+            normalization,
+            normalization_engine(tuple(
+                _engine_element(component, value)
+                for component, value in zip(component_values, values, strict=True)
+            )),
+        )
+
+    normalization_localization_map = OwnedRings().Mor(
+        source_data.normalization, normalization
+    )(
+        lambda element: in_product(tuple(
+            component_localizations[index](
+                source_data.component_projections.value(index)(element)
+            )
+            for index in indices
+        ))
+    )
+
+    source_reduction_map = source_data.reduction_map
+    reduced_source = source_reduction_map.codomain()
+    if source_reduction_map.is_identity() is True:
+        reduced_localization = localization
+        reduction_map = OwnedRings().Mor(localization, localization).identity()
+    else:
+        reduced_localization = reduced_source.localization(
+            *(source_reduction_map(element) for element in inverted)
+        )
+        reduced_localization_map = (
+            OwnedRings().Mor(reduced_source, reduced_source).identity()
+            if reduced_localization is reduced_source
+            else reduced_localization.localization_map()
+        )
+        reduction_map = localization.induced_morphism(
+            reduced_localization_map * source_reduction_map
+        )
+
+    reduced_component_maps = {}
+    for index in indices:
+        source_leg = (
+            component_localizations[index]
+            * source_data.component_projections.value(index)
+            * source_data.reduced_normalization_map
+        )
+        reduced_component_maps[index] = (
+            source_leg
+            if reduced_localization is reduced_source
+            else reduced_localization.induced_morphism(source_leg)
+        )
+    reduced_normalization_map = OwnedRings().Mor(reduced_localization, normalization)(
+        lambda element: in_product(tuple(
+            reduced_component_maps[index](element) for index in indices
+        ))
+    )
+    normalization_map = reduced_normalization_map * reduction_map
+
+    def component_projection(position, index):
+        component = localized_components[index]
+        if len(component_values) == 1:
+            return OwnedRings().Mor(normalization, component).identity()
+        projection_engine = normalization_engine.cartesian_projection(position)
+        return OwnedRings().Mor(normalization, component)(
+            lambda element: _owned_engine_element(
+                component,
+                projection_engine(_engine_element(normalization, element)),
+            )
+        )
+
+    projections = {
+        index: component_projection(position, index)
+        for position, index in enumerate(indices)
+    }
+    components = finite_indexed_family(indices, lambda index: (
+        source_data.components.value(index)[0].extension_to_localization(localization),
+        localized_components[index],
+        component_maps[index],
+    ))
+
+    functor = localization.localization_functor()
+    normalization_module = functor(source_data.normalization_module)
+    localized_unit = functor(source_data.normalization_unit_map)
+    localized_regular = localized_unit.domain()
+    regular = localization.regular_module()
+    (source_label,) = tuple(localized_regular.module_generating_set())
+    (regular_label,) = tuple(regular.module_generating_set())
+    to_regular = Modules(localization).Mor(localized_regular, regular)(
+        {source_label: regular.module_generator(regular_label)}
+    )
+    from_regular = Modules(localization).Mor(regular, localized_regular)(
+        {regular_label: localized_regular.module_generator(source_label)}
+    )
+    regular_comparison = _isomorphism_from_known_inverse_pair(to_regular, from_regular)
+    unit_map = localized_unit * regular_comparison.inverse()
+
+    # The square changes only the actual rank-one source of the unit map.
+    # The existing cokernel functor supplies its induced isomorphism, which
+    # composes with the localization functor's own cokernel comparison.
+    cokernels = Modules(localization).FinitelyPresented().cokernel_arrow_functor()
+    arrows = cokernels.domain()
+    localized_arrow = arrows(localized_unit)
+    regular_arrow = arrows(unit_map)
+    module_identity = Modules(localization).Mor(
+        normalization_module, normalization_module
+    ).identity()
+    square = arrows.Mor(localized_arrow, regular_arrow)._from_commuting_edges(
+        regular_comparison.forward(), module_identity
+    )
+    inverse_square = arrows.Mor(regular_arrow, localized_arrow)._from_commuting_edges(
+        regular_comparison.inverse(), module_identity
+    )
+    localized_cokernel_comparison = functor.cokernel_comparison(
+        source_data.normalization_unit_map
+    )
+    cokernel_comparison = _isomorphism_from_known_inverse_pair(
+        cokernels(square) * localized_cokernel_comparison.forward(),
+        localized_cokernel_comparison.inverse() * cokernels(inverse_square),
+    )
+
+    source_regular = source_data.normalization.regular_module()
+    (source_regular_label,) = tuple(source_regular.module_generating_set())
+    target_regular = normalization.regular_module()
+    (target_label,) = tuple(target_regular.module_generating_set())
+    target_one = target_regular.module_generator(target_label)
+    target = target_regular.restrict_scalars(normalization_map)
+
+    def realized_generator(label):
+        source_element = source_data.normalization_module.module_generator(label)
+        source_value = source_data.normalization_module_realization(
+            source_element
+        ).underlying_element()
+        coefficient = source_regular.framing_morphism().lift(source_value)(
+            source_regular_label
+        )
+        return target.wrap(target_regular.scalar_multiple(
+            normalization_localization_map(coefficient), target_one
+        ))
+
+    realization = Modules(localization).Mor(normalization_module, target)(realized_generator)
+    normality = conjunction((localization.is_reduced(), unit_map.cokernel().is_zero()))
+    coefficient_map = (
+        None if source_data.coefficient_map is None
+        else localization_map * source_data.coefficient_map
+    )
+
+    def component_numerators(index):
+        numerators = source_data.component_module_numerators.value(index)
+        # Direct affine packets retain polynomial-cover numerators. Read
+        # them in their actual source A before applying A -> L. An already
+        # localized packet has A-valued numerators and uses the same map.
+        return finite_indexed_family(
+            numerators.index_set(),
+            lambda label: localization_map(source(numerators.value(label))),
+        )
+
+    return _AffineNormalizationData(
+        normalization,
+        normalization_map,
+        None,
+        None,
+        normality,
+        components,
+        normalization_module_realization=realization,
+        normalization_unit_map=unit_map,
+        coefficient_map=coefficient_map,
+        component_module_numerators=finite_indexed_family(indices, component_numerators),
+        component_projections=finite_indexed_family(indices, lambda index: projections[index]),
+        reduction_map=reduction_map,
+        reduced_normalization_map=reduced_normalization_map,
+        normalization_localization_map=normalization_localization_map,
+        normalization_regular_comparison=regular_comparison,
+        normalization_cokernel_comparison=cokernel_comparison,
+    )
 
 
 def _affine_normalization_module_maps(

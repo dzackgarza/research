@@ -799,6 +799,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel in exact presentation regimes."""
             ring = self.base_ring()
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.modules.localizations import LocalizedModules
+
+                if self in LocalizedModules(ring):
+                    return super()._represented_annihilator_ideal()
             if ring in PrincipalIdealDomains():
                 # M is R^r together with the cyclic quotients R/(d_i), and the
                 # invariant factors divide one another in order.  A scalar kills
