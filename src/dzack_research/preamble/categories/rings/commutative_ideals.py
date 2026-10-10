@@ -562,6 +562,29 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 )
             return self.finite_primary_decomposition()
 
+        def primary_decomposition_locus(self):
+            r"""Finite primary presentations of ``I``, possibly an empty set.
+
+            An element of this set is a finite family of ideal *subsets*
+            ``Q_i`` of the underlying set of ``R``, each primary, whose
+            intersection equals ``I``. The definition makes no Noetherian
+            assertion and does not equate existence with a finite algorithm.
+            The ideal and primary predicates are mathematical propositions;
+            a computation that cannot decide them does not return false.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            ring = self.ring()
+            ideal_subsets = ring.power_set().condition_set(
+                lambda subset: AtomicProposition("is_ideal_subset", subset, ring)
+            )
+            finite_families = ideal_subsets.finite_subsets()
+            return finite_families.condition_set(
+                lambda family: AtomicProposition(
+                    "is_primary_decomposition_of", family, self
+                )
+            )
+
         def finite_primary_decomposition(self):
             r"""Selected finite primary decomposition over a Noetherian ring."""
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedNoetherianRings

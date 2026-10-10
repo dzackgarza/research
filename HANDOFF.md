@@ -128,9 +128,9 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
   The unrestricted nonenumerated set representation is supplied by the set image construction over the annihilator predicate.
 
   The Noetherian enumeration is also separately exposed as `finite_associated_primes()`; the unrestricted `associated_primes()` operation delegates to it only under the established finiteness hypothesis.
-- [ ] `CommutativeIdeals.X.primary_decomposition()` unconditionally returns `FiniteOrderedSets()` (`categories/rings/commutative_ideals.py:552`), without a Noetherian hypothesis. Primary decompositions of arbitrary ideals over non-Noetherian commutative rings need not exist, much less have finitely many components. The operation must distinguish the locus of primary presentations and existence of a finite primary decomposition from the selected finite engine calculation; the latter is only a justified case, not a theorem for all `CommutativeIdeals(R)`.
+- [x] `CommutativeIdeals.X.primary_decomposition()` no longer returns a finite family without the Noetherian hypothesis. A separate `primary_decomposition_locus()` now constructs the possibly empty predicate set of finite families of primary ideal subsets of `R` whose intersection is `I`. This formulation distinguishes existence of a primary decomposition from selection of one, and retains the mathematical family locus without enumerating arbitrary ideals. The Noetherian backend remains independently exposed as `finite_primary_decomposition()`; membership in the general locus is proposition-valued where no decision procedure exists.
 
-  The finite primary-decomposition calculation now requires the Noetherian category. The general existence/presentation locus remains to be expressed independently of the finite algorithm; leave unchecked.
+  A general primary decomposition need not exist; the presentation locus may be empty, and no engine assertion is used to declare its existence.
 
   The selected Noetherian algorithm is separately exposed as `finite_primary_decomposition()`, so its finite result is distinguished from the general primary-decomposition existence problem.
 
