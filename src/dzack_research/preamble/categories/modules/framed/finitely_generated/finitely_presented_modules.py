@@ -833,10 +833,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             # algebra backend enters here: whatever presents a kernel over this
             # ring presents the annihilator too.
             labels = tuple(self.module_generating_set())
-            assert labels, (
-                f"cannot intersect annihilators of generators of {self}: it has no generators, "
-                "so it is zero and its annihilator is the unit ideal"
-            )
+            if not labels:
+                return ring.ideal(ring.one())
             annihilator = self.annihilator_of(self.module_generator(labels[0]))
             for label in labels[1:]:
                 annihilator = annihilator.intersection(

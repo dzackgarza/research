@@ -2376,6 +2376,84 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return True
                 return self._normality_decision()
 
+            @RealizationHook
+            def _normalization_data(self):
+                r"""A retained normalization construction, or no selected computation.
+
+                Protected computation contract for ``normalization``,
+                ``normalization_map``, ``normalization_components``,
+                ``conductor_ideal`` and the coefficient-bearing algebra's
+                ``delta_invariant``. The convention is
+                ``A -> A_red -> B``, where ``B`` is the integral closure of
+                ``A_red`` in its total quotient ring in the represented case
+                of finitely many minimal primes (Stacks, Tag 035P).
+
+                A producer retains those two maps, their composite, the
+                normalized component domains and maps, and an actual module
+                ``N`` realizing ``Res_nu(B)``. The map ``A -> N`` sends one
+                to the unit; its cokernel is ``B/image(A)`` as an A-module.
+                Any coefficient field map used for delta is retained data.
+                A bare ring does not select such a field.
+
+                Finite component data do not assert that ``B`` is a finite
+                A-module. Only a producer establishing that stronger
+                hypothesis may supply finite presentation or finite-algebra
+                placement. The default provides neither a computation nor
+                a finiteness assertion.
+                """
+                return None
+
+            @cached_method
+            def normalization_map(self):
+                r"""Return the retained ``A -> A_red -> normalization(A_red)``.
+
+                Its kernel is the nilradical. It is injective for reduced
+                input, and is finite only under an additional finiteness
+                hypothesis on the normalization. This convention differs
+                from taking the integral closure of a nonreduced ``A`` in
+                its own total quotient ring.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization construction with its component and module data is represented for {self}"
+                )
+                return data.normalization_map
+
+            @cached_method
+            def normalization(self):
+                r"""Return the target of this ring's retained normalization map."""
+                return self.normalization_map().codomain()
+
+            def normalization_components(self):
+                r"""Return the retained normalized components and their maps from A.
+
+                The selected finite family consists of triples
+                ``(minimal_prime_of_A, normal_component, A_to_component)``.
+                The construction retains their projections from the common
+                normalization target as well. No finite enumeration is
+                inferred for an arbitrary commutative ring.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalized component construction is represented for {self}"
+                )
+                return data.components
+
+            @cached_method
+            def conductor_ideal(self):
+                r"""Return ``Ann_A(B/image(A))`` for the retained normalization.
+
+                Equivalently this is ``{a : nu(a) B <= image(nu)}``, an ideal
+                of the original ``A``. Under the reduction convention it
+                contains the nilradical; for reduced input it is the usual
+                conductor ``(A :_A B)``.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization quotient module is represented for {self}"
+                )
+                return data.normalization_cokernel.annihilator()
+
             @cached_method
             def square_class_group(self):
                 r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.

@@ -1108,29 +1108,33 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def _affine_normalization_data(self):
-            r"""Return the selected exact normalization data for this reduced affine ring.
+            r"""Retain the finite affine normalization after reduction.
 
-            The public object remains an owned quotient ring.  Singular's
-            ``normal.lib`` is only the private engine computing an affine
-            presentation of the integral closure, its normalization map,
-            conductor, and delta invariant.  No Singular ring, ideal, or map
-            crosses this boundary.
+            Its callers are the declared ``_normalization_data`` supplier
+            and the selected ``_normality_decision`` computation.
+            Singular normalizes the radical defining ideal in the same
+            polynomial cover. The owned ring and module maps remain over
+            this original quotient, including when it is nonreduced.
             """
-            return _affine_reduced_quotient_normalization_data(self)
+            return _affine_quotient_normalization_data(self)
 
-        @cached_method
-        def normalization(self):
-            r"""Return the integral closure of this reduced affine ring in its total quotient ring."""
-            return self._affine_normalization_data().normalization
+        def _normalization_data(self):
+            r"""Supply the common normalization contract in the finite affine regime.
 
-        @cached_method
-        def normalization_map(self):
-            r"""Return the canonical finite birational map ``A -> A^nu``."""
-            return self._affine_normalization_data().normalization_map
-
-        def normalization_components(self):
-            r"""Return the normalized irreducible components with their maps."""
-            return self._affine_normalization_data().components
+            The actual coefficient field and finite symmetric presentation
+            establish finiteness of the normalization and its component
+            family here. An arbitrary quotient or localization supplies no
+            such computation merely by belonging to this category.
+            """
+            source = self.quotient_source()
+            base = source.base_ring()
+            if (
+                base in OwnedRings().Division().Commutative()
+                and source in SymmetricAlgebras(base)
+                and source.algebra_generating_set() in FiniteSets()
+            ):
+                return self._affine_normalization_data()
+            return None
 
         def _reducedness_decision(self):
             if self._is_zero_ring() is True:
@@ -1236,17 +1240,6 @@ class QuotientRings(OwnedCategory):
 
             return OwnedRings().Mor(self, target)(image)
 
-        @cached_method
-        def conductor_ideal(self):
-            r"""Return ``(A :_A A^nu)``, the conductor of the normalization."""
-            return self._affine_normalization_data().conductor
-
-        @cached_method
-        def delta_invariant(self):
-            r"""Return ``dim_k(A^nu/A)`` when finite, and infinity otherwise."""
-            delta = self._affine_normalization_data().delta
-            return Infinity if delta < 0 else delta
-
         def _normality_decision(self):
             r"""Selected finite affine normality computation at the common owner."""
             reduced = self.is_reduced()
@@ -1272,8 +1265,13 @@ class QuotientRings(OwnedCategory):
         return [OwnedRings().Commutative()]
 
 
-class _AffineReducedQuotientNormalizationData(SageObject):
-    r"""Owned-boundary data returned by the private affine-normalization engine."""
+class _AffineNormalizationData(SageObject):
+    r"""The retained finite affine normalization and its original scalar action.
+
+    The native conductor and delta are private computation diagnostics.
+    The corresponding mathematical values come from the retained actual
+    normalization cokernel and its chosen coefficient restriction.
+    """
 
     def __init__(
         self,
@@ -1289,12 +1287,14 @@ class _AffineReducedQuotientNormalizationData(SageObject):
         coefficient_map,
         component_module_numerators,
         component_projections,
+        reduction_map,
+        reduced_normalization_map,
     ) -> None:
         self.normalization = normalization
         self.normalization_map = normalization_map
-        self.conductor = conductor
-        self.delta = int(delta)
-        self.is_normal = bool(is_normal)
+        self._native_conductor = conductor
+        self._native_delta = None if delta is None else int(delta)
+        self.is_normal = is_normal
         self.components = components
         self.normalization_module_realization = normalization_module_realization
         self.normalization_module = normalization_module_realization.domain()
@@ -1303,6 +1303,56 @@ class _AffineReducedQuotientNormalizationData(SageObject):
         self.coefficient_map = coefficient_map
         self.component_module_numerators = component_module_numerators
         self.component_projections = component_projections
+        self.reduction_map = reduction_map
+        self.reduced_normalization_map = reduced_normalization_map
+
+    @property
+    def conductor(self):
+        return self.normalization_map.domain().conductor_ideal()
+
+    @property
+    def delta(self):
+        return self.normalization_map.domain().delta_invariant()
+
+
+def _identity_affine_normalization_data(algebra, coefficient_map, components):
+    r"""Retain identity normalization when the affine owner proves normality.
+
+    The callers are the finite symmetric-algebra producer over a field and
+    the zero-quotient branch of ``_affine_quotient_normalization_data``.
+    They supply respectively the single domain component and the empty
+    component family; normality alone never supplies such an enumeration.
+    """
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+    identity = OwnedRings().Mor(algebra, algebra).identity()
+    regular = algebra.regular_module()
+    target = regular.restrict_scalars(identity)
+    realization = Modules(algebra).Mor(regular, target)(
+        {
+            label: target.wrap(regular.module_generator(label))
+            for label in regular.module_generating_set()
+        }
+    )
+    unit_map = Modules(algebra).Mor(regular, regular).identity()
+    indices = components.index_set()
+    numerator_labels = finite_ordered_set((0,))
+    numerators = finite_indexed_family(numerator_labels, lambda label: algebra.one())
+    return _AffineNormalizationData(
+        algebra,
+        identity,
+        None,
+        None,
+        True,
+        components,
+        normalization_module_realization=realization,
+        normalization_unit_map=unit_map,
+        coefficient_map=coefficient_map,
+        component_module_numerators=finite_indexed_family(indices, lambda index: numerators),
+        component_projections=finite_indexed_family(indices, lambda index: components.value(index)[2]),
+        reduction_map=identity,
+        reduced_normalization_map=identity,
+    )
 
 
 def _finite_product_ring(factors):
@@ -1326,7 +1376,7 @@ def _affine_normalization_module_maps(
     r"""Present the finite normalization module and retain its actual realization.
 
     Private construction adapter owned here. Its only caller is
-    ``_affine_reduced_quotient_normalization_data``. The arguments are the
+    ``_affine_quotient_normalization_data``. The arguments are the
     owned affine quotient, its normalization ring map, and finite indexed
     families of component triples and exact ordered numerators. The result
     retains the owned module realization and the diagonal unit map.
@@ -1431,21 +1481,26 @@ def _affine_normalization_module_maps(
     return realization, unit_map
 
 
-def _affine_reduced_quotient_normalization_data(quotient):
+def _affine_quotient_normalization_data(quotient):
     r"""Cross Singular ``normal.lib`` output back into owned affine algebra data.
 
     This adapter intentionally uses Sage's persistent Singular interface rather
     than an ad-hoc process or textual file protocol.  ``normal.lib`` computes
-    the normalization componentwise for a reduced affine quotient, the
-    generator images of every normalization map, the conductor, and ``delta``
-    in one exact computation.
+    the normalization componentwise for the reduction of an affine quotient.
+    Its input is the radical ideal, as required by ``normalConductor``.
+    The source of all returned ring and module maps remains the original
+    quotient ``A=P/I``. Thus the unit cokernel is ``B/image(A)``, even when
+    the canonical map has the nonzero kernel ``sqrt(I)/I``.
     The returned Singular ring is converted by Sage's own ``sage()`` crossing,
     then reconstructed through the source ring's ``quotient_ring`` and ``Mor`` methods.
     """
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
     source = quotient.quotient_source()
     source_engine = _engine_ring(source)
-    if not quotient.is_reduced():
-        raise ValueError("normalization here requires a reduced affine quotient")
+    assert source.algebra_base_ring() in OwnedRings().Division().Commutative(), (
+        "affine normalization currently requires an actual coefficient field"
+    )
     assert source in SymmetricAlgebras(source.algebra_base_ring()), (
         "affine normalization currently requires a symmetric-algebra presentation"
     )
@@ -1453,7 +1508,26 @@ def _affine_reduced_quotient_normalization_data(quotient):
         "affine normalization currently requires a finite symmetric-algebra presentation"
     )
 
-    defining_engine = _engine_ideal(source, quotient.defining_ideal())
+    coefficient_map = quotient.quotient_map() * source.algebra_structure_morphism()
+    if quotient._is_zero_ring() is True:
+        return _identity_affine_normalization_data(
+            quotient,
+            coefficient_map,
+            finite_indexed_family(finite_ordered_set(()), lambda index: None),
+        )
+
+    defining = quotient.defining_ideal()
+    radical = defining.radical()
+    reduced = radical == defining
+    reduction = quotient if reduced is True else source.quotient_ring(radical)
+    reduction_map = (
+        OwnedRings().Mor(quotient, quotient).identity()
+        if reduction is quotient
+        else OwnedRings().Mor(quotient, reduction)(
+            lambda element: reduction(quotient(element).lift())
+        )
+    )
+    defining_engine = _engine_ideal(source, radical)
     from sage.interfaces.singular import singular
 
     previous_ring = singular.current_ring()
@@ -1465,7 +1539,8 @@ def _affine_reduced_quotient_normalization_data(quotient):
 
         normal_rings = normal_data[1]
 
-        # The conductor is an ideal in the original polynomial presentation.
+        # Retain the native diagnostic on the radical input. The public
+        # conductor is Ann_A(B/image(A)) in the original quotient A.
         source_engine._singular_(singular).set_ring()
         conductor_singular = defining_singular.normalConductor(normal_data)
         conductor_engine = conductor_singular.sage(source_engine)
@@ -1573,7 +1648,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
         else:
             product_engine = _engine_ring(normalization)
 
-            def into_product(element):
+            def into_product(element, normalization=normalization, product_engine=product_engine):
                 values = tuple(map_(element) for map_ in normalization_maps)
                 backend = product_engine(
                     tuple(
@@ -1584,6 +1659,16 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 return _owned_engine_element(normalization, backend)
 
             normalization_map = OwnedRings().Mor(quotient, normalization)(into_product)
+
+        if reduction is quotient:
+            reduced_normalization_map = normalization_map
+        else:
+            reduced_normalization_map = OwnedRings().Mor(reduction, normalization)(
+                lambda element, source_map=normalization_map: source_map(
+                    quotient(reduction(element).lift())
+                )
+            )
+            normalization_map = reduced_normalization_map * reduction_map
 
         component_indices = finite_ordered_set(range(len(normalizations)))
         components = finite_indexed_family(
@@ -1605,9 +1690,27 @@ def _affine_reduced_quotient_normalization_data(quotient):
             components,
             component_module_numerators,
         )
+        normality = conjunction((reduced, unit_map.cokernel().is_zero()))
+        if normality is True:
+            # For reduced A, eta is injective. Its zero cokernel makes it
+            # an isomorphism, so its unique lifts realize the SAME selected
+            # N and numerator labels in A with identity normalization.
+            normalization = quotient
+            normalization_map = OwnedRings().Mor(quotient, quotient).identity()
+            reduced_normalization_map = normalization_map
+            normalization_module = unit_map.codomain()
+            target = unit_map.domain().restrict_scalars(normalization_map)
+            module_realization = Modules(quotient).Mor(normalization_module, target)(
+                {
+                    label: target.wrap(unit_map.lift(normalization_module.module_generator(label)))
+                    for label in normalization_module.module_generating_set()
+                }
+            )
 
         def component_projection(position):
             component = normalizations[int(position)]
+            if normality is True:
+                return normalization_maps[int(position)]
             if len(normalizations) == 1:
                 return OwnedRings().Mor(normalization, component)(lambda element: element)
             projection_engine = product_engine.cartesian_projection(int(position))
@@ -1622,19 +1725,20 @@ def _affine_reduced_quotient_normalization_data(quotient):
             component_indices,
             component_projection,
         )
-        coefficient_map = quotient.quotient_map() * source.algebra_structure_morphism()
-        return _AffineReducedQuotientNormalizationData(
+        return _AffineNormalizationData(
             normalization,
             normalization_map,
             quotient.ideal(*(quotient(generator) for generator in conductor.ideal_generators())),
             total_delta,
-            total_delta == 0,
+            normality,
             components,
             normalization_module_realization=module_realization,
             normalization_unit_map=unit_map,
             coefficient_map=coefficient_map,
             component_module_numerators=component_module_numerators,
             component_projections=component_projections,
+            reduction_map=reduction_map,
+            reduced_normalization_map=reduced_normalization_map,
         )
     finally:
         if previous_ring is not None:

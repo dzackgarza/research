@@ -1341,6 +1341,52 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
+        def _normality_decision(self):
+            r"""A finite symmetric algebra over a field is a normal domain.
+
+            Its generating module is a vector space, so choosing a basis
+            identifies its symmetric algebra with a polynomial algebra.
+            The assertion uses the actual coefficient field; it makes no
+            normality claim for Sym_R(M) over an arbitrary ring.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
+            if (
+                self.algebra_base_ring() in OwnedFields()
+                and self.algebra_generating_set() in FiniteSets()
+            ):
+                return True
+            return super()._normality_decision()
+
+        @cached_method
+        def _normalization_data(self):
+            r"""Supply identity normalization with the actual affine coefficient map."""
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                OwnedFields,
+                OwnedRings,
+            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _identity_affine_normalization_data,
+            )
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                finite_indexed_family,
+            )
+
+            if (
+                self.algebra_base_ring() not in OwnedFields()
+                or self.algebra_generating_set() not in FiniteSets()
+            ):
+                return None
+            identity = OwnedRings().Mor(self, self).identity()
+            components = finite_indexed_family(
+                finite_ordered_set((0,)),
+                lambda index: (self.ideal(self.zero()), self, identity),
+            )
+            coefficient_map = self.algebra_structure_morphism()
+            if coefficient_map.codomain() is not self:
+                coefficient_map = coefficient_map.codomain().inclusion() * coefficient_map
+            return _identity_affine_normalization_data(self, coefficient_map, components)
+
         def generating_module(self):
             r"""The exact input M of this chosen symmetric-algebra construction.
 
