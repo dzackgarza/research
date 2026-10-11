@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 633 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial, NoZeroDivisors, its commutative refinement and both nontrivial zero-product refinements, Noetherian and Artinian are the twenty complete whole-owner passes and are marked [x]. The authored Adic.Local provider and the two providers for existing nontrivial zero-product meets are each added and closed in their source banks. The domain correction retains true hypotheses, undecided propositions and the actual canonical fraction maps. The common Commutative ring owner is the next active existing pass. The remaining 613 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor` and its fixed-category construction are now also closed: 23 complete passes and 617 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. After these current wrong-answer repairs, the first literal ready row is `placement-owner-adelogpairs`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -43,6 +43,69 @@ Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematica
 **Step-3 ideal-property ingress cleanup:** Primality and maximality checks share the same quotient-cover ideal selection. Their distinct prime/maximal criteria remain separate, including the selected number-field and multivariate polynomial cases.
 
 **Step-3 engine pair ingress cleanup:** Sum, product, intersection, colon, and saturation now reuse compatible engine ideal-pair ingress on their selected backend routes. This changes no mathematical operation or quotient-cover handling.
+
+## Unit-owner source closure (2026-10-11)
+
+**Closed nodes:** `placement-owner-magmas-unital`,
+`placement-owner-unitalmagmamor`, and
+`placement-owner-unitalmagmamorcategoryconstruction`. The substantive owner
+and Mor definitions were banked together in `194e5bad284a`; this source closure
+also repairs successive evaluation of their induced unit-group consumer.
+The seven newly authored unit/semiring providers now each have exactly one
+TODO row and one parent edge. Unreviewed complete owners remain unchecked.
+
+**Owner and complete delta.** `Magmas.Unital` introduces `_MorCategory`, display
+naming, the selected `one`, `_unit_decision`, and `is_unit`. Its strict owned
+ancestors are exactly `Magmas`, `Sets`, and `Objects`: respectively a binary
+multiplication, a set, and the mathematical root. Their definitions and the
+complete introduced operations were read. Only the unital owner uniformly
+supplies both multiplication and the selected two-sided unit. The relocated
+predicate means `exists y: x*y=1 and y*x=1`; the realization returns True,
+False, or that exact proposition. No unspecified decision becomes False.
+
+`UnitalMagmaMor` adds no operation body. Its laws are preservation of the
+binary product and the selected unit, with no associativity premise. It
+inherits `MagmaMor` construction/identity, `MagmaMorphism` composition, and
+`CategoricalMor` admission and generated-arrow operations. Its construction
+introduces only `fixed_category_class() -> UnitalMagmaMor`, using the existing
+fixed-endpoint interning. The complete actual arrow walk was read:
+`MonoidMor -> UnitalMagmaMor -> MagmaMor -> SetMorCategory`; the generated
+provider collection follows the fixed-Mor supergraph. Exact endpoint identity
+and the declared stronger-Mor path govern existing-arrow reuse. A plain
+multiplicative constant-zero map on the integers is not an existing unital
+arrow. Constructing an arrow from a callable declares the requested laws as
+premises; it does not prove those laws for arbitrary input data.
+
+**True closure assertions.** On the rational vector space with basis
+`1,a,b,c`, extend multiplication bilinearly, make `1` a two-sided unit, set
+`ab=ba=ac=ca=1`, and make all other products among `a,b,c` zero. Then `b != c`
+are both two-sided inverses of `a`, `(ba)c=c != b=b(ac)`, and `ab=ac` with
+`b != c`. Thus the existential unit predicate is meaningful and true outside
+associative monoids/rings, while uniqueness and unit-implies-regularity fail.
+The generic predicate may remain represented rather than Boolean; this is
+not a claim to have supplied a nonassociative inverse algorithm. The unit
+itself has inverse itself. Identity preserves product and unit, and for
+unital maps `f,g`, `(g*f)(xy)=g(f(x))g(f(y))` and `(g*f)(1)=1`.
+
+For composable monoid maps `f:M->N`, `g:N->P` and an admitted `u` of `M^x`,
+`U(f)(u)=f(u)` and `U(g)(U(f)(u))=g(f(u))=U(g*f)(u)`. The repaired evaluator
+retains the source-unit premise supplied by its fixed group-arrow domain;
+it delegates ambient admission to the retained monoid arrow instead of
+reconstructing the intermediate predicate facade. It therefore preserves
+this equality even when the ambient predicate for `f(u)` is undecided. The
+literal unit-group endpoints and the generated group arrow are retained.
+
+**Sources and phase.** Mathlib's
+[unit definitions](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Units/Defs.html),
+[unit-map laws](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Units/Hom.html),
+[unital magma-map laws](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/Defs.html),
+and [regularity definition](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Regular/Defs.html)
+were read against the source contracts. The displayed algebra is an explicit
+independent separating calculation. This closes the complete M1 source
+assertions, not a runtime claim: literal constructor, identity, composition,
+and undecided-predicate evaluations remain retained under T. No Sage/import,
+QC, build, or consumer-repository gate was run. Whole `Monoids`, rings,
+algebras and groups are not closed by this record.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

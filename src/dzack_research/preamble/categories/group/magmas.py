@@ -759,7 +759,15 @@ class _UnitGroupMorphism:
         super().__init__(parent, monoid_morphism)
 
     def __call__(self, unit):
-        return self._monoid_morphism(self.domain()(unit))
+        r"""Apply the restriction to a unit of its declared source group.
+
+        The fixed group-arrow input contract supplies source-unit membership.
+        The retained monoid arrow performs the ordinary ambient ingress. A
+        fresh source unit-group admission would discard this premise when
+        ``unit`` is the image of an earlier induced unit map and its ambient
+        unit predicate remains undecided.
+        """
+        return self._monoid_morphism(unit)
 
     def _composition(self, right):
         r"""Compose two restrictions through their retained monoid arrows."""
