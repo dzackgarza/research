@@ -1690,6 +1690,20 @@ class _MorCategoryOf(OwnedCategoryBase):
     def base_category(self) -> Category:
         return self._base_category
 
+    def _mor_endpoint(self, obj):
+        r"""Represent a fixed-Mor object at this family's own Mor boundary.
+
+        Objects of this family are categories, and its arrows are the
+        functors inherited from ``Cat``.  Use ``Cat``'s exact represented
+        endpoint before the nested Mor family selects and caches its object.
+        An already represented endpoint retains its identity and category
+        datum.  The endpoints of ``self.Of(A, B)`` still enter through
+        ``self.base_category()`` and keep that category's representation.
+        """
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().object(obj)
+
     def family_over(self, category: Category) -> _MorCategoryOf:
         return _category_packet(category).Mors()
 

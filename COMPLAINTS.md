@@ -293,6 +293,31 @@ as a diagram target.
 set specimen were inspected; no claim is made about non-discrete specializations.
 Repair: `discrete-fixed-mor-universal-constructions` in [TODO.md](TODO.md).
 
+### Direct MorCategories ingress retains inconsistent represented endpoints
+
+A fixed-Mor category H is an object of MorCategories. Its functor Mor to K
+must use the exact represented endpoints Cat.object(H) and Cat.object(K),
+and its classifying family's admission record must name those same objects.
+
+Source inspection on 2026-10-11 found that direct
+MorCategories().Mor(H,K) uses the default raw endpoint ingress. The inherited
+Cat construction returns the genuine functor category with represented
+endpoints, but the generic family records it under raw H,K; its own
+identity-sensitive lookup then cannot recover that record from the returned
+endpoints. Supplying Cat.object(H), Cat.object(K) already works. This is a
+construction/admission defect, not missing mathematics or evidence that the
+functor category is discrete.
+
+The shared _MorCategoryOf boundary now normalizes the objects of individual
+Mor/End/Aut families, as required by the completed commutative-additive
+Mor-family pass. Direct MorCategories itself is not such a family.
+Its remaining entry belongs to `placement-owner-morcategories` in TODO.md.
+The retained dependency is exact category representation -> inherited
+functor Mor -> coherent admission record; no other repository gates it.
+The remedy must reuse Cat.object and preserve the actual Functor and natural
+transformation constructions. M1 / DEV-58 leaves the corresponding execution
+under T. No new mathematical foundation or formalization request is indicated.
+
 ### Discrete categories do not realize universal constructions that exist
 
 The discrete category on one object is the terminal category.  Every diagram
