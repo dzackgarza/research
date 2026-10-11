@@ -410,6 +410,7 @@ Repair the existing public construction routes and inherited methods before prov
 - [x] **`placement-owner-additivesemigroups-morcategory`**. **Needs:** none.
   **Owner pass:** `AdditiveSemigroups._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
   **Closure assertions:** the complete `AdditiveSemigroups._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveSemigroups._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Completed whole-owner source pass (2026-10-11):** the sole fixed_category_class selector, the complete MorCategories/Cat semantic ancestry, inherited _MorCategoryOf construction and actual AdditiveMagmaMor arrow supplier are reconciled in HANDOFF.md. The constructing semigroup family records its literally reused weaker fixed Mor without changing that Mor's owning family. Its identity/composition assertions and both internal discrete versus classifying functor/natural-transformation paths are retained under T. This completes the full record for c3a5912283 with no extra operation move, category or runtime claim.
 
 - [x] **`placement-owner-adiccompletions`**. **Needs:** none.
   **Owner pass:** `AdicCompletions` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
