@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: the complete owner records through the additive-semigroup selector are reconciled; TODO.md carries the live 641-owner completion count. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The complete AdditiveEndomorphismRings pass is now closed on its retained scalar datum, canonical identity, law-preserving arithmetic suppliers and exact full-versus-structured Hom carriers. The complete AdditiveGroups root pass is now closed on its existing right-difference operation, primitive suppliers and actual additive-monoid Mor inheritance. The complete AdditiveGroups.AdditiveCommutative pass is now closed on the general notation-conversion home, exact commutative realization, actual additive Mor and undecided equality. The complete commutative-additive Mor-family pass is now closed on both its enriched additive arrows and its coherent inherited functor-category endpoints. The complete root additive-group Mor-family pass is now closed on automatic inverse preservation, literal weaker-Mor reuse and both actual arrow levels. The complete AdditiveMagmaMor pass is now closed on its actual generated arrows, shared canonical identity and weaker set-map composition. The complete AdditiveMagmas root pass is now closed on its selected binary law, exact integer witness and actual inherited map theory. The complete commutative-additive-magma refinement is now closed on its actual additional axiom and literal reuse of the binary-law Mor. The complete additive-magma Mor-family pass is now closed on its binary-law selector and both actual map and functor levels. The complete AdditiveMonoidMor pass is now closed on its zero-preserving arrow theory, shared canonical identity and exact product-map consumers. The complete AdditiveMonoids pass is now closed on its additive subset constructors, exact generator/predicate data, actual inclusion factors and protected NN assertions. The complete additive-monoid Mor-family pass is now closed on its zero-preserving selector, exact inclusion/product maps and both actual higher-arrow paths. The complete AdditiveMor pass is now reconciled with its admission and contextual scalar-action changes. The scalar caller diff is banked and the complete AdditiveMorGroups pass now includes its actual weaker-arrow composition path. The complete AdditiveSemigroups source review and its separate selector review are now recorded. The selected AffineGSchemes whole pass remains in hand on its concrete closure obligations after the concurrent c1a25ef9e7 Mor relocation and checkbox; later owner rows continue under TODO.md's literal ready-row rule after the selected pass's outstanding source obligations are discharged. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: the complete owner records through the additive-semigroup selector are reconciled; TODO.md carries the live 641-owner completion count. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The complete AdditiveEndomorphismRings pass is now closed on its retained scalar datum, canonical identity, law-preserving arithmetic suppliers and exact full-versus-structured Hom carriers. The complete AdditiveGroups root pass is now closed on its existing right-difference operation, primitive suppliers and actual additive-monoid Mor inheritance. The complete AdditiveGroups.AdditiveCommutative pass is now closed on the general notation-conversion home, exact commutative realization, actual additive Mor and undecided equality. The complete commutative-additive Mor-family pass is now closed on both its enriched additive arrows and its coherent inherited functor-category endpoints. The complete root additive-group Mor-family pass is now closed on automatic inverse preservation, literal weaker-Mor reuse and both actual arrow levels. The complete AdditiveMagmaMor pass is now closed on its actual generated arrows, shared canonical identity and weaker set-map composition. The complete AdditiveMagmas root pass is now closed on its selected binary law, exact integer witness and actual inherited map theory. The complete commutative-additive-magma refinement is now closed on its actual additional axiom and literal reuse of the binary-law Mor. The complete additive-magma Mor-family pass is now closed on its binary-law selector and both actual map and functor levels. The complete AdditiveMonoidMor pass is now closed on its zero-preserving arrow theory, shared canonical identity and exact product-map consumers. The complete AdditiveMonoids pass is now closed on its additive subset constructors, exact generator/predicate data, actual inclusion factors and protected NN assertions. The complete additive-monoid Mor-family pass is now closed on its zero-preserving selector, exact inclusion/product maps and both actual higher-arrow paths. The complete AdditiveMor pass is now reconciled with its admission and contextual scalar-action changes. The scalar caller diff is banked and the complete AdditiveMorGroups pass now includes its actual weaker-arrow composition path. The complete AdditiveSemigroups source review and its separate selector review are now recorded. The complete AffineGSchemes pass is now reconciled after the concurrent Mor relocation: common G-scheme invariant/quotient operations, exact generic carriers, inverse section actions, truthful linearization data, restricted-action arrows and the stated scalar-comparison assertions are recorded. Its nonaffine/coarser-base computations and nonregular group-algebra relation supplier retain named frontiers inside the existing nodes. Later owner rows continue under TODO.md's literal ready-row rule. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -3358,6 +3358,289 @@ Focused record/diff and TODO-graph checks were used. No imports,
 tests, builds or runtime execution were performed. Every displayed
 computation assertion remains under T and core-usability-session.
 No new prerequisite or category declaration is introduced.
+
+
+## Whole-category placement: AffineGSchemes (2026-10-11)
+
+**Node:** `placement-owner-affinegschemes`. This whole source pass
+completes the selected ready row's obligations after the concurrent
+`c1a25ef9e7` Mor relocation and checkbox. The checkbox alone did not
+discharge the invariant/quotient, section-module, action-restriction or
+actual arrow obligations. This bank adds those substantive assertions;
+it creates no prerequisite node.
+
+**Complete inventory and mathematical data:** the original owner has
+nine direct category methods: `__classcall__`, `__init__`,
+`acting_group`, `base_ring`, `super_categories`,
+`_repr_object_names`, `an_object`, `global_sections_functor`
+and `_call_`. Its fifteen original ParentMethods are `__init__`,
+`nontrivial_stabilizer_subscheme`, `Mor`, `unacted_scheme`,
+`fixed_ideal`, `fixed_subscheme`, `_invariant_algebra_data`,
+`invariant_algebra`, `invariant_algebra_inclusion`,
+`invariant_algebra_element`, `affine_quotient`,
+`quotient_base_change_comparison`, `quotient_morphism`,
+`factor_through_affine_quotient` and `descend_invariant_family`.
+There is no separate element-operation block or direct Mor-family
+selector. The inventory and the selected computation suppliers were
+read together, including the complete invariant presentation algorithm,
+quotient/base-change/section functors, restriction of group action and
+the existing group-module linearization builder.
+
+The category's datum is an owned abstract group G, a commutative unital
+ring R, and a represented affine R-scheme X with a left G-action.
+Normalization, the parameter accessors, representation, sample and
+two-argument constructor retain that datum; the sample has the trivial
+action. The constructor retains its actual input scheme under
+`unacted_scheme()`, constructs the acted scheme on the same coordinate
+algebra, and retains the supplied action pullbacks. For a represented
+acted scheme the action functor evaluates to the acted scheme itself;
+the constructor's unacted input is not substituted for that evaluation.
+`Schemes.parameter_category()` and the affine-action constructor now
+state the required commutative base domain. The matrix ring
+M_2(QQ) is a true excluded parameter for classical Spec.
+
+**Complete strict authored semantic up-set:** all nine ancestor
+definitions were read: GObjects(G,Schemes(R)) is a chosen BG -> Sch/R
+action; Schemes(R).Affine consists of spectra of commutative R-algebras;
+Schemes(R).QuasiAffine consists of open subschemes of affine schemes;
+Schemes(R).Separated imposes the closed relative diagonal;
+Schemes(R) retains a scheme and its structure map to Spec(R);
+LocallyRingedSpaces has local stalks and local morphisms;
+RingedSpaces retains a sheaf of rings; SheafedSpaces retains a chosen
+sheaf on an underlying space; Objects is the mathematical root.
+The actual edges are the two affine-action parents, Affine ->
+QuasiAffine -> Separated -> Schemes, and Schemes -> LocallyRingedSpaces
+-> RingedSpaces -> SheafedSpaces -> Objects. There is no additional
+Sets or TopologicalSpaces semantic edge: the underlying space is data.
+
+**Disposition at the weakest declared homes:** Mor belongs to
+GObjects(G,C), where equivariance is defined without affineness; the
+earlier move is retained and its consumers are reviewed here. The fixed
+ideal is the affine ideal generated by rho(s)^*(a)-a on group and algebra
+generators. Its closed subscheme and the finite union of nonidentity
+fixed loci retain their affine coordinate construction. The latter is
+defined by the intersection of the individual fixed ideals, not the
+common fixed ideal. Their selected algorithms require finite determining
+families, and the union requires actual finite iteration and decided
+comparisons with the identity. Unknown cardinality/equality is never
+coerced into an affirmative iteration or a negative component choice.
+
+Global sections, their G-invariant algebra, its inclusion and invariant
+element lifts, Spec of that algebra, the quotient map and the unique
+factor of an invariant map to an affine target belong to the actual
+ancestor GObjects(G,Schemes(R)). A left action induces
+g.s = rho(g^-1)^*(s). An invariant map X -> Spec(C) corresponds exactly
+to an R-algebra map C -> Gamma(X,O)^G. Thus Spec(Gamma(X,O)^G) is
+universal for invariant maps to affine targets; this states no
+universal property among all scheme targets. The mathematical
+foundation is [Stacks, Lemma 26.6.4](https://stacks.math.columbia.edu/tag/01I1);
+the affine coequalizer distinction is explicit in
+[Stacks, Section 39.23](https://stacks.math.columbia.edu/tag/03BE).
+
+The eight public invariant/quotient operations have one category-level
+authority on GObjects, with thin original-signature ParentMethods
+delegates for concrete actions. The original category-level
+`global_sections_functor()` is retained as an affine-domain adapter
+to the same supplier; GObjects exposes the general-domain functor.
+The affine owner now retains eight ParentMethods: its five constructor,
+input and fixed-locus methods, cached `_invariant_algebra_data`, and
+the renamed `_invariant_algebra_element` and
+`_factor_through_affine_quotient` suppliers. Its nine direct category
+methods remain. It does not retain a second public quotient authority.
+
+**Actual generic delivery and computation:** the existing generic
+GObjects constructor makes a functor-category object, not a scheme.
+The category API accepts that object and evaluates the retained action
+at the sole object of BG to obtain the literal carrier X. No scheme
+placement is added to the functor wrapper. The common
+`_affine_invariant_action` uses one category-containment case selection:
+a represented affine action; an affine carrier of a generic action,
+using the existing affine constructor as a cached supplier; or the named
+nonaffine global-section/invariant computation assertion.
+
+The supplier preserves the coordinate algebra and actual action.
+The generic quotient map begins at the original X, while a factor is
+transported through the same coordinate pullback on the cached affine
+supplier. Both paths use the same invariant algebra B and exact R;
+the existing Spec cache keyed by id(B),id(R) makes their quotient
+endpoint literally the same object. The section functor similarly uses
+the actual forgotten carrier and underlying equivariant arrow, including
+a natural transformation's actual component.
+
+The polynomial invariant supplier supports finite linear actions on
+a polynomial algebra in finitely many chosen variables over a supported
+field. [Sage's invariant_generators documentation](https://doc.sagemath.org/html/en/reference/groups/sage/groups/matrix_gps/finitely_generated_gap.html#sage.groups.matrix_gps.finitely_generated_gap.FinitelyGeneratedMatrixGroup_gap.invariant_generators)
+states its finite-matrix-group domain and Singular algorithms.
+The supplier uses the actual pullback matrices, computes the relation
+ideal by eliminating the original variables from the graph ideal, and
+retains the resulting inclusion B -> A. It does not promise a particular
+order or names for Singular's generators. Selection occurs before an
+invariant lift traverses group generators. Exact polynomial certificate
+checks prove the lift even if a public equality diagnostic is undecided;
+a literal False is still refused. Those generator certificates prove
+the quotient factor's triangle without manufacturing a general map
+equality decision.
+
+**Required section and restriction consumers:** the old section
+construction already failed for A=QQ[x] because the group-module builder
+required a finite coefficient presentation. The existing builder now
+linearizes a retained action on any admitted coefficient module using
+its actual additive scalar representation. It sums only over the finite
+support of the supplied R[G] scalar and requests no generating family
+for an unframed coefficient module. A selected finite coefficient frame
+still supplies R[G]-spanning generators; its R-presentation remains on
+`unformed_module()`. It is not misreported as a complete R[G]-relation
+presentation. The existing missing-supplier value None preserves the
+linearity proposition and consumers' named relation frontiers.
+
+The canonical regular representation retains a cached actual left-action
+functor from the existing GroupAlgebras owner. Only literal identity with
+that datum selects the rank-one R[G] basis. GroupModuleMor's equation
+diagnostic traverses generators only when the selected label cardinality
+is literally known finite; an infinite group with finitely many selected
+generators is still supported. Otherwise it keeps its existing
+equivariance proposition.
+
+Restriction along H -> G now constructs an actual AffineGSchemes(H,R)
+object on the retained coordinate algebra. The functor's cached object
+images are the arrow endpoints, and the restricted arrow uses exactly
+the original coordinate pullback on those new endpoints. Its selected
+identity remains the new Mor identity. Generic actions and natural
+transformations retain the existing classifying-functor precomposition
+route. Consequently the cyclic restrictions needed by the stabilizer
+union reach their actual fixed-ideal supplier.
+
+**Delivered arrows at both levels:** the concrete endpoint method
+selects the actual GObjectMor through GObjectMorCategoryConstruction.
+Its generated arrow type takes EquivariantMorphismMethods and the
+actual underlying SchemeMorCategory's SchemeMorphismMethods through
+the fixed-Mor graph. The underlying Mor is formed on the exact
+forgetful endpoints. SchemeMorCategoryConstruction retains the
+over-R restriction and its LocallyRingedMorCategoryConstruction
+presentation selector. Ring pullbacks are defining data, not an
+invented inheritance of scheme arrows from ring-arrow types.
+
+Equivariant identity is cached. Composition keeps the underlying
+scheme identity simplifications and retains the actual input arrows
+as premises. Known equivariance of both factors proves the composite;
+otherwise the actual composite equations decide or remain propositions.
+A failed factor's law is not incorrectly conjoined into the result.
+An explicitly requested weaker Mor forgets the actions and retains
+the exact endpoints instead of silently granting equivariance.
+
+Internally a concrete fixed H.object(f) still has the represented
+discrete second arrows through MorArrowDiscreteMor/MorArrowIdentity.
+For its classifying-family path the inherited Cat normalization retains
+the represented category endpoint and supplies actual functors through
+_FunctorCategory/CategoryFunctorMor/CategoryFunctorMorphism, then actual
+natural transformations through NaturalTransformationMor and
+NaturalTransformationMorphism. A generic BG-action's first equivariant
+arrows already use that natural-transformation provider; its components
+are actual scheme arrows. No nonexistent equivariance_decision method
+is assumed on those natural transformations, and no additional
+2-morphism theory or equality algorithm is inferred.
+
+**True closure assertions retained under T:**
+
+1. For C2 acting by simultaneous sign on X=Spec(QQ[x,y]),
+   `X.fixed_ideal()` is (2x,2y)=(x,y), so the common fixed scheme is the
+   origin. The invariant algebra is isomorphic to
+   QQ[u,v,w]/(u*w-v^2), with inclusion u -> x^2, v -> x*y, w -> y^2.
+   Even-degree monomials give the generators and the displayed relation.
+   The map to the affine line with pullback t -> x^2+y^2 factors uniquely
+   by t -> u+w. The quotient and factor retain their exact endpoints and
+   defining pullbacks. A map with t -> x is not invariant in
+   characteristic zero and has no such invariant factor.
+
+2. Over F2, let a(x,y)=(x+1,y) and b(x,y)=(x+y,y). They are commuting
+   involutions. Their fixed ideals are (1), (y), and (y+1) for a, b and ab.
+   The common fixed scheme is empty, while the nontrivial-stabilizer
+   subscheme is V(y(y+1)). These translations use the fixed-ideal
+   construction, not the linear polynomial invariant algorithm.
+
+3. The sign involution [u:v] -> [-u:v] of P1_QQ fixes {0,infinity},
+   although Gamma(P1,O)=QQ and its global difference ideal is zero.
+   Thus the affine global-ideal recipe does not compute that nonaffine
+   fixed locus. For the trivial C2 action on P1_QQ, the invariant global
+   algebra is QQ and the universal affine-target map is the structure
+   map P1 -> Spec(QQ). Represent this action by the actual GroupActionFunctor,
+   then a=GObjects(G,Schemes(QQ))(F). The category's invariant, inclusion,
+   lift, quotient, quotient-map, factor and family APIs are present on
+   that a outside AffineGSchemes; requesting their current computation
+   reaches the named nonaffine invariant/global-section assertion.
+   The general section functor likewise reaches its own named assertion
+   on the corresponding opposite action object. It does not raise an
+   AttributeError or turn a into an affine scheme.
+
+4. For B=F7[e]/(e^2) and C3 acting with rho(g)^#(e)=2e, the induced
+   left section action sends e to 4e and its cube fixes e.
+   This separates inverse pullback from direct pullback. It is a finite
+   coefficient-module section specimen; the selected polynomial invariant
+   algebra solver does not claim to handle this relationful algebra.
+   For B=QQ[x] with sign action,
+   (a[1]+b[s]).p(x)=a*p(x)+b*p(-x) on exactly the retained coefficient
+   module B, without claiming it has finite R[G] generators.
+
+5. For S=ZZ[C2], the retained canonical left action gives
+   S.regular_representation() the single S-basis 1. The trivial action
+   on the same coefficient carrier S is annihilated by s-1 != 0 and is
+   not free rank one over S. It receives no such placement and no false
+   empty S-relation presentation. Its coefficient data are retained.
+   Undecided equivariance or linearity remains its actual proposition.
+
+6. On the sign affine line over QQ, translations t:x -> x+1 and
+   t^-1:x -> x-1 are individually non-equivariant, while their composite
+   is the equivariant identity; t composed with t remains
+   non-equivariant. The composite diagnostic therefore uses the
+   composite equation when input laws do not prove it. The selected
+   equivariant identity is reused and answers the inherited scheme
+   identity/open-immersion assertions correctly. The actual generic
+   action on P1 has the natural-transformation identity, whose component
+   is the scheme identity.
+
+7. Retain the actual unital field map iota:QQ -> K=QQ(sqrt(2)).
+   For the sign action the quotient comparison is the map
+   X_K/G -> (X/G)_K with the same polynomial invariant images and relation.
+   Its domain is literally `comparison.quotient_after_base_change()`,
+   its codomain is literally `comparison.base_change_after_quotient()`,
+   and it retains iota and the actual base-changed acted scheme.
+   Since 2 is invertible in K, the selected Reynolds inverse applies.
+   The comparison constructor admits the actual ring arrow, transports
+   the action lazily, and computes no table over every group element.
+   A same-endpoint set map r -> r^2 on QQ is not a ring-map input.
+   There is no unital ring map QQ -> GF(5); that protected fixture
+   spelling is not a true specimen for this pass and is not executed.
+
+**Named remainders, kept inside existing nodes:** nonaffine global
+sections/invariants, unsupported polynomial invariant engines, and
+nonfinite or unavailable determining data retain their named
+computation assertions here. For Spec(K[x]) considered over a proper
+coarser field R, the section functor currently has no selected
+coefficient-module realization along the exact R -> K[x] structure
+map; it asserts that frontier before the builder can incorrectly
+return a K[G]-module. Exact-base affine cases use the actual algebra
+structure map: the selected Schemes structure morphism calls
+_restriction_to_base, whose step is that algebra map followed by id_R.
+No generic scalar-restriction engine is introduced in this pass.
+
+The remaining computation of complete R[G]-relations for a nonregular
+linearized action stays inside `placement-owner-modulesovergroupalgebra`.
+The exact R-presentation is retained and the existing missing-relation
+protocol is truthful now. This does not reopen the present action
+construction or invent a prerequisite. Reynolds inversion is supplied
+under its stated hypothesis; no negative assertion about comparison
+isomorphisms outside that hypothesis is made.
+
+**Verification and phase:** root and two independent source reviewers
+reconciled the complete inventory, all nine ancestors, selected suppliers,
+exact scalar/coordinate data, actual first and higher arrow providers,
+and the displayed positive and separating assertions. Focused parsing of
+the six edited source files, source inventory, diff checks and the TODO
+DAG check are the verification surface. No project imports, Sage/runtime
+execution, tests, builds, notebooks or generated-doc commands were run.
+Every computation specimen remains under T and core-usability-session;
+M1 / DEV-58 closes the source obligations only. Foreign dirty work and
+the other worker's owner commits are preserved.
 
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)

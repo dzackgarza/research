@@ -14,6 +14,34 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### A coefficient presentation omits group-action relations
+
+**Observed during placement-owner-affinegschemes (2026-10-11):** asking
+the selected relation supplier of a linearized group action returned the
+coefficient module's R-linear relations as if they were all relations of
+the R[G]-framing. For the trivial C2-action on the coefficient carrier
+QQ[C2], that coefficient module is free, but the R[G]-framing has the
+additional nonzero relations (g-1)e_i. Empty coefficient relations cannot
+prove that its arbitrary generator images define an R[G]-linear map.
+
+**Correction and retained remainder:** _CoefficientModuleEngine now keeps
+the complete coefficient presentation on unformed_module() and returns
+the existing missing-relation value None outside canonical regular
+cases. ModuleMorphism consequently retains its linearity proposition;
+tensor and scalar-restriction presentation algorithms reach their
+existing named assertions. The genuine left regular action retains its
+rank-one group-algebra frame only through the actual cached action
+functor, while the trivial action on the same carrier receives no such
+frame. A complete nonregular R[G]-relation computation remains inside
+the existing placement-owner-modulesovergroupalgebra node.
+
+**Dependency and inspected boundary:** exact coefficient module and
+BG-action -> existing _equip_action scalar representation and spanning
+family -> actual R[G]-kernel supplier -> module-map, tensor and
+scalar-restriction consumers. The builder, _CoefficientModuleEngine,
+GroupAlgebras.regular_representation and these selected consumers were
+read as source. No runtime execution or test modification occurred.
+
 ### A module annihilator uses the additive endomorphism representation
 
 For a left module M over a possibly noncommutative ring R, the defining

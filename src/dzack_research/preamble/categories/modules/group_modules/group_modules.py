@@ -58,7 +58,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
-    FinitelyPresentedModules,
     LinearEndCategoryConstruction,
     LinearMorModules,
     ModuleMorCategoryConstruction,
@@ -1198,8 +1197,12 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         return source.module_category().Mor(source, target)
 
     def is_equivariant(self, arrow):
+        r"""Decide equivariance on a selected finite family of group generators."""
         group = self.domain().group()
-        if not group.has_selected_group_resolution():
+        if not (
+            group.has_selected_group_resolution()
+            and group.group_generating_set().cardinality().is_finite() is True
+        ):
             return AtomicProposition("is_equivariant", self, arrow)
         underlying = _coefficient_morphism_from_images(
             self,
@@ -1290,17 +1293,23 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
 
 class _CoefficientModuleEngine:
-    r"""The coefficient presentation of a linearized action.
+    r"""The retained coefficient module of a linearized action.
 
     Private realization selected only by the group-module entry.  A lattice
     carrying an action already has its free-module realization and must not
     inherit conversions through a second coefficient-module presentation.
-    The group-module category owns the action; this engine reads coordinates
-    from the exact coefficient module on which that action was stated.
+    The group-module category owns the action; requested coordinate
+    computations read a selected presentation of the exact coefficient
+    module on which that action was stated, when one is available.
     """
 
     def _selected_module_coefficients(self, element):
-        match self.unformed_module() is self.group_algebra():
+        module = self.unformed_module()
+        group_algebra = self.group_algebra()
+        match (
+            module is group_algebra
+            and self.action_functor() is module._left_regular_action_functor()
+        ):
             case True:
                 # The regular R[G]-basis is the unit; the R-basis remains
                 # on unformed_module(), not on this R[G]-resolution.
@@ -1310,8 +1319,6 @@ class _CoefficientModuleEngine:
                 pass
         if self._is_the_regular_module():
             return super()._selected_module_coefficients(element)
-        module = self.unformed_module()
-        group_algebra = self.group_algebra()
         coordinates = module.framing_morphism().lift(module(element))
         inclusion = Modules(group_algebra).coefficient_inclusion()
         return {
@@ -1320,9 +1327,21 @@ class _CoefficientModuleEngine:
         }
 
     def _selected_relation_morphism(self):
-        if self._is_the_regular_module() or self.unformed_module() is self.group_algebra():
+        r"""Return selected ``R[G]``-relations when this realization supplies them.
+
+        The coefficient module retains its own ``R``-presentation, but those
+        relations omit the equations imposed by the group action.  For a
+        general action no complete ``R[G]``-relation supplier is selected;
+        ``None`` keeps the module owner's missing-presentation protocol and
+        its consumers' undecided laws or named computation frontiers.
+        """
+        module = self.unformed_module()
+        if self._is_the_regular_module() or (
+            module is self.group_algebra()
+            and self.action_functor() is module._left_regular_action_functor()
+        ):
             return super()._selected_relation_morphism()
-        return self.unformed_module()._selected_relation_morphism()
+        return None
 
     def coefficient_module_rank(self):
         return self.unformed_module().module_rank()
@@ -1345,7 +1364,10 @@ def _equip_action(module, group_or_action, action=None):
 
     The ``R[G]``-module is built on the data of ``M`` by the generic module
     action ``R[G] -> End_Ab(U_R(M))``; ``M`` is retained as the datum and
-    answered by ``unformed_module()``, with its selected presentation.
+    answered by ``unformed_module()``.  A selected finite coefficient
+    presentation is retained when available; the construction otherwise
+    needs no generating family.  Each group-algebra scalar acts by summing
+    over only its own finite support.
     ``action`` may be an actual ``BG -> Modules(R)`` functor, a ring morphism
     out of ``R[G]``, or the binary action ``action(g,m)``.
 
@@ -1359,8 +1381,8 @@ def _equip_action(module, group_or_action, action=None):
     """
 
     base_ring = module.base_ring()
-    assert module in FinitelyPresentedModules(base_ring), (
-        f"cannot equip {module} with a group action: this needs a finitely presented {base_ring}-module, "
+    assert module in Modules(base_ring), (
+        f"cannot equip {module} with a group action: this needs a {base_ring}-module, "
         f"but {module} is only known to be in {module.category()}"
     )
     ring_action = None
@@ -1411,18 +1433,14 @@ def _equip_action(module, group_or_action, action=None):
         case _:
             group = _owned_group(group_or_action)
 
-    labels = module.module_generating_set()
-    assert labels.cardinality().is_finite(), (
-        f"cannot equip {module} with a group action: this needs a finite generating set of the module, "
-        f"but its chosen generating set {labels} is not known to be finite"
-    )
-
-    is_free = module in FinitelyGeneratedFreeModules(base_ring)
-    if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
-        raise TypeError(
-            f"cannot equip {module} with a group action: it is not known to be free, so it needs a chosen "
-            f"finite presentation by generators and relations, and it has none; it is in {module.category()}"
-        )
+    labels = None
+    if module.has_selected_module_resolution() and (
+        module in FinitelyGeneratedFreeModules(base_ring)
+        or module in ModulesWithChosenFinitePresentation(base_ring)
+    ):
+        labels = module.module_generating_set()
+        if labels.cardinality().is_finite() is not True:
+            labels = None
 
     group_algebra = base_ring[group]
     coefficient_modules = Modules(base_ring)
@@ -1434,6 +1452,12 @@ def _equip_action(module, group_or_action, action=None):
     def admitted_action_morphism(group_element):
         match supplied_action_functor:
             case None:
+                if labels is None:
+                    return coefficient_endomorphisms.elementwise(
+                        lambda vector: module(
+                            _apply_action(source_action, group_element, vector)
+                        )
+                    )
                 return coefficient_endomorphisms(
                     {
                         label: module(
@@ -1505,7 +1529,13 @@ def _equip_action(module, group_or_action, action=None):
         )
     )
     # An arbitrary selected group action has no inferred R[G]-basis.
-    regular = module is group_algebra
+    regular = (
+        module is group_algebra
+        and supplied_action_functor is not None
+        and supplied_action_functor is module._left_regular_action_functor()
+    )
+    framing_data = {}
+    extra_category = ()
     match regular:
         case True:
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -1515,9 +1545,13 @@ def _equip_action(module, group_or_action, action=None):
             extra_category = (FramedFreeModules(group_algebra),)
         case False:
             selected_labels = labels
-            selected_generator = module.module_generator
-            extra_category = ()
-    framing_source = group_algebra.free_module(selected_labels)
+            selected_generator = module.module_generator if labels is not None else None
+    if selected_labels is not None:
+        framing_data = {
+            "module_generating_set": selected_labels,
+            "module_generator_function": selected_generator,
+            "framing_source": group_algebra.free_module(selected_labels),
+        }
     # The generic linear realization and the represented action are both
     # actual properties of this object. Neither placement implies the other.
     equipped = _object_of(
@@ -1525,11 +1559,9 @@ def _equip_action(module, group_or_action, action=None):
         _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
         rho=scalar_action,
-        module_generating_set=selected_labels,
-        module_generator_function=selected_generator,
-        framing_source=framing_source,
         unformed_module=module,
         source_action_functor=source_action_functor,
+        **framing_data,
     )
     equipped.validate_action(check=False)
     return equipped

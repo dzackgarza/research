@@ -122,6 +122,31 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return Monoids().Mor(self.group(), self)(self.module_generator)
 
         @cached_method
+        def _left_regular_action_functor(self):
+            r"""The retained ``BG -> Modules(R)`` action by left multiplication.
+
+            The image of ``g`` sends ``a`` to ``[g] a``.  Group basis
+            elements commute with the coefficient scalars, so this map is
+            ``R``-linear, and the group law gives the action law.  Its
+            elementwise description needs no enumeration of the group basis.
+            """
+            from dzack_research.preamble.categories.functors.group_actions import (
+                GroupActionFunctor,
+            )
+
+            modules = Modules(self.base_ring())
+            endomorphisms = modules.Mor(self, self)
+            inclusion = self.group_inclusion()
+            return GroupActionFunctor(
+                self.group(),
+                modules,
+                self,
+                lambda group_element: endomorphisms.elementwise(
+                    lambda element: inclusion(group_element) * self(element)
+                ),
+            )
+
+        @cached_method
         def regular_representation(self):
             r"""``R[G]`` as a module over itself by left multiplication.
 
@@ -129,12 +154,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             multiplication through the group inclusion; ``Modules(R[G])``
             equips that action with the group-algebra scalar action.
             """
-            inclusion = self.group_inclusion()
-
-            def left_action(group_element, element):
-                return inclusion(group_element) * self(element)
-
-            return Modules(self)(self, left_action)
+            return Modules(self)(self, self._left_regular_action_functor())
 
         @cached_method
         def regular_representation_basis_isomorphism(self):
