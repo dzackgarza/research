@@ -28,6 +28,8 @@ of order six, and ``E8`` gives the trivial group.
 
 from sage.graphs.graph import Graph
 from sage.misc.cachefunc import cached_method
+from sage.matrix.constructor import matrix
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -62,6 +64,42 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
+
+    def spanning_automorphism_generators(self, lattice, vectors, colours):
+        r"""Integral ambient isometries preserving a supplied coloured spanning family.
+
+        Positions and colours are retained even when the family is redundant.
+        The nondegenerate spanning hypothesis makes its pairing permutation
+        action faithful. A graph generator need not preserve the ambient
+        integral lattice; in that case take the subgroup of integral lifts.
+        """
+        realization = _SpanningConfiguration(lattice, vectors, colours)
+        group = realization.graph.automorphism_group(edge_labels=True)
+        generators = tuple(realization.lift(realization, permutation) for permutation in group.gens())
+        if all(generator is not None for generator in generators):
+            return finite_ordered_set(generators)
+        return finite_ordered_set(tuple(
+            lifted for permutation in group
+            if (lifted := realization.lift(realization, permutation)) is not None
+        ))
+
+    def spanning_isometry(self, source, source_vectors, source_colours, target, target_vectors, target_colours):
+        r"""One integral ambient isometry of two coloured spanning families, or None."""
+        left = _SpanningConfiguration(source, source_vectors, source_colours)
+        right = _SpanningConfiguration(target, target_vectors, target_colours)
+        if len(left.vectors) != len(right.vectors) or left.rows.ncols() != right.rows.ncols():
+            return None
+        equivalent, certificate = left.graph.is_isomorphic(right.graph, edge_labels=True, certificate=True)
+        if not equivalent:
+            return None
+        lifted = left.lift(right, certificate.__getitem__)
+        if lifted is not None:
+            return lifted
+        for permutation in left.graph.automorphism_group(edge_labels=True):
+            lifted = left.lift(right, lambda position: certificate[permutation(position)])
+            if lifted is not None:
+                return lifted
+        return None
 
     class ParentMethods:
         def configuration_positions(self):
@@ -265,6 +303,48 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     for automorphism in automorphisms
                 )
             )
+
+
+class _SpanningConfiguration:
+    """Private graph realization of a supplied finite spanning family."""
+
+    def __init__(self, lattice, vectors, colours):
+        self.lattice = lattice
+        self.vectors = tuple(vectors)
+        colours = tuple(colours)
+        if len(colours) != len(self.vectors):
+            raise ValueError("each configuration position requires one colour")
+        if not lattice.is_nondegenerate():
+            raise ValueError("the finite pairing action requires a nondegenerate ambient lattice")
+        labels = tuple(lattice.module_generating_set())
+        self.rows = matrix(SageQQ, [
+            [int(point.to_vector()(label)) for label in labels]
+            for point in self.vectors
+        ])
+        if self.rows.rank() != int(lattice.rank()):
+            raise ValueError("the finite pairing action requires a spanning configuration")
+        self.basis_positions = self.rows.transpose().pivots()
+        self.inverse_basis = self.rows.matrix_from_rows(self.basis_positions).inverse()
+        self.graph = Graph(loops=True, multiedges=False)
+        self.graph.add_vertices(range(len(self.vectors)))
+        for left, point in enumerate(self.vectors):
+            self.graph.add_edge(left, left, ("vertex", colours[left], int(point.q())))
+            for right in range(left):
+                self.graph.add_edge(left, right, ("pairing", int(lattice.b(point, self.vectors[right]))))
+
+    def lift(self, target, permutation):
+        image_rows = target.rows.matrix_from_rows([int(permutation(position)) for position in range(len(self.vectors))])
+        transformation = self.inverse_basis * image_rows.matrix_from_rows(self.basis_positions)
+        if self.rows * transformation != image_rows:
+            return None
+        if any(entry.denominator() != 1 for entry in transformation.list()) or abs(transformation.det()) != 1:
+            return None
+        ring = target.lattice.base_ring()
+        labels = tuple(target.lattice.module_generating_set())
+        images = tuple(target.lattice.linear_combination({
+            label: ring(int(entry)) for label, entry in zip(labels, row, strict=True)
+        }) for row in transformation.rows())
+        return self.lattice.Isom(target.lattice)(images)
 
 
 __all__ = ["VectorConfigurations"]
