@@ -2521,6 +2521,9 @@ class _GroupMorRealizationMixin:
             return self._from_subgroup_inclusion()
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
 
+    def _compose_endomorphisms(self, left, right):
+        return self._pointwise_endomorphism_composite(left, right)
+
     def _owned_scalar_multiple(self, scalar, morphism):
         return self._pointwise_scalar_multiple(scalar, morphism)
 

@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.algebras.group_algebras import (
     GroupAlgebras,
@@ -78,7 +79,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
 
@@ -935,9 +936,17 @@ class GroupModuleMorphismMethods:
         elementwise=False,
         lift=None,
         equivariance_decision=None,
+        equivariance_premises=None,
         selected_lift_exact=False,
         linearity_premises=None,
     ) -> None:
+        if (
+            equivariance_premises is None
+            and isinstance(images, GroupModuleMorphismMethods)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            equivariance_premises = (images,)
         underlying = _coefficient_morphism_from_images(
             parent,
             images,
@@ -946,6 +955,7 @@ class GroupModuleMorphismMethods:
         )
         self._coefficient_morphism = underlying
         self._supplied_equivariance_decision = equivariance_decision
+        self._equivariance_premises = equivariance_premises
         self._selected_group_module_lift_exact = bool(selected_lift_exact)
         super().__init__(
             parent,
@@ -957,17 +967,28 @@ class GroupModuleMorphismMethods:
         )
 
     def _elementwise_linearity_derivation(self):
-        return self._coefficient_morphism.linearity_decision()
+        r"""``R[G]``-linearity is coefficient linearity together with equivariance."""
+        return conjunction((
+            self._coefficient_morphism.linearity_decision(),
+            self.equivariance_decision(),
+        ))
 
     @cached_method
     def equivariance_decision(self):
         r"""Return whether ``f rho_M(g) = rho_N(g) f`` for all ``g``, computed on first request.
 
-        A construction that decides equivariance supplies that decision;
-        otherwise the parent decides it on the selected group generators.
+        A structural construction supplies its decision. Arithmetic retains
+        the actual equivariant maps from which it is built and conjoins their
+        decisions; merely linear construction premises do not supply
+        equivariance. Otherwise use the selected group generators.
         """
         match self._supplied_equivariance_decision:
             case None:
+                if self._equivariance_premises is not None:
+                    return conjunction(
+                        premise.equivariance_decision()
+                        for premise in self._equivariance_premises
+                    )
                 return self.parent().is_equivariant(self._coefficient_morphism)
             case decision:
                 return decision
@@ -986,14 +1007,8 @@ class GroupModuleMorphismMethods:
 
     @cached_method
     def underlying_module_morphism(self):
-        r"""The same map in ``Hom_R(Res M, Res N)``."""
-        source = self.domain().unformed_module()
-        target = self.codomain().unformed_module()
-        return source.module_category().Mor(
-            source, target
-        )._from_constructed_element_map(
-            lambda element: target(self(self.domain()(element)))
-        )
+        r"""The retained coefficient map, with its exact endpoints and law decision."""
+        return self._coefficient_morphism
 
     underlying_arrow = underlying_module_morphism
 
@@ -1005,16 +1020,40 @@ class GroupModuleMorphismMethods:
         if other.parent() is not self.parent():
             return op == op_NE
         equal = self.underlying_module_morphism() == other.underlying_module_morphism()
-        return equal if op == op_EQ else not equal
+        return equal if op == op_EQ else negation(equal)
+
+    def __add__(self, other):
+        r"""Add the coefficient maps under the two retained equivariance laws."""
+        parent = self._pointwise_mor()
+        if other in parent:
+            other = parent(other)
+        elif parent.domain() is parent.codomain() and other in parent.base_ring():
+            other = parent._scalar_identity(parent.base_ring()(other))
+        else:
+            return NotImplemented
+        return parent._from_equivariant_images(
+            self.underlying_module_morphism() + other.underlying_module_morphism(),
+            equivariance_premises=(self, other),
+        )
+
+    def __neg__(self):
+        r"""Negate the coefficient map under its retained equivariance law."""
+        return self._pointwise_mor()._from_equivariant_images(
+            -self.underlying_module_morphism(),
+            equivariance_premises=(self,),
+        )
 
     def __mul__(self, other):
         if not isinstance(other, GroupModuleMorphismMethods):
             return super().__mul__(other)
-        if other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         underlying = self.underlying_module_morphism() * other.underlying_module_morphism()
-        return other.domain().Mor(self.codomain())._from_equivariant_images(
+        return self.parent().mor_family().Of(
+            other.domain(), self.codomain()
+        )._from_equivariant_images(
             underlying,
+            equivariance_premises=(self, other),
         )
 
     def natural_transformation(self):
@@ -1064,6 +1103,7 @@ class GroupModuleMorphismMethods:
         )
         return piece.Mor(piece)._from_equivariant_images(
             underlying,
+            equivariance_premises=(self, inclusion),
         )
 
     def inverse(self):
@@ -1071,6 +1111,7 @@ class GroupModuleMorphismMethods:
         ordinary_inverse = self.underlying_module_morphism().inverse()
         return self.codomain().Mor(self.domain())._from_equivariant_images(
             ordinary_inverse,
+            equivariance_premises=(self,),
         )
 
     def as_automorphism(self):
@@ -1186,19 +1227,22 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         elementwise=False,
         lift=None,
         selected_lift_exact=False,
+        equivariance_premises=(),
     ):
-        r"""Construct a map whose equivariance follows from its construction.
+        r"""Construct a map from a structural or premise-derived equivariance law.
 
         This protected path is for functorial images, identities, and
-        compositions.  Arbitrary user-supplied maps still use the ordinary
-        constructor and are checked on the selected group/module generators.
+        arithmetic. Arithmetic supplies its actual input equivariant maps;
+        the empty family is reserved for constructions whose formula itself
+        proves equivariance. Arbitrary user-supplied maps still use the
+        ordinary constructor and its separate equivariance decision.
         """
         morphism = self.element_class(
             self,
             images,
             elementwise=elementwise,
             lift=lift,
-            equivariance_decision=True,
+            equivariance_premises=tuple(equivariance_premises),
             selected_lift_exact=selected_lift_exact,
         )
         morphism.validate_linearity(check=False)
@@ -1219,6 +1263,26 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         centre of ``R``, so ``r . id`` commutes with the action.
         """
         return self._from_equivariant_images(self.underlying_mor()._scalar_identity(scalar))
+
+    def _compose_endomorphisms(self, left, right):
+        r"""Use the selected coefficient-map composition with both premises."""
+        if left not in self or right not in self or self.domain() is not self.codomain():
+            raise TypeError(f"composition in {self} needs two admitted endomorphisms")
+        return left * right
+
+    def _module_scalar_multiple(self, scalar, morphism):
+        r"""Apply the retained coefficient-centre action to the coefficient map."""
+        if morphism not in self:
+            raise TypeError(f"scalar multiplication in {self} needs an admitted equivariant map")
+        morphism = self(morphism)
+        scalar = self.base_ring()(scalar)
+        underlying = self.underlying_mor().scalar_multiple(
+            scalar, morphism.underlying_module_morphism()
+        )
+        return self._from_equivariant_images(
+            underlying,
+            equivariance_premises=(morphism,),
+        )
 
     def _repr_(self):
         return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"

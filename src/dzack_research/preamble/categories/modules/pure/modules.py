@@ -135,22 +135,21 @@ class MatrixEndomorphismMor(ModuleMor):
 class MatrixEndomorphismMorCategoryConstruction(MorCategoryConstruction):
     r"""Fixed Mor of matrix endomorphism objects over an arbitrary base ring.
 
-    Unverified specimens under ``DEV-58`` distinguish the two branches.  Over
-    a noncommutative coefficient ring the fixed Mor retains the linear matrix
-    structure and the composition-ring structure without claiming an algebra
-    over that coefficient ring::
+    These are unital algebra maps over the retained centre of the
+    coefficient ring. The fixed Mor has no pointwise additive closure:
+    the sum of two unit-preserving maps need not preserve the unit.
+    The following source specimens are unverified under ``DEV-58``::
 
         sage: base = ZZ.matrix_space(2, 2)
         sage: matrices = base.matrix_space(1, 1)
         sage: mor = MatrixEndomorphismSpaces(base).Mor(matrices, matrices)
         sage: identity = mor.identity()
-        sage: identity.parent() is mor and isinstance(identity, ModuleMorphism)
+        sage: identity.parent() is mor
         True
-        sage: identity(matrices.one()) == matrices.one()
+        sage: identity(matrices.one()) == matrices.one() and identity.preserves_unit()
         True
 
-    Over a commutative base the existing unital multiplicative algebra Mor is
-    retained::
+    For a commutative coefficient ring its centre is the ring itself::
 
         sage: matrices = ZZ.matrix_space(2, 2)
         sage: identity = MatrixEndomorphismSpaces(ZZ).Mor(matrices, matrices).identity()
@@ -159,15 +158,11 @@ class MatrixEndomorphismMorCategoryConstruction(MorCategoryConstruction):
     """
 
     def fixed_category_class_for(self, domain, codomain):
-        match self.base_category().base_ring() in OwnedRings().Commutative():
-            case True:
-                from dzack_research.preamble.categories.algebras.algebras import (
-                    UnitalMultiplicativeAlgebraMor,
-                )
+        from dzack_research.preamble.categories.algebras.algebras import (
+            UnitalMultiplicativeAlgebraMor,
+        )
 
-                return UnitalMultiplicativeAlgebraMor
-            case False:
-                return MatrixEndomorphismMor
+        return UnitalMultiplicativeAlgebraMor
 
 
 class ModuleMonoCategoryConstruction(MonoCategoryConstruction):
@@ -1081,8 +1076,19 @@ class Modules(OwnedCategoryOverBaseRing):
             return group_modules.restriction_of_scalars(group_modules.coefficient_inclusion())(obj)
         return obj
 
-    def _mor_parent_placement(self, domain, codomain, *, full_internal_mor=False):
-        r"""Return the category chosen when the canonical module Mor is constructed."""
+    def _mor_parent_placement(
+        self, domain, codomain, *, full_internal_mor=False, full_linear_mor=True
+    ):
+        r"""Place the chosen linear Mor without enlarging its arrow carrier.
+
+        ``full_linear_mor`` states whether this constructor supplies a
+        full-linear-Hom realization. Graded and cochain maps are defined
+        by extra equations, which may be vacuous for particular endpoints.
+        With ``False`` the Mor retains its central scalar action and
+        diagonal endomorphism algebra, but endpoint framings alone supply
+        no full-Hom basis or presentation. This construction datum neither
+        decides equality with the full Hom nor proves any arrow law.
+        """
         from dzack_research.preamble.owned_category import owned_category_join
 
         from dzack_research.preamble.categories.group.additive_mors import (
@@ -1090,6 +1096,12 @@ class Modules(OwnedCategoryOverBaseRing):
         )
 
         ring = self.base_ring()
+        if not full_linear_mor:
+            center = ring.ring_center()
+            placement = [LinearMorModules(center)]
+            if domain is codomain:
+                placement.append(AdditiveEndomorphismRings(center))
+            return owned_category_join(tuple(placement))
         if ring not in OwnedRings().Commutative():
             center = ring.ring_center()
             placement = [LinearMorModules(center)]
@@ -2850,18 +2862,15 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def base_ring(self):
-            r"""The ring acting pointwise on ``Hom_R(M, N)``: ``R`` when commutative, else its centre.
+            r"""The commutative scalar ring retained by this Mor's enrichment.
 
-            ``(r f)(m) = r f(m)`` is ``R``-linear in ``m`` exactly when ``r``
-            commutes with the scalars, so a noncommutative ring acts through
-            its centre.
+            Ordinary ``Hom_S(M, N)`` retains ``Z(S)``. A selected
+            equivariant Mor may retain the centre of its coefficient
+            ring instead, acting through its chosen coefficient map into
+            ``S = R[G]``. The fixed Mor stores that datum before placement;
+            recomputing a centre from its endpoints would change it.
             """
-            ring = self.domain().base_ring()
-            match ring:
-                case _ if ring in OwnedRings().Commutative():
-                    return ring
-                case _:
-                    return ring.ring_center()
+            return self._preamble_base_ring
 
         def source_module(self):
             return self.domain()
@@ -5623,13 +5632,14 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
 
 class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
-    r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.
+    r"""The matrix realization of ``End_R(F)`` as an algebra over ``Z(R)``.
 
     EXAMPLES::
 
         sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+        sage: from dzack_research.preamble.categories.group.additive_mors import AdditiveEndomorphismRings
         sage: R = MatrixAlgebras(ZZ).an_object()
-        sage: MatrixEndomorphismSpaces(R).super_categories()[1] is OwnedRings()
+        sage: MatrixEndomorphismSpaces(R).super_categories()[1] is AdditiveEndomorphismRings(R.ring_center())
         True
         sage: E = MatrixEndomorphismSpaces(R).an_object()
         sage: E in MatrixEndomorphismSpaces(R) and E in MatrixSpaces(R)
@@ -5660,17 +5670,11 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             AdditiveEndomorphismRings,
         )
 
-        # MatrixSpaces states the entrywise/module half.  Composition always
-        # makes End_R(F) a ring; when R is commutative the same object is the
-        # additive-endomorphism R-algebra, while a noncommutative R does not
-        # supply that algebra structure.
+        # MatrixSpaces states the entrywise/module data. Composition gives
+        # the endomorphism algebra over the retained centre, including
+        # when the coefficient ring itself is noncommutative.
         ring = self.base_ring()
-        match ring in OwnedRings().Commutative():
-            case True:
-                multiplicative_owner = AdditiveEndomorphismRings(ring)
-            case False:
-                multiplicative_owner = OwnedRings()
-        return [MatrixSpaces(ring), multiplicative_owner]
+        return [MatrixSpaces(ring), AdditiveEndomorphismRings(ring.ring_center())]
 
     _MorCategory = MatrixEndomorphismMorCategoryConstruction
 
@@ -5684,7 +5688,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             return self._module_scalar_multiple(scalar, morphism)
 
         def _commutativity_decision(self):
-            r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
+            r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R^{op})\) commutes.
 
             The base is not assumed commutative here, so the answer depends on
             both the ring and the rank, and each rank is its own statement.

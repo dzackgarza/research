@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 37 complete passes and 604 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The current first literal ready row is `placement-owner-additiveendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 38 complete passes and 603 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The complete AdditiveEndomorphismRings pass is now closed on its retained scalar datum, canonical identity, law-preserving arithmetic suppliers and exact full-versus-structured Hom carriers. The current first literal ready row is `placement-owner-additivegroups`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -1429,6 +1429,236 @@ finite-stage and exact-map computation frontiers already recorded for
 AbsoluteGaloisGroups remain named there; this pass does not claim those
 algorithms executed. All retained specimens, including the new G_Q family
 and undecided-collision assertions, remain under T.
+
+## Whole-category placement: AdditiveEndomorphismRings (2026-10-11)
+
+**Closed node:** `placement-owner-additiveendomorphismrings`.
+**Owner:** `AdditiveEndomorphismRings` in
+`src/dzack_research/preamble/categories/group/additive_mors.py`.
+This is a complete source owner pass. M1 / DEV-58 retains execution of
+every specimen below under T; no import, test or runtime result is claimed.
+
+### Defining datum, complete inventory and weaker identity home
+
+The datum is a diagonal Mor E = Hom_C(M,M) in an R-linear category, with
+the actual commutative unital scalar ring R and R-bilinear composition.
+The ring product is f*g = f composed with g; addition and negatives are
+pointwise; 1_E is id_M; and r acts through r*id_M. Associativity follows
+from function composition, distributivity from the admitted additive-map
+laws, and centrality from R-linearity. Neither faithfulness of the scalar
+action nor commutativity of E is assumed.
+
+The complete old direct inventory is `an_object`,
+`_repr_object_names`, `super_categories`, and the parent suppliers
+`_compose_endomorphisms`, `_owned_scalar_multiple`, and `identity`.
+There is no direct element method, fixed-Mor declaration or arrow operation.
+The category now states its commutative-ring parameter through
+`parameter_category`; the example remains the regular rank-one module's
+End over that literal ring; the name and actual two supercategories remain.
+
+Composition and scalar action stay at this enriched diagonal owner as
+abstract supplier contracts. The actual additive, group, linear, graded,
+equivariant and cochain Mor hosts fulfil them. The single private
+`_pointwise_endomorphism_composite` serves the additive/group realizations;
+linear and component realizations preserve their stronger retained
+premises through their actual constructors. A value-producing generic
+method no longer shadows those suppliers. This uses the existing abstract
+contract resolution, without a new dispatch registry or descendant switch.
+
+Identity belongs to the actual categorical diagonal, independently of
+additive enrichment. The duplicate public identity here is removed;
+the actual AdditiveMor host supplies its missing cached, diagonal-guarded
+identity, and existing set/group/module/cochain identity suppliers remain
+authoritative. For the already represented finite set X = {a,b},
+i = Sets().Mor(X,X).identity() satisfies i(a)=a, i(b)=b and i*i=i,
+although this full set End has no selected additive-ring structure.
+This is the true outside-owner assertion for that consolidation.
+
+### Complete actual authored up-set and both arrow levels
+
+All twenty-three strict authored providers and their definitions were read:
+
+- `AdditiveMorGroups` supplies the pointwise abelian law of the target.
+  `AdditiveGroups.AdditiveCommutative`, `AdditiveGroups`,
+  `AdditiveMonoids`, `AdditiveSemigroups`,
+  `AdditiveMagmas.AdditiveCommutative` and `AdditiveMagmas` supply
+  commutativity, additive inverses, zero, associativity and the binary law.
+- `Algebras.Associative.Unital`, `Algebras.Associative`,
+  `Algebras.Unital` and `Algebras` supply the actual scalar module,
+  bilinear multiplication, associativity and two-sided unit.
+  `Modules(R)` selects `ModulesOverCommutativeRings`, with the
+  retained R-action and abelian additive law.
+- `OwnedRings` has the actual `OwnedSemirings` and `OwnedRngs`
+  branches; both reach `OwnedNonUnitalSemirings`, with distributivity
+  and the additive/multiplicative laws. `Monoids`, `Semigroups`,
+  `Magmas.Unital` and `Magmas` supply the multiplicative unit,
+  associativity and binary operation.
+- `Sets` supplies the underlying set and its fixed Mor; `Objects`
+  is the root. Generated axiom meets carry these definitions and do not
+  create additional authored providers.
+
+An element f of E is a map M -> M, not an algebra map E -> E. Actual
+AdditiveMor arrows inherit AdditiveMorphism and the additive-monoid,
+additive-magma and owned-set providers. Actual group Mor arrows inherit
+GroupMorphism and the monoid, unital-magma, magma and set providers.
+Ordinary, auxiliary, matrix, tensor-syntax and divided-square-syntax
+module Mors inherit the actual ModuleMorphism providers; the latter two
+remain ordinary linear Hom, not form-preserving subspaces.
+Graded, equivariant and cochain fixed Mors supply their respective stronger
+arrow laws and inherit the actual weaker linear/additive/set providers
+through the fixed-Mor supercategory construction.
+
+The existing module-Mor initializer now carries the explicit construction
+datum `full_linear_mor`: whether a full-linear-Hom realization is supplied. Ordinary, auxiliary, tensor-syntax and
+divided-square-syntax Mors are full linear Hom. Graded and cochain Mors
+instead select the pointwise centre module and diagonal endomorphism
+algebra, without claiming the full coordinate Hom basis or model merely
+from framed endpoints. For two free rank-one pieces in distinct degrees
+0 and 1, graded End is R direct-product R: the cross-degree matrix units
+are excluded. For C^0=C^1=ZZ and d=2, the degreewise pair (a,b) must also
+satisfy 2a=2b, so cochain End is the diagonal copy of ZZ. These are true
+separating assertions for the full-Hom computation hypothesis; ordinary
+linear Hom retains its existing selected matrix and presentation routes.
+These extra equations can be vacuous; no claim of a universally proper
+submodule is made.
+
+A map E -> F preserving the R-algebra structure instead uses the actual
+UnitalAlgebraMorCategoryConstruction and its selected
+UnitalMultiplicativeAlgebraMor, retaining the underlying linear map,
+multiplicativity and unit law. RingMor supplies the corresponding ring
+arrow when that theory is requested. The generated arrow type, rather
+than resemblance between Python method names, delivers those providers.
+
+The selected noncommutative matrix case required correction at this
+boundary. MatrixEndomorphismSpaces(S) now declares its actual
+AdditiveEndomorphismRings(Z(S)) ancestor and selects the existing unital
+algebra Mor in both coefficient branches. Its objects already retained
+this centre algebra through the ordinary module-Mor constructor.
+For S=M_2(QQ) and E=End_S(S), id_E+id_E sends 1_E to 2*1_E,
+so unit-preserving arrows E -> E cannot themselves be an additive Mor.
+The selected algebra Mor has the correct carrier and its pointwise sums
+forget to the ordinary linear Mor. This asserts Z(S)-linearity, never an
+S-algebra structure. The now-unselected legacy MatrixEndomorphismMor
+declaration remains for its separately queued full retirement/reconciliation
+pass; direct legacy construction is not the selected route accepted here.
+
+### Exact coefficients and preservation through the selected suppliers
+
+Ordinary Hom_S(M,N) retains Z(S), including S itself when commutative.
+The LinearMorModules accessor now reads that constructor datum instead of
+recomputing a centre from its endpoints. An equivariant Mor can instead
+retain Z(R) for its chosen coefficients R in S=R[G]. For R=QQ and G=C2,
+that datum is QQ even though Z(QQ[C2]) is the larger QQ[C2].
+Every actual ordinary, auxiliary, matrix, graded and cochain initializer
+sets the datum before placement; GroupModuleMor sets its selected
+coefficient centre explicitly.
+
+For noncommutative coefficients, scalar evaluation uses the literal
+retained ring centre's inclusion Z(S) -> S before the module action.
+A differently realized magma/algebra centre is not substituted.
+Equivariant arithmetic delegates to the retained coefficient-module maps,
+so its existing coefficient inclusion R -> R[G] remains exact.
+The underlying coefficient arrow is returned itself, with its endpoints
+and linearity decision, rather than reconstructed as an unconditionally
+linear callback. R[G]-linearity conjoins that coefficient linearity
+with equivariance; these are not interchangeable decisions.
+
+Module addition/subtraction and scalar multiplication require an already
+admitted arrow in the actual Mor, or a genuine scalar multiple of the
+identity. They do not send a weaker arbitrary set map through the explicit
+constructor to invent another linearity premise. Identity shortcuts
+require a decision literally True. Map-valued scalars remain scalars
+unless they are actual composable maps.
+
+Ordinary arithmetic retains the actual input linearity premises. Graded
+arithmetic additionally retains degree-preservation premises; equivariant
+arithmetic retains its own equivariance premises. A merely linear
+construction does not acquire equivariance from the types of its inputs.
+The cochain suppliers retain component formulas, the literal degree index,
+and the actual cochain premises for addition, negatives, scalar action and
+composition. Zero and identity have their construction proofs. These
+formulas commute with the selected differentials when their input maps do,
+so they need not invoke the generic differential checker to prove those
+same laws again. Component normalization uses the ordinary S-linear Mor,
+preserving the full selected Z(S) action on richer component realizations.
+Unknown linearity, equivariance, degree and equality conditions remain
+propositions; none is converted to a Boolean by this arithmetic.
+
+### True closure assertions retained under T
+
+1. On QQ^2, let i be the identity, s the coordinate swap, P=E_11 and N=E_12.
+   Then s*s=i, P*N=N, N*P=0, and 2*i commutes with every endomorphism.
+   The multiplication classifier has exact domain E tensor_R E and codomain
+   E, and the algebra's unformed module is that same E.
+2. Use the actual presented module M=ZZ^2/<2e_2>, isomorphic to
+   ZZ direct-sum ZZ/2, not a finite source. Define
+   f(e_1)=2e_1, f(e_2)=e_2 and g(e_1)=3e_1, g(e_2)=e_2.
+   Their images respect the relation 2e_2=0. The composite has images
+   (6e_1,e_2), and 2*f has images (4e_1,0), still with proved linearity.
+   For p(a,b)=(a,0) and q=i-p, p^2=p, q^2=q, pq=qp=0 and p+q=i.
+3. On M=ZZ/2, 2*id_M=0 although 2 differs from zero in ZZ. Equality
+   of scalar endomorphisms therefore does not imply equality of scalars.
+4. For S=M_2(QQ) acting on its left regular module, f_a(s)=s*a is
+   S-linear and f_a*f_b=f_(b*a). With a=E_11 and b=E_12,
+   f_a*f_b=0 whereas f_b*f_a=f_E12. The central element 2I acts through
+   the exact Z(S) -> S inclusion. Left multiplication by E_11 is not
+   S-linear: E_11*E_12=E_12 but E_12*E_11=0.
+5. Let R=ZZ[t] and M=R.free_module(1) with basis e. The same-endpoint
+   additive/set map u(ae)=a(0)e is not R-linear. In fact
+   (id+u)(te)=te while t(id+u)(e)=2te. Arithmetic in End_R(M)
+   must not promote that weaker arrow. The explicit conditional map
+   constructor remains available with its unresolved or refuted law.
+6. The existing GradedModules(ZZ,ZZ) construction from the constant
+   indexed family ZZ.regular_module() gives M = direct-sum_(n in ZZ) ZZ e_n,
+   without a selected finite homogeneous generating family. For its
+   identity i, (i+i)(e_n)=2e_n, (-i)(e_n)=-e_n, and (3i)(e_n)=3e_n,
+   all with degree preservation proved by construction. The parent
+   composition supplier sends (2i,3i) to 6i. The actual component
+   projection p(sum a_n e_n)=a_0 e_0 gives p^2=p and 3p(sum a_n e_n)
+   =3a_0 e_0; its arithmetic keeps the supplied degree and linearity laws.
+   An ordinary elementwise identity rule u on the same module without its
+   degree proof retains the proposition preserves_degree(u), including
+   through arithmetic and reparenting. More generally an infinite-module
+   callback with undecided represented linearity retains that premise.
+7. For the cochain complex C with ZZ in degrees 0 and 1 and differential
+   multiplication by 2, i has identity components, and 2*i has component
+   2*id in each degree. Both sides of d(2*i)=(2*i)d are multiplication
+   by 4, and (2*i)*(2*i)=4*i. These formulas retain the selected
+   differential and components rather than replacing C by its cohomology.
+8. Let C2 act on QQ^2 by diag(1,-1). Coordinate swap is QQ-linear,
+   but does not commute with that action, so it is not QQ[C2]-linear.
+   The coefficient forgetful map retains its QQ-linearity; the ordinary
+   group-algebra-linear forgetful route also needs its equivariance law.
+   An undecided equivariance law must therefore remain in that latter
+   linearity decision. The exact QQ scalar datum of the equivariant Mor
+   stays QQ, although QQ[C2] has a larger centre.
+9. The matrix second-arrow separator above excludes false additive
+   placement, while E=End_S(M) retains its genuine central algebra.
+
+**Sources, review and named computation frontier.** The maintained
+[Mathlib linear-endomorphism definitions and instances](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/LinearMap/End.html)
+state identity/composition and the opposite-ring description of End_S(S).
+The central-action construction is also in
+[Mathlib Algebra.Basic](https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Algebra/Algebra/Basic.lean).
+The explicit finite-matrix, relationful-module and cochain computations
+above give their own expected values. A bounded read-only local
+formalization-corpus search had no matching result; upstream primary
+sources supplied the contract without making corpus work a prerequisite.
+
+The complete owner, twenty-three ancestor definitions, native suppliers,
+actual fixed-Mor paths, scalar actions and selected consumer constructors
+were reviewed, with an independent review of the final source delta.
+General infinite linear-map equality and arbitrary linearity decisions
+remain propositions. Equivariance without determining data remains its
+named proposition; unavailable general module computations retain their
+existing computation assertions. The generic nonfinite cochain component
+and differential-validation code is not invoked by the derived arithmetic
+accepted here; its unresolved validation obligations remain with the
+separate CochainMor owner. No generic differential algorithm is claimed.
+This pass introduces no new prerequisite and does not close those
+consumers' separate full-inventory owner rows. All displayed assertions,
+existing relevant construction specimens and megadoc regeneration remain
+execution obligations under T.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

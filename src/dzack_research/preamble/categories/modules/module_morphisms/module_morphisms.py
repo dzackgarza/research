@@ -767,12 +767,17 @@ class ModuleMorphismMethods:
     def __add__(self, other):
         r"""Return the pointwise sum ``(f + g)(m) = f(m) + g(m)``.
 
-        ``other`` is read by the element constructor of the Mor that holds
-        the sum: a linear map with the same endpoints, or a scalar of an
-        endomorphism ring, which is that multiple of the identity.
+        ``other`` must already be an arrow of the Mor that holds the sum,
+        or a scalar of an endomorphism ring. The explicit map constructor
+        can admit a new linearity hypothesis; arithmetic does not do so.
         """
         parent = self._pointwise_mor()
-        summand = parent(other)
+        if other in parent:
+            summand = parent(other)
+        elif parent.domain() is parent.codomain() and other in parent.base_ring():
+            summand = parent._scalar_identity(parent.base_ring()(other))
+        else:
+            return NotImplemented
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
@@ -802,7 +807,12 @@ class ModuleMorphismMethods:
 
     def __sub__(self, other):
         r"""Return the pointwise difference ``f - g = f + (-g)``."""
-        return self + (-self._pointwise_mor()(other))
+        parent = self._pointwise_mor()
+        if other in parent:
+            return self + (-parent(other))
+        if parent.domain() is parent.codomain() and other in parent.base_ring():
+            return self + parent._scalar_identity(-parent.base_ring()(other))
+        return NotImplemented
 
     def _richcmp_(self, other, op):
         r"""Compare admitted linear maps on an available finite spanning family.
@@ -856,15 +866,12 @@ class ModuleMorphismMethods:
         # not scalar multiplication.  Delegate to the left morphism so the
         # ordinary endpoint check and composition constructor remain the one
         # owner of the operation.
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            LinearMorModules,
-        )
-
-        match element_parent(actor) in LinearMorModules(self.domain().base_ring()):
-            case True:
-                return actor.__mul__(self)
-            case False:
-                return self.parent().scalar_multiple(actor, self)
+        if isinstance(actor, Morphism) and _precomposable(actor, self):
+            return actor.__mul__(self)
+        # A scalar can itself be a morphism when the retained coefficient
+        # ring is an endomorphism ring. Noncomposable map-valued scalars
+        # therefore keep the ordinary scalar-action ingress.
+        return self.parent().scalar_multiple(actor, self)
 
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
@@ -1948,9 +1955,9 @@ class ModuleMorphismMethods:
                 # The identity is a two-sided unit.  That is a theorem, so the
                 # composite is the other factor itself rather than a fresh
                 # morphism that would then have to be compared with it.
-                if self._is_the_identity():
+                if self._is_the_identity() is True:
                     return other
-                if other._is_the_identity():
+                if other._is_the_identity() is True:
                     return self
                 # Keep the Mor theory in which both arrows were admitted.
                 # Redispatching Modules(R) from the source's scalar ring can
@@ -2374,12 +2381,19 @@ def _initialize_module_mor_parent(
     codomain,
     *,
     full_internal_mor=False,
+    full_linear_mor=True,
 ) -> None:
     r"""Install the common enriched ``R``-module Mor parent semantics.
 
     This is implementation reuse only.  Structured Mor categories such as
     ``Hom_{R[G]}`` must not subclass ``Hom_R`` as Python classes merely because
     they have ``Hom_R`` as a categorical supercategory.
+
+    ``full_linear_mor`` records whether this constructor supplies a
+    full-linear-Hom realization. Graded and cochain maps pass ``False``:
+    their extra equations may cut down the Hom, so endpoint bases alone
+    do not supply a full-Hom basis. This withholds that representation
+    claim without deciding inequivalence or proving an arrow law.
     """
     modules = mor_family.base_category()
     ring = modules.base_ring()
@@ -2390,6 +2404,7 @@ def _initialize_module_mor_parent(
         domain,
         codomain,
         full_internal_mor=full_internal_mor,
+        full_linear_mor=full_linear_mor,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
@@ -2564,11 +2579,9 @@ class _ModuleMorCommonMethods:
                     raise TypeError(
                         f"the scalars of {self} lie in {center}, which is not the selected centre of {ring}"
                     )
-                match hasattr(ring, "center_inclusion"):
-                    case True:
-                        inclusion = ring.center_inclusion()
-                    case False:
-                        inclusion = center.inclusion()
+                # The enrichment retained this literal ring centre. The
+                # general magma/algebra centre may have another realization.
+                inclusion = center.inclusion()
                 if inclusion.domain() is not center or inclusion.codomain() is not ring:
                     raise TypeError(
                         f"the selected centre inclusion {inclusion} must have endpoints {center} -> {ring}"
@@ -2609,6 +2622,10 @@ class _ModuleMorCommonMethods:
 
     def _module_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action ``(r f)(m) = r f(m)`` defining this Mor's scalar enrichment."""
+        if morphism not in self:
+            raise TypeError(
+                f"scalar multiplication in {self} needs an arrow already admitted there"
+            )
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)
@@ -2617,10 +2634,9 @@ class _ModuleMorCommonMethods:
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
-        codomain = self.codomain()
         return self.element_class(
             self,
-            lambda element: codomain.scalar_multiple(scalar, morphism(element)),
+            lambda element: self._apply_pointwise_scalar(scalar, morphism(element)),
             elementwise=True,
             linearity_premises=(morphism,),
         )

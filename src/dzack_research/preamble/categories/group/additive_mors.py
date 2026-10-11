@@ -7,6 +7,7 @@ packet, using Sage's ``Mor``, ``Morphism`` and integer multiplication action.
 """
 
 from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.coerce_actions import IntegerMulAction
@@ -277,6 +278,10 @@ class AdditiveMorGroups(OwnedCategory):
 class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
     r"""Endomorphism algebras over their selected commutative scalar ring."""
 
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         r"""The endomorphism ring of the regular rank-one module."""
         assert self.base_ring() in OwnedRings().Commutative(), (
@@ -296,19 +301,38 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         return [AdditiveMorGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        @abstract_method
         def _compose_endomorphisms(self, left, right):
+            r"""The selected composition of two admitted endomorphisms.
+
+            The arrow multiplication and the algebra's bilinear classifier
+            call this contract. Additive and group realizations use the
+            pointwise computation below; linear and cochain realizations
+            retain the premises carried by their own map constructors.
+            """
+
+        def _pointwise_endomorphism_composite(self, left, right):
+            r"""Realize composition through an admitted elementwise map.
+
+            Only the additive and group Mor suppliers call this shared
+            computation. Their maps retain their laws as admitted data;
+            module and component realizations keep their richer premises
+            through their selected composition supplier instead.
+            """
             left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
             if left_scalar is not None and right_scalar is not None:
                 return self._scalar_identity(left_scalar * right_scalar)
             return self.elementwise(lambda element: left(right(element)))
 
+        @abstract_method
         def _owned_scalar_multiple(self, scalar, morphism):
-            r"""Apply this endomorphism Mor's selected scalar enrichment."""
-            return self._pointwise_scalar_multiple(scalar, morphism)
+            r"""Apply the retained scalar action, preserving the map's premises.
 
-        @cached_method
-        def identity(self):
-            return self._scalar_identity(self.base_ring().one())
+            The scalar-action realization and inherited additive arithmetic
+            call this contract. The actual Mor supplies its additive,
+            linear, group or component constructor; no stronger arrow law
+            is inferred from equal endpoints.
+            """
 
 
 class AdditiveMorphism:
@@ -426,6 +450,16 @@ class AdditiveMor(CategoricalMor):
         r"""The integer scalar ring of this additive Mor group."""
         return self._preamble_base_ring
 
+    @cached_method
+    def identity(self):
+        r"""The canonical identity in this additive Mor's diagonal."""
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity map {self.domain()} -> {self.codomain()}: "
+                "the domain and codomain are different additive groups"
+            )
+        return self._scalar_identity(self.base_ring().one())
+
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):
             assert datum.domain() is self.domain() and datum.codomain() is self.codomain(), (
@@ -458,10 +492,9 @@ class AdditiveMor(CategoricalMor):
     def _scalar_identity(self, scalar):
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
 
+    def _compose_endomorphisms(self, left, right):
+        return self._pointwise_endomorphism_composite(left, right)
+
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the canonical integer action through Sage's additive action."""
-        coefficient = _scalar_identity_coefficient(morphism)
-        if coefficient is not None:
-            return self._scalar_identity(self._preamble_base_ring(scalar) * coefficient)
-        integer = int(self._preamble_base_ring(scalar))
-        return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))
+        return self._pointwise_scalar_multiple(scalar, morphism)

@@ -154,7 +154,7 @@ def _selected_homogeneous_degree(element):
 class GradedModuleMorphismMethods:
     r"""A degree-zero morphism of graded modules.
 
-    An arrow built by an operation of its graded Mor (a composite) takes
+    An arrow built by an operation of its graded Mor takes
     ``degree_preservation_premises``: the family of graded maps it is built
     from.  It preserves degree when every premise does.
     """
@@ -272,20 +272,55 @@ class GradedModuleMorphismMethods:
                 )
         return self._validate_degree_component(degree, component)
 
+    def __add__(self, other):
+        r"""Add admitted graded maps, retaining their degree-preservation laws."""
+        parent = self._pointwise_mor()
+        if not isinstance(parent, GradedModuleMor):
+            return super().__add__(other)
+        if other in parent:
+            summand = parent(other)
+        elif parent.domain() is parent.codomain() and other in parent.base_ring():
+            summand = parent._scalar_identity(parent.base_ring()(other))
+        else:
+            return NotImplemented
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
+
+        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
+        if left is not None and right is not None:
+            return parent._scalar_identity(left + right)
+        return parent._from_constructed_graded_map(
+            lambda element: self(element) + summand(element),
+            premises=(self, summand),
+        )
+
+    def __neg__(self):
+        r"""Negate a graded map using the additive inverse in each degree."""
+        parent = self._pointwise_mor()
+        if not isinstance(parent, GradedModuleMor):
+            return super().__neg__()
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
+
+        scalar = _scalar_identity_coefficient(self)
+        if scalar is not None:
+            return parent._scalar_identity(-scalar)
+        return parent._from_constructed_graded_map(
+            lambda element: -self(element),
+            premises=(self,),
+        )
+
     def __mul__(self, other):
         if not isinstance(other, GradedModuleMorphismMethods):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
+        if other.parent() is self.parent() and self.domain() is self.codomain():
+            return self.parent()._compose_endomorphisms(self, other)
         domain = other.domain()
         indices = domain.grading_index_set()
         mor = GradedModules(domain.base_ring(), indices).Mor(domain, self.codomain())
-        return mor.element_class(
-            mor,
+        return mor._from_constructed_graded_map(
             lambda element: self(other(element)),
-            elementwise=True,
-            linearity_premises=(self, other),
-            degree_preservation_premises=(self, other),
+            premises=(self, other),
         )
 
 
@@ -302,7 +337,9 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             f"the morphisms {domain} -> {codomain} are graded by {indices}, but were placed in a category "
             f"graded by {mor_family.base_category().grading_index_set()}"
         )
-        _initialize_module_mor_parent(self, mor_family, domain, codomain)
+        _initialize_module_mor_parent(
+            self, mor_family, domain, codomain, full_linear_mor=False
+        )
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
@@ -312,9 +349,12 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                     f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "
                     f"{images.domain()} -> {images.codomain()}"
                 )
-            if isinstance(images, GradedModuleMorphismMethods) and images.parent() is self:
-                return images
-            morphism = self.element_class(self, images)
+            if isinstance(images, GradedModuleMorphismMethods):
+                if images.parent() is self:
+                    return images
+                morphism = self._from_constructed_graded_map(images, premises=(images,))
+            else:
+                morphism = self.element_class(self, images)
             morphism.validate_linearity(check=check)
             morphism.validate_degree_preservation(check=check)
             return morphism
@@ -323,6 +363,67 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             morphism.validate_degree_preservation(check=check)
         return morphism
 
+    def _from_constructed_graded_map(self, function, *, premises=()):
+        r"""Retain a formula whose linearity and degree laws follow from its inputs.
+
+        Graded arithmetic and forgetting a stronger graded-map theory call
+        this supplier with their actual graded arrows. Zero and scalar
+        identity have both laws by the grading's module axioms, so use the
+        empty family. Ordinary linear construction does not call this
+        supplier and does not acquire a degree-preservation premise.
+        """
+        if not callable(function):
+            raise TypeError(f"a constructed graded map in {self} needs a function on elements")
+        premises = tuple(premises)
+        return self.element_class(
+            self,
+            function,
+            elementwise=True,
+            linearity_premises=premises,
+            degree_preservation_premises=premises,
+        )
+
+    def _scalar_identity(self, scalar):
+        r"""The selected central scalar acts within each homogeneous submodule."""
+        from dzack_research.preamble.categories.group.additive_mors import _ScalarIdentityEvaluation
+
+        return self._from_constructed_graded_map(_ScalarIdentityEvaluation(self, scalar))
+
+    def _compose_module_endomorphisms(self, left, right):
+        r"""Compose the actual graded arrows used by the endomorphism algebra."""
+        if left not in self or right not in self or self.domain() is not self.codomain():
+            raise TypeError(f"composition in {self} needs two admitted graded endomorphisms")
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
+
+        left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
+        if left_scalar is not None and right_scalar is not None:
+            return self._scalar_identity(left_scalar * right_scalar)
+        return self._from_constructed_graded_map(
+            lambda element: left(right(element)),
+            premises=(left, right),
+        )
+
+    def _module_scalar_multiple(self, scalar, morphism):
+        r"""Apply the retained central scalar within each target degree."""
+        if morphism not in self:
+            raise TypeError(f"scalar multiplication in {self} needs an admitted graded map")
+        morphism = self(morphism)
+        scalar = self.base_ring()(scalar)
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
+
+        coefficient = _scalar_identity_coefficient(morphism)
+        if coefficient is not None:
+            return self._scalar_identity(scalar * coefficient)
+        return self._from_constructed_graded_map(
+            lambda element: self._apply_pointwise_scalar(scalar, morphism(element)),
+            premises=(morphism,),
+        )
+
+    def zero(self):
+        r"""The zero map preserves every degree, including off the diagonal."""
+        if self.domain() is self.codomain():
+            return self._scalar_identity(self.base_ring().zero())
+        return self._from_constructed_graded_map(lambda _element: self.codomain().zero())
 
 
 class GradedModuleMorCategoryConstruction(MorCategoryConstruction):
