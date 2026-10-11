@@ -761,7 +761,7 @@ class _GSetOnPoints:
         points = self.point_set()
         if points in OwnedGroups():
             return _GroupMorRealizationMixin._normalize_admitted_element(points, point)
-        return self(point)
+        return None
 
     def __iter__(self):
         return iter(self.point_set())

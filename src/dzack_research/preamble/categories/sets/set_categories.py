@@ -450,9 +450,10 @@ class OwnedSetMorphism(SetMorphism):
             # Re-admitting its value can discard a subset-inclusion premise.
             return function(element, *args, **kwargs)
         source = self.domain()
+        point = None
         if isinstance(source, OwnedParent) and source.category().is_subcategory(Sets()):
             point = source._normalize_admitted_element(element)
-        else:
+        if point is None:
             point = source(element)
         return self.codomain()(function(point, *args, **kwargs))
 
@@ -1596,13 +1597,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         def _normalize_admitted_element(self, element):
             r"""Normalize an admitted source point for evaluation of an actual set arrow.
 
-            Protected caller: OwnedSetMorphism. The default retains ordinary
-            constructor ingress. A realization with an actual facade datum may
+            Protected caller: OwnedSetMorphism. None leaves ordinary constructor
+            ingress to that caller. A realization with an actual facade datum may
             preserve that arrow's source premise through its existing ambient
             normalization; this does not admit a fresh member or decide a
             predicate. Public set construction and membership are unchanged.
             """
-            return self(element)
+            return None
 
         def is_parent_of(self, element) -> bool | Predicate:
             r"""Whether the candidate belongs to this represented set.
