@@ -3982,7 +3982,7 @@ class NaturalNumberSets(OwnedCategory):
         return [
             EnumeratedSets(),
             Sets().Infinite(),
-            OwnedSemirings(),
+            OwnedSemirings().Commutative(),
         ]
 
     class ElementMethods(Element):
