@@ -367,6 +367,21 @@ class ArrowMor(NaturalTransformationMor):
 
 
 class ArrowMorCategoryConstruction(MorCategoryConstruction):
+    r"""The family ``(f, g) |-> Hom_Ar(C)(f, g)`` of commuting-square categories.
+
+    The base is the chosen ``Ar(C) = [[1], C]``. Each ``Of(f, g)`` retains
+    its literal walking-arrow functors and selects :class:`ArrowMor`: its
+    objects are pairs ``(l, r)`` with ``r f = g l``. The common Mor family
+    owns endpoint normalization, literal reuse and the ``Of``/``Between``
+    entries; this specialization adds only that fixed-category selection.
+
+    An object of this family is a fixed category of squares. The family's
+    arrows are the functors inherited from ``Cat`` between those exact
+    categories, and the morphisms between those functors are the existing
+    natural transformations. They retain their separate construction from
+    the squares classified by ``Of(f, g)``.
+    """
+
     FixedCategoryClass = ArrowMor
 
 
