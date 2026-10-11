@@ -4888,21 +4888,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         def _has_close_vector(self, target, square_bound) -> bool:
             return self._exact_cvp_engine().has_close_vector(target, square_bound)
 
-        def _first_close_vector_scale(
-            self,
-            target,
-            square_bound,
-            max_multiplier,
-            *,
-            exact_distance=False,
-        ):
-            return self._exact_cvp_engine().first_close_vector_scale(
-                target,
-                square_bound,
-                max_multiplier,
-                exact_distance=exact_distance,
-            )
-
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)
@@ -4991,8 +4976,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: m == NN(2) and shell.domain() == Set((L.basis_vector(0),))
                 True
             """
-            return self._exact_cvp_engine().first_close_vectors(
-                target, square_bound, NN(max_multiplier)
+            from sage_indefinite_port.indefinite.scaled_shells import first_scaled_shell
+
+            return first_scaled_shell(
+                self, target, square_bound, max_multiplier
             )
 
         def scaled_close_vector_shells(self, target, square_bound, max_multiplier):
@@ -5039,8 +5026,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: m == NN(1) and sphere.domain() == Set((L.basis_vector(0), -L.basis_vector(0)))
                 True
             """
-            return self._exact_cvp_engine().first_close_vectors(
-                target, square_bound, NN(max_multiplier), exact_distance=True
+            from sage_indefinite_port.indefinite.scaled_shells import first_scaled_shell
+
+            return first_scaled_shell(
+                self, target, square_bound, max_multiplier, exact_distance=True
             )
 
         def babai(self, target):

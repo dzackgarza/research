@@ -430,6 +430,13 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 equation_covectors=tuple(self._equation_covectors) + tuple(other.equation_covectors()),
             )
 
+        def __eq__(self, other):
+            if self is other:
+                return True
+            if other in RationalPolyhedralCones(self.ambient_lattice()):
+                return self.is_equal_to(other)
+            return super().__eq__(other)
+
         def is_equal_to(self, other) -> bool:
             r"""Return whether the two cones are the same subset of ``L tensor QQ``.
 
