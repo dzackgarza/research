@@ -521,9 +521,11 @@ class AdditiveMor(CategoricalMor):
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a "
                 f"morphism {self.domain()} -> {self.codomain()}"
             )
-            if datum.parent() is self:
-                return datum
-            return self.elementwise(datum)
+            raise TypeError(
+                f"{datum} is not already represented as an additive morphism "
+                f"{self.domain()} -> {self.codomain()}; constructing an additive morphism from "
+                "a weaker arrow would assert additivity without supplying it"
+            )
         if callable(datum):
             return self.elementwise(datum)
         assert self.domain() is self.codomain(), (
