@@ -14,6 +14,69 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Formed-module Mono has a first-component-only definition
+
+In the formed-pair category, an arrow retains both f on modules and h on
+value modules. On a zero-form QQ-line, m=(id,0) has injective f but
+m*(id,0)=m*(id,id), so it is not categorically monic. The selected
+`FormEmbeddingMor` is exposed as `FormModules.Mono`, while its current
+definition and injectivity validator only state the first-component law.
+Its complete categorical-Mono repair must include the actual value-map
+requirement, different value-module endpoints and composition.
+
+The existing `placement-owner-formembeddingmor` retains this obligation.
+The bilinear-owner pass repairs the shared pair/form diagnostics and the
+actual consumers with identity value maps; it does not claim that checking
+first-component injectivity proves general categorical monicity. The exact
+zero-form separating equation remains under T. No new prerequisite is filed.
+
+### Protected formed-map expectations conflate two preservation laws
+
+For the A2 form with Gram [[2,1],[1,2]], the pair (id,3) from A2 to
+its form scaled by three satisfies h(b(x,y))=b'(f(x),f(y)). Its value map
+is multiplication by three, so it does not preserve that value map exactly.
+The protected `tests/modules/test_bilinear_form_modules_a2_and_u.sage`
+expects `preserves_form_exactly()` to be true for this pair. The same file
+expects default construction to reject the doubled first root, whose true
+failed norm equation is 2=8. Under OWN-22 that failure belongs to an explicit
+diagnostic check. A map with identity value component need not be injective:
+the zero map of a nonzero zero-form module is the separating example.
+
+The source pair, explicit-check and exact value-map decisions are repaired
+by `placement-owner-bilinearformmodules`. The existing `triage-long-tail`
+owns reconciliation of the protected expectations; T retains the true
+equations and distinct predicates. No protected file was edited or executed.
+
+### Protected bilinear constructors expect symmetry discovery
+
+The protected form construction specimens in
+`tests/constructions/test_forms_construct.sage` and
+`tests/constructions/test_bilinear_form_modules_construct.sage` expect a
+generic bilinear-form constructor to discover symmetry from its finite Gram
+table. OWN-22 requires the constructor to retain its defining form without
+computing the table or its laws. A requested Symmetric category supplies the
+law, and the actual polarization, dual, scalar-change, Vinberg and toric
+intersection constructions retain symmetry by their defining equations.
+The scalar value object may also be distinct from its actual regular module,
+as for QQ[t]; their conversion is an actual framing map, not object identity.
+
+The constructor and its finite source consumers are reconciled in
+`placement-owner-bilinearformmodules`. The protected mathematical symmetry
+and value-conversion assertions remain under T, with their constructor and
+representation reconciliation assigned to `triage-long-tail`.
+
+### Direct tensor symmetry still coerces undecided equality
+
+For G=[[0,a],[0,0]], symmetry is exactly the coefficient equation a=0.
+When that equality is an owned proposition, `Tensor.is_symmetric` in
+`tensors/tensor.py` Boolean-coerces it through Python all. The expected
+answer is the retained equation, with its exact negation; uncertainty does
+not refute symmetry. The generic formed constructor no longer requests this
+decision during placement, and its finite form-square diagnostic uses owned
+conjunction on the existing pullback tensor's public components. The direct
+Tensor predicate itself remains an observed source obligation at that owner
+under `TODO.md`'s existing `triage-long-tail`, not a new prerequisite.
+
 ### Core inverse data and its actual base-arrow representation
 
 An isomorphism datum u:A->B, v:B->A asserts v*u=id_A and u*v=id_B.

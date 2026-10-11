@@ -24,15 +24,19 @@ class _UnderlyingFormModuleFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         r"""Forget the form from an arrow of the formed-module domain."""
-        return Modules(morphism.domain().base_ring()).Mor(
+        module_map = morphism.module_morphism()
+        ordinary = Modules(morphism.domain().base_ring()).Mor(
             morphism.domain(), morphism.codomain()
-        )(morphism)
+        )
+        if module_map.parent() is ordinary:
+            return module_map
+        return ordinary._from_constructed_element_map(
+            module_map, premises=(module_map,)
+        )
 
 
 class _ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
     r"""Forget the selected form from one represented formed-module category."""
-
-    _faithful = True
 
     def __init__(self, base_ring, formed_category) -> None:
         ring = _owned_ring(base_ring)

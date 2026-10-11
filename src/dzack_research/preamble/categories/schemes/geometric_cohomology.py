@@ -1280,6 +1280,8 @@ def _toric_picard_to_chow_isomorphism(scheme):
 
 def _toric_middle_cohomology_form(scheme):
     r"""Return ``H^2(X(CC),ZZ)`` with its cup-product intersection form."""
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import BilinearFormModules
+
     _require_smooth_complete_rational_toric_realization(scheme)
     assert int(scheme.dimension()) == 2, (
         f"the intersection form on H^2 is constructed here only for toric surfaces, but {scheme} "
@@ -1291,10 +1293,15 @@ def _toric_middle_cohomology_form(scheme):
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
     integers = _own_ring(SageZZ)
-    return cohomology.equip_bilinear_form(integers, lambda left, right: intersection(
-            cohomology_to_picard(left),
-            cohomology_to_picard(right),
-        ))
+    # Degree-two classes commute under cup product.
+    return BilinearFormModules(integers).Symmetric()(
+        cohomology.bilinear_forms(integers)(
+            lambda left, right: intersection(
+                cohomology_to_picard(left),
+                cohomology_to_picard(right),
+            )
+        )
+    )
 
 
 def _toric_fundamental_group(scheme, base_point_cone=None):

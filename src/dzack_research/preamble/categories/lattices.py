@@ -3303,7 +3303,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                     rational = self.dual_module().equip_bilinear_form(fraction_field, dual_gram)
                     return FormModules(ring)(
                         rational.form(),
-                        _extra_categories=(FormModules(ring).Nondegenerate(),),
+                        _extra_categories=(
+                            FormModules(ring).Nondegenerate(),
+                            BilinearFormModules(ring).Symmetric(),
+                        ),
                     )
 
         @cached_method
