@@ -56,9 +56,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import _engine_rin
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
+    OrderedEnumeratedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
@@ -2376,7 +2377,49 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         square = lattice.base_ring()(int(square))
         if not lattice.is_definite():
             if square == lattice.base_ring().zero():
-                return finite_ordered_set(_primitive_pointed_classes(lattice, square))
+                primitive = tuple(_primitive_pointed_classes(lattice, square))
+                zero = lattice.zero()
+                if not primitive:
+                    return finite_ordered_set((zero,))
+                orbit_count = len(primitive)
+
+                def element_at(index):
+                    position = int(index)
+                    if position == 0:
+                        return zero
+                    content_position, orbit_position = divmod(position - 1, orbit_count)
+                    return lattice.scalar_multiple(
+                        lattice.base_ring()(content_position + 1),
+                        primitive[orbit_position],
+                    )
+
+                def index_of(vector):
+                    if element_parent(vector) is not lattice:
+                        return None
+                    if vector == zero:
+                        return NN(0)
+                    if vector.q() != square:
+                        return None
+                    content = int(vector.content())
+                    primitive_part = vector.primitive_part()
+                    orbit_position = next(
+                        (
+                            position
+                            for position, representative in enumerate(primitive)
+                            if primitive_part == representative
+                        ),
+                        None,
+                    )
+                    if orbit_position is None:
+                        return None
+                    return NN(1 + (content - 1) * orbit_count + orbit_position)
+
+                return OrderedEnumeratedSets()(
+                    NN,
+                    element_at,
+                    index_of=index_of,
+                    name=f"Square-zero orbit representatives of {lattice}",
+                )
             representatives = []
             for content in abs(square).divisors():
                 if square % (content * content) != lattice.base_ring().zero():

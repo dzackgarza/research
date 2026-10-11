@@ -846,18 +846,23 @@ def _isotropic_object_from_marked(marked, *, flag):
                 second(second.domain().module_generator(label))
                 for label in second.domain().module_generating_set()
             )
-            complement = next(
-                (
-                    vector
-                    for vector in plane_vectors
-                    if not line.inclusion().is_in_image(vector)
-                ),
-                None,
-            )
-            if complement is None:
+            plane = lattice.primitive_isotropic_subobject(*plane_vectors)
+            line_into_plane = line.inclusion().factor_through(plane.inclusion())
+            quotient = line_into_plane.cokernel()
+            if quotient.is_torsion_free() is not True or int(quotient.module_rank()) != 1:
                 raise ArithmeticError(
-                    f"the marked flag {marked} has no plane vector independent of its line"
+                    f"the marked flag {marked} does not present a primitive line in a primitive plane"
                 )
+            trivialization = quotient.finite_free_trivialization()
+            normalized = trivialization.codomain()
+            quotient_label = next(iter(normalized.module_generating_set()))
+            quotient_generator = trivialization.inverse()(
+                normalized.module_generator(quotient_label)
+            )
+            complement_in_plane = line_into_plane.cokernel_projection().preimage(
+                quotient_generator
+            )
+            complement = plane.inclusion()(complement_in_plane)
             return IsotropicFlag(lattice, (line_vector, complement))
 
 
