@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedRings,
     _engine_element,
     _engine_ring,
@@ -1739,7 +1740,7 @@ class BrauerCharacterRepresentations(FiniteFreeGroupRepresentations):
 
     def _call_(self, module):
         coefficient_ring = self.base_ring().base_ring()
-        if coefficient_ring.characteristic() == 0 or not coefficient_ring.is_field():
+        if coefficient_ring.characteristic() == 0 or coefficient_ring not in OwnedFields():
             raise TypeError("Brauer characters require a positive-characteristic coefficient field")
         return super()._call_(module)
 
@@ -1761,7 +1762,7 @@ class BrauerCharacterRepresentations(FiniteFreeGroupRepresentations):
                     f"cannot compute the Brauer character of {self}: {coefficient_ring} has characteristic 0, "
                     f"and Brauer characters are defined in positive characteristic; use character()"
                 )
-            if not coefficient_ring.is_field():
+            if coefficient_ring not in OwnedFields():
                 raise TypeError(
                     f"cannot compute the Brauer character of {self}: the coefficient ring {coefficient_ring} is not a field"
                 )
