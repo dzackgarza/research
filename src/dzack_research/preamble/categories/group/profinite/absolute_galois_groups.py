@@ -223,17 +223,15 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
         ]
 
     class ParentMethods:
-        def topological_group_generators(self):
-            return finite_ordered_set((self.frobenius(),))
+        def _topological_generating_family(self):
+            r"""Supply the distinguished dense generator ``x |-> x^q`` of ``G_Fq``.
 
-        def topological_generating_family(self):
-            r"""Return the selected owned family topologically generating ``G_K``.
-
-            For a finite field this is the singleton family containing
-            Frobenius.  It is topological generating data, not an algebraic
-            finite generating set.
+            This supplies ``TopologicalGroups``' selected-family contract.
+            Here ``q`` is the order of the exact base field, including a
+            nonprime finite field. Frobenius generates a dense infinite
+            cyclic subgroup, not the whole abstract group.
             """
-            return self.topological_group_generators()
+            return finite_ordered_set((self.frobenius(),))
 
 
 class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):

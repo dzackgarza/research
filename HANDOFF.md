@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 36 complete passes and 605 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The current first literal ready row is `placement-owner-absolutegaloisgroupsoffinitefields`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 37 complete passes and 604 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The current first literal ready row is `placement-owner-additiveendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -1292,6 +1292,143 @@ map remain their existing computation frontiers. This pass does not
 close the separate finite-stage wrapper or later refinement-owner rows.
 M1 / DEV-58 requires source-only work: no imports, Sage, tests or runtime
 acceptance are claimed.
+
+## Whole-category placement: AbsoluteGaloisGroupsOfFiniteFields (2026-10-11)
+
+**Closed node:** `placement-owner-absolutegaloisgroupsoffinitefields`.
+This is a complete source pass; execution of the assertions below remains
+unverified under M1 / DEV-58 and is retained for T.
+
+**Owner and delta.** The entire introduced inventory before the move is
+`an_object`, `_repr_object_names`, `super_categories`, and the two
+parent operations `topological_group_generators` and
+`topological_generating_family`. There is no introduced element method,
+Mor category, or arrow operation. The three category methods retain their
+roles: a selected example over the actual field of order two, the category
+name, and the absolute-Galois, commutative-group and infinite-group laws.
+
+Both public generating-family operations now belong to `TopologicalGroups`.
+Their data are a topological group G and a family of its elements whose
+generated subgroup is dense in G. This notion requires the represented
+topology and group law, but neither profiniteness nor a finite base field.
+The duplicate optional abstract declaration on `ProfiniteGroups` is removed
+so actual descendants inherit the public owner. Its protected
+`_topological_generating_family` value contract accepts a selected dense
+family and otherwise returns None. The finite-field owner supplies precisely
+the prior singleton containing its actual q-power Frobenius through that
+contract. The two public signatures are unchanged and return the same
+cached family.
+
+Without a selected supplier, the public owner uses the existing
+`indexed_family(G, lambda g: g)`. The index set is literally G; evaluation
+uses an admitted point and does not enumerate G, construct a new topology,
+assert finiteness, or select an algebraic group resolution. The values form
+all of G, whose generated subgroup equals G and therefore has closure G.
+A family retains its index set and is not identified with its image set.
+
+**Complete actual up-set.** The fifteen strict authored providers and their
+definitions were read: `AbsoluteGaloisGroups` retains the exact base field,
+closure and base embedding; `ProfiniteGroups` supplies represented profinite
+structure and finite continuous-quotient decisions; `TopologicalGroups`
+supplies a compatible represented group topology; `OwnedGroups.Commutative`
+adds the abelian law, its integer action and End construction;
+`OwnedGroups.Infinite` adds the infinite axiom; `OwnedGroups` supplies the
+group law; `Monoids.Commutative` adds the commutative monoid law and
+square-class construction; `Monoids` supplies associativity and a selected
+unit; `Semigroups` supplies associativity; `Magmas.Commutative` supplies
+commutativity of the binary law; `Magmas.Unital` supplies its selected
+two-sided unit; `Magmas` supplies multiplication; `Sets.Infinite` supplies
+infinite cardinality; `Sets` supplies a set; and `Objects` is the root.
+Generated axiom meets carry these laws, not additional authored providers.
+In particular, the actual TopologicalGroups declaration has OwnedGroups as
+its parent; this record does not invent a TopologicalSpaces edge.
+
+The finite-field refinement adds no arrow law to this chain. Its actual
+`GroupMorCategoryConstruction.Of` selects `GeneralGroupMor` on a profinite
+source. The generated arrow inherits `GroupMorphism`, the monoid and
+unital-magma arrow providers, `MagmaMorphism`, and the owned set-map
+provider. The actual endpoint and base-map constructions closed in the
+AbsoluteGaloisGroups pass remain in use. A topological generator does not
+replace that Mor by homomorphisms of a finitely generated abstract group.
+
+**Necessary indexed-family consumer repair.** The new all-points family
+reaches the existing `IndexedFamily._value_at_normalized_index` cache.
+Absolute-Galois elements with the same parent intentionally share a hash;
+equality of two retained field maps can be an undecided proposition. A Python
+dictionary keyed directly by those labels could truth-coerce that proposition.
+The existing cache now uses integer-hash buckets and scans each bucket for
+literal identity or equality that is literally True. Unknown equality keeps
+both labels available without deciding that they are distinct. The same
+scan serves unhashable labels and preserves their existing behavior.
+Only hash computation catches TypeError; an error constructing a value is
+not caught or retried through another cache. This repair discharges the
+current node's actual outside-owner consumer, not a separate hashing task.
+
+**True closure assertions retained for T.**
+
+- For every finite field K of order q, each finite extension of degree n
+  has cyclic Galois group of order n generated by x -> x^q. The compatible
+  restrictions identify G_K with the inverse limit of these cyclic groups,
+  and Frobenius maps to 1 modulo every n. Its powers therefore meet every
+  finite-quotient coset, proving that the selected singleton is dense.
+- In particular, for K = F_5, the two public operations return the same
+  singleton family containing `G.frobenius()`, with cardinality one.
+  G is abelian and infinite, has cardinality continuum, and is not finitely
+  generated as an abstract group. Indeed a finitely generated abstract
+  group is countable, whereas the profinite integers have continuum many
+  elements. The singleton does not give a surjective map from the abstract
+  infinite cyclic group onto G.
+- For K = F_9, q is 9, not 3. The selected Frobenius acts by x -> x^9,
+  fixes every element of the exact base field, and generates every finite
+  extension quotient. The 3-power map fails to fix an element of
+  F_9 outside F_3, so it is a true separating case. The unchanged retained
+  exponent, exact base embedding and finite-stage restriction computations
+  continue to express the 9-power map and its powers.
+- Outside this finite-field owner, take the already represented
+  G = AbsoluteGaloisGroup(QQ), with its Krull topology. For
+  F = G.topological_generating_family(), `F.index_set() is G` and
+  `F is G.topological_group_generators()`. Its value at each admitted
+  group element represents that same element, so its values generate G
+  itself and are dense. This uses an actual existing topological object,
+  not an unsupported finite-group topology placement.
+- At that G_Q, let U be `G.field_automorphism_mor()), and retain two
+  separately supplied valid identity rules
+  `sigma = G(U.elementwise(lambda x: x))` and
+  `tau = G(U.elementwise(lambda x: x))`. Their represented equality is
+  the existing undecided field-map equation and their hashes agree.
+  Asking F.value(sigma) and F.value(tau) must return their admitted values
+  without forcing that equation; repeated access at each identical label
+  reuses its value. An independently decided-equal label may reuse the
+  previously selected representative. Hence equality to the index is the
+  universal mathematical claim, not Python identity with every alternative
+  representation of it.
+- A repeated decided-equal finite label, including the existing [0] and
+  ([0],) unhashable examples in IndexedFamily, retains its chosen value.
+  An undecided collision neither denies membership in the indexing group
+  nor substitutes a Boolean equality answer. The selected Frobenius family
+  remains the existing finite ordered set and does not use this cache.
+
+**Sources, review and retained frontier.** The finite-field assertions use
+Keith Conrad, [Finite Fields, Theorem 4.1 and its extension-field form](https://kconrad.math.uconn.edu/blurbs/galoistheory/finitefields.pdf),
+and the compatible finite-Galois quotient description in
+[Stacks 0BU2](https://stacks.math.columbia.edu/tag/0BU2) and
+[Stacks 0BMI](https://stacks.math.columbia.edu/tag/0BMI).
+The identity-family density proof above is independent of any algorithm
+for enumerating a profinite group.
+
+Read sources include the existing megadoc as an index; the complete
+finite-field category and its selected absolute-Galois realization;
+profinite_groups.py; the actual providers in groups.py, magmas.py,
+set_categories.py, and the inherited abstract category/arrow constructions;
+and indexed_families.py with its value, iteration and cache consumers.
+The read-only finite-field construction, profinite-generator archive,
+profinite-owned-boundary, absolute-Galois object and Galois-session
+expectations retain their Frobenius/cardinality assertions. Independent
+review accepted the complete four-source-file delta. The general
+finite-stage and exact-map computation frontiers already recorded for
+AbsoluteGaloisGroups remain named there; this pass does not claim those
+algorithms executed. All retained specimens, including the new G_Q family
+and undecided-collision assertions, remain under T.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

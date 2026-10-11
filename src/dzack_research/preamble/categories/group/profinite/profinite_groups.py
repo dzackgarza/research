@@ -1,6 +1,5 @@
 """Profinite groups."""
 
-from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -88,8 +87,3 @@ class ProfiniteGroups(OwnedCategory):
             ``ProfiniteGroupIsAbelian._ask_``.  The default selects none.
             """
             yield from ()
-
-        @abstract_method(optional=True)
-        def topological_group_generators(self):
-            r"""Return a family of elements generating a dense subgroup."""
-            ...

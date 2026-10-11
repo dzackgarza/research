@@ -4513,6 +4513,47 @@ class TopologicalGroups(OwnedCategory):
         return [OwnedGroups()]
 
     class ParentMethods:
+        @RealizationHook
+        def _topological_generating_family(self):
+            r"""Supply a selected family whose generated subgroup is dense.
+
+            Protected value contract of ``TopologicalGroups``. The sole
+            caller is ``topological_group_generators``. A more specific
+            category or realization may retain a distinguished family;
+            ``None`` leaves the public operation to its general construction.
+            A supplied family need not generate the whole abstract group.
+            """
+            return None
+
+        @cached_method
+        def topological_group_generators(self):
+            r"""Return a selected family generating a dense subgroup.
+
+            Retain a distinguished family when one is supplied. Otherwise
+            select the identity family ``(g)_{g in G}``: its values generate
+            ``G`` itself, so their subgroup is dense in every group topology.
+            This family retains the actual group as its index set and reads
+            a value only at a supplied point; it does not enumerate ``G`` or
+            claim finite generation. Neither case selects an algebraic group
+            resolution.
+            """
+            selected = self._topological_generating_family()
+            if selected is not None:
+                return selected
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                indexed_family,
+            )
+
+            return indexed_family(
+                self,
+                lambda element: element,
+                name="Topological group generators",
+            )
+
+        def topological_generating_family(self):
+            r"""Return the same selected family as ``topological_group_generators``."""
+            return self.topological_group_generators()
+
         def is_profinite(self):
             r"""Whether this topological group is profinite, or the proposition that it is."""
             from dzack_research.preamble.categories.group.profinite.profinite_groups import (

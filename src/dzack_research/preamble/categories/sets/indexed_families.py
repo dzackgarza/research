@@ -47,7 +47,7 @@ class IndexedFamily[IndexT, ValueT]:
             )
         self._index_set = index_set
         self._value_function = value
-        self._value_cache: dict[IndexT, ValueT] = {}
+        self._value_cache: dict[int, list[tuple[IndexT, ValueT]]] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
         self._diagram = None
@@ -100,27 +100,25 @@ class IndexedFamily[IndexT, ValueT]:
         hash protocol while containing an unhashable label. Only that hash
         computation is caught; errors from the mathematical value constructor
         propagate without selecting another cache or constructing twice.
+        A hash selects a bucket, not an equality decision: reuse a value only
+        for an identical or decided-equal label. An undecided comparison keeps
+        the labels separate without asserting that they are unequal.
         """
         try:
-            hash(normalized)
+            index_hash = hash(normalized)
         except TypeError:
             # Hashability is representation data, not a hypothesis on an
             # indexing set. Only unhashable labels actually requested are
             # retained on this exact fallback path.
-            for known, value in self._unhashable_value_cache:
-                if (normalized == known) is True:
-                    return value
-            value = self._value_function(normalized)
-            self._unhashable_value_cache.append((normalized, value))
-            return value
+            bucket = self._unhashable_value_cache
         else:
-            missing = object()
-            cached = self._value_cache.get(normalized, missing)
-            if cached is not missing:
-                return cached
-            value = self._value_function(normalized)
-            self._value_cache[normalized] = value
-            return value
+            bucket = self._value_cache.setdefault(index_hash, [])
+        for known, value in bucket:
+            if normalized is known or (normalized == known) is True:
+                return value
+        value = self._value_function(normalized)
+        bucket.append((normalized, value))
+        return value
 
     __call__ = value
 
