@@ -112,7 +112,8 @@ def _signed_vector_witness(lattice, sign):
     belongs to that same module, including a represented formed submodule.
     The symmetric Hessian ``G + G.transpose()`` represents the diagonal
     function of any bilinear Gram ``G``. For a quadratic datum, its polar
-    diagonal is twice its selected norm, which has the same sign over QQ.
+    diagonal is twice its selected norm, so its symmetrization has four
+    times that norm. These positive factors preserve the sign over QQ.
     Return None only if exact rational diagonalization excludes the sign.
     """
     ring = lattice.base_ring()
@@ -131,13 +132,12 @@ def _signed_vector_witness(lattice, sign):
     if lattice.module_rank() == 0:
         return None
     labels = tuple(lattice.module_generating_set())
-    quadratic = lattice.form().parent().kind() == "quadratic"
 
     def hessian_entry(left_label, right_label):
         left = lattice.module_generator(left_label)
         right = lattice.module_generator(right_label)
         forward = lattice.b(left, right)
-        return forward if quadratic else forward + lattice.b(right, left)
+        return forward + lattice.b(right, left)
 
     size = len(labels)
     hessian = tensor(
