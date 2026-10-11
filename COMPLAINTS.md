@@ -1358,6 +1358,21 @@ computation and blocks no node.
 
 ## Workflow Papercuts
 
+### TODO dependencies contain an unresolved ID and a prose prerequisite
+
+The queue requires stable node IDs in each `Needs` list. In the inspected
+`TODO.md`, `architecture-remediation` names
+`a-finite-cardinal-is-a-natural-number`, but no checkbox row with that ID
+was found. The unchecked `nonaffine-structure-sheaf-coverage` row states
+its prerequisite in prose rather than linking an executable node. These
+declarations prevent the queue from defining its required dependency graph.
+
+**Coverage:** checkbox declarations and their `Needs` fields in `TODO.md`,
+inspected on 2026-10-11. **Repair:** reconcile the remaining obligation of
+each prerequisite with its mathematical owner and use live queue IDs;
+preserve any unfinished work. This queue repair is separate from the
+priority-one categorical construction work.
+
 ### Formal power series and their rings print without their coefficients
 
 `QQ.power_series_ring("q")` prints as `Ring over Rational Field`, and each of

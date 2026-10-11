@@ -2,6 +2,11 @@
 
 ## Execution priorities
 
+Priority one is `effective-categorical-constructions` in M1. Select it before
+other ready work. Its missing prerequisites are repaired at their mathematical
+owners before extending a consumer. This priority precedes the remaining
+selection preferences below.
+
 Make the existing preamble reliable for daily mathematics, stabilize its construction language, and prove the frozen API before expanding its required capabilities.
 Complete shared mathematical dependencies before extending their consumers.
 Within a milestone, geometry has priority over independent arithmetic applications; an arithmetic computation moves earlier only when a named geometric construction needs its result.
@@ -269,6 +274,64 @@ Preserve the phase-T execution rules.
 ## M1 — Daily mathematical work
 
 Repair the existing public construction routes and inherited methods before proving the daily core. Placement and engine audits cover the existing preamble; the exercise core tests mathematically useful composed pathways.
+
+- [ ] **`effective-categorical-constructions`**. **Needs:** none.
+  **Priority:** one.
+  **Owner and delta:** the common categorical constructors and their group,
+  module and set owners. Deliver effective constructions as actual objects
+  in their mathematical categories, with defining data, structural maps and
+  universal factorizations. The [source audit](docs/preamble-expressive-power.md)
+  identifies supplied constructions and the observed gaps; preserve the
+  supplied module image factorizations and other existing cases.
+  **Required construction family:**
+  - Image factorizations `A ->> im(f) -> B`, with the image an actual subgroup
+    or submodule, its inclusion and the induced surjection. Known source
+    generators supply image generators; selected finite presentations supply
+    actual generators and relations where the image is finitely presented.
+  - Finite products and coproducts of finitely generated and finitely
+    presented groups and modules, with projections, injections and universal
+    maps. Include empty diagrams and infinite groups with chosen finite
+    presentations. Preserve the general module product construction.
+  - Equalizers, coequalizers, kernels, cokernels and quotients, with their
+    inclusions or quotient maps and universal factorizations. Compose them
+    into finite diagram limits and colimits, pullback cones and pushout
+    cocones at the shared owner. Set quotients must admit infinite relation
+    diagrams, including those with finite quotients; class sets compose
+    these general quotient maps.
+  - Correct category placement and transport of preserved structure through
+    the same construction. Retain actual actions, morphisms, functors and
+    embedded subobjects as defining data. The
+    [label substitution defect](COMPLAINTS.md#string-labels-replace-mathematical-defining-data)
+    and [lost ideal structure](COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
+    are required repairs of this family.
+  - Computed group generating data as mathematical families and generating
+    epimorphisms, and chosen preimages as actual sections in sets. These
+    outputs must compose with the existing subgroup inclusions and group
+    morphisms.
+  **Hypotheses and computation:** retain the ambient category and state the
+  closure hypotheses that place a result in its finitely generated or
+  finitely presented subcategory. Read each formal construction at
+  `lean-categories`; request missing mathematics there and park the affected
+  consumer. Integrate maintained computations privately at the common
+  construction owner, with their exact input data and effective hypotheses.
+  Specializations inherit or compose that owner and preserve its maps.
+  **Closure specimens:** products and free products of infinite finitely
+  presented groups carry their canonical maps; a noninjective group map
+  factors through its image subgroup; the cokernel of multiplication by two
+  on `ZZ` is `ZZ/2` with its quotient map. For `R = k[x,y]`, the map
+  `R^2 -> R`, `(a,b) -> ax+by`, has image the ideal `(x,y)`, kernel generated
+  by `(-y,x)` and cokernel `R/(x,y)`, with the defining maps and preserved
+  ideal structure. Empty products and coproducts give the zero module in
+  finitely generated and finitely presented module categories. The set
+  coequalizer of `id_ZZ` and `n -> n+2` has its parity projection and
+  universal factorization. Sections satisfy their right-inverse equation;
+  generating epimorphisms land in the computed subgroup; a stabilizer's
+  defining action can be restricted along its inclusion.
+  **Acceptance:** independent mathematical assertions establish these objects,
+  maps, equations and category memberships at their formal owners and in
+  the permanent leaf-agnostic `lean-cas-dsl` suite. Source closure includes
+  the affected consumer routes and feeds `architecture-remediation`;
+  execution follows the existing M1 and terminal-T rules.
 
 - [ ] **`placement-audit`**. **Needs:** none.
   **Open mathematical prerequisite — `general-minimal-prime-locus`:** The `QuotientRings` category admits non-Noetherian sources, but its `minimal_primes()` and `irreducible_components()` construct `FiniteOrderedSets()` by enumerating `minimal_associated_primes()` of an engine ideal. This is false in general. The prime spectrum already supplies the specialization relation, but `CommutativeIdeals(R)` currently represents ideals by finite generating families, whereas a general prime ideal of a non-Noetherian ring need not be finitely generated. Repair the ideal/subobject owner so all ideals can be represented by their actual membership condition, retain finitely generated ideal presentations as an algorithmic specialization, and make the minimal-prime locus the points minimal under specialization. Its irreducible components are the closures of those generic points. In a Noetherian case, select the existing finite algorithm without confusing it with the mathematical domain. **Acceptance:** For `A = product_{n in NN} F_2`, distinct coordinate-projection kernels are distinct minimal prime ideals and yield distinct irreducible components; no finite placement is asserted. For `k[x,y]/(xy)`, the two minimal primes are `(x)` and `(y)` and the two components are their closures, with the finite realization still selected. This prerequisite is a genuine mathematical representation change, not permission to reject non-Noetherian inputs or define minimality by a finite search.
@@ -635,7 +698,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner and delta:** the stage retains `F_{q^d}` as defining data, and the operations of that field reach the stage through the construction chain of the slice.
   **Closure:** `tests/constructions/test_galois_construct.sage::test_the_absolute_galois_group_of_a_finite_field` passes.
 
-- [ ] **`architecture-remediation`**. **Needs:** `cyclotomic-characters-land-in-the-owned-unit-group`, `placement-audit`, `engine-wiring-audit`, `coxeter-diagram-orders-are-owned-posets`, `coxeter-diagrams-construct-from-their-data`, `session-objects-are-built-by-their-parents`, `a-finite-cardinal-is-a-natural-number`, `group-categories-defined-by-data`, `function-spaces-are-subobjects-of-mor`, `scalar-extension-is-order-independent`, `membership-replaces-dynamic-peeking`, `isometry-is-decided-without-a-witness`, `construction-is-instant`, `vinberg-invariants-are-points-of-the-projective-line`, `daily-core-exercises`, `modules-over-a-group-algebra-keep-the-module-axioms`, `quotient-ring-placement-follows-construction`, `symbolic-expressions-are-no-owned-ring`, `native-rings-are-constructed-not-adopted`, `integer-residue-rings-placed-by-their-ideal`, `rings-of-integers-are-dedekind-by-construction`, `ring-sizes-follow-construction`, `division-algebras-are-placed-by-construction`, `centres-of-algebras-on-infinitely-generated-modules`, `arrows-compare-through-richcmp`, `every-arrow-is-an-element-of-its-mor`, `restricted-algebras-are-restricted-modules`, `internal-mor-inclusion-starts-at-the-mor-module`, `brauer-characters-are-maps-on-p-regular-elements`, `restricted-mors-decide-membership-by-their-predicate`, `lattice-mor-stays-in-the-preamble`, `augmented-algebras-retain-their-defining-data`, `finite-galois-stages-answer-as-their-fields`, `classifying-categories-have-an-object-set`, `equivariant-module-maps-give-their-natural-transformation`, `graded-modules-ask-their-mor-of-the-endpoints`, `objects-of-sets-answer-their-endomorphisms`, `algebra-arrows-are-ring-arrows`, `power-algebra-identity`, `modules-call-on-a-set-is-the-free-module`, `unital-algebras-supply-their-unit`, `derivation-spaces-read-declared-data`, `group-resolution-augmentation-terminates`, `resolution-truncations-in-the-session`, `an-object-lies-in-several-slices`, `adopted-rings-declare-their-construction-data`, `module-and-algebra-slice-objects-lie-in-their-slice`, `cat-declares-the-owned-objects`, `covering-families-cover-their-space`, `gluing-accepts-isomorphisms-on-overlaps`, `cech-families-are-indexed-by-the-site`, `base-change-structure-morphisms-land-in-their-mor`, `native-free-algebras-answer-their-variable`, `literal-sets-route-by-membership`, `marked-schemes-construct-on-the-owner-route`, `arrow-class-subcategories-admit-their-arrows`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against the unresolved complaints affecting the existing public API and the daily core. Required capability additions retain their full contracts in M4; they are not prerequisites merely because they are unfinished. If a daily-core route actually consumes one of their outputs, split that prerequisite intact and put its edge here.
+- [ ] **`architecture-remediation`**. **Needs:** `effective-categorical-constructions`, `cyclotomic-characters-land-in-the-owned-unit-group`, `placement-audit`, `engine-wiring-audit`, `coxeter-diagram-orders-are-owned-posets`, `coxeter-diagrams-construct-from-their-data`, `session-objects-are-built-by-their-parents`, `a-finite-cardinal-is-a-natural-number`, `group-categories-defined-by-data`, `function-spaces-are-subobjects-of-mor`, `scalar-extension-is-order-independent`, `membership-replaces-dynamic-peeking`, `isometry-is-decided-without-a-witness`, `construction-is-instant`, `vinberg-invariants-are-points-of-the-projective-line`, `daily-core-exercises`, `modules-over-a-group-algebra-keep-the-module-axioms`, `quotient-ring-placement-follows-construction`, `symbolic-expressions-are-no-owned-ring`, `native-rings-are-constructed-not-adopted`, `integer-residue-rings-placed-by-their-ideal`, `rings-of-integers-are-dedekind-by-construction`, `ring-sizes-follow-construction`, `division-algebras-are-placed-by-construction`, `centres-of-algebras-on-infinitely-generated-modules`, `arrows-compare-through-richcmp`, `every-arrow-is-an-element-of-its-mor`, `restricted-algebras-are-restricted-modules`, `internal-mor-inclusion-starts-at-the-mor-module`, `brauer-characters-are-maps-on-p-regular-elements`, `restricted-mors-decide-membership-by-their-predicate`, `lattice-mor-stays-in-the-preamble`, `augmented-algebras-retain-their-defining-data`, `finite-galois-stages-answer-as-their-fields`, `classifying-categories-have-an-object-set`, `equivariant-module-maps-give-their-natural-transformation`, `graded-modules-ask-their-mor-of-the-endpoints`, `objects-of-sets-answer-their-endomorphisms`, `algebra-arrows-are-ring-arrows`, `power-algebra-identity`, `modules-call-on-a-set-is-the-free-module`, `unital-algebras-supply-their-unit`, `derivation-spaces-read-declared-data`, `group-resolution-augmentation-terminates`, `resolution-truncations-in-the-session`, `an-object-lies-in-several-slices`, `adopted-rings-declare-their-construction-data`, `module-and-algebra-slice-objects-lie-in-their-slice`, `cat-declares-the-owned-objects`, `covering-families-cover-their-space`, `gluing-accepts-isomorphisms-on-overlaps`, `cech-families-are-indexed-by-the-site`, `base-change-structure-morphisms-land-in-their-mor`, `native-free-algebras-answer-their-variable`, `literal-sets-route-by-membership`, `marked-schemes-construct-on-the-owner-route`, `arrow-class-subcategories-admit-their-arrows`. **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against the unresolved complaints affecting the existing public API and the daily core. Required capability additions retain their full contracts in M4; they are not prerequisites merely because they are unfinished. If a daily-core route actually consumes one of their outputs, split that prerequisite intact and put its edge here.
   **Invariants:** every M1 source descendant closes before this node; introducing a residual child keeps this node open.
   Each complaint's entire burden is discharged or retained in a required prerequisite.
   All alternative construction routes affected by a repair are inspected.
