@@ -805,7 +805,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CokernelTorsionFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
   **Closure assertions:** the complete `CokernelTorsionFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CokernelTorsionFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-commutativealgebracoproducts`**. **Needs:** none.
+- [x] **`placement-owner-commutativealgebracoproducts`**. **Needs:** none.
   **Owner pass:** `CommutativeAlgebraCoproducts` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
   **Closure assertions:** the complete `CommutativeAlgebraCoproducts` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeAlgebraCoproducts`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
