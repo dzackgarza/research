@@ -84,6 +84,7 @@ class Result(OwnedCategory):
         build = next(x for x in rules if x["method"] == "create"
                      and x["receiver"] == "ParentMethods")
         self.assertEqual(build["output"], "Child()")
+        self.assertTrue(build["location"].startswith("fixture.py:"))
         self.assertEqual(build["inputs"], ("parameter:int",))
         candidate = model["derivations"]["Child()"]
         self.assertTrue(any(x.get("operation") == build["id"]
