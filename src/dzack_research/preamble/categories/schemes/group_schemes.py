@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.group.g_objects import Grp
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -43,7 +42,7 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     r"""Affine group schemes over ``Spec(R)``, represented by their structure maps."""
 
     def super_categories(self):
-        return [Objects()]
+        return [Grp(Schemes(self.base_ring()).Affine())]
 
     def _repr_object_names(self):
         return f"affine group schemes over {self.base_ring()}"
@@ -95,6 +94,22 @@ class _AffineGroupSchemeEngine:
 
     def internal_group_object(self):
         return self._internal_group_object
+
+    def underlying_category(self):
+        r"""The affine-scheme category in which this is an internal group."""
+        return self.internal_group_object().underlying_category()
+
+    def underlying_object(self):
+        r"""The affine scheme underlying this internal group object."""
+        return self.internal_group_object().underlying_object()
+
+    def square_construction(self):
+        r"""The selected product ``G x_S G`` retained by the internal group."""
+        return self.internal_group_object().square_construction()
+
+    def terminal_construction(self):
+        r"""The selected terminal affine scheme retained by the internal group."""
+        return self.internal_group_object().terminal_construction()
 
     def scheme(self):
         return self.internal_group_object().underlying_object()
