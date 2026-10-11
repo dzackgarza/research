@@ -137,6 +137,28 @@ agent-memory maintain move <key> --to global/advice
 
 Everything here is general mathematics. An operation is accepted by true assertions about pure mathematics at its owner. There are no integration tests: no consumer (`sage-indefinite-port` or any other), migration contract or port run gates a research node, and research never waits on a consumer. A node whose acceptance names a consumer is a defect in the node; rewrite it as mathematical assertions.
 
+## Concrete boundary with `sage-indefinite-port`
+
+Research implements the following, including their computations:
+
+- Lattice and marked-lattice objects, Isom/Aut homsets, subobjects, forms, perpendiculars, quotients and discriminant/gluing objects.
+- Group actions and their effective stabilizer, orbit, kernel, image, preimage, intersection and coset operations from the data required by the selected general algorithm (#396).
+- Restriction and quotient-action morphisms for an isotropic marking; their sections/multisections, fibres and kernels. `R.rational_lifts(target, isometry)` and its `integral_members()` computation stay here (#401). `R.pointwise_perpendicular_kernel()` is a research computation (#398), not an import from the deleted port `indefinite.isotropic_lifts` module.
+- `G.centralizer(f)` and the reusable invariant-decomposition/gluing computation in `categories/lattice_centralizers.py` (#397). An indefinite component's O(L) computation may call the port; do not move the centralizer operation or the general gluing construction there.
+- GL of free modules, module-flag stabilizers, radical extensions from supplied factor groups, isometry extension, exact module solving, finite configurations and polyhedra (#398–#401).
+
+The port implements the following algorithms; research calls them rather than duplicating them:
+
+- `indefinite.eichler.EichlerEnvelope` and `OrbitCoverModel`: the reference's envelope, approximate generating family, covering-vector selection and splitting-vector strategy (port #18).
+- `indefinite.recursive.EichlerRecursion`: recursive indefinite orthogonal groups and plain/pointed isometries and stabilizers (port #18).
+- `indefinite.isotropic_induction.IsotropicInduction`: isotropic line, plane and flag classification and the recursive stabilizer algorithm (port #18). Research supplies sections and kernels; it does not implement this whole recursion for the port.
+- `indefinite.lorentzian_cells`: perfect-cell search, flips, side pairings and traversal; `indefinite.edgewalk`: the Allcock edgewalk (port #15).
+- The reference algorithm's arithmetic integral-model search for its rational groups, with its boundedness hypotheses; the resulting module quotients and finite-action computations use the research operations above (port #18; research #396).
+
+Research #403 owns the calls into these algorithms. Use `marked_lattices.isometry(category, source, target)`, `automorphism_group_generators(category, marked)` and `primitive_marking_classes(category, source, lattice)`, plus `perfect_domain_traversal(lattice, mode)` and `edgewalk_fundamental_domain(lattice)`. These take preamble objects. Replace obsolete imports of `isotropic_flags` and module-level `recursive` functions and the Gram-row/dictionary calling conventions. No port-specific group or lattice class is a prerequisite for a research operation.
+
+The [function-level assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) identify the concrete callers, implementations and repair owners. The port's line/plane stabilizer methods must implement the recursive algorithm, not ask this repository for that same unanswered stabilizer. Conversely, this repository must compute the general section or kernel it supplies, not return only a predicate or call back into that recursion. Mathematical acceptance stays with each implementation's owner; the port retains its complete consumer acceptance. This split is implementation responsibility, not a claim that any listed capability is finished.
+
 ## Owner resume — 2026-10-08
 
 The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
