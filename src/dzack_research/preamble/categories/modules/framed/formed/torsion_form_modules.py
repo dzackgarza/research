@@ -1533,7 +1533,11 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
         return "cokernel torsion forms"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+            FormModules,
+        )
+
+        return [FormModules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
         def cover(self):
