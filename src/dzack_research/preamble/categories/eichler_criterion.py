@@ -307,7 +307,7 @@ class TwoUEichlerModel(SageObject):
         category = Lattices(lattice.base_ring())
         if not lattice.is_even():
             raise ValueError("the Eichler determinant model requires an even lattice")
-        plane_form = category("U").gram_tensor()
+        plane = category("U")
         inclusions = []
 
         def descend(factor, inclusion):
@@ -319,7 +319,12 @@ class TwoUEichlerModel(SageObject):
                     descend(child, inclusion * factor.injection(index))
 
         descend(lattice, lattice.identity_morphism())
-        positions = tuple(index for index, inclusion in enumerate(inclusions) if inclusion.domain().gram_tensor() == plane_form)
+        positions = tuple(
+            index for index, inclusion in enumerate(inclusions)
+            if int(inclusion.domain().rank()) == 2
+            and inclusion.domain().is_unimodular()
+            and tuple(int(value) for value in inclusion.domain().signature_pair()) == (1, 1)
+        )
         if len(positions) < 2:
             raise ValueError("a represented 2U model needs two hyperbolic-plane factors")
         selected = positions[:2]
@@ -334,7 +339,17 @@ class TwoUEichlerModel(SageObject):
         result = cls.__new__(cls)
         result._orthogonal_complement = complement
         result._lattice = lattice
-        result._hyperbolic_inclusions = tuple(inclusions[index] for index in selected)
+        plane_inclusions = []
+        for index in selected:
+            inclusion = inclusions[index]
+            factor = inclusion.domain()
+            if factor.gram_tensor() == plane.gram_tensor():
+                first, second = tuple(factor.module_generators())
+            else:
+                first = factor.isotropic_vector().primitive_part()
+                second = first.hyperbolic_partner()
+            plane_inclusions.append(plane.Emb(lattice)((inclusion(first), inclusion(second))))
+        result._hyperbolic_inclusions = tuple(plane_inclusions)
         result._selected_complement_inclusion = complement.Emb(lattice)(images)
         return result
 
@@ -701,11 +716,16 @@ class TwoUEichlerModel(SageObject):
 
         lattice = self.lattice()
         orthogonal_group = lattice.O()
+        square = lattice.base_ring()(square)
         representatives = self.covering_vector_representatives(square)
-        from dzack_research.preamble.categories.lattice_morphisms import (
-            _primitive_pointed_classes,
-        )
-        full_orbits = tuple(_primitive_pointed_classes(lattice, lattice.base_ring()(square)))
+        if square == lattice.base_ring().zero():
+            full_orbits = tuple(
+                orthogonal_group.orbit_decomposition(
+                    lattice.primitive_isotropic_vectors()
+                ).representatives()
+            )
+        else:
+            full_orbits = tuple(orthogonal_group.vector_orbit_representatives(square))
 
         def datum(discriminant_class):
             vector = representatives[discriminant_class]
@@ -795,92 +815,10 @@ class TwoUEichlerModel(SageObject):
         )
 
     def full_generating_data(self, square):
-        r"""Return the finite theorem-backed generators of ``O(2U+K)``.
+        r"""Dispatch the specialized approximate-model generation theorem to the port."""
+        from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
 
-        The finite approximate family and its covering vectors are the sourced
-        ``2U`` approximate model.  Restrict that covering list to one full
-        orthogonal orbit, retain one transporter from the selected base vector
-        to every listed representative, and adjoin exact generators of the
-        base stabilizer.  The approximate-oracle property then proves the
-        returned finite family generates the whole orthogonal group.
-        """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        lattice = self.lattice()
-        orthogonal_group = lattice.O()
-        representatives = self.covering_vector_representatives(square)
-        if int(representatives.cardinality()) == 0:
-            raise ValueError(
-                f"cannot generate O(L) for L = {lattice} from vectors of square {square}: L has no "
-                f"primitive covering vector of that square"
-            )
-        base_label = next(iter(representatives.index_set()))
-        base_vector = representatives[base_label]
-        selected_labels = []
-        transporters = {}
-        for label in representatives.index_set():
-            transporter = orthogonal_group.vector_equivalence_witness(
-                base_vector,
-                representatives[label],
-            )
-            if transporter is None:
-                continue
-            selected_labels.append(label)
-            transporters[label] = transporter
-        orbit_labels = finite_ordered_set(tuple(selected_labels))
-        orbit_representatives = finite_indexed_family(
-            orbit_labels,
-            lambda label: representatives[label],
-            name=f"Approximate representatives in the selected full orbit of square {square}",
-        )
-        orbit_transporters = finite_indexed_family(
-            orbit_labels,
-            lambda label: transporters[label],
-            name=f"Full-orthogonal transporters from {base_vector}",
-        )
-        approximate = self.approximate_generating_family()
-        stabilizer = orthogonal_group.vector_stabilizer_generators(base_vector)
-        generation_labels = finite_ordered_set(
-            tuple(("approximate", label) for label in approximate.index_set())
-            + tuple(("stabilizer", generator) for generator in stabilizer)
-            + tuple(("transporter", label) for label in orbit_labels)
-        )
-
-        def generator(label):
-            kind, datum = label
-            match kind:
-                case "approximate":
-                    return approximate[datum]
-                case "stabilizer":
-                    return datum
-                case "transporter":
-                    return orbit_transporters[datum]
-                case _:
-                    raise ValueError(
-                        f"{label!r} does not name a generator of O(L) for {self}: its kind "
-                        f"{kind!r} is not a known kind of generator"
-                    )
-
-        generating_family = finite_indexed_family(
-            generation_labels,
-            generator,
-            name=f"Theorem-backed generators of O({lattice})",
-        )
-        return TwoUFullGeneratingDatum(
-            self,
-            lattice.base_ring()(square),
-            base_vector,
-            approximate,
-            stabilizer,
-            orbit_representatives,
-            orbit_transporters,
-            generating_family,
-        )
+        return OrbitCoverModel.split_full_generating_data(self, square)
 
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.

@@ -3100,7 +3100,7 @@ def _scaled_form_module(source, scalar):
     Thus the unit action returns the original object, including a double
     sign twist. No cancellation by a nonunit is used.
     """
-    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.lattices import BiproductLattices, Lattices
 
     form = source._formed_form()
     module = form.module()
@@ -3136,6 +3136,12 @@ def _scaled_form_module(source, scalar):
     if source in Lattices(ring):
         categories.append(Lattices(ring))
         data["gram_tensor"] = scaled.gram_tensor()
+        if source in BiproductLattices(ring):
+            categories.append(BiproductLattices(ring))
+            data["biproduct_factors"] = source.biproduct_factors().map(
+                lambda factor: FormValueScalings(ring)(factor, scalar),
+                name=f"Orthogonal summands scaled by {scalar}",
+            )
     return _form_module(scaled, _extra_categories=categories, _extra_construction_data=data)
 
 
