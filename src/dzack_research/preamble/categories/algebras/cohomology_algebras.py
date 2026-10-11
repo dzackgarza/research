@@ -170,7 +170,7 @@ class CohomologyAlgebraMorphism:
             cycle = source_piece.cycle_representative(cohomology_class)
             image_cycle = self.underlying_dga_morphism().component(degree)(cycle)
             image_class = target_piece.class_of_cycle(image_cycle)
-            if image_class != target_piece.zero():
+            if (image_class == target_piece.zero()) is not True:
                 result += target.from_component(degree, image_class)
         return result
 
