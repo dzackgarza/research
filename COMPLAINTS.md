@@ -46,15 +46,22 @@ execution and mathematical completeness remain unverified.
 Explicit group morphisms, their images and inverse images, and selected
 preimages should compose through their public mathematical maps.
 
+For `G = <g_1,...,g_n>` and an established morphism `f: G -> H`, the image
+is the generated subgroup `<f(g_1),...,f(g_n)>` of `H`, with its inclusion
+and the factorization of `f`. Computing its relations or selecting preimages
+are separate operations. The general group owner has a generated-subgroup
+constructor, and the subgroup-image method already maps generators.
+
 **Observed source boundary, 2026-10-11:** `GroupMorphism` accepts generator
 images, an elementwise rule or a GAP map. Its ordinary `image()` and
 element-preimage route call `_gap_morphism_crossing()`, which requires
 generator images or a GAP realization
 (`categories/group/groups.py:2167,2248,2291`). An evaluable elementwise
 map therefore need not support the same operations. The existing
-`finite_image_lifts` algorithm (`:3479-3563`) can use evaluation and
-source generators, but returns a dictionary rather than an image subgroup,
-factorization and selected set section. The general action stabilizer
+`finite_image_lifts` method (`:3479-3563`) selects preimages over a finite
+image, but publicly returns a dictionary. These choices should be a section
+`U(I) -> U(G)` of the underlying-set surjection, returned as a morphism in
+sets. The table is private computation data. The general action stabilizer
 (`group/g_objects.py:1115`) returns a predicate subgroup without connecting
 its retained action to available finite-index generator computations.
 
@@ -62,8 +69,8 @@ its retained action to available finite-index generator computations.
 image subgroup with inclusion and factorization -> chosen preimages ->
 subgroup images and inverse images; represented action -> stabilizer
 inclusion -> generating description where computable. **Partial capability:**
-generator evaluation, finite images with source witnesses, subgroup inverse
-images and finite-index Schreier generators already exist.
+generator evaluation, generated subgroups, selected preimage computations,
+subgroup inverse images and finite-index Schreier generators already exist.
 
 **Consumers:** general group maps, actions and subgroup compositions.
 **Owner:** the group-morphism, subgroup and action owners. **Coverage:**
