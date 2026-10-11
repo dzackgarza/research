@@ -889,17 +889,6 @@ class LocalizationRings(OwnedCategory):
                 self.denominator() * other.denominator(),
             )
 
-        def __mul__(self, other):
-            from sage.structure.element import parent as element_parent
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-            other_parent = element_parent(other)
-            if other_parent is self.parent():
-                return LocalizationRings.ElementMethods._mul_(self, other)
-            if other_parent in Modules(self.parent()):
-                return other_parent.scalar_multiple(self, other)
-            return NotImplemented
-
         def _unit_inverse_decision(self):
             r"""Return the inverse of a unit ``a/s``.
 
@@ -1080,7 +1069,7 @@ class LocalizationRings(OwnedCategory):
                         prime.contains_ambient_element(generator)
                         for generator in ideal.ideal_generators()
                     ))
-                case _ if self.is_fraction_field_localization():
+                case _ if self._has_selected_nonzero_element_submonoid():
                     return negation(conjunction(
                         generator == ring.zero()
                         for generator in ideal.ideal_generators()
@@ -1576,8 +1565,37 @@ class LocalizationRings(OwnedCategory):
         def localization_submonoid(self):
             return self._localization_submonoid
 
-        def is_fraction_field_localization(self) -> bool:
-            r"""Whether this localizes a domain at all of its nonzero elements."""
+        def is_fraction_field_localization(self):
+            r"""Whether the canonical localization realizes its source's fraction field.
+
+            A localization of a domain is its fraction field exactly when it
+            is a field. In that case its nonzero source elements stay nonzero
+            and become invertible, and every target element is a source
+            fraction. The chosen submonoid need not be presented as all the
+            nonzero elements: localizing a domain at its zero prime has the
+            same property. Undecided domain or field predicates are retained.
+
+            This mathematical predicate does not supply the separate selected
+            realization used by the fraction-field comparison methods.
+            """
+            source_is_domain = self.localization_source().is_integral_domain()
+            if source_is_domain is False:
+                return False
+            return conjunction((source_is_domain, self.is_field()))
+
+        def _has_selected_nonzero_element_submonoid(self) -> bool:
+            r"""Return whether the selected submonoid is the nonzero elements.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            this owner's submonoid-intersection and fraction-field realization
+            and comparison methods, and the CommutativeIdeals contraction
+            adapter. The input is this exact owned localization. The Boolean
+            result reads its retained construction tag: True supplies the
+            selected nonzero-element submonoid of its domain source; False
+            says only that this presentation was not selected. It neither
+            decides the mathematical fraction-field predicate nor supplies
+            an absent computation realization.
+            """
             return (
                 self.localization_submonoid()._structure_data().get("kind")
                 == "nonzero_elements"
@@ -1585,7 +1603,7 @@ class LocalizationRings(OwnedCategory):
 
         def fraction_field_realization(self):
             r"""Return the canonical owned field privately realizing this localization."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
                     f"the selected fraction-field realization for {self} requires the "
                     "nonzero-element localization presentation"
@@ -1601,7 +1619,7 @@ class LocalizationRings(OwnedCategory):
         @cached_method
         def fraction_field_comparison(self):
             r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
                     f"the selected comparison from {self} to its fraction-field realization "
                     "requires the nonzero-element localization presentation"
@@ -1625,7 +1643,7 @@ class LocalizationRings(OwnedCategory):
         @cached_method
         def fraction_field_comparison_inverse(self):
             r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
                     f"the selected inverse comparison into {self} from its fraction-field realization "
                     "requires the nonzero-element localization presentation"
@@ -1639,14 +1657,15 @@ class LocalizationRings(OwnedCategory):
             return self.localization_submonoid().monoid_generators()
 
         def inverted_element(self):
-            r"""Return the one element ``f`` this localization inverts.
+            r"""Return the selected singleton generator ``f`` of this localization.
 
-            Localizing at a single ``f`` is the distinguished open ``D(f)``, and
-            there every represented denominator is a power of ``f``, so a
-            fraction is read as ``a/f^n``.  A localization at several elements
-            inverts every monomial in them, so a denominator is described by one
-            exponent per inverted element rather than by a single natural
-            number; that reading is not stated here.
+            Every element of ``R[1/f]`` admits an expression ``a/f^n``.
+            Its stored fraction may use any denominator whose image is a unit,
+            however: in ``ZZ[1/6]``, the represented denominator of ``1/2``
+            need not be a power of ``6``. This accessor selects no rewriting
+            or exponent. A localization at several selected generators can
+            also be presented by their product, but this accessor does not
+            replace that family with a new singleton generator.
             """
             inverted = self.inverted_elements()
             match inverted.cardinality() == 1:

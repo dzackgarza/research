@@ -632,7 +632,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         case _:
                             return None
                 return contracted
-            if localization_ring.is_fraction_field_localization():
+            if localization_ring._has_selected_nonzero_element_submonoid():
                 match localization_ring.inverted_submonoid_meets(source_ideal):
                     case True:
                         return source_ring.ideal(source_ring.one())
