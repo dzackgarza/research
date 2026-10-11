@@ -1692,6 +1692,7 @@ class _MorCategoryOf(OwnedCategoryBase):
         # the common family object rather than relying on Sage category
         # internals for it.
         self._objects = {}
+        self._resolved_endpoint_categories = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -1825,12 +1826,26 @@ class _MorCategoryOf(OwnedCategoryBase):
         # cached parent is reusable only if it still has the selected class.
         fixed_class = self.fixed_category_class_for(domain, codomain)
         cached = self._cached_between(domain, codomain)
+        endpoint_categories = (domain.category(), codomain.category())
+        declared_supers = self.base_category()._set_of_super_categories
+        resolved = self._resolved_endpoint_categories.get((id(domain), id(codomain)))
+        if resolved is not None:
+            previous_domain, previous_codomain, previous_supers, previous_class, previous_result = resolved
+            if (
+                previous_domain is endpoint_categories[0]
+                and previous_codomain is endpoint_categories[1]
+                and previous_supers is declared_supers
+                and previous_class is fixed_class
+                and previous_result is cached
+            ):
+                return cached
         # What decides whether this category needs a Mor parent of its own is
         # whether the Mor it would build differs from one it already inherits,
         # not whether a class was declared somewhere in its Python ancestry: a
         # property subcategory inherits the declaration of the category it
         # refines and would build exactly the parent that category built.  So
-        # the supercategories are always walked, and a candidate survives when
+        # the supercategories are walked on construction and after endpoint
+        # refinement, and a candidate survives when
         # this category states nothing stronger than the class it already is.
         inherited = []
         for supercategory in _packet_supercategories(self.base_category()):
@@ -1882,7 +1897,13 @@ class _MorCategoryOf(OwnedCategoryBase):
                 if isinstance(cached, fixed_class) and cached.mor_family() is self
                 else fixed_class(self, domain, codomain)
             )
-        return self._remember_between(domain, codomain, result)
+        self._remember_between(domain, codomain, result)
+        # Store the categories read before construction: if construction
+        # refined an endpoint, the next call must resolve the new declaration.
+        self._resolved_endpoint_categories[id(domain), id(codomain)] = (
+            *endpoint_categories, declared_supers, fixed_class, result,
+        )
+        return result
 
     Between = Of
 

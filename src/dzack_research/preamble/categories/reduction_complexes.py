@@ -33,9 +33,6 @@ What *is* owned, so that a caller does not reach here for it:
   because ``-1`` exchanges the two components of the positive cone.
 """
 
-from sage.matrix.constructor import matrix as engine_matrix
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.polyhedral_cones import (
@@ -47,7 +44,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_action_from_images
 
 
 class ReductionCellAdjacency(SageObject):
@@ -531,84 +527,6 @@ class LorentzianPerfectDomainTraversal(SageObject):
         and deliberately do not have this unconditional conclusion.
         """
         return self.unpaired_facets().cardinality() == 0
-
-
-def _row_action_from_ray_permutation(rays, permutation):
-    r"""Recover the integral row-action matrix realizing one ray permutation."""
-    rows = tuple(tuple(SageQQ(entry) for entry in ray) for ray in rays)
-    if len(permutation) != len(rows):
-        raise ArithmeticError(f"the permutation {permutation} of the rays of a perfect domain has degree {len(permutation)}, but the domain has {len(rows)} rays")
-    ext = engine_matrix(SageQQ, rows)
-    if ext.rank() != ext.ncols():
-        raise ArithmeticError(f"the rays {rows} of a perfect domain span a space of rank {ext.rank()}, not the whole lattice of rank {ext.ncols()}")
-    permuted = engine_matrix(
-        SageQQ,
-        tuple(rows[int(permutation[index])] for index in range(len(rows))),
-    )
-    # The rays span, so the map carrying each ray to its image is unique.
-    action = _engine_row_action_from_images(ext, permuted)
-    if any(entry.denominator() != 1 for entry in action.list()):
-        raise ArithmeticError(
-            f"the permutation {permutation} of the rays of a perfect domain is induced by the matrix {action}, which is not integral, so it is not an isometry of the lattice"
-        )
-    return tuple(tuple(SageZZ(entry) for entry in action.row(index)) for index in range(action.nrows()))
-
-
-def _perfect_domain_traversal_from_records(lattice, records):
-    r"""Cross full-adjacency provider records into one completed owned traversal."""
-    records = tuple(records)
-    if not records:
-        raise ArithmeticError(f"the perfect-domain decomposition of {lattice} was computed with no orbit representatives")
-    cones = RationalPolyhedralCones(lattice)
-    raw_rays = tuple(tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"]) for record in records)
-    cells = tuple(cones.from_rays(tuple(lattice(row) for row in rays)) for rays in raw_rays)
-    orthogonal_group = lattice.O()
-    stabilizer_by_cell = {}
-    for cell, rays, record in zip(cells, raw_rays, records, strict=True):
-        stabilizer_by_cell[cell] = finite_ordered_set(
-            tuple(orthogonal_group(tuple(lattice(tuple(row)) for row in _row_action_from_ray_permutation(rays, permutation))) for permutation in record["x"]["GRP"])
-        )
-    stabilizers = finite_indexed_family(
-        finite_ordered_set(cells),
-        lambda cell: stabilizer_by_cell[cell],
-        name=f"Perfect-domain stabilizer generators in {lattice}",
-    )
-    adjacencies = []
-    for source_index, record in enumerate(records):
-        source = cells[source_index]
-        source_rays = raw_rays[source_index]
-        for adjacency_record in record["ListAdj"]:
-            target_index = int(adjacency_record["iOrb"])
-            if target_index < 0 or target_index >= len(cells):
-                raise ArithmeticError(f"the perfect-domain decomposition of {lattice} has an adjacency to orbit {target_index}, but there are only {len(cells)} orbits")
-            target = cells[target_index]
-            target_rays = raw_rays[target_index]
-            row_action = tuple(tuple(SageZZ(entry) for entry in row) for row in adjacency_record["x"]["eBigMat"])
-            target_to_neighbor = orthogonal_group(tuple(lattice(tuple(row)) for row in row_action))
-            neighbor_rays = tuple(target_to_neighbor(lattice(row)) for row in target_rays)
-            neighbor = cones.from_rays(neighbor_rays)
-            incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])
-            if len(incidence) != len(source_rays):
-                raise ArithmeticError(
-                    f"a facet of the perfect domain {source} of {lattice} has an incidence vector of length {len(incidence)}, but the domain has {len(source_rays)} rays"
-                )
-            face_rays = tuple(lattice(ray) for ray, selected in zip(source_rays, incidence, strict=True) if selected)
-            common_face = cones.from_rays(face_rays)
-            adjacencies.append(
-                PerfectDomainOrbitAdjacency(
-                    source,
-                    target,
-                    neighbor,
-                    common_face,
-                    target_to_neighbor,
-                )
-            )
-    return LorentzianPerfectDomainTraversal(
-        lattice,
-        cells,
-        adjacencies,
-        stabilizers,
-    )
 
 
 def _lorentzian_reduction_complex(lattice, marked_vectors=None):

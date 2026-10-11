@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -314,7 +315,7 @@ class _SpanningConfiguration:
         if lattice.base_ring() is not _own_ring(SageZZ):
             raise TypeError("integral ambient configuration isometries require a lattice over ZZ")
         self.lattice = lattice
-        self.vectors = tuple(vectors)
+        self.vectors = tuple(lattice(point) for point in vectors)
         colours = tuple(colours)
         if len(colours) != len(self.vectors):
             raise ValueError("each configuration position requires one colour")
@@ -331,10 +332,11 @@ class _SpanningConfiguration:
         self.inverse_basis = self.rows.matrix_from_rows(self.basis_positions).inverse()
         self.graph = Graph(loops=True, multiedges=False)
         self.graph.add_vertices(range(len(self.vectors)))
+        pairings = self.rows * _engine_component_matrix(lattice.gram_tensor()) * self.rows.transpose()
         for left, point in enumerate(self.vectors):
-            self.graph.add_edge(left, left, ("vertex", colours[left], int(point.q())))
+            self.graph.add_edge(left, left, ("vertex", colours[left], int(pairings[left, left])))
             for right in range(left):
-                self.graph.add_edge(left, right, ("pairing", int(lattice.b(point, self.vectors[right]))))
+                self.graph.add_edge(left, right, ("pairing", int(pairings[left, right])))
 
     def lift(self, target, permutation):
         image_rows = target.rows.matrix_from_rows([int(permutation(position)) for position in range(len(self.vectors))])
