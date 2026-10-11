@@ -464,7 +464,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AffineQuasiCoherentSheafMor` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
   **Closure assertions:** the complete `AffineQuasiCoherentSheafMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineQuasiCoherentSheafMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-affinesemigroupalgebras`**. **Needs:** none.
+- [x] **`placement-owner-affinesemigroupalgebras`**. **Needs:** none.
   **Owner pass:** `AffineSemigroupAlgebras` in `src/dzack_research/preamble/categories/algebras/semigroup_algebras.py`.
   **Closure assertions:** the complete `AffineSemigroupAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineSemigroupAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
