@@ -158,19 +158,30 @@ class AdditiveMorGroups(OwnedCategory):
 
     class ElementMethods:
         def _add_(self, other):
-            r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Mor."""
+            r"""Pointwise sum of arrows admitted in the same additive Mor.
+
+            The constructor can accept a function supplied as additive data;
+            arithmetic instead needs an already declared additive arrow.
+            In particular a set map with these endpoints is not enough.
+            """
+            parent = self._pointwise_mor()
+            if other not in parent:
+                return NotImplemented
             left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
             if left is not None and right is not None:
-                return self.parent()._scalar_identity(left + right)
-            return self.parent().elementwise(lambda element: self(element) + other(element))
+                return parent._scalar_identity(left + right)
+            return parent.elementwise(lambda element: self(element) + other(element))
 
         def __neg__(self):
+            parent = self._pointwise_mor()
             scalar = _scalar_identity_coefficient(self)
             if scalar is not None:
-                return self.parent()._scalar_identity(-scalar)
-            return self.parent().elementwise(lambda element: -self(element))
+                return parent._scalar_identity(-scalar)
+            return parent.elementwise(lambda element: -self(element))
 
         def __sub__(self, other):
+            if other not in self._pointwise_mor():
+                return NotImplemented
             return self + (-other)
 
         def _composition(self, right):
@@ -196,7 +207,9 @@ class AdditiveMorGroups(OwnedCategory):
             return mor.elementwise(lambda element: self(right(element)))
 
         def __rmul__(self, scalar):
-            return self.parent()._owned_scalar_multiple(scalar, self)
+            if isinstance(scalar, Morphism):
+                return scalar.__mul__(self)
+            return self._pointwise_mor()._owned_scalar_multiple(scalar, self)
 
 
 class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
@@ -259,6 +272,34 @@ class AdditiveMorphism:
         self._function = function
         super().__init__(parent, function)
 
+    def _pointwise_mor(self):
+        r"""The actual Mor holding this arrow's additive arithmetic.
+
+        Protected result-placement contract for AdditiveMorphism and
+        AdditiveMorGroups.ElementMethods: sums, negatives, differences and
+        scalar actions use it; composition retains its own Mor theory.
+        A parent carrying an additive-group law already supplies closure
+        and keeps its selected enrichment. Otherwise only the underlying
+        additive-map laws are available, so use the canonical additive Mor
+        with the same literal endpoints. In particular a ring or rng Mor
+        does not acquire a pointwise additive-group law.
+
+        ModuleMorphismMethods already refines this contract to the linear
+        Mor, since sums and negatives of linear maps remain linear even
+        when their originally selected restricted Mor is not additive.
+        """
+        parent = self.parent()
+        match parent:
+            case _ if parent in AdditiveGroups():
+                return parent
+            case _:
+                return AdditiveGroups().AdditiveCommutative().MorCategory().Of(
+                    self.domain(), self.codomain()
+                )
+
+    def __add__(self, other):
+        return AdditiveMorGroups.ElementMethods._add_(self, other)
+
     def _add_(self, other):
         return AdditiveMorGroups.ElementMethods._add_(self, other)
 
@@ -268,21 +309,25 @@ class AdditiveMorphism:
     def __neg__(self):
         return AdditiveMorGroups.ElementMethods.__neg__(self)
 
+    def __sub__(self, other):
+        return AdditiveMorGroups.ElementMethods.__sub__(self, other)
+
     def __rmul__(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _lmul_(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _rmul_(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _acted_upon_(self, actor, self_on_left):
         r"""Scalar action of the Mor's scalar ring; any other actor is not an action here."""
-        scalars = self.parent().base_ring()
+        parent = self._pointwise_mor()
+        scalars = parent.base_ring()
         if actor not in scalars:
             return None
-        return self.parent()._owned_scalar_multiple(scalars(actor), self)
+        return parent._owned_scalar_multiple(scalars(actor), self)
 
     def _composition(self, right):
         if right.codomain() is not self.domain():
@@ -294,10 +339,9 @@ class AdditiveMorphism:
             return NotImplemented
         if self is other:
             return op == op_EQ
-        from sage.structure.element import parent as element_parent
         from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
 
-        if element_parent(other) is not self.parent():
+        if other not in self.parent():
             return op == op_NE
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
         if left is not None and right is not None and (left == right) is True:

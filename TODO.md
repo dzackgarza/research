@@ -1636,21 +1636,25 @@ Repair the existing public construction routes and inherited methods before prov
   **Closure assertions:** the complete `Monoids.Commutative` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
   **Source closure (2026-10-11):** the complete four-introduction inventory, seven strict authored ancestors and actual `MonoidMor` route are recorded in HANDOFF.md. Square classes now retain their defining commutative monoid; quotient projection and admission explicitly use that monoid's unit group. The quotient's own inherited unit group is no longer replaced by its source. The nonring `ZZ.unit_group()` and `C4 -> C2` quotient assertions separate the corrected home and ambient object; execution remains T.
 
-- [ ] **`placement-owner-nonunitalsemiringmor`**. **Needs:** none.
+- [x] **`placement-owner-nonunitalsemiringmor`**. **Needs:** none.
   **Owner pass:** `NonUnitalSemiringMor` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `NonUnitalSemiringMor` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
+  **Source closure (2026-10-11):** The complete inherited construction/identity/composition route preserves addition, zero and multiplication, and does not require or infer preservation of one. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
-- [ ] **`placement-owner-nonunitalsemiringmorcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-nonunitalsemiringmorcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `NonUnitalSemiringMorCategoryConstruction` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `NonUnitalSemiringMorCategoryConstruction` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
+  **Source closure (2026-10-11):** The sole introduced fixed_category_class method selects NonUnitalSemiringMor; fixed-endpoint interning and generated providers follow the actual stronger-Mor graph. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
-- [ ] **`placement-owner-ownednonunitalsemirings`**. **Needs:** none.
+- [x] **`placement-owner-ownednonunitalsemirings`**. **Needs:** none.
   **Owner pass:** `OwnedNonUnitalSemirings` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `OwnedNonUnitalSemirings` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
+  **Source closure (2026-10-11):** Reducedness is the exact positive-power nilpotence predicate at the weakest declared associative-zero owner; no unit, additive inverse or decision algorithm is inferred. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
-- [ ] **`placement-owner-ownednonunitalsemirings-commutative`**. **Needs:** none.
+- [x] **`placement-owner-ownednonunitalsemirings-commutative`**. **Needs:** none.
   **Owner pass:** `OwnedNonUnitalSemirings.Commutative` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `OwnedNonUnitalSemirings.Commutative` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
+  **Source closure (2026-10-11):** Nilradical, prime/minimal-prime/component loci and prime-chain dimension retain their exact object and general nonenumerated meanings; finiteness is used only when a supplier establishes it. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
 - [ ] **`placement-owner-matrixalgebras`**. **Needs:** none.
   **Owner pass:** `MatrixAlgebras` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
@@ -2037,13 +2041,15 @@ Repair the existing public construction routes and inherited methods before prov
   **Closure assertions:** the complete `OwnedRings.Nontrivial` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Nontrivial`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
   **Whole-pass source closure (2026-10-11):** both introductions, all 15 strict authored ancestors and the actual inherited fixed RingMor/RingMorphism providers are reviewed. The literal ZZ witness is preserved and its existing exact native constructor now records the missing Nontrivial placement from 0 != 1; the prior PID/order/module paths did not supply that axiom. This changes no general Domain or Ordered implication and adds no recognizer. Existing Zmod(6) is a nontrivial nonfield with zero divisors; Zmod(1) is excluded. The ordinary noninjective reduction ZZ -> Zmod(6) remains a valid arrow, so nontriviality adds no injection or nonzero-reflection requirement. Unknown zero/one comparisons are not coerced. HANDOFF.md records the complete inventory, ancestry, witness admission and arrow assertions; inherited computation limits and runtime assertions remain in their existing owners and T. No prerequisite or category provider is added.
 
-- [ ] **`placement-owner-ownedrngs`**. **Needs:** none.
+- [x] **`placement-owner-ownedrngs`**. **Needs:** none.
   **Owner pass:** `OwnedRngs` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `OwnedRngs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRngs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Source closure (2026-10-11):** Two-sided ideal generation is placed on rngs. The required inherited-arrow repair now returns sums, negatives, differences and integer multiples in the actual additive Mor; it preserves composition and refuses an unproved additive operand. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
-- [ ] **`placement-owner-ownedsemirings`**. **Needs:** none.
+- [x] **`placement-owner-ownedsemirings`**. **Needs:** none.
   **Owner pass:** `OwnedSemirings` in `src/dzack_research/preamble/categories/rings/semirings.py`.
   **Closure assertions:** the complete `OwnedSemirings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedSemirings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Source closure (2026-10-11):** The initial natural-number map, central dual numbers and characteristic use exactly the unital semiring laws. NN is a nonring witness; missing constructions and kernel computations retain named frontiers. The complete introduction inventory, authored up-set, actual Mor route and true separating assertions are recorded in HANDOFF.md. Execution remains T.
 
 - [ ] **`placement-owner-pairedmodules`**. **Needs:** none.
   **Owner pass:** `PairedModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.

@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are now also closed: 24 complete passes and 616 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. After these current wrong-answer repairs, the first literal ready row is `placement-owner-adelogpairs`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 30 complete passes and 610 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. After these current wrong-answer repairs, the first literal ready row is `placement-owner-adelogpairs`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -157,6 +157,112 @@ The source search found no external caller of the removed erroneous source
 complete M1 source pass; their executable instances remain under T. No Sage,
 imports, tests, QC or build was run. This record does not close the independent
 whole `Monoids` or `OwnedGroups` passes.
+
+## Semiring/rng owner source closure (2026-10-11)
+
+**Closed nodes:** `placement-owner-ownednonunitalsemirings`,
+`placement-owner-ownednonunitalsemirings-commutative`,
+`placement-owner-nonunitalsemiringmor`,
+`placement-owner-nonunitalsemiringmorcategoryconstruction`,
+`placement-owner-ownedsemirings`, and `placement-owner-ownedrngs`.
+The semiring source and NN placement were banked in `7c532f342b`; this
+closure supplies the required inherited additive-arrow result correction.
+It does not close the independent ring or algebra owner passes.
+
+**Complete introduced inventories.** In `categories/rings/semirings.py`:
+
+| Owner | Complete direct operations and suppliers |
+| --- | --- |
+| OwnedNonUnitalSemirings | `_MorCategory`, naming, example, supercategories; `_reducedness_decision`, `is_reduced` |
+| Its Commutative refinement | naming, example; `_nilradical_decision`, `nilradical`, `_krull_dimension_decision`, `krull_dimension`, `prime_ideal_locus`, `minimal_prime_locus`, `_finite_minimal_primes`, `minimal_primes`, `irreducible_component_locus` |
+| OwnedSemirings | `_MorCategory`, example, supercategories, `initial_object`, `initial_morphism`; `_dual_numbers_construction`, `dual_numbers`, `_characteristic_decision`, `characteristic` |
+| OwnedRngs | `_MorCategory`, example, supercategories; `_ideal_generated_by`, `ideal` |
+| NonUnitalSemiringMor | no new operation bodies; stronger additive/zero/multiplicative laws with inherited construction, identity and composition |
+| Its category construction | `fixed_category_class` selects `NonUnitalSemiringMor` |
+
+The definitions of the complete authored up-sets were read. Put
+`B={Objects, Sets, Magmas, Semigroups, AdditiveMagmas,
+AdditiveMagmas.AdditiveCommutative, AdditiveSemigroups, AdditiveMonoids}`.
+These supply, successively, objects, sets, multiplication and its
+associativity, addition and its commutativity/associativity/zero. The strict
+up-set of OwnedNonUnitalSemirings is exactly B (8 owners); its commutative
+refinement adds OwnedNonUnitalSemirings and Magmas.Commutative (10).
+OwnedSemirings adds OwnedNonUnitalSemirings, Monoids and Magmas.Unital (11);
+OwnedRngs instead adds OwnedNonUnitalSemirings, AdditiveGroups and
+AdditiveGroups.AdditiveCommutative (11). Nonunital semirings impose both
+distributive laws and absorbing zero, semirings further select one, and rngs
+further require additive inverses. Generated joins are not new authored
+owners. The fixed-category constructions inherit the read
+`MorCategoryConstruction -> _MorCategoryOf` mechanism; their mathematical
+category is MorCategories, over Cat.
+
+**Placement and true assertions.** Positive powers and zero define reducedness
+without a unit or additive inverses; no weaker declared ancestor supplies all
+of this multiplicative-zero structure. In the commutative refinement, if
+`a^m=b^n=0`, distributivity shows `(a+b)^(m+n-1)=0`, and multiplication by any
+ambient element preserves nilpotence. Thus nilpotents form an ideal here;
+commutativity cannot be dropped (the two off-diagonal nilpotent matrix units
+in M2(QQ) sum to an invertible matrix). The prime/minimal-prime loci are
+subsets of the exact object's full power set, not a finite-generator proxy.
+Their `V(p)` images retain actual minimal-prime subsets and may be infinite.
+Dimension is the supremum of prime-chain lengths, including -infinity for
+an empty spectrum and +infinity when unbounded. No unsupplied finite bound is
+asserted. NN, outside rings, has nilpotent set `{0}`, and `{0}` is prime.
+These are mathematical propositions; the generic NN suppliers may retain
+them without a Boolean or computed ideal representation.
+
+The unique unital semiring arrow `NN -> S` is `n |-> n*1`; distributivity
+proves its multiplicativity. The source uses the selected zero/one/addition
+and retains the literal NN and S endpoints. For NN dual numbers,
+`(a,b)(c,d)=(ac,ad+bc)`, and `epsilon=(0,1)` is central and square-zero.
+Characteristic records the natural-number kernel: the zero semiring has
+characteristic 1; if no positive multiple of one vanishes it is 0. In the
+Boolean semiring characteristic is 0 although `1+1=1`, so characteristic
+zero does not imply injectivity of NN's map. Rng ideals instead are absorbing
+additive subgroups: in the nonunital rng 2ZZ the ideal generated by 4 is 4ZZ.
+This is a true witness outside unital rings; an absent represented ideal
+algorithm reaches the declared ideal-construction assertion.
+
+**Actual arrows and required repair.** Generated providers follow the actual
+fixed-Mor supergraph. NonUnitalSemiringMor reaches MagmaMor and
+AdditiveMonoidMor, then AdditiveMagmaMor/SetMorCategory. The commutative
+refinement reuses that fixed Mor. SemiringMor also reaches MonoidMor and
+UnitalMagmaMor; RngMor instead reaches AdditiveMor from its abelian additive
+ancestor. Endpoint identity and the actual stronger theory govern reuse.
+The constant-zero endomap of NN preserves addition, zero and multiplication,
+but not one; it belongs to the nonunital theory, not the unital theory.
+
+The inherited additive arithmetic had incorrectly constructed its results
+back in RngMor. For `f=id_ZZ`, `(-f)(1*1)=-1 != 1=(-f)(1)(-f)(1)` and
+`(f+f)(1*1)=2 != 4=(f+f)(1)(f+f)(1)`. Sums and negatives are additive maps,
+not generally rng maps. The shared `_pointwise_mor` now retains a declared
+additive enrichment when present and otherwise selects the actual additive
+Mor with the same endpoints. Addition, negation, subtraction and integer
+action use it; the existing linear refinement remains the linear Mor.
+Composition is unchanged and still preserves the stronger rng theory.
+An operand must already belong to the selected additive Mor: the set map
+`q(n)=n^2` supplies no additive premise and is refused by addition/subtraction.
+Indeed `(f+q)(2)=6 != 4=2*(f+q)(1)`. Constructor admission is not used to
+manufacture that premise. Common-Mor comparison now admits an already
+stronger rng arrow instead of falsely rejecting it solely by its parent.
+Finite comparison uses conjunctions; an undecided infinite comparison stays
+its exact owned proposition.
+
+**Sources, consumers and computation boundaries.** The complete semiring and
+final additive-owner files, the current ring suppliers, NN placement,
+fixed-Mor/generated-provider routes, and existing additive/linear/endomorphism
+consumers were inspected as source. Mathematical definitions are checked
+against Mathlib's
+[ring/semiring laws](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Defs.html),
+[nonunital and unital morphisms](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Hom/Defs.html),
+and [characteristic](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/CharP/Defs.html).
+The explicit separating calculations above are independent assertions.
+Nilradical representation, prime-chain dimension, finite minimal-prime
+computation, central dual-number construction, characteristic computation,
+and rng ideal generation each retain their named selected-supplier boundary.
+Nothing turns an unavailable algorithm into a negative predicate. These are
+complete M1 source closures; executable constructor/arithmetic/unknown cases
+remain under T. No Sage, imports, tests, QC, build or consumer gate was run.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 
