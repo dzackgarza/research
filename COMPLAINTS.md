@@ -29,7 +29,7 @@ constructions.
 owners expose these operations. Indefinite generators
 (`categories/lattice_morphisms.py:2215`) and general indefinite isometries
 (`:2593`) import `sage_indefinite_port.indefinite.recursive`; that module
-is absent from the inspected local port `src/` tree at `993029f`.
+was not found in the inspected local port `src/` tree at `993029f`.
 Definite computation and selected generating resolutions are existing
 partial capabilities.
 
@@ -50,20 +50,40 @@ For `G = <g_1,...,g_n>` and an established morphism `f: G -> H`, the image
 is the generated subgroup `<f(g_1),...,f(g_n)>` of `H`, with its inclusion
 and the factorization of `f`. Computing its relations or selecting preimages
 are separate operations. The general group owner has a generated-subgroup
-constructor, and the subgroup-image method already maps generators.
+constructor, and the subgroup-image method already maps generators. The
+free-source image constructor (`categories/group/groups.py:1888`) also
+uses this construction. Generated subgroups retain an owned generating set
+and selected free-group augmentation (`:4562-4610`).
 
 **Observed source boundary, 2026-10-11:** `GroupMorphism` accepts generator
 images, an elementwise rule or a GAP map. Its ordinary `image()` and
 element-preimage route call `_gap_morphism_crossing()`, which requires
 generator images or a GAP realization
 (`categories/group/groups.py:2167,2248,2291`). An evaluable elementwise
-map therefore need not support the same operations. The existing
+map therefore need not support the same operations. The nearby
+`factor_through` route (`:2336-2371`) requires both input maps to be known
+injective, so it does not supply the image factorization of a general
+noninjective map. The existing
 `finite_image_lifts` method (`:3479-3563`) selects preimages over a finite
 image, but publicly returns a dictionary. These choices should be a section
 `U(I) -> U(G)` of the underlying-set surjection, returned as a morphism in
-sets. The table is private computation data. The general action stabilizer
-(`group/g_objects.py:1115`) returns a predicate subgroup without connecting
-its retained action to available finite-index generator computations.
+sets. The table is private computation data. An existing section operation
+at `group/g_sets.py:1054` returns an actual set morphism.
+
+The default action stabilizer (`group/g_objects.py:1115`) constructs an
+actual preamble subgroup through `StabilizerSubgroups`, `PredicateSubgroups`
+and `Subgroups`, with its inherited inclusion
+(`group/groups.py:1851,4502`). Its public `stabilizer_action` accessor
+returns the string label passed to the constructor; the represented action
+is captured in the membership closure
+(`group/predicate_subgroups.py:669-706`). The construction should retain
+the represented action as defining data.
+
+Computed finite-index generating data have a separate public-output defect.
+The general, kernel and inverse-image Schreier methods return tuples
+(`group/predicate_subgroups.py:162,517,646`). Their elements belong to the
+subgroup, but the output supplies neither a represented generating family
+nor its free-group augmentation for that subgroup.
 
 **Dependency path:** selected generating data and evaluable morphism ->
 image subgroup with inclusion and factorization -> chosen preimages ->
@@ -94,8 +114,8 @@ map. The `pullbacks-in-every-category` node owns this construction.
 equalizers but returns the equalizer result rather than a selected pullback
 cone. The inspected `OwnedGroups._categorical_product_construction`
 (`categories/group/groups.py:2997`) accepts only nonempty finite families
-of finite groups. The inspected group owner files contain no equalizer
-realization. Selected products and equalizers at the general category owner,
+of finite groups. No equalizer realization was found in the inspected group
+owner files. Selected products and equalizers at the general category owner,
 predicate inverse images and finite-index Schreier generators are existing
 partial capabilities.
 
@@ -109,6 +129,36 @@ computability boundary. Request additional mathematics from
 
 The [expressive-power assessment](docs/preamble-expressive-power.md) records
 the general interfaces and their composition boundaries.
+
+### Represented set quotients require finite relation diagrams
+
+For parallel set maps `a,b: R -> X`, the coequalizer supplies a set `Q`,
+a projection `q: X -> Q` with `q a = q b`, and the universal factorization
+of maps that identify these pairs. Finiteness is a computation hypothesis,
+not part of the quotient definition.
+
+**Observed source boundary, 2026-10-11:**
+`categories/sets/set_categories.py:1178` constructs an owned quotient,
+projection and selected universal cocone, but asserts that both `R` and
+`X` are finite. This excludes represented infinite relations even when
+their quotient is finite. The action-specific `_OrbitSet` and `_orbit_set`
+(`categories/group/g_sets.py:567,632`) already retain a represented action
+and supply a quotient with a set-morphism projection; their representation
+is distinct from finite orbit enumeration.
+
+**Dependency path:** represented relation diagram -> quotient and universal
+projection -> class set of a represented small groupoid -> class projections
+and representative sections. The groupoid class set composes source and
+target on arrows with the set coequalizer. **Partial capability:** finite
+set coequalizers, represented orbit quotients and section morphisms.
+**Consumers:** equivalence relations, action quotients and class sets.
+**Owner:** the general set quotient construction. **Coverage:** the named
+source routes; other representations and execution remain unverified.
+Inspect the formal quotient and coequalizer owners before requesting further
+mathematics from `lean-categories`. The existing
+`genera-present-their-formalization` node owns the genus consumer; the
+[expressive-power assessment](docs/preamble-expressive-power.md) records
+the general construction gap.
 
 ### Module images require finite selected generators at the inspected owner
 
@@ -665,7 +715,10 @@ partitions its input family; it supplies no such maps for an entire genus.
 The category core retains objects and isomorphisms; its component quotient
 supplies the class set. Class projections, representative sections and
 isomorphism witnesses are distinct maps. Their general presentation belongs
-to the quotient and category owners, with the genus as a consumer. The local
+to the quotient and category owners, with the genus as a consumer. The
+[represented set quotient gap](#represented-set-quotients-require-finite-relation-diagrams)
+records the finite-relation restriction of the inspected general coequalizer
+route. The local
 formalization slice at `29ff4ad` supplies genus classes and positive-definite
 finiteness. Further classification and finiteness coverage remains with this
 existing foundation owner.
