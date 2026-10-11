@@ -1756,6 +1756,242 @@ class FormModules(OwnedCategoryOverBaseRing):
             def base_change(self, ring_map):
                 return FormBaseChanges(ring_map.codomain())(self, ring_map)
 
+        class Torsion(CategoryWithAxiom):
+            r"""Finitely presented torsion modules carrying a bilinear or quadratic form."""
+
+            def extra_super_categories(self):
+                return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+
+            def an_object(self):
+                ring = self.base_ring()
+                zero = ring.free_module(0)
+                presentation = zero.module_category().Mor(zero, zero).identity()
+                module = Modules(ring).FinitelyPresented().Torsion()(presentation)
+                form = module.bilinear_forms(ring)(lambda left, right: ring.zero())
+                return FormModules(ring)(form, _extra_categories=(self,))
+
+            class ParentMethods:
+                def _torsion_form_is_quadratic(self) -> bool:
+                    return _is_quadratic_form(self.form())
+
+                def subobject_generated_by(self, generators):
+                    return _torsion_form_subobject_on(
+                        self,
+                        generators,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def primary_part(self, prime):
+                    return _torsion_form_primary_part(
+                        self,
+                        prime,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                @cached_method
+                def isotropic_subobjects(self):
+                    return _torsion_form_isotropic_subobjects(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                @cached_method
+                def maximal_isotropic_subobjects(self):
+                    return _torsion_form_maximal_isotropic_subobjects(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def form_vanishes_on(self, elements) -> bool:
+                    elements = tuple(elements)
+                    zero = self.value_module().zero()
+                    if self._torsion_form_is_quadratic():
+                        return all(self.q(element) == zero for element in elements)
+                    return all(
+                        self.b(left, right) == zero
+                        for left in elements
+                        for right in elements
+                    )
+
+                def gram_matrix(self):
+                    representative = _representative_gram(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+                    rows, columns = map(int, representative.tensor_shape())
+                    return representative.base_ring().matrix_space(rows, columns).from_rows(
+                        tuple(
+                            tuple(representative[row, column] for column in range(columns))
+                            for row in range(rows)
+                        )
+                    )
+
+                @cached_method(key=lambda self, generators: tuple(id(generator) for generator in generators))
+                def reframing_isometry(self, generators):
+                    return _regenerate_form_on_generators(
+                        self,
+                        tuple(generators),
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def regenerate(self, generators):
+                    return self.reframing_isometry(generators).codomain()
+
+                @cached_method
+                def primary_components(self):
+                    return _primary_form_component_family(self)
+
+                def primary_decomposition(self, *args, **kwargs):
+                    return self.primary_components(*args, **kwargs)
+
+                @cached_method
+                def subobjects(self):
+                    return _torsion_form_all_subobjects(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def orbit(self, element, group=None):
+                    return _finite_form_orbit(self, element, group)
+
+                @cached_method
+                def orbits(self, group=None):
+                    return _finite_form_orbits(self, group)
+
+                def orbits_on_subobjects(self, group=None):
+                    return _finite_form_subobject_orbits(self, group=group)
+
+                def orbits_on_isotropic_subobjects(self, group=None):
+                    return _finite_form_subobject_orbits(self, isotropic=True, group=group)
+
+                def is_anisotropic(self) -> bool:
+                    zero = self.zero()
+                    return all(
+                        not self.form_vanishes_on((element,))
+                        for element in self.elements()
+                        if element != zero
+                    )
+
+                def orthogonal_subobject(self, subobject):
+                    return _torsion_form_orthogonal_subobject(
+                        self,
+                        subobject,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                @cached_method
+                def lagrangian_subobjects(self):
+                    return _torsion_form_lagrangian_subobjects(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def is_metabolic(self) -> bool:
+                    return self.lagrangian_subobjects().cardinality() != 0
+
+                def metabolizer(self):
+                    return _finite_form_metabolizer(self)
+
+                def restricted_form(self, subobject):
+                    if subobject.inclusion().codomain() is not self:
+                        raise ValueError(
+                            f"the form of {self} restricts only to a submodule of {self}, but {subobject} "
+                            f"is included into {subobject.inclusion().codomain()}"
+                        )
+                    return subobject
+
+                def subquotient_form(self, subobject, over):
+                    return _torsion_form_subquotient(
+                        self,
+                        subobject,
+                        over,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def orthogonal_quotient(self, subobject):
+                    perpendicular = self.orthogonal_subobject(subobject)
+                    return self.subquotient_form(subobject, perpendicular)
+
+                @cached_method
+                def invariant_factor_form(self):
+                    return _invariant_factor_form_isomorphism(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def p_adic_jordan_decomposition(self):
+                    return _p_adic_jordan_decomposition(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def p_adic_jordan_module_generators(self):
+                    return _p_adic_jordan_module_generators(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def p_adic_jordan_form(self):
+                    return _p_adic_jordan_form(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                normal_form = p_adic_jordan_form
+
+                def normal_form_isometry(self):
+                    return self.normal_form().inverse()
+
+                def twist(self, scalar):
+                    quadratic = self._torsion_form_is_quadratic()
+                    category = (
+                        TorsionQuadraticFormModules(self.base_ring())
+                        if quadratic
+                        else TorsionBilinearFormModules(self.base_ring())
+                    )
+                    return TorsionFormTwistFunctor(
+                        category,
+                        scalar,
+                        quadratic=quadratic,
+                    )(self)
+
+                def is_isomorphic(self, other) -> bool:
+                    quadratic = self._torsion_form_is_quadratic()
+                    category = (
+                        TorsionQuadraticFormModules(self.base_ring())
+                        if quadratic
+                        else TorsionBilinearFormModules(self.base_ring())
+                    )
+                    if other not in category:
+                        return False
+                    return _forms_are_isomorphic(self, other, quadratic=quadratic)
+
+                is_isometric_to = is_isomorphic
+
+                def is_anti_isometric(self, other) -> bool:
+                    quadratic = self._torsion_form_is_quadratic()
+                    category = (
+                        TorsionQuadraticFormModules(self.base_ring())
+                        if quadratic
+                        else TorsionBilinearFormModules(self.base_ring())
+                    )
+                    if other not in category:
+                        return False
+                    return self.is_isomorphic(other.twist(-1))
+
+                @cached_method
+                def automorphism_group(self):
+                    return _torsion_form_automorphism_group(
+                        self,
+                        quadratic=self._torsion_form_is_quadratic(),
+                    )
+
+                def orthogonal_group(self):
+                    return self.automorphism_group()
+
+                def O(self):  # noqa: E743 - standard notation O(A, form)
+                    return self.automorphism_group()
+
 
 class NondegenerateGenericFibreFormModules(OwnedCategoryOverBaseRing):
     r"""Finite nondegenerate formed modules over an integral domain.
@@ -2118,10 +2354,13 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             r"""Finitely presented torsion modules with a bilinear form."""
 
             def an_object(self):
-                r"""The discriminant group of U, a torsion module with a form."""
-                from dzack_research.preamble.categories.lattices import Lattices
+                r"""Return the common torsion module equipped through this bilinear constructor."""
+                ring = self.base_ring()
+                common = FormModules(ring).FinitelyPresented().Torsion().an_object()
+                return self.from_module(common.unformed_module(), (), ring)
 
-                return Lattices(self.base_ring())("U").discriminant_group()
+            def extra_super_categories(self):
+                return [FormModules(self.base_ring()).FinitelyPresented().Torsion()]
 
             _IsoCategory = TorsionBilinearFormIsoCategoryConstruction
 
@@ -2222,163 +2461,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                             f"relation of {module} does not pair to zero in {value_module} with every generator"
                         )
 
-                def subobject_generated_by(self, generators):
-                    r"""Return the span as a bilinear-form-bearing subobject."""
-                    return _torsion_form_subobject_on(self, generators, quadratic=False)
-
-                def primary_part(self, prime):
-                    r"""Return the ``prime``-primary bilinear-form-bearing subobject."""
-                    return _torsion_form_primary_part(self, prime, quadratic=False)
-
-                @cached_method
-                def isotropic_subobjects(self):
-                    r"""Return all subobjects on which the bilinear form vanishes."""
-                    return _torsion_form_isotropic_subobjects(self, quadratic=False)
-
-                @cached_method
-                def maximal_isotropic_subobjects(self):
-                    r"""Return the bilinear-isotropic subobjects maximal by inclusion."""
-                    return _torsion_form_maximal_isotropic_subobjects(self, quadratic=False)
-
-                def form_vanishes_on(self, elements) -> bool:
-                    elements = tuple(elements)
-                    return all(self.b(left, right) == self.value_module().zero() for left in elements for right in elements)
-
-
-                def gram_matrix(self):
-                    r"""Return canonical rational representatives of the finite-form Gram values."""
-                    representative = _representative_gram(self, quadratic=False)
-                    rows, columns = map(int, representative.tensor_shape())
-                    return representative.base_ring().matrix_space(rows, columns).from_rows(
-                        tuple(
-                            tuple(representative[row, column] for column in range(columns))
-                            for row in range(rows)
-                        )
-                    )
-
-                @cached_method(key=lambda self, generators: tuple(id(generator) for generator in generators))
-                def reframing_isometry(self, generators):
-                    r"""Return the explicit isometry to this form on the selected generating family."""
-                    return _regenerate_form_on_generators(
-                        self, tuple(generators), quadratic=False
-                    )
-
-                def regenerate(self, generators):
-                    r"""Return this finite form written on the selected generating family."""
-                    return self.reframing_isometry(generators).codomain()
-
-                @cached_method
-                def primary_components(self):
-                    r"""Return the prime-indexed family of primary form-bearing subobjects."""
-                    return _primary_form_component_family(self)
-
-                def primary_decomposition(self, *args, **kwargs):
-                    return self.primary_components(*args, **kwargs)
-
-
-                @cached_method
-                def subobjects(self):
-                    r"""Return all form-bearing subobjects of this finite form."""
-                    return _torsion_form_all_subobjects(self, quadratic=False)
-
-                def orbit(self, element, group=None):
-                    r"""Return the orbit of ``element`` under ``group`` or the full orthogonal group."""
-                    return _finite_form_orbit(self, element, group)
-
-                @cached_method
-                def orbits(self, group=None):
-                    r"""Return the orbit partition of the finite underlying module."""
-                    return _finite_form_orbits(self, group)
-
-                def orbits_on_subobjects(self, group=None):
-                    r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
-                    return _finite_form_subobject_orbits(self, group=group)
-
-                def orbits_on_isotropic_subobjects(self, group=None):
-                    r"""Return the orthogonal-group orbits on isotropic subobjects."""
-                    return _finite_form_subobject_orbits(self, isotropic=True, group=group)
-
-                def is_anisotropic(self) -> bool:
-                    zero = self.zero()
-                    return all(
-                        not self.form_vanishes_on((element,))
-                        for element in self.elements()
-                        if element != zero
-                    )
-
-                def orthogonal_subobject(self, subobject):
-                    return _torsion_form_orthogonal_subobject(
-                        self, subobject, quadratic=False
-                    )
-
-                @cached_method
-                def lagrangian_subobjects(self):
-                    return _torsion_form_lagrangian_subobjects(self, quadratic=False)
-
-                def is_metabolic(self) -> bool:
-                    return self.lagrangian_subobjects().cardinality() != 0
-
-                def metabolizer(self):
-                    return _finite_form_metabolizer(self)
-
-                def restricted_form(self, subobject):
-                    if subobject.inclusion().codomain() is not self:
-                        raise ValueError(
-                            f"the form of {self} restricts only to a submodule of {self}, but {subobject} "
-                            f"is included into {subobject.inclusion().codomain()}"
-                        )
-                    return subobject
-
-                def subquotient_form(self, subobject, over):
-                    return _torsion_form_subquotient(
-                        self, subobject, over, quadratic=False
-                    )
-
-                def orthogonal_quotient(self, subobject):
-                    perpendicular = self.orthogonal_subobject(subobject)
-                    return self.subquotient_form(subobject, perpendicular)
-
-                @cached_method
-                def invariant_factor_form(self):
-                    r"""Return the form-preserving isomorphism to invariant-factor framing."""
-                    return _invariant_factor_form_isomorphism(self, quadratic=False)
-
-                def p_adic_jordan_decomposition(self):
-                    r"""Return the chosen Jordan generators indexed by their prime."""
-                    return _p_adic_jordan_decomposition(self, quadratic=False)
-
-                def p_adic_jordan_module_generators(self):
-                    r"""Return the chosen prime-by-prime Jordan generating family."""
-                    return _p_adic_jordan_module_generators(self, quadratic=False)
-
-                def p_adic_jordan_form(self):
-                    r"""Return the explicit isometry to this form in Jordan framing."""
-                    return _p_adic_jordan_form(self, quadratic=False)
-
-                normal_form = p_adic_jordan_form
-
-                def normal_form_isometry(self):
-                    r"""Return the normal-form-to-original morphism."""
-                    return self.normal_form().inverse()
-
-                def twist(self, scalar):
-                    r"""Return the same finite module equipped with ``scalar*b``."""
-                    return TorsionBilinearFormModules(self.base_ring()).twist_functor(scalar)(self)
-
-                def is_isomorphic(self, other) -> bool:
-                    r"""Decide isometry of represented finite symmetric bilinear forms."""
-                    if other not in TorsionBilinearFormModules(self.base_ring()):
-                        return False
-                    return _forms_are_isomorphic(self, other, quadratic=False)
-
-                is_isometric_to = is_isomorphic
-
-                def is_anti_isometric(self, other) -> bool:
-                    r"""Return whether ``(self,b)`` is isometric to ``(other,-b)``."""
-                    if other not in TorsionBilinearFormModules(self.base_ring()):
-                        return False
-                    return self.is_isomorphic(other.twist(-1))
-
                 def pontryagin_dual_identification(self):
                     r"""Return ``A -> Hom(A,K/R)``, ``x |-> b(x,-)``, for perfect ``b``."""
                     from sage.categories.morphism import SetMorphism
@@ -2408,18 +2490,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                         )
 
                     return SetMorphism(OwnedSets().Mor(self, characters), character)
-
-                @cached_method
-                def automorphism_group(self):
-                    r"""Return ``O(A,b)`` as a finite owned group of live automorphisms."""
-                    return _torsion_form_automorphism_group(self, quadratic=False)
-
-                def orthogonal_group(self):
-                    return self.automorphism_group()
-
-                def O(self):  # noqa: E743 - standard mathematical notation O(A,b)
-                    return self.automorphism_group()
-
 
 class QuadraticFormModules(OwnedCategoryOverBaseRing):
     def an_object(self):
@@ -3103,6 +3173,8 @@ def _form_module(
         categories.append(FreeFormModules(base_ring))
     if is_presented:
         categories.append(FormModules(base_ring).FinitelyPresented())
+        if module in Modules(base_ring).FinitelyPresented().Torsion():
+            categories.append(FormModules(base_ring).FinitelyPresented().Torsion())
     if module in FramedFreeModules(base_ring).FinitelyGenerated():
         categories.append(FreeFormModules(base_ring).FinitelyGenerated())
     if _is_bilinear_form(form):
