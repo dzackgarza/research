@@ -743,7 +743,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ClassGroups` in `src/dzack_research/preamble/categories/divisors/class_groups.py`.
   **Closure assertions:** the complete `ClassGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-classifyingcategory`**. **Needs:** none.
+- [x] **`placement-owner-classifyingcategory`**. **Needs:** none.
   **Owner pass:** `ClassifyingCategory` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
   **Closure assertions:** the complete `ClassifyingCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
