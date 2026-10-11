@@ -492,7 +492,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
   **Closure assertions:** the complete `AlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-algebrasheaves`**. **Needs:** none.
+- [x] **`placement-owner-algebrasheaves`**. **Needs:** none.
   **Owner pass:** `AlgebraSheaves` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
   **Closure assertions:** the complete `AlgebraSheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraSheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

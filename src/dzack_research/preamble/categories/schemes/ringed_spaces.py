@@ -34,7 +34,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.logic import negation
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -215,6 +215,116 @@ class ModuleSheaves(OwnedParameterizedCategory):
         return sheaf_morphism.cokernel()
 
 
+def _represented_sheaf_mor(domain, codomain):
+    r"""The selected represented sheaf Mor shared by these endpoints.
+
+    A pair built on one literal sheaf presentation uses that presentation's
+    full-subcategory Mor.  The currently represented cross-presentation case
+    is quasi-coherent sheaves, whose Mor owner compares affine and finite-atlas
+    realizations.  A future non-quasi-coherent mixed presentation must supply
+    its own common sheaf-arrow realization instead of being treated as a map
+    merely because the endpoints are objects.
+    """
+    source_mor = getattr(domain, "_fixed_mor_category", None)
+    target_mor = getattr(codomain, "_fixed_mor_category", None)
+    if source_mor is not None and source_mor is target_mor:
+        return source_mor.Mor(domain, codomain)
+    scheme = domain.scheme()
+    quasi_coherent = QuasiCoherentSheaves(scheme)
+    if domain in quasi_coherent and codomain in quasi_coherent:
+        return quasi_coherent.Mor(domain, codomain)
+    raise TypeError(
+        f"the sheaves {domain} and {codomain} have no selected common sheaf-morphism realization; "
+        "their algebra-sheaf Hom exists mathematically, but this representation needs a common "
+        "sheaf-arrow computation before an underlying arrow can be supplied"
+    )
+
+
+class AlgebraSheafMorphismMethods:
+    r"""A morphism of ``O_X``-algebra sheaves on one represented ringed space.
+
+    The underlying sheaf arrow is retained exactly.  Preservation of
+    multiplication and unit are the defining arrow equations.  An arbitrary
+    represented sheaf arrow states those equations as premises; constructions
+    such as identity and composition derive them and record ``True``.
+    """
+
+    def __init__(self, parent, underlying_morphism, *, algebra_laws=None) -> None:
+        underlying = _represented_sheaf_mor(parent.domain(), parent.codomain())(
+            underlying_morphism
+        )
+        self._underlying_sheaf_morphism = underlying
+        self._algebra_laws = algebra_laws
+        super().__init__(parent)
+
+    def underlying_sheaf_morphism(self):
+        return self._underlying_sheaf_morphism
+
+    def preserves_multiplication(self):
+        if self._algebra_laws is True:
+            return True
+        return AtomicProposition("preserves_algebra_sheaf_multiplication", self)
+
+    def preserves_unit(self):
+        if self._algebra_laws is True:
+            return True
+        return AtomicProposition("preserves_algebra_sheaf_unit", self)
+
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if other not in self.parent():
+            return op == op_NE
+        equal = self.underlying_sheaf_morphism() == other.underlying_sheaf_morphism()
+        return equal if op == op_EQ else negation(equal)
+
+    def __eq__(self, other):
+        return self._richcmp_(other, op_EQ)
+
+    def __ne__(self, other):
+        return self._richcmp_(other, op_NE)
+
+    def __mul__(self, other):
+        if other.codomain() is not self.domain() or other not in self.parent().mor_category().Mor(
+            other.domain(), self.domain()
+        ):
+            return NotImplemented
+        mor = self.parent().mor_category().Mor(other.domain(), self.codomain())
+        return mor._from_known_algebra_map(
+            self.underlying_sheaf_morphism() * other.underlying_sheaf_morphism()
+        )
+
+
+class AlgebraSheafMor(CategoricalMor):
+    r"""``Hom_{O_X-Alg}(A,B)`` with its represented underlying sheaf arrow."""
+
+    ElementMethods = AlgebraSheafMorphismMethods
+
+    def _element_constructor_(self, underlying_morphism):
+        if isinstance(underlying_morphism, AlgebraSheafMorphismMethods):
+            if underlying_morphism.parent() is self:
+                return underlying_morphism
+            underlying_morphism = underlying_morphism.underlying_sheaf_morphism()
+        return self.element_class(self, underlying_morphism)
+
+    def _from_known_algebra_map(self, underlying_morphism):
+        return self.element_class(self, underlying_morphism, algebra_laws=True)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity algebra-sheaf morphism {self.domain()} -> {self.codomain()}: "
+                "the endpoints differ"
+            )
+        underlying = _represented_sheaf_mor(self.domain(), self.domain()).identity()
+        return self._from_known_algebra_map(underlying)
+
+
+class AlgebraSheafMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = AlgebraSheafMor
+
+
 class AlgebraSheaves(OwnedParameterizedCategory):
     r"""Sheaves of ``O_X``-algebras on one represented ringed space ``X``."""
 
@@ -228,6 +338,8 @@ class AlgebraSheaves(OwnedParameterizedCategory):
 
     def super_categories(self):
         return [ModuleSheaves(self.scheme())]
+
+    _MorCategory = AlgebraSheafMorCategoryConstruction
 
     def an_object(self):
         return self.scheme().structure_sheaf()
