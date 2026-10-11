@@ -6503,13 +6503,175 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return embedding.codomain().O().pointwise_stabilizer(embedding)
 
         @cached_method
-        def pointwise_perpendicular_kernel(self):
-            r"""Return the kernel of isometries acting identically on \(I^\perp\)."""
-            from sage_indefinite_port.indefinite.isotropic_lifts import (
-                pointwise_perpendicular_kernel,
-            )
+        def perpendicular_restriction(self):
+            r"""Return ``r:P_I -> O(I^perp)``, restriction to the full perpendicular.
 
-            return pointwise_perpendicular_kernel(self)
+            This is deliberately not the joint action on ``I`` and
+            ``I^perp/I``.  Its kernel consists of ambient isometries fixing
+            every vector of ``I^perp`` pointwise.
+            """
+            parabolic = self.parabolic_subgroup()
+            perpendicular = self.orthogonal_complement()
+            inclusion = perpendicular.inclusion()
+            target = perpendicular.Aut()
+
+            def restrict(isometry):
+                return target(
+                    lambda label: inclusion.lift(
+                        isometry(inclusion(perpendicular.module_generator(label)))
+                    )
+                )
+
+            return parabolic.Mor(target)(restrict)
+
+        @cached_method
+        def _pointwise_perpendicular_kernel_data(self):
+            r"""Retain the complete integral linear solution module for ``ker(r)``.
+
+            Put ``J=I^perp`` and ``R=rad(J)``.  The quotient ``L/J`` is
+            required to be free in the represented integral computation.  An
+            isometry fixing ``J`` pointwise is uniquely ``1+N`` with
+            ``N:L/J -> R``.  For chosen quotient lifts ``f_a`` the remaining
+            isometry equations are
+
+            ``b(N f_a, f_b) + b(f_a, N f_b) = 0``.
+
+            They are homogeneous integral linear equations.  Their kernel is
+            therefore the complete parameter module; no quotient-action or
+            arithmetic image computation enters this construction.
+            """
+            ambient = self.isotropic_embedding().codomain()
+            ring = ambient.base_ring()
+            if _engine_ring(ring) is not SageZZ:
+                raise TypeError(
+                    f"the pointwise-perpendicular kernel is presently solved integrally over ZZ, but {ambient} is over {ring}"
+                )
+            perpendicular = self.orthogonal_complement()
+            inclusion = perpendicular.inclusion()
+            quotient = inclusion.cokernel()
+            if quotient.is_torsion_free() is not True:
+                raise ValueError(
+                    f"the quotient {ambient}/{perpendicular} must be torsion-free for the pointwise-perpendicular kernel construction"
+                )
+            quotient_trivialization = quotient.finite_free_trivialization()
+            quotient_free = quotient_trivialization.codomain()
+            quotient_projection = inclusion.cokernel_projection()
+            quotient_map = quotient_trivialization.forward() * quotient_projection
+            quotient_labels = tuple(quotient_free.module_generating_set())
+            quotient_lifts = {
+                label: quotient_projection.preimage(
+                    quotient_trivialization.inverse()(
+                        quotient_free.module_generator(label)
+                    )
+                )
+                for label in quotient_labels
+            }
+
+            radical = perpendicular.radical()
+            radical_inclusion = radical.inclusion()
+            radical_labels = tuple(radical.module_generating_set())
+            radical_vectors = {
+                label: inclusion(radical_inclusion(radical.module_generator(label)))
+                for label in radical_labels
+            }
+
+            parameter_labels = finite_ordered_set(tuple(
+                (quotient_label, radical_label)
+                for quotient_label in quotient_labels
+                for radical_label in radical_labels
+            ))
+            parameters = ring.free_module(parameter_labels)
+            equation_labels = finite_ordered_set(tuple(
+                (left, right)
+                for left_position, left in enumerate(quotient_labels)
+                for right in quotient_labels[left_position:]
+            ))
+            equations = ring.free_module(equation_labels)
+
+            def equation_image(variable_label):
+                quotient_label, radical_label = variable_label
+                radical_vector = radical_vectors[radical_label]
+                coefficients = {}
+                for left, right in equation_labels:
+                    coefficient = ring.zero()
+                    if quotient_label == left:
+                        coefficient += ambient.b(radical_vector, quotient_lifts[right])
+                    if quotient_label == right:
+                        coefficient += ambient.b(quotient_lifts[left], radical_vector)
+                    if coefficient != ring.zero():
+                        coefficients[(left, right)] = coefficient
+                return equations.linear_combination(coefficients)
+
+            equation = parameters.module_category().Mor(parameters, equations)(equation_image)
+            solution = equation.kernel()
+
+            def correction(parameter, quotient_label):
+                coordinates = solution.inclusion()(parameter).to_vector()
+                result = ambient.zero()
+                for radical_label in radical_labels:
+                    coefficient = coordinates((quotient_label, radical_label))
+                    if coefficient != ring.zero():
+                        result += ambient.scalar_multiple(
+                            coefficient, radical_vectors[radical_label]
+                        )
+                return result
+
+            def shift(parameter, element):
+                quotient_coordinates = quotient_map(element).to_vector()
+                result = ambient.zero()
+                for quotient_label in quotient_labels:
+                    coefficient = quotient_coordinates(quotient_label)
+                    if coefficient != ring.zero():
+                        result += ambient.scalar_multiple(
+                            coefficient, correction(parameter, quotient_label)
+                        )
+                return result
+
+            def isometry(parameter):
+                forward = ambient.module_category().Mor(ambient, ambient)({
+                    label: ambient.module_generator(label)
+                    + shift(parameter, ambient.module_generator(label))
+                    for label in ambient.module_generating_set()
+                })
+                inverse = ambient.module_category().Mor(ambient, ambient)({
+                    label: ambient.module_generator(label)
+                    - shift(parameter, ambient.module_generator(label))
+                    for label in ambient.module_generating_set()
+                })
+                module_isomorphism = ambient.module_category().Core().Mor(
+                    ambient, ambient
+                )._from_known_inverse_pair(forward, inverse)
+                return ambient.Isom(ambient)(module_isomorphism)
+
+            return solution, isometry
+
+        def pointwise_perpendicular_parameter_module(self):
+            r"""Return the complete integral parameter module for ``ker(r)``."""
+            return self._pointwise_perpendicular_kernel_data()[0]
+
+        def pointwise_perpendicular_isometry(self, parameter):
+            r"""Evaluate one integral kernel parameter as an isometry of the ambient lattice."""
+            parameters, isometry = self._pointwise_perpendicular_kernel_data()
+            return isometry(parameters(parameter))
+
+        @cached_method
+        def pointwise_perpendicular_kernel(self):
+            r"""Return ``ker(P_I -> O(I^perp))`` with effective integral generators.
+
+            The selected generators are the images of a complete generating
+            family of the homogeneous integral parameter module.  This is the
+            pointwise kernel on the whole perpendicular, not the kernel of the
+            joint action on ``I`` and ``I^perp/I``.
+            """
+            parameters = self.pointwise_perpendicular_parameter_module()
+            ambient = self.isotropic_embedding().codomain()
+            generators = tuple(
+                self.pointwise_perpendicular_isometry(
+                    parameters.module_generator(label)
+                )
+                for label in parameters.module_generating_set()
+            )
+            return ambient.O().subgroup(generators)
 
         @cached_method
         def levi_action(self):
