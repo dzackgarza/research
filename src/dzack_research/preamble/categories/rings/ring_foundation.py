@@ -1565,6 +1565,32 @@ class LocalizationRings(OwnedCategory):
         def localization_submonoid(self):
             return self._localization_submonoid
 
+        def _field_decision(self):
+            r"""Inverting finitely many elements of a finite free ZZ-algebra gives no field.
+
+            Finite generation as a ZZ-module supplies finite generation as a
+            ZZ-algebra, and adjoining finitely many inverses preserves finite
+            type. If the localization is nonzero, torsion-freeness over ZZ
+            makes its canonical ZZ map injective: an equation ``n/1 = 0`` for
+            nonzero n would give ``n*s = 0`` for some s in the submonoid,
+            forcing s = 0 and hence the zero localization. But a field of
+            finite type over the Jacobson domain ZZ cannot contain ZZ
+            (Stacks, 00G4 and 0CY7). The zero localization is not a field either.
+
+            This uses the source's finite-free property and the selected
+            finite generating presentation of the submonoid. It selects no
+            basis, computes no rank, and does not read the possibly larger
+            ring computation model. Other cases keep the inherited predicate.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            if (
+                self.localization_submonoid()._selected_representation_kind() == "generators"
+                and self.localization_source() in Modules(_owned_integers()).Free().FinitelyGenerated()
+            ):
+                return False
+            return super()._field_decision()
+
         def is_fraction_field_localization(self):
             r"""Whether the canonical localization realizes its source's fraction field.
 
