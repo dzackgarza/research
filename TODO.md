@@ -405,6 +405,7 @@ Repair the existing public construction routes and inherited methods before prov
 - [x] **`placement-owner-additivesemigroups`**. **Needs:** none.
   **Owner pass:** `AdditiveSemigroups` in `src/dzack_research/preamble/categories/group/magmas.py`.
   **Closure assertions:** the complete `AdditiveSemigroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveSemigroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Completed whole-owner source pass (2026-10-11):** the complete two-method body and nested selector, all three strict authored ancestor definitions and actual AdditiveMagmaMor reuse are reconciled in HANDOFF.md. Associativity requires no new map law; zero, inverse and commutativity remain separate hypotheses. The inherited cached identity, exact-endpoint composition, weaker square-map fallback, nonassociative magma and constant-one max-semigroup separators are retained as true assertions under T. This supplies the complete source record for 6000faea9a; no additional source move or runtime acceptance is claimed.
 
 - [x] **`placement-owner-additivesemigroups-morcategory`**. **Needs:** none.
   **Owner pass:** `AdditiveSemigroups._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
