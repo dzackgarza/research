@@ -425,7 +425,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AffineGSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `AffineGSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-affinegeometriccohomologycomplexes`**. **Needs:** none.
+- [x] **`placement-owner-affinegeometriccohomologycomplexes`**. **Needs:** none.
   **Owner pass:** `AffineGeometricCohomologyComplexes` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
   **Closure assertions:** the complete `AffineGeometricCohomologyComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGeometricCohomologyComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
