@@ -14,6 +14,74 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Arithmetic orthogonal images and constructive stabilization lack their provider
+
+For a nondegenerate even integral lattice `M` and a positive integer `d`,
+primitive isotropic orbit enumeration requires the actual image of
+`O(M) -> Aut(M/dM)`. Recovering lattice-vector representatives also requires
+source lifts and an explicit isometry `U orthogonal-sum K -> M` for each
+selected complement genus representative `K`. The pointwise stabilizer of a
+chosen null vector has its own required finite image. Membership predicates
+and incomplete families of isometries do not supply those images.
+
+**Dependency path:** integral lattice and its isometry Mor -> full orthogonal
+action -> finite module quotient and induced action -> generated finite image
+and selected lifts -> marked submodule/coset stabilizer -> finite orbit set.
+Stabilization additionally requires the nonempty isometry Mor to supply an
+explicit element. In the split even case, transvections and extended
+automorphisms of `K` supply the pointwise stabilizer construction.
+
+**Searched:** live `categories/lattice_morphisms.py`, `lattices.py`,
+`orthogonal_quotients.py`, `rational_integral_stabilizers.py`, the group/action
+owners, and the `sage-indefinite-port` source tree at `993029f`, on 2026-10-11.
+**Found:** source implementations of finite images with lifts, congruence
+module actions, predicate stabilizers, overlattices, genera and transvections.
+Indefinite generators (`lattice_morphisms.py:2215`) and general indefinite
+isometries (`:2593`) import `indefinite.recursive`; that module is not in the
+inspected port `src/` tree. Levi-image computation (`lattices.py:6542`) also
+restricts its reduction to the definite case.
+**Conclusion:** the inspected source has an unmet indefinite provider
+contract. The existing finite algebra is reusable once complete arithmetic
+inputs are supplied. **Confidence:** source-level contract mismatch is
+established; execution and algorithm correctness are unverified.
+**Gaps:** frozen port snapshots, other installed distributions and independent
+arithmetic engines are outside this provider comparison.
+
+**Consumers:** primitive isotropic orbit enumeration, congruence orbit
+splitting and representative recovery. The provider repair belongs to
+`sage-indefinite-port`; presentation and composition belong to the existing
+lattice-isometry, group-action and subgroup owners. Formal genus comparisons
+remain with `genera-present-their-formalization`, below. The
+[capability assessment](docs/preamble-isotropic-orbit-capabilities.md) states
+the remaining formalization questions and distinguishes count-only inputs
+from representative inputs.
+
+### Effective group pullbacks require general products and equalizers
+
+For group morphisms `a: G -> Q` and `b: H -> Q`, the pullback has elements
+`(g,h)` with `a(g)=b(h)`, together with both projections and its universal
+map. The `pullbacks-in-every-category` node owns this construction.
+
+**Observed source boundary, 2026-10-11:** `Cat.fiber_product`
+(`categories/abstract_categories/cat.py:840`) composes products and
+equalizers. The inspected `OwnedGroups._categorical_product_construction`
+(`categories/group/groups.py:2997`) requires finite factors; the inspected
+group owner files contain no equalizer realization. Predicate inverse images
+and finite-index Schreier generators are existing partial capabilities.
+Effective evaluation of generator-defined maps additionally needs relation
+descent and word lifts. The finite group case and inverse images under an
+already evaluable map do not supply a general infinite generated-group
+pullback algorithm.
+
+**Dependency path:** group morphisms -> product -> equalizer -> pullback
+cone -> generating description where computable. **Consumers:** gluing
+stabilizers and arithmetic group maps. The isotropic-orbit strategy can use
+finite images without this general algorithm. **Coverage:** source inspection
+of the named category and group owners; execution and other representations
+remain unverified. Present the formal group pullback at this owner and retain
+the computability boundary. Request additional mathematics from
+`lean-categories` only after checking its existing pullback constructions.
+
 ### An integral isotropic partner with minimal pairing can fail to exist
 
 [Research #401](https://github.com/dzackgarza/research/issues/401) requests,
@@ -536,6 +604,21 @@ quadratic form as a genus invariant and Nikulin's classification and existence
 theorem for even genera [nikulin1979integral, Cor. 1.9.4, Thm. 1.10.1]; and
 the classification of genera by local symbols [CS10, Ch. 15, §7]. Repair is the
 `genera-present-their-formalization` node in [TODO.md](TODO.md).
+
+Primitive isotropic orbit enumeration is another consumer of this foundation.
+The [capability assessment](docs/preamble-isotropic-orbit-capabilities.md)
+adds its dependency account. In the inspected preamble, `_Genus` exposes
+lattice representatives as facade points, without a class projection or a
+selected section to the formal `GenusClass` set. `Core` retains the objects
+and their isomorphisms; its connected components supply the class set.
+The existing finite-family `isometry_classes` operation supplies a partition
+of its input family, not those maps for an entire genus. Presentation of the
+formal genus class set and its representative maps belongs to this same
+owner. Stabilization uniqueness, the divisibility-one orbit correspondence,
+isotropic-overlattice reduction and finite-quotient orbit splitting remain
+formalization questions: the local `Valued/` slice at `29ff4ad` did not locate
+these reduction theorems, and the released registry and dependent-library
+search remains open. No global absence claim follows from that slice.
 
 ### Dynamic peeking stands in for category membership across the preamble
 
