@@ -1,29 +1,24 @@
-r"""Dependency-light access to the canonical associative-algebra Mor owner.
+r"""Dependency-light access to an algebra category's canonical Mor family.
 
-``MatrixEndomorphismSpaces`` lives in the module tree but is also an
-associative unital algebra under composition.  The module tree therefore
-needs to name the algebra Mor construction without importing ``algebras.py``
-while that file is itself importing modules.  This module supplies only that
-late-binding category construction.  Its fixed Mor object is the ordinary
-``MultiplicativeAlgebraMor``; there is no second associative-morphism
-implementation or verification switch.
+The retained name returns the family already attached to the supplied
+category. Associativity constrains the objects, while multiplication
+preservation is the ordinary algebra-map law. A category with a chosen unit
+also requires its maps to preserve that unit; its actual family selects
+the corresponding representation and any selected presentation algorithm.
 """
 
-from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-    MorCategoryConstruction,
-)
+from sage.categories.category import Category
 
 
-class AssociativeAlgebraMorCategoryConstruction(MorCategoryConstruction):
-    r"""The canonical multiplicative algebra Mor, imported after module startup."""
+def AssociativeAlgebraMorCategoryConstruction(base_category: Category) -> Category:
+    r"""Return the exact Mor family of the supplied owned algebra category.
 
-    def fixed_category_class_for(self, domain, codomain):
-        _ = (domain, codomain)
-        from dzack_research.preamble.categories.algebras.algebras import (
-            MultiplicativeAlgebraMor,
-        )
-
-        return MultiplicativeAlgebraMor
+    For associative ``R``-algebras its fixed objects classify ``R``-linear
+    maps ``f`` satisfying ``f m_A = m_B (f tensor f)``. Their unit law and
+    selected realization are those of ``base_category``. The exported
+    spelling introduces no second family or morphism implementation.
+    """
+    return base_category.MorCategory()
 
 
 __all__ = ["AssociativeAlgebraMorCategoryConstruction"]
