@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
+    Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -84,12 +85,18 @@ class _ArrowConstructionFunctor(Functor):
 
 
 class _KernelArrowFunctor(_ArrowConstructionFunctor):
-    r"""The kernel functor from the finite-free module arrow category."""
+    r"""The kernel functor from finite-free arrows to modules.
+
+    A kernel of a map between finite-free modules need not be free or even
+    finitely generated over an arbitrary coefficient ring.  The selected
+    arrow computation below uses a finite generating family when one is
+    supplied; this computation does not strengthen the codomain category.
+    """
 
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
         finite_free = FinitelyGeneratedFreeModules(ring)
-        super().__init__(finite_free, finite_free)
+        super().__init__(finite_free, Modules(ring))
 
     def _repr_(self):
         return "Kernel functor"
@@ -100,6 +107,11 @@ class _KernelArrowFunctor(_ArrowConstructionFunctor):
     def _apply_morphism(self, square):
         source_kernel = self(square.domain())
         target_kernel = self(square.codomain())
+        labels = source_kernel.module_generating_set()
+        assert labels.is_finite() is True, (
+            "kernel-arrow computation on morphisms needs a selected finite "
+            "generating family for the source kernel"
+        )
         return source_kernel.module_category().Mor(source_kernel, target_kernel)(
             {
                 label: target_kernel.inclusion().lift(
@@ -107,13 +119,13 @@ class _KernelArrowFunctor(_ArrowConstructionFunctor):
                         source_kernel.inclusion()(source_kernel.module_generator(label))
                     )
                 )
-                for label in source_kernel.module_generating_set()
+                for label in labels
             }
         )
 
 
 class _CokernelArrowFunctor(_ArrowConstructionFunctor):
-    r"""The cokernel functor from the finite-free module arrow category."""
+    r"""The cokernel functor from the finitely presented module arrow category."""
 
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)

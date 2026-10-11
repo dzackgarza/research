@@ -14,6 +14,36 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Slice and coslice arrows still need their actual base-arrow initialization
+
+An object of `C/X` or `X/C` is an object of the actual `C` with its chosen
+structure arrow (`CAT-16`, `CAT-20`, `OWN-16`). Its nonfixed triangle edge
+is therefore a `C`-arrow. The current `SliceMor` and `CosliceMor` select
+the legacy `CommutativeSquare -> NaturalTransformationMorphism -> Morphism`
+implementation; it retains the square but does not initialize the selected
+module, group or other base-arrow representation promised by the declared
+`C.Mor`. In the module slice over zero, the identity triangle on a rank-one
+free module must carry its actual linear-map operations; the dual coslice
+has the same requirement.
+
+**Searched / Found / Conclusion:** read the slice/coslice carrier
+`_with_structure` construction, their genuine `C` declaration, the fixed
+Mor graph, generated-arrow selection and constructor transport. The
+existing `_mor_endpoints_in_supercategory` and
+`_transport_initialization_to_mor` protocols supply the correct repair
+boundary, exemplified by the actual equivariant-arrow constructor. Merely
+replacing `Element` with `ElementMethods` is insufficient: the retained
+edge has the original carrier endpoints, whereas the newly structured
+parents are distinct, and a module constructor can otherwise misread that
+edge as generator data.
+
+The existing `placement-owner-slicemor` and `placement-owner-coslicemor`
+own this independent lower-arrow initialization. Their exact source
+transformation, nonfixed edge, carrier transport and generated providers
+must be delivered together. Reusing the common `identity_at` or deferring
+the square's equation check neither depends on nor supplies that missing
+initialization. No new prerequisite or executed result is asserted.
+
 ### Selected exterior computations and the protected augmentation spelling
 
 The existing exterior-power realization selects a framed free module or
