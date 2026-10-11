@@ -659,8 +659,8 @@ def _field_generators(field):
     when they agree on these generators.
     """
     assert _is_finite_or_number_field(field), (
-        f"cannot list field generators of {field}: generators are computed only for finite fields "
-        f"and number fields, and {field} is neither"
+        f"cannot list field generators of {field}: this computation requires a represented finite "
+        "field or number field, and no such generator computation is supplied here"
     )
     return owned_sets.finite_ordered_set(tuple(
         _owned_engine_element(field, generator)
@@ -2388,7 +2388,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return negation(self == self.parent().zero())
 
         class Commutative(CategoryWithAxiom):
-            r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
+            r"""Fields: nontrivial commutative rings in which every nonzero element is a unit.
 
             Fields are a full subcategory of rings, so a map of fields is a
             ring map and this category inherits the ring ``Mor``.
@@ -2466,36 +2466,48 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return _own_ring(SageZZ).zero()
 
                 def field_generators(self):
-                    r"""Return exact elements which determine a unital map out of this field."""
+                    r"""Return the selected finite generators over the prime field.
+
+                    The current computation covers represented finite fields
+                    and number fields, including the levels of a relative
+                    tower. These elements determine every unital field map;
+                    arbitrary fields need not have a finite generating set.
+                    """
                     return _field_generators(self)
 
                 def exact_embeddings(self, codomain):
-                    r"""Return the embeddings of this field into ``codomain``, the elements of ``Mor(self, codomain)``."""
-                    return self.Mor(codomain).embeddings()
+                    r"""Enumerate the supplied exact field embeddings into ``codomain``.
+
+                    Field embeddings are the unital ring maps, independently
+                    of any additional coefficient-algebra presentation. The
+                    existing ring-Mor computation supplies a finite ordered
+                    enumeration in its supported realization cases; this does
+                    not assert that every pair of fields has finitely many
+                    embeddings or an available enumeration.
+                    """
+                    return OwnedRings().Mor(self, codomain).embeddings()
 
                 def first_exact_embedding(self, codomain):
-                    r"""Choose the first exact embedding into ``codomain`` in deterministic order."""
+                    r"""Choose the first embedding in the supplied finite enumeration.
+
+                    The selected enumeration fixes the order; the fields
+                    themselves do not have a canonical first embedding.
+                    """
                     embeddings = self.exact_embeddings(codomain)
-                    if embeddings.cardinality() == 0:
+                    if (embeddings.cardinality() == 0) is True:
                         raise ValueError(f"{self} has no embedding into {codomain}")
                     return embeddings[0]
-
-                def maximal_ideal(self):
-                    r"""Return the zero ideal, the unique maximal ideal of a field."""
-                    return self.ideal(self.zero())
-
-                def residue_field(self):
-                    return self
-
-                def residue_map(self):
-                    return OwnedRings().Mor(self, self).identity()
 
                 def absolute_galois_group(self):
                     r"""Return the absolute Galois group ``G_K`` of this field ``K``.
 
                     The group is the existing profinite owner; this field method is
                     only the mathematical construction site and creates no parallel
-                    realization.
+                    realization. That owner retains the selected algebraic closure
+                    and base embedding. Its existing closure and exact-embedding
+                    computations determine the available realization cases; the
+                    general group is defined without a finite-field or number-field
+                    hypothesis.
                     """
                     from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
                         AbsoluteGaloisGroup,
@@ -2661,8 +2673,24 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._with_axiom("Complete")
 
             class ParentMethods:
+                @cached_method
                 def local_ring_construction(self):
+                    r"""Return the fixed local quotient, with the canonical field default.
+
+                    Explicitly supplied local data keep their exact ideal,
+                    residue field and map. Without such data, a field has
+                    canonical residue field itself and quotient map the ring
+                    identity. Its zero maximal ideal is computed independently
+                    on demand, so reading the field or map needs no ideal
+                    computation.
+                    """
                     construction = self._selected_local_ring_construction()
+                    if construction is None and self in OwnedRings().Division().Commutative():
+                        construction = LocalRingConstruction(
+                            maximal_ideal_factory=lambda: self.ideal(self.zero()),
+                            residue_field=self,
+                            residue_map_factory=lambda: OwnedRings().Mor(self, self).identity(),
+                        )
                     assert construction is not None, (
                         f"the local ring {self} has no selected maximal-ideal and residue-field data"
                     )
