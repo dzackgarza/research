@@ -1,35 +1,34 @@
-r"""The square-class group \(R^\times/(R^\times)^2\) of a commutative ring.
+r"""The square-class group \(M^\times/(M^\times)^2\) of a commutative monoid.
 
-For a commutative ring \(R\) the squaring map \(u\mapsto u^2\) is an
-endomorphism of the abelian group \(R^\times\), and its cokernel is the
-square-class group \(R^\times/(R^\times)^2\).  Every element has order
+For a commutative monoid \(M\) the squaring map \(u\mapsto u^2\) is an
+endomorphism of the abelian group \(M^\times\), and its cokernel is the
+square-class group \(M^\times/(M^\times)^2\). Every element has order
 dividing two, since \([u]^2=[u^2]\) is trivial.  A class \([u]\) is named by
 any representative unit, and \([u]=[v]\) exactly when \(uv\) is a square:
 \(uv=(u/v)\,v^2\), so \(uv\) is a square iff \(u/v\) is.  Deciding equality
-is therefore deciding squareness in \(R\), which the ring element answers.
+is therefore deciding squareness in the selected monoid. A square root of a
+unit is itself a unit. If squareness is undecided, equality remains an owned
+proposition.
 
 It is the codomain of the spinor norm
 \(\mathrm{sn}_K\colon O(L\otimes K)\to K^\times/(K^\times)^2\)
-[GHS08, §1], and a ring morphism \(\varphi\colon R\to S\) induces
+[GHS08, §1], and a monoid morphism \(\varphi\colon M\to N\) induces
 \([u]\mapsto[\varphi(u)]\): it sends units to units and squares to squares.
 """
 
-from sage.categories.morphism import SetMorphism
 from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import MultiplicativeGroupElement
+from sage.structure.element import MultiplicativeGroupElement, parent
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import AbelianGroups, OwnedGroups
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    CommutativeRings,
-    _own_ring,
-)
+from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.logic import AtomicProposition, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
 class SquareClass(MultiplicativeGroupElement):
-    r"""The class \([u]\in R^\times/(R^\times)^2\) of a unit \(u\) of \(R\)."""
+    r"""The class \([u]\in M^\times/(M^\times)^2\) of a unit of the selected monoid."""
 
     def __init__(self, parent, representative) -> None:
         MultiplicativeGroupElement.__init__(self, parent)
@@ -41,34 +40,50 @@ class SquareClass(MultiplicativeGroupElement):
 
     def _mul_(self, other):
         r"""\([u][v]=[uv]\)."""
-        return self.parent()(self._representative * other._representative)
+        return self.parent()._class_of_unit(
+            self._representative * other._representative
+        )
 
     def __invert__(self):
         r"""\([u]^{-1}=[u^{-1}]=[u\cdot u^{-2}]=[u]\): every class is its own inverse."""
         return self
 
-    def is_one(self) -> bool:
+    def is_one(self):
         r"""Whether \([u]\) is trivial, that is whether \(u\) is a square."""
-        return bool(self._representative.is_square())
+        return self.parent()._unit_is_square(self._representative)
 
     def order(self):
         r"""The order of \([u]\): one when \(u\) is a square, two otherwise."""
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
         integers = _own_ring(SageZZ)
-        return integers.one() if self.is_one() else integers(2)
+        decision = self.is_one()
+        if decision is True:
+            return integers.one()
+        if decision is False:
+            return integers(2)
+        assert False, (
+            f"the order of {self} is one or two, but whether its representative "
+            f"is a square in {self.parent().monoid()} is undecided"
+        )
 
     multiplicative_order = order
 
     def __eq__(self, other):
         r"""\([u]=[v]\) exactly when \(uv\) is a square."""
-        return other in self.parent() and bool(
-            (self._representative * other._representative).is_square()
+        if not isinstance(other, SquareClass) or other.parent() is not self.parent():
+            return False
+        if self is other or (self._representative == other._representative) is True:
+            return True
+        return self.parent()._unit_is_square(
+            self._representative * other._representative
         )
 
     def __ne__(self, other):
-        return not self == other
+        return negation(self == other)
 
     def __hash__(self):
-        r"""Constant on the group: a class has no canonical representative over a general ring."""
+        r"""Constant on the group: no canonical representative is selected."""
         return hash(id(self.parent()))
 
     def _repr_(self):
@@ -79,98 +94,140 @@ class SquareClass(MultiplicativeGroupElement):
 
 
 class _SquareClassGroup:
-    r"""The cokernel \(R^\times/(R^\times)^2\) of squaring on \(R^\times\), at ``AbelianGroups()``.
+    r"""The cokernel of squaring on the selected unit group, at ``AbelianGroups()``.
 
-    The ring is the defining datum; the group law is the ring's
+    The monoid is the defining datum; the group law is its
     multiplication on representatives.
     """
 
-    def __init__(self, ring, **rest) -> None:
-        self._ring = ring
+    def __init__(self, monoid, **rest) -> None:
+        self._monoid = monoid
         super().__init__(**rest)
 
-    def ring(self):
-        r"""Return \(R\)."""
-        return self._ring
+    def monoid(self):
+        r"""Return the literal ambient monoid defining this square-class group."""
+        return self._monoid
 
-    def unit_group(self):
-        r"""Return \(R^\times\), of which this group is the quotient by the squares."""
-        return self._ring.unit_group()
+    def ring(self):
+        r"""Return the retained ring for the existing ring-case spelling."""
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        assert self._monoid in OwnedRings(), (
+            f"{self} has the selected ambient monoid {self._monoid}, without "
+            "an owned ring structure for this accessor"
+        )
+        return self._monoid
 
     def projection(self):
-        r"""Return the quotient map \(R^\times\to R^\times/(R^\times)^2\), \(u\mapsto[u]\)."""
-        units = self.unit_group()
-        return SetMorphism(units.Mor(self), lambda unit: self(unit))
+        r"""Return the group quotient map \(u\mapsto[u]\)."""
+        units = self.monoid().unit_group()
+        return OwnedGroups().Mor(units, self)(self._class_of_unit)
+
+    def _class_of_unit(self, unit):
+        r"""Construct the class of an established unit of the literal ambient monoid.
+
+        Protected constructor under OWN-05. The public element constructor
+        supplies a proved unit; ``one`` supplies the identity; multiplication
+        supplies a product of its retained unit representatives; ``projection``
+        supplies an element of the actual unit group; and the square-class
+        functor supplies its image under the actual monoid map. These callers
+        establish the unit premise without another target-unit decision.
+        No ambient datum or representative is replaced.
+        """
+        return self.element_class(self, unit)
+
+    def _unit_is_square(self, unit):
+        r"""Return squareness of a unit in this exact selected monoid.
+
+        ``SquareClass.is_one`` and ``SquareClass.__eq__`` are the callers;
+        they supply a retained unit or a product of retained units. Only an
+        element whose literal parent is this monoid can supply its square
+        predicate here. A facade's larger ambient parent cannot answer this
+        relative question, so that case retains its own proposition.
+        """
+        monoid = self._monoid
+        if (unit == monoid.one()) is True:
+            return True
+        if parent(unit) is monoid:
+            return unit.is_square()
+        return AtomicProposition("is_square", monoid, unit)
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
 
     def _element_constructor_(self, datum):
-        r"""Return a class of this group, or the class \([u]\) of a unit \(u\) of \(R\)."""
+        r"""Return a class of this group, or the class of an established ambient unit."""
         if datum in self:
             return datum
-        unit = self._ring(datum)
-        assert unit.is_unit(), (
-            f"{datum} has no class in {self}: a square class is the class of a unit, "
-            f"and {unit} is not a unit of {self._ring}"
+        unit = self._monoid(datum)
+        decision = self.monoid().unit_group().is_parent_of(unit)
+        if decision is False:
+            raise ValueError(
+                f"{datum} has no class in {self}: it is not a unit of {self._monoid}"
+            )
+        assert decision is True, (
+            f"cannot admit {datum} into {self}: whether it is a unit of "
+            f"{self._monoid} is undecided"
         )
-        return self.element_class(self, unit)
+        return self._class_of_unit(unit)
 
     def __contains__(self, datum) -> bool:
         return isinstance(datum, SquareClass) and datum.parent() is self
 
     def one(self):
-        return self.element_class(self, self._ring.one())
+        return self._class_of_unit(self._monoid.one())
 
     def _repr_(self):
-        return f"{self._ring}^× / ({self._ring}^×)^2"
+        return f"{self._monoid}^× / ({self._monoid}^×)^2"
 
     def _latex_(self):
-        ring = latex(self._ring)
-        return rf"{ring}^\times/({ring}^\times)^2"
+        monoid = latex(self._monoid)
+        return rf"{monoid}^\times/({monoid}^\times)^2"
 
 
-def _square_class_group(ring):
-    r"""Return \(R^\times/(R^\times)^2\) for the owned commutative ring ``ring``.
+def _square_class_group(monoid):
+    r"""Return the square-class group of the owned commutative ``monoid``.
 
-    The ring's ``square_class_group`` is the one entry; it retains the group.
+    ``Monoids.Commutative.ParentMethods.square_class_group`` is the one
+    protected-constructor caller. The exact source monoid is retained, and
+    its commutativity proves that the squares of units form a subgroup.
     """
-    assert ring in CommutativeRings(), (
-        f"the square-class group R^×/(R^×)^2 is the quotient of R^× by the subgroup of "
-        f"squares, which is a subgroup when R is commutative; {ring} is not known to be "
-        f"a commutative ring"
+    assert monoid in Monoids().Commutative(), (
+        f"the square-class group needs a commutative monoid, but {monoid} "
+        "is not supplied in that category"
     )
     return _object_of(
         AbelianGroups(),
         _engine=(OwnedGroups(), _SquareClassGroup, SquareClass),
-        ring=ring,
+        monoid=monoid,
     )
 
 
 class SquareClassGroupFunctor(Functor):
-    r"""\(R\mapsto R^\times/(R^\times)^2\) and \(\varphi\mapsto([u]\mapsto[\varphi(u)])\).
+    r"""\(M\mapsto M^\times/(M^\times)^2\) and \(\varphi\mapsto([u]\mapsto[\varphi(u)])\).
 
-    A ring morphism sends a unit to a unit and a square to a square, so the
+    A monoid morphism sends a unit to a unit and a square to a square, so the
     induced map on classes is well defined, and it is multiplicative because
     \(\varphi\) is.  The images are abelian groups of exponent dividing two.
     """
 
     def __init__(self) -> None:
-        super().__init__(CommutativeRings(), OwnedGroups())
+        super().__init__(Monoids().Commutative(), OwnedGroups())
 
-    def _apply_object(self, ring):
-        return ring.square_class_group()
+    def _apply_object(self, monoid):
+        return monoid.square_class_group()
 
     def _apply_morphism(self, morphism):
         source = self.object_image(morphism.domain())
         target = self.object_image(morphism.codomain())
-        return SetMorphism(
-            source.Mor(target),
-            lambda square_class: target(morphism(square_class.representative())),
+        return OwnedGroups().Mor(source, target)(
+            lambda square_class: target._class_of_unit(
+                morphism(square_class.representative())
+            ),
         )
 
     def _repr_(self):
-        return "Square-class group functor CRing -> Grp"
+        return "Square-class group functor CMon -> Grp"
 
 
 __all__ = ["SquareClass", "SquareClassGroupFunctor"]

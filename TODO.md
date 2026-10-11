@@ -1631,9 +1631,10 @@ Repair the existing public construction routes and inherited methods before prov
   **Closure assertions:** the complete `UnitalMagmaMorCategoryConstruction` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
   **Source closure (2026-10-11):** the complete fixed-Mor inventory and composition/admission assertions are recorded with `Magmas.Unital` in HANDOFF.md. This reconciles an authored provider from bank `194e5bad284a`, not a new prerequisite descent.
 
-- [ ] **`placement-owner-monoids-commutative`**. **Needs:** none.
+- [x] **`placement-owner-monoids-commutative`**. **Needs:** none.
   **Owner pass:** `Monoids.Commutative` in `src/dzack_research/preamble/categories/group/magmas.py`.
   **Closure assertions:** the complete `Monoids.Commutative` introduced operations, actual ancestor definitions and fixed-Mor inheritance satisfy the per-pass contract; all defining maps, decided cases and undecided propositions survive at their weakest sufficient declared owners. The owner record retains the exact mathematical specimens and unavailable computation assertions under T.
+  **Source closure (2026-10-11):** the complete four-introduction inventory, seven strict authored ancestors and actual `MonoidMor` route are recorded in HANDOFF.md. Square classes now retain their defining commutative monoid; quotient projection and admission explicitly use that monoid's unit group. The quotient's own inherited unit group is no longer replaced by its source. The nonring `ZZ.unit_group()` and `C4 -> C2` quotient assertions separate the corrected home and ambient object; execution remains T.
 
 - [ ] **`placement-owner-nonunitalsemiringmor`**. **Needs:** none.
   **Owner pass:** `NonUnitalSemiringMor` in `src/dzack_research/preamble/categories/rings/semirings.py`.
