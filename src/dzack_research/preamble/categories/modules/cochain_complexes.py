@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.owned_category import owned_category_join
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -296,7 +296,6 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
         self._differential_family = cochain_differential_family
         self._cochain_name = cochain_name
         super().__init__(**rest)
-        self._validate_differentials()
 
     def selected_degrees(self):
         if not self._finite_support:
@@ -336,45 +335,44 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
                 f"the differential d^{degree} of {self} must be a map C^{degree} -> C^{degree + 1}, "
                 f"i.e. {source} -> {target}, but it is {selected.domain()} -> {selected.codomain()}"
             )
-        if not self._finite_support:
-            following = self._raw_differential_component(degree + 1)
-            following_source = self.graded_piece(degree + 1)
-            following_target = self.graded_piece(degree + 2)
-            if (
-                following.domain() is not following_source
-                or following.codomain() is not following_target
-            ):
-                raise ValueError(
-                    f"the differential d^{degree + 1} of {self} must be a map "
-                    f"{following_source} -> {following_target}, but it is "
-                    f"{following.domain()} -> {following.codomain()}"
-                )
-            labels = source.module_generating_set()
-            if labels.cardinality().is_finite():
-                for label in labels:
-                    generator = source.module_generator(label)
-                    if following(selected(generator)) != following.codomain().zero():
-                        raise ValueError(
-                            f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
-                            f"but it sends the generator {generator} of C^{degree} to "
-                            f"{following(selected(generator))}"
-                        )
         return selected
 
-    def _validate_differentials(self) -> None:
+    def differential_square_zero_decision(self, degree):
+        r"""Decide ``d^(p+1)d^p=0`` when the selected source generators determine it."""
+        degree = int(degree)
+        first = self.differential_component(degree)
+        second = self.differential_component(degree + 1)
+        source = first.domain()
+        if (
+            not source.has_selected_module_resolution()
+            or source.module_generating_set().cardinality().is_finite() is not True
+        ):
+            return AtomicProposition("differential_squares_zero", self, degree)
+        zero = second.codomain().zero()
+        return conjunction(
+            second(first(source.module_generator(label))) == zero
+            for label in source.module_generating_set()
+        )
+
+    def square_zero_decision(self):
+        r"""Return the represented decision that the selected differential squares to zero."""
         if not self._finite_support:
-            return
-        for degree in self.selected_degrees():
-            first = self.differential_component(degree)
-            second = self.differential_component(degree + 1)
-            for label in first.domain().module_generating_set():
-                generator = first.domain().module_generator(label)
-                if second(first(generator)) != second.codomain().zero():
-                    raise ValueError(
-                        f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
-                        f"but it sends the generator {generator} of C^{degree} to "
-                        f"{second(first(generator))}"
-                    )
+            return AtomicProposition("differential_squares_zero", self)
+        return conjunction(
+            self.differential_square_zero_decision(degree)
+            for degree in self.selected_degrees()
+        )
+
+    def validate_differentials(self):
+        r"""Diagnose a proved violation of ``d^2=0`` without forcing undecided equations."""
+        decision = self.square_zero_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a cochain complex: the selected differential does not square to zero"
+            )
+        return decision
+
+    _validate_differentials = validate_differentials
 
     def _repr_(self):
         return self._cochain_name or "Cochain complex"
