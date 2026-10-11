@@ -795,10 +795,92 @@ class TwoUEichlerModel(SageObject):
         )
 
     def full_generating_data(self, square):
-        r"""Dispatch the specialized approximate-model generation theorem to the port."""
-        from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
+        r"""Return the finite theorem-backed generators of ``O(2U+K)``.
 
-        return OrbitCoverModel.split_full_generating_data(self, square)
+        The finite approximate family and its covering vectors are the sourced
+        ``2U`` approximate model.  Restrict that covering list to one full
+        orthogonal orbit, retain one transporter from the selected base vector
+        to every listed representative, and adjoin exact generators of the
+        base stabilizer.  The approximate-oracle property then proves the
+        returned finite family generates the whole orthogonal group.
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        orthogonal_group = lattice.O()
+        representatives = self.covering_vector_representatives(square)
+        if int(representatives.cardinality()) == 0:
+            raise ValueError(
+                f"cannot generate O(L) for L = {lattice} from vectors of square {square}: L has no "
+                f"primitive covering vector of that square"
+            )
+        base_label = next(iter(representatives.index_set()))
+        base_vector = representatives[base_label]
+        selected_labels = []
+        transporters = {}
+        for label in representatives.index_set():
+            transporter = orthogonal_group.vector_equivalence_witness(
+                base_vector,
+                representatives[label],
+            )
+            if transporter is None:
+                continue
+            selected_labels.append(label)
+            transporters[label] = transporter
+        orbit_labels = finite_ordered_set(tuple(selected_labels))
+        orbit_representatives = finite_indexed_family(
+            orbit_labels,
+            lambda label: representatives[label],
+            name=f"Approximate representatives in the selected full orbit of square {square}",
+        )
+        orbit_transporters = finite_indexed_family(
+            orbit_labels,
+            lambda label: transporters[label],
+            name=f"Full-orthogonal transporters from {base_vector}",
+        )
+        approximate = self.approximate_generating_family()
+        stabilizer = orthogonal_group.vector_stabilizer_generators(base_vector)
+        generation_labels = finite_ordered_set(
+            tuple(("approximate", label) for label in approximate.index_set())
+            + tuple(("stabilizer", generator) for generator in stabilizer)
+            + tuple(("transporter", label) for label in orbit_labels)
+        )
+
+        def generator(label):
+            kind, datum = label
+            match kind:
+                case "approximate":
+                    return approximate[datum]
+                case "stabilizer":
+                    return datum
+                case "transporter":
+                    return orbit_transporters[datum]
+                case _:
+                    raise ValueError(
+                        f"{label!r} does not name a generator of O(L) for {self}: its kind "
+                        f"{kind!r} is not a known kind of generator"
+                    )
+
+        generating_family = finite_indexed_family(
+            generation_labels,
+            generator,
+            name=f"Theorem-backed generators of O({lattice})",
+        )
+        return TwoUFullGeneratingDatum(
+            self,
+            lattice.base_ring()(square),
+            base_vector,
+            approximate,
+            stabilizer,
+            orbit_representatives,
+            orbit_transporters,
+            generating_family,
+        )
 
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
