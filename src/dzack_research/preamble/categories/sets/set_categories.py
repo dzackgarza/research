@@ -428,8 +428,17 @@ class OwnedSetMorphism(SetMorphism):
         typing, and foreign data is read where every owned set reads it, by
         the source's own ingress.
         """
+        function = self._owned_function
+        if (
+            isinstance(function, Morphism)
+            and function.domain() is self.domain()
+            and function.codomain() is self.codomain()
+        ):
+            # The retained arrow owns both ingress and its admitted range.
+            # Re-admitting its value can discard a subset-inclusion premise.
+            return function(element, *args, **kwargs)
         point = self.domain()(element)
-        return self.codomain()(self._owned_function(point, *args, **kwargs))
+        return self.codomain()(function(point, *args, **kwargs))
 
     def __eq__(self, other: Any) -> bool | Predicate:
         r"""Compare two arrows of one Mor through ``_richcmp_``.
@@ -509,6 +518,13 @@ class OwnedSetMorphism(SetMorphism):
         Finite images are enumerated by the image engine; for an infinite
         source it states the frontier when membership or cardinality is asked.
         """
+        function = self._owned_function
+        if (
+            isinstance(function, OwnedSetMorphism)
+            and function.domain() is self.domain()
+            and function.codomain() is self.codomain()
+        ):
+            return function.image()
         return Sets().image_set(self, self.domain())
 
     def is_injective(self) -> bool | Predicate:
@@ -523,6 +539,13 @@ class OwnedSetMorphism(SetMorphism):
         """
         from dzack_research.preamble.logic import AtomicProposition
 
+        function = self._owned_function
+        if (
+            isinstance(function, OwnedSetMorphism)
+            and function.domain() is self.domain()
+            and function.codomain() is self.codomain()
+        ):
+            return function.is_injective()
         domain = self.domain()
         match domain:
             case _ if (
@@ -532,6 +555,87 @@ class OwnedSetMorphism(SetMorphism):
                 return self.image().cardinality() == domain.cardinality()
             case _:
                 return AtomicProposition("is_injective", self)
+
+    @RealizationHook
+    def _factor_through_inclusion(self, target):
+        r"""Supply a factor through an injective map from retained construction data.
+
+        Protected value contract under OWN-05. Only ``factor_through_or_none``
+        calls this hook, after checking the common codomain and injectivity.
+        An operation-preserving inclusion may use its chosen generators and
+        the target's closure law. Return the actual factor, ``False`` for
+        proved noncontainment, or ``None`` when no such computation is selected.
+        An undecided containment must retain its named computation frontier.
+        """
+        return None
+
+    def factor_through_or_none(self, target: SetInjection) -> OwnedSetMorphism | None:
+        r"""The unique ``f`` with ``target * f == self``, or proved nonexistence.
+
+        A set map factors through an injection exactly when its image is
+        contained in that injection's image; the source map need not be
+        injective. The existing finite-source or finite-base algorithm
+        decides image containment, preserving any undecided proposition.
+        Stronger arrows can supply a factor in their actual theory.
+        """
+        from dzack_research.preamble.logic import conjunction, negation
+
+        base = self.codomain()
+        if target.codomain() is not base:
+            raise ValueError(
+                f"cannot factor {self} through {target}: their codomains {base} and "
+                f"{target.codomain()} differ"
+            )
+        assert target.is_injective() is True, (
+            f"cannot factor {self} through {target}: the target arrow is not known to be injective"
+        )
+        if target is self:
+            return self.parent().identity_at(self.domain())
+        supplied = self._factor_through_inclusion(target)
+        if supplied is False:
+            return None
+        if supplied is not None:
+            return supplied
+        domain = self.domain()
+        image = self.image()
+        target_image = target.image()
+        if domain in FiniteSets() and domain in EnumeratedSets():
+            contained = conjunction(target_image.is_parent_of(self(point)) for point in domain)
+        else:
+            assert base in FiniteSets() and base in EnumeratedSets(), (
+                f"cannot decide whether {image} is contained in {target_image}: no selected "
+                f"containment algorithm applies, and neither {domain} nor {base} is finite and enumerated"
+            )
+            contained = conjunction(
+                negation(conjunction((image.is_parent_of(point), negation(target_image.is_parent_of(point)))))
+                for point in base
+            )
+        if contained is False:
+            return None
+        assert contained is True, (
+            f"cannot factor {self} through {target}: image containment remains undecided"
+        )
+        if (
+            isinstance(self, SetInjection) and self._subset_premise
+            and isinstance(target, SetInjection) and target._subset_premise
+        ):
+            return Sets().Mono(domain, target.domain())._from_subset_inclusion()
+        assert isinstance(target, SetInjection), (
+            f"the image of {self} lies in the image of {target}, but no inverse-on-image "
+            "computation is selected for that target arrow"
+        )
+        inverse = target.inverse_on_image()
+        return Sets().Mor(domain, target.domain())(lambda point: inverse(self(point)))
+
+    def factor_through(self, target: SetInjection) -> OwnedSetMorphism:
+        r"""The unique factor through ``target``; reject proved noncontainment."""
+        factor = self.factor_through_or_none(target)
+        if factor is None:
+            raise ValueError(
+                f"{self} does not factor through {target}: its image {self.image()} is not contained in "
+                f"{target.image()}"
+            )
+        return factor
 
     def is_surjective(self) -> bool | Predicate:
         r"""Decide that every point of the codomain is a value.
@@ -1961,6 +2065,23 @@ class SetInjection(OwnedSetMorphism):
         self._subset_premise = subset_of_codomain
         super().__init__(parent, function)
 
+    def __call__(self, element, *args, **kwargs):
+        r"""Apply a subset inclusion using its actual source-membership premise.
+
+        The source still owns ingress. The protected subset construction
+        proves that its admitted point belongs to the target; a predicate
+        target retains that point rather than re-deciding its predicate.
+        """
+        if not self._subset_premise:
+            return super().__call__(element, *args, **kwargs)
+        if args or kwargs:
+            raise TypeError("a subset inclusion takes one point")
+        point = self.domain()(element)
+        target = self.codomain()
+        if isinstance(target, _ConditionSetEngine):
+            return target._retain_admitted_member(point)
+        return point
+
     @cached_method
     def is_injective(self) -> bool | Predicate:
         r"""Decide injectivity on first request, from the construction where it gives it."""
@@ -2021,50 +2142,6 @@ class SetInjection(OwnedSetMorphism):
         return Sets().Mor(self.codomain(), truth_values)(
             lambda point: truth_values(int(point in image))
         )
-
-    def factor_through_or_none(self, target: SetInjection) -> OwnedSetMorphism | None:
-        r"""The map \(f\colon A\to B\) with \(n\circ f = m\), or ``None`` when \(m(A)\not\subseteq n(B)\).
-
-        ``target`` is a monomorphism \(n\colon B\hookrightarrow X\).  The
-        containment is decided over a finite enumerated \(A\) or \(X\); the
-        factor sends \(a\) to the point of \(B\) over \(m(a)\).
-        """
-        base = self.codomain()
-        if target.codomain() is not base:
-            raise ValueError(
-                f"cannot factor {self} through {target}: they are subobjects of different sets {base} and "
-                f"{target.codomain()}"
-            )
-        assert target.is_injective() is True, (
-            f"cannot factor {self} through {target}: a factorization through a subobject needs a monomorphism, "
-            f"and {target} is not known to be injective"
-        )
-        domain = self.domain()
-        image = self.image()
-        target_image = target.image()
-        match domain:
-            case _ if domain in FiniteSets() and domain in EnumeratedSets():
-                contained = all(self(point) in target_image for point in domain)
-            case _:
-                assert base in FiniteSets() and base in EnumeratedSets(), (
-                    f"cannot decide whether {image} is contained in {target_image}: containment is decided here "
-                    f"only when {domain} or {base} is finite and enumerated"
-                )
-                contained = all(point not in image or point in target_image for point in base)
-        if not contained:
-            return None
-        inverse = target.inverse_on_image()
-        return Sets().Mor(domain, target.domain())(lambda point: inverse(self(point)))
-
-    def factor_through(self, target: SetInjection) -> OwnedSetMorphism:
-        r"""The map \(f\colon A\to B\) with \(n\circ f = m\); raises when \(m(A)\not\subseteq n(B)\)."""
-        factor = self.factor_through_or_none(target)
-        if factor is None:
-            raise ValueError(
-                f"{self} does not factor through {target}: its image {self.image()} is not contained in "
-                f"{target.image()}"
-            )
-        return factor
 
     def __mul__(self, other):
         r"""Compose; a composite of monomorphisms is placed as a monomorphism."""
@@ -2808,7 +2885,22 @@ class _ConditionSetEngine:
     def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
+        self._admitted_members = []
         super().__init__(facade=True, **rest)
+
+    def _retain_admitted_member(self, element):
+        r"""Retain an actual member whose membership was supplied by construction.
+
+        Protected ingress contract under OWN-05. Callers are successful
+        predicate admission, an additive-submonoid constructor's admitted
+        zero or generators, and a protected subset inclusion applied to an
+        admitted source point. This records that point, not a decision of
+        the defining predicate and not a rule for admitting arbitrary data.
+        """
+        point = self.universe()(element)
+        if not any(point is prior or (point == prior) is True for prior in self._admitted_members):
+            self._admitted_members.append(point)
+        return point
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""
@@ -2845,7 +2937,7 @@ class _ConditionSetEngine:
             return None
         count = 0
         for point in points:
-            member = self.predicate()(point)
+            member = self.is_parent_of(point)
             if member is True:
                 count += 1
             elif member is not False:
@@ -2866,7 +2958,13 @@ class _ConditionSetEngine:
             case False:
                 return False
             case True:
-                return self.predicate()(universe(element))
+                point = universe(element)
+                if any(point is prior or (point == prior) is True for prior in self._admitted_members):
+                    return True
+                member = self.predicate()(point)
+                if member is True:
+                    self._retain_admitted_member(point)
+                return member
             case _:
                 # P is defined on X; uncertain ingress into X does not
                 # authorize applying P to an arbitrary foreign value.
@@ -2881,7 +2979,7 @@ class _ConditionSetEngine:
         assert member is True, (
             f"cannot admit {element!r} into {self}: its membership is undecided"
         )
-        return self.universe()(element)
+        return self._retain_admitted_member(element)
 
     def __iter__(self):
         universe = self.universe()
@@ -2890,7 +2988,7 @@ class _ConditionSetEngine:
             "nor enumerated"
         )
         for point in universe:
-            member = self.predicate()(point)
+            member = self.is_parent_of(point)
             assert member is True or member is False, (
                 f"cannot enumerate {self}: membership of {point!r} remains undecided"
             )
@@ -4134,6 +4232,14 @@ class NaturalNumberSets(OwnedCategory):
 
         def one(self) -> NN.ElementType:
             return self(1)
+
+        def submonoid(self, generators, *, description=None):
+            r"""The additive submonoid of the natural numbers generated by a finite family."""
+            return self.additive_submonoid(generators, description=description)
+
+        def predicate_submonoid(self, predicate, description):
+            r"""The additive submonoid of ``NN`` defined by a zero- and sum-closed predicate."""
+            return self.predicate_additive_submonoid(predicate, description)
 
         def _repr_(self):
             return "NN = {0, 1, 2, ...}"

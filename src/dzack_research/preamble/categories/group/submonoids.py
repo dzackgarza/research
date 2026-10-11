@@ -3,10 +3,176 @@
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.categories.group.magmas import AdditiveMagmas, AdditiveMonoids, Monoids
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.logic import AtomicProposition, Predicate
+from dzack_research.preamble.categories.sets.set_categories import (
+    FiniteSets, NN, Sets, _ConditionSetEngine, _aleph0, cardinal,
+)
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+
+
+def _submonoid_generator_containment(inclusion, target_inclusion, generators):
+    r"""Decide containment on the exact chosen monoid generating family.
+
+    Protected construction contract under OWN-05. Multiplicative and
+    additive submonoid-inclusion suppliers call this with the corresponding
+    finite generating family and a target submonoid in the same law. Closure
+    proves containment from these generator images; an unknown answer is
+    retained and never interpreted as a missing factor.
+    """
+    target_image = target_inclusion.image()
+    return conjunction(
+        target_image.is_parent_of(inclusion(generator)) for generator in generators
+    )
+
+
+class _AdditiveSubmonoidEngine(_ConditionSetEngine):
+    r"""An additive submonoid with its retained subset and zero/closure premises.
+
+    The condition-set realization owns facade ingress and undecided
+    membership. This specialization supplies zero, the additive inclusion,
+    and the selected finite-generator algorithm on the literal natural
+    numbers. It inherits no multiplicative operation or unit.
+    """
+
+    def __init__(
+        self, ambient, *, zero, generators=None, predicate=None, description=None, **rest
+    ) -> None:
+        self._additive_zero = zero
+        self._additive_generators = generators
+        self._description = description
+        self._positive_member = None
+        self._zero_generated = generators is not None and all(
+            generator is zero or (generator == zero) is True for generator in generators
+        )
+        self._generator_weights = None
+        if generators is not None:
+            if ambient is NN:
+                self._generator_weights = tuple(int(generator) for generator in generators if int(generator) > 0)
+            predicate = self._generated_membership
+        else:
+            zero_membership = predicate(zero)
+            if zero_membership is False:
+                raise ValueError(
+                    f"the predicate {description or predicate} does not define an additive submonoid "
+                    f"of {ambient}: zero does not satisfy it"
+                )
+            if zero_membership is not True and not isinstance(zero_membership, Predicate):
+                raise TypeError("an additive-submonoid predicate must return a Boolean or an owned proposition")
+        super().__init__(universe=ambient, predicate=predicate, **rest)
+        self._retain_admitted_member(zero)
+        if generators is not None:
+            for generator in generators:
+                self._retain_admitted_member(generator)
+
+    def ambient_additive_monoid(self):
+        return self.universe()
+
+    def zero(self):
+        return self._additive_zero
+
+    @cached_method
+    def inclusion(self):
+        return AdditiveMonoids().Mor(self, self.universe())._from_submonoid_inclusion()
+
+    def additive_monoid_generators(self):
+        r"""Return the exact finite indexed family chosen by this presentation."""
+        assert self._additive_generators is not None, (
+            f"{self} is defined by a predicate and has no selected additive generating family"
+        )
+        return self._additive_generators
+
+    def _selected_representation_kind(self):
+        return "predicate" if self._additive_generators is None else "generators"
+
+    def defining_predicate(self):
+        assert self._additive_generators is None, (
+            f"{self} was defined by additive generators, not by a selected predicate"
+        )
+        return self.predicate()
+
+    def _generated_membership(self, element):
+        if self._generator_weights is not None:
+            from sage.combinat.integer_vector_weighted import WeightedIntegerVectors
+
+            # This fixed-weight, fixed-total family is finite. Zero and
+            # repeated generators remain in the defining indexed family.
+            return next(iter(WeightedIntegerVectors(int(element), self._generator_weights)), None) is not None
+        if self._zero_generated:
+            return element == self.zero()
+        return AtomicProposition("is_parent_of", self, element)
+
+    def _retain_admitted_member(self, element):
+        point = super()._retain_admitted_member(element)
+        if self.universe() is NN and self._positive_member is None and int(point) > 0:
+            self._positive_member = point
+        return point
+
+    def _cardinality_decision(self):
+        if self._zero_generated:
+            return cardinal(1)
+        if self.universe() is NN and self._positive_member is not None:
+            # For the retained k>0, n |-> n*k embeds NN in this submonoid;
+            # its ambient inclusion gives the countable upper bound.
+            return _aleph0()
+        return super()._cardinality_decision()
+
+    def __iter__(self):
+        if self._zero_generated:
+            yield self.zero()
+            return
+        yield from super().__iter__()
+
+    def _repr_(self):
+        if self._description is not None:
+            return self._description
+        return f"Additive submonoid of {self.universe()}"
+
+
+def _additive_submonoid(ambient, *, generators=None, predicate=None, description=None):
+    r"""Construct the additive subset declared by the AdditiveMonoids owner.
+
+    Protected constructor under OWN-05. The public generated constructor
+    supplies a finite indexed family; the predicate constructor supplies its
+    zero and addition-closure laws under OWN-22. Ambient commutativity and
+    subset finiteness restrict to this object without selecting an enumeration.
+    """
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
+    from dzack_research.preamble.categories.sets.indexed_families import (
+        IndexedFamily, finite_indexed_family_from_values,
+    )
+
+    if ambient not in AdditiveMonoids():
+        raise TypeError(f"an additive submonoid needs an additive ambient monoid, but got {ambient}")
+    if (generators is None) == (predicate is None):
+        raise ValueError("give either a finite additive generating family or a defining predicate")
+    if predicate is not None and not callable(predicate):
+        raise TypeError("an additive-submonoid predicate must be a function on the ambient monoid")
+    zero = ambient.zero()
+    if generators is not None:
+        labels = generators.index_set() if isinstance(generators, IndexedFamily) else None
+        supplied = finite_indexed_family_from_values(labels, generators)
+        values = tuple(ambient(generator) for generator in supplied)
+        generators = finite_indexed_family_from_values(supplied.index_set(), values)
+    placements = [SubobjectCategory(AdditiveMonoids(), ambient)]
+    if ambient in AdditiveMagmas().AdditiveCommutative():
+        placements.append(AdditiveMonoids().AdditiveCommutative())
+    if Sets().is_provably_finite(ambient) or (
+        generators is not None
+        and all(generator is zero or (generator == zero) is True for generator in generators)
+    ):
+        placements.append(FiniteSets())
+    category = owned_category_join(tuple(placements))
+    return _object_of(
+        category,
+        _engine=(category, _AdditiveSubmonoidEngine, None),
+        ambient=ambient,
+        zero=zero,
+        generators=generators,
+        predicate=predicate,
+        description=description,
+    )
 
 
 class _SubmonoidEngine:

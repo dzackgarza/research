@@ -87,6 +87,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             **rest,
         ) -> None:
             self._predicate = predicate
+            self._admitted_members = []
             self._description = description
             self._character_data = dict(character_data or {})
             self._character_data_complete = (
@@ -111,6 +112,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         __contains__ = _ConditionSetEngine.__contains__
         is_parent_of = __contains__
         __iter__ = _ConditionSetEngine.__iter__
+        _retain_admitted_member = _ConditionSetEngine._retain_admitted_member
 
         def _element_constructor_(self, datum):
             r"""Read ambient group literals, then use the set owner's predicate admission."""

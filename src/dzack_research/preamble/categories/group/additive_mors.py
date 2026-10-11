@@ -55,7 +55,6 @@ def _additive_operation_mor_element(parent, datum):
             )
         if datum.parent() is parent:
             return datum
-        datum = datum.__call__
     if not callable(datum):
         raise TypeError(
             f"an additive morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, "
@@ -81,12 +80,71 @@ class AdditiveMonoidMorphism:
     def __init__(self, parent, function) -> None:
         super().__init__(parent, function)
 
+    def _factor_through_inclusion(self, target):
+        r"""Supply the additive factor between two retained additive inclusions.
+
+        The existing set inclusion owns injectivity, image and finite-set
+        factorization. A chosen additive generating family additionally
+        supplies containment by the target's addition-closure premise.
+        The resulting arrow retains that actual subset inclusion, so its
+        range need not re-decide the target's defining predicate.
+        """
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+        from dzack_research.preamble.categories.group.submonoids import (
+            _AdditiveSubmonoidEngine, _submonoid_generator_containment,
+        )
+        from dzack_research.preamble.categories.sets.set_categories import SetInjection
+
+        if not isinstance(target, AdditiveMonoidMorphism):
+            return None
+        donor = self._owned_function
+        target_donor = target._owned_function
+        if not (
+            isinstance(donor, SetInjection) and donor._subset_premise
+            and isinstance(target_donor, SetInjection) and target_donor._subset_premise
+        ):
+            return None
+        source = self.domain()
+        if (
+            isinstance(source, _AdditiveSubmonoidEngine)
+            and source._selected_representation_kind() == "generators"
+        ):
+            contained = _submonoid_generator_containment(
+                self, target, source.additive_monoid_generators()
+            )
+            if contained is False:
+                return False
+            assert contained is True, (
+                f"cannot factor {self} through {target}: containment of the chosen additive "
+                "generators remains undecided"
+            )
+            return AdditiveMonoids().Mor(source, target.domain())._from_submonoid_inclusion()
+        factor = donor.factor_through_or_none(target_donor)
+        if factor is None:
+            return False
+        return AdditiveMonoids().Mor(source, target.domain())(factor)
+
 
 class AdditiveMonoidMor(CategoricalMor):
     ElementMethods = AdditiveMonoidMorphism
 
     def _element_constructor_(self, datum):
         return _additive_operation_mor_element(self, datum)
+
+    @cached_method
+    def _from_submonoid_inclusion(self):
+        r"""Retain the set inclusion of an additive submonoid as its actual additive arrow.
+
+        Protected construction contract under OWN-05. Additive-submonoid
+        construction and its generator-proved containment factor are the
+        callers. The exact source is a subset of the exact target, with
+        zero and addition inherited there. The existing set-injection datum
+        supplies injectivity and the literal image, without evaluating points.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        donor = Sets().Mono(self.domain(), self.codomain())._from_subset_inclusion()
+        return self.element_class(self, donor)
 
     # The identity function preserves both addition and zero. Bind the same
     # cached descriptor to this Mor and its generated additive-monoid arrow.
