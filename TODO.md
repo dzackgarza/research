@@ -780,7 +780,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CoconeMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
   **Closure assertions:** the complete `CoconeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoconeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-coconemorcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-coconemorcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `CoconeMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
   **Closure assertions:** the complete `CoconeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoconeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
