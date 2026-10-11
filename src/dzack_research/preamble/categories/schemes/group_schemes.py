@@ -198,7 +198,7 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
         return self._group_scheme
 
     def super_categories(self):
-        return [Objects()]
+        return [self.group_scheme().internal_group_object().actions()]
 
     def _repr_object_names(self):
         return f"affine schemes acted on by {self.group_scheme()}"
@@ -253,6 +253,18 @@ class _AffineGroupSchemeActionEngine:
 
     def internal_action(self):
         return self._internal_action
+
+    def group_object(self):
+        r"""The internal group object whose action this affine action refines."""
+        return self.internal_action().group_object()
+
+    def underlying_object(self):
+        r"""The affine scheme acted on, as the underlying internal-action object."""
+        return self.internal_action().underlying_object()
+
+    def action_product_construction(self):
+        r"""The selected product ``G x_S X`` retained by the internal action."""
+        return self.internal_action().action_product_construction()
 
     def scheme(self):
         return self.internal_action().underlying_object()
