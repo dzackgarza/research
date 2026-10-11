@@ -257,7 +257,8 @@ def _additive_group_exponential(additive_group):
     from sage.groups.group_exp import GroupExp
 
     engine = GroupExp()(_AdditiveGroupForGroupExp(additive_group))
-    group = _own_group(engine)
+    # The selected additive law proves exp(a)exp(b) = exp(b)exp(a).
+    group = _own_group(engine, refinements=(OwnedGroups().Commutative(),))
     forward = Sets().Mor(additive_group, group)(
         lambda element: group._from_engine(engine._element_constructor_(element))
     )
@@ -1238,7 +1239,7 @@ class _GroupElement(MultiplicativeGroupElement):
         return other in self.parent() and self._backend() == other._backend()
 
     def __ne__(self, other):
-        return not self == other
+        return negation(self == other)
 
     def __hash__(self):
         return hash((id(self.parent()), self._backend()))

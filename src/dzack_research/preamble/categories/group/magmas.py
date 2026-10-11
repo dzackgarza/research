@@ -723,6 +723,31 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [AdditiveMonoids()]
 
+    class ParentMethods:
+        def multiplicative_group_identification(self):
+            r"""Return the set isomorphism ``a |-> exp(a)`` with ``exp(a+b)=exp(a)exp(b)``.
+
+            Multiplicative notation exists for every additive group.  The
+            selected GroupExp realization requires commutative addition.
+            """
+            match self:
+                case _ if self in AdditiveGroups().AdditiveCommutative():
+                    from dzack_research.preamble.categories.group.groups import (
+                        _additive_group_exponential,
+                    )
+
+                    return _additive_group_exponential(self)
+                case _:
+                    assert False, (
+                        "multiplicative_group_identification cannot be computed: "
+                        "no realization is selected for this additive group; "
+                        "the available GroupExp realization requires commutative addition"
+                    )
+
+        def multiplicative_group(self):
+            r"""Return this additive group written multiplicatively."""
+            return self.multiplicative_group_identification().codomain()
+
     class ElementMethods:
         def _sub_(self, other):
             r"""The right difference, from addition and the additive inverse."""
@@ -730,19 +755,6 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
 
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
-
-        class ParentMethods:
-            def multiplicative_group_identification(self):
-                r"""Return the set isomorphism ``a |-> exp(a)`` with ``exp(a+b)=exp(a)exp(b)``."""
-                from dzack_research.preamble.categories.group.groups import (
-                    _additive_group_exponential,
-                )
-
-                return _additive_group_exponential(self)
-
-            def multiplicative_group(self):
-                r"""Return this abelian group written multiplicatively."""
-                return self.multiplicative_group_identification().codomain()
 
         class _MorCategory(MorCategoryConstruction):
             def fixed_category_class(self):
