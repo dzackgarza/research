@@ -270,28 +270,2558 @@ Preserve the phase-T execution rules.
 
 Repair the existing public construction routes and inherited methods before proving the daily core. Placement and engine audits cover the existing preamble; the exercise core tests mathematically useful composed pathways.
 
-- [x] **`placement-audit`**. **Needs:** `localized-quotient-invariants-use-exact-ideals`.
-  **Closed source piece (steward instruction, 2026-10-10):** the delivered quotient-owner invariant/locus pass is closed. Characteristic is at the semiring owner; cardinality at Sets; units and same-parent unit division at Monoids; subtraction at AdditiveGroups; prime/minimal-prime/component loci, selected finite families, Krull dimension, normality and total-quotient maps at commutative rings. Selected quotient/localization realizations fulfil the declared computation contracts while preserving the source, ideal, projection and exact maps. The introduced quotient operations and their full declared up-set were inspected together; HANDOFF.md records each disposition and the delivered arrow inheritance. The localized quotient and coordinate/predicate consumer pieces are now closed. The existing infinite-group, general locus and promoted-owner assertions remain under T; no runtime acceptance is claimed.
-  **Closed PrimeLocalizations category pass (2026-10-10):** all seven public introductions, its remaining realization hooks, its complete 21-member authored up-set and its inherited RingMor were inspected together. Maximal ideal, residue field and residue map inherit the existing Local ring owner; the retained source-to-residue composite belongs to the existing Local refinement of LocalizationRings. The Prime supplier reuses one LocalRingConstruction with independent cached factories for pR_p, Frac(R/p) and the induced quotient map. Localize-module and unit-predicate duplication are removed. Fraction field now belongs beside the existing integral-domain localization/map, without denying that a reducible source can localize to a field. The common local field decision retains the actual maximal ideal's zero proposition; the intrinsic dimension formula requires the actual finite-type/PID hypotheses. Canonical field identities explicitly use RingMor. HANDOFF.md records every disposition and an existing non-Prime localization witness; the separating assertions remain under T. No prerequisite node or edge is added.
-  **Closed LocalizationRings map/coefficient-owner piece (2026-10-10):** the complete category body and its 17 authored ancestors were read. The constructor now selects its exact coefficient base once, passes it through the existing module/algebra construction, and inherits algebra_base_ring from Algebras. The forward/inverse fraction-field comparisons and restriction_to explicitly construct RingMor arrows from their elementwise callbacks, preserving the actual endpoints; the existing domain fraction-field map and localized-module restriction consume those corrected arrows. Prime containment uses owned conjunction; an undecided containment or unit-image hypothesis reaches a computation assertion instead of being coerced or described as nonexistence. Selected comparison frontiers state their actual retained-presentation requirement. The whole LocalizationRings pass stays open on cardinality transport, fraction-field recognition, and predicate/equality/admission work inside this same node.
-  **Closed LocalizationRings predicate/scalar-owner piece (2026-10-11):** the public fraction-field predicate now asks that the actual source is a domain and the localization is a field, preserving undecided propositions. A separate declared selected-submonoid guard retains exactly the data needed by the five existing intersection/contraction and comparison consumers, without making field recognition a comparison algorithm. The selected singleton-generator documentation distinguishes a possible power-denominator expression from the stored admissible denominator. The redundant scalar multiplication override is removed: actual localization factories build the category's CommutativeRingElement, whose native multiplication uses the selected fraction law for the same parent and registered Modules actions for scalar multiplication. The independently read construction and native action chain establish inheritance. General field decisions remain inside this node; the finite-integer supplier recorded below restores ZZ[1/2]'s mathematical False through an actual source-property theorem. This bounded source closure claims no executed assertions or new prerequisite.
-  **Closed LocalizationRings universal-map piece (2026-10-11):** induced_morphism now establishes the global unit-image premise from selected generators or exact retained canonical data before constructing an arrow. An opaque predicate submonoid alone does not prove this hypothesis. The existing fraction evaluator is shared through one declared protected constructor with the residue, S-saturated total-quotient and maximal-completion suppliers. Public retained cases include the source localization map inducing the ring identity, zero targets, the identical inverted system, prime-containment restrictions and a matching quotient projection to a field. The completion reuse branch now requires the original prime to be proved maximal: for k[x,y] at (x), y is inverted in the localization but is not a unit in k[y][[x]], so that original-source completion map cannot extend. Unsupported general completion and unretained unit-image computations remain inside this node. All actual callers and map equations were source-reviewed; no execution or prerequisite is added.
-  **Closed LocalizationRings finite-integer field-decision piece (2026-10-11):** the existing field hook now returns False for a selected finite-generator localization whose source is a finite free module over the actual integers. Such a localization is a finite-type integer algebra; if nonzero, integer torsion-freeness makes its integer map injective, whereas a field of finite type over the Jacobson ring ZZ cannot contain it injectively (Stacks 00G4, 0CY7). The zero localization is also not a field. The guard uses only existing module properties and retained finite-generator data, requiring neither a basis nor a source-domain or engine decision. It applies to the actual initial placement of ZZ and represented number-field orders, restoring ZZ[1/2]'s decided False. Predicate submonoids delegate cooperatively, preserving the common Local maximal-ideal field decision in either provider order. Broader field algorithms remain the existing owner's computation frontier; execution is retained under T.
-  **Remainder retained inside this node:** this is closure of the delivered invariant/locus portion, not of the entire preamble survey. The five normalization introductions and their finite affine computations are now delivered by `normalization-extensions-retain-coefficients` and its closed coefficient-dimension dependency; their general computation remainder remains inside that existing node. The next category pass has started at LocalizationRings. The remaining owned categories, their complete operation lists and actual arrow inheritance still need their CAT-05 passes; the original whole-survey closure assertion below remains that remainder's acceptance condition. The broader supplied-cardinality and nonfinite invariant remainders named inside the two closed descendant pieces also remain visible here. None of these obligations is discarded or represented as another prerequisite node. `architecture-remediation` remains open on this full retained burden.
-  **General minimal-prime locus source repair retained:** the Step-2 full-power-set construction is now owned by `OwnedRings.Commutative.ParentMethods`. `prime_ideal_locus`, `minimal_prime_locus` and `irreducible_component_locus` represent arbitrary ideal subsets without finite generation or enumeration. The public finite-selection routes inherit that owner, and exact Noetherian quotient presentations supply their existing finite computations through declared hooks. Nonreduced rings also have irreducible components. The original infinite-Boolean-ring and two-component affine-ring assertions remain under T; no computation of an arbitrary ideal-subset predicate is claimed. Localized-source ideal computations and the normalization extension/coefficient data are the explicit prerequisites below.
+- [ ] **`placement-audit`**. **Needs:** `placement-owner-adelogpairs`, `placement-owner-abeliangroupendomorphismrings`, `placement-owner-absolutegaloisgroups`, `placement-owner-absolutegaloisgroupsoffinitefields`, `placement-owner-additiveendomorphismrings`, `placement-owner-additivegroups`, `placement-owner-additivegroups-additivecommutative`, `placement-owner-additivegroups-additivecommutative-morcategory`, `placement-owner-additivegroups-morcategory`, `placement-owner-additivemagmamor`, `placement-owner-additivemagmas`, `placement-owner-additivemagmas-additivecommutative`, `placement-owner-additivemagmas-morcategory`, `placement-owner-additivemonoidmor`, `placement-owner-additivemonoids`, `placement-owner-additivemonoids-morcategory`, `placement-owner-additivemor`, `placement-owner-additivemorgroups`, `placement-owner-additivesemigroups`, `placement-owner-additivesemigroups-morcategory`, `placement-owner-adiccompletions`, `placement-owner-affinegschemes`, `placement-owner-affinegeometriccohomologycomplexes`, `placement-owner-affinegroupschemeactionmor`, `placement-owner-affinegroupschemeactionmorcategoryconstruction`, `placement-owner-affinegroupschemeactions`, `placement-owner-affinegroupschememor`, `placement-owner-affinegroupschememorcategoryconstruction`, `placement-owner-affinegroupschemes`, `placement-owner-affinemodulefibres`, `placement-owner-affinequasicoherentsheafmor`, `placement-owner-affinesemigroupalgebras`, `placement-owner-affinespaces`, `placement-owner-algebragluingdata`, `placement-owner-algebragluingmor`, `placement-owner-algebragluingmorcategoryconstruction`, `placement-owner-algebramor`, `placement-owner-algebramorcategoryconstruction`, `placement-owner-algebrasheaves`, `placement-owner-algebraiccyclegroups`, `placement-owner-algebras`, `placement-owner-algebras-associative`, `placement-owner-algebras-associative-unital`, `placement-owner-algebras-associative-unital-commutative`, `placement-owner-algebras-associative-unital-finitelygeneratedasalgebra`, `placement-owner-algebras-associative-unital-finitelypresentedasalgebra`, `placement-owner-algebras-commutative`, `placement-owner-algebras-lie`, `placement-owner-algebras-unital`, `placement-owner-algebraswithchosenfinitepresentation`, `placement-owner-alternatingalgebras`, `placement-owner-alternatingpowermodules`, `placement-owner-arrowmor`, `placement-owner-arrowmorcategoryconstruction`, `placement-owner-associativealgebramorcategoryconstruction`, `placement-owner-augmentedalgebras`, `placement-owner-augmentedsimplexcategory`, `placement-owner-autcategoryconstruction`, `placement-owner-bilinearformmodules`, `placement-owner-bilinearformmodules-even`, `placement-owner-bilinearformmodules-finitelypresented`, `placement-owner-bilinearformmodules-finitelypresented-torsion`, `placement-owner-bilinearformmodules-symmetric`, `placement-owner-bilinearformmors`, `placement-owner-biproductlattices`, `placement-owner-biproductmodules`, `placement-owner-blowups`, `placement-owner-brauercharacterrepresentations`, `placement-owner-cardinalities`, `placement-owner-cardinalitymor`, `placement-owner-cardinalitymorcategoryconstruction`, `placement-owner-cartesianproductsofadditivemonoids`, `placement-owner-cartesianproductsofsets`, `placement-owner-cartierdivisorgroups`, `placement-owner-cat`, `placement-owner-categoricalmor`, `placement-owner-categoryfunctormor`, `placement-owner-centralizersubgroups`, `placement-owner-chambersystemmor`, `placement-owner-chambersystemmorcategoryconstruction`, `placement-owner-chambersystems`, `placement-owner-charactersets`, `placement-owner-chowgroups`, `placement-owner-classgroups`, `placement-owner-classifyingcategory`, `placement-owner-classifyingmor`, `placement-owner-classifyingmorcategory`, `placement-owner-closedembeddings`, `placement-owner-closedsubschemes`, `placement-owner-cochaincomplexes`, `placement-owner-cochainmor`, `placement-owner-cochainmorcategoryconstruction`, `placement-owner-coconemor`, `placement-owner-coconemorcategoryconstruction`, `placement-owner-cohomologyalgebramor`, `placement-owner-cohomologyalgebramorcategoryconstruction`, `placement-owner-cohomologyalgebras`, `placement-owner-cohomologymodules`, `placement-owner-cokerneltorsionformmodules`, `placement-owner-commutativealgebracoproducts`, `placement-owner-commutativealgebrapushouts`, `placement-owner-commutativegradedintegraldomains`, `placement-owner-commutativeideals`, `placement-owner-commutatorliealgebras`, `placement-owner-completelinearsystems`, `placement-owner-complexmanifoldmor`, `placement-owner-complexmanifoldmorcategoryconstruction`, `placement-owner-complexmanifolds`, `placement-owner-conemor`, `placement-owner-conemorcategoryconstruction`, `placement-owner-connectioncategoryconstruction`, `placement-owner-connectionmor`, `placement-owner-connectionmorphismcategoryconstruction`, `placement-owner-connectionspace`, `placement-owner-convexpolytopes`, `placement-owner-convexpolytopes-integral`, `placement-owner-convexpolytopes-integral-polygon`, `placement-owner-convexpolytopes-polygon`, `placement-owner-coproductsofsets`, `placement-owner-coremor`, `placement-owner-coremorcategoryconstruction`, `placement-owner-coslicecategory`, `placement-owner-coslicemor`, `placement-owner-coslicemorcategoryconstruction`, `placement-owner-coveredobjectcategory`, `placement-owner-coveringfamilies`, `placement-owner-coveringfamilymor`, `placement-owner-coveringfamilymorcategoryconstruction`, `placement-owner-coveringobjectcategory`, `placement-owner-coxrings`, `placement-owner-coxeterdiagrammor`, `placement-owner-coxeterdiagrammorcategoryconstruction`, `placement-owner-coxeterdiagrams`, `placement-owner-curves`, `placement-owner-cycliccovers`, `placement-owner-cyclicgroups`, `placement-owner-dgamor`, `placement-owner-dgamorcategoryconstruction`, `placement-owner-derhamalgebras`, `placement-owner-definitelattices`, `placement-owner-delpezzosurfaces`, `placement-owner-derivationcategoryconstruction`, `placement-owner-derivationspace`, `placement-owner-descentdataoncover`, `placement-owner-differentiablemanifolds`, `placement-owner-differentialgradedalgebras`, `placement-owner-differentialgradedmodules`, `placement-owner-digraphmor`, `placement-owner-digraphmorcategoryconstruction`, `placement-owner-digraphs`, `placement-owner-directsumobjects`, `placement-owner-directedsystem`, `placement-owner-discretecategories`, `placement-owner-discretecategory`, `placement-owner-discretemor`, `placement-owner-discretemorcategoryconstruction`, `placement-owner-discriminantbilinearmodules`, `placement-owner-discriminantmodules`, `placement-owner-discriminantquadraticmodules`, `placement-owner-discriminantsubmodules`, `placement-owner-distinguishedaffinecovermor`, `placement-owner-distinguishedaffinecovermorcategoryconstruction`, `placement-owner-distinguishedaffinecovers`, `placement-owner-distinguishedopenimmersions`, `placement-owner-distinguishedopensubobjects`, `placement-owner-dividedpoweralgebras`, `placement-owner-dividedpowermodules`, `placement-owner-dividedsquaremodules`, `placement-owner-divisorgroups`, `placement-owner-effectivecartierdivisors`, `placement-owner-endcategoryconstruction`, `placement-owner-enumeratedbyintegers`, `placement-owner-enumeratedbynaturals`, `placement-owner-enumeratedcoproductsofsets`, `placement-owner-enumeratedsets`, `placement-owner-epicategoryconstruction`, `placement-owner-eventwoelementarylattices`, `placement-owner-fiberproductschemes`, `placement-owner-fiberedformedmodulemor`, `placement-owner-finiteaffineatlases`, `placement-owner-finiteatlasalgebragluingdata`, `placement-owner-finiteatlasalgebragluingmor`, `placement-owner-finiteatlasalgebragluingmorcategoryconstruction`, `placement-owner-finiteatlasmodulegluingdata`, `placement-owner-finiteatlasmodulegluingmor`, `placement-owner-finiteatlasmodulegluingmorcategoryconstruction`, `placement-owner-finiteatlasmodulesheafmor`, `placement-owner-finiteatlasmor`, `placement-owner-finiteatlasmorcategoryconstruction`, `placement-owner-finiteenumeratedcartesianproductsofsets`, `placement-owner-finitefreegrouprepresentations`, `placement-owner-finitegsets`, `placement-owner-finiteorderedsets`, `placement-owner-finiteordinalcategory`, `placement-owner-finiteordinalmor`, `placement-owner-finiteordinalmorcategoryconstruction`, `placement-owner-finitepowersets`, `placement-owner-finitelysupportedfunctionsets`, `placement-owner-fixedautcategory`, `placement-owner-fixedcardinalitysubsetsets`, `placement-owner-fixedendcategory`, `placement-owner-fixedisocategory`, `placement-owner-fixedmorcategory`, `placement-owner-fixedrestrictedmorcategory`, `placement-owner-fixedwidemorcategory`, `placement-owner-formbasechanges`, `placement-owner-formembeddingmor`, `placement-owner-formmodules`, `placement-owner-formmodules-finitelypresented`, `placement-owner-formmodules-nondegenerate`, `placement-owner-formmodules-unimodular`, `placement-owner-formvaluescalings`, `placement-owner-formaldivisorgroups`, `placement-owner-formalpowerseriesrings`, `placement-owner-formedmodulemonocategoryconstruction`, `placement-owner-formedmodulemor`, `placement-owner-formedmodulemorcategoryconstruction`, `placement-owner-fractionfieldquotients`, `placement-owner-fractionalideals`, `placement-owner-framedfreealgebramor`, `placement-owner-framedfreemodules`, `placement-owner-framedfreemodules-finitelygenerated`, `placement-owner-freealgebras`, `placement-owner-freeformmodules`, `placement-owner-freeformmodules-finitelygenerated`, `placement-owner-functionenumeratedsets`, `placement-owner-functionmodules`, `placement-owner-functionsets`, `placement-owner-functorimagemor`, `placement-owner-functorimagemorcategoryconstruction`, `placement-owner-functormorcategoryconstruction`, `placement-owner-gobjectmor`, `placement-owner-gobjectmorcategoryconstruction`, `placement-owner-gobjects`, `placement-owner-gsetmor`, `placement-owner-gsetmorcategoryconstruction`, `placement-owner-generalgroupmor`, `placement-owner-generalmodules`, `placement-owner-generatedsubgroups`, `placement-owner-geometricfundamentalgroups`, `placement-owner-gorensteintoricschemes`, `placement-owner-gradedalgebramodules`, `placement-owner-gradedalgebramor`, `placement-owner-gradedalgebramorcategoryconstruction`, `placement-owner-gradedalgebras`, `placement-owner-gradedalgebras-supercommutative`, `placement-owner-gradedalgebras-supercommutative-alternating`, `placement-owner-gradedaugmentedalgebras`, `placement-owner-gradedderivationcategoryconstruction`, `placement-owner-gradedderivationspace`, `placement-owner-gradedfreealgebras`, `placement-owner-gradedmodulemor`, `placement-owner-gradedmodulemorcategoryconstruction`, `placement-owner-gradedmodules`, `placement-owner-graphs`, `placement-owner-groupalgebras`, `placement-owner-groupautomorphismgroup`, `placement-owner-groupautomorphismgroups`, `placement-owner-groupendcategoryconstruction`, `placement-owner-groupisocategoryconstruction`, `placement-owner-grouplatticemor`, `placement-owner-grouplatticemorcategoryconstruction`, `placement-owner-groupmodulemor`, `placement-owner-groupmodulemorcategoryconstruction`, `placement-owner-groupmor`, `placement-owner-groupmorcategoryconstruction`, `placement-owner-groupswithchosenfinitepresentation`, `placement-owner-groupswithchosenfreebasis`, `placement-owner-homogeneouspolynomialsectionspaces`, `placement-owner-hyperboliclattices`, `placement-owner-hyperbolicpolyhedra`, `placement-owner-hyperbolicspaces`, `placement-owner-idealdualpullbacks`, `placement-owner-idealmetricduals`, `placement-owner-imageoffunctor`, `placement-owner-imposedmultiplicitylinearsystems`, `placement-owner-indexedfreegroupmor`, `placement-owner-integergradedmodules`, `placement-owner-integralprimespectra`, `placement-owner-integralsingularcohomologygroups`, `placement-owner-integraltopologicalcohomologygroups`, `placement-owner-internalgroupactionmor`, `placement-owner-internalgroupactionmorcategoryconstruction`, `placement-owner-internalgroupactions`, `placement-owner-internalgroupobjectmor`, `placement-owner-internalgroupobjectmorcategoryconstruction`, `placement-owner-internalgroupobjects`, `placement-owner-internalmormodules`, `placement-owner-intersectionsubgroups`, `placement-owner-inversesystem`, `placement-owner-invertiblesheaveswithchosentrivialization`, `placement-owner-isocategoryconstruction`, `placement-owner-isotropicreductionlifttorsors`, `placement-owner-isotropicreductions`, `placement-owner-isotypicdecompositions`, `placement-owner-kahlerdifferentialmodules`, `placement-owner-kernelsubgroups`, `placement-owner-labelleddigraphmor`, `placement-owner-labelleddigraphmorcategoryconstruction`, `placement-owner-labelleddigraphs`, `placement-owner-labelledgraphs`, `placement-owner-latticeembeddingmor`, `placement-owner-latticeisocategoryconstruction`, `placement-owner-latticeisometrymor`, `placement-owner-latticemonocategoryconstruction`, `placement-owner-latticemor`, `placement-owner-latticemorcategoryconstruction`, `placement-owner-lattices`, `placement-owner-latticesovergroupalgebra`, `placement-owner-lebesguegradedmodules`, `placement-owner-leftcosetgsets`, `placement-owner-linebundlecohomologyspaces`, `placement-owner-linearendcategoryconstruction`, `placement-owner-linearmormodules`, `placement-owner-localizationrings`, `placement-owner-localizationrings-local`, `placement-owner-localizedmodules`, `placement-owner-locallyringedmorcategoryconstruction`, `placement-owner-locallyringedspaces`, `placement-owner-logpairs`, `placement-owner-magmamor`, `placement-owner-magmamorcategoryconstruction`, `placement-owner-magmas`, `placement-owner-magmas-commutative`, `placement-owner-magmas-unital`, `placement-owner-matrixalgebras`, `placement-owner-matrixendomorphismmor`, `placement-owner-matrixendomorphismmorcategoryconstruction`, `placement-owner-matrixendomorphismspaces`, `placement-owner-matrixspaces`, `placement-owner-moduleautomorphismgroup`, `placement-owner-moduleautomorphismgroups`, `placement-owner-moduleembeddingmor`, `placement-owner-moduleendcategoryconstruction`, `placement-owner-modulegluingdata`, `placement-owner-modulegluingmor`, `placement-owner-modulegluingmorcategoryconstruction`, `placement-owner-moduleinverseimages`, `placement-owner-moduleisocategoryconstruction`, `placement-owner-modulemonocategoryconstruction`, `placement-owner-modulemor`, `placement-owner-modulemorcategoryconstruction`, `placement-owner-moduleresolutions`, `placement-owner-modulesheaves`, `placement-owner-modulesubobjects`, `placement-owner-modules`, `placement-owner-modules-finitelygenerated`, `placement-owner-modules-finitelypresented`, `placement-owner-modules-finitelypresented-torsion`, `placement-owner-modules-free`, `placement-owner-modules-projective`, `placement-owner-modules-torsion`, `placement-owner-modulesovercommutativerings`, `placement-owner-modulesovergroupalgebra`, `placement-owner-modulesoverintegraldomains`, `placement-owner-moduleswithchosencomponentpresentation`, `placement-owner-moduleswithchosenfinitepresentation`, `placement-owner-moduleswithconnection`, `placement-owner-moduleswithflatconnection`, `placement-owner-monocategoryconstruction`, `placement-owner-monoidmor`, `placement-owner-monoidmorcategoryconstruction`, `placement-owner-monoids`, `placement-owner-morarrowdiscretemor`, `placement-owner-morcategories`, `placement-owner-morcategoryconstruction`, `placement-owner-mors`, `placement-owner-multihomogeneouspolynomialsectionspaces`, `placement-owner-multiplicativealgebramor`, `placement-owner-naturalnumbersets`, `placement-owner-naturaltransformationmor`, `placement-owner-naturaltransformationmorcategoryconstruction`, `placement-owner-noncrystallographicrootlattices`, `placement-owner-nondegenerategenericfibreformmodules`, `placement-owner-numberfieldswithchosenprimitiveelement`, `placement-owner-objects`, `placement-owner-openabsolutegaloissubgroups`, `placement-owner-openimmersions`, `placement-owner-oppositemor`, `placement-owner-oppositemorcategoryconstruction`, `placement-owner-orbitrepresentativesets`, `placement-owner-orbitspanconstructions`, `placement-owner-orbitspanlattices`, `placement-owner-ordermor`, `placement-owner-orderedenumeratedsets`, `placement-owner-orderswithchosenintegralbasis`, `placement-owner-ordinalmor`, `placement-owner-ordinalmorcategoryconstruction`, `placement-owner-ordinals`, `placement-owner-ordinarycharacterrepresentations`, `placement-owner-ownedadicallycompleterings`, `placement-owner-ownedgroups`, `placement-owner-ownedgroups-commutative`, `placement-owner-ownedgroups-finite`, `placement-owner-ownedgroups-finitelygeneratedasmagma`, `placement-owner-ownedgroups-finitelypresentedasgroup`, `placement-owner-ownedgroups-infinite`, `placement-owner-ownednumberfields`, `placement-owner-ownedorderedrings`, `placement-owner-ownedorders`, `placement-owner-ownedorders-morcategory`, `placement-owner-ownedrings`, `placement-owner-ownedrings-artinian`, `placement-owner-ownedrings-commutative`, `placement-owner-ownedrings-commutative-local`, `placement-owner-ownedrings-commutative-local-complete`, `placement-owner-ownedrings-commutative-principalideals`, `placement-owner-ownedrings-division`, `placement-owner-ownedrings-division-commutative`, `placement-owner-ownedrings-division-commutative-prime`, `placement-owner-ownedrings-nozerodivisors`, `placement-owner-ownedrings-nozerodivisors-commutative`, `placement-owner-ownedrings-noetherian`, `placement-owner-ownedrings-nontrivial`, `placement-owner-ownedrngs`, `placement-owner-ownedsemirings`, `placement-owner-pairedmodules`, `placement-owner-pairingobjects`, `placement-owner-parallelfamilycategory`, `placement-owner-parallelfamilymor`, `placement-owner-parallelfamilymorcategoryconstruction`, `placement-owner-parallelpaircategory`, `placement-owner-parallelpairmor`, `placement-owner-parallelpairmorcategoryconstruction`, `placement-owner-partiallyorderedsets`, `placement-owner-permutationgroups`, `placement-owner-picardgroups`, `placement-owner-posetcategory`, `placement-owner-posetmor`, `placement-owner-posetmorcategoryconstruction`, `placement-owner-positiveconecomponents`, `placement-owner-poweralgebramor`, `placement-owner-poweralgebramorcategoryconstruction`, `placement-owner-powersets`, `placement-owner-predicatesubgroups`, `placement-owner-predicatesubrings`, `placement-owner-preimagesubgroups`, `placement-owner-presentedalgebramor`, `placement-owner-primelocalizations`, `placement-owner-primespectra`, `placement-owner-primitiveisotropicsubobjects`, `placement-owner-productmor`, `placement-owner-productmorcategoryconstruction`, `placement-owner-productprojectivespaces`, `placement-owner-productschemes`, `placement-owner-profinitegroups`, `placement-owner-projectivebundlepicardgroups`, `placement-owner-projectivecompleteintersections`, `placement-owner-projectivecompleteintersections-smooth`, `placement-owner-projectivecurves`, `placement-owner-projectivejetspaces`, `placement-owner-projectivelinearsystems`, `placement-owner-projectivelines`, `placement-owner-projectivepointblowups`, `placement-owner-projectivespaces`, `placement-owner-projectivesurfaces`, `placement-owner-propersurfaces`, `placement-owner-quadraticformmodules`, `placement-owner-quadraticformmodules-finitelypresented`, `placement-owner-quadraticformmodules-finitelypresented-torsion`, `placement-owner-quadraticmodulemor`, `placement-owner-quasicoherentsheafmor`, `placement-owner-quasicoherentsheafmorcategoryconstruction`, `placement-owner-quasicoherentsheaves`, `placement-owner-quasicoherentsheaves-invertible`, `placement-owner-quotientrings`, `placement-owner-rationalpolyhedralcones`, `placement-owner-rationalpolyhedralfans`, `placement-owner-regularpolytopes`, `placement-owner-relativeprojectivizationquasicoherentmor`, `placement-owner-relativeprojectivizations`, `placement-owner-resolutionintegralcohomologygroups`, `placement-owner-resolutionmor`, `placement-owner-resolutionmorcategoryconstruction`, `placement-owner-resolutions`, `placement-owner-restrictedmorcategoryparent`, `placement-owner-restrictedscalarsalgebras`, `placement-owner-restrictedscalarsmodules`, `placement-owner-ringmor`, `placement-owner-ringmorcategoryconstruction`, `placement-owner-ringedspaces`, `placement-owner-rngmor`, `placement-owner-rngmorcategoryconstruction`, `placement-owner-rootlattices`, `placement-owner-satakediagrams`, `placement-owner-schememonomorphisms`, `placement-owner-schememorcategory`, `placement-owner-schememorcategoryconstruction`, `placement-owner-schemes`, `placement-owner-schemes-affine`, `placement-owner-schemes-calabiyau`, `placement-owner-schemes-finitetype`, `placement-owner-schemes-integral`, `placement-owner-schemes-locallynoetherian`, `placement-owner-schemes-locallynoetherian-integral`, `placement-owner-schemes-normal`, `placement-owner-schemes-projective`, `placement-owner-schemes-proper`, `placement-owner-schemes-proper-smooth`, `placement-owner-schemes-quasiaffine`, `placement-owner-schemes-quasiaffine-finitetype`, `placement-owner-schemes-quasiprojective`, `placement-owner-schemes-separated`, `placement-owner-schemes-smooth`, `placement-owner-schemesoverintegraldomains`, `placement-owner-schemesoverlocalrings`, `placement-owner-sectionrings`, `placement-owner-semigroups`, `placement-owner-semilinearmodulemor`, `placement-owner-semilinearmodulemorcategoryconstruction`, `placement-owner-semiringmor`, `placement-owner-semiringmorcategoryconstruction`, `placement-owner-setepicategoryconstruction`, `placement-owner-setinjectionmor`, `placement-owner-setmonocategoryconstruction`, `placement-owner-setmorcategory`, `placement-owner-setmorcategoryconstruction`, `placement-owner-setsubobjectcategory`, `placement-owner-setsurjectionmor`, `placement-owner-sets`, `placement-owner-sets-countable`, `placement-owner-sets-countable-infinite`, `placement-owner-sets-finite`, `placement-owner-sets-infinite`, `placement-owner-sets-uncountable`, `placement-owner-sheafobjects`, `placement-owner-sheafedspaces`, `placement-owner-sheaves`, `placement-owner-slicecategory`, `placement-owner-slicemor`, `placement-owner-slicemorcategoryconstruction`, `placement-owner-smoothcompleterationaltoricschemes`, `placement-owner-smoothmanifolds`, `placement-owner-smoothquartick3completeintersections`, `placement-owner-sparsefreealgebramor`, `placement-owner-stabilizersubgroups`, `placement-owner-subgroups`, `placement-owner-subobjectcategory`, `placement-owner-subobjectmor`, `placement-owner-subobjectmorcategoryconstruction`, `placement-owner-superobjectcategory`, `placement-owner-surfaces`, `placement-owner-symmetricalgebras`, `placement-owner-symmetricpowermodules`, `placement-owner-tensoralgebras`, `placement-owner-tensorpowermodules`, `placement-owner-tensorproductmodulemor`, `placement-owner-tensorproductmodules`, `placement-owner-topologicalgroups`, `placement-owner-topologicalmanifolds`, `placement-owner-topologicalspacemor`, `placement-owner-topologicalspacemorcategoryconstruction`, `placement-owner-topologicalspaces`, `placement-owner-toricfixedpointblowups`, `placement-owner-toricfundamentalgroups`, `placement-owner-toricgeometriclinebundlecohomologyspaces`, `placement-owner-toricintegralsingularcohomologygroups`, `placement-owner-toriclogpairs`, `placement-owner-toricprojectivespaces`, `placement-owner-toricschemes`, `placement-owner-toricweightcohomologycomplexes`, `placement-owner-torsionbilinearformisocategoryconstruction`, `placement-owner-torsionformorthogonalgroup`, `placement-owner-torsionquadraticformisocategoryconstruction`, `placement-owner-torsors`, `placement-owner-torusinvariantcyclegroups`, `placement-owner-totallyorderedsets`, `placement-owner-trivialcoveringfamilies`, `placement-owner-trivializedtorsors`, `placement-owner-unitalalgebramorcategoryconstruction`, `placement-owner-unitalmultiplicativealgebramor`, `placement-owner-varieties`, `placement-owner-vectorconfigurations`, `placement-owner-vectorspaces`, `placement-owner-vinberginvariantmatrices`, `placement-owner-weildivisorgroups`, `placement-owner-wellorderedsetmor`, `placement-owner-wellorderedsetmorcategoryconstruction`, `placement-owner-wellorderedsets`, `placement-owner-weylchambercomplexes`, `placement-owner-widemorcategoryconstruction`, `placement-owner-zariskiclosedsubobjects`, `placement-owner-zariskicoveringfamilies`, `placement-owner-autcategoryof`, `placement-owner-automorphismarrowcategory`, `placement-owner-auxiliarylinearmodulemor`, `placement-owner-cechcoveringfamilies`, `placement-owner-chosentrivializationquasicoherentmor`, `placement-owner-coconecategory`, `placement-owner-colimitsofcategory`, `placement-owner-conecategory`, `placement-owner-coproductcoconecategory`, `placement-owner-coproductsofcategory`, `placement-owner-corecategory`, `placement-owner-diagramcategory`, `placement-owner-dimensionsubcategoryofvarieties`, `placement-owner-discretetwomorcategoryof`, `placement-owner-endarrowcategory`, `placement-owner-endcategoryof`, `placement-owner-endofunctoralgebracategory`, `placement-owner-endofunctoralgebramor`, `placement-owner-endofunctoralgebramorcategory`, `placement-owner-epicategoryof`, `placement-owner-epimorphismarrowcategory`, `placement-owner-finiteatlasinverseimagemodulemor`, `placement-owner-finiteatlasinverseimagemodulemorcategoryconstruction`, `placement-owner-finiteatlasinverseimagemodulesheaves`, `placement-owner-fullsubcategoryofarrows`, `placement-owner-functorcategory`, `placement-owner-gluedschememorcategory`, `placement-owner-isoarrowcategory`, `placement-owner-isocategoryof`, `placement-owner-limitsofcategory`, `placement-owner-monocategoryof`, `placement-owner-monomorphismarrowcategory`, `placement-owner-morcategoryof`, `placement-owner-oppositecategory`, `placement-owner-predicatesubgroupconstruction`, `placement-owner-productcategory`, `placement-owner-productconecategory`, `placement-owner-productsofcategory`, `placement-owner-pullbacklinebundlequasicoherentmor`, `placement-owner-restrictedmorcategoryof`, `placement-owner-schemesubobjectsof`, `placement-owner-selectedfinitepresentationmodules`, `placement-owner-spancategory`, `placement-owner-subcategoryofarrows`, `placement-owner-torsionformisocategoryconstruction`, `placement-owner-walkingarrowfunctorcategory`, `placement-owner-widesubcategory`.
+  **Parent closure:** every category-owner pass below is closed on its own complete operation inventory, actual ancestor definitions, mathematical placement and delivered arrow inheritance. A completed edit inside an open pass is evidence for that pass, not closure of this parent. The parent closes only after the last required owner pass and final inventory reconciliation; `architecture-remediation` retains this dependency.
+  **Current source inventory (2026-10-11, HEAD `19c678528a`):** the source-only category graph lists 644 distinct authored qualified declarations; 630 are mathematical category owners and each has exactly one child below. Nested axiom categories and genuine Mor/arrow categories retain their own passes. Parameter families are counted once; assignment aliases use the canonical declaration instead of duplicating its pass. The snapshot is `.tmp/placement-owner-passes-2026-10-11.json`; the older live megadoc is not the denominator for this split. Future authored owners must be reconciled before parent closure.
+  **Exact exclusions:** the six Predicate element classes `AlmostEverywhereEquality`, `AtomicProposition`, `Conjunction`, `Negation`, `ProfiniteGroupIsAbelian`, and `RealRelation`; the five `.ObjectType` parent implementations `FixedSizeSelections`, `_FiniteLiteralSet`, `_Genus`, `_IntegralLatticeGenera`, and `_SubgroupCollection`; and the three category infrastructure bases `OwnedCategory`, `OwnedParameterizedCategory`, and `OwnedCategoryOverBaseRing`. Their actual bases and declarations were read. `Objects` is the mathematical root and remains a pass; underscore names and Mor names are not an exclusion rule.
+  **Per-pass closure contract:** read all of one owner's introduced object, element and arrow operations together, including its selected computation suppliers, with the complete actual up-set and the definitions of those ancestors. State each operation's mathematical data and hypotheses independently of its implementation; its home is the weakest declared structure supplying them uniformly. Move misplaced operations, repair their actual consumers and verify that descendant arrow types inherit the chosen arrow owner. Each moved operation has a true assertion on a specimen of its new home outside the original owner. Preserve signatures, defining maps, existing decided cases and undecided propositions; an unavailable algorithm reaches its named computation assertion. A pass with no moves still records its full inventory, ancestor review and actual Mor inheritance. Only complete source passes are marked `[x]`; M1 / DEV-58 leaves execution of the retained assertions to T and `core-usability-session`.
+  **Existing obligations:** the completed `localized-quotient-invariants-use-exact-ideals` source piece feeds the QuotientRings pass. General normalization and coefficient computations remain inside `normalization-extensions-retain-coefficients` and their actual owner passes. The broader supplied-cardinality and nonfinite invariant remainders stay with Sets and the relevant module/ring passes. `infinite-index-additive-product-placement` is an explicit prerequisite of the CartesianProductsOfSets pass below. No unfinished mathematical obligation is erased by this split.
   **Inspection surface:** use the opt-in [architecture inspection recipes](docs/architecture-inspection.md) to choose source and live slices, constructor/call evidence, repeated introductions and private-access candidates. These tools support mathematical review; their output is not an acceptance gate or a substitute for the category definitions and construction trace.
   **Owner and delta:** every public object and element operation introduced on each owned category, judged by the `CAT-05` placement test: an operation introduced on `C` is misplaced when it is well-defined on a supercategory of `C`, and moves to `max W_f` over the up-set `U_C = {D > C}`. Include arrow operations and inspect the delivered Mor-category inheritance: an arrow operation can move only to an arrow type that the arrow types below inherit.
   At its home an operation decides computability in one `case`/`match` on categorical containment: each case with a known algorithm routes to it, and the final `case _` asserts, naming the missing algorithm (`CAT-01`; AGENTS.md, *Abstract contracts are distinct from partial algorithms*). An operation placed low because only there can it be computed is the commonest misplacement. The group operations `conjugacy_classes`, `conjugacy_class`, `conjugation_g_set`, `left_cosets` and `right_cosets` have already moved to `OwnedGroups.ParentMethods` (`categories/group/groups.py`), with finite-group computation selected at that owner. Do not move these again; audit the remaining operations and their arrow owners.
-  Instrument: `just preamble-megadoc`, then `just placement [CATEGORY ...]`, forms the slice: for each category it prints the introduced object, element and arrow operations and the up-set `U_C` with each member's definition.
+  Under the current M1 / DEV-58 boundary use source-only inspection. During the later authorized execution phase, `just preamble-megadoc`, then `just placement [CATEGORY ...]`, forms the slice: for each category it prints the introduced object, element and arrow operations and the up-set `U_C` with each member's definition.
   It decides nothing about placement; `W_f` and its maximum come only from the investigation in the loop body.
   It also prints three mechanical findings: a name introduced on `C` and again in `U_C`; the lowest categories of `U_C` whose arrow type the arrow type of `C` does not inherit, and every Mor class that declares no arrow type; and each name introduced on pairwise incomparable categories, with their minimal common upper bounds in `P`. Loop body: one category `C`, with all of its introduced object and element operations handled together in the one pass.
   State the definitions of the categories in `U_C`. For every operation `f` introduced on `C`, state its mathematical definition with the data and hypotheses it uses, read from a source, never from its method body, which may use only what `C` happens to compute.
   Then decide, for all of them at once, which members `D` of `U_C` supply that data and satisfy those hypotheses for every object of `D`. Those members form `W_f`, and `max W_f` is the home of `f`. Move every operation whose home is above `C`, and route its computation.
   The categories are independent.
   A move that cannot be made in the loop body becomes its own node, named by the mathematics it needs, and this node `Needs` it: several maximal elements of `W_f`, or a maximum absent from `P`, is a missing category, axiom or property, or a defect in the declared graph; a consumer that breaks because it reached the operation through the old placement is repaired in the same loop body.
-  `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; this node supplies that check.
+  `category-method-coverage-sweep` calls every method where it currently sits, so it certifies the current placement and cannot detect a misplacement; the owner passes below supply that check.
   Each move is witnessed by an expectation that calls the operation on a specimen of the supercategory that is not in `C`. **Closure specimens:** `conjugacy_classes` asked of an infinite group reaches its own assertion, not an `AttributeError`; every owned category in the survey has had its pass, and each operation it moved answers on a specimen of its new home that is not in `C`.
   **Extension contract:** place the mathematical operation at the weakest sufficient structure; keep its signature, defining maps and existing computable cases usable as new cases arrive. Use category-aware `match`/`case`, specialization, or an owner-local algorithm registry with explicit applicability and precedence. Registration must not make a general category import or enumerate its descendants. Overlapping cases must select a mathematically compatible implementation. A new backend or case adds capability through this extension point; it must not narrow the old domain or replace inherited semantics. A substantial refactor carries an explicit contract change and the affected mathematical proof.
+
+
+- [x] **`placement-owner-quotientrings`**. **Needs:** `localized-quotient-invariants-use-exact-ideals`.
+  **Owner pass:** `QuotientRings` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `QuotientRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuotientRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Completed whole-owner pass (`6bfa4ed172`, 2026-10-10):** the quotient-owner operation inventory and its complete actual up-set are recorded in HANDOFF.md's Whole-category placement: QuotientRings section. Characteristic is at the semiring owner; cardinality at Sets; units and same-parent unit division at Monoids; subtraction at AdditiveGroups; prime/minimal-prime/component loci, selected finite families, Krull dimension, normality and total-quotient maps at commutative rings. Selected quotient/localization realizations fulfil the declared computation contracts while preserving the source, ideal, projection and exact maps. The introduced quotient operations and their full declared up-set were inspected together; HANDOFF.md records each disposition and the delivered arrow inheritance. The localized quotient and coordinate/predicate consumer pieces are now closed. The existing infinite-group, general locus and promoted-owner assertions remain under T; no runtime acceptance is claimed.
+
+- [x] **`placement-owner-primelocalizations`**. **Needs:** none.
+  **Owner pass:** `PrimeLocalizations` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `PrimeLocalizations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PrimeLocalizations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Completed whole-owner pass (`d71d56d59f`, 2026-10-10):** all seven public introductions, its remaining realization hooks, its complete 21-member authored up-set and its inherited RingMor were inspected together. Maximal ideal, residue field and residue map inherit the existing Local ring owner; the retained source-to-residue composite belongs to the existing Local refinement of LocalizationRings. The Prime supplier reuses one LocalRingConstruction with independent cached factories for pR_p, Frac(R/p) and the induced quotient map. Localize-module and unit-predicate duplication are removed. Fraction field now belongs beside the existing integral-domain localization/map, without denying that a reducible source can localize to a field. The common local field decision retains the actual maximal ideal's zero proposition; the intrinsic dimension formula requires the actual finite-type/PID hypotheses. Canonical field identities explicitly use RingMor. HANDOFF.md records every disposition and an existing non-Prime localization witness; the separating assertions remain under T. Its complete pass record is HANDOFF.md's Whole-category placement: PrimeLocalizations section.
+
+- [ ] **`placement-owner-localizationrings`**. **Needs:** none.
+  **Owner pass:** `LocalizationRings` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `LocalizationRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LocalizationRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Closed LocalizationRings map/coefficient-owner piece (2026-10-10):** the complete category body and its 17 authored ancestors were read. The constructor now selects its exact coefficient base once, passes it through the existing module/algebra construction, and inherits algebra_base_ring from Algebras. The forward/inverse fraction-field comparisons and restriction_to explicitly construct RingMor arrows from their elementwise callbacks, preserving the actual endpoints; the existing domain fraction-field map and localized-module restriction consume those corrected arrows. Prime containment uses owned conjunction; an undecided containment or unit-image hypothesis reaches a computation assertion instead of being coerced or described as nonexistence. Selected comparison frontiers state their actual retained-presentation requirement. The whole LocalizationRings pass stays open on cardinality transport, fraction-field recognition, and predicate/equality/admission work inside this owner pass.
+  **Closed LocalizationRings predicate/scalar-owner piece (2026-10-11):** the public fraction-field predicate now asks that the actual source is a domain and the localization is a field, preserving undecided propositions. A separate declared selected-submonoid guard retains exactly the data needed by the five existing intersection/contraction and comparison consumers, without making field recognition a comparison algorithm. The selected singleton-generator documentation distinguishes a possible power-denominator expression from the stored admissible denominator. The redundant scalar multiplication override is removed: actual localization factories build the category's CommutativeRingElement, whose native multiplication uses the selected fraction law for the same parent and registered Modules actions for scalar multiplication. The independently read construction and native action chain establish inheritance. General field decisions remain inside this owner pass; the finite-integer supplier recorded below restores ZZ[1/2]'s mathematical False through an actual source-property theorem. This bounded source closure claims no executed assertions or new prerequisite.
+  **Closed LocalizationRings universal-map piece (2026-10-11):** induced_morphism now establishes the global unit-image premise from selected generators or exact retained canonical data before constructing an arrow. An opaque predicate submonoid alone does not prove this hypothesis. The existing fraction evaluator is shared through one declared protected constructor with the residue, S-saturated total-quotient and maximal-completion suppliers. Public retained cases include the source localization map inducing the ring identity, zero targets, the identical inverted system, prime-containment restrictions and a matching quotient projection to a field. The completion reuse branch now requires the original prime to be proved maximal: for k[x,y] at (x), y is inverted in the localization but is not a unit in k[y][[x]], so that original-source completion map cannot extend. Unsupported general completion and unretained unit-image computations remain inside this owner pass. All actual callers and map equations were source-reviewed; no execution or prerequisite is added.
+  **Closed LocalizationRings finite-integer field-decision piece (2026-10-11):** the existing field hook now returns False for a selected finite-generator localization whose source is a finite free module over the actual integers. Such a localization is a finite-type integer algebra; if nonzero, integer torsion-freeness makes its integer map injective, whereas a field of finite type over the Jacobson ring ZZ cannot contain it injectively (Stacks 00G4, 0CY7). The zero localization is also not a field. The guard uses only existing module properties and retained finite-generator data, requiring neither a basis nor a source-domain or engine decision. It applies to the actual initial placement of ZZ and represented number-field orders, restoring ZZ[1/2]'s decided False. Predicate submonoids delegate cooperatively, preserving the common Local maximal-ideal field decision in either provider order. Broader field algorithms remain the existing owner's computation frontier; execution is retained under T.
+  **Remaining pass work:** finish cardinality transport at Sets and its actual suppliers; fraction equality at LocalizedModules; and admission, unit and denominator decisions that preserve undecided propositions. Retain the selected source, inverted submonoid, coefficient map and all defining arrows. The existing general field, completion and coefficient-presentation computation frontiers must stay explicit. Close this owner only after its complete inventory, all 17 authored ancestors, actual RingMor inheritance and every recorded assertion are reconciled; the completed pieces above alone do not close it.
+
+- [ ] **`placement-owner-adelogpairs`**. **Needs:** none.
+  **Owner pass:** `ADELogPairs` in `src/dzack_research/preamble/categories/schemes/ade_surfaces.py`.
+  **Closure assertions:** the complete `ADELogPairs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ADELogPairs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-abeliangroupendomorphismrings`**. **Needs:** none.
+  **Owner pass:** `AbelianGroupEndomorphismRings` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `AbelianGroupEndomorphismRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AbelianGroupEndomorphismRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-absolutegaloisgroups`**. **Needs:** none.
+  **Owner pass:** `AbsoluteGaloisGroups` in `src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py`.
+  **Closure assertions:** the complete `AbsoluteGaloisGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AbsoluteGaloisGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-absolutegaloisgroupsoffinitefields`**. **Needs:** none.
+  **Owner pass:** `AbsoluteGaloisGroupsOfFiniteFields` in `src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py`.
+  **Closure assertions:** the complete `AbsoluteGaloisGroupsOfFiniteFields` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AbsoluteGaloisGroupsOfFiniteFields`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additiveendomorphismrings`**. **Needs:** none.
+  **Owner pass:** `AdditiveEndomorphismRings` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
+  **Closure assertions:** the complete `AdditiveEndomorphismRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveEndomorphismRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivegroups`**. **Needs:** none.
+  **Owner pass:** `AdditiveGroups` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivegroups-additivecommutative`**. **Needs:** none.
+  **Owner pass:** `AdditiveGroups.AdditiveCommutative` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveGroups.AdditiveCommutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveGroups.AdditiveCommutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivegroups-additivecommutative-morcategory`**. **Needs:** none.
+  **Owner pass:** `AdditiveGroups.AdditiveCommutative._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveGroups.AdditiveCommutative._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveGroups.AdditiveCommutative._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivegroups-morcategory`**. **Needs:** none.
+  **Owner pass:** `AdditiveGroups._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveGroups._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveGroups._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemagmamor`**. **Needs:** none.
+  **Owner pass:** `AdditiveMagmaMor` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
+  **Closure assertions:** the complete `AdditiveMagmaMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMagmaMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemagmas`**. **Needs:** none.
+  **Owner pass:** `AdditiveMagmas` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveMagmas` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMagmas`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemagmas-additivecommutative`**. **Needs:** none.
+  **Owner pass:** `AdditiveMagmas.AdditiveCommutative` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveMagmas.AdditiveCommutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMagmas.AdditiveCommutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemagmas-morcategory`**. **Needs:** none.
+  **Owner pass:** `AdditiveMagmas._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveMagmas._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMagmas._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemonoidmor`**. **Needs:** none.
+  **Owner pass:** `AdditiveMonoidMor` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
+  **Closure assertions:** the complete `AdditiveMonoidMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMonoidMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemonoids`**. **Needs:** none.
+  **Owner pass:** `AdditiveMonoids` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveMonoids` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMonoids`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemonoids-morcategory`**. **Needs:** none.
+  **Owner pass:** `AdditiveMonoids._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveMonoids._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMonoids._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemor`**. **Needs:** none.
+  **Owner pass:** `AdditiveMor` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
+  **Closure assertions:** the complete `AdditiveMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivemorgroups`**. **Needs:** none.
+  **Owner pass:** `AdditiveMorGroups` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
+  **Closure assertions:** the complete `AdditiveMorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivesemigroups`**. **Needs:** none.
+  **Owner pass:** `AdditiveSemigroups` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveSemigroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveSemigroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-additivesemigroups-morcategory`**. **Needs:** none.
+  **Owner pass:** `AdditiveSemigroups._MorCategory` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `AdditiveSemigroups._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveSemigroups._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-adiccompletions`**. **Needs:** none.
+  **Owner pass:** `AdicCompletions` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `AdicCompletions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdicCompletions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegschemes`**. **Needs:** none.
+  **Owner pass:** `AffineGSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `AffineGSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegeometriccohomologycomplexes`**. **Needs:** none.
+  **Owner pass:** `AffineGeometricCohomologyComplexes` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `AffineGeometricCohomologyComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGeometricCohomologyComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschemeactionmor`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemeActionMor` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemeActionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemeActionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschemeactionmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemeActionMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemeActionMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemeActionMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschemeactions`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemeActions` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemeActions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemeActions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschememor`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemeMor` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschememorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemeMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinegroupschemes`**. **Needs:** none.
+  **Owner pass:** `AffineGroupSchemes` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
+  **Closure assertions:** the complete `AffineGroupSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinemodulefibres`**. **Needs:** none.
+  **Owner pass:** `AffineModuleFibres` in `src/dzack_research/preamble/categories/modules/affine_fibres.py`.
+  **Closure assertions:** the complete `AffineModuleFibres` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineModuleFibres`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinequasicoherentsheafmor`**. **Needs:** none.
+  **Owner pass:** `AffineQuasiCoherentSheafMor` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `AffineQuasiCoherentSheafMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineQuasiCoherentSheafMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinesemigroupalgebras`**. **Needs:** none.
+  **Owner pass:** `AffineSemigroupAlgebras` in `src/dzack_research/preamble/categories/algebras/semigroup_algebras.py`.
+  **Closure assertions:** the complete `AffineSemigroupAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineSemigroupAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-affinespaces`**. **Needs:** none.
+  **Owner pass:** `AffineSpaces` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `AffineSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebragluingdata`**. **Needs:** none.
+  **Owner pass:** `AlgebraGluingData` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `AlgebraGluingData` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraGluingData`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebragluingmor`**. **Needs:** none.
+  **Owner pass:** `AlgebraGluingMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `AlgebraGluingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraGluingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebragluingmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AlgebraGluingMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `AlgebraGluingMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraGluingMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebramor`**. **Needs:** none.
+  **Owner pass:** `AlgebraMor` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `AlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `AlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebrasheaves`**. **Needs:** none.
+  **Owner pass:** `AlgebraSheaves` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `AlgebraSheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraSheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebraiccyclegroups`**. **Needs:** none.
+  **Owner pass:** `AlgebraicCycleGroups` in `src/dzack_research/preamble/categories/divisors/chow_groups.py`.
+  **Closure assertions:** the complete `AlgebraicCycleGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraicCycleGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras`**. **Needs:** none.
+  **Owner pass:** `Algebras` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-associative`**. **Needs:** none.
+  **Owner pass:** `Algebras.Associative` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Associative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Associative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-associative-unital`**. **Needs:** none.
+  **Owner pass:** `Algebras.Associative.Unital` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Associative.Unital` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Associative.Unital`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-associative-unital-commutative`**. **Needs:** none.
+  **Owner pass:** `Algebras.Associative.Unital.Commutative` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Associative.Unital.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Associative.Unital.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-associative-unital-finitelygeneratedasalgebra`**. **Needs:** none.
+  **Owner pass:** `Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Associative.Unital.FinitelyGeneratedAsAlgebra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-associative-unital-finitelypresentedasalgebra`**. **Needs:** none.
+  **Owner pass:** `Algebras.Associative.Unital.FinitelyPresentedAsAlgebra` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Associative.Unital.FinitelyPresentedAsAlgebra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Associative.Unital.FinitelyPresentedAsAlgebra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-commutative`**. **Needs:** none.
+  **Owner pass:** `Algebras.Commutative` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-lie`**. **Needs:** none.
+  **Owner pass:** `Algebras.Lie` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Lie` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Lie`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebras-unital`**. **Needs:** none.
+  **Owner pass:** `Algebras.Unital` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `Algebras.Unital` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Algebras.Unital`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-algebraswithchosenfinitepresentation`**. **Needs:** none.
+  **Owner pass:** `AlgebrasWithChosenFinitePresentation` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `AlgebrasWithChosenFinitePresentation` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebrasWithChosenFinitePresentation`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-alternatingalgebras`**. **Needs:** none.
+  **Owner pass:** `AlternatingAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `AlternatingAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlternatingAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-alternatingpowermodules`**. **Needs:** none.
+  **Owner pass:** `AlternatingPowerModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `AlternatingPowerModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlternatingPowerModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-arrowmor`**. **Needs:** none.
+  **Owner pass:** `ArrowMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `ArrowMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ArrowMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-arrowmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ArrowMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `ArrowMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ArrowMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-associativealgebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AssociativeAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/associative_algebra_morphisms.py`.
+  **Closure assertions:** the complete `AssociativeAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AssociativeAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-augmentedalgebras`**. **Needs:** none.
+  **Owner pass:** `AugmentedAlgebras` in `src/dzack_research/preamble/categories/algebras/augmented_algebras.py`.
+  **Closure assertions:** the complete `AugmentedAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AugmentedAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-augmentedsimplexcategory`**. **Needs:** none.
+  **Owner pass:** `AugmentedSimplexCategory` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `AugmentedSimplexCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AugmentedSimplexCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-autcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `AutCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `AutCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AutCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmodules`**. **Needs:** none.
+  **Owner pass:** `BilinearFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `BilinearFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmodules-even`**. **Needs:** none.
+  **Owner pass:** `BilinearFormModules.Even` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `BilinearFormModules.Even` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.Even`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmodules-finitelypresented`**. **Needs:** none.
+  **Owner pass:** `BilinearFormModules.FinitelyPresented` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `BilinearFormModules.FinitelyPresented` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.FinitelyPresented`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmodules-finitelypresented-torsion`**. **Needs:** none.
+  **Owner pass:** `BilinearFormModules.FinitelyPresented.Torsion` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `BilinearFormModules.FinitelyPresented.Torsion` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.FinitelyPresented.Torsion`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmodules-symmetric`**. **Needs:** none.
+  **Owner pass:** `BilinearFormModules.Symmetric` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `BilinearFormModules.Symmetric` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.Symmetric`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-bilinearformmors`**. **Needs:** none.
+  **Owner pass:** `BilinearFormMors` in `src/dzack_research/preamble/categories/forms/forms.py`.
+  **Closure assertions:** the complete `BilinearFormMors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormMors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-biproductlattices`**. **Needs:** none.
+  **Owner pass:** `BiproductLattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `BiproductLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BiproductLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-biproductmodules`**. **Needs:** none.
+  **Owner pass:** `BiproductModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `BiproductModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BiproductModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-blowups`**. **Needs:** none.
+  **Owner pass:** `Blowups` in `src/dzack_research/preamble/categories/schemes/blowups.py`.
+  **Closure assertions:** the complete `Blowups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Blowups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-brauercharacterrepresentations`**. **Needs:** none.
+  **Owner pass:** `BrauerCharacterRepresentations` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `BrauerCharacterRepresentations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BrauerCharacterRepresentations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cardinalities`**. **Needs:** none.
+  **Owner pass:** `Cardinalities` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `Cardinalities` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Cardinalities`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cardinalitymor`**. **Needs:** none.
+  **Owner pass:** `CardinalityMor` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `CardinalityMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CardinalityMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cardinalitymorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CardinalityMorCategoryConstruction` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `CardinalityMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CardinalityMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cartesianproductsofadditivemonoids`**. **Needs:** none.
+  **Owner pass:** `CartesianProductsOfAdditiveMonoids` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `CartesianProductsOfAdditiveMonoids` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CartesianProductsOfAdditiveMonoids`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cartesianproductsofsets`**. **Needs:** `infinite-index-additive-product-placement`.
+  **Owner pass:** `CartesianProductsOfSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `CartesianProductsOfSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CartesianProductsOfSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cartierdivisorgroups`**. **Needs:** none.
+  **Owner pass:** `CartierDivisorGroups` in `src/dzack_research/preamble/categories/divisors/cartier_divisor_groups.py`.
+  **Closure assertions:** the complete `CartierDivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CartierDivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cat`**. **Needs:** none.
+  **Owner pass:** `Cat` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `Cat` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Cat`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-categoricalmor`**. **Needs:** none.
+  **Owner pass:** `CategoricalMor` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `CategoricalMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CategoricalMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-categoryfunctormor`**. **Needs:** none.
+  **Owner pass:** `CategoryFunctorMor` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `CategoryFunctorMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CategoryFunctorMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-centralizersubgroups`**. **Needs:** none.
+  **Owner pass:** `CentralizerSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `CentralizerSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CentralizerSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-chambersystemmor`**. **Needs:** none.
+  **Owner pass:** `ChamberSystemMor` in `src/dzack_research/preamble/categories/chamber_systems.py`.
+  **Closure assertions:** the complete `ChamberSystemMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChamberSystemMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-chambersystemmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ChamberSystemMorCategoryConstruction` in `src/dzack_research/preamble/categories/chamber_systems.py`.
+  **Closure assertions:** the complete `ChamberSystemMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChamberSystemMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-chambersystems`**. **Needs:** none.
+  **Owner pass:** `ChamberSystems` in `src/dzack_research/preamble/categories/chamber_systems.py`.
+  **Closure assertions:** the complete `ChamberSystems` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChamberSystems`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-charactersets`**. **Needs:** none.
+  **Owner pass:** `CharacterSets` in `src/dzack_research/preamble/categories/group/characters.py`.
+  **Closure assertions:** the complete `CharacterSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CharacterSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-chowgroups`**. **Needs:** none.
+  **Owner pass:** `ChowGroups` in `src/dzack_research/preamble/categories/divisors/chow_groups.py`.
+  **Closure assertions:** the complete `ChowGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChowGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-classgroups`**. **Needs:** none.
+  **Owner pass:** `ClassGroups` in `src/dzack_research/preamble/categories/divisors/class_groups.py`.
+  **Closure assertions:** the complete `ClassGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-classifyingcategory`**. **Needs:** none.
+  **Owner pass:** `ClassifyingCategory` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
+  **Closure assertions:** the complete `ClassifyingCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-classifyingmor`**. **Needs:** none.
+  **Owner pass:** `ClassifyingMor` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
+  **Closure assertions:** the complete `ClassifyingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-classifyingmorcategory`**. **Needs:** none.
+  **Owner pass:** `ClassifyingMorCategory` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
+  **Closure assertions:** the complete `ClassifyingMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-closedembeddings`**. **Needs:** none.
+  **Owner pass:** `ClosedEmbeddings` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ClosedEmbeddings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClosedEmbeddings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-closedsubschemes`**. **Needs:** none.
+  **Owner pass:** `ClosedSubschemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ClosedSubschemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClosedSubschemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cochaincomplexes`**. **Needs:** none.
+  **Owner pass:** `CochainComplexes` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
+  **Closure assertions:** the complete `CochainComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CochainComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cochainmor`**. **Needs:** none.
+  **Owner pass:** `CochainMor` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
+  **Closure assertions:** the complete `CochainMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CochainMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cochainmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CochainMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
+  **Closure assertions:** the complete `CochainMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CochainMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coconemor`**. **Needs:** none.
+  **Owner pass:** `CoconeMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `CoconeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoconeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coconemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CoconeMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `CoconeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoconeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cohomologyalgebramor`**. **Needs:** none.
+  **Owner pass:** `CohomologyAlgebraMor` in `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py`.
+  **Closure assertions:** the complete `CohomologyAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cohomologyalgebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CohomologyAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py`.
+  **Closure assertions:** the complete `CohomologyAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cohomologyalgebras`**. **Needs:** none.
+  **Owner pass:** `CohomologyAlgebras` in `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py`.
+  **Closure assertions:** the complete `CohomologyAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cohomologymodules`**. **Needs:** none.
+  **Owner pass:** `CohomologyModules` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
+  **Closure assertions:** the complete `CohomologyModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cokerneltorsionformmodules`**. **Needs:** none.
+  **Owner pass:** `CokernelTorsionFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
+  **Closure assertions:** the complete `CokernelTorsionFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CokernelTorsionFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-commutativealgebracoproducts`**. **Needs:** none.
+  **Owner pass:** `CommutativeAlgebraCoproducts` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `CommutativeAlgebraCoproducts` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeAlgebraCoproducts`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-commutativealgebrapushouts`**. **Needs:** none.
+  **Owner pass:** `CommutativeAlgebraPushouts` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `CommutativeAlgebraPushouts` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeAlgebraPushouts`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-commutativegradedintegraldomains`**. **Needs:** none.
+  **Owner pass:** `CommutativeGradedIntegralDomains` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `CommutativeGradedIntegralDomains` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeGradedIntegralDomains`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-commutativeideals`**. **Needs:** none.
+  **Owner pass:** `CommutativeIdeals` in `src/dzack_research/preamble/categories/rings/commutative_ideals.py`.
+  **Closure assertions:** the complete `CommutativeIdeals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeIdeals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-commutatorliealgebras`**. **Needs:** none.
+  **Owner pass:** `CommutatorLieAlgebras` in `src/dzack_research/preamble/categories/algebras/lie_algebras.py`.
+  **Closure assertions:** the complete `CommutatorLieAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutatorLieAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-completelinearsystems`**. **Needs:** none.
+  **Owner pass:** `CompleteLinearSystems` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `CompleteLinearSystems` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CompleteLinearSystems`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-complexmanifoldmor`**. **Needs:** none.
+  **Owner pass:** `ComplexManifoldMor` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `ComplexManifoldMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ComplexManifoldMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-complexmanifoldmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ComplexManifoldMorCategoryConstruction` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `ComplexManifoldMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ComplexManifoldMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-complexmanifolds`**. **Needs:** none.
+  **Owner pass:** `ComplexManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `ComplexManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ComplexManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-conemor`**. **Needs:** none.
+  **Owner pass:** `ConeMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ConeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-conemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ConeMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ConeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-connectioncategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ConnectionCategoryConstruction` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ConnectionCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConnectionCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-connectionmor`**. **Needs:** none.
+  **Owner pass:** `ConnectionMor` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ConnectionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConnectionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-connectionmorphismcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ConnectionMorphismCategoryConstruction` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ConnectionMorphismCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConnectionMorphismCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-connectionspace`**. **Needs:** none.
+  **Owner pass:** `ConnectionSpace` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ConnectionSpace` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConnectionSpace`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-convexpolytopes`**. **Needs:** none.
+  **Owner pass:** `ConvexPolytopes` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
+  **Closure assertions:** the complete `ConvexPolytopes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-convexpolytopes-integral`**. **Needs:** none.
+  **Owner pass:** `ConvexPolytopes.Integral` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
+  **Closure assertions:** the complete `ConvexPolytopes.Integral` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes.Integral`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-convexpolytopes-integral-polygon`**. **Needs:** none.
+  **Owner pass:** `ConvexPolytopes.Integral.Polygon` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
+  **Closure assertions:** the complete `ConvexPolytopes.Integral.Polygon` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes.Integral.Polygon`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-convexpolytopes-polygon`**. **Needs:** none.
+  **Owner pass:** `ConvexPolytopes.Polygon` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
+  **Closure assertions:** the complete `ConvexPolytopes.Polygon` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes.Polygon`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coproductsofsets`**. **Needs:** none.
+  **Owner pass:** `CoproductsOfSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `CoproductsOfSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoproductsOfSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coremor`**. **Needs:** none.
+  **Owner pass:** `CoreMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CoreMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoreMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coremorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CoreMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CoreMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoreMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coslicecategory`**. **Needs:** none.
+  **Owner pass:** `CosliceCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CosliceCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CosliceCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coslicemor`**. **Needs:** none.
+  **Owner pass:** `CosliceMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CosliceMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CosliceMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coslicemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CosliceMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CosliceMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CosliceMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coveredobjectcategory`**. **Needs:** none.
+  **Owner pass:** `CoveredObjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CoveredObjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveredObjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coveringfamilies`**. **Needs:** none.
+  **Owner pass:** `CoveringFamilies` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `CoveringFamilies` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringFamilies`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coveringfamilymor`**. **Needs:** none.
+  **Owner pass:** `CoveringFamilyMor` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `CoveringFamilyMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringFamilyMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coveringfamilymorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CoveringFamilyMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `CoveringFamilyMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringFamilyMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coveringobjectcategory`**. **Needs:** none.
+  **Owner pass:** `CoveringObjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `CoveringObjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringObjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coxrings`**. **Needs:** none.
+  **Owner pass:** `CoxRings` in `src/dzack_research/preamble/categories/divisors/cox_rings.py`.
+  **Closure assertions:** the complete `CoxRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coxeterdiagrammor`**. **Needs:** none.
+  **Owner pass:** `CoxeterDiagramMor` in `src/dzack_research/preamble/categories/coxeter_diagrams.py`.
+  **Closure assertions:** the complete `CoxeterDiagramMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxeterDiagramMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coxeterdiagrammorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `CoxeterDiagramMorCategoryConstruction` in `src/dzack_research/preamble/categories/coxeter_diagrams.py`.
+  **Closure assertions:** the complete `CoxeterDiagramMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxeterDiagramMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coxeterdiagrams`**. **Needs:** none.
+  **Owner pass:** `CoxeterDiagrams` in `src/dzack_research/preamble/categories/coxeter_diagrams.py`.
+  **Closure assertions:** the complete `CoxeterDiagrams` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxeterDiagrams`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-curves`**. **Needs:** none.
+  **Owner pass:** `Curves` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `Curves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Curves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cycliccovers`**. **Needs:** none.
+  **Owner pass:** `CyclicCovers` in `src/dzack_research/preamble/categories/schemes/cyclic_covers.py`.
+  **Closure assertions:** the complete `CyclicCovers` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CyclicCovers`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cyclicgroups`**. **Needs:** none.
+  **Owner pass:** `CyclicGroups` in `src/dzack_research/preamble/categories/group/cyclic_subgroups.py`.
+  **Closure assertions:** the complete `CyclicGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CyclicGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dgamor`**. **Needs:** none.
+  **Owner pass:** `DGAMor` in `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py`.
+  **Closure assertions:** the complete `DGAMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DGAMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dgamorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `DGAMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py`.
+  **Closure assertions:** the complete `DGAMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DGAMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-derhamalgebras`**. **Needs:** none.
+  **Owner pass:** `DeRhamAlgebras` in `src/dzack_research/preamble/categories/algebras/de_rham_algebras.py`.
+  **Closure assertions:** the complete `DeRhamAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DeRhamAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-definitelattices`**. **Needs:** none.
+  **Owner pass:** `DefiniteLattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `DefiniteLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DefiniteLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-delpezzosurfaces`**. **Needs:** none.
+  **Owner pass:** `DelPezzoSurfaces` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `DelPezzoSurfaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DelPezzoSurfaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-derivationcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `DerivationCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
+  **Closure assertions:** the complete `DerivationCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DerivationCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-derivationspace`**. **Needs:** none.
+  **Owner pass:** `DerivationSpace` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
+  **Closure assertions:** the complete `DerivationSpace` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DerivationSpace`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-descentdataoncover`**. **Needs:** none.
+  **Owner pass:** `DescentDataOnCover` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `DescentDataOnCover` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DescentDataOnCover`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-differentiablemanifolds`**. **Needs:** none.
+  **Owner pass:** `DifferentiableManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `DifferentiableManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DifferentiableManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-differentialgradedalgebras`**. **Needs:** none.
+  **Owner pass:** `DifferentialGradedAlgebras` in `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py`.
+  **Closure assertions:** the complete `DifferentialGradedAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DifferentialGradedAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-differentialgradedmodules`**. **Needs:** none.
+  **Owner pass:** `DifferentialGradedModules` in `src/dzack_research/preamble/categories/modules/dg_modules.py`.
+  **Closure assertions:** the complete `DifferentialGradedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DifferentialGradedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-digraphmor`**. **Needs:** none.
+  **Owner pass:** `DigraphMor` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `DigraphMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DigraphMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-digraphmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `DigraphMorCategoryConstruction` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `DigraphMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DigraphMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-digraphs`**. **Needs:** none.
+  **Owner pass:** `Digraphs` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `Digraphs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Digraphs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-directsumobjects`**. **Needs:** none.
+  **Owner pass:** `DirectSumObjects` in `src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py`.
+  **Closure assertions:** the complete `DirectSumObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DirectSumObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-directedsystem`**. **Needs:** none.
+  **Owner pass:** `DirectedSystem` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `DirectedSystem` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DirectedSystem`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discretecategories`**. **Needs:** none.
+  **Owner pass:** `DiscreteCategories` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
+  **Closure assertions:** the complete `DiscreteCategories` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteCategories`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discretecategory`**. **Needs:** none.
+  **Owner pass:** `DiscreteCategory` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
+  **Closure assertions:** the complete `DiscreteCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discretemor`**. **Needs:** none.
+  **Owner pass:** `DiscreteMor` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
+  **Closure assertions:** the complete `DiscreteMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discretemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `DiscreteMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
+  **Closure assertions:** the complete `DiscreteMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discriminantbilinearmodules`**. **Needs:** none.
+  **Owner pass:** `DiscriminantBilinearModules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
+  **Closure assertions:** the complete `DiscriminantBilinearModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantBilinearModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discriminantmodules`**. **Needs:** none.
+  **Owner pass:** `DiscriminantModules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
+  **Closure assertions:** the complete `DiscriminantModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discriminantquadraticmodules`**. **Needs:** none.
+  **Owner pass:** `DiscriminantQuadraticModules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
+  **Closure assertions:** the complete `DiscriminantQuadraticModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantQuadraticModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discriminantsubmodules`**. **Needs:** none.
+  **Owner pass:** `DiscriminantSubmodules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
+  **Closure assertions:** the complete `DiscriminantSubmodules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantSubmodules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-distinguishedaffinecovermor`**. **Needs:** none.
+  **Owner pass:** `DistinguishedAffineCoverMor` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `DistinguishedAffineCoverMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedAffineCoverMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-distinguishedaffinecovermorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `DistinguishedAffineCoverMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `DistinguishedAffineCoverMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedAffineCoverMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-distinguishedaffinecovers`**. **Needs:** none.
+  **Owner pass:** `DistinguishedAffineCovers` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `DistinguishedAffineCovers` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedAffineCovers`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-distinguishedopenimmersions`**. **Needs:** none.
+  **Owner pass:** `DistinguishedOpenImmersions` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `DistinguishedOpenImmersions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedOpenImmersions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-distinguishedopensubobjects`**. **Needs:** none.
+  **Owner pass:** `DistinguishedOpenSubobjects` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `DistinguishedOpenSubobjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedOpenSubobjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dividedpoweralgebras`**. **Needs:** none.
+  **Owner pass:** `DividedPowerAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `DividedPowerAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DividedPowerAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dividedpowermodules`**. **Needs:** none.
+  **Owner pass:** `DividedPowerModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `DividedPowerModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DividedPowerModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dividedsquaremodules`**. **Needs:** none.
+  **Owner pass:** `DividedSquareModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `DividedSquareModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DividedSquareModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-divisorgroups`**. **Needs:** none.
+  **Owner pass:** `DivisorGroups` in `src/dzack_research/preamble/categories/divisors/divisor_groups.py`.
+  **Closure assertions:** the complete `DivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-effectivecartierdivisors`**. **Needs:** none.
+  **Owner pass:** `EffectiveCartierDivisors` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `EffectiveCartierDivisors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EffectiveCartierDivisors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `EndCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `EndCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EndCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-enumeratedbyintegers`**. **Needs:** none.
+  **Owner pass:** `EnumeratedByIntegers` in `src/dzack_research/preamble/categories/sets/enumerated/function_sets.py`.
+  **Closure assertions:** the complete `EnumeratedByIntegers` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedByIntegers`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-enumeratedbynaturals`**. **Needs:** none.
+  **Owner pass:** `EnumeratedByNaturals` in `src/dzack_research/preamble/categories/sets/enumerated/function_sets.py`.
+  **Closure assertions:** the complete `EnumeratedByNaturals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedByNaturals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-enumeratedcoproductsofsets`**. **Needs:** none.
+  **Owner pass:** `EnumeratedCoproductsOfSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `EnumeratedCoproductsOfSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedCoproductsOfSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-enumeratedsets`**. **Needs:** none.
+  **Owner pass:** `EnumeratedSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `EnumeratedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-epicategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `EpiCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `EpiCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EpiCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-eventwoelementarylattices`**. **Needs:** none.
+  **Owner pass:** `EvenTwoElementaryLattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `EvenTwoElementaryLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EvenTwoElementaryLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fiberproductschemes`**. **Needs:** none.
+  **Owner pass:** `FiberProductSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `FiberProductSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiberProductSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fiberedformedmodulemor`**. **Needs:** none.
+  **Owner pass:** `FiberedFormedModuleMor` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FiberedFormedModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiberedFormedModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteaffineatlases`**. **Needs:** none.
+  **Owner pass:** `FiniteAffineAtlases` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAffineAtlases` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAffineAtlases`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasalgebragluingdata`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasAlgebraGluingData` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasAlgebraGluingData` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasAlgebraGluingData`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasalgebragluingmor`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasAlgebraGluingMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasAlgebraGluingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasAlgebraGluingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasalgebragluingmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasAlgebraGluingMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasAlgebraGluingMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasAlgebraGluingMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmodulegluingdata`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasModuleGluingData` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasModuleGluingData` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasModuleGluingData`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmodulegluingmor`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasModuleGluingMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasModuleGluingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasModuleGluingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmodulegluingmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasModuleGluingMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasModuleGluingMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasModuleGluingMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmodulesheafmor`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasModuleSheafMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasModuleSheafMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasModuleSheafMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmor`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FiniteAtlasMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `FiniteAtlasMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteAtlasMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteenumeratedcartesianproductsofsets`**. **Needs:** none.
+  **Owner pass:** `FiniteEnumeratedCartesianProductsOfSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `FiniteEnumeratedCartesianProductsOfSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteEnumeratedCartesianProductsOfSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finitefreegrouprepresentations`**. **Needs:** none.
+  **Owner pass:** `FiniteFreeGroupRepresentations` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `FiniteFreeGroupRepresentations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteFreeGroupRepresentations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finitegsets`**. **Needs:** none.
+  **Owner pass:** `FiniteGSets` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `FiniteGSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteGSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteorderedsets`**. **Needs:** none.
+  **Owner pass:** `FiniteOrderedSets` in `src/dzack_research/preamble/categories/sets/finite_ordered_sets.py`.
+  **Closure assertions:** the complete `FiniteOrderedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrderedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteordinalcategory`**. **Needs:** none.
+  **Owner pass:** `FiniteOrdinalCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `FiniteOrdinalCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrdinalCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteordinalmor`**. **Needs:** none.
+  **Owner pass:** `FiniteOrdinalMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `FiniteOrdinalMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrdinalMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteordinalmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FiniteOrdinalMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `FiniteOrdinalMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrdinalMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finitepowersets`**. **Needs:** none.
+  **Owner pass:** `FinitePowerSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `FinitePowerSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FinitePowerSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finitelysupportedfunctionsets`**. **Needs:** none.
+  **Owner pass:** `FinitelySupportedFunctionSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `FinitelySupportedFunctionSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FinitelySupportedFunctionSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedautcategory`**. **Needs:** none.
+  **Owner pass:** `FixedAutCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `FixedAutCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedAutCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedcardinalitysubsetsets`**. **Needs:** none.
+  **Owner pass:** `FixedCardinalitySubsetSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `FixedCardinalitySubsetSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedCardinalitySubsetSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedendcategory`**. **Needs:** none.
+  **Owner pass:** `FixedEndCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `FixedEndCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedEndCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedisocategory`**. **Needs:** none.
+  **Owner pass:** `FixedIsoCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `FixedIsoCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedIsoCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedmorcategory`**. **Needs:** none.
+  **Owner pass:** `FixedMorCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `FixedMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedrestrictedmorcategory`**. **Needs:** none.
+  **Owner pass:** `FixedRestrictedMorCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `FixedRestrictedMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedRestrictedMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fixedwidemorcategory`**. **Needs:** none.
+  **Owner pass:** `FixedWideMorCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `FixedWideMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedWideMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formbasechanges`**. **Needs:** none.
+  **Owner pass:** `FormBaseChanges` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormBaseChanges` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormBaseChanges`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formembeddingmor`**. **Needs:** none.
+  **Owner pass:** `FormEmbeddingMor` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormEmbeddingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormEmbeddingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formmodules`**. **Needs:** none.
+  **Owner pass:** `FormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formmodules-finitelypresented`**. **Needs:** none.
+  **Owner pass:** `FormModules.FinitelyPresented` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormModules.FinitelyPresented` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormModules.FinitelyPresented`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formmodules-nondegenerate`**. **Needs:** none.
+  **Owner pass:** `FormModules.Nondegenerate` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormModules.Nondegenerate` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormModules.Nondegenerate`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formmodules-unimodular`**. **Needs:** none.
+  **Owner pass:** `FormModules.Unimodular` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormModules.Unimodular` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormModules.Unimodular`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formvaluescalings`**. **Needs:** none.
+  **Owner pass:** `FormValueScalings` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormValueScalings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormValueScalings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formaldivisorgroups`**. **Needs:** none.
+  **Owner pass:** `FormalDivisorGroups` in `src/dzack_research/preamble/categories/divisors/divisor_groups.py`.
+  **Closure assertions:** the complete `FormalDivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormalDivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formalpowerseriesrings`**. **Needs:** none.
+  **Owner pass:** `FormalPowerSeriesRings` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `FormalPowerSeriesRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormalPowerSeriesRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formedmodulemonocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FormedModuleMonoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormedModuleMonoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormedModuleMonoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formedmodulemor`**. **Needs:** none.
+  **Owner pass:** `FormedModuleMor` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormedModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormedModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-formedmodulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FormedModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FormedModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FormedModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fractionfieldquotients`**. **Needs:** none.
+  **Owner pass:** `FractionFieldQuotients` in `src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py`.
+  **Closure assertions:** the complete `FractionFieldQuotients` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FractionFieldQuotients`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fractionalideals`**. **Needs:** none.
+  **Owner pass:** `FractionalIdeals` in `src/dzack_research/preamble/categories/modules/fractional_ideals.py`.
+  **Closure assertions:** the complete `FractionalIdeals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FractionalIdeals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-framedfreealgebramor`**. **Needs:** none.
+  **Owner pass:** `FramedFreeAlgebraMor` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `FramedFreeAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FramedFreeAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-framedfreemodules`**. **Needs:** none.
+  **Owner pass:** `FramedFreeModules` in `src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py`.
+  **Closure assertions:** the complete `FramedFreeModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FramedFreeModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-framedfreemodules-finitelygenerated`**. **Needs:** none.
+  **Owner pass:** `FramedFreeModules.FinitelyGenerated` in `src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py`.
+  **Closure assertions:** the complete `FramedFreeModules.FinitelyGenerated` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FramedFreeModules.FinitelyGenerated`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-freealgebras`**. **Needs:** none.
+  **Owner pass:** `FreeAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `FreeAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FreeAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-freeformmodules`**. **Needs:** none.
+  **Owner pass:** `FreeFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FreeFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FreeFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-freeformmodules-finitelygenerated`**. **Needs:** none.
+  **Owner pass:** `FreeFormModules.FinitelyGenerated` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `FreeFormModules.FinitelyGenerated` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FreeFormModules.FinitelyGenerated`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functionenumeratedsets`**. **Needs:** none.
+  **Owner pass:** `FunctionEnumeratedSets` in `src/dzack_research/preamble/categories/sets/enumerated/function_sets.py`.
+  **Closure assertions:** the complete `FunctionEnumeratedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctionEnumeratedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functionmodules`**. **Needs:** none.
+  **Owner pass:** `FunctionModules` in `src/dzack_research/preamble/categories/modules/pure/function_modules.py`.
+  **Closure assertions:** the complete `FunctionModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctionModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functionsets`**. **Needs:** none.
+  **Owner pass:** `FunctionSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `FunctionSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctionSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functorimagemor`**. **Needs:** none.
+  **Owner pass:** `FunctorImageMor` in `src/dzack_research/preamble/categories/abstract_categories/functor_images.py`.
+  **Closure assertions:** the complete `FunctorImageMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctorImageMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functorimagemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FunctorImageMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/functor_images.py`.
+  **Closure assertions:** the complete `FunctorImageMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctorImageMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functormorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `FunctorMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `FunctorMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FunctorMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gobjectmor`**. **Needs:** none.
+  **Owner pass:** `GObjectMor` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `GObjectMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GObjectMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gobjectmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GObjectMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `GObjectMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GObjectMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gobjects`**. **Needs:** none.
+  **Owner pass:** `GObjects` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `GObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gsetmor`**. **Needs:** none.
+  **Owner pass:** `GSetMor` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `GSetMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GSetMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gsetmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GSetMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `GSetMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GSetMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-generalgroupmor`**. **Needs:** none.
+  **Owner pass:** `GeneralGroupMor` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GeneralGroupMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GeneralGroupMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-generalmodules`**. **Needs:** none.
+  **Owner pass:** `GeneralModules` in `src/dzack_research/preamble/categories/modules/general_modules.py`.
+  **Closure assertions:** the complete `GeneralModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GeneralModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-generatedsubgroups`**. **Needs:** none.
+  **Owner pass:** `GeneratedSubgroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GeneratedSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GeneratedSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-geometricfundamentalgroups`**. **Needs:** none.
+  **Owner pass:** `GeometricFundamentalGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `GeometricFundamentalGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GeometricFundamentalGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gorensteintoricschemes`**. **Needs:** none.
+  **Owner pass:** `GorensteinToricSchemes` in `src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py`.
+  **Closure assertions:** the complete `GorensteinToricSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GorensteinToricSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebramodules`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebraModules` in `src/dzack_research/preamble/categories/modules/dg_modules.py`.
+  **Closure assertions:** the complete `GradedAlgebraModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebraModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebramor`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebraMor` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `GradedAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `GradedAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebras`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebras` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `GradedAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebras-supercommutative`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebras.Supercommutative` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `GradedAlgebras.Supercommutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebras.Supercommutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedalgebras-supercommutative-alternating`**. **Needs:** none.
+  **Owner pass:** `GradedAlgebras.Supercommutative.Alternating` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
+  **Closure assertions:** the complete `GradedAlgebras.Supercommutative.Alternating` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAlgebras.Supercommutative.Alternating`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedaugmentedalgebras`**. **Needs:** none.
+  **Owner pass:** `GradedAugmentedAlgebras` in `src/dzack_research/preamble/categories/algebras/augmented_algebras.py`.
+  **Closure assertions:** the complete `GradedAugmentedAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedAugmentedAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedderivationcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GradedDerivationCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
+  **Closure assertions:** the complete `GradedDerivationCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedDerivationCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedderivationspace`**. **Needs:** none.
+  **Owner pass:** `GradedDerivationSpace` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
+  **Closure assertions:** the complete `GradedDerivationSpace` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedDerivationSpace`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedfreealgebras`**. **Needs:** none.
+  **Owner pass:** `GradedFreeAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `GradedFreeAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedFreeAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedmodulemor`**. **Needs:** none.
+  **Owner pass:** `GradedModuleMor` in `src/dzack_research/preamble/categories/modules/graded_modules.py`.
+  **Closure assertions:** the complete `GradedModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedmodulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GradedModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/graded_modules.py`.
+  **Closure assertions:** the complete `GradedModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gradedmodules`**. **Needs:** none.
+  **Owner pass:** `GradedModules` in `src/dzack_research/preamble/categories/modules/graded_modules.py`.
+  **Closure assertions:** the complete `GradedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GradedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-graphs`**. **Needs:** none.
+  **Owner pass:** `Graphs` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `Graphs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Graphs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupalgebras`**. **Needs:** none.
+  **Owner pass:** `GroupAlgebras` in `src/dzack_research/preamble/categories/algebras/group_algebras.py`.
+  **Closure assertions:** the complete `GroupAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupautomorphismgroup`**. **Needs:** none.
+  **Owner pass:** `GroupAutomorphismGroup` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupAutomorphismGroup` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupAutomorphismGroup`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupautomorphismgroups`**. **Needs:** none.
+  **Owner pass:** `GroupAutomorphismGroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupAutomorphismGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupAutomorphismGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupendcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GroupEndCategoryConstruction` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupEndCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupEndCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GroupIsoCategoryConstruction` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-grouplatticemor`**. **Needs:** none.
+  **Owner pass:** `GroupLatticeMor` in `src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py`.
+  **Closure assertions:** the complete `GroupLatticeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupLatticeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-grouplatticemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GroupLatticeMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py`.
+  **Closure assertions:** the complete `GroupLatticeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupLatticeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupmodulemor`**. **Needs:** none.
+  **Owner pass:** `GroupModuleMor` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `GroupModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupmodulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GroupModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `GroupModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupmor`**. **Needs:** none.
+  **Owner pass:** `GroupMor` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `GroupMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupswithchosenfinitepresentation`**. **Needs:** none.
+  **Owner pass:** `GroupsWithChosenFinitePresentation` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupsWithChosenFinitePresentation` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupsWithChosenFinitePresentation`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-groupswithchosenfreebasis`**. **Needs:** none.
+  **Owner pass:** `GroupsWithChosenFreeBasis` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `GroupsWithChosenFreeBasis` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `GroupsWithChosenFreeBasis`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-homogeneouspolynomialsectionspaces`**. **Needs:** none.
+  **Owner pass:** `HomogeneousPolynomialSectionSpaces` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `HomogeneousPolynomialSectionSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `HomogeneousPolynomialSectionSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-hyperboliclattices`**. **Needs:** none.
+  **Owner pass:** `HyperbolicLattices` in `src/dzack_research/preamble/categories/hyperbolic_lattices.py`.
+  **Closure assertions:** the complete `HyperbolicLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `HyperbolicLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-hyperbolicpolyhedra`**. **Needs:** none.
+  **Owner pass:** `HyperbolicPolyhedra` in `src/dzack_research/preamble/categories/hyperbolic_geometry.py`.
+  **Closure assertions:** the complete `HyperbolicPolyhedra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `HyperbolicPolyhedra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-hyperbolicspaces`**. **Needs:** none.
+  **Owner pass:** `HyperbolicSpaces` in `src/dzack_research/preamble/categories/hyperbolic_geometry.py`.
+  **Closure assertions:** the complete `HyperbolicSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `HyperbolicSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-idealdualpullbacks`**. **Needs:** none.
+  **Owner pass:** `IdealDualPullbacks` in `src/dzack_research/preamble/categories/modules/ideal_duals.py`.
+  **Closure assertions:** the complete `IdealDualPullbacks` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IdealDualPullbacks`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-idealmetricduals`**. **Needs:** none.
+  **Owner pass:** `IdealMetricDuals` in `src/dzack_research/preamble/categories/modules/ideal_duals.py`.
+  **Closure assertions:** the complete `IdealMetricDuals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IdealMetricDuals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-imageoffunctor`**. **Needs:** none.
+  **Owner pass:** `ImageOfFunctor` in `src/dzack_research/preamble/categories/abstract_categories/functor_images.py`.
+  **Closure assertions:** the complete `ImageOfFunctor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ImageOfFunctor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-imposedmultiplicitylinearsystems`**. **Needs:** none.
+  **Owner pass:** `ImposedMultiplicityLinearSystems` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `ImposedMultiplicityLinearSystems` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ImposedMultiplicityLinearSystems`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-indexedfreegroupmor`**. **Needs:** none.
+  **Owner pass:** `IndexedFreeGroupMor` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `IndexedFreeGroupMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IndexedFreeGroupMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-integergradedmodules`**. **Needs:** none.
+  **Owner pass:** `IntegerGradedModules` in `src/dzack_research/preamble/categories/modules/graded_modules.py`.
+  **Closure assertions:** the complete `IntegerGradedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IntegerGradedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-integralprimespectra`**. **Needs:** none.
+  **Owner pass:** `IntegralPrimeSpectra` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `IntegralPrimeSpectra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IntegralPrimeSpectra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-integralsingularcohomologygroups`**. **Needs:** none.
+  **Owner pass:** `IntegralSingularCohomologyGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `IntegralSingularCohomologyGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IntegralSingularCohomologyGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-integraltopologicalcohomologygroups`**. **Needs:** none.
+  **Owner pass:** `IntegralTopologicalCohomologyGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `IntegralTopologicalCohomologyGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IntegralTopologicalCohomologyGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupactionmor`**. **Needs:** none.
+  **Owner pass:** `InternalGroupActionMor` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupActionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupActionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupactionmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `InternalGroupActionMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupActionMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupActionMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupactions`**. **Needs:** none.
+  **Owner pass:** `InternalGroupActions` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupActions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupActions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupobjectmor`**. **Needs:** none.
+  **Owner pass:** `InternalGroupObjectMor` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupObjectMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupObjectMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupobjectmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `InternalGroupObjectMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupObjectMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupObjectMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalgroupobjects`**. **Needs:** none.
+  **Owner pass:** `InternalGroupObjects` in `src/dzack_research/preamble/categories/group/g_objects.py`.
+  **Closure assertions:** the complete `InternalGroupObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalGroupObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-internalmormodules`**. **Needs:** none.
+  **Owner pass:** `InternalMorModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `InternalMorModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InternalMorModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-intersectionsubgroups`**. **Needs:** none.
+  **Owner pass:** `IntersectionSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `IntersectionSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IntersectionSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-inversesystem`**. **Needs:** none.
+  **Owner pass:** `InverseSystem` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `InverseSystem` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InverseSystem`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-invertiblesheaveswithchosentrivialization`**. **Needs:** none.
+  **Owner pass:** `InvertibleSheavesWithChosenTrivialization` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `InvertibleSheavesWithChosenTrivialization` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `InvertibleSheavesWithChosenTrivialization`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `IsoCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `IsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isotropicreductionlifttorsors`**. **Needs:** none.
+  **Owner pass:** `IsotropicReductionLiftTorsors` in `src/dzack_research/preamble/categories/isotropic_lifts.py`.
+  **Closure assertions:** the complete `IsotropicReductionLiftTorsors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IsotropicReductionLiftTorsors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isotropicreductions`**. **Needs:** none.
+  **Owner pass:** `IsotropicReductions` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `IsotropicReductions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IsotropicReductions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isotypicdecompositions`**. **Needs:** none.
+  **Owner pass:** `IsotypicDecompositions` in `src/dzack_research/preamble/categories/modules/group_modules/isotypic.py`.
+  **Closure assertions:** the complete `IsotypicDecompositions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `IsotypicDecompositions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-kahlerdifferentialmodules`**. **Needs:** none.
+  **Owner pass:** `KahlerDifferentialModules` in `src/dzack_research/preamble/categories/algebras/kahler_differentials.py`.
+  **Closure assertions:** the complete `KahlerDifferentialModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `KahlerDifferentialModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-kernelsubgroups`**. **Needs:** none.
+  **Owner pass:** `KernelSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `KernelSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `KernelSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-labelleddigraphmor`**. **Needs:** none.
+  **Owner pass:** `LabelledDigraphMor` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `LabelledDigraphMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LabelledDigraphMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-labelleddigraphmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LabelledDigraphMorCategoryConstruction` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `LabelledDigraphMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LabelledDigraphMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-labelleddigraphs`**. **Needs:** none.
+  **Owner pass:** `LabelledDigraphs` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `LabelledDigraphs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LabelledDigraphs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-labelledgraphs`**. **Needs:** none.
+  **Owner pass:** `LabelledGraphs` in `src/dzack_research/preamble/categories/graph_categories.py`.
+  **Closure assertions:** the complete `LabelledGraphs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LabelledGraphs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticeembeddingmor`**. **Needs:** none.
+  **Owner pass:** `LatticeEmbeddingMor` in `src/dzack_research/preamble/categories/lattice_morphisms.py`.
+  **Closure assertions:** the complete `LatticeEmbeddingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeEmbeddingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticeisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LatticeIsoCategoryConstruction` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `LatticeIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticeisometrymor`**. **Needs:** none.
+  **Owner pass:** `LatticeIsometryMor` in `src/dzack_research/preamble/categories/lattice_morphisms.py`.
+  **Closure assertions:** the complete `LatticeIsometryMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeIsometryMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticemonocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LatticeMonoCategoryConstruction` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `LatticeMonoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeMonoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticemor`**. **Needs:** none.
+  **Owner pass:** `LatticeMor` in `src/dzack_research/preamble/categories/lattice_morphisms.py`.
+  **Closure assertions:** the complete `LatticeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LatticeMorCategoryConstruction` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `LatticeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-lattices`**. **Needs:** none.
+  **Owner pass:** `Lattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `Lattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Lattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-latticesovergroupalgebra`**. **Needs:** none.
+  **Owner pass:** `LatticesOverGroupAlgebra` in `src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py`.
+  **Closure assertions:** the complete `LatticesOverGroupAlgebra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LatticesOverGroupAlgebra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-lebesguegradedmodules`**. **Needs:** none.
+  **Owner pass:** `LebesgueGradedModules` in `src/dzack_research/preamble/categories/functions/lebesgue_graded.py`.
+  **Closure assertions:** the complete `LebesgueGradedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LebesgueGradedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-leftcosetgsets`**. **Needs:** none.
+  **Owner pass:** `LeftCosetGSets` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `LeftCosetGSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LeftCosetGSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-linebundlecohomologyspaces`**. **Needs:** none.
+  **Owner pass:** `LineBundleCohomologySpaces` in `src/dzack_research/preamble/categories/divisors/cohomology.py`.
+  **Closure assertions:** the complete `LineBundleCohomologySpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LineBundleCohomologySpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-linearendcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LinearEndCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `LinearEndCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LinearEndCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-linearmormodules`**. **Needs:** none.
+  **Owner pass:** `LinearMorModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `LinearMorModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LinearMorModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-localizationrings-local`**. **Needs:** none.
+  **Owner pass:** `LocalizationRings.Local` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `LocalizationRings.Local` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LocalizationRings.Local`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Existing evidence:** the PrimeLocalizations pass delivered this local refinement's `source_residue_map` and example. Review this refinement's complete introductions, full actual up-set and arrow inheritance as its own pass before marking it complete.
+
+- [ ] **`placement-owner-localizedmodules`**. **Needs:** none.
+  **Owner pass:** `LocalizedModules` in `src/dzack_research/preamble/categories/modules/localizations.py`.
+  **Closure assertions:** the complete `LocalizedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LocalizedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-locallyringedmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `LocallyRingedMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `LocallyRingedMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LocallyRingedMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-locallyringedspaces`**. **Needs:** none.
+  **Owner pass:** `LocallyRingedSpaces` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `LocallyRingedSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LocallyRingedSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-logpairs`**. **Needs:** none.
+  **Owner pass:** `LogPairs` in `src/dzack_research/preamble/categories/schemes/log_pairs.py`.
+  **Closure assertions:** the complete `LogPairs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `LogPairs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-magmamor`**. **Needs:** none.
+  **Owner pass:** `MagmaMor` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `MagmaMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MagmaMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-magmamorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `MagmaMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `MagmaMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MagmaMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-magmas`**. **Needs:** none.
+  **Owner pass:** `Magmas` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `Magmas` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Magmas`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-magmas-commutative`**. **Needs:** none.
+  **Owner pass:** `Magmas.Commutative` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `Magmas.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Magmas.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-magmas-unital`**. **Needs:** none.
+  **Owner pass:** `Magmas.Unital` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `Magmas.Unital` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Magmas.Unital`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-matrixalgebras`**. **Needs:** none.
+  **Owner pass:** `MatrixAlgebras` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `MatrixAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MatrixAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-matrixendomorphismmor`**. **Needs:** none.
+  **Owner pass:** `MatrixEndomorphismMor` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `MatrixEndomorphismMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MatrixEndomorphismMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-matrixendomorphismmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `MatrixEndomorphismMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `MatrixEndomorphismMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MatrixEndomorphismMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-matrixendomorphismspaces`**. **Needs:** none.
+  **Owner pass:** `MatrixEndomorphismSpaces` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `MatrixEndomorphismSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MatrixEndomorphismSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-matrixspaces`**. **Needs:** none.
+  **Owner pass:** `MatrixSpaces` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `MatrixSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MatrixSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleautomorphismgroup`**. **Needs:** none.
+  **Owner pass:** `ModuleAutomorphismGroup` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `ModuleAutomorphismGroup` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleAutomorphismGroup`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleautomorphismgroups`**. **Needs:** none.
+  **Owner pass:** `ModuleAutomorphismGroups` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `ModuleAutomorphismGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleAutomorphismGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleembeddingmor`**. **Needs:** none.
+  **Owner pass:** `ModuleEmbeddingMor` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `ModuleEmbeddingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleEmbeddingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleendcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ModuleEndCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModuleEndCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleEndCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulegluingdata`**. **Needs:** none.
+  **Owner pass:** `ModuleGluingData` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `ModuleGluingData` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleGluingData`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulegluingmor`**. **Needs:** none.
+  **Owner pass:** `ModuleGluingMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `ModuleGluingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleGluingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulegluingmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ModuleGluingMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `ModuleGluingMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleGluingMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleinverseimages`**. **Needs:** none.
+  **Owner pass:** `ModuleInverseImages` in `src/dzack_research/preamble/categories/modules/affine_fibres.py`.
+  **Closure assertions:** the complete `ModuleInverseImages` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleInverseImages`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ModuleIsoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModuleIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulemonocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ModuleMonoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModuleMonoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleMonoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulemor`**. **Needs:** none.
+  **Owner pass:** `ModuleMor` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `ModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleresolutions`**. **Needs:** none.
+  **Owner pass:** `ModuleResolutions` in `src/dzack_research/preamble/categories/modules/resolutions.py`.
+  **Closure assertions:** the complete `ModuleResolutions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleResolutions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulesheaves`**. **Needs:** none.
+  **Owner pass:** `ModuleSheaves` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `ModuleSheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleSheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulesubobjects`**. **Needs:** none.
+  **Owner pass:** `ModuleSubobjects` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModuleSubobjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModuleSubobjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules`**. **Needs:** none.
+  **Owner pass:** `Modules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-finitelygenerated`**. **Needs:** none.
+  **Owner pass:** `Modules.FinitelyGenerated` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.FinitelyGenerated` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.FinitelyGenerated`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-finitelypresented`**. **Needs:** none.
+  **Owner pass:** `Modules.FinitelyPresented` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.FinitelyPresented` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.FinitelyPresented`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-finitelypresented-torsion`**. **Needs:** none.
+  **Owner pass:** `Modules.FinitelyPresented.Torsion` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.FinitelyPresented.Torsion` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.FinitelyPresented.Torsion`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-free`**. **Needs:** none.
+  **Owner pass:** `Modules.Free` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.Free` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.Free`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-projective`**. **Needs:** none.
+  **Owner pass:** `Modules.Projective` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.Projective` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.Projective`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modules-torsion`**. **Needs:** none.
+  **Owner pass:** `Modules.Torsion` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `Modules.Torsion` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules.Torsion`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulesovercommutativerings`**. **Needs:** none.
+  **Owner pass:** `ModulesOverCommutativeRings` in `src/dzack_research/preamble/categories/modules/fibered_modules.py`.
+  **Closure assertions:** the complete `ModulesOverCommutativeRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesOverCommutativeRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulesovergroupalgebra`**. **Needs:** none.
+  **Owner pass:** `ModulesOverGroupAlgebra` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `ModulesOverGroupAlgebra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesOverGroupAlgebra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-modulesoverintegraldomains`**. **Needs:** none.
+  **Owner pass:** `ModulesOverIntegralDomains` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModulesOverIntegralDomains` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesOverIntegralDomains`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleswithchosencomponentpresentation`**. **Needs:** none.
+  **Owner pass:** `ModulesWithChosenComponentPresentation` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModulesWithChosenComponentPresentation` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesWithChosenComponentPresentation`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleswithchosenfinitepresentation`**. **Needs:** none.
+  **Owner pass:** `ModulesWithChosenFinitePresentation` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `ModulesWithChosenFinitePresentation` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesWithChosenFinitePresentation`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleswithconnection`**. **Needs:** none.
+  **Owner pass:** `ModulesWithConnection` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ModulesWithConnection` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesWithConnection`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-moduleswithflatconnection`**. **Needs:** none.
+  **Owner pass:** `ModulesWithFlatConnection` in `src/dzack_research/preamble/categories/modules/connections.py`.
+  **Closure assertions:** the complete `ModulesWithFlatConnection` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ModulesWithFlatConnection`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `MonoCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `MonoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MonoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monoidmor`**. **Needs:** none.
+  **Owner pass:** `MonoidMor` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `MonoidMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MonoidMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monoidmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `MonoidMorCategoryConstruction` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `MonoidMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MonoidMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monoids`**. **Needs:** none.
+  **Owner pass:** `Monoids` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `Monoids` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Monoids`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-morarrowdiscretemor`**. **Needs:** none.
+  **Owner pass:** `MorArrowDiscreteMor` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `MorArrowDiscreteMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MorArrowDiscreteMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-morcategories`**. **Needs:** none.
+  **Owner pass:** `MorCategories` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `MorCategories` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MorCategories`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-morcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `MorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `MorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-mors`**. **Needs:** none.
+  **Owner pass:** `Mors` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Mors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Mors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-multihomogeneouspolynomialsectionspaces`**. **Needs:** none.
+  **Owner pass:** `MultihomogeneousPolynomialSectionSpaces` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `MultihomogeneousPolynomialSectionSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MultihomogeneousPolynomialSectionSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-multiplicativealgebramor`**. **Needs:** none.
+  **Owner pass:** `MultiplicativeAlgebraMor` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `MultiplicativeAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `MultiplicativeAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-naturalnumbersets`**. **Needs:** none.
+  **Owner pass:** `NaturalNumberSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `NaturalNumberSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NaturalNumberSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-naturaltransformationmor`**. **Needs:** none.
+  **Owner pass:** `NaturalTransformationMor` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `NaturalTransformationMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NaturalTransformationMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-naturaltransformationmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `NaturalTransformationMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `NaturalTransformationMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NaturalTransformationMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-noncrystallographicrootlattices`**. **Needs:** none.
+  **Owner pass:** `NoncrystallographicRootLattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `NoncrystallographicRootLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NoncrystallographicRootLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-nondegenerategenericfibreformmodules`**. **Needs:** none.
+  **Owner pass:** `NondegenerateGenericFibreFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `NondegenerateGenericFibreFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NondegenerateGenericFibreFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-numberfieldswithchosenprimitiveelement`**. **Needs:** none.
+  **Owner pass:** `NumberFieldsWithChosenPrimitiveElement` in `src/dzack_research/preamble/categories/rings/number_fields.py`.
+  **Closure assertions:** the complete `NumberFieldsWithChosenPrimitiveElement` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `NumberFieldsWithChosenPrimitiveElement`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-objects`**. **Needs:** none.
+  **Owner pass:** `Objects` in `src/dzack_research/preamble/categories/abstract_categories/objects.py`.
+  **Closure assertions:** the complete `Objects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Objects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-openabsolutegaloissubgroups`**. **Needs:** none.
+  **Owner pass:** `OpenAbsoluteGaloisSubgroups` in `src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py`.
+  **Closure assertions:** the complete `OpenAbsoluteGaloisSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OpenAbsoluteGaloisSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-openimmersions`**. **Needs:** none.
+  **Owner pass:** `OpenImmersions` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `OpenImmersions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OpenImmersions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-oppositemor`**. **Needs:** none.
+  **Owner pass:** `OppositeMor` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `OppositeMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OppositeMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-oppositemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `OppositeMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `OppositeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OppositeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-orbitrepresentativesets`**. **Needs:** none.
+  **Owner pass:** `OrbitRepresentativeSets` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `OrbitRepresentativeSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrbitRepresentativeSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-orbitspanconstructions`**. **Needs:** none.
+  **Owner pass:** `OrbitSpanConstructions` in `src/dzack_research/preamble/categories/modules/orbit_spans.py`.
+  **Closure assertions:** the complete `OrbitSpanConstructions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrbitSpanConstructions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-orbitspanlattices`**. **Needs:** none.
+  **Owner pass:** `OrbitSpanLattices` in `src/dzack_research/preamble/categories/modules/orbit_spans.py`.
+  **Closure assertions:** the complete `OrbitSpanLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrbitSpanLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ordermor`**. **Needs:** none.
+  **Owner pass:** `OrderMor` in `src/dzack_research/preamble/categories/rings/embeddings.py`.
+  **Closure assertions:** the complete `OrderMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrderMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-orderedenumeratedsets`**. **Needs:** none.
+  **Owner pass:** `OrderedEnumeratedSets` in `src/dzack_research/preamble/categories/sets/finite_ordered_sets.py`.
+  **Closure assertions:** the complete `OrderedEnumeratedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrderedEnumeratedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-orderswithchosenintegralbasis`**. **Needs:** none.
+  **Owner pass:** `OrdersWithChosenIntegralBasis` in `src/dzack_research/preamble/categories/rings/number_fields.py`.
+  **Closure assertions:** the complete `OrdersWithChosenIntegralBasis` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrdersWithChosenIntegralBasis`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ordinalmor`**. **Needs:** none.
+  **Owner pass:** `OrdinalMor` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `OrdinalMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrdinalMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ordinalmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `OrdinalMorCategoryConstruction` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `OrdinalMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrdinalMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ordinals`**. **Needs:** none.
+  **Owner pass:** `Ordinals` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
+  **Closure assertions:** the complete `Ordinals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Ordinals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ordinarycharacterrepresentations`**. **Needs:** none.
+  **Owner pass:** `OrdinaryCharacterRepresentations` in `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`.
+  **Closure assertions:** the complete `OrdinaryCharacterRepresentations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OrdinaryCharacterRepresentations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedadicallycompleterings`**. **Needs:** none.
+  **Owner pass:** `OwnedAdicallyCompleteRings` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedAdicallyCompleteRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedAdicallyCompleteRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedgroups`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Retained assertion:** asking an infinite group for `conjugacy_classes` reaches the operation's own named computation assertion, rather than an absent method. The already delivered conjugacy, coset and conjugation operations stay at this owner; review its remaining introductions and arrow inheritance together.
+
+- [ ] **`placement-owner-ownedgroups-commutative`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups.Commutative` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedgroups-finite`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups.Finite` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups.Finite` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups.Finite`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedgroups-finitelygeneratedasmagma`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups.FinitelyGeneratedAsMagma` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups.FinitelyGeneratedAsMagma` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups.FinitelyGeneratedAsMagma`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedgroups-finitelypresentedasgroup`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups.FinitelyPresentedAsGroup` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups.FinitelyPresentedAsGroup` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups.FinitelyPresentedAsGroup`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedgroups-infinite`**. **Needs:** none.
+  **Owner pass:** `OwnedGroups.Infinite` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `OwnedGroups.Infinite` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedGroups.Infinite`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownednumberfields`**. **Needs:** none.
+  **Owner pass:** `OwnedNumberFields` in `src/dzack_research/preamble/categories/rings/number_fields.py`.
+  **Closure assertions:** the complete `OwnedNumberFields` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedNumberFields`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedorderedrings`**. **Needs:** none.
+  **Owner pass:** `OwnedOrderedRings` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedOrderedRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedOrderedRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedorders`**. **Needs:** none.
+  **Owner pass:** `OwnedOrders` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedOrders` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedOrders`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedorders-morcategory`**. **Needs:** none.
+  **Owner pass:** `OwnedOrders._MorCategory` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedOrders._MorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedOrders._MorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings`**. **Needs:** none.
+  **Owner pass:** `OwnedRings` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-artinian`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Artinian` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Artinian` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Artinian`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-commutative`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Commutative` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **General minimal-prime locus source repair retained:** the Step-2 full-power-set construction is now owned by `OwnedRings.Commutative.ParentMethods`. `prime_ideal_locus`, `minimal_prime_locus` and `irreducible_component_locus` represent arbitrary ideal subsets without finite generation or enumeration. The public finite-selection routes inherit that owner, and exact Noetherian quotient presentations supply their existing finite computations through declared hooks. Nonreduced rings also have irreducible components. The original infinite-Boolean-ring and two-component affine-ring assertions remain under T; no computation of an arbitrary ideal-subset predicate is claimed. Localized-source ideal computations and the normalization extension/coefficient data remain in their existing nodes and this owner pass.
+  **Retained remainder:** review all other commutative-ring introductions, including the general nonfinite invariant/locus and normalization frontiers. Prior consumer-driven repairs do not establish completion of this whole-owner pass.
+
+- [ ] **`placement-owner-ownedrings-commutative-local`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Commutative.Local` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Commutative.Local` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Commutative.Local`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-commutative-local-complete`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Commutative.Local.Complete` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Commutative.Local.Complete` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Commutative.Local.Complete`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-commutative-principalideals`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Commutative.PrincipalIdeals` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Commutative.PrincipalIdeals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Commutative.PrincipalIdeals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-division`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Division` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Division` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Division`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-division-commutative`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Division.Commutative` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Division.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Division.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-division-commutative-prime`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Division.Commutative.Prime` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Division.Commutative.Prime` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Division.Commutative.Prime`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-nozerodivisors`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.NoZeroDivisors` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.NoZeroDivisors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.NoZeroDivisors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-nozerodivisors-commutative`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.NoZeroDivisors.Commutative` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.NoZeroDivisors.Commutative` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.NoZeroDivisors.Commutative`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-noetherian`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Noetherian` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Noetherian` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Noetherian`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrings-nontrivial`**. **Needs:** none.
+  **Owner pass:** `OwnedRings.Nontrivial` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `OwnedRings.Nontrivial` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRings.Nontrivial`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedrngs`**. **Needs:** none.
+  **Owner pass:** `OwnedRngs` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `OwnedRngs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedRngs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ownedsemirings`**. **Needs:** none.
+  **Owner pass:** `OwnedSemirings` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `OwnedSemirings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `OwnedSemirings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-pairedmodules`**. **Needs:** none.
+  **Owner pass:** `PairedModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `PairedModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PairedModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-pairingobjects`**. **Needs:** none.
+  **Owner pass:** `PairingObjects` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `PairingObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PairingObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelfamilycategory`**. **Needs:** none.
+  **Owner pass:** `ParallelFamilyCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelFamilyCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelFamilyCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelfamilymor`**. **Needs:** none.
+  **Owner pass:** `ParallelFamilyMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelFamilyMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelFamilyMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelfamilymorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ParallelFamilyMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelFamilyMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelFamilyMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelpaircategory`**. **Needs:** none.
+  **Owner pass:** `ParallelPairCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelPairCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelPairCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelpairmor`**. **Needs:** none.
+  **Owner pass:** `ParallelPairMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelPairMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelPairMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-parallelpairmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ParallelPairMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `ParallelPairMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ParallelPairMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-partiallyorderedsets`**. **Needs:** none.
+  **Owner pass:** `PartiallyOrderedSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `PartiallyOrderedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PartiallyOrderedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-permutationgroups`**. **Needs:** none.
+  **Owner pass:** `PermutationGroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `PermutationGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PermutationGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-picardgroups`**. **Needs:** none.
+  **Owner pass:** `PicardGroups` in `src/dzack_research/preamble/categories/divisors/picard_groups.py`.
+  **Closure assertions:** the complete `PicardGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PicardGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-posetcategory`**. **Needs:** none.
+  **Owner pass:** `PosetCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `PosetCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PosetCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-posetmor`**. **Needs:** none.
+  **Owner pass:** `PosetMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `PosetMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PosetMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-posetmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `PosetMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `PosetMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PosetMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-positiveconecomponents`**. **Needs:** none.
+  **Owner pass:** `PositiveConeComponents` in `src/dzack_research/preamble/categories/hyperbolic_geometry.py`.
+  **Closure assertions:** the complete `PositiveConeComponents` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PositiveConeComponents`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-poweralgebramor`**. **Needs:** none.
+  **Owner pass:** `PowerAlgebraMor` in `src/dzack_research/preamble/categories/algebras/power_algebras.py`.
+  **Closure assertions:** the complete `PowerAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PowerAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-poweralgebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `PowerAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `PowerAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PowerAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-powersets`**. **Needs:** none.
+  **Owner pass:** `PowerSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `PowerSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PowerSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-predicatesubgroups`**. **Needs:** none.
+  **Owner pass:** `PredicateSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `PredicateSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PredicateSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-predicatesubrings`**. **Needs:** none.
+  **Owner pass:** `PredicateSubrings` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `PredicateSubrings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PredicateSubrings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-preimagesubgroups`**. **Needs:** none.
+  **Owner pass:** `PreimageSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `PreimageSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PreimageSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-presentedalgebramor`**. **Needs:** none.
+  **Owner pass:** `PresentedAlgebraMor` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `PresentedAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PresentedAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-primespectra`**. **Needs:** none.
+  **Owner pass:** `PrimeSpectra` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `PrimeSpectra` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PrimeSpectra`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-primitiveisotropicsubobjects`**. **Needs:** none.
+  **Owner pass:** `PrimitiveIsotropicSubobjects` in `src/dzack_research/preamble/categories/isotropic_parabolics.py`.
+  **Closure assertions:** the complete `PrimitiveIsotropicSubobjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `PrimitiveIsotropicSubobjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productmor`**. **Needs:** none.
+  **Owner pass:** `ProductMor` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `ProductMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProductMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ProductMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `ProductMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProductMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productprojectivespaces`**. **Needs:** none.
+  **Owner pass:** `ProductProjectiveSpaces` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ProductProjectiveSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProductProjectiveSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productschemes`**. **Needs:** none.
+  **Owner pass:** `ProductSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ProductSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProductSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-profinitegroups`**. **Needs:** none.
+  **Owner pass:** `ProfiniteGroups` in `src/dzack_research/preamble/categories/group/profinite/profinite_groups.py`.
+  **Closure assertions:** the complete `ProfiniteGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProfiniteGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivebundlepicardgroups`**. **Needs:** none.
+  **Owner pass:** `ProjectiveBundlePicardGroups` in `src/dzack_research/preamble/categories/divisors/picard_groups.py`.
+  **Closure assertions:** the complete `ProjectiveBundlePicardGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveBundlePicardGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivecompleteintersections`**. **Needs:** none.
+  **Owner pass:** `ProjectiveCompleteIntersections` in `src/dzack_research/preamble/categories/schemes/complete_intersections.py`.
+  **Closure assertions:** the complete `ProjectiveCompleteIntersections` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveCompleteIntersections`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivecompleteintersections-smooth`**. **Needs:** none.
+  **Owner pass:** `ProjectiveCompleteIntersections.Smooth` in `src/dzack_research/preamble/categories/schemes/complete_intersections.py`.
+  **Closure assertions:** the complete `ProjectiveCompleteIntersections.Smooth` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveCompleteIntersections.Smooth`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivecurves`**. **Needs:** none.
+  **Owner pass:** `ProjectiveCurves` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `ProjectiveCurves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveCurves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivejetspaces`**. **Needs:** none.
+  **Owner pass:** `ProjectiveJetSpaces` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `ProjectiveJetSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveJetSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivelinearsystems`**. **Needs:** none.
+  **Owner pass:** `ProjectiveLinearSystems` in `src/dzack_research/preamble/categories/divisors/linear_systems.py`.
+  **Closure assertions:** the complete `ProjectiveLinearSystems` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveLinearSystems`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivelines`**. **Needs:** none.
+  **Owner pass:** `ProjectiveLines` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ProjectiveLines` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveLines`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivepointblowups`**. **Needs:** none.
+  **Owner pass:** `ProjectivePointBlowups` in `src/dzack_research/preamble/categories/schemes/blowups.py`.
+  **Closure assertions:** the complete `ProjectivePointBlowups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectivePointBlowups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivespaces`**. **Needs:** none.
+  **Owner pass:** `ProjectiveSpaces` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `ProjectiveSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-projectivesurfaces`**. **Needs:** none.
+  **Owner pass:** `ProjectiveSurfaces` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `ProjectiveSurfaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProjectiveSurfaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-propersurfaces`**. **Needs:** none.
+  **Owner pass:** `ProperSurfaces` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `ProperSurfaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ProperSurfaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quadraticformmodules`**. **Needs:** none.
+  **Owner pass:** `QuadraticFormModules` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `QuadraticFormModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuadraticFormModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quadraticformmodules-finitelypresented`**. **Needs:** none.
+  **Owner pass:** `QuadraticFormModules.FinitelyPresented` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `QuadraticFormModules.FinitelyPresented` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuadraticFormModules.FinitelyPresented`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quadraticformmodules-finitelypresented-torsion`**. **Needs:** none.
+  **Owner pass:** `QuadraticFormModules.FinitelyPresented.Torsion` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
+  **Closure assertions:** the complete `QuadraticFormModules.FinitelyPresented.Torsion` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuadraticFormModules.FinitelyPresented.Torsion`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quadraticmodulemor`**. **Needs:** none.
+  **Owner pass:** `QuadraticModuleMor` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `QuadraticModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuadraticModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quasicoherentsheafmor`**. **Needs:** none.
+  **Owner pass:** `QuasiCoherentSheafMor` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `QuasiCoherentSheafMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuasiCoherentSheafMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quasicoherentsheafmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `QuasiCoherentSheafMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `QuasiCoherentSheafMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuasiCoherentSheafMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quasicoherentsheaves`**. **Needs:** none.
+  **Owner pass:** `QuasiCoherentSheaves` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `QuasiCoherentSheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuasiCoherentSheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-quasicoherentsheaves-invertible`**. **Needs:** none.
+  **Owner pass:** `QuasiCoherentSheaves.Invertible` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `QuasiCoherentSheaves.Invertible` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `QuasiCoherentSheaves.Invertible`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-rationalpolyhedralcones`**. **Needs:** none.
+  **Owner pass:** `RationalPolyhedralCones` in `src/dzack_research/preamble/categories/polyhedral_cones.py`.
+  **Closure assertions:** the complete `RationalPolyhedralCones` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RationalPolyhedralCones`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-rationalpolyhedralfans`**. **Needs:** none.
+  **Owner pass:** `RationalPolyhedralFans` in `src/dzack_research/preamble/categories/schemes/toric/fans.py`.
+  **Closure assertions:** the complete `RationalPolyhedralFans` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RationalPolyhedralFans`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-regularpolytopes`**. **Needs:** none.
+  **Owner pass:** `RegularPolytopes` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
+  **Closure assertions:** the complete `RegularPolytopes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RegularPolytopes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-relativeprojectivizationquasicoherentmor`**. **Needs:** none.
+  **Owner pass:** `RelativeProjectivizationQuasiCoherentMor` in `src/dzack_research/preamble/categories/schemes/relative_proj.py`.
+  **Closure assertions:** the complete `RelativeProjectivizationQuasiCoherentMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RelativeProjectivizationQuasiCoherentMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-relativeprojectivizations`**. **Needs:** none.
+  **Owner pass:** `RelativeProjectivizations` in `src/dzack_research/preamble/categories/schemes/relative_proj.py`.
+  **Closure assertions:** the complete `RelativeProjectivizations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RelativeProjectivizations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-resolutionintegralcohomologygroups`**. **Needs:** none.
+  **Owner pass:** `ResolutionIntegralCohomologyGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `ResolutionIntegralCohomologyGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ResolutionIntegralCohomologyGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-resolutionmor`**. **Needs:** none.
+  **Owner pass:** `ResolutionMor` in `src/dzack_research/preamble/categories/abstract_categories/resolutions.py`.
+  **Closure assertions:** the complete `ResolutionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ResolutionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-resolutionmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `ResolutionMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/resolutions.py`.
+  **Closure assertions:** the complete `ResolutionMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ResolutionMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-resolutions`**. **Needs:** none.
+  **Owner pass:** `Resolutions` in `src/dzack_research/preamble/categories/abstract_categories/resolutions.py`.
+  **Closure assertions:** the complete `Resolutions` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Resolutions`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-restrictedmorcategoryparent`**. **Needs:** none.
+  **Owner pass:** `RestrictedMorCategoryParent` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `RestrictedMorCategoryParent` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RestrictedMorCategoryParent`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-restrictedscalarsalgebras`**. **Needs:** none.
+  **Owner pass:** `RestrictedScalarsAlgebras` in `src/dzack_research/preamble/categories/algebras/restricted_scalars.py`.
+  **Closure assertions:** the complete `RestrictedScalarsAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RestrictedScalarsAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-restrictedscalarsmodules`**. **Needs:** none.
+  **Owner pass:** `RestrictedScalarsModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `RestrictedScalarsModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RestrictedScalarsModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ringmor`**. **Needs:** none.
+  **Owner pass:** `RingMor` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `RingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ringmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `RingMorCategoryConstruction` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `RingMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RingMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-ringedspaces`**. **Needs:** none.
+  **Owner pass:** `RingedSpaces` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `RingedSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RingedSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-rngmor`**. **Needs:** none.
+  **Owner pass:** `RngMor` in `src/dzack_research/preamble/categories/rings/ring_foundation.py`.
+  **Closure assertions:** the complete `RngMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RngMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-rngmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `RngMorCategoryConstruction` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `RngMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RngMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-rootlattices`**. **Needs:** none.
+  **Owner pass:** `RootLattices` in `src/dzack_research/preamble/categories/lattices.py`.
+  **Closure assertions:** the complete `RootLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `RootLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-satakediagrams`**. **Needs:** none.
+  **Owner pass:** `SatakeDiagrams` in `src/dzack_research/preamble/categories/satake_diagrams.py`.
+  **Closure assertions:** the complete `SatakeDiagrams` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SatakeDiagrams`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schememonomorphisms`**. **Needs:** none.
+  **Owner pass:** `SchemeMonomorphisms` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `SchemeMonomorphisms` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SchemeMonomorphisms`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schememorcategory`**. **Needs:** none.
+  **Owner pass:** `SchemeMorCategory` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `SchemeMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SchemeMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schememorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SchemeMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `SchemeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SchemeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes`**. **Needs:** none.
+  **Owner pass:** `Schemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-affine`**. **Needs:** none.
+  **Owner pass:** `Schemes.Affine` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Affine` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Affine`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-calabiyau`**. **Needs:** none.
+  **Owner pass:** `Schemes.CalabiYau` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.CalabiYau` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.CalabiYau`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-finitetype`**. **Needs:** none.
+  **Owner pass:** `Schemes.FiniteType` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.FiniteType` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.FiniteType`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-integral`**. **Needs:** none.
+  **Owner pass:** `Schemes.Integral` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Integral` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Integral`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-locallynoetherian`**. **Needs:** none.
+  **Owner pass:** `Schemes.LocallyNoetherian` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.LocallyNoetherian` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.LocallyNoetherian`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-locallynoetherian-integral`**. **Needs:** none.
+  **Owner pass:** `Schemes.LocallyNoetherian.Integral` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.LocallyNoetherian.Integral` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.LocallyNoetherian.Integral`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-normal`**. **Needs:** none.
+  **Owner pass:** `Schemes.Normal` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Normal` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Normal`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-projective`**. **Needs:** none.
+  **Owner pass:** `Schemes.Projective` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Projective` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Projective`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-proper`**. **Needs:** none.
+  **Owner pass:** `Schemes.Proper` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Proper` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Proper`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-proper-smooth`**. **Needs:** none.
+  **Owner pass:** `Schemes.Proper.Smooth` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Proper.Smooth` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Proper.Smooth`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-quasiaffine`**. **Needs:** none.
+  **Owner pass:** `Schemes.QuasiAffine` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.QuasiAffine` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.QuasiAffine`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-quasiaffine-finitetype`**. **Needs:** none.
+  **Owner pass:** `Schemes.QuasiAffine.FiniteType` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.QuasiAffine.FiniteType` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.QuasiAffine.FiniteType`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-quasiprojective`**. **Needs:** none.
+  **Owner pass:** `Schemes.QuasiProjective` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.QuasiProjective` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.QuasiProjective`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-separated`**. **Needs:** none.
+  **Owner pass:** `Schemes.Separated` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Separated` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Separated`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemes-smooth`**. **Needs:** none.
+  **Owner pass:** `Schemes.Smooth` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `Schemes.Smooth` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Schemes.Smooth`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemesoverintegraldomains`**. **Needs:** none.
+  **Owner pass:** `SchemesOverIntegralDomains` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `SchemesOverIntegralDomains` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SchemesOverIntegralDomains`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemesoverlocalrings`**. **Needs:** none.
+  **Owner pass:** `SchemesOverLocalRings` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `SchemesOverLocalRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SchemesOverLocalRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sectionrings`**. **Needs:** none.
+  **Owner pass:** `SectionRings` in `src/dzack_research/preamble/categories/divisors/section_rings.py`.
+  **Closure assertions:** the complete `SectionRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SectionRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-semigroups`**. **Needs:** none.
+  **Owner pass:** `Semigroups` in `src/dzack_research/preamble/categories/group/magmas.py`.
+  **Closure assertions:** the complete `Semigroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Semigroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-semilinearmodulemor`**. **Needs:** none.
+  **Owner pass:** `SemilinearModuleMor` in `src/dzack_research/preamble/categories/modules/fibered_modules.py`.
+  **Closure assertions:** the complete `SemilinearModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SemilinearModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-semilinearmodulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SemilinearModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/modules/fibered_modules.py`.
+  **Closure assertions:** the complete `SemilinearModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SemilinearModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-semiringmor`**. **Needs:** none.
+  **Owner pass:** `SemiringMor` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `SemiringMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SemiringMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-semiringmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SemiringMorCategoryConstruction` in `src/dzack_research/preamble/categories/rings/semirings.py`.
+  **Closure assertions:** the complete `SemiringMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SemiringMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setepicategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SetEpiCategoryConstruction` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetEpiCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetEpiCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setinjectionmor`**. **Needs:** none.
+  **Owner pass:** `SetInjectionMor` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetInjectionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetInjectionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setmonocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SetMonoCategoryConstruction` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetMonoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetMonoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setmorcategory`**. **Needs:** none.
+  **Owner pass:** `SetMorCategory` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SetMorCategoryConstruction` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setsubobjectcategory`**. **Needs:** none.
+  **Owner pass:** `SetSubobjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SetSubobjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetSubobjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-setsurjectionmor`**. **Needs:** none.
+  **Owner pass:** `SetSurjectionMor` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `SetSurjectionMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SetSurjectionMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sets`**. **Needs:** none.
+  **Owner pass:** `Sets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Retained remainder:** reconcile public cardinality ownership with every existing supplier and retain unknown finite predicate membership and cardinality. The earlier finite-predicate source piece and quotient cardinality move are evidence, not completion of this whole-owner inventory.
+
+- [ ] **`placement-owner-sets-countable`**. **Needs:** none.
+  **Owner pass:** `Sets.Countable` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets.Countable` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets.Countable`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sets-countable-infinite`**. **Needs:** none.
+  **Owner pass:** `Sets.Countable.Infinite` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets.Countable.Infinite` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets.Countable.Infinite`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sets-finite`**. **Needs:** none.
+  **Owner pass:** `Sets.Finite` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets.Finite` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets.Finite`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sets-infinite`**. **Needs:** none.
+  **Owner pass:** `Sets.Infinite` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets.Infinite` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets.Infinite`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sets-uncountable`**. **Needs:** none.
+  **Owner pass:** `Sets.Uncountable` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `Sets.Uncountable` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sets.Uncountable`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sheafobjects`**. **Needs:** none.
+  **Owner pass:** `SheafObjects` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `SheafObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SheafObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sheafedspaces`**. **Needs:** none.
+  **Owner pass:** `SheafedSpaces` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `SheafedSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SheafedSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sheaves`**. **Needs:** none.
+  **Owner pass:** `Sheaves` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `Sheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Sheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-slicecategory`**. **Needs:** none.
+  **Owner pass:** `SliceCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SliceCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SliceCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-slicemor`**. **Needs:** none.
+  **Owner pass:** `SliceMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SliceMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SliceMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-slicemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SliceMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SliceMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SliceMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-smoothcompleterationaltoricschemes`**. **Needs:** none.
+  **Owner pass:** `SmoothCompleteRationalToricSchemes` in `src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py`.
+  **Closure assertions:** the complete `SmoothCompleteRationalToricSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SmoothCompleteRationalToricSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-smoothmanifolds`**. **Needs:** none.
+  **Owner pass:** `SmoothManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `SmoothManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SmoothManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-smoothquartick3completeintersections`**. **Needs:** none.
+  **Owner pass:** `SmoothQuarticK3CompleteIntersections` in `src/dzack_research/preamble/categories/schemes/complete_intersections.py`.
+  **Closure assertions:** the complete `SmoothQuarticK3CompleteIntersections` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SmoothQuarticK3CompleteIntersections`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-sparsefreealgebramor`**. **Needs:** none.
+  **Owner pass:** `SparseFreeAlgebraMor` in `src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py`.
+  **Closure assertions:** the complete `SparseFreeAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SparseFreeAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-stabilizersubgroups`**. **Needs:** none.
+  **Owner pass:** `StabilizerSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `StabilizerSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `StabilizerSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-subgroups`**. **Needs:** none.
+  **Owner pass:** `Subgroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `Subgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Subgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-subobjectcategory`**. **Needs:** none.
+  **Owner pass:** `SubobjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SubobjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SubobjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-subobjectmor`**. **Needs:** none.
+  **Owner pass:** `SubobjectMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SubobjectMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SubobjectMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-subobjectmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `SubobjectMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SubobjectMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SubobjectMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-superobjectcategory`**. **Needs:** none.
+  **Owner pass:** `SuperobjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `SuperobjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SuperobjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-surfaces`**. **Needs:** none.
+  **Owner pass:** `Surfaces` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `Surfaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Surfaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-symmetricalgebras`**. **Needs:** none.
+  **Owner pass:** `SymmetricAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `SymmetricAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SymmetricAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-symmetricpowermodules`**. **Needs:** none.
+  **Owner pass:** `SymmetricPowerModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `SymmetricPowerModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `SymmetricPowerModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-tensoralgebras`**. **Needs:** none.
+  **Owner pass:** `TensorAlgebras` in `src/dzack_research/preamble/categories/algebras/free_algebras.py`.
+  **Closure assertions:** the complete `TensorAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TensorAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-tensorpowermodules`**. **Needs:** none.
+  **Owner pass:** `TensorPowerModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
+  **Closure assertions:** the complete `TensorPowerModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TensorPowerModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-tensorproductmodulemor`**. **Needs:** none.
+  **Owner pass:** `TensorProductModuleMor` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `TensorProductModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TensorProductModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-tensorproductmodules`**. **Needs:** none.
+  **Owner pass:** `TensorProductModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `TensorProductModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TensorProductModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-topologicalgroups`**. **Needs:** none.
+  **Owner pass:** `TopologicalGroups` in `src/dzack_research/preamble/categories/group/groups.py`.
+  **Closure assertions:** the complete `TopologicalGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TopologicalGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-topologicalmanifolds`**. **Needs:** none.
+  **Owner pass:** `TopologicalManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
+  **Closure assertions:** the complete `TopologicalManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TopologicalManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-topologicalspacemor`**. **Needs:** none.
+  **Owner pass:** `TopologicalSpaceMor` in `src/dzack_research/preamble/categories/topological_spaces.py`.
+  **Closure assertions:** the complete `TopologicalSpaceMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TopologicalSpaceMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-topologicalspacemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `TopologicalSpaceMorCategoryConstruction` in `src/dzack_research/preamble/categories/topological_spaces.py`.
+  **Closure assertions:** the complete `TopologicalSpaceMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TopologicalSpaceMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-topologicalspaces`**. **Needs:** none.
+  **Owner pass:** `TopologicalSpaces` in `src/dzack_research/preamble/categories/topological_spaces.py`.
+  **Closure assertions:** the complete `TopologicalSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TopologicalSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricfixedpointblowups`**. **Needs:** none.
+  **Owner pass:** `ToricFixedPointBlowups` in `src/dzack_research/preamble/categories/schemes/toric/blowups.py`.
+  **Closure assertions:** the complete `ToricFixedPointBlowups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricFixedPointBlowups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricfundamentalgroups`**. **Needs:** none.
+  **Owner pass:** `ToricFundamentalGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `ToricFundamentalGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricFundamentalGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricgeometriclinebundlecohomologyspaces`**. **Needs:** none.
+  **Owner pass:** `ToricGeometricLineBundleCohomologySpaces` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `ToricGeometricLineBundleCohomologySpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricGeometricLineBundleCohomologySpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricintegralsingularcohomologygroups`**. **Needs:** none.
+  **Owner pass:** `ToricIntegralSingularCohomologyGroups` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `ToricIntegralSingularCohomologyGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricIntegralSingularCohomologyGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toriclogpairs`**. **Needs:** none.
+  **Owner pass:** `ToricLogPairs` in `src/dzack_research/preamble/categories/schemes/log_pairs.py`.
+  **Closure assertions:** the complete `ToricLogPairs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricLogPairs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricprojectivespaces`**. **Needs:** none.
+  **Owner pass:** `ToricProjectiveSpaces` in `src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py`.
+  **Closure assertions:** the complete `ToricProjectiveSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricProjectiveSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricschemes`**. **Needs:** none.
+  **Owner pass:** `ToricSchemes` in `src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py`.
+  **Closure assertions:** the complete `ToricSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-toricweightcohomologycomplexes`**. **Needs:** none.
+  **Owner pass:** `ToricWeightCohomologyComplexes` in `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py`.
+  **Closure assertions:** the complete `ToricWeightCohomologyComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ToricWeightCohomologyComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torsionbilinearformisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `TorsionBilinearFormIsoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
+  **Closure assertions:** the complete `TorsionBilinearFormIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TorsionBilinearFormIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torsionformorthogonalgroup`**. **Needs:** none.
+  **Owner pass:** `TorsionFormOrthogonalGroup` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
+  **Closure assertions:** the complete `TorsionFormOrthogonalGroup` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TorsionFormOrthogonalGroup`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torsionquadraticformisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `TorsionQuadraticFormIsoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
+  **Closure assertions:** the complete `TorsionQuadraticFormIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TorsionQuadraticFormIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torsors`**. **Needs:** none.
+  **Owner pass:** `Torsors` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `Torsors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Torsors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torusinvariantcyclegroups`**. **Needs:** none.
+  **Owner pass:** `TorusInvariantCycleGroups` in `src/dzack_research/preamble/categories/divisors/chow_groups.py`.
+  **Closure assertions:** the complete `TorusInvariantCycleGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TorusInvariantCycleGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-totallyorderedsets`**. **Needs:** none.
+  **Owner pass:** `TotallyOrderedSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `TotallyOrderedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TotallyOrderedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-trivialcoveringfamilies`**. **Needs:** none.
+  **Owner pass:** `TrivialCoveringFamilies` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `TrivialCoveringFamilies` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TrivialCoveringFamilies`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-trivializedtorsors`**. **Needs:** none.
+  **Owner pass:** `TrivializedTorsors` in `src/dzack_research/preamble/categories/group/g_sets.py`.
+  **Closure assertions:** the complete `TrivializedTorsors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `TrivializedTorsors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-unitalalgebramorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `UnitalAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `UnitalAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `UnitalAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-unitalmultiplicativealgebramor`**. **Needs:** none.
+  **Owner pass:** `UnitalMultiplicativeAlgebraMor` in `src/dzack_research/preamble/categories/algebras/algebras.py`.
+  **Closure assertions:** the complete `UnitalMultiplicativeAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `UnitalMultiplicativeAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-varieties`**. **Needs:** none.
+  **Owner pass:** `Varieties` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `Varieties` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Varieties`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-vectorconfigurations`**. **Needs:** none.
+  **Owner pass:** `VectorConfigurations` in `src/dzack_research/preamble/categories/vector_configurations.py`.
+  **Closure assertions:** the complete `VectorConfigurations` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `VectorConfigurations`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-vectorspaces`**. **Needs:** none.
+  **Owner pass:** `VectorSpaces` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
+  **Closure assertions:** the complete `VectorSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `VectorSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-vinberginvariantmatrices`**. **Needs:** none.
+  **Owner pass:** `VinbergInvariantMatrices` in `src/dzack_research/preamble/categories/vinberg_invariants.py`.
+  **Closure assertions:** the complete `VinbergInvariantMatrices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `VinbergInvariantMatrices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-weildivisorgroups`**. **Needs:** none.
+  **Owner pass:** `WeilDivisorGroups` in `src/dzack_research/preamble/categories/divisors/weil_divisor_groups.py`.
+  **Closure assertions:** the complete `WeilDivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WeilDivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-wellorderedsetmor`**. **Needs:** none.
+  **Owner pass:** `WellOrderedSetMor` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `WellOrderedSetMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WellOrderedSetMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-wellorderedsetmorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `WellOrderedSetMorCategoryConstruction` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `WellOrderedSetMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WellOrderedSetMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-wellorderedsets`**. **Needs:** none.
+  **Owner pass:** `WellOrderedSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
+  **Closure assertions:** the complete `WellOrderedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WellOrderedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-weylchambercomplexes`**. **Needs:** none.
+  **Owner pass:** `WeylChamberComplexes` in `src/dzack_research/preamble/categories/chamber_complexes.py`.
+  **Closure assertions:** the complete `WeylChamberComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WeylChamberComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-widemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `WideMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `WideMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `WideMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-zariskiclosedsubobjects`**. **Needs:** none.
+  **Owner pass:** `ZariskiClosedSubobjects` in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`.
+  **Closure assertions:** the complete `ZariskiClosedSubobjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ZariskiClosedSubobjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-zariskicoveringfamilies`**. **Needs:** none.
+  **Owner pass:** `ZariskiCoveringFamilies` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
+  **Closure assertions:** the complete `ZariskiCoveringFamilies` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ZariskiCoveringFamilies`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-autcategoryof`**. **Needs:** none.
+  **Owner pass:** `_AutCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_AutCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_AutCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-automorphismarrowcategory`**. **Needs:** none.
+  **Owner pass:** `_AutomorphismArrowCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_AutomorphismArrowCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_AutomorphismArrowCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-auxiliarylinearmodulemor`**. **Needs:** none.
+  **Owner pass:** `_AuxiliaryLinearModuleMor` in `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`.
+  **Closure assertions:** the complete `_AuxiliaryLinearModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_AuxiliaryLinearModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-cechcoveringfamilies`**. **Needs:** none.
+  **Owner pass:** `_CechCoveringFamilies` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
+  **Closure assertions:** the complete `_CechCoveringFamilies` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_CechCoveringFamilies`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-chosentrivializationquasicoherentmor`**. **Needs:** none.
+  **Owner pass:** `_ChosenTrivializationQuasiCoherentMor` in `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py`.
+  **Closure assertions:** the complete `_ChosenTrivializationQuasiCoherentMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ChosenTrivializationQuasiCoherentMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coconecategory`**. **Needs:** none.
+  **Owner pass:** `_CoconeCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_CoconeCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_CoconeCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-colimitsofcategory`**. **Needs:** none.
+  **Owner pass:** `_ColimitsOfCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_ColimitsOfCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ColimitsOfCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-conecategory`**. **Needs:** none.
+  **Owner pass:** `_ConeCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_ConeCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ConeCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coproductcoconecategory`**. **Needs:** none.
+  **Owner pass:** `_CoproductCoconeCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_CoproductCoconeCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_CoproductCoconeCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-coproductsofcategory`**. **Needs:** none.
+  **Owner pass:** `_CoproductsOfCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_CoproductsOfCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_CoproductsOfCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-corecategory`**. **Needs:** none.
+  **Owner pass:** `_CoreCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_CoreCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_CoreCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-diagramcategory`**. **Needs:** none.
+  **Owner pass:** `_DiagramCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_DiagramCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_DiagramCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-dimensionsubcategoryofvarieties`**. **Needs:** none.
+  **Owner pass:** `_DimensionSubcategoryOfVarieties` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
+  **Closure assertions:** the complete `_DimensionSubcategoryOfVarieties` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_DimensionSubcategoryOfVarieties`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-discretetwomorcategoryof`**. **Needs:** none.
+  **Owner pass:** `_DiscreteTwoMorCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_DiscreteTwoMorCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_DiscreteTwoMorCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endarrowcategory`**. **Needs:** none.
+  **Owner pass:** `_EndArrowCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_EndArrowCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EndArrowCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endcategoryof`**. **Needs:** none.
+  **Owner pass:** `_EndCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_EndCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EndCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endofunctoralgebracategory`**. **Needs:** none.
+  **Owner pass:** `_EndofunctorAlgebraCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_EndofunctorAlgebraCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EndofunctorAlgebraCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endofunctoralgebramor`**. **Needs:** none.
+  **Owner pass:** `_EndofunctorAlgebraMor` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_EndofunctorAlgebraMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EndofunctorAlgebraMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-endofunctoralgebramorcategory`**. **Needs:** none.
+  **Owner pass:** `_EndofunctorAlgebraMorCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_EndofunctorAlgebraMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EndofunctorAlgebraMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-epicategoryof`**. **Needs:** none.
+  **Owner pass:** `_EpiCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_EpiCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EpiCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-epimorphismarrowcategory`**. **Needs:** none.
+  **Owner pass:** `_EpimorphismArrowCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_EpimorphismArrowCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_EpimorphismArrowCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasinverseimagemodulemor`**. **Needs:** none.
+  **Owner pass:** `_FiniteAtlasInverseImageModuleMor` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `_FiniteAtlasInverseImageModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_FiniteAtlasInverseImageModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasinverseimagemodulemorcategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `_FiniteAtlasInverseImageModuleMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `_FiniteAtlasInverseImageModuleMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_FiniteAtlasInverseImageModuleMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-finiteatlasinverseimagemodulesheaves`**. **Needs:** none.
+  **Owner pass:** `_FiniteAtlasInverseImageModuleSheaves` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `_FiniteAtlasInverseImageModuleSheaves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_FiniteAtlasInverseImageModuleSheaves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-fullsubcategoryofarrows`**. **Needs:** none.
+  **Owner pass:** `_FullSubcategoryOfArrows` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_FullSubcategoryOfArrows` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_FullSubcategoryOfArrows`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-functorcategory`**. **Needs:** none.
+  **Owner pass:** `_FunctorCategory` in `src/dzack_research/preamble/categories/abstract_categories/cat.py`.
+  **Closure assertions:** the complete `_FunctorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_FunctorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-gluedschememorcategory`**. **Needs:** none.
+  **Owner pass:** `_GluedSchemeMorCategory` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
+  **Closure assertions:** the complete `_GluedSchemeMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_GluedSchemeMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isoarrowcategory`**. **Needs:** none.
+  **Owner pass:** `_IsoArrowCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_IsoArrowCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_IsoArrowCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-isocategoryof`**. **Needs:** none.
+  **Owner pass:** `_IsoCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_IsoCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_IsoCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-limitsofcategory`**. **Needs:** none.
+  **Owner pass:** `_LimitsOfCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_LimitsOfCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_LimitsOfCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monocategoryof`**. **Needs:** none.
+  **Owner pass:** `_MonoCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_MonoCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_MonoCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-monomorphismarrowcategory`**. **Needs:** none.
+  **Owner pass:** `_MonomorphismArrowCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_MonomorphismArrowCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_MonomorphismArrowCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-morcategoryof`**. **Needs:** none.
+  **Owner pass:** `_MorCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_MorCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_MorCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-oppositecategory`**. **Needs:** none.
+  **Owner pass:** `_OppositeCategory` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `_OppositeCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_OppositeCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-predicatesubgroupconstruction`**. **Needs:** none.
+  **Owner pass:** `_PredicateSubgroupConstruction` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
+  **Closure assertions:** the complete `_PredicateSubgroupConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_PredicateSubgroupConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productcategory`**. **Needs:** none.
+  **Owner pass:** `_ProductCategory` in `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py`.
+  **Closure assertions:** the complete `_ProductCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ProductCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productconecategory`**. **Needs:** none.
+  **Owner pass:** `_ProductConeCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_ProductConeCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ProductConeCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-productsofcategory`**. **Needs:** none.
+  **Owner pass:** `_ProductsOfCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_ProductsOfCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_ProductsOfCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-pullbacklinebundlequasicoherentmor`**. **Needs:** none.
+  **Owner pass:** `_PullbackLineBundleQuasiCoherentMor` in `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py`.
+  **Closure assertions:** the complete `_PullbackLineBundleQuasiCoherentMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_PullbackLineBundleQuasiCoherentMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-restrictedmorcategoryof`**. **Needs:** none.
+  **Owner pass:** `_RestrictedMorCategoryOf` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
+  **Closure assertions:** the complete `_RestrictedMorCategoryOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_RestrictedMorCategoryOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-schemesubobjectsof`**. **Needs:** none.
+  **Owner pass:** `_SchemeSubobjectsOf` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
+  **Closure assertions:** the complete `_SchemeSubobjectsOf` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_SchemeSubobjectsOf`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-selectedfinitepresentationmodules`**. **Needs:** none.
+  **Owner pass:** `_SelectedFinitePresentationModules` in `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py`.
+  **Closure assertions:** the complete `_SelectedFinitePresentationModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_SelectedFinitePresentationModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-spancategory`**. **Needs:** none.
+  **Owner pass:** `_SpanCategory` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
+  **Closure assertions:** the complete `_SpanCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_SpanCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-subcategoryofarrows`**. **Needs:** none.
+  **Owner pass:** `_SubcategoryOfArrows` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_SubcategoryOfArrows` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_SubcategoryOfArrows`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-torsionformisocategoryconstruction`**. **Needs:** none.
+  **Owner pass:** `_TorsionFormIsoCategoryConstruction` in `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py`.
+  **Closure assertions:** the complete `_TorsionFormIsoCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_TorsionFormIsoCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-walkingarrowfunctorcategory`**. **Needs:** none.
+  **Owner pass:** `_WalkingArrowFunctorCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_WalkingArrowFunctorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_WalkingArrowFunctorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+
+- [ ] **`placement-owner-widesubcategory`**. **Needs:** none.
+  **Owner pass:** `_WideSubcategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
+  **Closure assertions:** the complete `_WideSubcategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `_WideSubcategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
 - [x] **`finite-predicate-subsets-retain-undecided-membership`**. **Needs:** none.
   **Closed source piece (2026-10-10):** a finite predicate subset is constructed in FiniteSets without an enumeration when a predicate value is undecided. Its owned membership returns that proposition. Its actual inclusion and a composite of retained subset inclusions preserve the exact source/image, and finite-subset admission uses finiteness rather than an exact count. Finite endpoint bounds construct the required Mor objects without counting the predicate subset; fully decided filters retain their ordered enumeration. These are the named closure assertions, traced through the construction and its actual consumers; execution remains in T under DEV-58.
