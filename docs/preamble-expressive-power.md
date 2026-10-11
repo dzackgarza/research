@@ -3,9 +3,11 @@
 The inspected preamble has incomplete public constructions for group images
 and their factorizations, sections, subgroup generating data, group limits,
 and quotients of represented sets. These defects also obstruct the
-presentation of class sets. Stabilizer subgroups are constructed as preamble
-subgroups, but their construction loses the publicly accessible action datum
-and their computed generating data are not returned as mathematical families.
+presentation of class sets. A foundational semantic defect affects several
+stabilizer constructions: string labels occupy fields that should retain
+actual represented actions. The subgroups exist, but their defining
+mathematical structure is incomplete. Computed generating data also fail
+to return mathematical families.
 
 ## Standard of completeness
 
@@ -43,7 +45,7 @@ Source paths in this table are relative to
 | Image of a group morphism | `G ->> I -> H`, with `I` a subgroup of `H` and the composite equal to the input map | The ordinary image route requires a GAP realization even for an evaluable map with known source generators. It returns the subgroup, but the inspected factorization method accepts only monomorphisms. A general image factorization is not supplied by that route. |
 | Section of a surjection in sets | `s: U(I) -> U(G)` with `U(e) s = id` | A public method computes selected preimages but returns a dictionary. The corresponding section is absent from its output. |
 | Generating data for a subgroup | A represented family in the subgroup and its generating epimorphism `F(S) ->> P` | Public Schreier methods return tuples. The computed family and augmentation are not supplied as preamble objects attached to the subgroup. |
-| Stabilizer construction for a represented action | A subgroup inclusion, determined by the action and the stabilized point | The subgroup and inclusion exist. The public defining-action accessor returns a string label; the actual action is captured only in a predicate closure. |
+| Retention of mathematical defining data | Actual objects, morphisms and functors, with their defining diagrams | Several stabilizer constructors retain string labels as their defining actions. This foundational semantic defect prevents composition through the promised action datum. The subgroup objects and inclusions do exist. |
 | Group products and equalizers | Actual groups, universal cones and universal factorization maps | The inspected product implementation requires finite factors and a nonempty family. No equalizer realization was found in the inspected group owners. |
 | Pullback construction from limits | The apex, both legs and universal factorization | The general method returns an equalizer result and does not expose a selected pullback cone. |
 | Quotient of a represented set by a relation | A quotient set, projection and universal factorization | The general set coequalizer implementation requires finite source and target sets. It does not represent the quotient of an infinite relation by that route. |
@@ -136,14 +138,19 @@ represented generating family or epimorphism. The existing
 data. The computed data must be presented for the actual subgroup, with
 its existing inclusion, so that subsequent group maps can consume them.
 
-## Stabilizer construction
+## Mathematical data replaced by string labels
+
+A label cannot supply the mathematical object it names. Where a construction
+requires an action, its defining datum must be the represented action, with
+its acted-on object and maps. The same requirement applies to morphisms,
+functors and structural inclusions. Descriptive text supplies no such data.
 
 The default `GObjects.stabilizer` route at `group/g_objects.py:1115`
 does construct a preamble subgroup:
 
 1. It calls `StabilizerSubgroups(G)`.
 2. That construction inherits `PredicateSubgroups(G)`, which inherits
-   `Subgroups(G)` (`predicate_subgroups.py:37,411,660`).
+   `Subgroups(G)` (`predicate_subgroups.py:37,411,653`).
 3. It constructs the object through `_object_of`, retaining the ambient
    group and the membership predicate.
 4. The subgroup inherits its ambient group operations and
@@ -152,13 +159,26 @@ does construct a preamble subgroup:
 
 This trace establishes the subgroup result and its inclusion.
 
-The remaining construction defect is specific:
 `GObjects.stabilizer` passes `"pointwise"` as its action argument.
 `StabilizerSubgroups.stabilizer_action` returns that argument
-(`predicate_subgroups.py:669-706`). The actual action remains inside the
-membership closure. The retained mathematical construction should expose
-the represented action and point, with the subgroup inclusion. A label does
-not supply the action morphism or functor.
+(`predicate_subgroups.py:653-698`). The actual action remains inside the
+membership closure. This is a foundational loss of defining data, recorded
+in [COMPLAINTS.md](../COMPLAINTS.md#string-labels-replace-mathematical-defining-data).
+
+The defect recurs in normalizers (`groups.py:3603`), lattice stabilizers
+(`lattice_morphisms.py:2029,2048,2079`) and finite decomposition groups
+(`group/profinite/galois_decomposition.py:129`). Their action fields contain
+`"conjugation"`, `"pointwise"`, `"setwise"` or `"prime ideal"`.
+For embedded subobjects, the lattice constructors also retain only the source
+module as the stabilized object, leaving the embedding in the membership
+computation.
+
+The retained construction must expose the actual action and stabilized
+point or subobject, with the subgroup inclusion. Otherwise its defining
+diagram, action restrictions and transport cannot compose through that
+datum. The general action owner already exposes actual `action_functor`
+and `action` maps (`group/g_objects.py:995,1022`); these provide existing
+mathematical structure for the stabilizer construction to retain.
 
 Generator computation for this subgroup has the public-output defect
 described above. A generating description must remain data of the same

@@ -14,6 +14,50 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### String labels replace mathematical defining data
+
+This is a foundational semantic defect. An action, morphism, functor or
+structured object must be retained as its actual preamble datum. A string
+that names a kind of structure cannot supply its domain, codomain, action
+maps, structural inclusions or composition laws. Descriptions may name a
+construction; they cannot constitute it.
+
+**Observed source boundary, 2026-10-11:** `StabilizerSubgroups`
+(`categories/group/predicate_subgroups.py:653-698`) stores its `action`
+argument and returns it through `stabilizer_action`. The inspected callers
+pass strings in this mathematical field:
+
+- `GObjects.stabilizer` passes `"pointwise"`
+  (`categories/group/g_objects.py:1136`).
+- `Groups.normalizer` passes `"conjugation"`
+  (`categories/group/groups.py:3603`).
+- Lattice stabilizer constructors pass `"pointwise"` or `"setwise"`
+  (`categories/lattice_morphisms.py:2029,2048,2079`). For embedded
+  subobjects, they retain the source module as the stabilized object;
+  the defining embedding occurs only in the membership computation.
+- The finite decomposition-group constructor passes `"prime ideal"`
+  (`categories/group/profinite/galois_decomposition.py:129`).
+
+These constructions produce actual subgroups with inclusions. Their
+membership predicates use the intended computations. The public defining
+action, however, is a label. The subgroup's retained data do not supply the
+represented action needed to recover its defining diagram, restrict that
+action or transport the construction. Correct subgroup membership does not
+repair this loss of structure.
+
+**Dependency path:** represented action functor `BG -> C` and stabilized
+point or subobject -> stabilizer with its ambient inclusion -> restricted
+action and induced maps -> further subgroup and functor compositions.
+**Partial capability:** `GObjects.action_functor` and `GObjects.action`
+already supply actual mathematical maps (`group/g_objects.py:995,1022`);
+the subgroup constructors already retain ambient groups and inclusions.
+**Consumers:** general action stabilizers, normalizers, lattice stabilizers
+and decomposition groups. **Owner:** the general action and stabilizer
+constructors and their specializations, under `OWN-14`.
+**Coverage:** the named constructor and callers; other string-valued fields
+and runtime behavior remain unverified. This is an observed presentation
+defect, not evidence that the formal action mathematics is missing.
+
 ### Explicit isometries and automorphism generators lack their indefinite provider
 
 A represented lattice needs distinct operations for deciding isometry,
@@ -70,14 +114,9 @@ image, but publicly returns a dictionary. These choices should be a section
 sets. The table is private computation data. An existing section operation
 at `group/g_sets.py:1054` returns an actual set morphism.
 
-The default action stabilizer (`group/g_objects.py:1115`) constructs an
-actual preamble subgroup through `StabilizerSubgroups`, `PredicateSubgroups`
-and `Subgroups`, with its inherited inclusion
-(`group/groups.py:1851,4502`). Its public `stabilizer_action` accessor
-returns the string label passed to the constructor; the represented action
-is captured in the membership closure
-(`group/predicate_subgroups.py:669-706`). The construction should retain
-the represented action as defining data.
+The separate foundational defect
+[string labels replace mathematical defining data](#string-labels-replace-mathematical-defining-data)
+records the lost action structure in stabilizer constructions.
 
 Computed finite-index generating data have a separate public-output defect.
 The general, kernel and inverse-image Schreier methods return tuples
