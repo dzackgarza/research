@@ -248,7 +248,12 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     extension_engine = _engine_ring(extension_ring)
 
     def coefficient_lift(coefficient):
-        representative = extension_engine(coefficient).lift()
+        representative = _engine_element(
+            extension_presentation_ring,
+            extension_ring.lift_to_presentation(
+                _owned_engine_element(extension_ring, extension_engine(coefficient))
+            ),
+        )
         return presentation_engine(extension_presentation_map(representative))
 
     algebra_presentation_ring = algebra.presentation_ring()
@@ -294,7 +299,10 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
         return algebra(value)
 
     def lift_to_presentation(element):
-        representative = _engine_element(algebra, algebra(element)).lift()
+        representative = _engine_element(
+            algebra_presentation_ring,
+            algebra.lift_to_presentation(algebra(element)),
+        )
         return _lift_polynomial(
             representative,
             coefficient_lift,
@@ -388,11 +396,30 @@ def _restrict_algebra_scalars(algebra, ring_map):
         "ring_map": ring_map,
     }
 
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        SymmetricAlgebras,
+    )
+    from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+    from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+
+    # The represented transport below substitutes polynomial variables in
+    # both selected covers. Commutativity of the two quotients alone does
+    # not supply polynomial covers: either may retain a tensor presentation.
     has_selected_presentation = (
         extension_ring in AlgebrasWithChosenFinitePresentation(base_ring)
         and algebra in AlgebrasWithChosenFinitePresentation(extension_ring)
         and extension_ring in Algebras(base_ring).Associative().Unital().Commutative()
         and algebra in Algebras(extension_ring).Associative().Unital().Commutative()
+        and extension_ring.presentation_ring() in SymmetricAlgebras(base_ring)
+        and algebra.presentation_ring() in SymmetricAlgebras(extension_ring)
+        and isinstance(
+            _engine_ring(extension_ring.presentation_ring()),
+            (PolynomialRing_generic, MPolynomialRing_base),
+        )
+        and isinstance(
+            _engine_ring(algebra.presentation_ring()),
+            (PolynomialRing_generic, MPolynomialRing_base),
+        )
         and ring_map is extension_ring.algebra_structure_morphism()
     )
     if has_selected_presentation:

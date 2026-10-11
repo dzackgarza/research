@@ -358,6 +358,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return None if radical is None else radical.extension_to_localization(ring)
             if ring._has_selected_exact_coefficient_presentation():
                 presentation_ring = ring._exact_coefficient_presentation_ring()
+                if presentation_ring not in OwnedRings().Commutative():
+                    # A commutative quotient can retain a tensor presentation.
+                    # Its two-sided ideal needs its own radical computation.
+                    return None
                 lifted_generators = tuple(
                     presentation_ring(
                         ring._lift_coefficient_to_presentation(generator)

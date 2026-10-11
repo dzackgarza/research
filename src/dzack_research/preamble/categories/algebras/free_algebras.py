@@ -430,9 +430,23 @@ def _relations_to_ideal(presentation_ring, relations):
 
 
 def _base_change_commutative_presentation(algebra, ring_map):
+    r"""Change coefficients in the selected polynomial relation family."""
     source_base = algebra.base_ring()
+    if ring_map.domain() is not source_base:
+        raise ValueError(
+            f"scalar change of {algebra} along {ring_map} needs a ring map "
+            f"starting at its exact coefficient ring {source_base}"
+        )
     target_base = _owned_ring(ring_map.codomain())
-    ring_map = source_base.Mor(target_base)(ring_map)
+    ring_map = OwnedRings().Mor(source_base, target_base)(ring_map)
+    source_presentation = algebra.presentation_ring()
+    assert source_presentation in SymmetricAlgebras(source_base) and isinstance(
+        _engine_ring(source_presentation), (PolynomialRing_generic, MPolynomialRing_base)
+    ), (
+        f"scalar change of {algebra} needs a selected polynomial presentation; "
+        f"its retained presentation {source_presentation} needs a different "
+        "coefficient-change computation"
+    )
     target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_engine = _engine_ring(source_base)
     target_base_engine = _engine_ring(target_base)
@@ -446,19 +460,20 @@ def _base_change_commutative_presentation(algebra, ring_map):
         source_engine.Hom(target_base_engine),
         map_backend_scalar,
     )
-    source_presentation = algebra.presentation_ring()
-    mapped_relations = tuple(
-        _owned_engine_element(target_presentation_ring,
+    source_relations = algebra.relations()
+    mapped_relations = indexed_family(
+        source_relations.index_set(),
+        lambda index: _owned_engine_element(target_presentation_ring,
             target_engine(
-                _engine_element(source_presentation, relation).map_coefficients(
+                _engine_element(source_presentation, source_relations.value(index)).map_coefficients(
                     backend_base_map,
                     new_base_ring=target_base_engine,
                 )
             )
-        )
-        for relation in algebra.relations()
+        ),
+        name=f"Scalar-changed defining relations of {algebra}",
     )
-    return (target_presentation_ring).quotient_by_relations(mapped_relations)
+    return target_presentation_ring.quotient_by_relations(mapped_relations)
 
 
 class _PresentedAlgebraParent(_OwnedAlgebraParent):
@@ -484,9 +499,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         finite_free_generator=None,
         finite_free_coordinates=None,
     ) -> None:
+        # An auxiliary native polynomial cover retains its actual map from
+        # the chosen presentation.  Other realizations have no such cover.
+        self._presentation_cover_map = None
         if extra_construction_data is not None:
             for name, value in extra_construction_data:
                 setattr(self, name, value)
+        if presentation_flattening is not None:
+            self._presentation_cover_map = presentation_flattening
         unflatten = (
             None if presentation_flattening is None else presentation_flattening.section()
         )
@@ -573,6 +593,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             selected_relations,
             presentation_ideal,
             lift_to_presentation,
+            presentation_cover_map=self._presentation_cover_map,
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
@@ -867,14 +888,22 @@ def _finitely_presented_algebra_from_data(
     _extra_construction_data=None,
     _generating_module=None,
 ):
-    r"""Return the selected quotient ``R[S] / (relations)``."""
+    r"""Return the selected polynomial or associative quotient by relations.
+
+    The literal free presentation and relation indices are retained.  Tensor
+    presentations use the selected two-sided normal-form supplier; polynomial
+    presentations keep their existing polynomial computations.  A private
+    auxiliary polynomial cover, when needed, carries its exact presentation
+    map and inverse lift instead of replacing the owned presentation.
+    """
     base = presentation_ring.base_ring()
     assert (
         presentation_ring in AlgebrasWithChosenFinitePresentation(base)
         or presentation_ring in SymmetricAlgebras(base)
+        or presentation_ring in TensorAlgebras(base)
     ), (
-        f"an algebra given by generators and relations must be a quotient of a polynomial algebra or of "
-        f"an algebra given by generators and relations, but {presentation_ring} is neither"
+        f"a selected finite algebra presentation needs a tensor or polynomial "
+        f"presentation, or a quotient of one, but {presentation_ring} has none selected"
     )
     assert presentation_ring.is_framed_algebra(), (
         f"a finite presentation of {presentation_ring} needs chosen algebra generators"
@@ -882,7 +911,7 @@ def _finitely_presented_algebra_from_data(
     labels = presentation_ring.algebra_generating_set()
     assert labels.cardinality().is_finite() is True, (
         f"a finite presentation of {presentation_ring} needs a known finite chosen "
-        "algebra-generator family before any polynomial presentation computation"
+        "algebra-generator family before the presentation computation"
     )
     match relations:
         case IndexedFamily():
@@ -901,8 +930,11 @@ def _finitely_presented_algebra_from_data(
             # Retain the existing bare finite-iterable ingress also for
             # quotients of quotients, before their relations are lifted.
             relations = tuple(relations)
+    presentation_ideal, selected_relations = _relations_to_ideal(
+        presentation_ring, relations
+    )
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
-        # A quotient of a quotient is one quotient of the same polynomial
+        # A quotient of a quotient is one quotient of the same free
         # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
         # lifts the new relations to P.  Consolidating here keeps one chosen
         # presentation and one scalar ring, so a second closed embedding into
@@ -910,30 +942,93 @@ def _finitely_presented_algebra_from_data(
         # first rather than needing a tower of quotient objects.
         source = presentation_ring.presentation_ring()
         existing = presentation_ring.relations()
+        lifted_relations = selected_relations.map(
+            lambda relation: presentation_ring.lift_to_presentation(relation),
+            name="Lifted additional algebra relations",
+        )
+        relation_families = indexed_family(
+            Sets.Δ[1],
+            lambda index: existing if int(index) == 0 else lifted_relations,
+            name="Original and additional relation families",
+        )
+        relation_indices = Sets().coproduct(
+            relation_families.map(lambda family: family.index_set())
+        )
+        combined_relations = indexed_family(
+            relation_indices,
+            lambda index: relation_families.value(index.summand_index()).value(
+                index.summand_element()
+            ),
+            name="Original and lifted additional algebra relations",
+        )
         return _finitely_presented_algebra_from_data(
             source,
-            (
-                *(existing.value(index) for index in existing.index_set()),
-                *(
-                    presentation_ring.lift_to_presentation(presentation_ring(relation))
-                    for relation in relations
-                ),
-            ),
+            combined_relations,
             _extra_categories=_extra_categories,
             _extra_construction_data=_extra_construction_data,
             _generating_module=_generating_module,
         )
-    presentation_ideal, selected_relations = _relations_to_ideal(
-        presentation_ring, relations
-    )
     presentation_engine = _engine_ring(presentation_ring)
+    commutative_backend = presentation_ring in SymmetricAlgebras(base)
+    if presentation_ring in TensorAlgebras(base):
+        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+            _HomogeneousPresentationTensorIdeal,
+        )
+
+        presentation_ideal = _HomogeneousPresentationTensorIdeal(
+            presentation_ring, selected_relations
+        )
     presentation_flattening = None
     quotient_presentation_engine = presentation_engine
     quotient_ideal = presentation_ideal
     quotient_engine = None
     generator_values = None
     presentation_lift = None
-    if isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
+    extra_construction_data = (
+        () if _extra_construction_data is None else tuple(_extra_construction_data)
+    )
+    if isinstance(presentation_engine, PolynomialRing_generic) and (
+        len(presentation_ideal.gens()) > 1
+        or any(
+            relation and relation.leading_coefficient().is_unit() is not True
+            for relation in presentation_ideal.gens()
+        )
+    ):
+        # Reuse the one-variable multivariate polynomial computation already
+        # selected for Sym_R(M) with a relation such as 2*x over ZZ.  A
+        # nonmonic relation need not define a finite free coefficient module.
+        auxiliary = _SagePolynomialRing(
+            presentation_engine.base_ring(), 1,
+            names=presentation_engine.variable_names(),
+        )
+        to_auxiliary = presentation_engine.hom(auxiliary.gens(), auxiliary)
+        from_auxiliary = auxiliary.hom(
+            presentation_engine.gens(), presentation_engine
+        )
+        cover_map = to_auxiliary
+        cover_lift = from_auxiliary
+        quotient_presentation_engine = auxiliary
+        if isinstance(auxiliary.base_ring(), (PolynomialRing_generic, MPolynomialRing_base)):
+            # The same canonical flattening as the multivariate branch below
+            # also handles, for example, R=QQ[s] and the relation s*t+1.
+            flattening = auxiliary.flattening_morphism()
+            quotient_presentation_engine = flattening.codomain()
+            cover_map = flattening * to_auxiliary
+            cover_lift = from_auxiliary * flattening.section()
+        quotient_ideal = quotient_presentation_engine.ideal(
+            tuple(cover_map(relation) for relation in presentation_ideal.gens())
+        )
+        quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
+        generator_values = tuple(
+            quotient_engine(cover_map(generator))
+            for generator in presentation_engine.gens()
+        )
+
+        def presentation_lift(element):
+            return cover_lift(quotient_engine(element).lift())
+
+        extra_construction_data += (("_presentation_cover_map", cover_map),)
+    elif isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
         presentation_engine.base_ring(),
         (PolynomialRing_generic, MPolynomialRing_base),
     ):
@@ -1004,13 +1099,9 @@ def _finitely_presented_algebra_from_data(
         selected_relations,
         presentation_ideal,
         extra_categories=tuple(_extra_categories),
-        extra_construction_data=(
-            None
-            if _extra_construction_data is None
-            else tuple(_extra_construction_data)
-        ),
+        extra_construction_data=extra_construction_data,
         generating_module=_generating_module,
-        commutative_backend=True,
+        commutative_backend=commutative_backend,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
         generator_values=generator_values,
@@ -1620,7 +1711,12 @@ def _presentation_data(algebra):
     base = algebra.base_ring()
     match algebra:
         case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
-            return algebra.presentation_ring(), tuple(algebra.relations())
+            presentation = algebra.presentation_ring()
+            assert presentation in SymmetricAlgebras(base), (
+                f"the selected commutative coproduct of {algebra} needs a "
+                "polynomial presentation computation for its actual chosen source"
+            )
+            return presentation, tuple(algebra.relations())
         case _ if algebra in SymmetricAlgebras(base) and algebra.is_framed_algebra():
             return algebra, ()
         case _ if algebra in QuotientRings():
@@ -1713,36 +1809,36 @@ def _quotient_by_algebra_elements_backend(
             assert elements.cardinality().is_finite() is True, (
                 f"the selected quotient of {algebra} needs a known finite family of algebra elements"
             )
+            empty = elements.cardinality() == cardinal(0)
         case tuple() | list():
-            pass
+            empty = not elements
         case _ if elements in Sets():
             assert cardinal(elements.cardinality()).is_finite() is True, (
                 f"the selected quotient of {algebra} needs a known finite owned relation set "
                 "before traversal"
             )
+            empty = cardinal(elements.cardinality()) == cardinal(0)
         case _:
             # This is the established ingress for a supplied finite iterable,
             # not a finiteness test on an owned mathematical set or family.
             elements = tuple(elements)
-    selected = tuple(elements)
-    if not selected and not extra_categories and not extra_construction_data:
-        identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
+            empty = not elements
+    if empty is True and not extra_categories and not extra_construction_data:
+        identity = Algebras(base).Associative().Unital().Mor(algebra, algebra).identity()
         return algebra, identity
     match algebra:
-        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
-            presentation = algebra.presentation_ring()
-            relations = tuple(algebra.relations()) + tuple(
-                algebra.lift_to_presentation(element) for element in selected
-            )
-        case _ if algebra in SymmetricAlgebras(base):
-            presentation = algebra
-            relations = selected
+        case _ if (
+            algebra in AlgebrasWithChosenFinitePresentation(base)
+            or algebra in SymmetricAlgebras(base)
+            or algebra in TensorAlgebras(base)
+        ):
+            pass
         case _:
-            raise TypeError(
-                f"the quotient of {algebra} by {elements} is computed only for a polynomial algebra or a "
-                "quotient of one given by relations"
+            assert False, (
+                f"the quotient of {algebra} by {elements} needs a selected tensor "
+                "or polynomial presentation computation"
             )
-    quotient = (presentation).quotient_by_relations(relations,
+    quotient = _finitely_presented_algebra_from_data(algebra, elements,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )

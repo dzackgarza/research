@@ -2037,6 +2037,12 @@ class _GeneralPresentedModule:
         for every free coordinate ``e_j``.  This avoids relying on Sage's
         generic submodule-membership implementation over quotient rings, which
         can fail even on a displayed generator of the submodule.
+
+        Return ``None`` when no exact coefficient cover is selected, and
+        ``NotImplemented`` when the selected cover is noncommutative.  In
+        the latter case the module span of the displayed two-sided ideal
+        generators need not contain their right multiples, so this formula
+        cannot decide relation membership.
         """
         if self._lifted_relation_submodule is not None:
             return (
@@ -2049,8 +2055,11 @@ class _GeneralPresentedModule:
             return None
 
         from sage.modules.free_module import FreeModule as SageFreeModule
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
         presentation_ring = base_ring._exact_coefficient_presentation_ring()
+        if presentation_ring not in OwnedRings().Commutative():
+            return NotImplemented
         presentation_engine = _engine_ring(presentation_ring)
         rank = int(self.module_generating_set().cardinality())
         lifted_free = SageFreeModule(presentation_engine, rank)
@@ -2139,6 +2148,8 @@ class _GeneralPresentedModule:
         if polynomial_contains is not NotImplemented:
             return polynomial_contains
         lifted_backend = self._lifted_relation_backend()
+        if lifted_backend is NotImplemented:
+            return None
         if lifted_backend is None:
             return vector in self._relation_submodule
 

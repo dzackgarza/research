@@ -123,37 +123,55 @@ the repaired finite-generation selector on another repository.
 
 ### Selected algebra presentations exceed the polynomial computations
 
-Finite associative algebra presentations include noncommutative tensor
-quotients. For example `T_ZZ(ZZ/2 direct_sum ZZ)=ZZ<x,y>/(2x)` has distinct
-mixed words `xy,yx`. A computation for polynomial exponent vectors cannot
-interpret those words, and a polynomial elimination algorithm is not a
-general associative quotient, scalar-kernel or torsion algorithm.
+An associative finite presentation retains its actual tensor or polynomial
+source `P`, indexed relations, quotient `q:P -> A` and lift. A commutative
+quotient can retain a noncommutative source: for example
+`QQ[x,y] = QQ<x,y>/(xy-yx)`. Commutativity of `A` therefore does not
+justify a polynomial computation on its selected `P`.
 
-**Source evidence (2026-10-11):** read the complete chosen-presentation
-owner, `_PresentedAlgebraParent`, the tensor-from-linear-module-relations
-supplier, both public algebra quotient paths and selected scalar
-restriction. The current computation supplies commutative polynomial
-quotients and exponent-vector normal forms, a separate selected linear
-tensor quotient, and the finite-module ideal quotient route. The public
-normal-form and quotient boundaries now name their actual applicability.
-General tensor word-term extraction and other associative quotient
-computations remain absent from these inspected entries. The integral-PID
-torsion supplier also relies on its integral-domain and polynomial
-elimination hypotheses; it does not decide every presented algebra.
+**Remaining computations:** general nonhomogeneous tensor relations and
+coefficient realizations outside the selected exact-field homogeneous
+reduction or existing linear-module construction still need a maintained
+two-sided normal-form supplier. The valid presentation
+`QQ<x,y>/(xy-1)` is a small nonhomogeneous boundary specimen. General
+scalar-kernel intersections, membership with undecided coefficients and
+torsion decisions outside the retained module/domain regimes remain
+named computation frontiers. These are not negative mathematical claims.
+Their defining assertions remain under terminal T's chosen-presentation
+obligations; the placement pass is source delivery, not executed acceptance.
 
-**Remaining transport:** selected polynomial presentation transport under
-scalar restriction needs actual commutative presentations and the literal
-coefficient structure map. Other associative restrictions retain their
-actual module, multiplication, unit and scalar map, while their selected
-presentation computation remains to be supplied. No negative
-finite-presentation claim follows from that boundary.
+**Remaining transport:** the selected scalar-restriction computation uses
+actual polynomial presentations of both the coefficient extension and its
+algebra, their selected lifts, and the literal coefficient structure map.
+Other associative restrictions retain their actual module, multiplication,
+unit and scalar map. Their finite-presentation transport still needs an
+appropriate associative supplier at
+`placement-owner-restrictedscalarsalgebras`. No negative finite-presentation
+claim follows from the missing selected computation. Polynomial
+differentials/coproducts, commutative radical transport and lifted module
+relations likewise retain their explicit actual-presentation hypotheses.
 
-**Searched / Found / Conclusion:** the existing
-`placement-owner-algebraswithchosenfinitepresentation` and
-`placement-owner-restrictedscalarsalgebras` own these computation cases.
-Preserve the selected ideal, quotient, lift and exact coefficients.
-The inspected source establishes these boundaries with high confidence;
-no runtime failure is claimed and no new prerequisite is created.
+**Protected result-type finding (2026-10-11):** the last assertion of
+`tests/constructions/test_algebra_presentation_normal_form_terms_construct.sage`
+asks `terms.cardinality() == cardinal(2)`. Independently of that line,
+API-02 defines coordinates as a finitely supported function on the chosen
+basis, with support its condition subset; it says, “No coordinate readout
+has a dictionary interface.” SET-01 requires the owned mathematical
+collection. The former implementation returned a Python dictionary and
+the protected line asks the cardinality of the wrong type. For
+`QQ[x,y]/(xy)`, the true statement is that the coefficient function of
+`x+y` has support cardinality two, value one on the two supported basis
+labels, and reconstructs `x+y`. Retain this required mathematical
+correction for T; no protected expectation was edited to match code.
+
+**Searched / Found / Conclusion:** the complete selected-presentation
+owner, quotient/lift adapters, actual tensor-module supplier, existing
+coordinate function, scalar-restriction construction and changed
+coefficient consumers were read. API-02, SET-01, CAT-01/CAT-05 and
+DEV-67--69 supply no public-dictionary exception or permission to infer
+polynomial input from quotient commutativity. The current explicit
+frontiers and the protected type mismatch are source findings; no
+runtime failure or universal absence theorem is claimed.
 
 ### A finite-generation reference confuses a property with a chosen family
 

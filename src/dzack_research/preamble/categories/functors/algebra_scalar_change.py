@@ -128,6 +128,7 @@ class _AlgebraScalarExtensionFunctor(Functor):
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebras,
             TensorAlgebras,
+            _base_change_commutative_presentation,
         )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -152,7 +153,7 @@ class _AlgebraScalarExtensionFunctor(Functor):
 
         match algebra in AlgebrasWithChosenFinitePresentation(self._source_ring):
             case True:
-                return algebra.base_change(self.ring_map())
+                return _base_change_commutative_presentation(algebra, self.ring_map())
             case False:
                 from dzack_research.preamble.categories.rings.number_fields import (
                     OrdersWithChosenIntegralBasis,
@@ -162,7 +163,9 @@ class _AlgebraScalarExtensionFunctor(Functor):
                     f"scalar extension of the algebra {algebra} is computed only for a commutative algebra given "
                     "by finitely many generators and relations, or an order in a number field with an integral basis"
                 )
-                return algebra.base_change(self.ring_map())
+                return OrdersWithChosenIntegralBasis.ParentMethods.base_change(
+                    algebra, self.ring_map()
+                )
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

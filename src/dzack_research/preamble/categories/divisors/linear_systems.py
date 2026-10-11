@@ -865,25 +865,37 @@ def _projective_section_restriction(
         tuple(equations),
     )
 
-    normal_forms = {}
-    monomials = []
-    for label in source.module_generating_set():
-        section = into_complete(source.module_generator(label))
-        polynomial = complete.homogeneous_polynomial(section)
-        terms = quotient.presentation_normal_form_terms(quotient(polynomial))
-        normal_forms[label] = terms
-        for monomial in terms:
-            if not any(monomial == known for known in monomials):
-                monomials.append(monomial)
-
-    ambient = base._fresh_free_module_on(
-        finite_ordered_set(tuple(monomials)),
+    source_labels = source.module_generating_set()
+    assert source_labels.is_finite() is True, (
+        f"computing the restriction image of {source} needs a selected finite "
+        "section generating family"
     )
+    normal_forms = indexed_family(
+        source_labels,
+        lambda label: quotient.presentation_normal_form_terms(
+            quotient(complete.homogeneous_polynomial(
+                into_complete(source.module_generator(label))
+            ))
+        ),
+        name="Selected presentation coefficients of restricted sections",
+    )
+    monomial_labels = finite_ordered_set(())
+    for coordinates in normal_forms:
+        monomial_labels = monomial_labels.union(coordinates.support().domain())
+
+    ambient = base._fresh_free_module_on(monomial_labels)
     ambient_map = source.module_category().Mor(source, ambient)(
-        {
-            label: ambient.linear_combination(normal_forms[label])
-            for label in source.module_generating_set()
-        }
+        indexed_family(
+            source_labels,
+            lambda label: sum(
+                (ambient.scalar_multiple(
+                    normal_forms[label](monomial_label),
+                    ambient.module_generator(monomial_label),
+                ) for monomial_label in normal_forms[label].support().domain()),
+                ambient.zero(),
+            ),
+            name="Restriction images in the selected monomial coefficient module",
+        )
     )
     image = ambient_map.image()
     restriction_images = {

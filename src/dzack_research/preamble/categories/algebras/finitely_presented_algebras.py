@@ -1,6 +1,8 @@
-r"""Finite algebra presentations backed by Sage polynomial quotients."""
+r"""Selected polynomial and associative algebra quotient computations."""
 
 
+from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
+from sage.algebras.free_algebra import FreeAlgebra_generic
 from sage.rings.noncommutative_ideals import Ideal_nc
 
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -21,12 +23,126 @@ from dzack_research.preamble.categories.modules.tensor_products import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
+
+
+class _HomogeneousPresentationTensorIdeal(Ideal_nc):
+    r"""A homogeneous two-sided ideal with degree-local letterplace reduction.
+
+    The ring and ideal remain the original generic free associative algebra
+    and its supplied relations.  Letterplace is only a normal-form supplier:
+    an element's finite word support is split into homogeneous components,
+    each component uses Sage's degree-bounded ``normal_form``, and the results
+    are transported back and added in the original ring.  Thus this presents
+    the whole quotient, including inhomogeneous elements; it neither requests
+    a global Groebner basis nor replaces the quotient by one graded piece.
+
+    Apart from the zero and unit ideals, the selected computation requires
+    homogeneous relations over an exact field supported by libSingular.
+    Other associative finite presentations remain valid mathematical data
+    but need a different normal-form computation.
+
+    Source contract (not an executed validation): Sage's ``normal_form``
+    requests ``groebner_basis(degbound=element.degree())``; see
+    https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/letterplace/free_algebra_element_letterplace.html
+    and the generic free-algebra conversion at
+    https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/free_algebra.html.
+    """
+
+    def __init__(self, presentation_ring, relations) -> None:
+        engine = _engine_ring(presentation_ring)
+        assert isinstance(engine, FreeAlgebra_generic), (
+            f"the selected homogeneous associative quotient of {presentation_ring} "
+            "needs the native free-word presentation computation"
+        )
+        backend_relations = tuple(
+            _engine_element(presentation_ring, relations.value(index))
+            for index in relations.index_set()
+        )
+        Ideal_nc.__init__(self, engine, backend_relations, side="twosided")
+        self._presentation_ring = presentation_ring
+        self._selected_relations = relations
+        self._nonzero_relations = tuple(
+            relation for relation in backend_relations
+            if relation.monomial_coefficients()
+        )
+        self._unit_relation = next(
+            (relation for relation in self._nonzero_relations
+             if all(len(word) == 0 for word in relation.monomial_coefficients())
+             and relation.is_unit() is True),
+            None,
+        )
+        if not self._nonzero_relations or self._unit_relation is not None:
+            return
+
+        for relation in self._nonzero_relations:
+            assert len({len(word) for word in relation.monomial_coefficients()}) == 1, (
+                f"the selected associative quotient of {presentation_ring} needs "
+                "a normal-form computation for nonhomogeneous defining relations"
+            )
+        assert presentation_ring.base_ring() in OwnedFields(), (
+            f"the selected homogeneous associative quotient of {presentation_ring} "
+            "needs a two-sided normal-form computation over this coefficient ring"
+        )
+        assert engine.base_ring().is_exact() is True, (
+            f"the selected homogeneous associative quotient of {presentation_ring} "
+            "needs exact coefficient computations"
+        )
+        try:
+            letterplace = _SageFreeAlgebra(
+                engine.base_ring(), names=engine.variable_names(),
+                implementation="letterplace",
+            )
+        except (ImportError, TypeError, NotImplementedError) as error:
+            assert False, (
+                f"the selected homogeneous associative quotient of {presentation_ring} "
+                "needs a letterplace coefficient realization: "
+                f"{error}"
+            )
+        # A generic free-algebra hom evaluates ordered words.  Calling the
+        # letterplace element constructor on a generic word polynomial is not
+        # this conversion and can discard its noncommutative interpretation.
+        self._to_letterplace = engine.hom(letterplace.gens(), letterplace)
+        self._letterplace_ideal = letterplace.ideal(
+            tuple(self._to_letterplace(relation) for relation in self._nonzero_relations),
+            side="twosided",
+        )
+
+    def reduce(self, element):
+        engine = self.ring()
+        element = engine(element)
+        if self._unit_relation is not None:
+            return engine.zero()
+        if not self._nonzero_relations:
+            return element
+
+        components = {}
+        for word, coefficient in element.monomial_coefficients().items():
+            components.setdefault(len(word), {})[word] = coefficient
+        result = engine.zero()
+        for degree, coefficients in components.items():
+            component = engine(coefficients)
+            if degree == 0:
+                # A proper homogeneous ideal over a field has no degree-zero
+                # part; the nonzero constant-relation case was handled above.
+                result += component
+                continue
+            reduced = self._to_letterplace(component).normal_form(
+                self._letterplace_ideal
+            )
+            # Sage's maintained conversion reads successive letterplace
+            # blocks as ordered free-monoid letters, with the same scalars.
+            result += engine(reduced)
+        return result
+
+    def _contains_(self, element) -> bool:
+        return self.reduce(element) == self.ring().zero()
 
 
 class _LinearPresentationTensorIdeal(Ideal_nc):
