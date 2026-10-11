@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 34 complete passes and 607 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The current first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 35 complete passes and 606 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The current first literal ready row is `placement-owner-absolutegaloisgroups`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -806,6 +806,197 @@ the displayed scalar-action, associator, exterior, tensor, composition and
 matrix-ideal calculations provide independent proofs of the separators.
 Only focused source/whitespace checks were used. No imports, Sage, tests,
 QC, build, live survey or other repository's progress is claimed.
+
+## Whole-category placement: AbelianGroupEndomorphismRings (2026-10-11)
+
+**Closed node:** `placement-owner-abeliangroupendomorphismrings`.
+**Owner and delta:** `AbelianGroupEndomorphismRings` in
+`src/dzack_research/preamble/categories/group/groups.py` now enriches the
+canonical group or additive `End(A)` rather than constructing a detached
+ring of callbacks. Its pointwise arithmetic uses `AdditiveMorGroups` and
+`AdditiveEndomorphismRings(ZZ)` in `group/additive_mors.py`. The fixed arrows
+retain their literal source and target, existing determining data, and
+admitted source/range membership. This is a complete source owner pass;
+the distinct AdditiveEndomorphismRings, AdditiveMorGroups and GroupMor
+owner rows remain open for their own complete inventories.
+
+### Defining datum, full introduced inventory and actual ancestors
+
+The datum is one abelian group A, written additively or multiplicatively.
+The carrier is the set of all group homomorphisms A -> A, with pointwise
+abelian addition, zero the trivial map, negative the pointwise inverse,
+multiplication composition, and one the identity of A. Associativity is
+associativity of composition. Both distributive laws follow from evaluation
+and the homomorphism law. An arbitrary ring R supplied as A means End(R,+);
+it does not impose R-linearity on these maps.
+
+The complete direct category inventory is `an_object`, `_call_` and
+`super_categories`; the complete direct object inventory is
+`_commutativity_decision` and `_repr_`. There is no direct ElementMethods
+or fixed-Mor declaration left in this owner. `an_object` still gives
+End(ZZ,+). `_call_` uses
+`AdditiveGroups().AdditiveCommutative().End(A)` for additive notation and
+`OwnedGroups().End(A)` for multiplicative notation, rejects a nonabelian
+input, and refines that same cached Mor object.
+
+The old owner-local constructor, domain/codomain accessors, map evaluation,
+one/zero, addition, negation and composition are supplied by the canonical
+Mor and the existing enrichment. The old `_is_additive`, `_sum_values`,
+`_negative_value` and `_identity_value` are now the one shared target-law
+supplier in AdditiveMorGroups. The source need not be abelian: Hom(G,A)
+has the pointwise abelian law whenever the target A is abelian. Only an
+unrestricted diagonal receives endomorphism-ring placement. Aut(A) retains
+its composition law and explicitly declines that additive placement.
+
+The actual ancestor definitions were read along both branches:
+
+- AbelianGroupEndomorphismRings -> AdditiveEndomorphismRings(ZZ).
+- AdditiveEndomorphismRings -> AdditiveMorGroups ->
+  AdditiveGroups.AdditiveCommutative and the additive group, monoid,
+  semigroup, magma, set and object spine. The propagated commutative law
+  reaches the actual AdditiveMagmas.AdditiveCommutative provider.
+- AdditiveEndomorphismRings -> Algebras(ZZ).Associative().Unital(), including
+  the root, Associative and Unital definitions and the OwnedRings branch.
+  Root Algebras -> Modules(ZZ) and Magmas; Modules(ZZ) selects
+  ModulesOverCommutativeRings and its abelian additive-group structure.
+- OwnedRings -> OwnedSemirings and OwnedRngs. OwnedSemirings ->
+  OwnedNonUnitalSemirings and Monoids; OwnedRngs ->
+  OwnedNonUnitalSemirings and abelian additive groups.
+  OwnedNonUnitalSemirings -> multiplicative Semigroups and commutative
+  additive monoids. Monoids -> Semigroups and Magmas.Unital; both meet
+  the common Magmas -> Sets -> Objects definitions.
+
+The scalar ring is the literal owned ZZ, installed before each GroupMor,
+GeneralGroupMor or IndexedFreeGroupMor is initialized. Integer action on
+a multiplicatively written target is the existing integer-power operation.
+The existing scalar-evaluation datum and an actual diagonal subgroup
+inclusion identify scalar maps; no sampling, cache annotation or asserted
+proof flag is used. The scalar-one map reuses the cached identity inclusion.
+`Algebras.Unital.one` supplies that same identity for an additive End Mor.
+The native abelian-group scalar_action now uses the existing ring Mor
+`ZZ.Mor(E)(E._scalar_identity)`.
+
+### Actual fixed arrows and the explicit construction contract
+
+Two arrow levels must remain distinct. An element f of E=End(A) is an
+actual map A -> A. GroupEndCategoryConstruction.Of reuses the diagonal
+GroupMor/GeneralGroupMor/IndexedFreeGroupMor and attaches End; the additive
+branch uses the actual AdditiveMor. CategoricalMor._generated_arrow_type
+assembles the selected GroupMorphism or AdditiveMorphism providers.
+Group arrows reach monoid, unital-magma, magma and set arrows. Additive
+arrows reach additive-monoid, additive-magma and set arrows. Their
+enrichment supplies arithmetic on those very arrows, preserving evaluation
+and endpoint identity.
+
+A ring or algebra arrow E -> F is a different object. OwnedRings().Mor
+selects RingMorCategoryConstruction -> RingMor -> RingMorphism. The
+unital ZZ-algebra Mor selects UnitalAlgebraMorCategoryConstruction and,
+without selected algebra generators, UnitalMultiplicativeAlgebraMor with
+its actual underlying linear map and multiplicativity/unit laws. These
+are separate from the Mor object's 2-Mor surface: 1_E is the map A -> A,
+whereas id_E is the map E -> E.
+
+**Explicit constructor-contract change:** an untagged callable in the
+canonical IndexedFreeGroupMor keeps its established meaning as images of
+basis labels. The removed detached End carrier had interpreted every
+callable as a map on group elements. Both interpretations cannot occupy
+one untagged input of the same canonical Mor. A callback on group elements
+therefore uses the existing explicit constructor
+`E.elementwise(lambda element: ...)`; it is extended through the existing
+free-basis realization. Nonfree GroupMor and AdditiveMor retain their
+elementwise callable interpretation. Native scalar_action was changed
+with this contract, and no duplicate wrapper or engine was introduced.
+
+### Preserved admitted points, equality and operations
+
+GroupMorphism evaluation now normalizes source and image through the
+shared `_GroupMorRealizationMixin._normalize_admitted_element` contract.
+A point whose actual parent is the literal endpoint is retained before
+any facade traversal. Otherwise the actual submonoid engine's ambient
+monoid, or the actual Subgroups(ambient) datum, supplies the representing
+parent; nested facades are followed. A quotient is not unwrapped merely
+because it has a supergroup accessor. Ordinary endpoints keep ordinary
+ingress. The same supplier serves the cached subgroup inclusion.
+
+This is evaluation on an admitted source point and an image supplied by
+the map's range law, not admission of a new subgroup member or a decision
+of a predicate. It is necessary when the ambient computation cannot
+decide that an already admitted value is a unit. It also preserves groups
+whose subgroup elements have their own actual parent, such as an open
+absolute Galois subgroup. The source reader of that consumer supplied
+the distinguishing own-parent case; the common guard repairs the new
+supplier rather than adding an inclusion-specific exception.
+
+General GroupMorphism composition keeps the actual rule f(g(x)) in the
+canonical group Mor, avoiding a second SetMor predicate admission.
+The existing free realization has one `_admitted_generator_image`
+supplier. It retains the given basis-map range premise, reads an actual
+OwnedSetMorphism's evaluator (or an existing native map's evaluation),
+and uses the same target normalization. Reduced-word evaluation, image
+generators, postcomposition and the free inclusion use that supplier.
+
+Pointwise scalar multiplication requires a map already admitted in the
+actual enriched Mor and delegates to its retained target action.
+Addition/negation of an automorphism land in the full Mor, while
+automorphism composition retains its existing restricted carrier.
+Equality in finite group Mors still uses the selected determining
+generators; maps from (ZZ,+) compare their values on 1. An undecided
+target equality remains the corresponding owned proposition.
+The commutativity supplier proves End(A) commutative for a selected
+cyclic A (and for (ZZ,+)); it does not infer noncommutativity from a
+longer chosen generator list.
+
+### True closure assertions retained under T
+
+1. For A=C3 with generator a, E has three elements. Put i=1_E and d=i+i.
+   Then d(a)=a^2 != a, d != i, d*d=i, and d+i=0. These equations follow
+   by the exponent calculus modulo three. The existing read-only archive
+   assertions in tests/groups/test_groups_archive.sage remain required.
+2. For E=End(ZZ,+), (i+i)(3)=6, (-i)(3)=-3, and i+i != i. Every additive
+   map from ZZ is determined by 1. More generally an undecided equality
+   of the two images of 1 is retained, not converted to a Boolean.
+3. Outside the old End owner, Hom(S3,C2) is an abelian group under the
+   pointwise law and sign+sign is the trivial map. Distinct endpoints
+   do not receive ring placement. This proves the weaker home of the
+   pointwise operations independently of a diagonal endomorphism carrier.
+4. For A=C2 x C2 with generators a,b, let p(a)=a, p(b)=1, and let s swap
+   a and b. Then (p*s)(a)=1 while (s*p)(a)=b, so End(A) is not
+   commutative. Scalar maps n*id remain central. A general A with more
+   than one chosen generator retains an undecided commutativity
+   proposition unless an actual decision is available.
+5. For the identity automorphism u of C2, u+u is the zero endomorphism
+   and is not an automorphism. Its parent is the full End Mor. The
+   composition u*u remains the identity automorphism.
+6. If v=f(u) is the image of an admitted unit under a unital map and
+   ambient is_unit(v) is undecided, the identity of the unit-group End
+   sends v to v and its double sends v to v^2. Composition and the
+   selected free-basis version retain that membership premise. For an
+   abelian subgroup H with its own-parent element h, the identity of
+   End(H) likewise sends h to h before any facade traversal.
+7. The map ZZ -> End(A), n |-> n*id_A, preserves zero, one, sum and
+   product: (n+m)id=nid+mid and (nm)id=(nid) composed with (mid).
+   In multiplicative notation these are ordinary integer-power laws.
+   The existing C4 scalar-action case sends its generator to its square
+   under scalar 2.
+
+The pointwise Hom theorem requires an abelian target, and the
+endomorphism ring law is independently stated in the maintained
+[Mathlib group-hom instances](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/Instances.html),
+[endomorphism definitions](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/End.html)
+and [module endomorphisms](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/End.html).
+The displayed finite calculations establish their own expected values.
+
+**Source acceptance and named frontier:** all introduced operations, the
+actual ancestor definitions, canonical carrier and delivered arrow
+providers were source-reviewed, including an independent review of the
+admitted-unit and own-parent cases. General infinite-map equality and
+unknown commutativity retain owned propositions. A selected
+multiplicatively written target without a computable inverse retains
+that existing computation frontier for negative powers; this pass does
+not invent an inverse algorithm. The examples above and the preserved
+archive cases remain execution obligations under T. M1 / DEV-58 forbids
+runtime, imports and tests in this source phase, and no execution result
+is claimed.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

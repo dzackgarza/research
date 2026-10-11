@@ -50,7 +50,8 @@ from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.galois_group import GaloisGroup_v2 as SageGaloisGroup
-from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
+from sage.structure.element import Element, MultiplicativeGroupElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.sage_object import SageObject
@@ -1297,14 +1298,17 @@ def _finite_if_bounded_by(group):
             return ()
 
 
-def _group_mor_placement(domain, codomain, *categories):
+def _group_mor_placement(domain, codomain, *categories, pointwise=True):
     r"""The placement of ``Mor(G, H)``, the homomorphisms ``G -> H``, at construction.
 
     A homomorphism ``G -> H`` is a function ``G -> H``, so ``Mor(G, H)`` is a
     subset of ``H^G``: a set, and a finite set of at most ``|H|^|G|``
     elements when ``G`` and ``H`` are finite.  ``Mor(G, G)`` is a monoid under
-    composition.  No homomorphism is counted here; the cardinality is
-    computed when it is asked.
+    composition. If ``H`` is abelian, its pointwise law makes the full
+    ``Mor(G,H)`` an abelian group. On the unrestricted diagonal this is
+    the endomorphism ring. A restriction such as ``Aut(G)`` supplies
+    ``pointwise=False``: sums of automorphisms need not be invertible.
+    No homomorphism is counted here; cardinality is computed when asked.
     """
     match domain, codomain:
         case _ if domain in OwnedFiniteGroups() and codomain in OwnedFiniteGroups():
@@ -1312,7 +1316,15 @@ def _group_mor_placement(domain, codomain, *categories):
         case _:
             sets = Sets()
     monoids = (Monoids(),) if domain is codomain else ()
-    return Cat().meet((sets, *monoids, *categories))
+    enrichment = ()
+    if pointwise and codomain in OwnedGroups().Commutative():
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        enrichment = (
+            AbelianGroupEndomorphismRings()
+            if domain is codomain else AdditiveMorGroups(),
+        )
+    return Cat().meet((sets, *monoids, *enrichment, *categories))
 
 
 @cached_function(
@@ -1895,6 +1907,59 @@ class GroupMorphism:
             submonoid_of_codomain=subgroup_of_codomain,
         )
 
+    def __call__(self, element, *args, **kwargs):
+        r"""Evaluate this group map on an admitted point of its source.
+
+        The fixed source supplies membership, and the homomorphism datum
+        supplies membership of the image. Subgroup and submonoid facades
+        retain their ambient representatives: evaluation normalizes those
+        representatives without asking their defining predicate again.
+        Other endpoints keep their ordinary element-constructor ingress.
+        """
+        normalize = _GroupMorRealizationMixin._normalize_admitted_element
+        point = normalize(self.domain(), element)
+        return normalize(self.codomain(), self._owned_function(point, *args, **kwargs))
+
+    def _pointwise_mor(self):
+        r"""The full group Mor containing this arrow's pointwise arithmetic.
+
+        An abelian target is necessary for the uniform homomorphism law.
+        A restriction such as automorphisms keeps its composition, while
+        addition and negation land in the canonical full Mor.
+        """
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        if self.codomain() not in OwnedGroups().Commutative():
+            raise TypeError(f"pointwise abelian arithmetic is not defined for maps into {self.codomain()}")
+        parent = self.parent()
+        if parent in AdditiveMorGroups():
+            return parent
+        return OwnedGroups().Mor(self.domain(), self.codomain())
+
+    def __add__(self, other):
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        return AdditiveMorGroups.ElementMethods._add_(self, other)
+
+    _add_ = __add__
+
+    def __neg__(self):
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        return AdditiveMorGroups.ElementMethods.__neg__(self)
+
+    _neg_ = __neg__
+
+    def __sub__(self, other):
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        return AdditiveMorGroups.ElementMethods.__sub__(self, other)
+
+    def __rmul__(self, scalar):
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveMorGroups
+
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
+
     @cached_method
     def _engine_generator_epimorphism(self):
         r"""GAP's ``F(S) ->> G`` onto the generators whose images define this morphism."""
@@ -2033,9 +2098,10 @@ class GroupMorphism:
     def _composition(self, right):
         r"""Compose group maps through their retained rules on elements.
 
-        A free source uses its basis universal property. Otherwise the set
-        owner supplies the composite rule, retained in the ordinary group
-        Mor. In particular an automorphism followed by a group map need
+        A free source uses its basis universal property. Otherwise the
+        composite rule is retained in the ordinary group Mor, whose
+        admitted-point contract preserves intermediate membership premises.
+        In particular an automorphism followed by a group map need
         not be an automorphism. No generating resolution or GAP realization
         is needed to compose admitted maps. A weaker right factor composes
         in the inherited weaker Mor.
@@ -2043,6 +2109,8 @@ class GroupMorphism:
         source = right.domain()
         if source not in OwnedGroups() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
             return super()._composition(right)
+        if right.parent() is self.parent() and self.parent() in AbelianGroupEndomorphismRings():
+            return self.parent()._compose_endomorphisms(self, right)
         if source in GroupsWithChosenFreeBasis():
             return right.postcompose(self)
         if (
@@ -2053,8 +2121,9 @@ class GroupMorphism:
             return source.Mor(self.codomain())(
                 {generator: self(right(generator)) for generator in source.group_generators()}
             )
-        composite = OwnedSetMorphism._composition(self, right)
-        return OwnedGroups().Mor(source, self.codomain())._from_elementwise_rule(composite)
+        return OwnedGroups().Mor(source, self.codomain())._from_elementwise_rule(
+            lambda element: self(right(element))
+        )
 
     def _evaluate_gap(self, element):
         model = _element_to_engine(self.domain(), element)
@@ -2308,6 +2377,21 @@ class IndexedFreeGroupMorphism(GroupMorphism):
     def generator_morphism(self):
         return self._generator_morphism
 
+    def _admitted_generator_image(self, index):
+        r"""Evaluate the retained basis map with its supplied range premise.
+
+        The free-group extension already receives a map from its basis into
+        the target group. At this protected realization boundary, the owned
+        set map's retained evaluator supplies that map's values without a
+        second predicate-target admission. A supplied native set map keeps
+        its own evaluator. The common group-arrow normalization then keeps
+        the target's actual ambient representation.
+        """
+        index = self.domain().free_basis()(index)
+        morphism = self.generator_morphism()
+        image = morphism._owned_function(index) if isinstance(morphism, OwnedSetMorphism) else morphism(index)
+        return _GroupMorRealizationMixin._normalize_admitted_element(self.codomain(), image)
+
     @validator
     def validate_homomorphism(self) -> None:
         r"""The free extension preserves multiplication by reduction of words.
@@ -2343,14 +2427,14 @@ class IndexedFreeGroupMorphism(GroupMorphism):
             f"the image of {self} is a subgroup of {self.codomain()}, but this construction "
             "lists its generators only when the selected free basis is finite"
         )
-        return self.codomain().subgroup(tuple(self.generator_morphism()(label) for label in basis))
+        return self.codomain().subgroup(tuple(self._admitted_generator_image(label) for label in basis))
 
     def _evaluate_reduced_word(self, element):
         codomain = self.codomain()
         return reduce(
             mul,
             (
-                self.generator_morphism()(index) ** sign
+                self._admitted_generator_image(index) ** sign
                 for index, sign in _reduced_word_data(self.domain(), element)
             ),
             codomain.one(),
@@ -2363,12 +2447,42 @@ class IndexedFreeGroupMorphism(GroupMorphism):
         indices = self.domain().free_basis()
         return self.domain().Mor(morphism.codomain())(
             Sets().Mor(indices, morphism.codomain())(
-                lambda index: morphism(self.generator_morphism()(index))
+                lambda index: morphism(self._admitted_generator_image(index))
             )
         )
 
 
 class _GroupMorRealizationMixin:
+    @staticmethod
+    def _normalize_admitted_element(endpoint, element):
+        r"""Normalize a group-arrow point through its declared facade ambient.
+
+        Protected evaluation contract (OWN-05), shared by GroupMorphism
+        and the defining subgroup inclusion. The point is already admitted
+        in the source, or its membership is supplied by the defining map's
+        range law. This is not a constructor for new subgroup members.
+        A point already parented by the current endpoint is retained before
+        following any ambient datum: a subgroup may own its elements.
+        The existing submonoid realization explicitly retains its ambient
+        monoid; Subgroups retains its ambient group. Follow these actual
+        facade data, including nested facades, then use ordinary ingress in
+        the representing ambient parent. No predicate truth is inferred.
+        """
+        from dzack_research.preamble.categories.group.submonoids import _SubmonoidEngine
+
+        while True:
+            if element_parent(element) is endpoint:
+                return element
+            if isinstance(endpoint, _SubmonoidEngine):
+                endpoint = endpoint.ambient_monoid()
+                continue
+            if endpoint in OwnedGroups():
+                ambient = endpoint.supergroup()
+                if ambient is not endpoint and endpoint in Subgroups(ambient):
+                    endpoint = ambient
+                    continue
+            return endpoint(element)
+
     def _from_elementwise_rule(self, function):
         r"""Retain an admitted group map by its rule on elements (``OWN-22``).
 
@@ -2377,6 +2491,38 @@ class _GroupMorRealizationMixin:
         realization reads this same rule on its selected free generators.
         """
         return self.element_class(self, function)
+
+    def elementwise(self, function):
+        r"""Retain an admitted homomorphism on elements in this exact Mor.
+
+        This is the shared pointwise-arithmetic constructor contract. A
+        free source still uses its existing basis realization through
+        ``_from_elementwise_rule``; no second group-map engine is created.
+        """
+        if not callable(function):
+            raise TypeError(f"a morphism in {self} needs a function on elements")
+        return self._from_elementwise_rule(function)
+
+    def _apply_pointwise_scalar(self, scalar, element):
+        r"""The integer action on the multiplicatively written abelian target.
+
+        Only the additive Mor enrichment calls this selected action.
+        Exact owned-integer ingress precedes the native exponent spelling.
+        """
+        return element ** int(self.base_ring()(scalar))
+
+    def _scalar_identity(self, scalar):
+        from dzack_research.preamble.categories.group.additive_mors import _ScalarIdentityEvaluation
+
+        if self.domain() is not self.codomain():
+            raise ValueError(f"a scalar multiple of the identity needs equal endpoints, but got {self}")
+        scalar = self.base_ring()(scalar)
+        if (scalar == self.base_ring().one()) is True:
+            return self._from_subgroup_inclusion()
+        return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
+
+    def _owned_scalar_multiple(self, scalar, morphism):
+        return self._pointwise_scalar_multiple(scalar, morphism)
 
     @cached_method
     def identity(self):
@@ -2439,7 +2585,7 @@ class _GroupMorRealizationMixin:
         codomain = self.codomain()
         return self.element_class(
             self,
-            lambda element: codomain(element),
+            lambda element: self._normalize_admitted_element(codomain, element),
             injectivity_decision=True,
             subgroup_of_codomain=True,
         )
@@ -2459,6 +2605,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = IndexedFreeGroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
+        self._preamble_base_ring = _own_ring(ZZ)
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -2496,6 +2643,8 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 generator_morphism = set_mor(images.__getitem__)
             case _ if callable(images):
                 generator_morphism = set_mor(images)
+            case _ if self in AbelianGroupEndomorphismRings():
+                return self._scalar_identity(images)
             case _:
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
@@ -2517,7 +2666,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return self.element_class(
             self,
             Sets().Mor(domain.free_basis(), codomain)(
-                lambda index: codomain(domain.free_generator(index))
+                lambda index: self._normalize_admitted_element(codomain, domain.free_generator(index))
             ),
             injectivity_decision=True,
             subgroup_of_codomain=True,
@@ -2540,14 +2689,16 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
     def __classcall__(cls, family, domain, codomain):
         return typecall(cls, family, domain, codomain)
 
-    def __init__(self, mor_family, domain, codomain, *, category=None):
+    def __init__(self, mor_family, domain, codomain, *, category=None, pointwise=True):
+        self._preamble_base_ring = _own_ring(ZZ)
         CategoricalMor.__init__(
             self,
             mor_family,
             domain,
             codomain,
             category=_group_mor_placement(
-                domain, codomain, *(() if category is None else (category,))
+                domain, codomain, *(() if category is None else (category,)),
+                pointwise=pointwise,
             ),
         )
 
@@ -2563,6 +2714,8 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 morphism = self._from_gap_generator_images(images)
             case _ if callable(images):
                 morphism = self._from_elementwise_rule(images)
+            case _ if self in AbelianGroupEndomorphismRings():
+                morphism = self._scalar_identity(images)
             case _:
                 raise TypeError(f"unable to convert {images!r} to an element of {self}")
         morphism.validate_homomorphism(check=check)
@@ -2762,6 +2915,7 @@ class GroupAutomorphismGroup(GroupMor):
             group,
             group,
             category=Cat().meet(tuple(categories)),
+            pointwise=False,
         )
         if group.is_finite() is True:
             backend_generators = tuple(self._libgap_().GeneratorsOfGroup())
@@ -2811,6 +2965,7 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = GroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
+        self._preamble_base_ring = _own_ring(ZZ)
         CategoricalMor.__init__(
             self, mor_family, domain, codomain, category=_group_mor_placement(domain, codomain)
         )
@@ -2821,6 +2976,8 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 return datum
             case _ if callable(datum):
                 return self._from_elementwise_rule(datum)
+            case _ if self in AbelianGroupEndomorphismRings():
+                return self._scalar_identity(datum)
             case _:
                 raise TypeError(
                     f"a group morphism {self.domain()} -> {self.codomain()} needs an admitted "
@@ -3953,21 +4110,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             @cached_method
             def endomorphism_ring(self):
                 r"""The ring ``End(A)`` of group endomorphisms, under pointwise sum and composition."""
-                return _object_of(AbelianGroupEndomorphismRings(), group=self)
+                return AbelianGroupEndomorphismRings()(self)
 
             @cached_method
             def scalar_action(self):
 
                 integers = _own_ring(ZZ)
                 endomorphisms = self.endomorphism_ring()
-                additive = self.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
-
-                def multiple(exponent, element):
-                    return exponent * element if additive else element ** int(exponent)
-
-                return integers.Mor(endomorphisms)(
-                    lambda exponent: endomorphisms(lambda element: multiple(exponent, element)),
-                )
+                return integers.Mor(endomorphisms)(endomorphisms._scalar_identity)
 
             def scalar_multiple(self, exponent, element):
 
@@ -4532,53 +4682,42 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
 class AbelianGroupEndomorphismRings(OwnedCategory):
     r"""The rings ``End(A)`` of endomorphisms of an abelian group ``A``.
 
-    The datum is the group ``A``.  Addition is pointwise, in the group law of
-    ``A`` written additively or multiplicatively, and multiplication is
-    composition.
+    The datum is an abelian group ``A`` in either notation. Its canonical
+    endomorphism Mor is the carrier, with its actual maps and endpoints.
+    The pointwise abelian law and composition form the already owned
+    endomorphism algebra over ``ZZ``; this category owns only the group
+    construction and its selected cyclic commutativity decision.
     """
 
     def an_object(self):
         r"""The endomorphism ring of the additive group of the integers."""
-        return _object_of(
-            self,
-            group=AdditiveGroups().an_object(),
-        )
+        return self(AdditiveGroups().an_object())
+
+    def _call_(self, group):
+        r"""Enrich the actual ``End(A)`` in the notation already carried by A.
+
+        For an additive group, including the additive group of any ring,
+        the canonical additive Mor supplies all group homomorphisms;
+        no linearity over that ring is imposed. Multiplicative notation
+        uses the canonical group Mor. Both branches retain literal
+        endpoints and reuse the existing End packet's cached object.
+        """
+        if group in AdditiveGroups().AdditiveCommutative():
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(group)
+        elif group in OwnedGroups().Commutative():
+            endomorphisms = OwnedGroups().End(group)
+        else:
+            raise TypeError(f"an endomorphism ring needs an abelian group, but got {group}")
+        if endomorphisms not in self:
+            refine(endomorphisms, self)
+        return endomorphisms
 
     def super_categories(self):
-        return [OwnedRings()]
+        from dzack_research.preamble.categories.group.additive_mors import AdditiveEndomorphismRings
+
+        return [AdditiveEndomorphismRings(_own_ring(ZZ))]
 
     class ParentMethods:
-        def __init__(self, group, **rest) -> None:
-            self._group = group
-            super().__init__(**rest)
-
-        def domain(self):
-            return self._group
-
-        def codomain(self):
-            return self._group
-
-        def _is_additive(self) -> bool:
-            return self._group.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
-
-        def _sum_values(self, left, right):
-            return left + right if self._is_additive() else left * right
-
-        def _negative_value(self, value):
-            return -value if self._is_additive() else value**-1
-
-        def _identity_value(self):
-            return self._group.zero() if self._is_additive() else self._group.one()
-
-        def _element_constructor_(self, mapping):
-            return self.element_class(self, mapping)
-
-        def one(self):
-            return self(lambda element: element)
-
-        def zero(self):
-            return self(lambda element: self._identity_value())
-
         def _commutativity_decision(self):
             r"""``End(A)`` commutes when ``A`` is cyclic.
 
@@ -4586,34 +4725,18 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
             proposition that ``End(A)`` is commutative.
             """
             undecided = AtomicProposition("is_commutative", self)
-            if not self._group.has_selected_group_resolution():
+            group = self.domain()
+            if group is _own_ring(ZZ):
+                return True
+            if group not in OwnedGroups() or not group.has_selected_group_resolution():
                 return undecided
-            generators = self._group.group_generators().cardinality()
+            generators = group.group_generators().cardinality()
             if generators.is_finite() and int(generators.finite_value()) <= 1:
                 return True
             return undecided
 
         def _repr_(self):
-            return f"Endomorphism ring of {self._group}"
-
-    class ElementMethods(RingElement):
-        r"""One endomorphism, given by its map on the elements of ``A``."""
-
-        def __init__(self, parent, mapping) -> None:
-            RingElement.__init__(self, parent)
-            self._mapping = mapping
-
-        def __call__(self, element):
-            return self._mapping(element)
-
-        def _add_(self, other):
-            return self.parent()(lambda element: self.parent()._sum_values(self(element), other(element)))
-
-        def _neg_(self):
-            return self.parent()(lambda element: self.parent()._negative_value(self(element)))
-
-        def _mul_(self, other):
-            return self.parent()(lambda element: self(other(element)))
+            return f"Endomorphism ring of {self.domain()}"
 
 
 class Subgroups(OwnedParameterizedCategory):

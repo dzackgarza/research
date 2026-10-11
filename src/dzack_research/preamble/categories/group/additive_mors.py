@@ -118,12 +118,15 @@ class _ScalarIdentityEvaluation:
 
 
 def _scalar_identity_coefficient(morphism):
-    r"""Read only the actual scalar-evaluation realization of an owned map.
+    r"""Read a scalar from its actual evaluation or the diagonal inclusion.
 
-    Private shared additive/linear map adapter. Its callers are native map
+    Private shared additive/linear/group map adapter. Its callers are native map
     arithmetic and endomorphism centrality. It inspects the selected callable
-    at those two declared engines, never infers a scalar by sampling a map.
+    at those declared engines. The retained subgroup-inclusion datum with
+    identical endpoints is the identity, so also supplies the scalar one.
+    Neither case infers a scalar by sampling a map.
     """
+    from dzack_research.preamble.categories.group.groups import GroupMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphismMethods
 
     match morphism:
@@ -131,13 +134,25 @@ def _scalar_identity_coefficient(morphism):
             evaluation = morphism._function
         case ModuleMorphismMethods():
             evaluation = morphism._element_function
+        case GroupMorphism() if morphism._subgroup_premise and morphism.domain() is morphism.codomain():
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+            return _own_ring(SageZZ).one()
+        case OwnedSetMorphism():
+            evaluation = morphism._owned_function
         case _:
             return None
     return evaluation.scalar if isinstance(evaluation, _ScalarIdentityEvaluation) else None
 
 
 class AdditiveMorGroups(OwnedCategory):
-    r"""Additively enriched Mor groups with pointwise operations."""
+    r"""Mor groups with the pointwise abelian law of their target.
+
+    This includes additive and linear maps, and group homomorphisms
+    ``G -> A`` with abelian target ``A`` written multiplicatively. The
+    source need not be abelian; commutativity of the target makes the
+    pointwise product of two homomorphisms another homomorphism.
+    """
 
     def an_object(self):
         r"""The additive endomorphism group of the rank-one integer module."""
@@ -151,10 +166,57 @@ class AdditiveMorGroups(OwnedCategory):
         return [AdditiveGroups().AdditiveCommutative()]
 
     class ParentMethods:
+        def base_ring(self):
+            r"""The scalar ring retained by this Mor's selected enrichment."""
+            return self._preamble_base_ring
+
+        def _is_additive(self):
+            r"""The notation of the actual target abelian law.
+
+            This is the shared value-operation supplier for pointwise Mor
+            arithmetic. It selects a declared mathematical law, without
+            deciding equality of target values or inspecting an engine.
+            """
+            if self.codomain() in AdditiveGroups().AdditiveCommutative():
+                return True
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            if self.codomain() not in OwnedGroups().Commutative():
+                raise TypeError(f"pointwise abelian arithmetic needs an abelian target, but got {self.codomain()}")
+            return False
+
+        def _sum_values(self, left, right):
+            return left + right if self._is_additive() else left * right
+
+        def _negative_value(self, value):
+            return -value if self._is_additive() else value**-1
+
+        def _identity_value(self):
+            return self.codomain().zero() if self._is_additive() else self.codomain().one()
+
         def zero(self):
             if self.domain() is self.codomain():
                 return self._scalar_identity(self.base_ring().zero())
-            return self.elementwise(lambda element: self.codomain().zero())
+            return self.elementwise(lambda element: self._identity_value())
+
+        def _pointwise_scalar_multiple(self, scalar, morphism):
+            r"""Apply the retained scalar action to the values of this arrow.
+
+            The additive, linear and multiplicative-group Mor realizations
+            supply ``_apply_pointwise_scalar`` on their actual target.
+            This shared formula is called by their scalar-action adapters;
+            it does not select a new target action or coerce a weaker map
+            into this Mor.
+            """
+            if morphism not in self:
+                raise TypeError(f"pointwise scalar multiplication in {self} needs an arrow already admitted there")
+            scalar = self.base_ring()(scalar)
+            coefficient = _scalar_identity_coefficient(morphism)
+            if coefficient is not None:
+                return self._scalar_identity(scalar * coefficient)
+            return self.elementwise(
+                lambda element: self._apply_pointwise_scalar(scalar, morphism(element))
+            )
 
     class ElementMethods:
         def _add_(self, other):
@@ -170,14 +232,14 @@ class AdditiveMorGroups(OwnedCategory):
             left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
             if left is not None and right is not None:
                 return parent._scalar_identity(left + right)
-            return parent.elementwise(lambda element: self(element) + other(element))
+            return parent.elementwise(lambda element: parent._sum_values(self(element), other(element)))
 
         def __neg__(self):
             parent = self._pointwise_mor()
             scalar = _scalar_identity_coefficient(self)
             if scalar is not None:
                 return parent._scalar_identity(-scalar)
-            return parent.elementwise(lambda element: -self(element))
+            return parent.elementwise(lambda element: parent._negative_value(self(element)))
 
         def __sub__(self, other):
             if other not in self._pointwise_mor():
@@ -241,24 +303,8 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             return self.elementwise(lambda element: left(right(element)))
 
         def _owned_scalar_multiple(self, scalar, morphism):
-            r"""Apply the selected scalar enrichment pointwise.
-
-            The Mor constructor supplies its scalar ring.  Integer scalars
-            act on every additive group through Sage's repeated addition;
-            a commutative scalar ring acts through the target module.
-            """
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-            scalar = self.base_ring()(scalar)
-            coefficient = _scalar_identity_coefficient(morphism)
-            if coefficient is not None:
-                return self._scalar_identity(scalar * coefficient)
-            if self.base_ring() is _own_ring(SageZZ):
-                action = IntegerMulAction(SageZZ, self.codomain(), m=self.codomain().zero())
-                return self.elementwise(lambda element: action(int(scalar), morphism(element)))
-            return self.elementwise(
-                lambda element: self.codomain().scalar_multiple(scalar, morphism(element))
-            )
+            r"""Apply this endomorphism Mor's selected scalar enrichment."""
+            return self._pointwise_scalar_multiple(scalar, morphism)
 
         @cached_method
         def identity(self):
@@ -347,7 +393,13 @@ class AdditiveMorphism:
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         domain = self.domain()
-        if domain.is_finite() is not True or domain not in EnumeratedSets():
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        if domain is _own_ring(SageZZ):
+            # A homomorphism from (ZZ,+) is determined by the image of 1.
+            # The target equality may still be an undecided proposition.
+            equal = self(domain.one()) == other(domain.one())
+        elif domain.is_finite() is not True or domain not in EnumeratedSets():
             equal = AtomicProposition("equal", self, other)
         else:
             equal = conjunction(self(element) == other(element) for element in domain)
