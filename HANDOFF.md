@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 633 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial, NoZeroDivisors, its commutative refinement and both nontrivial zero-product refinements are the eighteen complete whole-owner passes and are marked [x]. The authored Adic.Local provider and the two providers for existing nontrivial zero-product meets are each added and closed in their source banks. The domain correction retains true hypotheses, undecided propositions and the actual canonical fraction maps. Noetherian is the next active existing owner pass. The remaining 615 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 633 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial, NoZeroDivisors, its commutative refinement and both nontrivial zero-product refinements and Noetherian are the nineteen complete whole-owner passes and are marked [x]. The authored Adic.Local provider and the two providers for existing nontrivial zero-product meets are each added and closed in their source banks. The domain correction retains true hypotheses, undecided propositions and the actual canonical fraction maps. Artinian is the next active existing owner pass. The remaining 614 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,7 +259,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed domain-owner passes (2026-10-11):** `placement-owner-ownedrings-nozerodivisors-commutative`, `placement-owner-ownedrings-nozerodivisors-nontrivial` and `placement-owner-ownedrings-nozerodivisors-commutative-nontrivial` each have a complete source pass and are [x]. The two new authored providers expose existing axiom meets and are added and closed in the same bank. Nonzero submonoids now use the weakest existing sufficient structure, including the actual noncommutative QQ<x,y> example; fraction constructions require commutativity and nontriviality. Selected fraction maps, normalized fractional-ideal data, zero-ring behavior and owned undecided propositions are preserved. Their full records below include the actual arrows and all constructor repairs. Protected construction assertions are unchanged; the missing category-level fraction-field entry and unsupported computations remain named inside the existing domain work and T. Eighteen of 633 whole-owner passes are closed. The existing Noetherian pass is active next; no new prerequisite has been filed.
+**Closed `placement-owner-ownedrings-noetherian` (2026-10-11):** both introductions, all 15 strict authored ancestors and the inherited ordinary ring arrows have their complete pass. The class, selector, common predicate and session-alias documentation now consistently state the primary source's left-Noetherian convention; the commutative shorthand keeps its exact value. The source changes no behavior, placement, constructor or arrow. ZZ, the zero ring and the existing undecided predicate provide the retained assertions, with no recognition algorithm inferred from the property. Nineteen of 633 whole-owner passes are closed. Artinian is the next active existing pass; no new prerequisite or owner has been added. Runtime assertions remain under T.
+
+**Closed domain-owner passes (2026-10-11; `fd3aed3701`):** `placement-owner-ownedrings-nozerodivisors-commutative`, `placement-owner-ownedrings-nozerodivisors-nontrivial` and `placement-owner-ownedrings-nozerodivisors-commutative-nontrivial` each have a complete source pass and are [x]. The two new authored providers expose existing axiom meets and are added and closed in the same bank. Nonzero submonoids now use the weakest existing sufficient structure, including the actual noncommutative QQ<x,y> example; fraction constructions require commutativity and nontriviality. Selected fraction maps, normalized fractional-ideal data, zero-ring behavior and owned undecided propositions are preserved. Their full records below include the actual arrows and all constructor repairs. Protected construction assertions are unchanged; the missing category-level fraction-field entry and unsupported computations remain named inside the existing domain work and T. This bank completed eighteen of 633 whole-owner passes; all six changed Python files passed the required post-commit stdlib AST check. Noetherian closes independently in its later bank, and Artinian is now active. No new prerequisite was filed.
 
 **Closed `placement-owner-ownedrings-nozerodivisors` (2026-10-11; `1a93093f4c`):** both introductions, all 15 strict authored ancestors and the inherited ring arrows have their complete pass. The category now names its exact zero-product axiom and states that commutativity and nontriviality are separate. Its integer witness and ordinary, possibly noninjective ring maps are preserved. This was the fifteenth of 631 owner passes at its bank; the sole changed Python file passed the required post-commit stdlib AST check. The commutative refinement and both new existing-meet providers are independently closed in the later domain bank below. Runtime assertions remain under T.
 
@@ -285,7 +287,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. Subsequent independent Localization, Local/Complete/Adic, FormalPowerSeriesRings, Prime, Division, Fields, Nontrivial and NoZeroDivisors passes are closed. The newly authored AdicCompletions.Local provider received its complete pass in the same source bank, giving 631 owners. The domain correction closes the existing commutative NoZeroDivisors pass and adds and closes the complete passes for the two authored providers on existing Nontrivial zero-product meets. There are now 633 owners: eighteen complete and 615 unchecked. Noetherian is active next. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; explicit new-provider accounting does not restart either survey.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. Subsequent independent Localization, Local/Complete/Adic, FormalPowerSeriesRings, Prime, Division, Fields, Nontrivial and NoZeroDivisors passes are closed. The newly authored AdicCompletions.Local provider received its complete pass in the same source bank, giving 631 owners. The domain correction closes the existing commutative NoZeroDivisors pass and adds and closes the complete passes for the two authored providers on existing Nontrivial zero-product meets. The independent Noetherian pass is also closed. There are now 633 owners: nineteen complete and 614 unchecked. Artinian is active next. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; explicit new-provider accounting does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -373,6 +375,156 @@ These are source-level closure correspondences, not executed Sage results. The a
 
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
+
+### Whole-category placement: `OwnedRings.Noetherian` (2026-10-11; source pass closed)
+
+This is the complete pass for `placement-owner-ownedrings-noetherian` in `categories/rings/ring_foundation.py`. It clarifies four related docstrings while preserving the category name, witness, graph, predicates, constructors and arrows. The complete own declaration, actual inherited structures and selected constructor examples were read before the repair.
+
+#### Definition read before the clarification
+
+The actual [Mathlib Noetherian definition source](https://github.com/leanprover-community/mathlib4/blob/2da3ab0a20dc0c66f56a557e37df39f7d36cb953/Mathlib/RingTheory/Noetherian/Defs.lean)
+and its [generated documentation](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Noetherian/Defs.html)
+were opened and read before writing the patch. `IsNoetherianRing R`
+abbreviates the regular-module condition `IsNoetherian R R`. Its introductory
+comment expressly selects the left-module convention in the absence of
+commutativity. The chain-stabilization and ideal-finite-generation theorems
+state the equivalent conditions.
+
+Accordingly, this ring owner means that every ascending chain of **left
+ideals** stabilizes, equivalently every left ideal is finitely generated.
+It asserts neither commutativity nor a right-module condition. In a
+commutative ring the side distinction disappears. The zero ring satisfies
+the property, and finite generation is a proposition rather than a selected
+generating-family datum. The existing accessor, class definition, and common
+ring predicate now use consistent wording for this convention.
+
+[Sage's Noetherian category documentation](https://doc.sagemath.org/html/en/reference/categories/sage/categories/noetherian_rings.html)
+was also read directly: its category is expressly commutative. That narrower
+Sage category cannot justify adding a commutativity edge to this existing
+OwnedRings axiom. The current session alias already selects the commutative
+refinement; its docstring now says so explicitly, with no change to its value.
+
+#### Complete introduction inventory
+
+| Introduction | Disposition |
+| --- | --- |
+| `_repr_object_names()` | Retain the category-specific name, "noetherian rings". No other owner may receive that name merely because it forgets this property. |
+| `an_object()` | Retain canonical owned ZZ. It is a genuine Noetherian witness, reached through the existing native ring constructor. |
+
+No ParentMethods, ElementMethods, parameter, selected-data supplier,
+computation hook, extra supercategory edge, Mor family, or arrow provider is
+introduced at this owner. Its registration in `all_axioms` and the existing
+OwnedRings SubcategoryMethods accessor supply the axiom refinement. The
+common ring predicate `is_noetherian()` reads established placement and
+otherwise retains its owned proposition; it is not duplicated here.
+
+The existing `OwnedNoetherianRings()` function, exported as
+`NoetherianRings`, explicitly returns the commutative refinement. This is a
+session shorthand and does not make commutativity a property of the present
+bare owner. Its value remains unchanged.
+
+#### Complete strict authored up-set: 15 owners
+
+| Strict authored ancestor | Retained structure |
+| --- | --- |
+| `OwnedRings` | Associative unital ring. |
+| `OwnedSemirings` | Unital multiplication, commutative addition, distributivity. |
+| `OwnedRngs` | Associative multiplication and additive inverses. |
+| `Monoids` | Associative unital multiplication. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication and its identity. |
+| `Magmas` | Multiplication. |
+| `AdditiveGroups.AdditiveCommutative` | Additive abelian group. |
+| `AdditiveGroups` | Additive group. |
+| `AdditiveMonoids` | Associative addition and zero. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Addition. |
+| `Sets` | Underlying set. |
+| `Objects` | Owned object. |
+
+The existing CategoryWithAxiom construction retains the ring and these
+ancestors. Synthetic axiom meets and implementation wrappers are not
+additional authored owners. Commutative, NoZeroDivisors, Nontrivial, Local,
+Complete, Artinian, Division, Fields, PrincipalIdeals, finite cardinality,
+and a fixed coefficient algebra are not uniform consequences. In particular,
+the Artinian-to-Noetherian edge is a descendant implication, not an upward
+Noetherian-to-Artinian edge.
+
+Every strict ancestor forgets the Noetherian property, so no operation has
+been left here merely for a convenient finite algorithm. The two own
+introductions implement the name and witness of this exact category, rather
+than a mathematical operation that a weaker category should also supply.
+
+#### Actual fixed Mor
+
+CategoryWithAxiom carries the owned CategoryPacketMethods. Its fixed-endpoint
+selector walks the declared supercategory packet, preserves the literal
+endpoints, and inherits OwnedRings' RingMorCategoryConstruction. The actual
+fixed provider is RingMor and its element provider is RingMorphism; the
+existing semiring, rng, multiplicative, additive, and set providers deliver
+their usual laws. No new arrow class or restriction is introduced here.
+
+The arrows are all unital ring maps between the admitted rings. They need
+not be injective: the existing map `ZZ -> GF(2)` has Noetherian endpoints and
+kills 2. They need not be finite ring maps either: the canonical map
+`ZZ -> QQ` retains the same ring-arrow interface. Identity is the existing
+RingMor identity on the literal object, and composition uses its actual
+middle endpoint. No finite-presentation, flatness, continuity, or chosen
+ideal-generation data are implied by this arrow category.
+
+#### Witness, property, and computation boundaries
+
+The selected native integer branch already places canonical ZZ in the
+Noetherian category, so the witness requires no recognition algorithm.
+Mathematically every integer ideal is generated by one integer. The existing
+commutative PrincipalIdeals owner also declares the Noetherian implication.
+The actual zero ring `ZZ/1` is finite and Noetherian; the Noetherian category
+does not imply distinct zero and one. These are selected source examples,
+not runtime checks.
+
+The property asserts finite generation of left ideals, not a chosen
+generating family or an algorithm to find one. No such data supplier is
+introduced by this pass. The common predicate preserves unknown status for
+a ring without established Noetherian placement, and this owner has no
+computation capable of deciding the general property. Consequently there is
+no algorithmic remainder created by its name or witness; algorithm consumers
+remain at their separately tracked owners.
+
+The full common ring/semiring/rng/magma/additive/Set/Objects spine, owned
+axiom propagation, fixed-Mor packet, canonical ZZ native placement, common
+Noetherian predicate, and PrincipalIdeals implication were already read and
+rechecked in their exact relevant source slices. This review does not widen
+into all Noetherian consumers or claim their complete owner passes.
+
+#### Closure assertions and exact scope
+
+- The name still denotes the same existing ring-axiom owner, now with its
+  left-ideal convention stated explicitly. No new category or property name
+  is added, and the authored-owner denominator does not change.
+- `OwnedRings().Noetherian().an_object()` returns the canonical owned ZZ
+  already supplied by the native classifier. Its actual Noetherian placement
+  makes the common predicate True without asking an engine to recognize it.
+- The zero ring remains admitted through its existing finite-ring
+  construction. No Nontrivial, commutativity, Artinian, domain, or field
+  implication is introduced.
+- The current `NoetherianRings()` alias still denotes
+  `OwnedRings().Commutative().Noetherian()`.
+- Fixed RingMor endpoints, ordinary ring identity/composition, and the
+  admissible noninjective `ZZ -> GF(2)` example are unchanged. No stronger
+  arrow property is claimed.
+- A parent lacking supplied Noetherian placement retains the existing
+  `AtomicProposition` from the common predicate; the definition change
+  introduces neither a recognition algorithm nor Boolean coercion.
+
+These are source-supported assertions, not executed results. The whole
+two-introduction owner, all 15 strict authored ancestors, and its actual
+fixed-Mor packet are covered. The selected producers already inspected in
+the preceding source passes are compatible with this convention; this
+closure does not claim all Noetherian-consuming algorithms. There is no new
+prerequisite, unfinished own introduction, or broader consumer audit.
+
+M1 verification is a focused diff check followed by post-commit stdlib AST of the sole changed Python file. No project import, Sage, runtime test or generated-view regeneration belongs to this bank.
 
 ### Whole-category placement: the three zero-product/domain owners (2026-10-11; source passes closed)
 

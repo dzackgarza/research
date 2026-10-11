@@ -2351,7 +2351,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self._with_axiom("NoZeroDivisors")
 
         def Noetherian(self):
-            r"""Return this category with the ascending chain condition on ideals."""
+            r"""Return this category with the ascending chain condition on left ideals."""
             return self._with_axiom("Noetherian")
 
         def Artinian(self):
@@ -2654,7 +2654,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         return self.fraction_field_localization().fraction_field_realization()
 
     class Noetherian(CategoryWithAxiom):
-        r"""Noetherian rings: the ascending chain condition on ideals."""
+        r"""Rings satisfying the ascending chain condition on left ideals.
+
+        Following Mathlib's ``IsNoetherianRing R = IsNoetherian R R``,
+        this says that the left regular module is Noetherian, equivalently
+        every left ideal is finitely generated. In the commutative case
+        this is the usual Noetherian condition. The property admits the
+        zero ring and supplies no chosen ideal generators or right-module
+        Noetherian hypothesis.
+        """
 
         @classmethod
         def _repr_object_names(cls):
@@ -3248,6 +3256,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._integral_domain_decision()
 
         def is_noetherian(self):
+            r"""Return whether the left regular module is Noetherian."""
             return True if self in OwnedRings().Noetherian() else AtomicProposition("is_noetherian", self)
 
         def is_artinian(self):
@@ -3707,7 +3716,7 @@ def _krull_dimension_of_engine(engine):
 
 
 def OwnedNoetherianRings():
-    r"""``OwnedRings().Commutative().Noetherian()``, the session name for Noetherian rings."""
+    r"""The session shorthand for commutative Noetherian rings."""
     return OwnedRings().Commutative().Noetherian()
 
 
