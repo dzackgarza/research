@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 31 complete passes and 609 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. After the remaining current group/algebra wrong-answer repairs, the first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 33 complete passes and 608 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. After the remaining current algebra wrong-answer repairs, the first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -405,6 +405,188 @@ backend availability and localized singularity computation remain named
 frontiers in the same owner; they create no prerequisite node. The complete
 source assertions and selected constructor/Mor routes are closed. Executable
 instances remain under T: no Sage, imports, tests, QC or build was run.
+
+## Group owner and finite magma-generation source closure (2026-10-11)
+
+**Closed nodes:** `placement-owner-ownedgroups` and the newly authored
+`placement-owner-magmas-finitelygeneratedasmagma`. The original unit-functor
+consumer was banked in `eccba97e91`. This commit closes the complete group
+owner, including its selected arrow and subgroup consumers, and reconciles
+the new axiom provider as its own completed pass and parent dependency.
+The independent group refinements and Mor-category owner passes remain
+unchecked.
+
+**Complete direct inventory.** All of OwnedGroups through the start of its
+Commutative refinement was read, together with its selected native/free/
+general arrow providers and the actual consumers below.
+
+| Introductions | Mathematical data and disposition |
+| --- | --- |
+| Native constructor catalogue | C, S, A, D, Dic, Q, V4, Abelian, Artin, Braid, Cactus, PureCactus, Weyl, Reflection, RightAngledArtin, classical matrix/projective groups, Heisenberg, affine/Euclidean/semimonomial, nilpotent/small, reflection/sporadic/transitive and Rubik groups retain their existing defining data and owned engine crossings; Free and Coxeter retain their specialized constructions |
+| Category construction | `an_object`, `Mor`, `_MorCategory`, `_EndCategory`, `_IsoCategory`, naming and `super_categories` retain Grp and literal fixed endpoints |
+| Structural functors | `group_algebra(base_ring)`, `abelianization`, `abelianization_adjunction`, `underlying_set` retain Grp as their stated domain and the actual selected functor maps |
+| Category properties and suppliers | `FinitelyPresentedAsGroup` retains a group-presentation property; `FinitelyGeneratedAsMagma` moves to Magmas with its matching axiom; categorical product/coproduct suppliers retain their actual cones, cocones and maps |
+| Element operations | `inverse`, `cyclic_subgroup`; unit, unit-inverse and regularity computations supply the weaker monoid/magma contracts; the optional cyclic-cardinality supplier reuses the native order algorithm when one exists |
+| Resolution data | `has_selected_group_resolution`, `has_selected_finite_group_generating_set`, `selected_group_resolution`, `group_generating_set`, `group_generator_morphism`, `group_generator`, `group_generators`, `number_of_group_generators` retain the exact selected resolution |
+| Action and map data | `invariant_overlattice`, `conjugation_morphism`, `classifying_category`, parent `Mor` and `_Hom_` retain the group/action data and actual arrow endpoints |
+| Predicates and counts | Finiteness, abelianity/commutativity, finite generation/presentation, arithmeticity, topological-group, cardinality and order decisions retain their existing suppliers; unknown equations remain propositions |
+| Quotients and finite search | `quotient_by_relators`, `finite_image_lifts` retain the actual normal closure and finite-image search; traversal defaults now require a selected finite generating family |
+| Subgroups | `subgroup`, `predicate_subgroup`, `centralizer`, `normalizer`, `conjugate_subgroup`, `subgroups`, `supergroup`, `inclusion` retain their exact ambient group, predicate, action and inclusions |
+| Conjugacy and cosets | Conjugation G-set, conjugacy classes/class, subgroup-conjugation G-set, their decision suppliers and left/right cosets remain at Groups with their existing finite and represented routes |
+| Center and commutators | Public `center` and `center_inclusion` move to Magmas; the group owner supplies one cached pair. `commutator_subgroup` and `derived_subgroup` retain the group normal-closure definition |
+| Endomorphisms and comparison | `End`, `Aut`, `is_isomorphic_to` keep their actual distinct families and selected computation boundaries |
+
+The complete strict authored up-set has six owners: Monoids (associative
+multiplication and a selected two-sided unit), Semigroups (associativity),
+Magmas.Unital (a selected two-sided unit), Magmas (the binary law), Sets, and
+Objects. Their definitions were read. Group-specific functors, inverse,
+conjugation, presentations, subgroup normality and quotient data are not
+uniformly available on a strict ancestor. Suppliers for existing weaker
+operations stay as group computations, with the common public contract
+inherited. This pass does not claim a separate whole-owner review of every
+named group refinement.
+
+**Center placement.** For any magma, a central element commutes with every
+element and satisfies the left and right associator equations. Those
+equations imply the middle associator equation, so this is the commutant
+intersected with the nucleus. The center is closed under multiplication and
+its induced law is associative and commutative. Thus multiplication alone
+supplies the definition; neither inverses nor an ambient unit are required.
+
+Magmas now owns the common public accessors and a cached protected
+`(center, inclusion)` supplier. A group has full nucleus by associativity,
+so its supplier is exactly the existing group center. An abelian group
+returns itself and its typed identity. A represented finite nonabelian
+group retains the GAP center and literal subgroup inclusion. A general
+unsupported computation reaches the named center-construction assertion.
+For an inclusion i_Z, dom(i_Z)=Z(G), cod(i_Z)=G and i_Z(z)=z.
+
+Outside Groups, the two-element magma with constant-zero multiplication is
+associative and commutative and has itself as center, but has no two-sided
+unit. The center operation is now present at this binary-law owner; when
+only that law is supplied, its call reaches the named center-construction
+assertion. No absent method or falsely asserted inverse is substituted.
+The multiplicative magma of F2 is another nongroup with full center; its
+zero is not a multiplicative unit.
+
+**Finite magma generation and its independent provider.** A finite subset
+generates when closure under the selected binary law is the whole magma.
+Every finite magma is therefore finitely generated by its whole set,
+without choosing an enumeration or deciding equality. The qualified
+`is_finitely_generated_as_magma` uses that fact or the existing axiom, and
+otherwise calls its optional supplier. The default retains the exact
+finite-generation proposition rather than inventing a generating family.
+
+The new Magmas.FinitelyGeneratedAsMagma axiom introduces exactly its
+existence property, `an_object` using the existing C2, and display naming.
+Its strict ancestors are Magmas, Sets and Objects. It adds no associativity,
+unit, inverse, finite-cardinality or selected-family datum. Its inherited
+fixed Mor is MagmaMor with the existing Set/categorical arrow providers;
+there is no additional arrow law. The matching axiom class backs the selector.
+
+For the multiplicative magma of owned F2, the qualified predicate returns
+True from finite-set placement; zero makes this a true specimen outside
+Groups. Finite generation does not imply finite cardinality: positive
+integers under addition are generated by 1. For a group generated by finite
+S, S union S^-1 union {1} generates its magma; conversely magma generation
+implies group generation. The existing group `is_finitely_generated`
+entry uses this equivalence and preserves the old group decision hook,
+including the actual absolute-Galois False/unknown supplier. The separate
+group resolution classifier and chosen generators are unchanged.
+
+**Actual group-arrow inheritance and maps.** The fixed Mor supergraph
+delivers GroupMorphism, MonoidMorphism, MagmaMorphism and OwnedSetMorphism,
+including the unital-magma and categorical-arrow protocols. The selected
+providers reviewed in full are GroupMorphism, IndexedFreeGroupMorphism,
+_GroupMorRealizationMixin, IndexedFreeGroupMor, GroupMor,
+GroupAutomorphismMethods, GeneralGroupMor, GroupMorCategoryConstruction,
+and the existing Group End/Iso constructions.
+
+IndexedFreeGroupMorphism now actually inherits GroupMorphism, so it
+receives kernel, preimage, lift, normality and cokernel operations while
+retaining its exact basis map and reduced-word evaluator. The universal
+extension is a homomorphism because adjacent inverse-letter cancellation
+preserves the product of images. This proof works for an infinite basis;
+neither construction nor equality enumerates that basis.
+
+Ordinary admitted elementwise maps now construct and compose in the actual
+GroupMor with literal endpoints, without a GAP engine or generating
+resolution. For f:G->H and g:H->K, (g*f)(x)=g(f(x)). A left automorphism does
+not promote an arbitrary composite to an automorphism. Existing selected
+generator/GAP computations remain available. Injectivity and subgroup-image
+premises are forwarded through the monoid initializer rather than lost.
+
+Common-Mor admission precedes group-specific equality. A bare SetMor with
+the same endpoints is not a group map merely because it agrees on group
+generators; that comparison uses the weaker set theory. Two admitted group
+maps use conjunction of image equalities on a selected finite generating
+family. Otherwise the actual set supplier computes when its own hypotheses
+hold or returns the equality proposition. No finite-group-to-ranked-set
+conversion is inserted. Injectivity and surjectivity likewise use either
+the retained GAP data or the existing Set Mor at the exact G,H endpoints.
+
+A decided bijective homomorphism has a homomorphic inverse: applying f to
+f^-1(x)f^-1(y) gives xy. The selected lift or Set inverse routine supplies
+its rule; the result is in GroupMor(H,G). `as_isomorphism` retains that
+inverse pair in core(Grp). The stronger automorphism inverse stays in the
+actual Aut parent through GroupAutomorphismMethods. An inclusion H->G is
+injective, evaluates h to h, and has image literally H.
+
+**Actual subgroup consumers and true assertions.** Predicate subgroups reuse
+the set owner's condition-subset membership, admission and enumeration on
+the literal ambient group. For admitted x, membership is exactly P(x).
+Unknown P(x) remains a proposition; exact admission/enumeration names that
+boundary. The declared subgroup premise supplies the ambient identity
+without a new predicate test. Intersections use conjunction and preimages
+use the target subgroup's actual membership predicate.
+
+A cyclic subgroup now retains its selected generator without querying an
+absent order operation. Its optional native order supplier is reused only
+for cardinality, finiteness or enumeration. The ambient identity generates
+a cardinal-one subgroup; in C4=<g>, <g^2> has cardinal two and retains its
+ambient elements. An unknown order does not prevent construction, and
+unknown power membership is not answered False. A finite ambient walk is
+bounded by its cardinality and asks for decided return-to-identity equality.
+
+For a finite selected generating family S of H, the normalizer predicate
+checks g*S*g^-1 subset H and g^-1*S*g subset H. These extend to both subgroup
+containments and are equivalent to g*H*g^-1=H. For finite H, one containment
+suffices by equal cardinality. General unresolved cases retain
+`normalizes(g,H)`. Thus 1 belongs to N_G(H), N_G(G)=G, and every subgroup
+of an abelian group is normalized by G. Fresh subgroup-parent identity is
+not used as a test of this mathematical equality. Abelian conjugacy is the
+actual element-equality proposition, including when undecided.
+
+The free-product supplier now requires its constructed object to belong to
+the requested category and retains that category in the diagram. C2*C2 is
+infinite and nonabelian, so it cannot be advertised as an abelian-group
+coproduct. Product/free-product known cases retain their exact maps and the
+existing nonempty finite represented-family hypotheses. Finite-image and
+Schreier defaults require selected finite generators. The abelianization
+consumer uses its existing finite-group import.
+
+**Source acceptance and retained T boundaries.** The preceding assertions
+close these source passes. Execution is still required under T for the
+literal constructor, composition, inclusion, unknown-predicate and finite
+specimens. General engine/subgroup generation, group cardinality, conjugacy,
+center outside the supplied cases, derived subgroup, isomorphism, image,
+normality, factorization and cokernel computations retain their selected
+engine/finite-basis/finite-target or abelian-inclusion requirements. Inverse
+requires established bijectivity and an inverse/lift computation. No
+unavailable computation is described as mathematical nonexistence.
+The infinite-group `conjugacy_classes` assertion stays explicitly retained.
+
+Mathematical definitions and laws were checked against Mathlib's
+[group homomorphisms](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/Defs.html),
+[units](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Units/Defs.html),
+[regularity](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Regular/Defs.html),
+[center](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Center.html),
+[finite generation](https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/Finiteness.html)
+and
+[closure of finite generating sets](https://leanprover-community.github.io/mathlib4_docs/Mathlib/ModelTheory/FinitelyGenerated.html).
+The displayed normalizer, center, inverse and cyclic calculations supply
+independent separating proofs. Only focused source and whitespace checks
+were run; no Sage, imports, tests, QC, build or consumer-repository gate.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

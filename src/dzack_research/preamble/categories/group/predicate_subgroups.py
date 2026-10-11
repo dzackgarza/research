@@ -20,8 +20,8 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     _subgroup_vector_orbit_representatives,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.set_categories import Set
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.categories.sets.set_categories import Set, _ConditionSetEngine
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -99,6 +99,23 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def defining_predicate(self):
             return self._predicate
 
+        def universe(self):
+            r"""The literal ambient set for the inherited predicate-subset operations."""
+            return self.supergroup()
+
+        predicate = defining_predicate
+
+        # The subgroup is the same predicate subset of its ambient group.
+        # Reuse the set owner's membership, admission and enumeration rules;
+        # group closure is a premise of this subgroup construction.
+        __contains__ = _ConditionSetEngine.__contains__
+        is_parent_of = __contains__
+        __iter__ = _ConditionSetEngine.__iter__
+
+        def _element_constructor_(self, datum):
+            r"""Read ambient group literals, then use the set owner's predicate admission."""
+            return _ConditionSetEngine._element_constructor_(self, self.supergroup()(datum))
+
         def finite_index_schreier_generators(self, *, index_bound, generators=None):
             r"""Generate a finite-index predicate subgroup by coset traversal.
 
@@ -135,6 +152,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             """
             ambient = self.supergroup()
             if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
                 generators = tuple(ambient.group_generators())
             else:
                 generators = tuple(generators)
@@ -217,18 +238,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
             return cardinal(sum(1 for _element in self))
 
-        def __iter__(self):
-            r"""The elements of the finite supergroup satisfying the predicate."""
-            supergroup = self.supergroup()
-            assert supergroup.is_finite() is True, (
-                f"cannot list the elements of the subgroup {self}: its group {supergroup} "
-                f"is not known to be finite"
-            )
-            return (element for element in supergroup if self._predicate(element))
-
-        def __contains__(self, element):
-            return element in self.supergroup() and bool(self._predicate(element))
-
         @cached_method
         def _engine_group(self):
             r"""The engine subgroup on the elements of this subgroup of a finite group.
@@ -247,24 +256,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def _from_engine(self, engine_element):
             return self.supergroup()._from_subgroup_engine(engine_element)
 
-        def _element_constructor_(self, datum):
-            supergroup = self.supergroup()
-            element = datum if datum in supergroup else supergroup(datum)
-            if element not in self:
-                raise ValueError(
-                    f"{element} is not an element of the subgroup {self}: it does not "
-                    f"satisfy {self._description}"
-                )
-            return element
-
         def one(self):
-            identity = self.supergroup().one()
-            if identity not in self:
-                raise ValueError(
-                    f"{self} is not a subgroup of {self.supergroup()}: the identity {identity} "
-                    f"does not satisfy {self._description}"
-                )
-            return identity
+            r"""The ambient identity, which lies in the declared subgroup."""
+            return self.supergroup().one()
 
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
@@ -510,6 +504,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             morphism = self.kernel_morphism()
             ambient = self.supergroup()
             if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
                 generators = tuple(ambient.group_generators())
             else:
                 generators = tuple(generators)
@@ -572,7 +570,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             )
         if predicate is None:
             def predicate(element):
-                return morphism(element) in subgroup
+                return subgroup.is_parent_of(morphism(element))
         if description is None:
             description = f"{morphism}(g) lies in {subgroup}"
         return _object_of(
@@ -631,6 +629,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             ambient = self.supergroup()
             target = self.target_subgroup()
             if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
                 source_generators = tuple(ambient.group_generators())
             else:
                 source_generators = tuple(generators)
@@ -757,7 +759,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         return _object_of(
             _predicate_subgroup_category(self),
             supergroup=group,
-            predicate=lambda element: all(element in subgroup for subgroup in subgroups),
+            predicate=lambda element: conjunction(subgroup.is_parent_of(element) for subgroup in subgroups),
             description="g lies in every selected subgroup",
             character_data=character_data,
             character_data_complete=character_data_complete,
