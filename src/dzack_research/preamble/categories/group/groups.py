@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoryPacketMethods,
     EndCategoryConstruction,
     MorCategoryConstruction,
+    MorCategories,
     IsoCategoryConstruction,
     _category_mor_parent,
     _distinct_supercategories,
@@ -2108,7 +2109,11 @@ class GroupMorphism:
         in the inherited weaker Mor.
         """
         source = right.domain()
-        if source not in OwnedGroups() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
+        if (
+            source not in OwnedGroups()
+            or right.parent() not in MorCategories()
+            or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups())
+        ):
             return super()._composition(right)
         if right.parent() is self.parent() and self.parent() in AbelianGroupEndomorphismRings():
             return self.parent()._compose_endomorphisms(self, right)
