@@ -1,10 +1,20 @@
 """Algebras equipped with an augmentation morphism to the base ring."""
 
 from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    CommutativeSquare, SliceCategory, SliceMorCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    MultiplicativeAlgebraMorphism,
+    UnitalMultiplicativeAlgebraMor,
+    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _root_algebra_law_decisions,
     _scalar_module,
@@ -17,109 +27,359 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_algebras import (
+    GradedAlgebraMor, GradedAlgebras,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     _owned_ring,
 )
+from dzack_research.preamble.logic import conjunction
+from dzack_research.preamble.validation import validator
 
 
-class AugmentedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Associative unital \(R\)-algebras equipped with an augmentation.
+def AugmentedAlgebras(base_ring):
+    r"""Return the canonical slice of associative unital ``R``-algebras over ``R``.
 
-    An \(R\)-algebra is a ring \(A\) together with a ring homomorphism
-    \(R\to A\). If it is further equipped with an \(R\)-algebra homomorphism
-    the other way,
-    \[
-    \varepsilon\colon A\to R,
-    \]
-    then it is an *augmented* \(R\)-algebra. The kernel of \(\varepsilon\) is
-    the augmentation ideal. This is the nLab definition of an augmented
-    algebra (Cartan–Eilenberg: a supplemented algebra).
+    An object retains its algebra and chosen augmentation ``epsilon: A -> R``.
+    A morphism ``f: A -> B`` is an algebra morphism satisfying
+    ``epsilon_B*f = epsilon_A``. This is the existing slice construction,
+    with its scalar-algebra implementation; both entries retain one category.
+    """
+    ring = _owned_ring(base_ring)
+    if ring not in OwnedRings().Commutative():
+        raise TypeError(f"augmented R-algebras require a commutative R, but got {ring}")
+    ordinary = Algebras(ring).Associative().Unital()
+    return SliceCategory(ordinary, _scalar_module(ring))
+
+
+class _AugmentedAlgebraMorphism:
+    r"""An actual algebra arrow with its retained augmentation triangle.
+
+    The existing algebra Mor constructs the lower arrow on the same
+    structured endpoints. Its cooperative constructor supplies every lower
+    arrow operation. The extra datum is an existing ArrowMor square, whose
+    right edge is the identity of the scalar algebra.
     """
 
+    def __init__(self, parent, datum, *, augmentation_square=None, **options):
+        underlying = parent.underlying_mor()
+        # Reading a stronger arrow in C preserves it literally. Here the
+        # defining square needs the existing C implementation, so enter its
+        # actual constructor on the retained whole-map datum. This prevents
+        # an augmented edge from recursively composing its own square.
+        if isinstance(datum, Morphism) and datum.parent() is underlying:
+            arrow = datum
+        elif (
+            isinstance(underlying, UnitalMultiplicativeAlgebraMor)
+            and isinstance(datum, UnitalMultiplicativeAlgebraMorphism)
+            and datum.domain() is parent.domain()
+            and datum.codomain() is parent.codomain()
+        ):
+            # The common unframed constructor otherwise forgets f to U(f)
+            # before its unital provider sees it. This existing exact-map
+            # transport keeps f's three law decisions independently.
+            arrow = underlying._from_constructed_element_map(
+                datum, transported_morphism=datum,
+            )
+        else:
+            # In particular the graded constructor retains the actual
+            # source map and its independent degree-preservation datum.
+            arrow = underlying._element_constructor_(datum)
+        self._augmentation_underlying_morphism = arrow
+        if augmentation_square is None:
+            augmentation_square = parent._square_of(arrow)
+        elif (
+            augmentation_square.parent() is not parent._augmentation_square_mor()
+            or augmentation_square.left() is not datum
+        ):
+            raise ValueError("the augmentation triangle must retain this exact defining algebra arrow")
+        elif arrow is not datum:
+            augmentation_square = parent._augmentation_square_mor()._from_commuting_edges(
+                arrow, augmentation_square.right(),
+                commutativity_premises=(augmentation_square,),
+            )
+        self._augmentation_square = augmentation_square
+        args, transported_options = arrow._transport_initialization_to_mor(parent)
+        super().__init__(*args, **transported_options, **options)
+        self.validate_augmentation_preservation(check=False)
+
+    def _elementwise_linearity_derivation(self):
+        return self._augmentation_underlying_morphism.linearity_decision()
+
+    def _multiplicativity_derivation(self):
+        return self._augmentation_underlying_morphism.is_multiplicative()
+
+    def _unit_preservation_derivation(self):
+        return self._augmentation_underlying_morphism.preserves_unit()
+
+    def underlying_arrow(self):
+        r"""The retained arrow after forgetting augmentation preservation."""
+        return self._augmentation_underlying_morphism
+
+    def augmentation_square(self):
+        r"""The defining square with left edge ``f`` and right edge ``id_R``."""
+        return self._augmentation_square
+
+    def left(self):
+        r"""The free edge of this slice morphism, on its structured endpoints."""
+        return self.augmentation_square().left()
+
+    def right(self):
+        r"""The retained edge at the fixed scalar object."""
+        return self.augmentation_square().right()
+
+    @cached_method
+    def preserves_augmentation(self):
+        r"""The augmentation equation, retaining undecided morphism equality."""
+        square = self.augmentation_square()
+        scalar = square.right().domain()
+        ordinary = Algebras(self.domain().algebra_base_ring()).Associative().Unital()
+        identity = ordinary.Mor(scalar, scalar).identity()
+        return conjunction((square.commutativity_decision(), square.right() == identity))
+
+    commutativity_decision = preserves_augmentation
+
+    @validator
+    def validate_augmentation_preservation(self):
+        r"""Check the defining triangle when requested, following ``OWN-22``."""
+        decision = self.preserves_augmentation()
+        if decision is False:
+            raise ValueError(f"{self.underlying_arrow()} does not preserve the chosen augmentations")
+        assert decision is True, (
+            "no selected algebra-morphism equality computation decides this augmentation triangle"
+        )
+
+    def __mul__(self, other):
+        if not isinstance(other, _AugmentedAlgebraMorphism):
+            return MultiplicativeAlgebraMorphism.__mul__(self, other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        if self.domain() is self.codomain() and self is self.parent().identity():
+            return other
+        if other.domain() is other.codomain() and other is other.parent().identity():
+            return self
+        category = Cat().join((self.parent().mor_category(), other.parent().mor_category()))
+        square = self.augmentation_square() * other.augmentation_square()
+        return category.Mor(other.domain(), self.codomain())._from_augmentation_square(
+            square, degree_preservation_premises=(self, other),
+        )
+
+
+class _AugmentedAlgebraMor(CategoricalMor):
+    r"""The existing scalar-slice Mor, with the actual algebra-arrow provider."""
+
+    ElementMethods = _AugmentedAlgebraMorphism
+
+    def underlying_mor(self):
+        ordinary = Algebras(self.domain().algebra_base_ring()).Associative().Unital()
+        return ordinary.Mor(self.domain(), self.codomain())
+
+    @cached_method
+    def _augmentation_square_mor(self):
+        ordinary = Algebras(self.domain().algebra_base_ring()).Associative().Unital()
+        arrows = ordinary.ArrowCategory()
+        source = arrows(self.domain().augmentation())
+        target = arrows(self.codomain().augmentation())
+        return arrows.Mor(source, target)
+
+    def _square_of(self, arrow):
+        scalar = self.domain().augmentation().codomain()
+        ordinary = Algebras(self.domain().algebra_base_ring()).Associative().Unital()
+        return self._augmentation_square_mor()(arrow, ordinary.Mor(scalar, scalar).identity())
+
+    def _element_constructor_(self, datum, *, check=False):
+        if isinstance(datum, CommutativeSquare):
+            morphism = self._from_augmentation_square(datum)
+        else:
+            morphism = self.element_class(self, datum)
+        morphism.validate_augmentation_preservation(check=check)
+        return morphism
+
+    def _from_augmentation_square(self, square, *, degree_preservation_premises=None):
+        square = self._augmentation_square_mor()(square)
+        return self.element_class(self, square.left(), augmentation_square=square)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("the identity in an augmented-algebra Mor requires equal endpoints")
+        return self._from_augmentation_square(self._augmentation_square_mor().identity())
+
+
+class _GradedAugmentedAlgebraMor(_AugmentedAlgebraMor, GradedAlgebraMor):
+    r"""Algebra arrows retaining both the selected grading and augmentation."""
+
+    def __init__(self, mor_family, domain, codomain):
+        GradedAlgebraMor.__init__(self, mor_family, domain, codomain)
+
+    def underlying_mor(self):
+        graded = GradedAlgebras(self.domain().algebra_base_ring(), self.grading_monoid())
+        return graded.Mor(self.domain(), self.codomain())
+
+    def _from_augmentation_square(self, square, *, degree_preservation_premises=None):
+        r"""Retain the composite's actual graded arrows as sufficient premises."""
+        square = self._augmentation_square_mor()(square)
+        return self.element_class(
+            self, square.left(), augmentation_square=square,
+            degree_preservation_premises=degree_preservation_premises,
+        )
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("the identity in a graded augmented Mor requires equal endpoints")
+        square = self._augmentation_square_mor().identity()
+        return self.element_class(
+            self, square.left(), augmentation_square=square,
+            degree_preservation_premises=(),
+        )
+
+
+class _AugmentedAlgebraSlice(SliceCategory):
+    r"""The scalar-slice implementation of ``AugmentedAlgebras(R)``.
+
+    This is selected by the existing SliceCategory cache, not a second
+    category. The original algebra and its one chosen map are retained by
+    the slice; the algebra owner constructs the structured domain on the
+    original module, multiplication and unit.
+    """
+
+    _SliceMor = _AugmentedAlgebraMor
+
+    @staticmethod
+    def __classcall__(cls, base_category, base_object):
+        return SliceCategory(base_category, base_object)
+
+    @classmethod
+    def _slice_category_class_for(cls, base_category, base_object):
+        return cls if base_object is _scalar_module(base_category.base_ring()) else None
+
+    def base_ring(self):
+        return self.base_category().base_ring()
+
+    def object(self, augmentation, *, categories=(), construction_data=None, _engine=None):
+        r"""Admit the exact scalar map, then use the canonical slice cache."""
+        if not isinstance(augmentation, Map):
+            raise TypeError("an augmented algebra is supplied by an algebra map to its scalar algebra")
+        domain = augmentation.domain()
+        if domain not in self.base_category() or domain.algebra_base_ring() is not self.base_ring():
+            raise ValueError("the augmentation must retain the requested coefficient ring")
+        if augmentation.codomain() is not self.base_object():
+            raise ValueError("the augmentation must end at the exact canonical scalar algebra")
+        selected = self.base_category().Mor(domain, self.base_object())(augmentation)
+        return SliceCategory.object(
+            self, selected, categories=categories,
+            construction_data=construction_data, _engine=_engine,
+        )
+
+    __call__ = object
+
+    def _construct_on(self, arrow, categories, engine, construction_data):
+        return _augmented_algebra(
+            arrow, category=self, categories=categories,
+            construction_data=construction_data, engine=engine,
+        )
+
     def an_object(self):
-        r"""``R[x]`` augmented by evaluation at zero.
-
-        The augmentation is the algebra morphism \(R[x]\to R\) sending the
-        generator to \(0\); the structured object retains that exact algebra
-        and selected morphism as its data.
-        """
-
         ring = self.base_ring()
         polynomials = ring.free_module(("x",)).symmetric_algebra()
         label = next(iter(polynomials.algebra_generating_set()))
-        return self(polynomials.Mor(ring)({label: ring.zero()}))
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "augmented algebras"
-
-    def super_categories(self):
-        return [Algebras(self.base_ring()).Associative().Unital()]
-
-    def _call_(self, augmentation):
-        return _augmented_algebra(augmentation)
+        return self(polynomials.Mor(self.base_object())({label: self.base_object().zero()}))
 
     class ParentMethods:
-        def __init__(self, selected_augmentation=None, **rest) -> None:
-            assert selected_augmentation is not None, (
-                "an augmented algebra needs its augmentation A -> R, but none was given"
-            )
-            self._preamble_selected_augmentation = selected_augmentation
+        def __init__(self, algebra_default_mor_category=None, **rest):
+            r"""Retain the producing construction's selected default arrow theory.
+
+            The canonical power producer supplies its actual power category.
+            An ordinary augmentation entry leaves this datum empty and uses
+            the scalar slice, together with a common retained grading when
+            both endpoints have it. Explicit category requests are unchanged.
+            """
+            self._algebra_default_mor_category = algebra_default_mor_category
             super().__init__(**rest)
 
-        def is_augmented(self) -> bool:
+        def _default_algebra_mor_category(self, codomain):
+            r"""Select the theory retained by both augmented endpoints.
+
+            Power-construction maps are the default only when both endpoints
+            retain that same producer choice. A new augmentation on the same
+            power algebra may differ, so its default instead states the
+            actual augmentation triangle, and the grading when shared.
+            """
+            category = AugmentedAlgebras(self.algebra_base_ring())
+            if codomain not in category:
+                return None
+            selected = self._algebra_default_mor_category
+            if (
+                selected is not None
+                and codomain._algebra_default_mor_category is selected
+                and self in selected and codomain in selected
+            ):
+                return selected
+            graded = _declared_graded_algebra_category(self)
+            if graded is not None:
+                common = GradedAugmentedAlgebras(
+                    self.algebra_base_ring(), graded.grading_monoid(),
+                )
+                if self in common and codomain in common:
+                    return common
+            return category
+
+        def is_augmented(self):
+            r"""This object retains a chosen augmentation, its scalar-slice datum."""
             return True
 
         @cached_method
         def augmentation(self):
-            r"""The selected augmentation on this exact structured endpoint.
+            r"""The chosen augmentation on this exact structured endpoint.
 
-            The wrapper retains the same module, multiplication and unit.
-            Transport therefore uses the selected map's actual linearity,
-            multiplication and unit premises, without a finite generator
-            comparison or a fresh assertion of any undecided law.
+            The wrapper retains the original module, multiplication and unit,
+            so each law is transported from the selected arrow independently.
             """
-            from dzack_research.preamble.categories.algebras.comparison_maps import _constructed_algebra_morphism
+            from dzack_research.preamble.categories.algebras.comparison_maps import (
+                _constructed_algebra_morphism,
+            )
 
-            selected = self._preamble_selected_augmentation
+            category = AugmentedAlgebras(self.algebra_base_ring())
+            selected = category.arrow(self)
             source = self.unformed_module()
-            target = selected.codomain()
             return _constructed_algebra_morphism(
-                self,
-                target,
+                self, selected.codomain(),
                 lambda element: selected(source(element)),
                 transported_morphism=selected,
             )
 
-
 class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Graded algebras over an augmented \(R\)-algebra.
+    r"""Associative unital algebras with a chosen grading and augmentation.
 
-    Let \(B\) be an augmented \(R\)-algebra and let \(A\) be a graded
-    \(B\)-algebra that is itself augmented over \(B\). The composite of
-    the two augmentations is an augmentation of \(A\) over \(R\):
-    \[
-    A \to B \to R.
-    \]
-    For a connected grading, \(B = A_u = R\) and the second map is the
-    identity. This is the nLab graded-plus-augmented situation
-    (Cartan–Eilenberg: a supplemented graded algebra).
+    These are independent data over the same commutative ``R``. A morphism
+    preserves both. No projection to the unit-degree piece, centrality of
+    that piece, connectedness, or grading law for the augmentation is stated.
     """
 
+    _MorCategory = SliceMorCategoryConstruction
+    _SliceMor = _GradedAugmentedAlgebraMor
+
+    @classmethod
+    def parameter_category(cls):
+        return OwnedRings().Commutative()
+
     def an_object(self):
-        r"""``R[x]`` augmented by evaluation at zero.
-
-        The augmentation is the algebra morphism \(R[x]\to R\) sending the
-        generator to \(0\); the structured object retains that exact algebra
-        and selected morphism as its data.
-        """
-
+        r"""The scalar algebra, concentrated in the grading's identity degree."""
+        from dzack_research.preamble.categories.algebras.comparison_maps import (
+            _constructed_algebra_morphism,
+        )
         ring = self.base_ring()
-        polynomials = ring.free_module(("x",)).symmetric_algebra()
-        label = next(iter(polynomials.algebra_generating_set()))
-        return AugmentedAlgebras(ring)(polynomials.Mor(ring)({label: ring.zero()}))
+        algebra = GradedAlgebras(ring, self.grading_monoid()).an_object()
+        label = next(iter(algebra.module_generating_set()))
+        scalar = _scalar_module(ring)
+        augmentation = _constructed_algebra_morphism(
+            algebra, scalar,
+            lambda element: scalar(algebra(element).to_vector()(label)),
+        )
+        return AugmentedAlgebras(ring)(augmentation)
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
@@ -149,20 +409,8 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def ground_ring_augmentation(self):
-            r"""The composite augmentation \(A\to A_u\to R\).
-
-            The first arrow is the augmentation of \(A\) as an \(A_u\)-algebra.
-            The second is the augmentation of \(A_u\) as an \(R\)-algebra;
-            when \(A_u = R\) that second map is the identity.
-            """
-            unit = self.graded_piece(self.grading_monoid().monoidal_unit())
-            to_unit = self.augmentation()
-            ground = self.algebra_base_ring()
-            match unit:
-                case _ if unit in AugmentedAlgebras(ground):
-                    return unit.augmentation() * to_unit
-                case _:
-                    return unit.algebra_structure_morphism() * to_unit
+            r"""The actual chosen ``A -> R`` map, without an unchosen factorization."""
+            return self.augmentation()
 
 
 def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
@@ -173,7 +421,7 @@ def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
     realization, not a change of the augmentation's mathematical target.
     """
     _ = domain
-    return codomain is base or codomain is _scalar_module(base)
+    return codomain is _scalar_module(base)
 
 
 def _declared_graded_algebra_category(domain):
@@ -213,13 +461,19 @@ def _graded_algebra_placement(domain, base):
     return placement
 
 
-def _augmented_algebra(augmentation):
+def _augmented_algebra(
+    augmentation, *, category=None, categories=(), construction_data=None, engine=None,
+    default_mor_category=None,
+):
     r"""Return the domain of ``augmentation``, as an augmented algebra.
 
-    An augmentation of an \(R\)-algebra is an algebra morphism \(A\to R\).
-    When \(A\) is graded, the unit-degree piece \(A_u\) is a subalgebra, and
-    \(A\) is an \(A_u\)-algebra; an augmentation of that algebra is a map
-    \(A\to A_u\).
+    The selected scalar slice retains this exact map and the algebra owner
+    retains its domain as the structured algebra's underlying module. A
+    grading, when present, is independent data; it supplies no map to ``A_u``.
+    The module owner selects the actual finite, free or general realization;
+    its existing same-data construction has no additional engine parameter.
+    A canonical power producer may retain its actual default Mor category;
+    an ordinary augmentation entry selects the common augmentation theory.
     """
     match isinstance(augmentation, Map):
         case True:
@@ -229,8 +483,18 @@ def _augmented_algebra(augmentation):
                 f"an augmentation is an algebra morphism A -> R, but {augmentation!r} is not a map"
             )
     domain = augmentation.domain()
-    base = _owned_ring(domain.base_ring())
+    if category is None:
+        category = AugmentedAlgebras(domain.algebra_base_ring())
+    base = category.base_ring()
     algebras = Algebras(base).Associative().Unital()
+    if domain.algebra_base_ring() is not base:
+        raise ValueError("the augmentation must have the requested literal coefficient ring")
+    assert engine is None, (
+        "this scalar slice retains the original algebra's exact module data; "
+        "the module owner's existing same-data construction selects its "
+        "realization and has no supplied composition with another private "
+        "slice engine"
+    )
     match domain in algebras:
         case True:
             pass
@@ -252,7 +516,13 @@ def _augmented_algebra(augmentation):
     law_decisions = _root_algebra_law_decisions(domain)
     if _declared_graded_algebra_category(domain) is not None:
         law_decisions["grading"] = domain.grading_compatibility_decision()
-    data = {"selected_augmentation": selected}
+    data = dict(construction_data or {})
+    data["algebra_default_mor_category"] = default_mor_category
+    arrows = dict(data.pop("slice_arrows", {}))
+    if category in arrows and arrows[category] is not selected:
+        raise ValueError("one scalar slice cannot retain two different augmentations")
+    arrows[category] = selected
+    data["slice_arrows"] = arrows
     # A power algebra's defining input is M, not its whole graded module.
     # Pass that exact datum through construction before cooperative init;
     # the direct-sum realization retains the same graded-piece family.
@@ -262,6 +532,8 @@ def _augmented_algebra(augmentation):
     elif domain in DividedPowerAlgebras(base):
         data["generating_module"] = domain.generating_module()
         data["power_flavor"] = "divided"
+    elif domain in SymmetricAlgebras(base) or domain in TensorAlgebras(base):
+        data["generating_module"] = domain.generating_module()
     if domain.is_framed_algebra():
         framing_owner = domain.algebra_framing_owner()
         data["algebra_generating_family"] = domain.algebra_generators()
@@ -270,7 +542,8 @@ def _augmented_algebra(augmentation):
     return _algebra_on_module(
         domain,
         domain.multiplication_morphism(),
-        placement=(AugmentedAlgebras(base), *tuple(placement)),
+        placement=(category, *tuple(placement)),
+        categories=categories,
         unit=domain.one(),
         construction_data=data,
         law_decisions=law_decisions,

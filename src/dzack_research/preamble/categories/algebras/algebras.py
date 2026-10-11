@@ -311,11 +311,86 @@ class MultiplicativeAlgebraMor(CategoricalMor):
 class UnitalMultiplicativeAlgebraMorphism:
     r"""A morphism of unital algebras: multiplicative and \(f(1) = 1\)."""
 
+    @cached_method
+    def _constructed_algebra_map_decision(self):
+        r"""The sufficient hypotheses of the retained algebra-map construction.
+
+        Only a decided true conjunction proves the laws of a constructed
+        evaluator. A failed or undecided sufficient premise leaves its
+        ordinary diagnostics in force. Transport of an actual map instead
+        retains its three independent law decisions in the suppliers below.
+        """
+        transported = self._transported_algebra_morphism
+        if transported is not None:
+            return conjunction((
+                transported.linearity_decision(),
+                transported.is_multiplicative(),
+                transported.preserves_unit(),
+            ))
+        if self._constructed_algebra_map_premises is None:
+            return None
+        maps, equations = self._constructed_algebra_map_premises
+        return conjunction((
+            conjunction(morphism.linearity_decision() for morphism in maps),
+            conjunction(equations),
+        ))
+
+    def _elementwise_linearity_derivation(self):
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.linearity_decision()
+        if self._constructed_algebra_map_decision() is True:
+            return True
+        return super()._elementwise_linearity_derivation()
+
+    def _multiplicativity_derivation(self):
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.is_multiplicative()
+        if self._constructed_algebra_map_decision() is True:
+            return True
+        return super()._multiplicativity_derivation()
+
     def _unit_preservation_derivation(self):
         r"""Return a construction-derived unit-preservation decision, or ``None``."""
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.preserves_unit()
+        if self._constructed_algebra_map_decision() is True:
+            return True
         return None
 
-    def __init__(self, parent, underlying_morphism) -> None:
+    def __init__(
+        self, parent, underlying_morphism, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(underlying_morphism, UnitalMultiplicativeAlgebraMorphism)
+            and underlying_morphism.domain() is parent.domain()
+            and underlying_morphism.codomain() is parent.codomain()
+        ):
+            _transported_morphism = underlying_morphism
+        if _transported_morphism is not None:
+            domain = parent.domain()
+            codomain = parent.codomain()
+            if (
+                not isinstance(_transported_morphism, UnitalMultiplicativeAlgebraMorphism)
+                or _transported_morphism.codomain() is not codomain
+                or (
+                    _transported_morphism.domain() is not domain
+                    and _transported_morphism.domain() is not domain.unformed_module()
+                )
+                or _transported_morphism not in Algebras(
+                    domain.algebra_base_ring()
+                ).Unital().Mor(_transported_morphism.domain(), codomain)
+            ):
+                raise ValueError(
+                    f"transporting an algebra map to {domain} -> {codomain} requires "
+                    "the same endpoints, or the retained same-product module domain "
+                    "and unchanged codomain"
+                )
+        # These are the actual input maps/equations, installed before the
+        # lower-arrow initialization and its deferred validators.
+        self._constructed_algebra_map_premises = _construction_premises
+        self._transported_algebra_morphism = _transported_morphism
         super().__init__(parent, underlying_morphism)
         self.validate_unit_preservation(check=False)
 
@@ -357,6 +432,44 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
     r"""``Mor`` of unital algebras: the multiplicative linear maps preserving the unit."""
 
     ElementMethods = UnitalMultiplicativeAlgebraMorphism
+
+    def _from_constructed_element_map(
+        self, evaluator, *, linearity_premises=(), equations=(),
+        transported_morphism=None,
+    ):
+        r"""Construct a unital algebra map from its actual construction data.
+
+        This is the common supplier for canonical comparisons, exterior
+        extensions and augmentations. The selected fixed Mor still runs its
+        own whole-map constructor; a framing or presentation is not required.
+        The supplied construction proves the laws when its retained linear
+        maps and equations hold. Empty families mean that its formula alone
+        proves them. Failed or undecided sufficient premises leave the
+        ordinary evaluator diagnostics in force.
+
+        An actual transported map retains linearity, multiplicativity and
+        unit preservation independently. Equal literal endpoints support
+        strengthening the arrow's category. The other permitted caller is
+        the scalar-slice augmentation wrapper: its construction retains the
+        old algebra as its module, with that algebra's literal multiplication
+        and unit. Endpoint agreement alone does not certify a new product on
+        an old module; this protected wrapper construction supplies that
+        same-data relation.
+        """
+        if not callable(evaluator):
+            raise TypeError(
+                f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
+                f"but {evaluator!r} is not callable"
+            )
+        represented = SetMorphism(
+            Sets().Mor(self.domain(), self.codomain()),
+            lambda element: self.codomain()(evaluator(self.domain()(element))),
+        )
+        return self.element_class(
+            self, represented,
+            _construction_premises=(tuple(linearity_premises), tuple(equations)),
+            _transported_morphism=transported_morphism,
+        )
 
     def _repr_(self):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
@@ -1684,6 +1797,16 @@ class Algebras(OwnedCategoryOverBaseRing):
                         "functor currently computes associative-unital algebras"
                     )
 
+        @RealizationHook
+        def _default_algebra_mor_category(self, codomain):
+            r"""Supply the construction's selected category for default arrows.
+
+            A supplying construction checks both endpoints and returns its
+            actual retained category. None leaves the ordinary algebra
+            default in force.
+            """
+            return None
+
         def Mor(self, codomain, category=None):
             r"""Select the algebra arrow laws requested by the two endpoints.
 
@@ -1692,6 +1815,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             still asks only for a linear multiplicative map.
             """
             base = self.algebra_base_ring()
+            if category is None:
+                selected = self._default_algebra_mor_category(codomain)
+                if selected is not None:
+                    return _category_mor_parent(selected, self, codomain)
             if category is None and base is self and self in OwnedRings():
                 return OwnedRings.ParentMethods.Mor(self, codomain)
             algebras = Algebras(base)
@@ -1702,12 +1829,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return ordinary.Mor(self, codomain)
                 if self in unital and codomain in unital:
                     return unital.Mor(self, codomain)
-                return algebras.Mor(self, codomain)
-            if category.is_subcategory(ordinary):
-                return ordinary.Mor(self, codomain)
-            if category.is_subcategory(unital):
-                return unital.Mor(self, codomain)
-            if category.is_subcategory(algebras):
                 return algebras.Mor(self, codomain)
             return _category_mor_parent(category, self, codomain)
 
@@ -2098,7 +2219,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     f"{category} is not a category of algebras over {self.algebra_base_ring()}, so Mor({self}, "
                     f"{codomain}) cannot be formed in it"
                 )
-            return Algebras.ParentMethods.Mor(self, codomain, category=category)
+            return self.Mor(codomain, category=category)
 
     class Associative(CategoryWithAxiom):
         r"""Algebras whose multiplication is associative."""
@@ -2173,6 +2294,15 @@ class Algebras(OwnedCategoryOverBaseRing):
                 ]
 
             _MorCategory = UnitalAlgebraMorCategoryConstruction
+
+            @property
+            def _SliceCategory(self):
+                r"""Supply the algebra realization of the canonical scalar slice."""
+                from dzack_research.preamble.categories.algebras.augmented_algebras import (
+                    _AugmentedAlgebraSlice,
+                )
+
+                return _AugmentedAlgebraSlice
 
             class SubcategoryMethods:
                 def ProjectiveAsAlgebra(self):
@@ -3397,59 +3527,30 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
 class AlgebraMorphism:
     r"""An ``R``-algebra morphism specified by the images of algebra generators."""
 
-    @cached_method
-    def _constructed_algebra_map_decision(self):
-        r"""The retained hypotheses of the selected algebra-map construction.
-
-        The supplying construction proves the algebra laws from its actual
-        linear maps and defining equations. A failed or undecided sufficient
-        premise is not a refutation of the chosen evaluator; only a literal
-        True supplies a derivation, and otherwise the ordinary diagnostics
-        remain authoritative.
-        """
-        transported = self._transported_algebra_morphism
-        if transported is not None:
-            return conjunction((
-                transported.linearity_decision(),
-                transported.is_multiplicative(),
-                transported.preserves_unit(),
-            ))
-        if self._constructed_algebra_map_premises is None:
-            return None
-        maps, equations = self._constructed_algebra_map_premises
-        return conjunction((
-            conjunction(morphism.linearity_decision() for morphism in maps),
-            conjunction(equations),
-        ))
-
-    def _elementwise_linearity_derivation(self):
-        if self._transported_algebra_morphism is not None:
-            return self._transported_algebra_morphism.linearity_decision()
-        if self._constructed_algebra_map_decision() is True:
-            return True
-        return super()._elementwise_linearity_derivation()
-
     def _multiplicativity_derivation(self):
         r"""Generator extension proves the law; arbitrary map ingress states it."""
-        if self._transported_algebra_morphism is not None:
-            return self._transported_algebra_morphism.is_multiplicative()
-        if self._constructed_algebra_map_decision() is True:
-            return True
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
         return self._generator_extension_laws
 
     def _unit_preservation_derivation(self):
-        if self._transported_algebra_morphism is not None:
-            return self._transported_algebra_morphism.preserves_unit()
-        if self._constructed_algebra_map_decision() is True:
-            return True
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
         return self._generator_extension_laws
 
     def __init__(
         self, parent, images, *, _construction_premises=None,
         _transported_morphism=None,
     ) -> None:
-        self._constructed_algebra_map_premises = _construction_premises
-        self._transported_algebra_morphism = _transported_morphism
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         self._generator_extension_laws = None
         domain = parent.domain()
         codomain = parent.codomain()
@@ -3478,7 +3579,10 @@ class AlgebraMorphism:
             else:
                 self._generator_images = None
             linear = domain.module_category().Mor(domain, codomain).elementwise(images)
-            super().__init__(parent, linear)
+            super().__init__(
+                parent, linear, _construction_premises=_construction_premises,
+                _transported_morphism=_transported_morphism,
+            )
             return
         if isinstance(images, Map):
             if images.domain() is domain and images.codomain() is codomain:
@@ -3500,7 +3604,10 @@ class AlgebraMorphism:
                 ).elementwise(
                     lambda element: codomain(images(domain(element)))
                 )
-                super().__init__(parent, linear)
+                super().__init__(
+                    parent, linear, _construction_premises=_construction_premises,
+                    _transported_morphism=_transported_morphism,
+                )
                 return
             engine_domain = _engine_ring(domain)
             engine_codomain = _engine_ring(codomain)
@@ -3528,7 +3635,10 @@ class AlgebraMorphism:
                     images(engine_domain(domain(element)))
                 )
             )
-            super().__init__(parent, linear)
+            super().__init__(
+                parent, linear, _construction_premises=_construction_premises,
+                _transported_morphism=_transported_morphism,
+            )
             return
         engine_domain = _engine_ring(domain)
         engine_codomain = _engine_ring(codomain)
@@ -3613,7 +3723,10 @@ class AlgebraMorphism:
                 self._engine_morphism(engine_domain(domain(element)))
             )
         )
-        super().__init__(parent, linear)
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
+        )
 
     def __call__(self, element):
         r"""Apply this owned algebra morphism to an engine-backed facade element."""
@@ -3721,11 +3834,17 @@ class PresentedAlgebraMorphism:
         return super()._elementwise_linearity_derivation()
 
     def _multiplicativity_derivation(self):
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
         if self._presentation_descent_decision() is True:
             return True
         return None
 
     def _unit_preservation_derivation(self):
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
         if self._presentation_descent_decision() is True:
             return True
         return None
@@ -3783,7 +3902,17 @@ class PresentedAlgebraMorphism:
                 "do not annihilate its presentation relations"
             )
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         domain = parent.domain()
         codomain = parent.codomain()
         labels = domain.algebra_generating_set()
@@ -3802,7 +3931,10 @@ class PresentedAlgebraMorphism:
                 name="Generator images",
             )
             linear = domain.module_category().Mor(domain, codomain).elementwise(images)
-            super().__init__(parent, linear)
+            super().__init__(
+                parent, linear, _construction_premises=_construction_premises,
+                _transported_morphism=_transported_morphism,
+            )
             return
         size = labels.cardinality()
         if not size.is_finite():
@@ -3857,7 +3989,10 @@ class PresentedAlgebraMorphism:
                 self._presentation_map(domain.lift_to_presentation(domain(element)))
             )
         )
-        super().__init__(parent, linear)
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
+        )
         self.validate_presentation_relations(check=False)
 
     def algebra_generator_morphism(self):
@@ -4027,57 +4162,6 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
 
     def _element_constructor_(self, images):
         return self.element_class(self, images)
-
-    def _from_constructed_element_map(
-        self, evaluator, *, linearity_premises=(), equations=(),
-        transported_morphism=None,
-    ):
-        r"""Construct an algebra map under the actual premises of its construction.
-
-        This protected route is for canonical maps such as the factorial
-        comparison ``Gamma(M) -> Sym(M)``.  It retains the ordinary algebra-Mor
-        parent and an actual owned set map; arbitrary user element functions do
-        not enter through this route. The supplying construction proves
-        linearity, multiplication and unit preservation when the retained
-        module maps are linear and the defining equations hold. Empty families
-        mean that the construction alone proves these laws. Undecided premises
-        remain available to the actual arrow's ordinary diagnostics.
-
-        ``transported_morphism`` is the existing algebra map when a structured
-        wrapper retains its domain's exact module, product and unit, as in
-        augmentation. This is transport of the same defining data, not a new
-        extension: each law retains that map's own decision independently.
-        Only ``AugmentedAlgebras.augmentation`` supplies this private datum:
-        ``_augmented_algebra`` constructs its source from ``A`` and the literal
-        ``A.multiplication_morphism()`` and ``A.one()``. The endpoint check
-        below checks those retained endpoints; it is not by itself a proof
-        that an arbitrary new product on the same module agrees with the old.
-        """
-        if not callable(evaluator):
-            raise TypeError(
-                f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, but {evaluator!r} "
-                "is not callable"
-            )
-        if transported_morphism is not None:
-            if (
-                not isinstance(transported_morphism, ModuleMorphismMethods)
-                or transported_morphism.domain() is not self.domain().unformed_module()
-                or transported_morphism.codomain() is not self.codomain()
-            ):
-                raise ValueError(
-                    f"transporting an algebra map to {self.domain()} -> {self.codomain()} "
-                    "requires its exact retained module domain and unchanged codomain"
-                )
-        represented = SetMorphism(
-            Sets().Mor(self.domain(), self.codomain()),
-            lambda element: self.codomain()(evaluator(self.domain()(element))),
-        )
-        return self.element_class(
-            self,
-            represented,
-            _construction_premises=(tuple(linearity_premises), tuple(equations)),
-            _transported_morphism=transported_morphism,
-        )
 
     @cached_method
     def identity(self):

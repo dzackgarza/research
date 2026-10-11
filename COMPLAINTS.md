@@ -14,17 +14,26 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+
+
 ### Slice and coslice arrows still need their actual base-arrow initialization
 
 An object of `C/X` or `X/C` is an object of the actual `C` with its chosen
 structure arrow (`CAT-16`, `CAT-20`, `OWN-16`). Its nonfixed triangle edge
-is therefore a `C`-arrow. The current `SliceMor` and `CosliceMor` select
+is therefore a `C`-arrow. The generic `SliceMor` and `CosliceMor` select
 the legacy `CommutativeSquare -> NaturalTransformationMorphism -> Morphism`
 implementation; it retains the square but does not initialize the selected
 module, group or other base-arrow representation promised by the declared
 `C.Mor`. In the module slice over zero, the identity triangle on a rank-one
 free module must carry its actual linear-map operations; the dual coslice
 has the same requirement.
+
+The exact associative-unital algebra slice over its canonical scalar
+algebra now has its declared `_AugmentedAlgebraMor` implementation.
+That route initializes the actual lower algebra map on the structured
+endpoints and retains the existing square. This completes the scalar
+augmentation route only; it does not settle generic module, group or
+coslice initialization.
 
 **Searched / Found / Conclusion:** read the slice/coslice carrier
 `_with_structure` construction, their genuine `C` declaration, the fixed

@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _RestrictedMorCategoryOf,
     _category_accepts_morphism,
     _category_mor_parent,
+    _declared_construction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -821,6 +822,16 @@ class SliceMor(ArrowMor):
 class SliceMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = SliceMor
 
+    def fixed_category_class_for(self, domain, codomain):
+        r"""Use the slice's declared arrow implementation, if it supplies one.
+
+        The declaration implements this same fixed slice Mor. Its owner
+        supplies any lower-arrow initialization required by its represented
+        objects; other slices retain the existing square implementation.
+        """
+        declared = _declared_construction(self.base_category(), "_SliceMor")
+        return self.FixedCategoryClass if declared is None else declared
+
 
 class SliceCategory(_SubcategoryOfArrows):
     r"""The slice category \(C/X\): arrows into ``X``, with squares whose right edge is ``id_X``.
@@ -892,6 +903,15 @@ class SliceCategory(_SubcategoryOfArrows):
         match cls:
             case DynamicMetaclass():
                 return cls.__base__(base_category, base_object)
+        if cls is SliceCategory:
+            declared = _declared_construction(base_category, "_SliceCategory")
+            if declared is not None:
+                selected = declared._slice_category_class_for(base_category, base_object)
+                if selected is not None:
+                    # The cache belongs to this exact SliceCategory(C, X)
+                    # entry, including when its owner supplies a more specific
+                    # implementation. No second category is constructed.
+                    return typecall(selected, base_category, base_object)
         return typecall(cls, base_category, base_object)
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:

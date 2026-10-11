@@ -17,12 +17,12 @@ def _constructed_algebra_morphism(
     ``transported_morphism`` instead retains each law separately when the
     structured source keeps the same module, multiplication and unit.
     """
-    if domain.base_ring() is not codomain.base_ring():
+    if domain.algebra_base_ring() is not codomain.algebra_base_ring():
         raise ValueError(
             f"a morphism of algebras {domain} -> {codomain} needs one base ring, but they are over "
-            f"{domain.base_ring()} and {codomain.base_ring()}"
+            f"{domain.algebra_base_ring()} and {codomain.algebra_base_ring()}"
         )
-    mor = Algebras(domain.base_ring()).Associative().Unital().Mor(
+    mor = Algebras(domain.algebra_base_ring()).Unital().Mor(
         domain,
         codomain,
     )

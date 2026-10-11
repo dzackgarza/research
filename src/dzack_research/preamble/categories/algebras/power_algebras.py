@@ -272,7 +272,9 @@ class PowerAlgebraMorphism:
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        return other.domain().Mor(self.codomain())(self.degree_one_map() * other.degree_one_map())
+        return self.parent().mor_category().Mor(other.domain(), self.codomain())(
+            self.degree_one_map() * other.degree_one_map()
+        )
 
 
 class PowerAlgebraMor(CategoricalMor):
@@ -420,7 +422,7 @@ def _power_algebra_of(source, flavor):
     augmentation = _constructed_algebra_morphism(
         algebra, _scalar_module(ring), augmentation_value,
     )
-    return _augmented_algebra(augmentation)
+    return _augmented_algebra(augmentation, default_mor_category=category)
 
 
 def _alternating_algebra_of(module):

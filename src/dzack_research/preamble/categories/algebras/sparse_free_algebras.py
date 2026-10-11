@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras, MultiplicativeAlgebraMorphism, UnitalMultiplicativeAlgebraMor,
+    UnitalMultiplicativeAlgebraMorphism,
     _AlgebraMorCommonMethods, _algebra_on_module,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
@@ -174,6 +175,9 @@ class SparseFreeAlgebraMorphism:
         return super()._elementwise_linearity_derivation()
 
     def _multiplicativity_derivation(self):
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
         if self._source_element_map is not None:
             return None
         linearity = self._generating_module_morphism.linearity_decision()
@@ -185,9 +189,22 @@ class SparseFreeAlgebraMorphism:
         return None if commuting is None else conjunction((linearity, commuting))
 
     def _unit_preservation_derivation(self):
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
         return None if self._source_element_map is not None else True
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         domain = parent.domain()
         codomain = parent.codomain()
         source = domain.generating_module()
@@ -270,7 +287,10 @@ class SparseFreeAlgebraMorphism:
             # supply linearity above. An arbitrary word evaluator carries no
             # empty-premise certificate at this ordinary module ingress.
             linear = linear_mor.elementwise(lambda element: self._call_(element))
-        super().__init__(parent, linear)
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
+        )
 
     def algebra_generator_images(self):
         return self._generator_images

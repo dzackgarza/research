@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    MultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _assert_not_refuted,
     _associativity,
@@ -106,19 +107,45 @@ def _homogeneous_degree(element):
 class GradedAlgebraMorphism:
     r"""An algebra morphism preserving the selected grading."""
 
-    def __init__(self, parent, images, *, degree_preservation=None) -> None:
-        if degree_preservation is None and isinstance(images, GradedModuleMorphismMethods):
-            degree_preservation = images.degree_preservation_decision()
+    def __init__(
+        self, parent, images, *, degree_preservation=None,
+        degree_preservation_premises=None, **options,
+    ) -> None:
         self._graded_algebra_degree_preservation_decision = degree_preservation
-        super().__init__(parent, images)
+        self._graded_algebra_degree_preservation_source = (
+            images if isinstance(images, GradedModuleMorphismMethods) else None
+        )
+        self._graded_algebra_degree_preservation_premises = (
+            None if degree_preservation_premises is None
+            else tuple(degree_preservation_premises)
+        )
+        super().__init__(parent, images, **options)
 
     def _degree_preservation_derivation(self):
-        r"""Return the degree-preservation decision supplied at construction, or ``None``."""
-        return self._graded_algebra_degree_preservation_decision
+        r"""Use a retained exact map or the actual laws of a construction.
+
+        Only known input laws prove that a composite preserves degree. A
+        failed or undecided sufficient premise does not decide the composite:
+        inverse translations of a polynomial generator compose to identity.
+        In that case the inherited graded-module diagnostic decides the
+        resulting map's own equation, or retains that proposition.
+        """
+        supplied = self._graded_algebra_degree_preservation_decision
+        if supplied is not None:
+            return supplied
+        premises = self._graded_algebra_degree_preservation_premises
+        if premises is not None:
+            if all(arrow.degree_preservation_decision() is True for arrow in premises):
+                return True
+            return None
+        source = self._graded_algebra_degree_preservation_source
+        if source is not None:
+            return source.degree_preservation_decision()
+        return None
 
     def __mul__(self, other):
         if not isinstance(other, GradedAlgebraMorphism):
-            return NotImplemented
+            return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
@@ -126,10 +153,15 @@ class GradedAlgebraMorphism:
             source.base_ring(),
             _require_grading_monoid(source.grading_monoid()),
         ).Mor(source, self.codomain())
-        ordinary = Algebras(source.base_ring()).Associative().Unital()
+        # Reading a graded arrow in a weaker Mor retains that same arrow.
+        # The shared algebra composition instead applies its actual module
+        # forgetful functor before composing, avoiding recursive dispatch.
+        composite = MultiplicativeAlgebraMorphism.__mul__(self, other)
+        if composite is NotImplemented:
+            return NotImplemented
         return mor._from_degree_preserving_underlying_morphism(
-            ordinary.Mor(self.domain(), self.codomain())(self)
-            * ordinary.Mor(source, self.domain())(other)
+            composite,
+            degree_preservation_premises=(self, other),
         )
 
 
@@ -172,9 +204,19 @@ class GradedAlgebraMor(CategoricalMor):
         r"""Construct a graded map whose generator construction preserves degree."""
         return self.element_class(self, images, degree_preservation=True)
 
-    def _from_degree_preserving_underlying_morphism(self, morphism):
-        r"""Lift an actual weaker algebra morphism whose construction preserves degree."""
-        return self.element_class(self, morphism, degree_preservation=True)
+    def _from_degree_preserving_underlying_morphism(
+        self, morphism, *, degree_preservation_premises=(),
+    ):
+        r"""Lift a construction using its actual sufficient degree premises.
+
+        The empty family is used for the identity, whose construction proves
+        degree preservation. Composition retains its actual two input maps;
+        arbitrary ingress uses the ordinary constructor and diagnostic.
+        """
+        return self.element_class(
+            self, morphism,
+            degree_preservation_premises=tuple(degree_preservation_premises),
+        )
 
     def identity(self):
         if self.domain() is not self.codomain():

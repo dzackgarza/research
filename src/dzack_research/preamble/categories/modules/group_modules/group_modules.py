@@ -285,7 +285,10 @@ class ModulesOverGroupAlgebra(Modules):
         match ring_map:
             case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return _InductionFunctor(ring_map)
-            case _ if ring_map.is_group_algebra_augmentation():
+            case _ if (
+                ring_map.is_group_algebra_augmentation()
+                and ring_map.codomain() is self.coefficient_ring()
+            ):
                 return _CoinvariantsFunctor(ring_map)
             case _:
                 return _ScalarExtensionFunctor(ring_map)
@@ -322,7 +325,10 @@ class ModulesOverGroupAlgebra(Modules):
         match ring_map:
             case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return _CoinductionFunctor(ring_map)
-            case _ if ring_map.is_group_algebra_augmentation():
+            case _ if (
+                ring_map.is_group_algebra_augmentation()
+                and ring_map.codomain() is self.coefficient_ring()
+            ):
                 return _InvariantsFunctor(ring_map)
             case _:
                 return _CoextensionOfScalarsFunctor(ring_map)
@@ -343,7 +349,10 @@ class ModulesOverGroupAlgebra(Modules):
         match ring_map:
             case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return _InductionRestrictionAdjunction(ring_map)
-            case _ if ring_map.is_group_algebra_augmentation():
+            case _ if (
+                ring_map.is_group_algebra_augmentation()
+                and ring_map.codomain() is self.coefficient_ring()
+            ):
                 return _CoinvariantsTrivialAdjunction(ring_map)
             case _:
                 return _base_change_adjunction(ring_map)

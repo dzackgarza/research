@@ -23,6 +23,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -32,6 +33,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FinitelyPresentedAlgebras,
     MultiplicativeAlgebraMorphism,
     UnitalMultiplicativeAlgebraMor,
+    UnitalMultiplicativeAlgebraMorphism,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _algebra_with_structure,
@@ -1724,6 +1726,10 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
+            if category is None:
+                selected = self._default_algebra_mor_category(codomain)
+                if selected is not None:
+                    return _category_mor_parent(selected, self, codomain)
             alternating = AlternatingAlgebras(self.base_ring())
             if category is None and codomain in alternating:
                 return alternating.Mor(self, codomain)
@@ -2004,6 +2010,10 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         gamma = divided_power
 
         def Mor(self, codomain, category=None):
+            if category is None:
+                selected = self._default_algebra_mor_category(codomain)
+                if selected is not None:
+                    return _category_mor_parent(selected, self, codomain)
             divided = DividedPowerAlgebras(self.base_ring())
             if category is None and codomain in divided:
                 return divided.Mor(self, codomain)
@@ -2051,6 +2061,9 @@ class FramedFreeAlgebraMorphism:
     __mul__ = MultiplicativeAlgebraMorphism.__mul__
 
     def _multiplicativity_derivation(self):
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
         if self._source_element_map is not None:
             return None
         linearity = self._generating_module_morphism.linearity_decision()
@@ -2060,9 +2073,22 @@ class FramedFreeAlgebraMorphism:
         return None if commuting is None else conjunction((linearity, commuting))
 
     def _unit_preservation_derivation(self):
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
         return None if self._source_element_map is not None else True
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         domain = cast(Any, parent.domain())
         codomain = parent.codomain()
         generating = domain.generating_module()
@@ -2163,7 +2189,10 @@ class FramedFreeAlgebraMorphism:
                 lambda element: self._call_(element),
                 premises=(self._generating_module_morphism,),
             )
-        super().__init__(parent, linear)
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
+        )
 
     def algebra_generator_images(self):
         return self._images
