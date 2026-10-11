@@ -751,7 +751,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ClassifyingMor` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
   **Closure assertions:** the complete `ClassifyingMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-classifyingmorcategory`**. **Needs:** none.
+- [x] **`placement-owner-classifyingmorcategory`**. **Needs:** none.
   **Owner pass:** `ClassifyingMorCategory` in `src/dzack_research/preamble/categories/group/classifying_categories.py`.
   **Closure assertions:** the complete `ClassifyingMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ClassifyingMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
