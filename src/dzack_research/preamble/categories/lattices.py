@@ -2878,32 +2878,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             labels = self.module_generating_set()
             return self.module_generator(labels[int(position)])
 
-        def signature_pair(self):
-            r"""Return $(p,q)$: the positive and negative indices of inertia.
-
-            This is the real signature of the quadratic space over
-            \(\mathbb{Q}\) obtained by extending scalars along
-            \(\operatorname{Frac}(R)\) when that field is \(\mathbb{Q}\).
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)("U").signature_pair()
-                (1, 1)
-                sage: Lattices(ZZ)(ZZ^NN).signature_pair()
-                (+Infinity, 0)
-            """
-
-            signature = _signature_pair_of_gram(self.gram_tensor())
-            assert signature is not None, (
-                f"cannot determine the signature of {self!r}: it has rank {self.module_rank()}, and its Gram rule does not determine the indices of inertia"
-            )
-            return signature
-
-        def signature(self):
-            r"""Return the inertia pair ``(p,q)`` of the lattice form."""
-            return self.signature_pair()
-
         def discriminant(self):
             r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$, the signed determinant.
 

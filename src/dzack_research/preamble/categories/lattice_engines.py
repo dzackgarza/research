@@ -17,6 +17,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_engine_element,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -65,7 +68,7 @@ def _rational_signed_direction(gram, sign):
     engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
     diagonal, change = QuadraticForm(
         SageQQ,
-        2 * engine_gram,
+        engine_gram + engine_gram.transpose(),
     ).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
     index = next((
@@ -102,23 +105,51 @@ def _raise_rational_lattice_vector(lattice, coordinates):
 
 
 def _signed_vector_witness(lattice, sign):
-    r"""Realize a finite symmetric formed module's signed-vector operation.
+    r"""Realize the norm-sign operation on a finite framed form module.
 
-    Private computation for ``BilinearFormModules.Symmetric.vector_of_sign``.
+    Private computation for ``FormModules.vector_of_sign``.
     The input retains its own form and selected framing; the raised vector
     belongs to that same module, including a represented formed submodule.
-    Return None if the requested sign is absent.
+    The symmetric Hessian ``G + G.transpose()`` represents the diagonal
+    function of any bilinear Gram ``G``. For a quadratic datum, its polar
+    diagonal is twice its selected norm, which has the same sign over QQ.
+    Return None only if exact rational diagonalization excludes the sign.
     """
     ring = lattice.base_ring()
     assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
         f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.value_module() is ring, (
+        f"rational signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
+    )
+    assert lattice in FramedFreeModules(ring), (
+        f"rational signed-vector computation needs a selected free framing on {lattice}"
     )
     assert lattice.module_rank().is_finite(), (
         f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
     )
     if lattice.module_rank() == 0:
         return None
-    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
+    labels = tuple(lattice.module_generating_set())
+    quadratic = lattice.form().parent().kind() == "quadratic"
+
+    def hessian_entry(left_label, right_label):
+        left = lattice.module_generator(left_label)
+        right = lattice.module_generator(right_label)
+        forward = lattice.b(left, right)
+        return forward if quadratic else forward + lattice.b(right, left)
+
+    size = len(labels)
+    hessian = tensor(
+        ring,
+        (),
+        (size, size),
+        tuple(
+            tuple(hessian_entry(left, right) for right in labels)
+            for left in labels
+        ),
+    )
+    coordinates = _rational_signed_direction(hessian, sign)
     return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
 
 

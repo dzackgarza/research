@@ -1451,6 +1451,70 @@ class FormModules(OwnedCategoryOverBaseRing):
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
 
+        def is_unimodular(self):
+            r"""Whether the polar correlation is an isomorphism.
+
+            Declared unimodularity supplies the property without querying its
+            own certifying predicate.  The selected finite free scalar-valued
+            computation uses the actual correlation; otherwise retain the
+            proposition.  Symmetry is not required.
+            """
+            ring = self.base_ring()
+            if self.category().is_subcategory(FormModules(ring).Unimodular()):
+                return True
+            if (
+                self.value_module() is not ring
+                or ring not in OwnedRings().Commutative()
+                or self not in FramedFreeModules(ring)
+                or self.module_generating_set().is_finite() is not True
+            ):
+                return AtomicProposition("is_unimodular", self)
+            correlation = self.algebraic_correlation_morphism()
+            return conjunction(
+                (correlation.is_injective(), correlation.is_surjective())
+            )
+
+        def correlation_isomorphism(self):
+            r"""Return the perfect scalar polar correlation and its inverse.
+
+            The current inverse computation uses a selected finite free
+            framing; other represented perfect pairings retain that named
+            computation frontier.
+            """
+            return _correlation_isomorphism(self)
+
+        def hodge_discriminant(self, volume):
+            r"""Return the determinant of ``b`` divided by the squared volume.
+
+            For a quadratic form, ``b`` is its polar pairing.  The existing
+            Gram-determinant supplier retains the actual ring of values.
+            """
+            return _hodge_discriminant(self, volume)
+
+        def hodge_star(self, volume, degree):
+            r"""Return ``PD_volume o Lambda^degree(b^flat)^(-1)`` on forms.
+
+            This uses a perfect scalar-valued pairing and an actual volume
+            isomorphism; it does not require the pairing to be symmetric.
+            """
+            return _hodge_star(self, volume, degree)
+
+        def hodge_star_over_fraction_field(self, volume, degree):
+            r"""Return the covariant Hodge isomorphism after scalar extension.
+
+            The current computation is over the fraction field of a declared
+            integral domain and requires the extended pairing to be perfect.
+            """
+            return _hodge_star_over_fraction_field(self, volume, degree)
+
+        def multivector_hodge_star(self, volume, degree):
+            r"""Return ``PD_volume^(-1) o Lambda^degree(b^flat)`` on vectors.
+
+            This scalar-valued construction does not require a perfect or
+            symmetric pairing and need not be invertible.
+            """
+            return _multivector_hodge_star(self, volume, degree)
+
         @cached_method
         def ideal_dual(self, modulus):
             r"""Return the rational vectors whose polar pairings lie in the principal ideal ``(modulus)``."""
@@ -1653,6 +1717,155 @@ class FormModules(OwnedCategoryOverBaseRing):
         def q(self, element):
             r"""Return the selected quadratic/norm value of ``element``."""
             return self.norm(element)
+
+        def vector_of_sign(self, sign):
+            r"""Return a vector whose selected norm has sign ``-1`` or ``1``, or ``None``.
+
+            The vector belongs to this formed module. For a represented
+            submodule its inclusion supplies the ambient vector. Rational
+            diagonalization supplies the computation over ``QQ`` and
+            ``ZZ`` with a finite framing and rational scalar form values;
+            the integral result is primitive. A bilinear form uses its
+            diagonal function, and a quadratic form retains its own norm.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
+                sage: v = S.vector_of_sign(-1)
+                sage: v.parent() is S and S.inclusion()(v).q() < ZZ(0)
+                True
+                sage: S.vector_of_sign(1) is None
+                True
+                sage: T = U.subobject_on((U.basis_vector(0) + U.basis_vector(1), U.basis_vector(0) - U.basis_vector(1)))
+                sage: p, n = T.positive_vector(), T.negative_vector()
+                sage: p.parent() is T and n.parent() is T
+                True
+                sage: p.q() > 0 and n.q() < 0
+                True
+                sage: T.inclusion()(p).q() == p.q() and T.inclusion()(n).q() == n.q()
+                True
+            """
+            if sign not in (-1, 1):
+                raise ValueError("a signed-vector request requires sign -1 or 1")
+            from dzack_research.preamble.categories.lattice_engines import (
+                _signed_vector_witness,
+            )
+
+            return _signed_vector_witness(self, sign)
+
+        def positive_vector(self):
+            r"""Return a positive-norm vector, or ``None`` if none exists."""
+            return self.vector_of_sign(1)
+
+        def negative_vector(self):
+            r"""Return a negative-norm vector, or ``None`` if none exists."""
+            return self.vector_of_sign(-1)
+
+        def signature_pair(self):
+            r"""Return the positive and negative indices of the selected norm.
+
+            At finite rank this uses the symmetric Hessian of the selected
+            norm: ``b+b^T`` for a bilinear datum and the polar form for a
+            quadratic datum.  At infinite rank an existing Gram rule may
+            supply exact inertia directly; otherwise the computation remains
+            explicitly unavailable.
+            """
+            if self.value_module() is not self.base_ring():
+                raise TypeError(
+                    f"the signature of {self} needs scalar values in {self.base_ring()}, "
+                    f"but its values lie in {self.value_module()}"
+                )
+            from dzack_research.preamble.categories._lattice import (
+                _signature_pair_of_gram,
+            )
+
+            if _has_finite_framing(self):
+                labels = tuple(self.module_generating_set())
+                quadratic = _is_quadratic_form(self.form())
+
+                def value(left_label, right_label):
+                    left = self.module_generator(left_label)
+                    right = self.module_generator(right_label)
+                    forward = self.b(left, right)
+                    return forward if quadratic else forward + self.b(right, left)
+
+                size = len(labels)
+                hessian = tensor(
+                    self.base_ring(),
+                    (),
+                    (size, size),
+                    tuple(
+                        tuple(value(left, right) for right in labels)
+                        for left in labels
+                    ),
+                )
+                signature = _signature_pair_of_gram(hessian)
+            else:
+                if not _is_bilinear_form(self.form()):
+                    signature = None
+                else:
+                    signature = _signature_pair_of_gram(self.gram_tensor())
+            assert signature is not None, (
+                f"cannot compute the inertia of {self}: its selected norm supplies no exact inertia computation"
+            )
+            return signature
+
+        def signature(self):
+            r"""Return the inertia pair of this selected norm."""
+            return self.signature_pair()
+
+        def definiteness(self):
+            r"""Return the sign type at finite rank from the exact inertia pair."""
+            assert self.module_rank().is_finite() is True, (
+                f"the definiteness of {self} is decided here only at finite rank; "
+                f"its exact inertia {self.signature_pair()} does not determine an infinite-dimensional radical"
+            )
+            signature = self.signature_pair()
+            positive, negative = signature.first(), signature.second()
+            rank = self.module_rank()
+            if positive == 0 and negative == 0:
+                return "zero"
+            if negative == 0:
+                return "positive_definite" if positive == rank else "positive_semidefinite"
+            if positive == 0:
+                return "negative_definite" if negative == rank else "negative_semidefinite"
+            return "indefinite"
+
+        @cached_method
+        def orthogonal_group(self):
+            r"""Return the module automorphisms preserving this form with identity value map."""
+            automorphisms = Modules(self.base_ring()).Aut(self)
+            formed_mor = FormModules(self.base_ring()).Mor(self, self)
+            return automorphisms.predicate_subgroup(
+                lambda automorphism: formed_mor.preserves_forms(
+                    automorphism.as_morphism()
+                ),
+                f"Isometries of {self}",
+            )
+
+        O = orthogonal_group  # noqa: E741 - standard notation O(M,q)
+
+        @cached_method
+        def square_fibre(self, square):
+            r"""The fibre of the selected norm ``v |-> q(v)`` at ``square``."""
+            values = self.value_module()
+            square = values(square)
+            return OwnedSets().equalizer_construction(
+                OwnedSets().Mor(self, values)(lambda vector: self.norm(vector)),
+                OwnedSets().Mor(self, values)(lambda vector: square),
+            )
+
+        def square_fibre_action(self, square, *, orbit_relation=None):
+            r"""The identity-value isometry action on the complete norm fibre."""
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+
+            points = self.square_fibre(square).object()
+            return GObjects(self.orthogonal_group(), OwnedSets()).on_set(
+                points,
+                lambda isometry, vector: isometry(vector),
+                orbit_relation=orbit_relation,
+            )
 
         def gram_tensor(self):
             r"""Return the scalar Gram as its intrinsic type-``(0,2)`` tensor."""
@@ -2145,27 +2358,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 for value in probes
             )
 
-        @cached_method
-        def square_fibre(self, square):
-            r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
-            values = self.value_module()
-            square = values(square)
-            return OwnedSets().equalizer_construction(
-                OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
-                OwnedSets().Mor(self, values)(lambda vector: square),
-            )
-
-        def square_fibre_action(self, square, *, orbit_relation=None):
-            r"""The automorphism action on the complete diagonal-value fibre."""
-            from dzack_research.preamble.categories.group.g_objects import GObjects
-
-            points = self.square_fibre(square).object()
-            return GObjects(self.Aut(), OwnedSets()).on_set(
-                points,
-                lambda isometry, vector: isometry(vector),
-                orbit_relation=orbit_relation,
-            )
-
     def _call_(
         self,
         form,
@@ -2212,141 +2404,78 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return BilinearFormModules(self.base_ring()).an_object()
 
         class ParentMethods:
-            def vector_of_sign(self, sign):
-                r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
-
-                The vector belongs to this formed module. For a represented
-                submodule its inclusion supplies the ambient vector. Rational
-                diagonalization supplies the computation over ``QQ`` and
-                ``ZZ``; the integral result is primitive.
-
-                EXAMPLES::
-
-                    sage: U = Lattices(ZZ)("U")
-                    sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
-                    sage: v = S.vector_of_sign(-1)
-                    sage: v.parent() is S and S.inclusion()(v).q() < ZZ(0)
-                    True
-                    sage: S.vector_of_sign(1) is None
-                    True
-                    sage: T = U.subobject_on((U.basis_vector(0) + U.basis_vector(1), U.basis_vector(0) - U.basis_vector(1)))
-                    sage: p, n = T.positive_vector(), T.negative_vector()
-                    sage: p.parent() is T and n.parent() is T
-                    True
-                    sage: p.q() > 0 and n.q() < 0
-                    True
-                    sage: T.inclusion()(p).q() == p.q() and T.inclusion()(n).q() == n.q()
-                    True
-                """
-                if sign not in (-1, 1):
-                    raise ValueError("a signed-vector request requires sign -1 or 1")
-                from dzack_research.preamble.categories.lattice_engines import (
-                    _signed_vector_witness,
-                )
-
-                return _signed_vector_witness(self, sign)
-
-            def positive_vector(self):
-                r"""Return a positive-square vector, or ``None`` if none exists."""
-                return self.vector_of_sign(1)
-
-            def negative_vector(self):
-                r"""Return a negative-square vector, or ``None`` if none exists."""
-                return self.vector_of_sign(-1)
-
-            def signature_pair(self):
-                r"""Return the Sylvester inertia pair of a finite symmetric form."""
-                assert self.module_rank().is_finite(), (
-                    f"the signature of {self} is computed here only at finite rank, "
-                    f"but it has rank {self.module_rank()}"
-                )
-                assert self.value_module() in OwnedRings(), (
-                    f"the signature of {self} needs scalar values in an ordered ring, "
-                    f"but its values lie in {self.value_module()}"
-                )
-                from dzack_research.preamble.categories._lattice import (
-                    _signature_pair_of_gram,
-                )
-
-                return _signature_pair_of_gram(self.gram_tensor())
-
-            def signature(self):
-                r"""Return the Sylvester inertia pair of this symmetric form."""
-                return self.signature_pair()
-
-            def definiteness(self):
-                r"""Return the sign type of this finite-rank symmetric form."""
-                rank = int(self.module_rank())
-                signature = self.signature_pair()
-                positive = int(signature.first())
-                negative = int(signature.second())
-                zero = rank - positive - negative
-                match (positive, negative, zero):
-                    case (0, 0, _):
-                        return "zero"
-                    case (_, 0, 0):
-                        return "positive_definite"
-                    case (0, _, 0):
-                        return "negative_definite"
-                    case (_, 0, _):
-                        return "positive_semidefinite"
-                    case (0, _, _):
-                        return "negative_semidefinite"
-                    case _:
-                        return "indefinite"
-
             def to_quadratic_module(self):
-                r"""Return ``q(v)=b(v,v)/2`` when this symmetric form is even.
+                r"""Return the canonical quadratic form ``q(v)=b(v,v)/2``.
 
-                Over rings where ``2`` is not a unit this is genuinely extra
-                structure: the quotient must lie back in the coefficient ring.
-                The represented construction is checked on a finite framing; the
-                cross terms need no further divisibility test because symmetry
-                contributes them with the factor ``2`` in ``b(v,v)``.
+                The original module and value object ``W`` are retained.
+                Doubling on ``W`` must be injective: its unique halves then
+                satisfy quadratic homogeneity and have polarization ``b``.
+                When ``2`` is invertible, its inverse supplies every half.
+                Otherwise a selected finite spanning family tests evenness;
+                symmetry already makes the cross terms divisible by ``2``.
+
+                Scalar values use regularity of ``2`` and exact division in
+                their actual ring.  Module values use the represented doubling
+                map and its existing preimage computation.  Without established
+                injectivity, choosing halves would require a quadratic
+                refinement, which this canonical operation does not select.
                 """
-                assert self.module_rank().is_finite(), (
-                    f"the quadratic form q(v)=b(v,v)/2 of {self} is computed only for finite rank, "
-                    f"but {self} has rank {self.module_rank()}"
-                )
                 ring = self.base_ring()
-                two = ring(2)
-                zero = ring.zero()
+                values = self.value_module()
                 unformed = self.unformed_module()
+                assert ring in OwnedRings().Commutative(), (
+                    f"canonical half-norm conversion of {self} is defined here over a commutative scalar ring, "
+                    f"but the base ring is {ring}"
+                )
+                represented = _represented_value_module(self)
+                two = ring(2)
+                inverse = two.inverse_of_unit() if two.is_unit() is True else None
+                doubling = represented.module_category().Mor(
+                    represented, represented
+                )._from_constructed_element_map(
+                    lambda element: represented.scalar_multiple(two, element)
+                )
+                if inverse is None:
+                    assert (
+                        represented.has_selected_module_resolution()
+                        and represented.module_generating_set().is_finite() is True
+                    ), (
+                        f"canonical half-norm conversion of {self} has no selected finite doubling computation on {values}"
+                    )
+                    injective = doubling.is_injective()
+                    if injective is False:
+                        raise ValueError(
+                            f"canonical half-norm conversion of {self} is not defined: doubling on {values} is not injective, "
+                            "so an even bilinear form does not select a unique quadratic refinement"
+                        )
+                    assert injective is True, (
+                        f"canonical half-norm conversion of {self} cannot decide whether doubling on {values} is injective"
+                    )
 
                 def half(value):
-                    value = ring(value)
-                    quotient, remainder = value.quo_rem(two)
-                    if remainder != zero:
-                        raise ValueError(
-                            f"{self} has no quadratic form q(v)=b(v,v)/2: the form is not even, "
-                            f"since the value {value} is not divisible by 2 in {ring}"
-                        )
-                    return quotient
+                    element = _value_as_module_element(self, value)
+                    halved = (
+                        represented.scalar_multiple(inverse, element)
+                        if inverse is not None
+                        else doubling.preimage(element)
+                    )
+                    return _value_from_module_element(self, halved)
 
                 def half_norm(element):
                     element = self(element)
                     return half(self.b(element, element))
 
-                for generator in unformed.module_generators():
-                    half_norm(generator)
+                if inverse is None:
+                    assert (
+                        unformed.has_selected_module_resolution()
+                        and unformed.module_generating_set().is_finite() is True
+                    ), (
+                        f"canonical half-norm conversion of {self} has no selected finite spanning family for its evenness computation"
+                    )
+                    for generator in unformed.module_generators():
+                        half_norm(generator)
 
-                return unformed.equip_quadratic_form(ring, half_norm)
-
-            def hodge_discriminant(self, volume):
-
-                return _hodge_discriminant(self, volume)
-
-            def hodge_star(self, volume, degree):
-
-                return _hodge_star(self, volume, degree)
-
-            def hodge_star_over_fraction_field(self, volume, degree):
-
-                return _hodge_star_over_fraction_field(self, volume, degree)
-
-            def multivector_hodge_star(self, volume, degree):
-
-                return _multivector_hodge_star(self, volume, degree)
+                return unformed.equip_quadratic_form(values, half_norm)
 
     class Even(CategoryWithAxiom):
         r"""Modules with a bilinear form satisfying ``b(x, x) in 2W`` for every ``x``."""
@@ -2973,18 +3102,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             r"""Return the algebraic correlation ``M -> Hom_R(M,R)``."""
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
-
-        def is_unimodular(self) -> bool:
-            r"""Return whether the algebraic correlation is an isomorphism."""
-            injective = self in FormModules(self.base_ring()).Nondegenerate()
-            correlation = _algebraic_correlation_morphism(
-                self, injective=injective
-            )
-            return correlation.is_injective() and correlation.is_surjective()
-
-        def correlation_isomorphism(self):
-            r"""Return the correlation isomorphism when this free formed module is unimodular."""
-            return _correlation_isomorphism(self)
 
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
