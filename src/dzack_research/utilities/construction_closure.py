@@ -281,54 +281,103 @@ def inventory(root: Path) -> dict:
 
 
 def closure(data: dict) -> dict:
-    """Least fixed point of *symbolic type schemes*, not concrete objects.
+    """Compute the least fixed point of candidate *type schemes*.
 
-    A method is available on its owner's specializations. A result which is
-    an explicit category instance becomes reachable; unresolved results
-    stay in the audit rather than being silently dropped. Parameterized
-    expressions remain distinct expressions.
+    Category declarations are available as symbolic seeds, not witnesses of
+    inhabited categories. No operation requiring unbound arguments is marked
+    as a verified construction: its reachable result is CONDITIONAL. A newly
+    derived expression such as ``Modules(R)`` activates every method of
+    ``Modules`` and its supercategories, even though it is not literally a
+    vertex in the source category graph. This is what makes the closure
+    compositional rather than a one-step method-return inventory.
+
+    The finite abstraction is by declared category families and result
+    expressions. We do not generate the infinite set of nested object
+    *values*, nor claim that a Python condition is decidable statically.
     """
+    import re
+
     vertices = set(data["vertices"])
-    below = defaultdict(set)
+    ancestor_edges = defaultdict(set)
     for edge in data["category_edges"]:
-        below[edge["to"]].add(edge["from"])
-    # All declared categories are symbolic seeds: their parameter choices
-    # are variables, not one arbitrarily selected example instance.
-    reached = set(vertices)
-    reasons = {x: [{"kind": "declared-category"}] for x in vertices}
-    work = deque(sorted(vertices))
-    descendants = {x: {x} for x in vertices}
-    for category in vertices:
-        pending = list(below[category])
+        ancestor_edges[edge["from"]].add(edge["to"])
+
+    def ancestors(vertex: str) -> set[str]:
+        seen = {vertex}
+        pending = list(ancestor_edges[vertex])
         while pending:
-            child = pending.pop()
-            if child in descendants[category]:
-                continue
-            descendants[category].add(child)
-            pending.extend(below[child])
+            item = pending.pop()
+            if item not in seen:
+                seen.add(item)
+                pending.extend(ancestor_edges[item])
+        return seen
+
+    def declared_family(expression: str) -> str | None:
+        match = re.match(r"^([A-Za-z_]\\w*)", expression)
+        return match.group(1) if match else None
+
     by_owner = defaultdict(list)
     for rule in data["rules"]:
-        by_owner[rule["owner"]].append(rule)
+        if rule["output"] is not None:
+            by_owner[rule["owner"]].append(rule)
+
+    # A scheme carries symbolic arguments; a source declaration is NOT a
+    # constructibility witness. "Candidate" means that some input instance
+    # could realize the rule. Conditions remain explicit on each derivation.
+    reasons: dict[str, list[dict]] = {
+        vertex: [{"kind": "declared-type", "verified-inhabited": False}]
+        for vertex in vertices
+    }
+    work = deque(sorted(vertices))
+    family_vertices = defaultdict(set)
+    for vertex in vertices:
+        family_vertices[declared_family(vertex)].add(vertex)
+    unfolded: set[str] = set()
+
     while work:
-        vertex = work.popleft()
-        for owner in (x for x in descendants if vertex in descendants[x]):
+        scheme = work.popleft()
+        if scheme in unfolded:
+            continue
+        unfolded.add(scheme)
+        family = declared_family(scheme)
+        if family not in family_vertices:
+            # The output names an unresolved category family. Its absence
+            # must be visible, not treated as a proved construction.
+            continue
+        applicable = {
+            owner
+            for canonical in family_vertices[family]
+            for owner in ancestors(canonical)
+        }
+        for owner in sorted(applicable):
             for rule in by_owner[owner]:
                 target = rule["output"]
-                if not target:
-                    continue
                 if target == "$receiver":
-                    target = vertex
-                if target.startswith("$dispatch:") or target.startswith("$method:"):
+                    target = scheme
+                if not target or target.startswith(("$dispatch:", "$method:")):
                     continue
-                evidence = {"kind": "construction", "rule": rule["id"], "from": vertex}
+                required = bool(rule["inputs"]) or bool(rule["conditions"])
+                witness = {
+                    "kind": "candidate-construction",
+                    "operation": rule["id"],
+                    "from": scheme,
+                    "conditional": required,
+                    "inputs": list(rule["inputs"]),
+                    "conditions": list(rule["conditions"]),
+                }
                 if target not in reasons:
-                    reasons[target] = [evidence]
-                    reached.add(target)
+                    reasons[target] = [witness]
                     work.append(target)
-                elif evidence not in reasons[target]:
-                    reasons[target].append(evidence)
-    data["reachable_schemes"] = sorted(reached)
+                elif witness not in reasons[target]:
+                    reasons[target].append(witness)
+
+    data["reachable_schemes"] = sorted(reasons)
     data["derivations"] = reasons
+    data["unmatched_result_families"] = sorted(
+        x for x in reasons
+        if (family := declared_family(x)) not in family_vertices
+        and x not in vertices
+    )
     data["summary"] = {
         "category_vertices": len(vertices),
         "category_edges": len(data["category_edges"]),
@@ -336,7 +385,8 @@ def closure(data: dict) -> dict:
         "resolved_return_branches": sum(r["status"] == "resolved" for r in data["rules"]),
         "unresolved_return_branches": sum(r["status"] == "unresolved" for r in data["rules"]),
         "symbolic_return_branches": sum(r["status"] == "symbolic" for r in data["rules"]),
-        "reachable_symbolic_schemes": len(reached),
+        "candidate_symbolic_schemes": len(reasons),
+        "unmatched_result_families": len(data["unmatched_result_families"]),
     }
     return data
 
