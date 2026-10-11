@@ -719,7 +719,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CentralizerSubgroups` in `src/dzack_research/preamble/categories/group/predicate_subgroups.py`.
   **Closure assertions:** the complete `CentralizerSubgroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CentralizerSubgroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-chambersystemmor`**. **Needs:** none.
+- [x] **`placement-owner-chambersystemmor`**. **Needs:** none.
   **Owner pass:** `ChamberSystemMor` in `src/dzack_research/preamble/categories/chamber_systems.py`.
   **Closure assertions:** the complete `ChamberSystemMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChamberSystemMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
