@@ -1788,31 +1788,26 @@ class LocalizationRings(OwnedCategory):
         def induced_morphism(self, morphism):
             r"""Return the unique ``S^{-1}R -> T`` extending ``g: R -> T``.
 
-            Localization is universal among ring maps out of ``R`` that invert
-            ``S``.  So when ``g`` carries ``S`` into the units exactly one map
-            out of ``S^{-1}R`` composes with the localization map to give
-            ``g``, and it sends ``a/s`` to ``g(a)g(s)^{-1}``.  Which
-            representative of a fraction is used does not matter: ``a/f`` and
-            ``af/f^2`` have the same image, so the map is defined on the
-            fraction and not on a chosen presentation of it.
+            The hypothesis is that ``g`` carries every element of ``S`` to a
+            unit. For a selected generating family it suffices to establish
+            that hypothesis on its generators. A predicate presentation of
+            ``S`` supplies no such family or general unit-image decision.
 
-            Both terms come from the fraction itself, which a localization
-            built from a numerator and a denominator, so the source ring is
-            asked for nothing beyond the two elements it already holds.
+            Retained canonical data also establish concrete predicate cases:
+            this localization's own map induces its identity; a quotient map
+            ``R -> R/p`` induces ``R_p -> R/p`` when that quotient is a field;
+            and canonical maps between prime localizations use their existing
+            prime-containment construction. Every map to the zero ring
+            carries all of ``S`` to units. Other predicate cases require a
+            selected proof of the global unit-image hypothesis.
 
-            The hypothesis is one statement about a generating set: a monomial
-            in elements carried to units is carried to a unit, so it suffices
-            on generators.  The complement of a prime has no finite generating
-            set, and there the hypothesis is asked of each denominator the map
-            meets, which is where inverting it is what the map has to do.
-
-            A transition map of a toric atlas is such a map: the pullback to a
-            face localization is a ring morphism out of the source that carries
-            the inverted character to a unit.  So is the residue map
-            ``R_p -> kappa(p)``, which extends ``R -> kappa(p)``.
+            Once that hypothesis is established, the unique arrow sends
+            ``a/s`` to ``g(a)g(s)^-1``. This is independent of the represented
+            fraction. Merely attempting inverses at encountered denominators
+            would not establish the existence of that ring arrow.
             """
             from dzack_research.preamble.categories.rings.commutative_algebra import (
-                PrimeLocalizations,
+                QuotientRings,
             )
 
             source = self.localization_source()
@@ -1824,10 +1819,16 @@ class LocalizationRings(OwnedCategory):
                         f"a map out of {self} is induced from a ring morphism out of {source}, but {morphism} starts "
                         f"at {morphism.domain()}"
                     )
-            match self in PrimeLocalizations():
-                case True:
-                    pass
-                case False:
+
+            target = morphism.codomain()
+            if target is self and morphism is self.localization_map():
+                return OwnedRings().Mor(self, self).identity()
+            if (target.one() == target.zero()) is True:
+                return self._induced_morphism_from_unit_images(morphism)
+
+            submonoid = self.localization_submonoid()
+            match submonoid._selected_representation_kind():
+                case "generators":
                     for inverted in self.inverted_elements():
                         match morphism(inverted).is_unit():
                             case True:
@@ -1838,10 +1839,85 @@ class LocalizationRings(OwnedCategory):
                                     f"factor through {self}"
                                 )
                             case _:
-                                raise ValueError(
-                                    f"it is undecided whether {morphism} sends {inverted} to a unit, so it is not known to "
-                                    f"factor through {self}"
+                                assert False, (
+                                    f"invertibility of the image of {inverted} under {morphism} is unresolved; "
+                                    f"constructing the induced map from {self} requires that unit-image hypothesis"
                                 )
+                    return self._induced_morphism_from_unit_images(morphism)
+                case "predicate":
+                    pass
+                case representation:
+                    assert False, (
+                        f"the selected submonoid representation {representation!r} supplies no unit-image computation"
+                    )
+
+            structure = submonoid._structure_data()
+            if (
+                target in LocalizationRings()
+                and target.localization_source() is source
+                and morphism is target.localization_map()
+            ):
+                if target.localization_submonoid() is submonoid:
+                    return self._induced_morphism_from_unit_images(morphism)
+                if (
+                    structure.get("kind") == "prime_complement"
+                    and target.localization_submonoid()._structure_data().get("kind") == "prime_complement"
+                ):
+                    return self.restriction_to(target)
+
+            if (
+                structure.get("kind") == "prime_complement"
+                and target in QuotientRings()
+                and target.quotient_source() is source
+                and morphism is target.quotient_map()
+                and (target.defining_ideal() == structure["prime_ideal"]) is True
+            ):
+                match target.is_field():
+                    case True:
+                        return self._induced_morphism_from_unit_images(morphism)
+                    case False:
+                        raise ValueError(
+                            f"the quotient {target} is not a field, so its quotient map does not invert "
+                            f"the complement of {structure['prime_ideal']}"
+                        )
+                    case _:
+                        assert False, (
+                            f"whether the quotient {target} is a field is unresolved; inducing its quotient "
+                            f"map from {self} requires that field hypothesis"
+                        )
+
+            assert False, (
+                f"the predicate presentation of {submonoid} selects no generating family or unit-image proof "
+                f"for {morphism}; constructing a map from {self} requires every element of that submonoid "
+                "to have a unit image"
+            )
+
+        def _induced_morphism_from_unit_images(self, morphism):
+            r"""Construct the localization arrow after its unit-image premise is established.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            induced_morphism, the PrimeLocalizations local residue-map
+            supplier, the QuotientRings total-quotient-map supplier after
+            contracting a localized ideal, the maximal adic-localization
+            comparison, and the adic-completion factory's maximal-prime case.
+
+            The inputs are this exact localization ``L = S^-1 R`` and an owned
+            ring morphism ``g: R -> T`` with this literal source. Each caller
+            must establish ``g(S)`` lies in the units of ``T`` from its retained
+            defining data: generator images or canonical maps at the public
+            ingress; nonzero images in ``Frac(R/p)`` for the residue supplier;
+            regular images in the total quotient ring of an S-saturated
+            contraction; or the complement of a proved maximal adic ideal.
+            A predicate or successful inversions of some denominators alone
+            is not that global premise.
+
+            The result is the owned ring map ``L -> T`` whose composite with
+            ``R -> L`` is exactly ``g``. This is the single fraction evaluator
+            for these callers; it does not infer or store a new premise.
+            """
+            assert morphism.domain() is self.localization_source(), (
+                "an induced localization map must retain the exact localization source"
+            )
 
             def image(element):
                 fraction = self(element)

@@ -1211,7 +1211,7 @@ class QuotientRings(OwnedCategory):
                 contracted_quotient = source.quotient_contraction_map(self).domain()
                 total_map = contracted_quotient.total_quotient_map()
                 source_map = total_map * contracted_quotient.quotient_map()
-                localized_map = source.induced_morphism(source_map)
+                localized_map = source._induced_morphism_from_unit_images(source_map)
                 return OwnedRings().Mor(self, localized_map.codomain())(
                     lambda element: localized_map(self(element).lift())
                 )
@@ -2281,7 +2281,7 @@ class PrimeLocalizations(OwnedCategory):
                 source_map = quotient.quotient_map()
                 if residue is not quotient:
                     source_map = _canonical_map(quotient, residue) * source_map
-                return self.induced_morphism(source_map)
+                return self._induced_morphism_from_unit_images(source_map)
 
             construction = LocalRingConstruction(
                 maximal_ideal_factory=lambda: prime.extension_to_localization(self),
@@ -2611,18 +2611,26 @@ class AdicCompletions(Category):
                     f"the comparison of completion and localization at a maximal ideal needs a Noetherian ring, "
                     f"but {source} is not known to be Noetherian"
                 )
-            if not bool(maximal.is_maximal()):
-                raise TypeError(
-                    f"the comparison of completion and localization needs a maximal ideal of definition, but "
-                    f"{maximal} is not maximal in {source}"
-                )
+            match maximal.is_maximal():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        f"the comparison of completion and localization needs a maximal ideal of definition, but "
+                        f"{maximal} is not maximal in {source}"
+                    )
+                case _:
+                    assert False, (
+                        f"the comparison of completion and localization requires maximality of {maximal} "
+                        f"in {source} to be established"
+                    )
             local = source.localize_at_prime(maximal)
             local_completion = local.adic_completion(
                 local.maximal_ideal(),
                 precision=self.computation_precision(),
             )
             forward = self.induced_map(local.localization_map(), local_completion)
-            local_to_completion = local.induced_morphism(self.completion_map())
+            local_to_completion = local._induced_morphism_from_unit_images(self.completion_map())
             inverse = local_completion.induced_map(local_to_completion, self)
             return MaximalAdicLocalizationCompletionComparison(
                 self,
@@ -4010,12 +4018,17 @@ def _adic_completion_from_owned_data(source, defining, precision):
     if source in PrimeLocalizations() and defining == source.maximal_ideal():
         bottom = source.localization_source()
         prime = source.localized_prime()
+        assert prime.is_maximal() is True, (
+            f"reusing the completion of {bottom} at {prime} to complete {source} requires every element "
+            f"outside {prime} to become a unit in that completion; this selected construction requires "
+            "the prime to be proved maximal in the original source"
+        )
         bottom_completion = AdicCompletions()(
             bottom,
             prime,
             precision=precision,
         )
-        local_to_completion = source.induced_morphism(
+        local_to_completion = source._induced_morphism_from_unit_images(
             bottom_completion.completion_map()
         )
         completion_engine = _engine_ring(bottom_completion)
