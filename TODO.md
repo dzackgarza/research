@@ -396,7 +396,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AdditiveMor` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
   **Closure assertions:** the complete `AdditiveMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-additivemorgroups`**. **Needs:** none.
+- [x] **`placement-owner-additivemorgroups`**. **Needs:** none.
   **Owner pass:** `AdditiveMorGroups` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
   **Closure assertions:** the complete `AdditiveMorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

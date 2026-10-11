@@ -156,8 +156,9 @@ class _ScalarIdentityEvaluation:
 
     This callable is the defining computation, not an annotation on another
     map. The parent supplies its already constructed pointwise scalar action.
-    Arithmetic of two such maps is arithmetic of the supplied scalars, even
-    when arbitrary endomorphism equality cannot be decided.
+    Within that same retained parent, arithmetic of two such maps is
+    arithmetic of the supplied scalars, even when arbitrary endomorphism
+    equality cannot be decided.
     """
 
     def __init__(self, parent, scalar):
@@ -173,32 +174,46 @@ class _ScalarIdentityEvaluation:
         return self._parent._apply_pointwise_scalar(self.scalar, element)
 
 
-def _scalar_identity_coefficient(morphism):
-    r"""Read a scalar from its actual evaluation or the diagonal inclusion.
+def _scalar_identity_coefficient(morphism, parent):
+    r"""Read a coefficient for the scalar action of this exact diagonal Mor.
 
     Private shared additive/linear/group map adapter. Its callers are native map
-    arithmetic and endomorphism centrality. It inspects the selected callable
-    at those declared engines. The retained subgroup-inclusion datum with
-    identical endpoints is the identity, so also supplies the scalar one.
-    Neither case infers a scalar by sampling a map.
+    arithmetic and endomorphism centrality, and supply their actual result or
+    comparison parent. A retained scalar evaluation belongs to that parent's
+    selected action; even equal coefficient rings do not identify two actions.
+    A scalar map for a stronger module theory therefore need not be a scalar
+    map in the weaker additive End ring. Foreign action data return ``None``
+    so the caller uses its ordinary formula or computation frontier.
+
+    The retained subgroup-inclusion datum with identical endpoints is the
+    identity in its owning group Mor, so also supplies the scalar one there.
+    Neither case infers a scalar by sampling a map or transporting scalars.
     """
     from dzack_research.preamble.categories.group.groups import GroupMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphismMethods
 
+    if (
+        parent.domain() is not parent.codomain()
+        or morphism.domain() is not parent.domain()
+        or morphism.codomain() is not parent.codomain()
+    ):
+        return None
     match morphism:
+        case ModuleMorphismMethods():
+            # Its cooperative additive initializer retains the bound _call_
+            # wrapper; the actual selected evaluator is _element_function.
+            evaluation = morphism._element_function
         case AdditiveMorphism():
             evaluation = morphism._function
-        case ModuleMorphismMethods():
-            evaluation = morphism._element_function
-        case GroupMorphism() if morphism._subgroup_premise and morphism.domain() is morphism.codomain():
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-            return _own_ring(SageZZ).one()
+        case GroupMorphism() if morphism._subgroup_premise and morphism.parent() is parent:
+            return parent.base_ring().one()
         case OwnedSetMorphism():
             evaluation = morphism._owned_function
         case _:
             return None
-    return evaluation.scalar if isinstance(evaluation, _ScalarIdentityEvaluation) else None
+    if isinstance(evaluation, _ScalarIdentityEvaluation) and evaluation._parent is parent:
+        return evaluation.scalar
+    return None
 
 
 class AdditiveMorGroups(OwnedCategory):
@@ -267,7 +282,7 @@ class AdditiveMorGroups(OwnedCategory):
             if morphism not in self:
                 raise TypeError(f"pointwise scalar multiplication in {self} needs an arrow already admitted there")
             scalar = self.base_ring()(scalar)
-            coefficient = _scalar_identity_coefficient(morphism)
+            coefficient = _scalar_identity_coefficient(morphism, self)
             if coefficient is not None:
                 return self._scalar_identity(scalar * coefficient)
             return self.elementwise(
@@ -285,14 +300,14 @@ class AdditiveMorGroups(OwnedCategory):
             parent = self._pointwise_mor()
             if other not in parent:
                 return NotImplemented
-            left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+            left, right = _scalar_identity_coefficient(self, parent), _scalar_identity_coefficient(other, parent)
             if left is not None and right is not None:
                 return parent._scalar_identity(left + right)
             return parent.elementwise(lambda element: parent._sum_values(self(element), other(element)))
 
         def __neg__(self):
             parent = self._pointwise_mor()
-            scalar = _scalar_identity_coefficient(self)
+            scalar = _scalar_identity_coefficient(self, parent)
             if scalar is not None:
                 return parent._scalar_identity(-scalar)
             return parent.elementwise(lambda element: parent._negative_value(self(element)))
@@ -374,7 +389,7 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             module and component realizations keep their richer premises
             through their selected composition supplier instead.
             """
-            left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
+            left_scalar, right_scalar = _scalar_identity_coefficient(left, self), _scalar_identity_coefficient(right, self)
             if left_scalar is not None and right_scalar is not None:
                 return self._scalar_identity(left_scalar * right_scalar)
             return self.elementwise(lambda element: left(right(element)))
@@ -468,7 +483,7 @@ class AdditiveMorphism:
 
         if other not in self.parent():
             return op == op_NE
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        left, right = _scalar_identity_coefficient(self, self.parent()), _scalar_identity_coefficient(other, self.parent())
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         domain = self.domain()
