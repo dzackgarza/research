@@ -249,18 +249,22 @@ def _algebraic_correlation_morphism(metric, *, injective=False):
                         source_generator,
                         metric.module_generator(dual_label),
                     )
-                    if coefficient != ring.zero():
+                    if (coefficient == ring.zero()) is not True:
                         coefficients[dual_label] = coefficient
                 return dual.linear_combination(coefficients)
 
             return correlation_from_generator_images(finite_generator_image)
         case False:
-            regular = ring.regular_module()
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                _as_module_element,
+            )
 
             def infinite_generator_image(source_label):
                 source_generator = metric.module_generator(source_label)
                 return dual(
-                    lambda target_label: regular(
+                    lambda target_label: _as_module_element(
+                        ring,
+                        ring,
                         metric.b(
                             source_generator,
                             metric.module_generator(source_labels(target_label)),
