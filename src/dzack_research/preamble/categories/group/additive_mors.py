@@ -20,7 +20,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
-from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
+from dzack_research.preamble.categories.sets.set_categories import (
+    OwnedSetMorphism,
+    SetMorCategory,
+)
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -67,12 +70,9 @@ class AdditiveMagmaMor(CategoricalMor):
     def _element_constructor_(self, datum):
         return _additive_operation_mor_element(self, datum)
 
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
-            )
-        return self(lambda element: element)
+    # The identity function preserves addition. Reuse the declared cached
+    # descriptor: its constructor uses this Mor's actual element_class.
+    identity = SetMorCategory.__dict__["identity"]
 
 
 class AdditiveMonoidMorphism:

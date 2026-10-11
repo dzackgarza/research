@@ -35,7 +35,8 @@ def _compose_operation_preserving_mor(left, right, fallback):
         return NotImplemented
     category = left.parent().mor_family().base_category()
     if (
-        right.domain() not in category
+        right.parent() not in MorCategories()
+        or right.domain() not in category
         or not right.parent().mor_family().base_category().is_subcategory(category)
     ):
         return fallback(right)
