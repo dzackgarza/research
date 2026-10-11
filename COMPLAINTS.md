@@ -14,6 +14,81 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### General degree-zero algebras need represented homogeneous inclusions
+
+For a strictly commutative differential graded `R`-algebra `B`, its degree-zero
+algebra is the actual module `B^0` with the induced product and unit. For
+`B=k[z] tensor exterior_k(e)` with `|z|=0`, `|e|=1` and zero differential,
+`B^0=k[z]`; the coefficient algebra alone does not determine it. The de Rham
+adjunction uses that algebra and the inclusion `B^0 -> B`, extending
+`a |-> f(a)` by `da |-> d(f(a))`.
+
+**Source evidence (2026-10-11):** `functors/de_rham.py`'s
+`_DegreeZeroDGAFunctor._degree_zero_data` supplies exact de Rham data,
+justified standard scalar restrictions, represented graded direct sums,
+and finite framed homogeneous subobjects. A general represented homogeneous
+piece with its inclusion and lift remains unavailable through this selected
+route; it reaches a named assertion. The resulting algebra can also lack the
+selected presentation required by `_DeRhamAdjunction._counit_component`.
+
+**Searched / Found / Conclusion:** read the degree-zero functor, restricted
+graded algebra, graded direct sum and graded-module piece suppliers; found
+the constructions above, not a general inclusion/lift supplier. This is a
+source-level computation frontier, not an executed failure or a claim that
+every other representation lacks the mathematics. Confidence is high for
+these inspected paths; other suppliers and runtime behavior are uninspected.
+The existing `placement-owner-differentialgradedalgebras` owns the piece
+construction; `placement-owner-kahlerdifferentialmodules` owns the needed
+algebra-presentation remainder. No external repository gates either owner.
+Mathematics: [de Rham construction](https://stacks.math.columbia.edu/tag/0FKF)
+and [strict commutativity](https://stacks.math.columbia.edu/tag/061U).
+
+### General Kähler differentials exceed the selected finite conormal computation
+
+For every retained commutative ring map `R -> A`, `Omega^1_(A/R)` represents
+`R`-derivations from `A`. In particular, for any index set `I`,
+`Omega^1_(R[x_i : i in I]/R)` is the direct sum of copies of `R[x_i] dx_i`.
+Finiteness is not a hypothesis of that universal construction.
+
+**Source evidence (2026-10-11):** the path from the commutative algebra's
+`kahler_differentials` and `de_rham_algebra` to
+`derivations._commutative_presentation_data` uses selected polynomial or
+quotient data with literally known finite polynomial labels. Infinite or
+undecided label finiteness reaches the named conormal/differential assertion
+before traversal. Existing localization and relative-zero cases remain.
+An algebra constructed only on a degree-zero module can lack this selected
+presentation even when it is isomorphic to its coefficient ring.
+
+**Searched / Found / Conclusion:** read the Kähler, derivation, de Rham and
+degree-zero suppliers and their selected presentation branches. Found the
+finite conormal construction; the general infinite presentation computation
+and presentation of a newly constructed degree-zero algebra remain at the
+existing `placement-owner-kahlerdifferentialmodules` owner. Confidence is high
+for the inspected source boundary; no execution or global absence claim is
+made. Mathematics: [differentials and the conormal sequence](https://stacks.math.columbia.edu/tag/00RM).
+
+### Cohomology needs general represented cycle quotients
+
+For an arbitrary cochain complex of `R`-modules, `H^p` is the module of cycles
+modulo boundaries, with its actual kernel, image, factorization and quotient
+maps. It need not be finitely presented. For algebraic de Rham cohomology of
+`F2[x]`, `H^0=F2[x^2]` and `H^1=F2[x^2] x dx` have infinite `F2`-dimension.
+
+**Source evidence (2026-10-11):** `functors/cohomology.py` has the general
+codomain `Modules(R)`, while `modules/cochain_complexes.py:_cohomology`
+still selects a chosen finite cycle presentation after obtaining the actual
+kernel, image and boundary-in-cycle factorization. The unresolved computation
+is the general represented cycle quotient, not the functor's mathematical
+codomain. The existing `placement-owner-cohomologymodules` owns this remainder
+and its unavailable-computation assertions.
+
+**Searched / Found / Conclusion:** read the cohomology functor, cycles,
+boundaries, `_cohomology`, and the de Rham consumer; found the selected finite
+construction and the named frontier, not a general unbounded solver along
+this route. Confidence is high for this source trace; broader algorithms
+and runtime behavior are uninspected. No execution is claimed. The displayed
+`F2[x]` equations follow directly from the [de Rham differential](https://stacks.math.columbia.edu/tag/0FKF).
+
 ### A coefficient presentation omits group-action relations
 
 **Observed during placement-owner-affinegschemes (2026-10-11):** asking

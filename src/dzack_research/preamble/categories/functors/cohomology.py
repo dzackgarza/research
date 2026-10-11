@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.functors.core import (
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -28,7 +28,7 @@ class _CohomologyFunctor(Functor):
         self._degree = int(degree)
         super().__init__(
             CochainComplexes(self._base_ring),
-            FinitelyPresentedModules(self._base_ring),
+            Modules(self._base_ring),
         )
 
     def base_ring(self):

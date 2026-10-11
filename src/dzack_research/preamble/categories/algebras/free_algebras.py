@@ -355,14 +355,21 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
 
 
 def _relations_to_ideal(presentation_ring, relations):
-    r"""Return the backend ideal and the owned finite relation family."""
+    r"""Return the backend ideal and the owned finite relation family.
+
+    A bare iterable supplies an explicitly finite list, normalized by the
+    existing positional-family ingress. Owned families and sets must instead
+    supply decided finiteness before their values are traversed.
+    """
+    if not isinstance(relations, (IndexedFamily, tuple, list)) and relations not in Sets():
+        relations = tuple(relations)
     engine = _engine_ring(presentation_ring)
     if isinstance(relations, IndexedFamily):
         size = cardinal(relations.cardinality())
-        if not size.is_finite():
-            raise TypeError(
-                f"an algebra given by generators and relations needs finitely many relations, but got {size}"
-            )
+        assert size.is_finite() is True, (
+            f"the selected finite algebra presentation needs a known finite relation family, "
+            f"but the supplied family has cardinality {size}"
+        )
         selected_relations = indexed_family(
             relations.index_set(),
             lambda index: presentation_ring(relations.value(index)),
@@ -376,7 +383,11 @@ def _relations_to_ideal(presentation_ring, relations):
             lambda index: presentation_ring(by_position[int(index)]),
             name="Defining relation family",
         )
-    elif relations in FiniteSets():
+    elif relations in Sets():
+        assert cardinal(relations.cardinality()).is_finite() is True, (
+            f"the selected finite algebra presentation needs a known finite relation set, "
+            f"but the supplied set is {relations}"
+        )
         selected_relations = indexed_family(
             relations,
             lambda relation: presentation_ring(relation),
@@ -842,6 +853,31 @@ def _finitely_presented_algebra_from_data(
         f"an algebra given by generators and relations must be a quotient of a polynomial algebra or of "
         f"an algebra given by generators and relations, but {presentation_ring} is neither"
     )
+    assert presentation_ring.is_framed_algebra(), (
+        f"a finite presentation of {presentation_ring} needs chosen algebra generators"
+    )
+    labels = presentation_ring.algebra_generating_set()
+    assert labels.cardinality().is_finite() is True, (
+        f"a finite presentation of {presentation_ring} needs a known finite chosen "
+        "algebra-generator family before any polynomial presentation computation"
+    )
+    match relations:
+        case IndexedFamily():
+            assert relations.cardinality().is_finite() is True, (
+                f"a finite presentation of {presentation_ring} needs a known finite "
+                "relation family before any traversal"
+            )
+        case tuple() | list():
+            pass
+        case _ if relations in Sets():
+            assert cardinal(relations.cardinality()).is_finite() is True, (
+                f"a finite presentation of {presentation_ring} needs a known finite "
+                "owned relation set before any traversal"
+            )
+        case _:
+            # Retain the existing bare finite-iterable ingress also for
+            # quotients of quotients, before their relations are lifted.
+            relations = tuple(relations)
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
         # A quotient of a quotient is one quotient of the same polynomial
         # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
@@ -914,11 +950,10 @@ def _finitely_presented_algebra_from_data(
             def presentation_lift(element):
                 return element
 
-    labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
     if (
-        label_size.is_finite()
+        label_size.is_finite() is True
         and int(label_size.finite_value()) == 1
         and isinstance(quotient_engine, PolynomialQuotientRing_generic)
     ):
@@ -1600,12 +1635,21 @@ def _commutative_algebra_coproduct_backend(left, right):
         f"the coproduct {left} (x) {right} is computed only when both factors have finitely many "
         "chosen algebra generators"
     )
+    left_labels = left.algebra_generating_set()
+    right_labels = right.algebra_generating_set()
+    assert (
+        left_labels.cardinality().is_finite() is True
+        and right_labels.cardinality().is_finite() is True
+    ), (
+        f"the coproduct {left} (x) {right} needs a selected finite-presentation computation; "
+        "finiteness of both chosen algebra-generator families must be decided before enumeration"
+    )
 
     left_presentation, left_relations = _presentation_data(left)
     right_presentation, right_relations = _presentation_data(right)
     combined_labels = tuple(
-        ("left", label) for label in left.algebra_generating_set()
-    ) + tuple(("right", label) for label in right.algebra_generating_set())
+        ("left", label) for label in left_labels
+    ) + tuple(("right", label) for label in right_labels)
     presentation = base.free_module(combined_labels).symmetric_algebra()
     relations = _transport_relations(
         left_presentation, left_relations, presentation, "left"
@@ -1638,8 +1682,24 @@ def _quotient_by_algebra_elements_backend(
     extra_construction_data=None,
 ):
     base = algebra.base_ring()
+    match elements:
+        case IndexedFamily():
+            assert elements.cardinality().is_finite() is True, (
+                f"the selected quotient of {algebra} needs a known finite family of algebra elements"
+            )
+        case tuple() | list():
+            pass
+        case _ if elements in Sets():
+            assert cardinal(elements.cardinality()).is_finite() is True, (
+                f"the selected quotient of {algebra} needs a known finite owned relation set "
+                "before traversal"
+            )
+        case _:
+            # This is the established ingress for a supplied finite iterable,
+            # not a finiteness test on an owned mathematical set or family.
+            elements = tuple(elements)
     selected = tuple(elements)
-    if not selected:
+    if not selected and not extra_categories and not extra_construction_data:
         identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
     match algebra:
@@ -1684,8 +1744,15 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         raise ValueError(
             f"the pushout of {left} <- {common} -> {right} needs all three over one base ring {base}"
         )
-    if left_map.parent() is not common.Mor(left) or right_map.parent() is not common.Mor(
-        right
+    category = Algebras(base).Associative().Unital().Commutative()
+    if common not in category or left not in category or right not in category:
+        raise TypeError(
+            f"the pushout of {left} <- {common} -> {right} requires commutative "
+            f"associative unital algebras over the retained base {base}"
+        )
+    if (
+        left_map not in category.Mor(common, left)
+        or right_map not in category.Mor(common, right)
     ):
         raise TypeError(
             f"the pushout maps {left_map} and {right_map} must be algebra morphisms {common} -> {left} and "
@@ -1695,13 +1762,18 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         f"the pushout of {left} <- {common} -> {right} is computed only when {common} has finitely many "
         "chosen algebra generators"
     )
+    common_labels = common.algebra_generating_set()
+    assert common_labels.cardinality().is_finite() is True, (
+        f"the pushout of {left} <- {common} -> {right} needs a finite chosen algebra-generator "
+        "family for its common source before forming the compatibility relations"
+    )
 
     tensor = _commutative_algebra_coproduct_backend(left, right)
     left_injection, right_injection = tensor.coproduct_injections()
     equalities = tuple(
         left_injection(left_map(common.algebra_generator(label)))
         - right_injection(right_map(common.algebra_generator(label)))
-        for label in common.algebra_generating_set()
+        for label in common_labels
     )
     pushout, _quotient_map = _quotient_by_algebra_elements_backend(
         tensor,

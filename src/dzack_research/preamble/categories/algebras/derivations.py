@@ -81,6 +81,10 @@ def _commutative_presentation_data(algebra):
         lift = presentation
 
     labels = presentation.algebra_generating_set()
+    assert labels.cardinality().is_finite() is True, (
+        f"the selected conormal and differential computation for {algebra} requires "
+        "a known finite family of polynomial generators"
+    )
     variables = FiniteOrderedSets().from_indexed(
         labels,
         presentation.algebra_generator,

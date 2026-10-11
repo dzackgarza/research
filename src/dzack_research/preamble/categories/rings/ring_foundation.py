@@ -2894,7 +2894,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 Protected computation contract for ``normalization``,
                 ``normalization_map``, ``normalization_components``,
-                ``conductor_ideal`` and the coefficient-bearing algebra's
+                ``conductor_ideal`` and this ring's coefficient-dependent
                 ``delta_invariant``, for the finite-localization producer
                 reading its source's retained data, and for
                 ``LocalizationRings._normality_decision``. The convention is
@@ -2967,6 +2967,53 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     f"no normalization quotient module is represented for {self}"
                 )
                 return data.normalization_cokernel.annihilator()
+
+            @cached_method
+            def delta_invariant(self, base_field_map=None):
+                r"""Return the retained coefficient dimension of ``B/image(A)``.
+
+                The normalization construction retains an actual field map
+                ``c:k -> A`` on this commutative ring, independently of an
+                ambient algebra base. With no argument this is
+                ``dim_k(Res_c(B/image(A)))``, including an infinite dimension when
+                the module owner represents it. For reduced input the quotient is
+                the usual ``B/A``. A quotient's immediate algebra base may be its
+                polynomial presentation ring; it does not replace this chosen ``k``.
+
+                An optional actual ``base_field_map:F -> k`` asks for a second
+                scalar restriction, hence dimension for the composite ``F -> k -> A``.
+                For example a one-dimensional quotient over a quadratic field over
+                QQ has dimension two along that supplied field inclusion. Both maps
+                and the module are retained by the restriction constructors. No
+                factorization of an arbitrary map ``F -> A`` is guessed, and a
+                dimension algorithm for every alternate field is not presumed.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization construction with a coefficient action is represented for {self}"
+                )
+                coefficient_map = data.coefficient_map
+                assert coefficient_map is not None, (
+                    f"the normalization of {self} has no retained coefficient field map"
+                )
+                field = _owned_ring(coefficient_map.domain())
+                assert (
+                    field in OwnedFields()
+                    and coefficient_map.codomain() is self
+                    and coefficient_map in OwnedRings().Mor(field, self)
+                ), (
+                    f"delta for {self} requires its retained unital ring map from an actual field"
+                )
+                quotient = data.normalization_cokernel.restrict_scalars(coefficient_map)
+                if base_field_map is not None:
+                    alternate_field = _owned_ring(base_field_map.domain())
+                    assert (
+                        alternate_field in OwnedFields()
+                        and base_field_map.codomain() is field
+                        and base_field_map in OwnedRings().Mor(alternate_field, field)
+                    ), f"the alternate coefficient map must be an actual field map into {field}"
+                    quotient = quotient.restrict_scalars(base_field_map)
+                return quotient.dimension()
 
             @RealizationHook
             def _krull_dimension_decision(self):
