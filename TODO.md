@@ -767,7 +767,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CochainComplexes` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
   **Closure assertions:** the complete `CochainComplexes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CochainComplexes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-cochainmor`**. **Needs:** none.
+- [x] **`placement-owner-cochainmor`**. **Needs:** none.
   **Owner pass:** `CochainMor` in `src/dzack_research/preamble/categories/modules/cochain_complexes.py`.
   **Closure assertions:** the complete `CochainMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CochainMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
   **Retained source obligation (2026-10-11):** the AdditiveEndomorphismRings pass supplies arithmetic from retained component formulas and cochain premises. The generic infinite-support component-validation branch still reads `source` without binding it, and its treatment of undecided differential equations needs this owner's full review. Neither that general validator nor a generic infinite differential algorithm was accepted by the derived-arithmetic closure.

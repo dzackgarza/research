@@ -531,8 +531,6 @@ class CochainMorphismMethods:
             elementwise=True,
             linearity_premises=cochain_premises,
         )
-        if cochain_premises is None:
-            self._validate_components()
 
     def _raw_component(self, degree):
         degree = int(degree)
@@ -556,55 +554,51 @@ class CochainMorphismMethods:
         return mor(self._raw_component(degree))
 
     def _validate_degree_component(self, degree, selected):
-        if self._cochain_premises is not None:
-            # These component formulas commute with d under the retained
-            # cochain laws of their inputs. Do not decide those laws again.
-            return selected
-        degree = int(degree)
-        if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
-            following = self._raw_component(degree + 1)
-            following_source = self.domain().graded_piece(degree + 1)
-            following_target = self.codomain().graded_piece(degree + 1)
-            if (
-                following.domain() is not following_source
-                or following.codomain() is not following_target
-            ):
-                raise ValueError(
-                    f"the degree-{degree + 1} component of the cochain map {self} must be a map "
-                    f"{following_source} -> {following_target}, but it is "
-                    f"{following.domain()} -> {following.codomain()}"
-                )
-            left = self.codomain().differential_component(degree)
-            right = self.domain().differential_component(degree)
-            labels = source.module_generating_set()
-            if labels.cardinality().is_finite():
-                for label in labels:
-                    generator = source.module_generator(label)
-                    if left(selected(generator)) != following(right(generator)):
-                        raise ValueError(
-                            f"{self} is not a cochain map: it must commute with the differentials, "
-                            f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
-                            f"of degree {degree}"
-                        )
+        r"""Return the selected component; cochain commutation is checked separately."""
         return selected
 
-    def _validate_components(self) -> None:
-        if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
-            return
-        degrees = set(self.domain().selected_degrees()) | set(self.codomain().selected_degrees())
-        for degree in degrees:
-            left = self.codomain().differential_component(degree)
-            component = self.component(degree)
-            right_component = self.component(degree + 1)
-            right = self.domain().differential_component(degree)
-            for label in component.domain().module_generating_set():
-                generator = component.domain().module_generator(label)
-                if left(component(generator)) != right_component(right(generator)):
-                    raise ValueError(
-                        f"{self} is not a cochain map: it must commute with the differentials, "
-                        f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
-                        f"of degree {degree}"
-                    )
+    def cochain_degree_decision(self, degree):
+        r"""Decide ``d f^p = f^(p+1) d`` when degree ``p`` is finitely determined."""
+        if self._cochain_premises is not None:
+            return True
+        degree = int(degree)
+        source = self.domain().graded_piece(degree)
+        if (
+            not source.has_selected_module_resolution()
+            or source.module_generating_set().cardinality().is_finite() is not True
+        ):
+            return AtomicProposition("commutes_with_differential", self, degree)
+        component = self.component(degree)
+        following = self.component(degree + 1)
+        left = self.codomain().differential_component(degree)
+        right = self.domain().differential_component(degree)
+        return conjunction(
+            left(component(source.module_generator(label)))
+            == following(right(source.module_generator(label)))
+            for label in source.module_generating_set()
+        )
+
+    def cochain_map_decision(self):
+        r"""Return the represented decision that all component squares commute."""
+        if self._cochain_premises is not None:
+            return True
+        if not self.domain().has_finite_support():
+            return AtomicProposition("commutes_with_differentials", self)
+        return conjunction(
+            self.cochain_degree_decision(degree)
+            for degree in self.domain().selected_degrees()
+        )
+
+    def validate_cochain_map(self):
+        r"""Diagnose a proved failure of the cochain-map equations without forcing unknown ones."""
+        decision = self.cochain_map_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a cochain map: its selected components do not commute with the differentials"
+            )
+        return decision
+
+    _validate_components = validate_cochain_map
 
     def _evaluate_components(self, element):
         element = self.domain()(element)
@@ -745,9 +739,7 @@ class CochainMor(CategoricalMor):
                 chosen = selected.get(degree)
                 if chosen is not None:
                     return chosen
-                return source.module_category().Mor(source, target)(
-                    {label: target.zero() for label in source.module_generating_set()}
-                )
+                return source.module_category().Mor(source, target).zero()
 
             components = indexed_family(
                 self.domain().degree_index_set(),
