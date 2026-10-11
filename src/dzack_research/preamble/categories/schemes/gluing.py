@@ -82,7 +82,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family_from_values,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import negation
+from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -5243,7 +5243,7 @@ class ModuleGluingMor(CategoricalMor):
         )
 
 
-def _algebra_maps_agree_on_generators(left, right) -> bool:
+def _algebra_maps_agree_on_generators(left, right):
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
     source = left.domain()
@@ -5253,7 +5253,7 @@ def _algebra_maps_agree_on_generators(left, right) -> bool:
             f"cannot compare the algebra maps {left} and {right} on generators: {source} must have "
             f"finitely many chosen algebra generators, but it has {labels.cardinality()}"
         )
-    return all(
+    return conjunction(
         left(source.algebra_generator(label)) == right(source.algebra_generator(label))
         for label in labels
     )
@@ -5487,18 +5487,18 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                         f"an isomorphism of algebras {source} -> {target} between the restrictions of the two "
                         "local algebras to the overlap"
                     )
-                if not _algebra_maps_agree_on_generators(
+                if _algebra_maps_agree_on_generators(
                     transition.inverse() * transition.forward(),
                     _algebra_mor(source, source).identity(),
-                ):
+                ) is False:
                     raise ValueError(
                         f"cannot glue along {transition} on the overlap of charts {left} and {right}: it followed "
                         f"by its stated inverse is not the identity of {source}"
                     )
-                if not _algebra_maps_agree_on_generators(
+                if _algebra_maps_agree_on_generators(
                     transition.forward() * transition.inverse(),
                     _algebra_mor(target, target).identity(),
-                ):
+                ) is False:
                     raise ValueError(
                         f"cannot glue along {transition} on the overlap of charts {left} and {right}: its stated "
                         f"inverse followed by it is not the identity of {target}"
@@ -5616,11 +5616,11 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         def _verify_cocycles(self) -> None:
             for left, middle, right in combinations(tuple(self.chart_index_set()), 3):
                 labels = (left, middle, right)
-                if not _algebra_maps_agree_on_generators(
+                if _algebra_maps_agree_on_generators(
                     self.transition_on_intersection(middle, right, *labels)
                     * self.transition_on_intersection(left, middle, *labels),
                     self.transition_on_intersection(left, right, *labels),
-                ):
+                ) is False:
                     raise ValueError(
                         f"the algebra chart changes of {self} fail the cocycle condition on the triple overlap of "
                         f"charts {left}, {middle} and {right}"
@@ -5907,10 +5907,10 @@ class AlgebraGluingMorphism(Morphism):
             right_restriction = self.domain().restricted_local_map(
                 self.codomain(), right, left, self.local_map(right)
             )
-            if not _algebra_maps_agree_on_generators(
+            if _algebra_maps_agree_on_generators(
                 target_transition * left_restriction,
                 right_restriction * source_transition,
-            ):
+            ) is False:
                 raise ValueError(
                     f"{self} does not glue: on the overlap of charts {left} and {right} its local maps do not "
                     "commute with the chart changes"

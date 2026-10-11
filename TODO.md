@@ -472,7 +472,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AffineSpaces` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `AffineSpaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineSpaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-algebragluingdata`**. **Needs:** none.
+- [x] **`placement-owner-algebragluingdata`**. **Needs:** none.
   **Owner pass:** `AlgebraGluingData` in `src/dzack_research/preamble/categories/schemes/gluing.py`.
   **Closure assertions:** the complete `AlgebraGluingData` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AlgebraGluingData`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
