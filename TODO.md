@@ -400,7 +400,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AdditiveMorGroups` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
   **Closure assertions:** the complete `AdditiveMorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-additivesemigroups`**. **Needs:** none.
+- [x] **`placement-owner-additivesemigroups`**. **Needs:** none.
   **Owner pass:** `AdditiveSemigroups` in `src/dzack_research/preamble/categories/group/magmas.py`.
   **Closure assertions:** the complete `AdditiveSemigroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveSemigroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
