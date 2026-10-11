@@ -116,8 +116,11 @@ class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
         def _characteristic_decision(self):
             r"""Protected exact characteristic of this semiring, or None.
 
-            Only characteristic calls this hook. An owned parent realization
-            or a more specific category supplies the nonnegative owned integer
+            The public characteristic operation calls this hook. The
+            PredicateSubrings cardinality supplier also reads it on the actual
+            ambient unital ring, since a unital inclusion preserves
+            characteristic. An owned parent realization or a more specific
+            category supplies the nonnegative owned integer
             n for which m*1 = 0 exactly when n divides the natural number m.
             None means that no characteristic computation has been supplied;
             it does not mean characteristic zero.

@@ -1504,15 +1504,105 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             assertion about finiteness or emptiness.
 
             Permitted callers are ``cardinality``, the finite-endpoint
-            queries in ``Cardinalities.set_power_category``. The latter
-            caller must retain only its established
-            cardinal bounds when no value is supplied.  They may not call
+            queries in ``Cardinalities.set_power_category``, and the
+            cardinality suppliers of set, ring, algebra and module
+            constructions reading their retained parameters, and their
+            finiteness decisions. These callers retain only established
+            bounds when no value is supplied. They may not call
             the public exact-valued operation merely to ask whether a
             computation is available: that operation reports an assertion
-            at its computational frontier.  ``cardinality`` itself also
-            reads the standard set constructions when this hook returns
-            ``None``.
+            at its computational frontier. This owner supplies the standard
+            set-construction formulas here, so transport reads the same
+            computation as the public operation. Infinite indexed formulas
+            retain their existing unevaluated cardinal family; finite
+            families require supplied factor values and a chosen enumeration.
             """
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                OrderedEnumeratedSets,
+            )
+
+            result = None
+            structural = True
+            match self:
+                case _ if self in OrderedEnumeratedSets():
+                    indices = self.index_set()
+                    if indices is not self:
+                        result = indices._cardinality_decision()
+                case _ if self in PowerSets():
+                    size = self.base_set()._cardinality_decision()
+                    if size is not None and cardinal(size).expression().is_normal_form():
+                        result = cardinal(2) ** cardinal(size)
+                case _ if self in FunctionSets():
+                    base_size = self.base()._cardinality_decision()
+                    exponent_size = self.exponent()._cardinality_decision()
+                    if (
+                        base_size is not None and exponent_size is not None
+                        and cardinal(base_size).expression().is_normal_form()
+                        and cardinal(exponent_size).expression().is_normal_form()
+                    ):
+                        result = cardinal(base_size) ** cardinal(exponent_size)
+                case _ if self in FixedCardinalitySubsetSets():
+                    selected_size = self.subset_cardinality()
+                    if selected_size == 0:
+                        result = cardinal(1)
+                    else:
+                        source_size = self.source()._cardinality_decision()
+                        if source_size is not None and cardinal(source_size).expression().is_normal_form():
+                            source_size = cardinal(source_size)
+                            result = (
+                                cardinal(comb(source_size.finite_value(), selected_size))
+                                if source_size.is_finite()
+                                else source_size
+                            )
+                case _ if self in FinitePowerSets():
+                    source_size = self.source()._cardinality_decision()
+                    if source_size is not None and cardinal(source_size).expression().is_normal_form():
+                        source_size = cardinal(source_size)
+                        result = (
+                            cardinal(2) ** source_size
+                            if source_size.is_finite()
+                            else source_size
+                        )
+                case _ if self in CartesianProductsOfSets() or self in CoproductsOfSets():
+                    indices = self.index_set()
+                    index_size = indices._cardinality_decision()
+                    if index_size is not None and cardinal(index_size).expression().is_normal_form():
+                        product = self in CartesianProductsOfSets()
+                        term = self.factor if product else self.cofactor
+                        if cardinal(index_size).is_finite():
+                            if indices in EnumeratedSets() or isinstance(indices, _FiniteLiteralSet):
+                                values = []
+                                for index in indices:
+                                    value = term(index)._cardinality_decision()
+                                    if value is None or not cardinal(value).expression().is_normal_form():
+                                        break
+                                    values.append(cardinal(value))
+                                else:
+                                    result = (
+                                        _cardinalities().product(*values)
+                                        if product else _cardinalities().sum(*values)
+                                    )
+                        else:
+                            # This existing cardinal constructor retains the
+                            # infinite family without evaluating its terms.
+                            # Its index-size read is already supplied above;
+                            # factor cardinalities are exact-valued lazy data.
+                            result = (
+                                _cardinalities().indexed_product(
+                                    indices, lambda index: term(index).cardinality(),
+                                )
+                                if product else _cardinalities().indexed_sum(
+                                    indices, lambda index: term(index).cardinality(),
+                                )
+                            )
+                case _:
+                    structural = False
+            if result is not None:
+                return cardinal(result)
+            if not structural and self in Sets().Finite() and self in EnumeratedSets():
+                return cardinal(sum(1 for _point in self))
+            if self in Sets().Countable() and self in Sets().Infinite():
+                return _aleph0()
             return None
 
         def is_finite(self):
@@ -1547,7 +1637,8 @@ class Sets(CategoryPacketMethods, OwnedCategory):
               and ``|X|`` for infinite ``X``;
             - ``|prod_i X_i| = prod_i |X_i|`` and ``|coprod_i X_i| =
               sum_i |X_i|``, the definitions of cardinal product and sum;
-            - any other finite set is counted through its points, and any
+            - any other finite set with a chosen enumeration is counted
+              through that enumeration, and any
               other countably infinite set has cardinality ``aleph_0``.
 
             A realization whose construction determines a cardinality these
@@ -1557,86 +1648,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             cardinality that no exact computation here reaches, and the
             assertion says so.
             """
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                OrderedEnumeratedSets,
-            )
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                PredicateSubrings,
-            )
-
             construction_cardinality = self._cardinality_decision()
-            if construction_cardinality is not None:
-                return cardinal(construction_cardinality)
-
-            match self:
-                case _ if self in OrderedEnumeratedSets():
-                    return cardinal(self.index_set().cardinality())
-                case _ if self in PowerSets():
-                    return cardinal(2) ** cardinal(self.base_set().cardinality())
-                case _ if self in FunctionSets():
-                    return cardinal(self.base().cardinality()) ** cardinal(
-                        self.exponent().cardinality()
-                    )
-                case _ if self in FixedCardinalitySubsetSets() and self.subset_cardinality() == 0:
-                    return cardinal(1)
-                case _ if self in FixedCardinalitySubsetSets() and cardinal(self.source().cardinality()).is_finite():
-                    return cardinal(
-                        comb(
-                            cardinal(self.source().cardinality()).finite_value(),
-                            self.subset_cardinality(),
-                        )
-                    )
-                case _ if self in FixedCardinalitySubsetSets():
-                    return cardinal(self.source().cardinality())
-                case _ if self in FinitePowerSets() and cardinal(self.source().cardinality()).is_finite():
-                    return cardinal(2) ** cardinal(self.source().cardinality())
-                case _ if self in FinitePowerSets():
-                    return cardinal(self.source().cardinality())
-                case _ if self in CartesianProductsOfSets():
-                    return _cardinalities().indexed_product(
-                        self.index_set(),
-                        lambda index: cardinal(self.factor(index).cardinality()),
-                    )
-                case _ if self in CoproductsOfSets():
-                    return _cardinalities().indexed_sum(
-                        self.index_set(),
-                        lambda index: cardinal(self.cofactor(index).cardinality()),
-                    )
-                case _ if self in PredicateSubrings():
-                    ambient = self.ambient_ring()
-                    size = cardinal(ambient.cardinality())
-                    match (
-                        size.is_finite(),
-                        size.is_countably_infinite(),
-                        self.characteristic() == 0,
-                    ):
-                        case True, _, _:
-                            return cardinal(
-                                sum(1 for element in ambient if element in self)
-                            )
-                        case False, True, True:
-                            return _aleph0()
-                        case _:
-                            match self:
-                                case _ if self in Sets().Finite():
-                                    return cardinal(sum(1 for _point in self))
-                                case _:
-                                    assert self in Sets().Countable() and self in Sets().Infinite(), (
-                                        f"cannot compute the cardinality of {self}: its predicate-subring data do not "
-                                        f"determine a size, and it is not known to be finite or countably infinite "
-                                        f"(it is in {self.category()})"
-                                    )
-                                    return _aleph0()
-                case _:
-                    match self:
-                        case _ if self in Sets().Finite():
-                            return cardinal(sum(1 for _point in self))
-                        case _:
-                            assert self in Sets().Countable() and self in Sets().Infinite(), (
-                                f"cannot compute the cardinality of {self}: it is not known to be finite or countably "
-                                f"infinite, and no formula for it applies (it is in {self.category()})"
-                            )
-                            return _aleph0()
+            assert construction_cardinality is not None, (
+                f"cannot compute the cardinality of {self}: its construction supplies no exact value "
+                f"or decided finite enumeration (it is in {self.category()})"
+            )
+            return cardinal(construction_cardinality)
 
         def finite_words(self):
             r"""All finite words in this alphabet, including the empty word."""
@@ -2801,6 +2818,40 @@ class _ConditionSetEngine:
         r"""The predicate \(P\) cutting this subset out of \(X\)."""
         return self._predicate
 
+    def _cardinality_decision(self):
+        r"""Count a supplied finite enumeration only when every predicate is decided.
+
+        Finite placement by itself supplies no iteration. The literal,
+        image and predicate realizations below retain their own finite
+        iteration data even when no enumeration category was selected.
+        """
+        universe = self.universe()
+        if not Sets().is_provably_finite(universe):
+            return super()._cardinality_decision()
+        if universe in EnumeratedSets() or isinstance(universe, _FiniteLiteralSet):
+            points = universe
+        elif isinstance(universe, _ImageSetEngine):
+            source = universe.source_set()
+            if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+                return None
+            points = universe._distinct_values()
+            if points is None:
+                return None
+        elif isinstance(universe, _ConditionSetEngine):
+            if universe._cardinality_decision() is None:
+                return None
+            points = universe
+        else:
+            return None
+        count = 0
+        for point in points:
+            member = self.predicate()(point)
+            if member is True:
+                count += 1
+            elif member is not False:
+                return None
+        return cardinal(count)
+
     @cached_method
     def inclusion(self) -> SetInjection:
         r"""The inclusion \(\{x\in X : P(x)\}\hookrightarrow X\)."""
@@ -2923,38 +2974,53 @@ class _ImageSetEngine:
         """
         from dzack_research.preamble.logic import AtomicProposition
 
-        match self.source_set():
-            case _ if self._image_inverse is not None:
-                return True
-            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
-                return cardinal(sum(1 for _value in self._distinct_values())) == cardinal(
-                    source.cardinality()
-                )
-            case _:
-                return AtomicProposition("is_injective_image", self)
+        source = self.source_set()
+        if self._image_inverse is not None:
+            return True
+        if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            values = self._distinct_values()
+            source_size = source._cardinality_decision()
+            if values is not None and source_size is not None:
+                return cardinal(len(values)) == cardinal(source_size)
+        return AtomicProposition("is_injective_image", self)
 
     def _cardinality_decision(self) -> Cardinalities.ObjectType | None:
         r"""The cardinality of \(f(A)\).
 
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
-        \(|f(A)| = |A|\); without one, the image of a finite set is a finite
-        set, counted through its points by the set level, and this hook
-        supplies nothing.
+        \(|f(A)| = |A|\). A finite source with a chosen enumeration also
+        supplies the size when equality decides its distinct image values.
+        Undecided distinctness supplies no exact count.
         """
         match self.source_set():
             case source if self._image_inverse is not None:
-                return cardinal(source.cardinality())
+                return source._cardinality_decision()
+            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
+                values = self._distinct_values()
+                return None if values is None else cardinal(len(values))
             case _:
                 return None
 
-    @cached_method
     def _distinct_values(self):
-        r"""The values of \(f\) over a finite source, each once, in the order of the source."""
+        r"""The distinct ordered values over a finite source, or ``None``.
+
+        The cardinality and injectivity suppliers can retain undecided
+        equality. Enumeration requires the complete decided tuple. An
+        unavailable tuple is not cached as permanent mathematical data.
+        """
         distinct = []
         for point in self.source_set():
             value = self.image_map()(point)
-            if not any(value is previous or value == previous for previous in distinct):
+            comparisons = tuple(
+                True if value is previous else value == previous
+                for previous in distinct
+            )
+            if any(comparison is True for comparison in comparisons):
+                continue
+            if all(comparison is False for comparison in comparisons):
                 distinct.append(value)
+            else:
+                return None
         return tuple(distinct)
 
     def __iter__(self):
@@ -2962,14 +3028,22 @@ class _ImageSetEngine:
             f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
             "to be finite; for an infinite image use Sets().image_set with an inverse on the image"
         )
-        return iter(self._distinct_values())
+        values = self._distinct_values()
+        assert values is not None, (
+            "cannot enumerate this finite image: equality of its represented values is undecided"
+        )
+        return iter(values)
 
     def __contains__(self, element) -> bool:
         r"""Whether ``element`` is a value \(f(a)\) for a point \(a\) of the source."""
         source = self.source_set()
         match source:
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
-                return element in self._distinct_values()
+                values = self._distinct_values()
+                assert values is not None, (
+                    "cannot decide membership through the distinct image values: their equality is undecided"
+                )
+                return element in values
             case _ if self._image_inverse is not None:
                 preimage = self._image_inverse(element)
                 return preimage in source and self.image_map()(source(preimage)) == element
@@ -2987,7 +3061,10 @@ class _ImageSetEngine:
     def _repr_(self) -> str:
         match self.source_set():
             case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
-                return "{" + ", ".join(repr(value) for value in self) + "}"
+                values = self._distinct_values()
+                if values is not None:
+                    return "{" + ", ".join(repr(value) for value in values) + "}"
+                return f"Image of {source} under {self.image_map()}"
             case source:
                 return f"Image of {source} under {self.image_map()}"
 
@@ -3722,7 +3799,10 @@ class _FiniteWordSet:
         super().__init__(family=indexed_family(NN, degree_set), **rest)
 
     def _cardinality_decision(self):
-        match self._alphabet.cardinality() == 0:
+        alphabet_size = self._alphabet._cardinality_decision()
+        if alphabet_size is None or not cardinal(alphabet_size).expression().is_normal_form():
+            return None
+        match cardinal(alphabet_size) == 0:
             case True:
                 return cardinal(1)
             case False:

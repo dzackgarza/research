@@ -949,11 +949,33 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
 
         def _represented_vector_space_dimension(self):
-            r"""Compute dimension from the selected presentation over a field."""
-            if self.base_ring() not in OwnedFields():
+            r"""Compute dimension from a diagonal presentation or an exact field model.
+
+            The module rank, zero predicate, vector-space dimension,
+            scalar-restriction constructor and cardinality supplier read this
+            existing optional result. No foreign model or undecided coefficient equality is
+            replaced by a presumed matrix rank.
+            """
+            ring = self.base_ring()
+            if ring not in OwnedFields():
                 return NotImplemented
+            diagonal = self._selected_diagonal_relation_scalars()
+            if diagonal is not None:
+                return cardinal(sum(
+                    1 for scalar in diagonal if (scalar == ring.zero()) is True
+                ))
+            presentation = self.presentation()
+            if (presentation == presentation.parent().zero()) is True:
+                return presentation.codomain()._represented_vector_space_dimension()
+            from sage.categories.fields import Fields as SageFields
             from sage.rings.integer_ring import ZZ as SageZZ
 
+            engine = ring._selected_engine_ring()
+            if (
+                engine is None or engine.is_exact() is not True
+                or (engine is not ring and engine not in SageFields())
+            ):
+                return NotImplemented
             relation_matrix = _engine_matrix(_relation_morphism(self))
             return _owned_engine_element(
                 SageZZ,
@@ -1082,19 +1104,22 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _selected_presentation_smith_backend(self):
-            r"""Privately reduce the selected relation matrix over a PID.
+            r"""Privately reduce the selected relation matrix over a PID, or return ``None``.
 
             The input is the selected presentation morphism itself, so the
             returned basis changes refer to the selected relation and target
             framings.  This is backend state local to the presenting module;
             callers receive owned invariants or an owned presentation witness.
+            The invariant-factor readers require this result explicitly;
+            the cardinality supplier preserves its absence. A localization
+            uses retained PID-source basis changes, or an exact field model
+            when its actual target is a field. A larger fraction-field
+            computation is not a Smith decomposition over a nonfield PID.
             """
 
             ring = self.base_ring()
-            assert ring in PrincipalIdealDomains(), (
-                f"cannot compute the Smith normal form of the relation matrix of {self}: "
-                f"the base ring {ring} must be a principal ideal domain"
-            )
+            if ring not in PrincipalIdealDomains():
+                return None
             if ring in LocalizationRings():
                 from dzack_research.preamble.categories.modules.localizations import (
                     LocalizedModules,
@@ -1115,6 +1140,16 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                         # nonunits of S^{-1}R and therefore does not describe
                         # module automorphisms over the localization.
                         return source._selected_presentation_smith_backend()
+                if ring not in OwnedFields():
+                    return None
+            from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
+
+            engine = ring._selected_engine_ring()
+            if (
+                engine is None or engine.is_exact() is not True
+                or (engine is not ring and engine not in SagePrincipalIdealDomains())
+            ):
+                return None
             backend_relation_matrix = _engine_matrix(_relation_morphism(self))
             return backend_relation_matrix.smith_form()
 
@@ -1129,7 +1164,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             owned isomorphisms are ``invariant_factor_presentation``.
             """
             ring = self.base_ring()
-            diagonal, _, _ = self._selected_presentation_smith_backend()
+            smith = self._selected_presentation_smith_backend()
+            assert smith is not None, (
+                f"cannot compute the invariant factors of {self}: its selected presentation "
+                f"over {ring} supplies no exact Smith computation"
+            )
+            diagonal, _, _ = smith
             diagonal_rank = min(diagonal.nrows(), diagonal.ncols())
             return tuple(
                 _canonical_pid_associate(ring, _owned_engine_element(ring, diagonal[position, position]))
@@ -1143,7 +1183,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             if ring in OwnedFields():
-                return cardinal(self._represented_vector_space_dimension())
+                dimension = self._represented_vector_space_dimension()
+                assert dimension is not NotImplemented, (
+                    f"cannot compute the rank of {self}: its selected presentation over {ring} "
+                    "supplies no decided diagonal or exact field-rank computation"
+                )
+                return cardinal(dimension)
             assert ring in PrincipalIdealDomains(), (
                 f"cannot compute the rank of {self} from invariant factors: "
                 f"the base ring {ring} must be a principal ideal domain or a field"
@@ -1194,7 +1239,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 case _ if ring in LocalizationRings():
                     return super().is_zero()
                 case _ if ring in OwnedFields():
-                    return self.module_rank() == 0
+                    dimension = self._represented_vector_space_dimension()
+                    if dimension is NotImplemented:
+                        return AtomicProposition("is_zero", self)
+                    return cardinal(dimension) == Cardinalities().zero()
                 case _ if ring in PrincipalIdealDomains():
                     return all(invariant.is_unit() for invariant in self._invariants_with_units())
                 case _:
@@ -1209,8 +1257,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                         return True
                     return AtomicProposition("is_zero", self)
 
-        def cardinality(self):
-            r"""Return ``|M|`` from the base cardinal and the invariant-factor decomposition.
+        def _cardinality_decision(self):
+            r"""Supply ``|M|`` from the base cardinal and the selected decomposition.
 
             Over a principal ideal domain ``M`` is ``R^r`` together with the
             cyclic quotients ``R/(d_i)`` of its nonzero non-unit invariant
@@ -1218,22 +1266,55 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             the underlying sets.  So ``|M| = |R|^r * prod_i |R/(d_i)|``, with
             every factor read from the base ring rather than assumed to be the
             integers.  The vector-space and free cases are the same formula
-            with no nonzero non-unit invariant factor.
+            with no nonzero non-unit invariant factor. A selected diagonal
+            presentation already supplies its cyclic decomposition. Missing
+            scalar cardinals, relation computations or unit decisions return
+            ``None``; they do not assert that the module is infinite.
             """
 
             ring = self.base_ring()
-            if ring in OwnedFields():
-                return ring.cardinality() ** self.module_rank()
-            assert ring in PrincipalIdealDomains(), (
-                f"the cardinality of a module presented over {ring} is read from an "
-                "invariant-factor decomposition, which a principal ideal domain supplies"
-            )
-            cyclic_orders = tuple(
-                ring.quotient_ring(ring.ideal(invariant)).cardinality()
-                for invariant in self._invariants_with_units()
-                if invariant != 0 and not invariant.is_unit()
-            )
-            return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
+            presentation = self.presentation()
+            if (presentation == presentation.parent().zero()) is True:
+                # The actual zero presentation has the same underlying set
+                # as its selected free target, whose owner already supplies
+                # the free-module cardinality computation.
+                return presentation.codomain()._cardinality_decision()
+            if ring not in PrincipalIdealDomains() and ring not in OwnedFields():
+                return super()._cardinality_decision()
+            scalar_size = ring._cardinality_decision()
+            diagonal = self._selected_diagonal_relation_scalars()
+            if diagonal is None:
+                if ring in OwnedFields():
+                    dimension = self._represented_vector_space_dimension()
+                    if dimension is NotImplemented:
+                        return None
+                    if cardinal(dimension) == Cardinalities().zero():
+                        return Cardinalities().one()
+                    if scalar_size is None or not cardinal(scalar_size).expression().is_normal_form():
+                        return None
+                    return cardinal(scalar_size) ** cardinal(dimension)
+                if self._selected_presentation_smith_backend() is None:
+                    return None
+                diagonal = self._invariants_with_units()
+            orders = []
+            for invariant in diagonal:
+                is_zero = invariant == ring.zero()
+                if is_zero is True:
+                    order = scalar_size
+                elif is_zero is False:
+                    is_unit = invariant.is_unit()
+                    if is_unit is True:
+                        order = Cardinalities().one()
+                    elif is_unit is False:
+                        order = ring.quotient_ring(ring.ideal(invariant))._cardinality_decision()
+                    else:
+                        return None
+                else:
+                    return None
+                if order is None or not cardinal(order).expression().is_normal_form():
+                    return None
+                orders.append(cardinal(order))
+            return Cardinalities().product(*orders)
 
         def _finiteness_decision(self):
             r"""Use finite generation over finite rings or PID invariant factors.
@@ -1246,10 +1327,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             match ring.is_finite():
                 case True:
                     return True
-                case _ if ring in PrincipalIdealDomains() or ring in OwnedFields():
-                    return self.cardinality().is_finite()
                 case _:
-                    return AtomicProposition("is_finite", self)
+                    size = self._cardinality_decision()
+                    if size is None or not cardinal(size).expression().is_normal_form():
+                        return AtomicProposition("is_finite", self)
+                    return cardinal(size).is_finite()
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -1298,7 +1380,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 identity = arrows.Mor(original_object, original_object).identity()
                 return arrows.Core().Mor(original_object, original_object)(identity, identity)
 
-            diagonal_backend, target_change_backend, source_change_backend = self._selected_presentation_smith_backend()
+            smith = self._selected_presentation_smith_backend()
+            assert smith is not None, (
+                f"cannot compute the invariant-factor presentation of {self}: the selected "
+                f"presentation over {ring} supplies no exact Smith computation"
+            )
+            diagonal_backend, target_change_backend, source_change_backend = smith
 
             source_labels = finite_ordered_set(range(int(presentation.domain().module_generating_set().cardinality())))
             target_labels = finite_ordered_set(range(int(presentation.codomain().module_generating_set().cardinality())))

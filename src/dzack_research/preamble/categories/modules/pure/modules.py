@@ -1869,6 +1869,9 @@ class Modules(OwnedCategoryOverBaseRing):
             Protected contract of ``Modules(R)``. Permitted callers are
             :meth:`_framing_lift` and module coordinate-transport or morphism
             evaluation constructors already holding an owned framing vector.
+            The localized-module equality predicate also reads the stored
+            coordinates of an actual free source vector to test whether its
+            finitely many coefficients vanish after localization.
             A localized module, quotient or restriction of scalars implements
             it at the representation it constructs. The result is a finite
             label-to-owned-coefficient family keyed by
@@ -1962,8 +1965,9 @@ class Modules(OwnedCategoryOverBaseRing):
         def _represented_vector_space_dimension(self):
             r"""An owned dimension, or ``NotImplemented`` when not represented.
 
-            ``VectorSpaces.dimension`` reads this value. The scalar
-            restriction constructor also reads it for a field-to-field
+            ``VectorSpaces.dimension`` and the selected-presentation rank,
+            zero predicate and cardinality suppliers read this value. The
+            scalar restriction constructor also reads it for a field-to-field
             tower with a selected finite scalar basis. A known dimension
             does not supply a finite framing or require an enumeration.
             """
@@ -3980,7 +3984,7 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
 
         def _cardinality_decision(self):
             r"""``|Res_f(M)| = |M|``: restriction of scalars keeps the underlying set."""
-            return self.module_over_extension().cardinality()
+            return self.module_over_extension()._cardinality_decision()
 
         def _scalars_act_by_units(self):
             r"""Whether every nonzero ``r in R`` acts on ``Res_f(M)`` invertibly.

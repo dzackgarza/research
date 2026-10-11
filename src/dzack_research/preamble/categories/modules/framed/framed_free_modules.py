@@ -57,6 +57,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 def _finitely_generated_free_placement(ring, module_generating_set):
@@ -558,24 +559,41 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             )
             return True
 
-        def cardinality(self):
-            r"""Return ``|R^(S)|``: ``|R|^|S|`` for finite ``S``, else ``max(|R|, |S|)`` by finite support."""
+        @RealizationHook
+        def _cardinality_decision(self):
+            r"""Supply ``|R^(S)|`` from the represented scalar and label cardinals.
+
+            The finite-support formula is ``|R|^|S|`` for finite ``S`` and
+            ``max(|R|, |S|)`` for infinite ``S`` over a nonzero ring. A
+            missing parameter cardinal supplies no exact value here.
+            """
 
             if self.base_ring() is self:
                 # A ring as the rank-one free module over itself: its
                 # underlying set is the ring's, which the ring level answers.
-                return super().cardinality()
-            scalars = self.base_ring().cardinality()
-            labels = self.module_generating_set().cardinality()
+                return super()._cardinality_decision()
+            scalars = self.base_ring()._cardinality_decision()
+            labels = self.module_generating_set()._cardinality_decision()
+            if labels is not None and (cardinal(labels) == Cardinalities().zero()) is True:
+                return Cardinalities().one()
+            if scalars is not None and (cardinal(scalars) == Cardinalities().one()) is True:
+                return Cardinalities().one()
+            if scalars is None or labels is None:
+                return None
+            scalars = cardinal(scalars)
+            labels = cardinal(labels)
+            if not scalars.expression().is_normal_form() or not labels.expression().is_normal_form():
+                return None
             if labels.is_finite():
                 return scalars**labels
-            if scalars == Cardinalities().one():
-                return Cardinalities().one()
             return Cardinalities().supremum(scalars, labels)
 
-        def _finiteness_decision(self) -> bool:
+        def _finiteness_decision(self):
             r"""Return whether the underlying free module is finite."""
-            return self.cardinality().is_finite()
+            size = self._cardinality_decision()
+            if size is None or not cardinal(size).expression().is_normal_form():
+                return AtomicProposition("is_finite", self)
+            return cardinal(size).is_finite()
 
         @cached_method
         def base_change(self, ring_map, *, _extra_construction_data=None):

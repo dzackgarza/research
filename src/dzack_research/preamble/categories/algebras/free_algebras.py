@@ -982,8 +982,18 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
                 cardinal,
             )
 
-            scalars = cardinal(self.base_ring().cardinality())
-            generators = cardinal(self.algebra_generating_set().cardinality())
+            scalars = self.base_ring()._cardinality_decision()
+            generators = self.algebra_generating_set()._cardinality_decision()
+            if scalars is not None and (cardinal(scalars) == Cardinalities().one()) is True:
+                return Cardinalities().one()
+            if scalars is None or generators is None:
+                return None
+            scalars = cardinal(scalars)
+            generators = cardinal(generators)
+            if (generators == Cardinalities().zero()) is True:
+                return scalars
+            if not scalars.expression().is_normal_form() or not generators.expression().is_normal_form():
+                return None
             match generators == Cardinalities().zero(), scalars == Cardinalities().one():
                 case True, _:
                     return scalars

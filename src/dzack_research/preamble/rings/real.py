@@ -635,8 +635,8 @@ class ExactRealField(UniqueRepresentation, Field):
     def is_finite(self) -> bool:
         return False
 
-    def cardinality(self):
-
+    def _cardinality_decision(self):
+        r"""Supply the cardinality of the real numbers at the set owner."""
         return continuum
 
     def fraction_field(self):

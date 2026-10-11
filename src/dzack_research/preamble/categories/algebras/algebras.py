@@ -81,7 +81,7 @@ from dzack_research.preamble.categories.sets.set_categories import EnumeratedSet
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import RealizationHook, refine
 from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
@@ -1092,6 +1092,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
+        @RealizationHook
         def _cardinality_decision(self):
             r"""Return the cardinality of the module carrying this algebra."""
             module = self.unformed_module()
@@ -1099,7 +1100,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 case True:
                     return super()._cardinality_decision()
                 case False:
-                    return module.cardinality()
+                    return module._cardinality_decision()
 
         def _specialized_algebra_with_structure(
             self,

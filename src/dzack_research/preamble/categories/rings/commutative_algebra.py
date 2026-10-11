@@ -76,7 +76,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     UncountableSets,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.logic import AtomicProposition, negation
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -904,7 +904,7 @@ class QuotientRings(OwnedCategory):
                 if comparison is None:
                     return AtomicProposition("is_finite", self)
                 return comparison.domain().is_finite()
-            source_engine = _engine_ring(source)
+            source_engine = source._selected_engine_ring()
             if isinstance(source_engine, SageNumberFieldOrder):
                 return not _engine_ideal(
                     self.quotient_source(), self.defining_ideal()
@@ -920,15 +920,17 @@ class QuotientRings(OwnedCategory):
                 return cardinal(self._preamble_engine_ring.cardinality())
             if self.quotient_source() in LocalizationRings():
                 comparison = self._finite_localized_quotient_isomorphism()
-                return None if comparison is None else comparison.domain().cardinality()
-            source_engine = _engine_ring(self.quotient_source())
+                return None if comparison is None else comparison.domain()._cardinality_decision()
+            source = self.quotient_source()
+            source_engine = source._selected_engine_ring()
+            if source_engine is None:
+                return None
             if isinstance(source_engine, SageNumberFieldOrder):
                 defining = _engine_ideal(
                     self.quotient_source(), self.defining_ideal()
                 )
                 if not defining.is_zero():
                     return cardinal(SageZZ(defining.norm()))
-            source = self.quotient_source()
             if (
                 source not in LocalizationRings()
                 and source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
@@ -941,8 +943,10 @@ class QuotientRings(OwnedCategory):
                         continue
                     valuations.append(int(backend.valuation()))
                 if valuations:
-                    residue_size = source.residue_field().cardinality()
-                    return residue_size ** min(valuations)
+                    residue_size = source.residue_field()._cardinality_decision()
+                    if residue_size is None or not cardinal(residue_size).expression().is_normal_form():
+                        return None
+                    return cardinal(residue_size) ** min(valuations)
             return None
 
         def _field_decision(self):
@@ -3300,6 +3304,15 @@ def _one_step_inverted_family(source, generators):
 def _submonoid_contains_zero_in_domain(source, submonoid):
     r"""Decide whether a represented multiplicative submonoid contains zero in a domain.
 
+    Private localization-construction contract. Permitted callers are
+    _localization_size_placements, _finite_generated_localization, the
+    LocalizationRings._cardinality_decision computation, and
+    LocalizedModules._fraction_equality_status after its domain and
+    torsion-free hypotheses are established. The source is an actual domain
+    and the submonoid is selected in that same source. The result is True,
+    False, or an owned proposition; an undecided result supplies neither
+    domain placement nor a negative equality answer.
+
     In an integral domain a finite product is zero exactly when one factor is
     zero.  Thus a submonoid given by generators contains zero exactly when one
     chosen generator is zero.  Predicate-defined submonoids use their selected
@@ -3312,10 +3325,12 @@ def _submonoid_contains_zero_in_domain(source, submonoid):
     )
     match submonoid._selected_representation_kind():
         case "predicate":
-            return source.zero() in submonoid
+            return submonoid.defining_predicate()(source.zero())
         case "generators":
             generators = tuple(submonoid.monoid_generators())
-            return any(generator == source.zero() for generator in generators)
+            return negation(conjunction(
+                negation(generator == source.zero()) for generator in generators
+            ))
         case representation:
             raise AssertionError(
                 f"unknown selected submonoid representation {representation!r}"
@@ -3553,13 +3568,19 @@ def _finite_generated_localization(source, submonoid):
         if localization_engine is None:
             localization_engine = engine_bottom.localization(values)
     placements = list(_localization_size_placements(source, submonoid))
-    if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
-    else:
-        if source in OwnedRings().Commutative().NoZeroDivisors():
+    if source in OwnedRings().Noetherian():
+        placements.append(OwnedRings().Noetherian())
+    # Localization preserves a domain (and a PID) only when zero is not
+    # inverted. Noetherianity also holds for the zero localization. An
+    # undecided zero-membership predicate supplies no nontriviality edge.
+    if (
+        source in OwnedRings().Commutative().NoZeroDivisors()
+        and _submonoid_contains_zero_in_domain(source, submonoid) is False
+    ):
+        if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+            placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
+        else:
             placements.append(OwnedRings().Commutative().NoZeroDivisors())
-        if source in OwnedRings().Noetherian():
-            placements.append(OwnedRings().Noetherian())
     base = source.base_ring()
     algebra_source = (
         source
@@ -4304,14 +4325,22 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
                 )
             return self.formal_parameter(labels[0])
 
-        def cardinality(self):
-            r"""Return ``|R|^aleph0`` for a nonconstant formal series ring."""
-            parameter_count = int(self.formal_parameter_set().cardinality())
+        def _cardinality_decision(self):
+            r"""Supply ``|R|^aleph0`` from the retained coefficient cardinal."""
+            coefficient_size = self.base_ring()._cardinality_decision()
+            if coefficient_size is None:
+                return None
+            parameter_size = self.formal_parameter_set()._cardinality_decision()
+            if parameter_size is None:
+                return None
+            parameter_count = int(cardinal(parameter_size).finite_value())
             match parameter_count:
                 case 0:
-                    return cardinal(self.base_ring().cardinality())
+                    return cardinal(coefficient_size)
                 case _:
-                    return cardinal(self.base_ring().cardinality()) ** aleph0
+                    if not cardinal(coefficient_size).expression().is_normal_form():
+                        return None
+                    return cardinal(coefficient_size) ** aleph0
 
     class ElementMethods:
         def coefficient(self, degree):
