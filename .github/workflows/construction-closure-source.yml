@@ -28,3 +28,15 @@ jobs:
           python -m py_compile src/dzack_research/utilities/construction_closure.py
           python -m py_compile src/dzack_research/utilities/category_graph.py
           python -m unittest discover -s tests/utilities -p 'test_construction_closure_source.py' -v
+      - name: Extract the complete source tree and verify output contracts
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m dzack_research.utilities.construction_closure --output "$RUNNER_TEMP/construction-closure"
+          python -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"construction-closure"; d=json.loads((p/"universe.json").read_text()); assert d["summary"]["category_vertices"]>0; assert d["summary"]["operations_and_return_branches"]>0; assert (p/"universe.dot").stat().st_size>0; assert (p/"index.html").stat().st_size>0; print(d["summary"])'
+      - name: Attach searchable audit and machine-readable inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: construction-closure-audit
+          path: ${{ runner.temp }}/construction-closure/
+          if-no-files-found: error
