@@ -102,6 +102,24 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
+    def from_finite_orbits(self, seeds, action):
+        r"""The union of the finite orbits of supplied points under a given action.
+
+        The caller supplies an effective action and the hypothesis that these
+        orbits are finite. Enumerating generator images then terminates at
+        exactly their union; no search bound is a finiteness certificate.
+        """
+        points = list(finite_ordered_set(tuple(seeds)))
+        generators = tuple(self.group().group_generators())
+        position = 0
+        while position < len(points):
+            for generator in generators:
+                image = action(generator, points[position])
+                if image not in points:
+                    points.append(image)
+            position += 1
+        return self(finite_ordered_set(tuple(points)), action)
+
     def underlying_category(self):
         r"""``FinSet``, the codomain of the forgetful functor."""
         return FiniteSets()
