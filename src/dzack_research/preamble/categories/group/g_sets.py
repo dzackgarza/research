@@ -352,6 +352,19 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return free
             return self.is_transitive_action()
 
+        @cached_method
+        def _transporter_generator_actions(self):
+            r"""Evaluate each supplied generator's finite permutation once."""
+            return tuple(
+                (generator, self.action_of(generator))
+                for generator in self.acting_group().group_generators()
+            )
+
+        @cached_method
+        def _transporter_word_tables(self):
+            r"""Per-source Schreier trees, retaining points by semantic equality."""
+            return []
+
         def transporter_witness(self, source, target):
             r"""Return one ``g`` with ``g.source = target`` when one exists."""
             if source not in self or target not in self:
@@ -360,19 +373,28 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                     f"points of {self.point_set()}"
                 )
             group = self.acting_group()
-            generators = tuple(group.group_generators())
-            points = [source]
-            witnesses = [group.one()]
-            position = 0
-            while position < len(points):
-                if points[position] == target:
-                    return witnesses[position]
-                for generator in generators:
-                    image = self.act(generator, points[position])
-                    if image not in points:
-                        points.append(image)
-                        witnesses.append(generator * witnesses[position])
-                position += 1
+            actions = self._transporter_generator_actions()
+            tables = self._transporter_word_tables()
+            table = next((table for table in tables if table[0][0] == source), None)
+            if table is None:
+                points = [source]
+                words = [()]
+                position = 0
+                while position < len(points):
+                    for index, (_generator, action) in enumerate(actions):
+                        image = action(points[position])
+                        if image not in points:
+                            points.append(image)
+                            words.append((*words[position], index))
+                    position += 1
+                table = (points, words)
+                tables.append(table)
+            points, words = table
+            if target in points:
+                witness = group.one()
+                for index in words[points.index(target)]:
+                    witness = actions[index][0] * witness
+                return witness
             raise ValueError(
                 f"{source} and {target} lie in different orbits of {self}: no element of "
                 f"{group} carries {source} to {target}"
