@@ -33,7 +33,7 @@ def build(self, n):
         self.assertIn("n", _conditions(root, guarded))
         self.assertEqual(
             _target(guarded.value, {"Other"}, {}, set()),
-            ("Other(n)", "explicit-category"),
+            ("Cat(Other(n))", "category-value"),
         )
         unchanged = next(x for x in branches if isinstance(x.value, ast.Name))
         self.assertEqual(
@@ -102,6 +102,12 @@ class Result(OwnedCategory):
         unresolved = next(x for x in rules if x["method"] == "unresolved")
         self.assertEqual(unresolved["status"], "unresolved")
         self.assertNotIn("opaque_third_party_call()", model["reachable_schemes"])
+        # An operation declared on Child must not be applied to Base, which
+        # does not inherit Child's stronger mathematical structure.
+        self.assertFalse(any(
+            w.get("from") == "Base" and "special" in w.get("operation", "")
+            for w in model["derivations"]["Result()"]
+        ))
         self.assertIn("digraph Constructions", dot(model))
         page = inspector(model)
         self.assertIn("Preamble construction closure", page)
