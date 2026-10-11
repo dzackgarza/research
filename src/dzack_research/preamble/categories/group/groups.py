@@ -3496,6 +3496,30 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def has_selected_group_resolution(self) -> bool:
             return self.has_selected_resolution(OwnedGroups())
 
+        def group_generators_are_computable(self) -> bool:
+            r"""Whether this object supplies its selected algebraic generator family.
+
+            This reports the retained group-resolution datum, not the logical
+            existence of a finite or enumerable generating set, and it runs
+            no search for a presentation. A topological generating family
+            alone supplies no such datum: the Frobenius of an absolute
+            Galois group of a finite field generates a dense subgroup, not
+            the whole abstract group.
+            """
+            return self.has_selected_group_resolution()
+
+        def has_computed_group_generators(self) -> bool:
+            r"""Whether selected algebraic generator data have already been fixed.
+
+            This capability reports the retained resolution selection;
+            its generator family may be realized lazily, and this method
+            does not ask whether that computation has run. It neither
+            enumerates the indexing set nor asserts finiteness. Without
+            selected algebraic data the answer is False, including when
+            only topological generators have been supplied.
+            """
+            return self.has_selected_group_resolution()
+
         def has_selected_finite_group_generating_set(self) -> bool:
             r"""Whether the selected group resolution has finitely many degree-zero generators."""
             match self.has_selected_group_resolution():
@@ -3871,12 +3895,28 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return CentralizerSubgroups(self)(element)
 
+        @RealizationHook
+        def _normalizer_construction(self, subgroup):
+            r"""Supply a selected construction of ``N_self(subgroup)``, or None.
+
+            Protected construction contract under OWN-05. Only normalizer
+            calls this hook, after subgroup admission. A more specific
+            category may return its normalizer with its retained subgroup
+            data; None selects the general predicate stabilizer. An
+            undecided normality predicate does not select the whole group.
+            """
+            return None
+
         def normalizer(self, subgroup):
             r"""Return ``N_G(H) = {g in G : g H g^-1 = H}``, the stabilizer of ``H`` under conjugation."""
             assert subgroup is self or subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
             from dzack_research.preamble.categories.group.predicate_subgroups import (
                 StabilizerSubgroups,
             )
+
+            selected = self._normalizer_construction(subgroup)
+            if selected is not None:
+                return selected
 
             def normalizes(group_element):
                 if subgroup is self or (group_element == self.one()) is True or self.is_abelian() is True:
@@ -3961,12 +4001,27 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Return the conjugacy orbit of ``representative``."""
             return self.conjugacy_classes().orbit_of(self(representative))
 
+        @RealizationHook
+        def _conjugate_subgroup_construction(self, group_element, subgroup):
+            r"""Supply a selected ``g H g^-1`` construction, or None.
+
+            Protected construction contract under OWN-05. Only
+            conjugate_subgroup calls this hook, with admitted ``g`` and
+            ``H``. A more specific category retains any defining data of
+            its conjugated subgroup; None selects the general predicate
+            construction. The public operation is owned by groups.
+            """
+            return None
+
         def conjugate_subgroup(self, group_element, subgroup):
             r"""Return ``g H g^-1``, the image of ``H`` under conjugation by ``g``."""
             assert group_element in self, f"{group_element} is not an element of {self}"
             assert subgroup is self or subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
             if subgroup is self:
                 return self
+            selected = self._conjugate_subgroup_construction(group_element, subgroup)
+            if selected is not None:
+                return selected
             inverse = group_element.inverse()
             return self.predicate_subgroup(
                 lambda element: subgroup.is_parent_of(inverse * element * group_element),

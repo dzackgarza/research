@@ -2,8 +2,8 @@ r"""Continuous cyclotomic and quadratic characters of absolute Galois groups."""
 
 from math import gcd
 
-from sage.categories.morphism import Morphism
 from sage.groups.generic import discrete_log
+from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -20,33 +20,64 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
-class RestrictedProfiniteCharacter(Morphism):
-    def __init__(self, character, subgroup) -> None:
+class RestrictedProfiniteCharacter(metaclass=ClasscallMetaclass):
+    r"""The character restricted along its retained subgroup inclusion.
+
+    The public class call selects this existing realization in the canonical
+    continuous group Mor. Its private class-call hook is not inherited by
+    the generated arrow type, whose initialization joins GroupMorphism.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls, character, subgroup):
         if subgroup.supergroup() is not character.domain():
             raise ValueError(
                 f"cannot restrict {character} to {subgroup}: a restriction needs a subgroup "
                 f"of the character's domain {character.domain()}, but {subgroup} is a "
                 f"subgroup of {subgroup.supergroup()}"
             )
+        parent = subgroup.Mor(character.codomain())
+        return parent._from_realization_engine(cls, character, subgroup.inclusion())
+
+    def __init__(self, parent, character, inclusion) -> None:
         self._character = character
-        Morphism.__init__(
-            self,
-            subgroup.continuous_morphisms_to(character.codomain()),
-        )
+        self._inclusion = inclusion
+        super().__init__(parent, self._call_)
 
     def _call_(self, element):
-        return self._character(self.domain().inclusion()(element))
+        return self._character(self._inclusion(element))
 
     def is_continuous(self) -> bool:
         return True
 
 
-class ProfiniteCharacter(Morphism):
-    r"""A character factoring through one represented finite Galois quotient."""
+class ProfiniteCharacter(metaclass=ClasscallMetaclass):
+    r"""The retained finite-factor interface of a profinite character.
 
-    def __init__(self, domain, codomain, extension: FiniteGaloisExtension) -> None:
+    The factor stage alone does not specify a unique character. Concrete
+    realizations retain its defining map; the bare interface computes the
+    uniform identity value and names the missing-map frontier elsewhere.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls, domain, codomain, extension: FiniteGaloisExtension):
+        return domain.continuous_morphisms_to(codomain)._from_realization_engine(cls, extension)
+
+    def __init__(self, parent, extension: FiniteGaloisExtension) -> None:
         self._factor_extension = extension
-        Morphism.__init__(self, domain.continuous_morphisms_to(codomain))
+        super().__init__(parent, self._call_)
+
+    def _call_(self, element):
+        r"""Every character sends one to one; other values need its defining map."""
+        match element == self.domain().one():
+            case True:
+                return self.codomain().one()
+            case _:
+                assert False, (
+                    f"evaluating {self} away from a decided identity needs the defining "
+                    f"character on its finite factor {self.factor_extension()}; "
+                    "a finite factor alone does not supply that value computation"
+                )
 
     def factor_extension(self) -> FiniteGaloisExtension:
         return self._factor_extension
@@ -58,7 +89,14 @@ class ProfiniteCharacter(Morphism):
     def factorization(self):
         return self.domain().restriction_map(self._factor_extension)
 
-    def kernel(self):
+    def _root_generated_kernel(self):
+        r"""The open kernel when the retained root generates the finite stage.
+
+        CyclotomicCharacter and QuadraticCharacter select this supplier:
+        their value is one exactly when the chosen stage-generating root is
+        fixed. A general character merely factoring through that stage has
+        the inherited group-map kernel, which need not equal this subgroup.
+        """
         return self.domain().open_subgroup(self._factor_extension)
 
     def restrict(self, subgroup):
@@ -88,7 +126,8 @@ def _finite_root_at_stage(root, stage):
 class CyclotomicCharacter(ProfiniteCharacter):
     r"""The continuous character (\chi_n:G_K\to(\mathbb Z/n)^{\times})."""
 
-    def __init__(self, domain, n) -> None:
+    @staticmethod
+    def __classcall_private__(cls, domain, n):
         n = ZZ(n)
         if n < 2:
             raise ValueError(
@@ -100,21 +139,20 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 f"the cyclotomic character chi_{n} of {domain} needs n prime to the "
                 f"characteristic, but the base field has characteristic {characteristic}"
             )
-        self._modulus = n
-        self._residues = Zmod(n)
-        target = self._residues.unit_group()
+        residues = Zmod(n)
+        target = residues.unit_group()
         closure = _engine_ring(domain.algebraic_closure())
         root = closure.zeta(n)
-        self._root = _owned_engine_element(domain.algebraic_closure(), root)
+        owned_root = _owned_engine_element(domain.algebraic_closure(), root)
 
         if domain._is_finite_field():
-            q = target(self._residues(int(domain.base_field_order())))
+            q = target(residues(int(domain.base_field_order())))
             stage = domain.finite_extension(q.multiplicative_order())
-            self._root_at_stage = _finite_root_at_stage(root, stage)
+            root_at_stage = _finite_root_at_stage(root, stage)
         elif _engine_ring(domain.base_field()) is SageQQ:
             if n == 2:
                 stage = domain.extension_data(domain.base_field())
-                self._root_at_stage = domain.base_field()(-1)
+                root_at_stage = domain.base_field()(-1)
             else:
                 base = _engine_ring(domain.base_field())
                 polynomial = cyclotomic_polynomial(n).change_ring(base)
@@ -123,13 +161,24 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 backend = field.hom([root], closure)
                 embedding = owned_field.Mor(domain.algebraic_closure())(backend)
                 stage = domain.extension_data(owned_field, embedding=embedding)
-                self._root_at_stage = _owned_engine_element(owned_field, field.gen())
+                root_at_stage = _owned_engine_element(owned_field, field.gen())
         else:
             assert False, (
                 f"the cyclotomic character chi_{n} of {domain} is computed only when the "
                 f"base field is finite or QQ, but it is {domain.base_field()}"
             )
-        super().__init__(domain, target, stage)
+        return domain.continuous_morphisms_to(target)._from_realization_engine(
+            cls, n, residues, owned_root, root_at_stage, stage
+        )
+
+    def __init__(self, parent, modulus, residues, root, root_at_stage, extension) -> None:
+        self._modulus = modulus
+        self._residues = residues
+        self._root = root
+        self._root_at_stage = root_at_stage
+        super().__init__(parent, extension)
+
+    kernel = ProfiniteCharacter._root_generated_kernel
 
     def modulus(self):
         return self._modulus
@@ -171,7 +220,8 @@ class CyclotomicCharacter(ProfiniteCharacter):
 class QuadraticCharacter(ProfiniteCharacter):
     r"""The character attached to (K(\sqrt a)/K) in characteristic not two."""
 
-    def __init__(self, domain, a) -> None:
+    @staticmethod
+    def __classcall_private__(cls, domain, a):
         characteristic = ZZ(int(domain.characteristic()))
         if characteristic == 2:
             raise ValueError(
@@ -187,18 +237,20 @@ class QuadraticCharacter(ProfiniteCharacter):
                 f"the quadratic character of K(sqrt(a))/K needs a nonzero a in {base_field}, "
                 f"but a = {owned_a}"
             )
-        self._square_class = owned_a
         closure = _engine_ring(domain.algebraic_closure())
         embedded_a = domain.base_embedding()(owned_a)
         root = _engine_element(domain.algebraic_closure(), embedded_a).sqrt()
-        self._root = _owned_engine_element(domain.algebraic_closure(), closure(root))
+        owned_root = _owned_engine_element(domain.algebraic_closure(), closure(root))
 
         if backend_a.is_square():
             stage = domain.extension_data(domain.base_field())
-            self._root_at_stage = _owned_engine_element(domain.base_field(), backend_a.sqrt())
+            root_at_stage = _owned_engine_element(domain.base_field(), backend_a.sqrt())
+            # Retain the exact image of the selected stage root: independent
+            # square-root choices in K and its closure can differ by a sign.
+            owned_root = domain.base_embedding()(root_at_stage)
         elif domain._is_finite_field():
             stage = domain.finite_extension(2)
-            self._root_at_stage = _finite_root_at_stage(root, stage)
+            root_at_stage = _finite_root_at_stage(root, stage)
         else:
             polynomial_ring = base["t"]
             t = polynomial_ring.gen()
@@ -207,10 +259,21 @@ class QuadraticCharacter(ProfiniteCharacter):
             backend = field.hom([root], closure)
             embedding = owned_field.Mor(domain.algebraic_closure())(backend)
             stage = domain.extension_data(owned_field, embedding=embedding)
-            self._root_at_stage = _owned_engine_element(owned_field, field.gen())
+            root_at_stage = _owned_engine_element(owned_field, field.gen())
 
+        integers = _own_ring(ZZ)
+        return domain.continuous_morphisms_to(integers.unit_group())._from_realization_engine(
+            cls, owned_a, owned_root, root_at_stage, stage
+        )
+
+    def __init__(self, parent, square_class, root, root_at_stage, extension) -> None:
+        self._square_class = square_class
+        self._root = root
+        self._root_at_stage = root_at_stage
         self._integers = _own_ring(ZZ)
-        super().__init__(domain, self._integers.unit_group(), stage)
+        super().__init__(parent, extension)
+
+    kernel = ProfiniteCharacter._root_generated_kernel
 
     def square_class(self):
         return self._square_class
@@ -226,15 +289,23 @@ class QuadraticCharacter(ProfiniteCharacter):
             image = self.factor_extension().embedding()(coordinate(self._root_at_stage))
         else:
             image = element(self._root)
-        if image == self._root:
-            return self.codomain()(self._integers(1))
-        if image == -self._root:
-            return self.codomain()(self._integers(-1))
-        raise ValueError(
-            f"{element} sends sqrt({self._square_class}) = {self._root} to {image}, which is "
-            f"neither sqrt({self._square_class}) nor its negative, so {element} does not "
-            f"preserve the quadratic extension"
-        )
+        match image == self._root, image == -self._root:
+            case True, _:
+                return self.codomain()(self._integers(1))
+            case _, True:
+                return self.codomain()(self._integers(-1))
+            case False, False:
+                raise ValueError(
+                    f"{element} sends sqrt({self._square_class}) = {self._root} to {image}, which is "
+                    f"neither sqrt({self._square_class}) nor its negative, so {element} does not "
+                    f"preserve the quadratic extension"
+                )
+            case _:
+                assert False, (
+                    f"evaluating {self} at {element} needs a decision whether its image "
+                    f"{image} equals the retained root {self._root} or its negative; "
+                    "the available equality computations leave the sign undecided"
+                )
 
     def _repr_(self) -> str:
         return f"Quadratic character for {self._square_class}: {self.domain()} -> {self.codomain()}"

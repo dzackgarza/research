@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 35 complete passes and 606 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The current first literal ready row is `placement-owner-absolutegaloisgroups`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 36 complete passes and 605 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The current first literal ready row is `placement-owner-absolutegaloisgroupsoffinitefields`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -997,6 +997,301 @@ not invent an inverse algorithm. The examples above and the preserved
 archive cases remain execution obligations under T. M1 / DEV-58 forbids
 runtime, imports and tests in this source phase, and no execution result
 is claimed.
+
+## Whole-category placement: AbsoluteGaloisGroups (2026-10-11)
+
+**Closed node:** `placement-owner-absolutegaloisgroups`.
+**Owner and delta:** `AbsoluteGaloisGroups` in
+`src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py`.
+The selected absolute-group realization in `absolute_galois_group.py`,
+the character realizations in `galois_characters.py`, and the existing
+group-operation suppliers in `group/groups.py` form this owner-sized unit.
+It retains the exact base field and embeddings, composes the actual
+conjugated finite-stage square, preserves mixed Frobenius/field-map laws
+and undecided equations, and gives all selected character arrows the
+generated group-Mor inheritance. No new category or prerequisite is added.
+
+### Mathematical datum, full direct inventory and actual up-set
+
+The defining datum is a field K, a chosen algebraic closure Kbar, and
+the exact embedding e:K -> Kbar. G_K consists of automorphisms sigma of
+Kbar satisfying sigma e=e, with composition and the Krull topology.
+For an imperfect field the finite separable subextensions supply the
+usual absolute Galois correspondence; the discussion does not identify
+K with the fixed subfield of the entire inseparable algebraic closure.
+
+The complete direct category inventory is `an_object`,
+`_repr_object_names` and `super_categories`. The specimen is G_F2.
+The complete final object inventory is `characteristic`,
+`_conjugate_subgroup_construction`, `_subgroup_conjugacy_decision`,
+`_normalizer_construction`, `_cardinality_decision`,
+`_finite_quotient_witnesses` and `_cubic_splitting_field_restriction`.
+There is no direct ElementMethods or Mor declaration in this category.
+
+Characteristic remains the characteristic of the retained K: no actual
+ancestor supplies a base field. The two former generator-capability
+methods now belong to OwnedGroups and read its existing
+`has_selected_group_resolution` datum. Their signatures are preserved.
+The explicit capability contract is availability of a selected algebraic
+generating-family realization, which may be lazy; it neither asserts
+that all values were computed nor decides finite generation, enumeration
+or the existence of an arbitrary algorithm. Topological generators alone
+do not supply this algebraic datum.
+
+Conjugation and normalizer were already public group operations.
+They remain there, with protected `_conjugate_subgroup_construction`
+and `_normalizer_construction` suppliers for selected computations.
+The defaults use the existing predicate constructions; an unavailable
+specialized construction returns None. The Absolute category supplies
+its open-subgroup computation rather than replacing the public owner.
+The existing subgroup-conjugacy hook still answers True, False or Unknown;
+it applies `ask` to the exact extension-isomorphism proposition.
+
+The full strict authored up-set is:
+
+- ProfiniteGroups: inverse limits of finite groups with their profinite
+  topology; its finite-quotient supplier and abelianity predicate were read.
+- TopologicalGroups: groups with a group topology. Its authored
+  `super_categories` declares OwnedGroups, not a TopologicalSpaces edge.
+- OwnedGroups: associative multiplication, a two-sided unit and inverses.
+- Monoids: associative multiplication and a two-sided unit.
+- Semigroups: associative multiplication.
+- Magmas.Unital: a binary law and a two-sided unit, without an
+  associativity hypothesis.
+- Magmas: a binary law on the carrier.
+- Sets: the carrier and set maps.
+- Objects: the common mathematical-object root.
+
+The actual branches are ProfiniteGroups -> TopologicalGroups ->
+OwnedGroups -> Monoids, then Semigroups and Magmas.Unital, meeting at
+Magmas -> Sets -> Objects. All definitions were read with their selected
+suppliers. The finite-field and open-subgroup refinements are actual
+consumers inspected here; their separate complete owner passes remain open.
+
+### Selected realization inventory and preserved construction routes
+
+The actual absolute-group engine retains its initialization datum;
+`base_field`, `algebraic_closure`, `base_embedding`/`geometric_point`,
+`field_automorphism_mor`/`arrow_set`, `choice_data`,
+`has_canonical_realization`, `slice_category`, `extension_object`,
+`stage_category` and `slice_automorphism` read that exact datum and the
+existing field/slice/Core constructions.
+
+Its group/set suppliers are `_finiteness_decision`,
+`_finite_generation_decision`, `_is_finite_field`, `_is_number_field`,
+`base_field_order`, element ingress, membership, parent equality/hash,
+`one`, `an_element`, `frobenius`, `_finite_frobenius_image`,
+`_compose_elements`, `_inverse_element` and representation. Their public
+group/set meaning is inherited; this engine supplies the selected
+finite-field or exact-field-map computation. Finiteness and abstract
+finite-generation decisions remain False only for finite and number
+fields; other regimes retain the existing proposition/frontier.
+
+`extension_data`, `finite_extension`, `finite_quotient`,
+`_finite_quotient_of_stage`, `restriction_map`, `lift`, `lifts`,
+`open_subgroup` and `open_subgroup_class` use the existing finite-stage,
+finite-group, restriction, fiber and subgroup/orbit constructions.
+`decomposition_group`, `decomposition_group_class`, `inertia_group`,
+`inertia_group_class` and `frobenius_class` retain their existing selected
+prime/prolongation constructions. `cyclotomic_character` and
+`quadratic_character` retain their concrete character classes below.
+A chosen finite-field lift is a representative of a fiber, not an
+asserted homomorphic section of a finite quotient. Noncanonical lifts
+remain the full existing LiftCoset; no new lift algorithm is claimed.
+
+The selected element inventory comprises initialization; `as_morphism`
+and `underlying_field_morphism`; domain/codomain and exact-action data;
+`realized_stages`, `restriction_coordinate`, `extend_coordinate`;
+`frobenius_exponent`, `is_globally_evaluable`, evaluation;
+`fixes_base_field`, `validate_base_fixing`, `restrict`; multiplication,
+inverse, powers, conjugacy class, equality/inequality, hash and display.
+FrobeniusElement supplies its existing exponent initialization.
+The full source route was read, including existing finite-coordinate
+and field-arrow computations; it is not replaced by a new element engine.
+
+### Exact conjugation and extension comparison
+
+For a retained stage t=(K --j--> E --iota--> Kbar) and admitted g in G_K,
+the new stage has exactly the same E and j and embedding g iota. The
+existing CosliceMor._from_commuting_edges supplies the square with
+left edge id_K and right edge g.as_morphism(). Its composite with
+t.arrow() is constructed through
+`G.stage_category().object(..., _engine=_FiniteGaloisExtensionEngine)`.
+That existing engine reads all fields and maps from the square.
+The exact source object is unchanged, so degree and separability are
+unchanged. The triangle follows from (g iota)j=g(iota j)=ge=e.
+No search for embeddings, or new separability decision, is required.
+
+An automorphism g h g^-1 fixes g iota(E) exactly when h fixes iota(E).
+Thus the represented subgroup is precisely g G_(E,iota) g^-1.
+Two such open subgroups are conjugate exactly when the retained finite
+separable K-extensions are isomorphic. `_same_k_extension` therefore
+tests s j_E=j_F for the selected finite field-embedding candidates and
+equal degrees. Conjunction and negation retain undecided candidate
+equations; outside the existing finite/number-field computation regime
+the actual extension-isomorphism proposition is retained.
+
+The open subgroup's conjugacy-class constructor now passes its
+`fixed_extension`, including j. An admitted stage takes precedence over
+the bare-ring branch: it is itself a field through its slice/coslice
+placement, so testing OwnedRings first would discard that very datum.
+Only a bare field with a unique base embedding is inferred. The missing
+OwnedRings import on this route is also repaired.
+
+For N_G(G_E), the selected whole-group construction is used only when
+normality is literally True. An undecided normality result reaches the
+existing predicate normalizer. The usual law is
+N_G(G_E)/G_E = Aut_K(E); N_G(G_E)=G exactly for a Galois E/K.
+
+### Equality, group laws and actual arrows
+
+The exact-action input belongs to the literal field Mor Kbar -> Kbar.
+Base fixing is the map equation sigma e=e; OWN-22 keeps this admission
+premise separate from its `validate_base_fixing` diagnostic, which
+rejects a proved failure and preserves an undecided equation.
+A K-endomorphism of the algebraic extension Kbar/K is an automorphism,
+so the mathematical group law does not require an inverse computation
+at construction (Stacks, Lemma 9.8.11).
+
+Two integral Frobenius representations still compare their exponents.
+Other same-parent comparisons use their actual retained field maps;
+inequality is logical negation, not a comparison of a proposition with
+a Boolean. Zeroth Frobenius uses the canonical identity field map.
+Thus re-entering g.as_morphism() preserves a decided identical map
+without confusing its representation with its mathematical value.
+The hash depends only on the actual parent, so equal mixed
+representations satisfy the hash law. The collision tradeoff does not
+change equality or introduce an extra mathematical identifier.
+Mixed composition retains left.as_morphism() * right.as_morphism().
+The common base-fixing equation is preserved by composition; only
+decided identity comparisons select an identity shortcut.
+The existing inverse computation remains the selected supplier.
+
+OwnedGroups.Mor -> GroupMorCategoryConstruction.Of selects GeneralGroupMor
+for a profinite source. GeneralGroupMor.ElementMethods is GroupMorphism;
+CategoricalMor.super_categories and _generated_arrow_type include the
+actual MonoidMorphism, UnitalMagmaMorphism, MagmaMorphism and
+OwnedSetMorphism providers. GaloisRestrictionMap and OpenSubgroupInclusion
+already used the existing `_from_realization_engine` route.
+The character classes now use that same route rather than merely giving
+a raw Sage Morphism a GroupMor parent. Public class-call signatures are
+preserved using Sage's non-inherited __classcall_private__ hook and
+cooperative generated-arrow initialization. No wrapper or new category
+is introduced. The chosen restriction, inclusion and character maps
+are continuous by their constructions; the common abstract group Mor
+does not itself assert continuity of every group homomorphism.
+
+### Character data, root coherence and the exact kernel hypothesis
+
+Cyclotomic characters retain n, the literal residue-ring unit group,
+the primitive closure root, its selected stage root, and K(zeta_n).
+Quadratic characters retain nonzero a, characteristic different from
+two, the literal integer-unit target, both root realizations, and
+K(sqrt(a)). For a square a, the stored closure root is now exactly
+e(root_at_stage), so direct evaluation and an installed identity
+coordinate agree even if independent square-root routines choose
+opposite signs. Only decided root equalities supply a sign; an
+undecided sign reaches its named computation assertion.
+
+The two concrete roots generate their selected finite stage. Hence
+chi(sigma)=1 iff sigma fixes that root iff sigma is in G_L. The existing
+open-kernel formula is shared only by those concrete constructions.
+A general character merely factoring through L need not be faithful
+there, and uses the inherited group-map predicate kernel. The trivial
+character through a nontrivial L separates these assertions.
+
+RestrictedProfiniteCharacter retains the exact supplied H, the original
+target and the actual inclusion i_H, in H.Mor(target), with
+(chi|_H)(h)=chi(i_H(h)). This also admits ordinary represented subgroups
+without demanding a profinite convenience method. Continuity is the
+restriction theorem for the induced subgroup topology.
+The bare ProfiniteCharacter interface retains a missing-defining-map
+frontier, computing only the universal identity value f(1)=1; a finite
+factor alone is not a uniquely specified character. That incomplete
+generic computation is not a concrete closure specimen.
+
+### True closure assertions retained under T
+
+1. For finite or number fields K, |G_K|=2^aleph_0. The countable
+   algebraic closure gives the upper bound. Finite fields have quotients
+   of every positive order; number fields have
+   [K(zeta_n):K] >= phi(n)/[K:QQ], hence unbounded finite quotients.
+   An infinite profinite group has no isolated points; recursively
+   splitting nonempty clopen cosets and compactness give continuum
+   distinct elements. These groups are not finitely generated as
+   abstract groups, since any finitely generated group is countable.
+   Algebraically closed and real-closed bases give orders one and two
+   as separators; the selected continuum supplier does not apply there.
+2. Over QQ, x^3-2 is irreducible by Eisenstein and has nonsquare
+   discriminant -108, so its splitting field has Galois group S3.
+   Restriction is a continuous surjection with its exact open kernel.
+   Over another number field the two selected cubics supply their
+   actual splitting-field groups, not a blanket S3 claim. Failure to
+   find a nonabelian quotient does not prove abelianity.
+3. Put K=QQ(b), b^2=2, and E=QQ(x) in its real embedding with
+   x^2=1+b; then x^4-2x^2-1=0. Norm(1+b)=-1 proves [E:K]=2.
+   On the same abstract E put j_+(b)=x^2-1 and j_-(b)=1-x^2.
+   These K-extensions are not isomorphic: an intertwining automorphism
+   would send x to an element whose square is 1-b<0 in this real E.
+   For fixed e(b)=sqrt(2), the images sqrt(1+sqrt(2)) and
+   i*sqrt(sqrt(2)-1) give compatible closure embeddings respectively.
+   Exact K-extension comparison therefore returns False despite
+   identical underlying field objects. Conjugating either stage
+   preserves its literal j and changes only iota to g iota.
+4. For E=QQ(cube_root(2)), N(G_E)/G_E has order one. For
+   E=QQ(sqrt(5)), it has order two and N(G_E)=G_QQ.
+   The existing normalizer archive assertions are preserved.
+5. In G_F9 arithmetic Frobenius is alpha |-> alpha^9, fixes F9,
+   and its inverse cancels it. For alpha generating F_(9^4),
+   alpha^9 != alpha^3. If h=G(g.as_morphism()), then h=g and
+   (g*h)(alpha)=alpha^81. Unknown equality of other retained
+   closure maps remains an owned equality proposition.
+6. G_F25 -> G_F5 sends Frobenius_25 to Frobenius_5^2.
+   Restriction to F625 has cyclic order four; its kernel has index
+   four, contains Frobenius^4 and excludes Frobenius. The order-two
+   coordinate has two lifts among exponents 0,1,2,3, namely 1 and 3.
+   The common own-parent ingress from the End pass preserves H-owned
+   points until the actual inclusion evaluator receives them.
+7. On G_F5, chi_3(Frobenius)=-1 modulo three and the quadratic
+   character of 2 has value -1. Their selected stages and kernels
+   have degree/index two; chi(g h)=chi(g)chi(h). On G_F9,
+   chi_5(Frobenius)=4 modulo five. If a is square, both direct
+   identity evaluation and its retained identity coordinate give +1.
+   Restricting a character to its concrete open kernel gives value one.
+8. For chi_5 on G_F2 the factor has degree four and
+   chi(Frobenius^e)=2^e mod 5. Its abelian unit-group target has itself
+   as its retained center; inherited corestrict_to_center returns
+   that same character with all defining data. Inherited pointwise
+   addition evaluates as (chi+chi)(g)=chi(g)*chi(g).
+9. Outside the original owner, a chosen free group supplies the
+   selected algebraic generator datum, while G_Fq with only its
+   topological Frobenius datum supplies no such resolution. In S3,
+   conjugating <(12)> by (123) gives <(23)>, and the normalizer
+   of <(12)> is itself. These are true group-level specimens for
+   the retained common operation homes.
+
+Primary mathematical sources are
+[Stacks 0BMI, infinite Galois theory](https://stacks.math.columbia.edu/tag/0BMI),
+[Stacks 0BU2, inverse limits and onto restrictions](https://stacks.math.columbia.edu/tag/0BU2),
+[Stacks 0BMD, algebraic-extension endomorphisms](https://stacks.math.columbia.edu/tag/0BMD),
+and [Keith Conrad, Finite Fields, Theorem 4.1](https://kconrad.math.uconn.edu/blurbs/galoistheory/finitefields.pdf).
+The exact-base separator and displayed exponent/root calculations
+establish their expected values independently of the implementation.
+The character class-call mechanism was also checked against the
+[primary Sage source](https://github.com/sagemath/sage/blob/develop/src/sage/misc/classcall_metaclass.pyx).
+
+**Source acceptance and named frontier:** the full direct owner inventory,
+actual ancestors, selected realizations and delivered arrow inheritance
+were reviewed, including an independent final source review. The retained
+tests/groups/test_absolute_galois.sage and the normalizer, generator,
+open-subgroup and character archive assertions remain required under T.
+Generic finite-stage embedding/equality and quotient computations,
+unavailable inverses of arbitrary exact closure maps, noncanonical
+individual lifts, general cardinality and the bare missing-character
+map remain their existing computation frontiers. This pass does not
+close the separate finite-stage wrapper or later refinement-owner rows.
+M1 / DEV-58 requires source-only work: no imports, Sage, tests or runtime
+acceptance are claimed.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 
