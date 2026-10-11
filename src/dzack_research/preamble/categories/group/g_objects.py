@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     CategoryPacketMethods,
     MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
@@ -990,6 +991,22 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         def underlying_category(self):
             r"""Return the category in which this object is acted on."""
             return self._underlying_category
+
+        def Mor(self, codomain, category=None):
+            r"""Return the equivariant Mor, or an explicitly requested weaker Mor.
+
+            Equivariance is part of being a ``G``-object, independently of
+            whether the underlying object is a set, module, scheme, or other
+            represented object.  With no explicit category, morphisms are
+            therefore the arrows of ``GObjects(G,C)``.  An explicit weaker
+            category forgets the actions first and asks that category for the
+            Mor of the underlying endpoints.
+            """
+            acted = GObjects(self.acting_group(), self.underlying_category())
+            if category is None or category.is_subcategory(acted):
+                return acted.Mor(self, codomain)
+            forget = acted.forgetful_functor()
+            return _category_mor_parent(category, forget(self), forget(codomain))
 
         @cached_method
         def action_functor(self):

@@ -3904,18 +3904,6 @@ class AffineGSchemes(OwnedCategory):
                 ideal = algebra.ideal(algebra.one())
             return self.closed_subscheme(tuple(ideal.ideal_generators()))
 
-        def Mor(self, codomain, category=None):
-            from dzack_research.preamble.categories.group.g_objects import GObjects
-
-            acted_schemes = GObjects(self.acting_group(), self.underlying_category())
-            match category:
-                case None:
-                    return acted_schemes.Mor(self, codomain)
-                case _ if category.is_subcategory(acted_schemes):
-                    return acted_schemes.Mor(self, codomain)
-                case _:
-                    return _scheme_mor_category(self, codomain)
-
         def unacted_scheme(self):
             r"""Return the affine scheme the action was stated on."""
             return self._unacted_scheme
