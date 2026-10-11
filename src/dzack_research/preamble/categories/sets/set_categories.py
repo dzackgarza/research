@@ -4325,6 +4325,45 @@ class WellOrderedSetMorphism:
     def underlying_set_morphism(self):
         return self._set_morphism
 
+    @validator
+    def validate_order_preservation(self) -> None:
+        r"""Check \(x \le y \Rightarrow f(x) \le f(y)\) on a finite enumeration.
+
+        This is the optional diagnostic for the retained map (``OWN-22``).
+        An unavailable comparison leaves the law undecided; it is not a
+        counterexample. The current arbitrary-map diagnostic requires a
+        finite enumerated source, while construction retains any represented
+        well-order map without performing this computation.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        set_morphism = self.underlying_set_morphism()
+        assert Sets().is_provably_finite(domain) and domain in EnumeratedSets(), (
+            f"cannot decide whether {set_morphism} preserves the well-order: arbitrary order preservation is "
+            f"decided here only on finite enumerated domains, but {domain} lies in {domain.category()}"
+        )
+        undecided_pair = None
+        for left in domain:
+            for right in domain:
+                source_order = domain.le(left, right)
+                if source_order is False:
+                    continue
+                left_image = set_morphism(left)
+                right_image = set_morphism(right)
+                target_order = codomain.le(left_image, right_image)
+                if target_order is True:
+                    continue
+                if source_order is True and target_order is False:
+                    raise ValueError(
+                        f"{set_morphism} is not order-preserving: {left} <= {right} in {domain}, but "
+                        f"{left_image} is not <= {right_image} in {codomain}"
+                    )
+                undecided_pair = (left, right)
+        assert undecided_pair is None, (
+            f"cannot decide whether {set_morphism} preserves the well-order: the order implication "
+            f"at {undecided_pair} is undecided"
+        )
+
     def __eq__(self, other):
         if element_parent(other) is not self.parent():
             return False
@@ -4357,37 +4396,22 @@ class WellOrderedSetMorphism:
 class WellOrderedSetMor(CategoricalMor):
     r"""Order-preserving maps between two represented well-orders.
 
-    Arbitrary ingress is decided exactly on finite enumerated sources.  Maps
-    known order-preserving by construction -- identities and composites -- use
-    the private theorem-backed entry instead.  This is the same separation
-    between mathematical ownership and finite verification used by the other
-    structured set categories.
+    Construction retains the defining set map. Order preservation is checked
+    only on request, through the arrow's validator; its current arbitrary-map
+    diagnostic uses a finite enumerated source. Identities and composites
+    retain their existing construction-derived set maps.
     """
 
     ElementMethods = WellOrderedSetMorphism
 
-    def _verify_order_preserving(self, set_morphism) -> None:
-        domain = self.domain()
-        assert Sets().is_provably_finite(domain) and domain in EnumeratedSets(), (
-            f"cannot decide whether {set_morphism} preserves the well-order: arbitrary order preservation is "
-            f"decided here only on finite enumerated domains, but {domain} lies in {domain.category()}"
-        )
-        for left in domain:
-            for right in domain:
-                if domain.le(left, right) and self.codomain().le(
-                    set_morphism(left), set_morphism(right)
-                ) is not True:
-                    raise ValueError(
-                        f"{set_morphism} is not order-preserving: {left} <= {right} in {domain}, but "
-                        f"{set_morphism(left)} is not <= {set_morphism(right)} in {self.codomain()}"
-                    )
-
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
         if element_parent(datum) is self:
-            return datum
-        set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
-        self._verify_order_preserving(set_morphism)
-        return self.element_class(self, set_morphism)
+            morphism = datum
+        else:
+            set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
+            morphism = self.element_class(self, set_morphism)
+        morphism.validate_order_preservation(check=check)
+        return morphism
 
     def _from_order_preserving_set_map(self, set_morphism):
         if (
