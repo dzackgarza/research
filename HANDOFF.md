@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 48 complete passes and 593 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The complete AdditiveEndomorphismRings pass is now closed on its retained scalar datum, canonical identity, law-preserving arithmetic suppliers and exact full-versus-structured Hom carriers. The complete AdditiveGroups root pass is now closed on its existing right-difference operation, primitive suppliers and actual additive-monoid Mor inheritance. The complete AdditiveGroups.AdditiveCommutative pass is now closed on the general notation-conversion home, exact commutative realization, actual additive Mor and undecided equality. The complete commutative-additive Mor-family pass is now closed on both its enriched additive arrows and its coherent inherited functor-category endpoints. The complete root additive-group Mor-family pass is now closed on automatic inverse preservation, literal weaker-Mor reuse and both actual arrow levels. The complete AdditiveMagmaMor pass is now closed on its actual generated arrows, shared canonical identity and weaker set-map composition. The complete AdditiveMagmas root pass is now closed on its selected binary law, exact integer witness and actual inherited map theory. The complete commutative-additive-magma refinement is now closed on its actual additional axiom and literal reuse of the binary-law Mor. The complete additive-magma Mor-family pass is now closed on its binary-law selector and both actual map and functor levels. The complete AdditiveMonoidMor pass is now closed on its zero-preserving arrow theory, shared canonical identity and exact product-map consumers. The complete AdditiveMonoids pass is now closed on its additive subset constructors, exact generator/predicate data, actual inclusion factors and protected NN assertions. The current first literal ready row is `placement-owner-additivemonoids-morcategory`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 49 complete passes and 592 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The complete AbelianGroupEndomorphismRings pass is now closed on the canonical End carrier, pointwise arithmetic, integer action and admitted-point assertions. The complete AbsoluteGaloisGroups pass is now closed on its exact stages and base maps, mixed element laws, inherited character arrows and finite-quotient assertions. The complete AbsoluteGaloisGroupsOfFiniteFields pass is now closed on inherited topological generating families, q-power Frobenius, and unknown-safe all-points family evaluation. The complete AdditiveEndomorphismRings pass is now closed on its retained scalar datum, canonical identity, law-preserving arithmetic suppliers and exact full-versus-structured Hom carriers. The complete AdditiveGroups root pass is now closed on its existing right-difference operation, primitive suppliers and actual additive-monoid Mor inheritance. The complete AdditiveGroups.AdditiveCommutative pass is now closed on the general notation-conversion home, exact commutative realization, actual additive Mor and undecided equality. The complete commutative-additive Mor-family pass is now closed on both its enriched additive arrows and its coherent inherited functor-category endpoints. The complete root additive-group Mor-family pass is now closed on automatic inverse preservation, literal weaker-Mor reuse and both actual arrow levels. The complete AdditiveMagmaMor pass is now closed on its actual generated arrows, shared canonical identity and weaker set-map composition. The complete AdditiveMagmas root pass is now closed on its selected binary law, exact integer witness and actual inherited map theory. The complete commutative-additive-magma refinement is now closed on its actual additional axiom and literal reuse of the binary-law Mor. The complete additive-magma Mor-family pass is now closed on its binary-law selector and both actual map and functor levels. The complete AdditiveMonoidMor pass is now closed on its zero-preserving arrow theory, shared canonical identity and exact product-map consumers. The complete AdditiveMonoids pass is now closed on its additive subset constructors, exact generator/predicate data, actual inclusion factors and protected NN assertions. The complete additive-monoid Mor-family pass is now closed on its zero-preserving selector, exact inclusion/product maps and both actual higher-arrow paths. The current first literal ready row is `placement-owner-additivemor`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -2757,6 +2757,110 @@ source/record diffs and TODO graph checks pass. No tests, imports, Sage,
 builds or runtime acceptance were run. All mathematical specimens above
 and the unchanged protected assertions remain under T and
 core-usability-session. No new prerequisite or category owner is filed.
+
+
+## Whole-category placement: AdditiveMonoids._MorCategory (2026-10-11)
+
+**Node:** `placement-owner-additivemonoids-morcategory`.
+**Owner:** `group/magmas.py:AdditiveMonoids._MorCategory`.
+**Delta:** close the complete fixed-class selection pass on the existing
+zero-preserving Mor and the committed exact additive-inclusion suppliers.
+No independent source change is required.
+
+The entire direct inventory is fixed_category_class, which selects
+AdditiveMonoidMor. The owner introduces no parent or element method and
+no independent arrow evaluator. Its inherited MorCategoryConstruction
+is the existing empty specialization of _MorCategoryOf. The full selected
+construction retains the literal base category, normalizes each fixed
+endpoint through it, caches by endpoint identity, selects the declared
+class, and reuses a weaker fixed object only when the chosen
+implementation agrees. Family membership reads that actual construction;
+it does not manufacture an object by observing compatible endpoints.
+
+The classifying family's complete strict authored semantic up-set is
+MorCategories and Cat. MorCategories holds represented fixed-endpoint
+Mor categories; Cat holds represented categories, their functors and
+natural transformations. Their complete relevant definitions and the
+shared owned-category/CategoryPacket constructions were reviewed.
+The native Sage Objects root remains infrastructure. The family is not
+declared a subcategory of the entire AdditiveMagmas Mor family: choosing
+a narrower arrow theory is different from selecting the same fixed
+category object.
+
+For F=AdditiveMonoids().MorCategory() and H=F.Of(A,B), the selected
+fixed Mor has four distinct strict authored ancestors: AdditiveMagmaMor,
+SetMorCategory, Objects' FixedMorCategory, and Objects.
+AdditiveSemigroups literally reuses AdditiveMagmaMor and adds no fifth
+object. Its actual generated maps reach AdditiveMonoidMorphism,
+AdditiveMagmaMorphism, OwnedSetMorphism and the shared owned/Sage
+morphism roots. This is actual generated-arrow delivery, not an
+assertion that the fixed parent directly subclasses every donor class.
+
+The independent defining laws are f(x+y)=f(x)+f(y) and f(0)=0.
+For ({0,1},max,0), the constant-one function preserves the binary
+operation but not zero, so the selected arrow theory is strictly
+different from additive-magma maps in general. This is a mathematical
+separator; no owned realization of that max-monoid is claimed.
+[Mathlib's additive-monoid homomorphism definitions](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/Defs.html)
+state both laws and their closure under identity and composition.
+
+For the canonical owned integer witness Z, repeated F.Of(Z,Z)
+returns the same fixed object, different from AdditiveMagmas().Mor(Z,Z);
+AdditiveSemigroups' corresponding fixed object is the latter literally.
+H.identity() uses the existing cached set-identity descriptor through
+the actual AdditiveMonoidMor element class: it fixes n and zero, retains
+both literal endpoints, and is recognized as the canonical identity.
+Admitted doubling and tripling compose to n->6n in the selected Mor.
+Wrong endpoints retain their rejection. A bare set map is not a member
+merely because its endpoints agree; an explicit callable construction
+carries the two preservation laws as supplied hypotheses.
+Public ingress retains an already-admitted stronger arrow literally.
+
+The unchanged additive product consumers retain their actual factors
+and zero: for P=Sets().product((Z,Z)), p_j:P->Z uses AdditiveMonoidMor,
+sends P.zero() to zero and preserves addition. The map induced by the
+two canonical identities has the literal endpoints Z and P and satisfies
+p_j(d(n))=n. A finite induced-map constructor still requires the
+actual additive component maps. These assertions remain in the protected
+tests/sets/test_products_and_coproducts_of_finite_and_countable_sets.sage.
+
+The current additive subobject consumers also use this exact selector.
+For S=<6> and K=<3> in NN, the actual inclusions into NN and the
+generator-proved S->K factor have the appropriate literal endpoints,
+are additive-monoid maps, and retain their set-inclusion donors.
+The inclusion triangle fixes every admitted point and zero. Factoring
+a proper inclusion through itself selects identity_at(S).
+The committed retained-member boundary preserves a proved factor's
+range without deciding an unknown defining predicate again. It does
+not grant an additive law or injectivity to an arbitrary callback.
+
+Two higher arrow paths are kept distinct. Inside fixed H, the represented
+arrow object H.object(f) has its canonical identity in the existing
+discrete second-Mor. At the classifying-family level, _MorCategoryOf's
+actual _mor_endpoint instead retains Cat.object(H) before selecting
+and caching F.Mor(H,K). The inherited Cat construction supplies the
+genuine functor category and CategoryFunctorMor/CategoryFunctorMorphism;
+the following Mor uses NaturalTransformationMor and its actual
+transformation elements. Raw and already represented category endpoints
+use the same retained categories. The direct raw MorCategories ingress
+and general discrete universal-construction remainders stay in their
+existing open owners; neither is claimed repaired by this selector.
+
+Finite pointwise map comparisons preserve the actual equations;
+general infinite-source equality remains its proposition. The current
+factorization supplier distinguishes decided noncontainment from
+undecided containment and unavailable computation. Existing inverse
+computations keep the weaker set-arrow result and their named frontier.
+No additional law classifier or inference of maximal mixed-arrow
+structure is introduced.
+
+**Verification:** the prepared complete review was reconciled with
+commit 7c4f053718's actual inclusion donors, factor hooks and shared-set
+consumer repair. Independent source review and focused record/graph
+checks accepted this pass. No imports, tests or runtime execution were
+performed. The displayed identity, composition, product, factor and
+higher-arrow assertions remain under T and core-usability-session.
+No new prerequisite or mathematical owner is introduced.
 
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
