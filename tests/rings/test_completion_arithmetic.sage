@@ -9,6 +9,7 @@ retain stronger information when it is genuinely available.
 import pytest
 
 from dzack_research.preamble.all import *
+from dzack_research.preamble.logic import Unknown, ask
 
 
 def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:
@@ -67,11 +68,15 @@ def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpot
     assert (x_hat**2).is_zero()
     assert x_hat**2 == completion.zero()
 
-    # y^4 vanishes in the selected A/m^4 computation stage but not in the
-    # completed ring.  The finite approximation therefore cannot answer this
-    # exact equality question.
-    with pytest.raises(AssertionError):
-        (y_hat**4).is_zero()
+    # y^4 is nonzero in the completion, although the selected A/m^4
+    # approximation agrees with zero. The current equality procedure retains
+    # that undecided proposition; the next exact source quotient witnesses
+    # nonvanishing without changing the selected computation precision.
+    zero_statement = (y_hat**4).is_zero()
+    assert ask(zero_statement) is Unknown
+    with pytest.raises(TypeError):
+        bool(zero_statement)
+    assert completion.adic_projection(5)(y_hat**4) != completion.adic_truncation(5).zero()
 
     assert completion.adic_projection(4)(y_hat**4) == completion.adic_truncation(4).zero()
     assert completion.adic_projection(3)(y_hat**2) != completion.adic_truncation(3).zero()

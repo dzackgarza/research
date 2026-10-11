@@ -3148,8 +3148,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             Protected ring-construction contract under OWN-05. The callers
             are the local-ring datum accessor, the local field decision,
-            the local-ring installation adapter, and the adic-completion
-            residue-map selector. A construction owner returns
+            and the local-ring installation adapter. A construction owner returns
             a ``LocalRingConstruction`` for this exact ring: its selected
             maximal ideal, the owned residue field, and its quotient map when
             selected. The local field decision uses the ideal's zero predicate

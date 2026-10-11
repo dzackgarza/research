@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
-    _algebra_structure_morphism,
     _algebra_with_structure,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
@@ -78,7 +77,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category, CategoryWithAxiom
 
 
 def _commutative_algebra_with_structure(algebra, base_ring, labels=None, *categories):
@@ -2374,6 +2373,19 @@ class AdicCompletions(Category):
             int(precision),
         )
 
+    class Local(CategoryWithAxiom):
+        r"""Selected adic completions whose completed ring is local."""
+
+        def an_object(self):
+            r"""The 2-adic completion of the integers."""
+            return _own_ring(SageZZ).adic_completion(2)
+
+        class ParentMethods:
+            @cached_method
+            def source_residue_map(self):
+                r"""Compose the retained completion map with the local residue map."""
+                return self.residue_map() * self.completion_map()
+
     class ParentMethods:
         def completion_source(self):
             return self._adic_completion_source
@@ -2390,10 +2402,13 @@ class AdicCompletions(Category):
             morphism = self._realized_completion_map
             if morphism is None:
                 morphism = self._adic_completion_map_factory()
-                if morphism.domain() is not self.completion_source():
+                if (
+                    morphism.domain() is not self.completion_source()
+                    or morphism.codomain() is not self
+                ):
                     raise ValueError(
-                        f"the completion map of {self} must start at {self.completion_source()}, but it starts at "
-                        f"{morphism.domain()}"
+                        f"the completion map of {self} must be {self.completion_source()} -> {self}, "
+                        f"but the supplied map is {morphism.domain()} -> {morphism.codomain()}"
                     )
                 self._realized_completion_map = morphism
             return morphism
@@ -2407,20 +2422,6 @@ class AdicCompletions(Category):
             through the localization map.
             """
             return self._adic_projection_lift
-
-        @cached_method
-        def algebra_structure_morphism(self):
-            r"""Return the coefficient structure map without duplicating the completion map.
-
-            For an ordinary adic completion the coefficient ring is its source,
-            so the structure map is exactly the canonical completion map.  A
-            formal power-series specialization is instead an algebra over the
-            coefficient ring below its polynomial completion source and keeps
-            that distinct scalar structure.
-            """
-            if self.algebra_base_ring() is self.completion_source():
-                return self.completion_map()
-            return _algebra_structure_morphism(self)
 
         @cached_method
         def ideal_extension(self):
@@ -2448,13 +2449,15 @@ class AdicCompletions(Category):
             )
 
         @cached_method
-        def completion_map_kernel(self):
-            r"""Return ``ker(A -> A^)`` in the represented exact regimes.
+        def _completion_map_kernel_decision(self):
+            r"""Supply the source kernel from retained data or the current exact cases.
 
-            The kernel is ``intersection I^n``.  The zero/nilpotent and
-            idempotent cases are exact from the represented ideal arithmetic;
-            no injectivity claim is made outside a theorem or one of these
-            computations.
+            This protected completion decision is consumed only by
+            ``completion_map_kernel``, the source-separatedness predicate,
+            and exact-source element equality. Its result is an owned ideal
+            of the retained source, or ``None`` when these computations do
+            not establish that ideal. Constructor-supplied kernels are fixed
+            data; finite precision by itself supplies no kernel.
             """
             source = self.completion_source()
             represented = self._adic_completion_map_kernel
@@ -2462,30 +2465,48 @@ class AdicCompletions(Category):
                 return represented
             zero = source.ideal(source.zero())
             defining = self.completion_ideal()
-            if defining == zero:
+            if (defining == zero) is True:
                 return zero
             square = defining.power(2)
-            if square == zero:
+            if (square == zero) is True:
                 return zero
-            if square == defining:
+            if (square == defining) is True:
                 return defining
             supported_by_krull_intersection = (
                 source in OwnedRings().Noetherian()
-                and source in OwnedRings().Commutative().NoZeroDivisors()
+                and (
+                    source in OwnedRings().Commutative().NoZeroDivisors()
+                    or source in OwnedRings().Commutative().Local()
+                )
+                and defining.contains_ambient_element(source.one()) is False
             )
-            assert supported_by_krull_intersection, (
-                f"cannot compute ker({source} -> {self}), the intersection of the powers of {defining}: "
-                f"{source} is not known to be a Noetherian integral domain, where Krull's intersection "
-                "theorem makes it zero, and no other case applies"
+            if supported_by_krull_intersection:
+                return zero
+            return None
+
+        def completion_map_kernel(self):
+            r"""Return ``ker(R -> R_hat) = intersection I^n``.
+
+            The retained, square-zero, and idempotent cases use their exact
+            source ideals. Krull intersection gives zero for a proved proper
+            ideal in a Noetherian domain or Noetherian local ring.
+            """
+            kernel = self._completion_map_kernel_decision()
+            assert kernel is not None, (
+                f"cannot compute ker({self.completion_source()} -> {self}), the intersection "
+                f"of the powers of {self.completion_ideal()}: no represented kernel or "
+                "applicable exact source-ideal computation is supplied"
             )
-            return zero
+            return kernel
 
-        def is_adically_separated(self) -> bool:
-            r"""Return whether the represented source embeds in this completion."""
-            source = self.completion_source()
-            return self.completion_map_kernel() == source.ideal(source.zero())
+        def is_adically_separated(self):
+            r"""Return whether the retained source is separated for its completion ideal."""
+            kernel = self._completion_map_kernel_decision()
+            if kernel is None:
+                return AtomicProposition("is_adically_separated", self)
+            return kernel.is_zero()
 
-        def is_completion_map_injective(self) -> bool:
+        def is_completion_map_injective(self):
             r"""Return injectivity exactly when the represented kernel is known."""
             return self.is_adically_separated()
 
@@ -2541,7 +2562,7 @@ class AdicCompletions(Category):
             higher = self.adic_truncation(higher_exponent)
             lower = self.adic_truncation(lower_exponent)
             lower_projection = lower.quotient_map()
-            return higher.Mor(lower)(
+            return OwnedRings().Mor(higher, lower)(
                 lambda element: lower_projection(element.lift()),
             )
 
@@ -2554,47 +2575,86 @@ class AdicCompletions(Category):
             target = self.adic_truncation(exponent)
             quotient_map = target.quotient_map()
             projection_lift = self._completion_projection_lift()
-            assert projection_lift is not None, (
-                f"cannot compute the projection {self} -> {target}: {self} has no way to reduce its elements "
-                "modulo a power of its ideal of definition"
-            )
 
             def image(element):
-                backend = _engine_element(self, self(element))
+                selected = self(element)
+                source_expression = selected.exact_source_expression()
+                if source_expression is not None:
+                    return quotient_map(source_expression)
+                assert projection_lift is not None, (
+                    f"cannot compute the projection {self} -> {target} at {element}: "
+                    "neither an exact source expression nor a finite-stage reduction is supplied"
+                )
+                backend = _engine_element(self, selected)
                 return quotient_map(projection_lift(backend, exponent))
 
-            return self.Mor(target)(image)
+            return OwnedRings().Mor(self, target)(image)
 
         def induced_map(self, source_morphism, target_completion):
-            r"""Return the continuous map of completions induced by ``source_morphism``.
+            r"""Extend the given ring map to the chosen complete target.
 
-            This supported topology requires ``f(I) <= J``.  The mathematical
-            map is unique by completion; computation on an element uses its
-            exact retained source expression and otherwise stays at the
-            declared computational frontier.
+            A map from the source ``R`` may end at the complete target ``B``
+            itself, with ``f(I)`` inside its chosen defining ideal, or at
+            another completion's source ``S``, with ``f(I)`` inside that
+            source's completion ideal. In the latter case it is composed
+            with ``S -> B``. These sufficient continuity data determine a
+            unique continuous map ``R_hat -> B``. Evaluation uses the retained exact
+            source expression and otherwise keeps its computation boundary.
             """
+            if target_completion not in OwnedAdicallyCompleteRings():
+                raise TypeError(
+                    f"an induced completion map needs a chosen complete target, but got {target_completion}"
+                )
             if source_morphism.domain() is not self.completion_source():
                 raise ValueError(
                     f"cannot induce a map of completions from {source_morphism}: it must start at "
                     f"{self.completion_source()}, but it starts at {source_morphism.domain()}"
                 )
-            if source_morphism.codomain() is not target_completion.completion_source():
-                raise ValueError(
-                    f"cannot induce a map {self} -> {target_completion} from {source_morphism}: it must end at "
-                    f"{target_completion.completion_source()}, but it ends at {source_morphism.codomain()}"
+            source_map_owner = OwnedRings().Mor(
+                self.completion_source(), source_morphism.codomain()
+            )
+            if source_morphism not in source_map_owner:
+                raise TypeError(
+                    f"an induced completion map requires an owned unital ring map, but got {source_morphism}"
                 )
-            target_ideal = target_completion.completion_ideal()
-            if any(
-                not target_ideal.contains_ambient_element(source_morphism(generator))
-                for generator in self.completion_ideal().ideal_generators()
-            ):
-                raise ValueError("the source ideal does not map into the target ideal")
             if (
                 source_morphism.domain() is source_morphism.codomain()
-                and source_morphism is source_morphism.parent().identity()
+                and (
+                    source_morphism is source_morphism.parent().identity()
+                    or source_morphism.is_identity() is True
+                )
                 and target_completion is self
             ):
-                return self.Mor(self).identity()
+                return OwnedRings().Mor(self, self).identity()
+
+            if source_morphism.codomain() is target_completion:
+                target_ideal = target_completion.ideal_of_definition()
+                into_target = source_morphism
+            elif (
+                target_completion in AdicCompletions()
+                and source_morphism.codomain() is target_completion.completion_source()
+            ):
+                target_ideal = target_completion.completion_ideal()
+                into_target = target_completion.completion_map() * source_morphism
+            else:
+                raise ValueError(
+                    f"cannot induce a map {self} -> {target_completion} from {source_morphism}: "
+                    "it must end at that complete target or its retained completion source"
+                )
+            continuity = conjunction(
+                target_ideal.contains_ambient_element(source_morphism(generator))
+                for generator in self.completion_ideal().ideal_generators()
+            )
+            match continuity:
+                case True:
+                    pass
+                case False:
+                    raise ValueError("the source completion ideal does not map into the selected target ideal")
+                case _:
+                    assert False, (
+                        f"the induced map {self} -> {target_completion} requires the images of "
+                        f"{self.completion_ideal()} to be established inside {target_ideal}"
+                    )
 
             def image(element):
                 selected = self(element)
@@ -2604,29 +2664,26 @@ class AdicCompletions(Category):
                         f"cannot evaluate the induced map of completions at {element}: it is not known as the image "
                         f"of an element of {self.completion_source()}"
                     )
-                return target_completion.completion_map()(
-                    source_morphism(source_expression)
-                )
+                return into_target(source_expression)
 
-            return self.Mor(target_completion)(image)
+            return OwnedRings().Mor(self, target_completion)(image)
 
         @cached_method
         def maximal_localization_comparison(self):
             r"""Return ``R^_m ~= (R_m)^`` when the source completion ideal is maximal.
 
-            For Noetherian ``R`` completion at a maximal ideal agrees with
-            completion after localizing at that maximal ideal.  Both arrows
-            are assembled from the localization/completion universal maps;
-            this method does not assert any analogous comparison for an
-            arbitrary localization.
+            Each ``R/m^n`` is local, so localizing it outside the maximal
+            ideal changes nothing; the inverse limits therefore agree.
+            The current realization uses Noetherian source computations.
+            Both arrows use the existing localization/completion universal
+            maps, with their retained-source evaluation boundary.
             """
             source = self.completion_source()
             maximal = self.completion_ideal()
-            if source not in OwnedRings().Noetherian():
-                raise TypeError(
-                    f"the comparison of completion and localization at a maximal ideal needs a Noetherian ring, "
-                    f"but {source} is not known to be Noetherian"
-                )
+            assert source in OwnedRings().Noetherian(), (
+                f"the comparison of completion and localization at a maximal ideal is computed here "
+                f"for Noetherian source rings; no source computation is supplied for {source}"
+            )
             match maximal.is_maximal():
                 case True:
                     pass
@@ -2657,43 +2714,6 @@ class AdicCompletions(Category):
             )
 
         @cached_method
-        def residue_map(self):
-            r"""Return the selected local quotient, or ``A^ -> A/I`` for maximal ``I``.
-
-            A local completion may have a nonmaximal chosen completion
-            ideal. Its supplied local quotient remains the residue map.
-            """
-            construction = self._selected_local_ring_construction()
-            if construction is not None:
-                selected = construction.residue_map()
-                if selected is not None:
-                    return selected
-            defining = self.completion_ideal()
-            match defining.is_maximal():
-                case True:
-                    pass
-                case False:
-                    raise TypeError(
-                        f"a residue map A^ -> A/m needs a maximal completion ideal "
-                        f"when no local quotient map is supplied, but {defining} is not maximal"
-                    )
-                case _:
-                    assert False, (
-                        f"the residue map of {self} needs maximality of the completion "
-                        f"ideal {defining} to be established or a supplied local quotient map"
-                    )
-            residue = self.residue_field()
-            projection = self.adic_projection(1)
-            if projection.codomain() is residue:
-                return projection
-            return _canonical_map(projection.codomain(), residue) * projection
-
-        @cached_method
-        def source_residue_map(self):
-            r"""Compose ``A -> A^`` with the completed ring's selected residue map."""
-            return self.residue_map() * self.completion_map()
-
-        @cached_method
         def adic_limit_cone(self):
             r"""Return the canonical cone ``A_hat -> (A/I^n)_n``."""
             system = self.adic_inverse_system()
@@ -2722,7 +2742,7 @@ class AdicCompletions(Category):
                     f"cannot factor the cone {supplied_cone} through the limit {self}: only the limit cone "
                     "itself factors here, because compatible series are not constructed"
                 )
-                return self.Mor(self).identity()
+                return OwnedRings().Mor(self, self).identity()
 
             return SelectedLimitConstruction(diagram, cone, factorizer)
 
@@ -2872,12 +2892,14 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         if left_source is None or right_source is None:
             return None
         difference = left_source - right_source
-        if difference == self.parent().completion_source().zero():
+        if (difference == self.parent().completion_source().zero()) is True:
             return True
-        kernel = self.parent().completion_map_kernel()
-        return bool(kernel.contains_ambient_element(difference))
+        kernel = self.parent()._completion_map_kernel_decision()
+        if kernel is None:
+            return None
+        return kernel.contains_ambient_element(difference)
 
-    def _completion_equal(self, other) -> bool:
+    def _completion_equal(self, other):
         parent = self.parent()
         try:
             other = parent(other)
@@ -2904,21 +2926,18 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         difference = left - right
         if bool(difference):
             return False
-        raise AssertionError(
-            f"cannot decide whether {self} == {other} in {parent}: they agree to the computed precision, "
-            "which does not decide equality"
-        )
+        return AtomicProposition("equal", self, other)
 
     def __eq__(self, other):
         return self._completion_equal(other)
 
     def __ne__(self, other):
-        return not self._completion_equal(other)
+        return negation(self._completion_equal(other))
 
     __hash__ = None
 
     def __bool__(self):
-        return not self._completion_equal(self.parent().zero())
+        return bool(negation(self._completion_equal(self.parent().zero())))
 
     def is_zero(self):
         return self._completion_equal(self.parent().zero())
@@ -2930,8 +2949,13 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         return bool(self._backend().is_unit())
 
     def _unit_inverse_decision(self):
-        if not self.is_unit():
-            raise ZeroDivisionError(f"{self} is not a unit in {self.parent()}")
+        match self.is_unit():
+            case True:
+                pass
+            case False:
+                raise ZeroDivisionError(f"{self} is not a unit in {self.parent()}")
+            case _:
+                return None
         return _owned_engine_element(self.parent(), self._backend() ** -1)
 
     def precision_absolute(self):
@@ -3048,7 +3072,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 True if formal_base in OwnedRings().Division().Commutative() else None
             )
         else:
-            defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
+            defining_ideal_is_maximal = defining_ideal.is_maximal()
 
         match (
             defining_ideal_is_maximal,
@@ -3093,13 +3117,30 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             case (_, True):
                 maximal_ideal = completion_map.extension_of_ideal(defining_ideal)
                 residue = source.residue_field_at(defining_ideal)
-                _install_local_ring_construction(self, maximal_ideal, residue)
+
+                def residue_map_factory():
+                    projection = self.adic_projection(1)
+                    if projection.codomain() is residue:
+                        return projection
+                    return _canonical_map(projection.codomain(), residue) * projection
+
+                self._local_ring_construction = LocalRingConstruction(
+                    maximal_ideal=maximal_ideal,
+                    residue_field=residue,
+                    residue_map_factory=residue_map_factory,
+                )
             case _:
                 pass
 
     def _selected_adic_defining_ideal(self):
         r"""Supply this completion's fixed target ideal to ``ideal_of_definition``."""
         return self.ideal_extension().extended_ideal()
+
+    def _selected_algebra_structure_morphism(self):
+        r"""Supply the retained completion map when it is the scalar structure map."""
+        if self.algebra_base_ring() is self.completion_source():
+            return self.completion_map()
+        return None
 
     def completion_arithmetic_mode(self):
         return self._adic_arithmetic_mode
@@ -4111,7 +4152,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
     family; public notation is defined below and delegates back to the category
     constructor.
     """
-    if source in PrimeLocalizations() and defining == source.maximal_ideal():
+    if source in PrimeLocalizations() and (defining == source.maximal_ideal()) is True:
         bottom = source.localization_source()
         prime = source.localized_prime()
         assert prime.is_maximal() is True, (
@@ -4158,14 +4199,37 @@ def _adic_completion_from_owned_data(source, defining, precision):
             projection_lift=projection_lift,
             arithmetic_mode=bottom_completion.completion_arithmetic_mode(),
             completion_image=completion_image,
-            completion_map_kernel=source.ideal(source.zero()),
+            completion_map_kernel=(
+                source.ideal(source.zero()) if source in OwnedRings().Noetherian() else None
+            ),
         )
     defining_engine = _engine_ideal(source, defining)
     generators = tuple(defining_engine.gens())
     engine = _engine_ring(source)
     zero_ideal = source.ideal(source.zero())
     unit_ideal = source.ideal(source.one())
-    if defining == unit_ideal:
+    degenerate_formal_data = {}
+    base = source.base_ring()
+    if source in SymmetricAlgebras(base) and source.is_framed_algebra() is True:
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+        labels = source.algebra_generating_set()
+        if labels in FiniteOrderedSets() and (
+            (source.one() == source.zero()) is True
+            or (
+                (labels.cardinality() == cardinal(0)) is True
+                and (defining == zero_ideal) is True
+            )
+        ):
+            # Zero coefficients and an empty variable family may be realized
+            # by scalar engines. Their fixed formal variables and coefficient
+            # ring remain the data of the same formal-series construction.
+            degenerate_formal_data = {
+                "algebra_base": base,
+                "formal_parameter_labels": tuple(labels),
+                "extra_categories": (FormalPowerSeriesRings(base),),
+            }
+    if (defining == unit_ideal) is True:
         zero_quotient = source.quotient_ring(unit_ideal)
         zero_engine = _engine_ring(zero_quotient)
         assert zero_engine is not zero_quotient, (
@@ -4188,8 +4252,9 @@ def _adic_completion_from_owned_data(source, defining, precision):
             arithmetic_mode="exact_backend",
             completion_image=completion_image,
             completion_map_kernel=unit_ideal,
+            **degenerate_formal_data,
         )
-    if defining == zero_ideal:
+    if (defining == zero_ideal) is True:
         def projection_lift(value, _exponent):
             return _owned_engine_element(source, engine(value))
 
@@ -4202,6 +4267,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
             arithmetic_mode="exact_backend",
             completion_image=lambda element: _engine_element(source, source(element)),
             completion_map_kernel=zero_ideal,
+            **degenerate_formal_data,
         )
     if len(generators) == 1 and engine is SageZZ:
         generator = generators[0]
@@ -4213,8 +4279,10 @@ def _adic_completion_from_owned_data(source, defining, precision):
         completion_engine = engine.completion(prime, int(precision))
 
         def projection_lift(value, exponent):
-            assert exponent <= int(precision), (
-                f"the truncation at exponent {exponent} exceeds the precision {precision} of the p-adic completion"
+            value_precision = value.precision_absolute()
+            assert exponent <= value_precision, (
+                f"the truncation at exponent {exponent} exceeds the represented element's "
+                f"absolute precision {value_precision}"
             )
             return source(int(value.lift()))
 
@@ -4261,10 +4329,10 @@ def _adic_completion_from_owned_data(source, defining, precision):
             )
             arithmetic_mode = "finite_approximation"
             completion_map_kernel = None
-            if selected_power == zero_ideal:
+            if (selected_power == zero_ideal) is True:
                 arithmetic_mode = "exact_backend"
                 completion_map_kernel = zero_ideal
-            elif defining.power(2) == defining:
+            elif (defining.power(2) == defining) is True:
                 arithmetic_mode = "exact_backend"
                 completion_map_kernel = defining
             return _AdicCompletionAlgebraParent(
@@ -4323,7 +4391,9 @@ def _adic_completion_from_owned_data(source, defining, precision):
         completed_ideal_generators=completed_ideal_generators,
         projection_lift=projection_lift,
         arithmetic_mode="exact_lazy",
-        completion_map_kernel=zero_ideal if source in OwnedRings().Commutative().NoZeroDivisors() else None,
+        # A polynomial has finite degree in the selected variables over any
+        # coefficient ring, so no nonzero polynomial lies in all their powers.
+        completion_map_kernel=zero_ideal,
         algebra_base=algebra_base,
         formal_parameter_labels=formal_parameter_labels,
         extra_categories=extra_categories,

@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 630 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement and the common Adic owner are the seven complete whole-owner passes and are marked [x]. AdicCompletions and FormalPowerSeriesRings are the next active passes. The remaining 623 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions and its Local refinement are the nine complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. FormalPowerSeriesRings is ready for its own closure, while the Division and prime-field refinement passes are active. The remaining 622 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,7 +259,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed `placement-owner-ownedadicallycompleterings` (2026-10-11):** all five introductions, all 17 strict authored ancestors and delivered RingMor have their own completed review. The common accessor exposes the actual chosen target ideal, preserves explicit supplier authority and accepts independent zero-adic native fields. Source, target and maximal ideals remain distinct. Seven of 630 owner passes are now complete; AdicCompletions and FormalPowerSeriesRings are active. The parent remains open, with runtime assertions retained under T.
+**Closed `placement-owner-adiccompletions` and `placement-owner-adiccompletions-local` (2026-10-11):** all 27 original Adic introductions, its 18 strict authored ancestors, full selected-supplier inventory and delivered RingMor are reviewed and repaired. The new Local provider's two introductions and 21 strict ancestors have their own completed pass. Scalar and residue maps use their common owners; induced maps have actual endpoints and true hypotheses; exact source projection and finite precision remain distinct. The provider is added and closed in this bank, so nine of 631 owner passes are complete. FormalPowerSeriesRings is next for closure; Division and prime-field refinement work is active. Evaluation without exact source data remains explicitly named inside Adic and T, with no new prerequisite.
+
+**Closed `placement-owner-ownedadicallycompleterings` (`0af4238b7b`, 2026-10-11):** all five introductions, all 17 strict authored ancestors and delivered RingMor have their own completed review. The common accessor exposes the actual chosen target ideal, preserves explicit supplier authority and accepts independent zero-adic native fields. Source, target and maximal ideals remain distinct. This completed the seventh owner pass; the selected Adic and its Local provider passes are independently closed above. The parent remains open, with runtime assertions retained under T.
 
 **Closed `placement-owner-ownedrings-commutative-local-complete` (`94033b61a2`, 2026-10-11):** the four-introduction pass, all 20 strict authored ancestors and delivered RingMor are complete. The selected source ideal, its actual target extension and a potentially different maximal ideal remain distinct; native fields supply an independent zero-adic witness. The coherent source repair is in 05056101fb with all three changed Python files parsed after commit. This completed the sixth owner pass; the common Adic pass is independently closed above. Runtime assertions remain under T.
 
@@ -269,7 +271,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is reopened and Needs one node for each current canonical category owner. The source-only inventory has 644 declarations, with 14 source-proved noncategory/infrastructure exclusions and 630 owner passes. TODO.md states each pass's source, closure assertions and dependency; at the split commit `ad02191213`, only QuotientRings and PrimeLocalizations were complete. LocalizationRings, its distinct nested Local refinement, the common Local owner, the Complete refinement and the common Adic owner are now also closed on their own whole-owner assertions. Seven passes are complete and 623 remain unchecked. AdicCompletions and FormalPowerSeriesRings are the next active passes. The split does not rerun or alter the completed Step-2 or Step-3 surveys. The closed pieces below are evidence within their owner passes; they do not close the parent.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: nine complete and 622 unchecked. FormalPowerSeriesRings is ready for closure; Division and the prime-field refinement are active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -357,6 +359,259 @@ These are source-level closure correspondences, not executed Sage results. The a
 
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
+
+### Whole-category placement: `AdicCompletions.Local` (2026-10-11; source pass closed)
+
+**Closed independent owner pass: `placement-owner-adiccompletions-local`.** This newly authored provider implements the already existing Local axiom on selected completions. Its complete two-operation pass is added and closed in this same bank. The explicit source inventory changes from 630 to 631 owners; this is no new prerequisite, axiom or parallel category, and Step 3's completed 18-operation denominator remains fixed.
+
+#### Definition and complete two-introduction inventory
+
+An object is a selected adic completion `lambda: R -> A` whose target A is local under the repository's existing nonzero local-ring convention. Its source ideal I need not be maximal. A may be complete for its selected extended ideal without being complete for its maximal ideal. Locality supplies the canonical target maximal ideal, residue field and residue map; the selected completion supplies R, I and lambda.
+
+| Introduction | Disposition and precise data |
+| --- | --- |
+| `an_object` | Keep the selected 2-adic completion of the canonical owned integers. Its source ideal is maximal, so the existing constructor supplies actual CompleteLocal placement and therefore Local. It also installs the actual target maximal ideal/residue field and the retained residue-map factory. |
+| `ParentMethods.source_residue_map` | Own the canonical composite `R -> A -> k(A)`, cached from the already fixed completion map and local residue map. This needs both construction data and locality. General AdicCompletions may be nonlocal; general Local rings have no selected completion source. No stricter maximal-source-ideal hypothesis is needed. |
+
+There is no new constructor, `extra_super_categories`, ElementMethods, MorphismMethods, `_MorCategory`, arrow type, topology datum or other method. The common public residue map remains at OwnedRings.Commutative.Local. This provider does not forward or redefine it.
+
+This is a narrowing to the actual required hypothesis, not an upward promotion. An outside-Adic specimen would lack the retained completion source and is not claimed. The actual constructor specimens are the integer prime-adic completion and `Z_2[[t]]`, with the nonlocal completion excluded as stated below.
+
+#### Actual applicability through owned axiom propagation
+
+The existing `_AdicCompletionAlgebraParent` assembles AdicCompletions with actual Local or CompleteLocal placement only from its supplied source/coefficients. The new nested provider is reached by the existing machinery:
+
+- `OwnedCategoryMixin._with_axiom_as_tuple` detects the authored Local provider and constructs that refinement.
+- `_owned_join_as_tuple` gathers axioms from the actual construction branches and propagates them through the declared branches until stable.
+- When the constructor supplies Local, the Adic branch therefore becomes AdicCompletions.Local and receives the provider through actual category realization. CompleteLocal also contains the Local axiom.
+
+No source-ideal maximality predicate is recomputed by `source_residue_map`, and no getter refines the ring. A supplied nonlocal completion does not receive this provider merely because it is adically complete. The zero completion is likewise not local under the repository convention.
+
+#### Complete strict authored up-set: 21
+
+This is the complete declared source ancestry, not an executed synthetic-join or C3 report. The intersection adds AdicCompletions, common Local and its Nontrivial consequence to the 18 strict ancestors of AdicCompletions, with their shared spine counted only once.
+
+| Strict ancestor | Retained structure |
+| --- | --- |
+| `AdicCompletions` | The selected source R, ideal I, completion map lambda and its computation realization. |
+| `OwnedRings.Commutative.Local` | The local target ring, canonical maximal ideal and residue quotient. |
+| `OwnedRings.Nontrivial` | The repository's `1 != 0` consequence of locality. |
+| `OwnedAdicallyCompleteRings` | The selected target ideal of definition and actual completeness. |
+| `OwnedRings.Commutative` | Commutative unital associative ring. |
+| `OwnedRings` | Unital associative ring. |
+| `OwnedSemirings` | Additive commutative and multiplicative unital monoids with distributivity. |
+| `OwnedRngs` | Additive abelian group and distributive associative multiplication. |
+| `Monoids` | Associative multiplication and unit. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication and two-sided unit. |
+| `Magmas.Commutative` | Commutative multiplication. |
+| `Magmas` | Binary multiplication. |
+| `AdditiveGroups.AdditiveCommutative` | Additive abelian group. |
+| `AdditiveGroups` | Additive group. |
+| `AdditiveMonoids` | Associative addition and identity. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Binary addition. |
+| `Sets` | Underlying set. |
+| `Objects` | Mathematical root. |
+
+CompleteLocal, Noetherian, domain, field, Artinian, finite/enumerated, coefficient-algebra, and topological-space categories are not uniform ancestors. For example a local coefficient ring not complete at its maximal ideal can produce a variable-adic complete local formal-series ring without granting maximal-adic completeness. The constructor's stronger examples do not change this owner definition.
+
+#### Actual Mor and canonical composition
+
+The owned CategoryWithAxiom contract explicitly states that a property axiom adds no new morphisms. Its packet follows the original category's semantic Mor supergraph and reuses the compatible fixed Mor. Neither this provider nor common Local nor common Adic introduces another arrow condition. Both branches reach OwnedRings' RingMor construction with actual RingMorphism implementation and literal endpoint reuse.
+
+Thus the category inherits ordinary unital ring maps; it does not declare them local or continuous. The particular `source_residue_map` is the actual canonical ring-map composite. The completion constructor already makes lambda an explicit ring morphism. Common Local returns the supplied actual residue arrow, and RingMorphism composition preserves the literal endpoints. Even when the same object has a coefficient-algebra placement, this operation does not invent an AlgebraMor callback or change the source action.
+
+The composite has domain `completion_source()` and codomain `residue_field()`. Its middle object is literally self: `completion_map().codomain() is self` and `residue_map().domain() is self`. Both source maps are fixed before the cached composition; the getter chooses no ideal, field, topology or alternate realization.
+
+#### Concrete local suppliers and absence of recursion
+
+For source I maximal, the existing constructor retains the actual target maximal ideal and residue field and now supplies a lazy residue factory in LocalRingConstruction. The factory reads the first source projection `A -> R/I`, then composes the canonical identification with the retained residue field only when the codomain is not already literal. It does not call the common residue accessor or the new source composite.
+
+For a formal completion over an actual local coefficient ring, the previously banked Local producer supplies constant coefficient followed by that coefficient ring's residue map. That case does not require the chosen source completion ideal to be maximal. For `A=Z_2[[t]]`, the chosen target defining ideal is `(t)` while the maximal ideal is `(2,t)`; the common residue map kills both 2 and t. `source_residue_map` composes `Z_2[t] -> A` with that same map, with no false substitution of `(t)` for the maximal ideal.
+
+The ideal-extension construction depends on the source ideal and lambda. The local maximal-ideal supplier is independently fixed by its source ideal. Neither needs the new source residue composite, so there is no mutual getter recursion or first-access datum selection.
+
+#### Closure assertions
+
+These are unexecuted source assertions for the already existing owner/test framework.
+
+1. The provider introduces exactly the two methods above, retains the 21 strict authored ancestors, and introduces no arrow/Mor method.
+2. The existing integer prime-adic construction belongs to AdicCompletions.Local by actual constructor placement plus owned axiom propagation. The new `an_object` supplies that real construction witness.
+3. For `A=ZZ.adic_completion(3)`, `source_residue_map` has literal source ZZ, literal target A's residue field, and sends 5 to 2. The existing Adic residue assertion remains the same mathematical assertion.
+4. For a local formal completion with nonmaximal chosen source ideal, such as `Z_2[[t]]`, the same operation is available and uses the actual constant-coefficient/base-residue composite. It does not require the source ideal `(t)` to be maximal.
+5. Nonlocal `QQ[x,y]` completed at `(x)` has no Local placement and receives no local residue operation from AdicCompletions. The existing negative method-access test is migrated to the actual category assertion, rather than depending on an absent leaf method raising a particular exception.
+6. Source-residue calls for prime localizations still use their separately owned LocalizationRings.Local operation. The two composites have distinct retained source constructions; identical short bodies do not identify that construction data or authorize a common ring owner with no such source.
+7. The cached source composite retains the actual fixed maps and endpoints; evaluating it does not create a parallel residue field, completion map, or chosen target ideal.
+
+**Source evidence:** the entire new provider, actual selected completion constructors and common Local data/accessors, owned axiom propagation, packet dispatch and RingMorphism composition were read together. The complete caller ledger distinguishes completion source-residue consumers from the unchanged prime-localization source-residue consumers. All execution assertions remain under T during M1/DEV-58.
+
+### Whole-category placement: `AdicCompletions` (2026-10-11; source pass closed)
+
+**Closed independent owner pass: `placement-owner-adiccompletions`.** All original introductions, selected suppliers, actual ancestors, delivered ring arrows and affected callers have their own completed source review. The coherent source repair and the two existing assertion-source migrations are included in this bank. Execution remains under T and core-usability-session during M1/DEV-58.
+
+#### Definition, retained data, and hypotheses
+
+Write `lambda: R -> A = completion_I(R)`. This owner retains the literal source R, its selected source ideal I, the actual completion map lambda, and a selected computation precision/realization. The completed ring A is an inverse limit, not its finite computational stage. Its common adic defining ideal is the actual target extension `J=I*A`, supplied through the already banked common adic owner. A local A may additionally have a different maximal ideal m. None of these three ideals is substituted for another.
+
+This data owner is broader than prime-adic, maximal-adic, domain, Noetherian, or formal-series completions. Conversely, its ancestors do not retain the particular source R, ideal I, lambda, or selected finite-stage realization. Source-dependent constructions stay here. A theorem about completion at an arbitrary ideal does not automatically supply an exact computation. In particular, the supported source producers use their represented finite ideal generators and exact source models; the pass does not claim that completion at an arbitrary infinitely generated ideal is automatically complete for its extended ideal. The finitely generated source-ideal completeness theorem is the previously checked Stacks Tag 05GG.
+
+An object may also carry an actual coefficient-algebra placement. The ordinary selected completion uses R as coefficient ring; a full-variable formal completion of `k[t_1,...,t_n]` uses k. That extra placement is construction data, not a uniform authored ancestor of AdicCompletions.
+
+#### Complete original introduction inventory: 27
+
+The original category has three category methods and 24 ParentMethods. It declares no ElementMethods, MorphismMethods, `_MorCategory`, or arrow-type provider. The patch removes three leaf public introductions, adds one protected result decision, and authors the two-method existing Local refinement separately. Every original introduction is dispositioned below.
+
+| Original introduction | Weakest retained data / final disposition |
+| --- | --- |
+| `an_object` | Keep the selected 2-adic completion of the integers as this construction owner's witness. |
+| `super_categories` | Keep the actual implication to `OwnedAdicallyCompleteRings`; the chosen target ideal is supplied by the concrete completion participant. No local/domain/Noetherian implication is added. |
+| `_call_` | Keep authoritative ingress `(R,I,precision)`, normalize the actual owned source and ideal, and reuse the existing cached factory. Precision remains computation data. |
+| `completion_source` | Keep the fixed source R. No ancestor supplies a selected predecessor ring. |
+| `completion_ideal` | Keep the fixed source ideal I, whose ambient ring is R. It differs from the target defining ideal. |
+| `completion_map` | Keep the already selected lambda; cache only its fixed realization and require both literal endpoints `R -> self`. |
+| `_completion_projection_lift` | Keep the protected selected finite-stage supplier. Its declared callers are this owner's projection and the prime-local completion constructor transporting it. |
+| `algebra_structure_morphism` | Remove the duplicate public implementation. The existing Algebras owner constructs this operation, reading a declared optional retained-map supplier before its existing module-action derivation. The concrete completion supplies lambda exactly when R is its coefficient ring; otherwise the actual lower coefficient action is preserved. |
+| `ideal_extension` | Keep the selected view `IdealExtensionData(lambda,I)`. General extension mathematics remains at the existing ring-map/ideal owners; this cached operation binds the already fixed pair. |
+| `extended_ideal` | Keep the result projection of that retained construction, `I*A`, with literal target ambient ring. It does not select another ideal or repeat extension mathematics. |
+| `truncation_ideal_extension` | Keep extension of the selected I along the actual source quotient `R -> R/I^n`. |
+| `completion_map_kernel` | Keep the exact-value operation `ker(lambda)=intersection I^n`. Reuse the added optional result decision; assert at this named algorithm boundary when no kernel is supplied/computed. |
+| `is_adically_separated` | Keep the property of the retained source for I. Consume the same optional kernel result and retain an Atomic proposition if unavailable. |
+| `is_completion_map_injective` | Keep its semantic equivalence with source I-adic separatedness. No second kernel algorithm or false-from-undecided path is introduced. |
+| `is_flat_over_source` | Keep the selected-source property. Noetherian R supplies True for its canonical completion; otherwise the existing proposition remains. This is not a claim about arbitrary maps into A. The preceding common Local repair restricted the separate flat-transport selector to the literal canonical completion arrow. |
+| `computation_precision` | Keep the selected realization datum. It is neither a ring cardinal nor a truncation of the mathematical object. |
+| `adic_inverse_system` | Keep the actual diagram `n |-> R/I^(n+1)` in commutative rings. Its fixed source data are absent above this owner. |
+| `adic_truncation` | Keep `R/I^n` for `n>0`; it is a source quotient, not an unrecorded substitution of `A/J^n`. |
+| `adic_artin_truncation` | Keep the named selected stage, requiring actual Artinian placement. The underlying stage exists more generally and is exposed by `adic_truncation`. |
+| `adic_transition_map` | Keep the canonical source-quotient map for `m>=n>0`; construct its elementwise evaluator in explicit RingMor. |
+| `adic_projection` | Keep `A -> R/I^n`. First use an exact retained source expression at any n; otherwise use the selected finite-stage supplier with its element-level precision boundary. Use explicit RingMor. |
+| `induced_map` | Keep continuous extension out of this selected completion. Admit an actual ring arrow from R either into the complete target or into another selected completion's source, and establish the corresponding ideal-image condition. The exact-source evaluator is shared by these routes. |
+| `maximal_localization_comparison` | Keep the comparison between completing at a maximal ideal before/after localization. Its theorem is general; the current selected computation remains Noetherian. The repaired inverse extends `R_m -> A` into the already complete target, rather than requiring a nonexistent `R_m -> R`. |
+| `residue_map` | Remove the nonlocal leaf public override. Existing common Local owns the residue map. The selected completion constructor now supplies its actual local quotient through the existing LocalRingConstruction, including a lazy maximal-source-ideal residue factory. |
+| `source_residue_map` | Move to `AdicCompletions.Local`: the operation needs both lambda and the target's local residue map. General Adic objects may be nonlocal, while common Local objects need not have a completion source. |
+| `adic_limit_cone` | Keep the actual cone with vertex A and legs `adic_projection(n+1)`. |
+| `adic_limit_construction` | Keep the existing selected inverse-limit datum. Its supplied-cone identity factorizer uses explicit RingMor. Arbitrary compatible-series factorization remains its stated computation boundary. |
+
+Added `_completion_map_kernel_decision` is a protected optional result at this same owner. Its declared consumers are the public kernel, source-separatedness, and exact-source element equality. It supplies an actual source ideal or None; None is not a zero ideal or an injectivity claim. There is no new capability flag, registry, comparison record, or public forwarding family.
+
+The upward moves have actual specimens outside the old Adic category. The ordinary polynomial algebra `QQ[x]` receives `QQ -> QQ[x]` from the shared Algebras structure-map owner and its actual coefficient action; it is not a selected AdicCompletions object. The selected prime localization `ZZ_(3)` receives its residue map to its retained residue field through the same common Local accessor and its existing LocalRingConstruction; it likewise is not an Adic completion. These specimens exercise the promoted public homes. Moving `source_residue_map` to Adic.Local is instead a restriction to its required locality hypothesis: no outside-Adic specimen is possible or claimed for that construction-specific operation.
+
+#### Complete strict authored up-set: 18
+
+This is the source-declared mathematical up-set, including the existing axiom propagation. It is not an executed C3/MRO listing. Synthetic intersections are not extra authored owners.
+
+| Strict ancestor | Structure retained after forgetting the completion datum |
+| --- | --- |
+| `OwnedAdicallyCompleteRings` | A commutative ring with its selected target defining ideal and actual completeness. It has no selected predecessor `(R,I,lambda)`. |
+| `OwnedRings.Commutative` | Commutative unital associative ring. |
+| `OwnedRings` | Unital associative ring with distributivity and an additive abelian group. |
+| `OwnedSemirings` | Additive commutative and multiplicative unital monoids with distributivity and absorbing zero. |
+| `OwnedRngs` | Associative distributive multiplication and additive abelian group. |
+| `Monoids` | Associative multiplication with a two-sided unit. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication with a two-sided unit. |
+| `Magmas.Commutative` | Commutative multiplication. |
+| `Magmas` | Binary multiplication. |
+| `AdditiveGroups.AdditiveCommutative` | Additive abelian group. |
+| `AdditiveGroups` | Additive group. |
+| `AdditiveMonoids` | Associative addition with identity. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Binary addition. |
+| `Sets` | Underlying set. |
+| `Objects` | Mathematical root. |
+
+Local, CompleteLocal, Nontrivial, Noetherian, domain, field, Artinian, coefficient-algebra, finite/enumerated set, and topological-space owners are not uniform ancestors. Examples produced by stronger constructors do not add such a universal edge.
+
+#### Actual Mor inheritance and the existing AlgebraMor inputs
+
+AdicCompletions and OwnedAdicallyCompleteRings introduce no different Mor. The source graph reaches `OwnedRings` and its `RingMorCategoryConstruction`, whose fixed category is RingMor with the actual RingMorphism provider. The generated arrow type visits that declared fixed-Mor supergraph; it does not copy methods into a new shell. The category therefore has the existing unital ring maps. It does not silently require continuity or a local homomorphism. `induced_map` separately constructs a continuous ring map from its supplied sufficient continuity data.
+
+The new source-map admission preserves the existing `line.Mor(line)` inputs in `test_completion_maps.sage`. The actual chain is:
+
+1. `Algebras(k).Associative().Unital().extra_super_categories()` explicitly includes OwnedRings.
+2. The algebra Mor family preserves the literal domain and codomain when forgetting coefficient action. `CategoricalMor.super_categories()` constructs the corresponding fixed super-Mors on those endpoints.
+3. `CategoricalMor.__contains__` sends an actual Morphism to `accepts`, which checks both literal endpoints and `_already_parented_arrow`.
+4. `_arrow_is_inherited_from_subcategory` admits a stronger fixed Mor only when its declared supergraph reaches the target RingMor. `_declared_category_reaches` follows those actual edges, not successful trial conversion or merely matching endpoints.
+5. `_generated_arrow_type` reads the same graph, so the ring provider is actually delivered to these algebra arrows.
+
+Consequently the existing x-to-x^2, algebra identity, and x-to-1 maps remain genuine admitted ring arrows. Their ideal-image conditions distinguish the first two from the third. An additive or set Map with the same endpoints is not admitted merely because its values happen to land in the target ideal. No change to RingMor or AlgebraMor is required for this admission.
+
+The identity shortcut also respects actual supplied identity data. AlgebraMor caches its identity, while RingMor constructs a fresh identity with `_preamble_is_identity=True`. The patch retains the literal/cached branch and also accepts `source_morphism.is_identity() is True`, before asking for ideal containment. It returns the explicit ring identity on A.
+
+#### Concrete selected producers and every affected element operation
+
+The concrete classes are realizations of these data, not extra category owners.
+
+| Supplier or concrete operation | Source disposition |
+| --- | --- |
+| `_adic_completion_from_owned_data` | Keep the one cached selected completion factory. Retain the source ideal, precision, kernel when proved, and each existing arithmetic/projection model. Sufficient equality branches require `is True`; undecided comparisons do not authorize a zero/unit/nilpotent/idempotent case. |
+| Prime-local completion branch | Transport the selected bottom completion and its projection lift through the actual localization. The stored zero kernel is supplied only when the localized source is Noetherian, rather than claiming separatedness of every local source. |
+| Unit-ideal branch | The inverse limit is the zero ring; stored source kernel is I=R. No proper-ideal Krull argument applies. |
+| Zero-ideal branch | The completion is exactly its source realization and the kernel is zero. |
+| Integer prime-adic branch | Retain the actual prime completion. The opaque projection supplier checks `value.precision_absolute()`, not the nominal cap of a containing parent. |
+| Presented finite-stage branch | A finite quotient model remains an approximation unless an actual nilpotent or idempotent ideal calculation supplies exactness. An agreeing finite stage supplies no exact equality or zero kernel. |
+| Polynomial-variable branch | Retain the maintained exact lazy completion and actual selected variables. The map from a polynomial ring is injective over any coefficient ring, by finite degree in those variables. No domain hypothesis is needed for this supplied zero kernel. |
+| Degenerate formal companion | Only an already framed symmetric-algebra source with an actual finite ordered label family can supply metadata. A proved zero source, or an empty selected family with I=0, retains that coefficient ring and label family through scalar/zero engines. An empty-family unit completion of a nonzero source does not acquire false Formal placement. No native empty parser or notation execution is claimed. |
+| `_AdicCompletionAlgebraParent.__init__` | Fix source I, completion-map factory, realization mode, precision and optional source kernel before exposing the parent. Keep actual chosen coefficient/formal data. Source maximality is not bool-coerced. Existing LocalRingConstruction receives a supplied actual residue map/factory, so common Local is the sole public residue owner. |
+| `_selected_adic_defining_ideal` | Keep the already banked target-ideal supplier using the fixed `(lambda,I)` extension. It does not ask for the target maximal ideal. |
+| Added `_selected_algebra_structure_morphism` | Supply the literal lambda when source and coefficient ring coincide; otherwise None requests the existing actual module-action derivation. No second map cache or independent scalar action is introduced. |
+| `completion_arithmetic_mode`, `_completion_element` | Keep the selected mode and wrapping of the actual engine value with optional exact source expression. |
+| `_element_constructor_`, `zero`, `one` | Keep canonical source ingress through lambda, preserving exact source expressions and literal parent identities. |
+| `_AdicCompletionElement.__init__`, `exact_source_expression`, `_with_source_expression` | Retain exact source data separately from finite engine data. A finite approximation alone never fills that slot. |
+| `_cache_key` and `__hash__` | Preserve the existing conservative exact-source/identity cache key and the unhashable equality-sensitive element contract. No undecided equality is used to merge opaque elements. |
+| `_add_`, `_mul_`, `__mul__`, `__rmul__`, `_neg_`, `__pow__` | Existing arithmetic preserves exact source expressions when its operands/exponent supply them; scalar module dispatch remains unchanged. Negative powers may lose source expressions. These operations were read for changed equality/projection consumers, not rewritten. |
+| `_exact_source_equality_status` | A proved zero source difference gives True. Otherwise use the optional source kernel; None remains unavailable, and actual ideal membership may remain a proposition. No bool-coercion turns an undecided membership into a decision. |
+| `_completion_equal`, `__eq__`, `__ne__` | Retain exact source and existing exact backend/lazy decisions. Finite disagreement proves False; finite agreement gives an Atomic equality proposition. Inequality uses mathematical negation. |
+| `__bool__`, `is_zero`, `is_one` | Zero and one queries retain the equality proposition. An explicit Python truth conversion continues to reject undecided propositions with the logic owner's TypeError; it is not a mathematical negative answer. |
+| `_unit_decision`, `_unit_inverse_decision` | Keep the selected backend unit supplier. The inverse branch handles True/False/unknown distinctly: compute, reject a proved nonunit, or return None to the existing exact inverse frontier. It does not turn an unknown unit predicate into a nonunit. |
+| `precision_absolute`, `refine_precision` | Preserve the represented element's actual precision and the existing exact-source-only refinement. An opaque element cannot acquire digits by changing the parent cap. Source refinement reuses the same source ideal and actual completion map. |
+| `_AdicQuotientInverseSystem.__init__`, `completion`, `base_index_category`, `system_category`, `exponent`, `_apply_object`, `_apply_morphism` | Keep the seven existing functor operations. Index n corresponds to exponent n+1; an opposite index arrow gives the transition from the higher quotient to the lower. No finite-stage or arrow orientation changes. |
+
+The optional kernel decision first respects a retained exact source kernel, then the existing zero/square-zero/idempotent ideal computations. Its Krull-intersection sufficient case requires a Noetherian source, domain or Local placement, and a proved proper ideal (`1 notin I`). Unknown properness is not false membership and does not justify kernel zero. The source review independently checked the Noetherian-local theorem at [Stacks 00IP](https://stacks.math.columbia.edu/tag/00IP) and the domain consequence using a maximal ideal containing I at [Stacks 00IJ](https://stacks.math.columbia.edu/tag/00IJ). The review does not add a general intersection-of-ideal-powers solver.
+
+#### Caller reconciliation
+
+The complete live src/tests/docs caller search and the four existing completion assertion files were read. Generated graph/megadoc entries remain source-phase snapshots.
+
+| Actual caller family | Contract after this unit |
+| --- | --- |
+| Public kernel assertions in `test_adic_completions_construct`, `test_completion_maps`, `test_completion_comparisons` | The integer, nilpotent, idempotent and unit-collapse values remain exactly the same source ideals. Required exact calls assert when the optional decision has no result. |
+| `is_adically_separated` and `is_completion_map_injective` | Optional predicate consumers no longer force the exact kernel accessor. |
+| `_AdicCompletionElement._exact_source_equality_status` | Uses the optional result directly and preserves an undecided source-ideal membership. |
+| Exact-expression arithmetic, cache, precision, Local maximal-ideal helper, quotient-completion comparison | Existing representation contract retained. Projection is the new consumer that can use an exact expression beyond the selected finite stage. |
+| Maximal-localization comparison's two `induced_map` calls | Forward source map ends in the localized completion's source; inverse source map ends in the original completed target itself. Both now have literal valid endpoints. |
+| `_quotient_completion_comparison` | Its quotient source map continues through the same source-to-source induced-map route. No quotient comparison mathematics is duplicated. |
+| Existing `line.Mor(line)` induced-map tests | Actual inherited ring-arrow admission as proved above; x-to-x^2 and identity admitted, x-to-1 rejected by the ideal condition. |
+| Existing integer RingMor identity test | Retained identity flag is accepted even though a fresh `.identity()` is not literally the same object. |
+| Existing Adic residue tests | A selected local completion receives the common Local residue map and new Adic.Local source composition, with the same field and maps. |
+| Prime-local source residue callers | Their existing LocalizationRings.Local operation is a different source construction and remains untouched. |
+| Common Algebras public scalar-map caller | The existing helper is the sole caller of the declared retained-map supplier. Completion's public leaf duplicate is removed. |
+| Common local datum hook | Its caller documentation no longer names the removed Adic public residue selector. The existing Local accessor/field decision/installation roles remain. |
+
+Two existing assertion bodies require interface migration, supplied in the 43-line assertion companion. The nonlocal x-adic completion of `QQ[x,y]` now asserts absence from LocalRings instead of calling a method which belongs only to local rings. The existing fat-plane arithmetic test retains the true nonvanishing of y^4: modulo `(x,y)^5` it is visibly nonzero, while the cap-4 equality procedure carries an undecided proposition and explicit Boolean conversion raises TypeError. This does not weaken y^4 to a potentially zero mathematical element or pretend the current kernel algorithm decides it. The direct completion equality decision remains required later computation; the same test already has the true next-stage witness.
+
+#### Source closure assertions and precise remaining computation boundaries
+
+All following assertions are source-backed expectations retained for later authorized execution; none was executed here.
+
+1. The 27 original introductions are all dispositioned, and the original 18 strict authored ancestors and RingMor are accounted for. Three public leaf operations move to their correct existing owners; the new Adic.Local provider receives its own complete two-method pass and owner inventory row.
+2. `completion_source`, `completion_ideal`, and `completion_map` retain literal R, I and lambda. `lambda.domain() is R` and `lambda.codomain() is A`. The common target ideal remains `I*A`, even when A also has a distinct local maximal ideal.
+3. For an ordinary selected completion the inherited Algebras structure map is literally lambda; for a full-variable formal completion it is the actual lower coefficient action. Existing algebra-map callbacks are not reinterpreted as elementwise ring callbacks.
+4. Every canonical stage/transition/projection/induced map and supplied-cone identity is an actual owned ring arrow on its literal endpoints. `projection_n(lambda(r))` equals the source quotient image of r for every n for which that source quotient is supplied, even beyond the chosen approximation cap.
+5. In an opaque p-adic value at precision 2, requesting a stage requiring precision 4 reaches the actual element-precision assertion. Coercing the value into a larger-cap parent does not authorize missing digits. Exact source images are handled separately by the previous assertion.
+6. The nilpotent and idempotent source examples retain their known kernels, and completing at the unit ideal yields the zero ring with whole-source kernel. Noetherian domain/local proper-ideal cases have zero kernel. Finite agreement or unknown properness does not certify injectivity.
+7. The fat-plane element y^4 is nonzero, witnessed by its nonzero image modulo the fifth ideal power. Current is_zero may remain Atomic; ask returns Unknown and host truth conversion refuses it. Exact source projection obtains the true finite-stage witness without promoting cap-4 agreement to equality.
+8. The selected x-to-x^2 source map induces the expected continuous formal map; an actual supplied identity returns ring identity without an ideal-membership computation; x-to-1 is rejected. A merely additive x-to-2x-style map is rejected by actual ring-arrow admission even if an endpoint/ideal-only test would have accepted it.
+9. For a maximal source ideal m, each `R/m^n` is already local, so localization outside m is an isomorphism at every stage; the inverse limits agree. The current construction still uses its Noetherian source regime and retained-expression evaluator. The repaired comparison arrows have actual inverse-direction endpoints and the mathematical inverse theorem.
+10. A computed round trip on every represented element is not claimed. The existing localization evaluator divides even for denominator one, and completion unit inversion can lose exact source expressions. Thus finite-precision p-adic comparisons may return an opaque image whose equality is Atomic; applying another exact-source-only induced evaluator may assert. Exact-lazy polynomial comparisons can retain their supplied exact backend decisions. This is an existing representation/evaluation boundary, not a false inverse theorem or a new prerequisite.
+11. The selected inverse-system orientation and positive exponent requirements are unchanged. The limit datum factors its own supplied cone by actual ring identity; an arbitrary compatible infinite cone still needs a selected construction not provided by this owner.
+12. Degenerate formal metadata is preserved only from an existing chosen finite ordered frame. The zero coefficient ring and an already selected empty family with I=0 keep the correct base/labels through scalar realizations. No native parser or arbitrary unframed generator availability is inferred.
+
+General ideal-power intersections, undecided ideal-image computations, arbitrary compatible-series factorization, arbitrary continuity beyond the supplied `f(I) subset J` condition, and missing exact-source metadata remain explicit limitations inside this owner. None is converted into a new prerequisite node, a false negative mathematical predicate, or a claim that a broader category lacks the operation.
+
+**Source evidence:** the full live `categories/rings/commutative_algebra.py` Adic category, element/parent realizations, selected factory and quotient-completion consumer; `categories/algebras/algebras.py` scalar owner, module action and actual Mor providers; common Local and RingMor in `categories/rings/ring_foundation.py`; actual `owned_category.py`, `owned_category_bases.py`, `categories/abstract_categories/mor_categories.py` and `mor_foundation.py` dispatch; the complete additive/multiplicative/set ancestor definitions; and the four current completion assertion sources were read. Installed Sage LazySeries.truncate and LazyPowerSeries.polynomial confirm the existing exact finite-stage conversion. An independent source review reconciled all map/precision/hypothesis assertions. No Sage, project import or runtime assertion was run.
 
 ### Whole-category placement: `OwnedAdicallyCompleteRings` (2026-10-11; source pass closed)
 

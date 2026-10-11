@@ -927,6 +927,9 @@ def _root_algebra_law_decisions(algebra):
 
 def _algebra_structure_morphism(algebra):
     r"""Return the scalar structure map determined by an algebra's retained module action."""
+    selected = algebra._selected_algebra_structure_morphism()
+    if selected is not None:
+        return selected
     ring = algebra.algebra_base_ring()
     if ring is algebra:
         return ring.Mor(ring, category=OwnedRings()).identity()
@@ -1339,6 +1342,22 @@ class Algebras(OwnedCategoryOverBaseRing):
             return tensor.from_bilinear_map(
                 self, lambda left, right: self(product(module(left), module(right))),
             )
+
+        @RealizationHook
+        def _selected_algebra_structure_morphism(self):
+            r"""Supply an already retained scalar-structure map, or ``None``.
+
+            Only the common ``algebra_structure_morphism`` construction,
+            through ``_algebra_structure_morphism``, calls this protected
+            datum supplier. Its value is the structure map of the actual
+            retained module action: for an associative unital algebra it
+            is the owned ring map from the coefficient ring to the centre.
+            A completion realization supplies its retained completion map
+            when that source is its coefficient ring. ``None`` selects the
+            existing derivation from the module action; it does not choose
+            a different coefficient ring or scalar action.
+            """
+            return None
 
         @cached_method
         def algebra_structure_morphism(self):
