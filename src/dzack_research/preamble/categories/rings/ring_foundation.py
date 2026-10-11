@@ -5255,10 +5255,10 @@ def _presented_ring_category(engine: Ring) -> Category:
     field = (OwnedRings().Division().Commutative(), principal, noetherian)
     match engine:
         case _ if engine is SageZZ:
-            # ZZ is Euclidean, ordered, countable, and its own ring of
-            # integers with the integral basis (1).
+            # ZZ has distinct 0 and 1; it is Euclidean, ordered, countable,
+            # and its own ring of integers with the integral basis (1).
             placements = (
-                principal, noetherian, OwnedOrderedRings(),
+                principal, noetherian, OwnedRings().Nontrivial(), OwnedOrderedRings(),
                 owned_sets.CountablyInfiniteSets(), OrdersWithChosenIntegralBasis(),
             )
         case _ if engine is SageQQ:
