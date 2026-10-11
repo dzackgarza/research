@@ -3159,7 +3159,7 @@ class AlgebraMorphism:
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if element_parent(other) is not self.parent():
+        if other not in self.parent():
             return op == op_NE
         if self is other:
             return op == op_EQ
@@ -3518,7 +3518,9 @@ class AlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
             Sets().Mor(self.domain(), self.codomain()),
             lambda element: self.codomain()(evaluator(self.domain()(element))),
         )
-        return self.element_class(self, represented)
+        morphism = self.element_class(self, represented)
+        morphism._generator_extension_laws = True
+        return morphism
 
     @cached_method
     def identity(self):
