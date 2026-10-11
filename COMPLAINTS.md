@@ -14,6 +14,45 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Core inverse data and its actual base-arrow representation
+
+An isomorphism datum u:A->B, v:B->A asserts v*u=id_A and u*v=id_B.
+Its explicit law check must retain undecided equality separately from a
+false equation. The current generic `CoreMor._element_constructor_`
+calls `CategoricalIsomorphism(...,verify=True)`; that constructor computes
+both composites and rejects any inverse equation not literally True.
+The known-pair entry already passes `verify=False`. The actual generic
+parent also declares the legacy `Element=CategoricalIsomorphism`, bypassing
+the generated base-arrow route. Its future repair must initialize the
+selected base-arrow representation, not merely rename that declaration.
+
+**Searched / Found / Conclusion:** read the complete Core and categorical
+isomorphism definitions, the selected element-class branch, known-pair
+identity/composition routes and direct stronger consumers. Plane linear
+right equivalences and torsion-form isometries explicitly retain supplied
+inverse data with `verify=False`; the latter already has a separate
+validator. The bounded protected search found positive swap and identity
+pairs, but no explicit invalid inverse-pair rejection fixture.
+The existing `placement-owner-coremor` owns these law-check and actual
+representation obligations. Aut-family selection reuses fixed diagonal
+categories without invoking pair ingress, so the completed
+`placement-owner-autcategoryconstruction` does not require this repair.
+
+### Protected Aut specimens conflate a fixed category and a group realization
+
+The two-element set has four endomaps and two automorphisms; its
+automorphism group is C2. Those true theorems in
+`tests/objects/test_isomorphisms_of_a_two_element_set.sage` do not by
+themselves select an ordinary group-engine representation for the fixed
+categorical Aut object. Its `.order()`/`.is_isomorphic_to()` calls need
+that representation, and its no-argument `.identity()` must distinguish
+the identity automorphism from the identity two-arrow on an arrow object.
+The actual fixed entries `.one()`/`identity_automorphism()` and
+`.identity(arrow_object)` retain that distinction. The existing
+`triage-long-tail` owns protected spelling/representation reconciliation;
+the swap-square, identity-square and counting assertions remain under T.
+The protected file is unchanged and unexecuted.
+
 ### Protected well-order reversal expects eager validation
 
 The three-point reversal r(k)=2-k is not monotone: 0<=1, but r(0)=2 is

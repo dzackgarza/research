@@ -2188,8 +2188,14 @@ class IsoCategoryConstruction(_IsoCategoryOf):
     pass
 
 
-class AutCategoryConstruction(_AutCategoryOf):
-    pass
+def AutCategoryConstruction(base_category: Category) -> _AutCategoryOf:
+    r"""Return the canonical automorphism family of the supplied category.
+
+    This compatibility spelling returns the packet's existing family
+    (``CAT-22``). Its objects are the selected diagonal isomorphism categories
+    ``Aut_C(X) = Iso_C(X, X)``, with the packet's one remembered population.
+    """
+    return _category_packet(base_category).Auts()
 
 
 __all__ = [
