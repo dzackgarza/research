@@ -139,8 +139,13 @@ Everything here is general mathematics. An operation is accepted by true asserti
 
 ## Owner resume — 2026-10-08
 
-The repository owner resumed this workstream on 2026-10-08 after the October stop. Work from
-`HANDOFF.md` first, in the priority order it states, then from the `TODO.md` dependency graph.
+The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
+priority steps in `HANDOFF.md` are complete; select current work from the `TODO.md` dependency graph.
+Record completed source-audit reasoning, including the required inventory and ancestor review,
+in the corresponding commit. Keep unexecuted mathematical assertions and unresolved computation
+frontiers with their live TODO owners so later execution can find them. Do not expand HANDOFF.md
+with retrospective pass narratives or repeat completed history in the live worklist. Preserve its
+existing mathematical specimens until their outstanding obligations have a durable owner.
 Only a later explicit owner instruction stops the repository again.
 
 ## Owner resume — 2026-09-17
