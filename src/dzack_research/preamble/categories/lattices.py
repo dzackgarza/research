@@ -4329,10 +4329,14 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def possible_root_lengths(self):
-            r"""Return the possible absolute self-pairings of reflective roots."""
+            r"""Return the possible absolute self-pairings of reflective roots.
+
+            Only the exponent of coker(L -> L dual) enters the bound.
+            Its discriminant pairing is not needed for this computation.
+            """
             assert self.module_rank().is_finite(), f"the root-length bound of {self} requires finite rank"
             assert self.determinant() != 0, f"the root-length bound of {self} requires a nondegenerate form"
-            exponent = abs(self.discriminant_group().exponent())
+            exponent = abs(self.correlation_morphism().cokernel().exponent())
             return finite_ordered_set(tuple((self.base_ring()(2) * exponent).divisors()))
 
         def reflective_root_locus(self):
