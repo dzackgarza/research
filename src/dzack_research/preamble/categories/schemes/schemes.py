@@ -5828,6 +5828,99 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         first = next(iter(base_object.coordinate_algebra().algebra_generators()))
         return base_object.closed_subscheme(first)
 
+
+
+class EffectiveCartierDivisors(_SchemeSubobjectsOf):
+    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
+
+    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
+    invertible.  This is structure on the closed subobject, not on one
+    particular divisor realization.  A represented construction may retain a
+    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
+    """
+
+    immersion_name = "effective Cartier divisors"
+
+    def super_categories(self):
+        ambient = self.base_object()
+        return [
+            ClosedEmbeddings(ambient),
+            ClosedSubschemes(ambient.scheme_base_ring()),
+        ]
+
+    def an_object(self):
+        r"""Return the empty effective Cartier divisor in the represented affine case."""
+        ambient = self.base_object()
+        base = ambient.scheme_base_ring()
+        match ambient:
+            case _ if ambient in Schemes(base).Affine():
+                return ambient.closed_subscheme(
+                    ambient.coordinate_algebra().one(),
+                    placements=(self,),
+                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
+                )
+            case _:
+                raise AssertionError(
+                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
+                    "category currently constructs that specimen only from an affine presentation"
+                )
+
+    class ParentMethods:
+        def __init__(
+            self,
+            effective_cartier_ideal_sheaf,
+            effective_cartier_picard_class=None,
+            **rest,
+        ) -> None:
+            self._effective_cartier_picard_class = effective_cartier_picard_class
+            super().__init__(
+                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
+                **rest,
+            )
+            ambient = self.inclusion().codomain()
+            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
+                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
+                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
+                f"{self.ideal_sheaf().category()}"
+            )
+
+        def is_effective_cartier_divisor(self) -> bool:
+            return True
+
+        def picard_class(self):
+            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
+            match self._effective_cartier_picard_class:
+                case None:
+                    raise AssertionError(
+                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
+                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
+                        "supply a represented class"
+                    )
+                case picard_class:
+                    return picard_class
+
+
+class ClosedSubschemes(OwnedCategoryOverBaseRing):
+    r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
+
+    ``ClosedEmbeddings(X)`` is the fibre of this category over one scheme
+    ``X``; this category collects those fibres over all ``R``-schemes so that
+    being a closed subscheme is a placement a session can ask without naming
+    the codomain of the immersion.  Its objects are constructed in both.
+    """
+
+    def an_object(self):
+        r"""The origin of the affine line."""
+        line = AffineSpaces(self.base_ring())(1)
+        return line.closed_subscheme(next(iter(line.coordinate_algebra().algebra_generators())))
+
+    def _repr_object_names(self):
+        return f"closed subschemes of schemes over {self.base_ring()}"
+
+    def super_categories(self):
+        return [Schemes(self.base_ring())]
+
+
     class ParentMethods:
         def __init__(
             self,
@@ -6141,97 +6234,6 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                         f"cannot form the open complement of {self}: this is computed here only in affine or "
                         f"projective schemes, but {codomain} is an object of {codomain.category()}"
                     )
-
-
-class EffectiveCartierDivisors(_SchemeSubobjectsOf):
-    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
-
-    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
-    invertible.  This is structure on the closed subobject, not on one
-    particular divisor realization.  A represented construction may retain a
-    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
-    """
-
-    immersion_name = "effective Cartier divisors"
-
-    def super_categories(self):
-        ambient = self.base_object()
-        return [
-            ClosedEmbeddings(ambient),
-            ClosedSubschemes(ambient.scheme_base_ring()),
-        ]
-
-    def an_object(self):
-        r"""Return the empty effective Cartier divisor in the represented affine case."""
-        ambient = self.base_object()
-        base = ambient.scheme_base_ring()
-        match ambient:
-            case _ if ambient in Schemes(base).Affine():
-                return ambient.closed_subscheme(
-                    ambient.coordinate_algebra().one(),
-                    placements=(self,),
-                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
-                )
-            case _:
-                raise AssertionError(
-                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
-                    "category currently constructs that specimen only from an affine presentation"
-                )
-
-    class ParentMethods:
-        def __init__(
-            self,
-            effective_cartier_ideal_sheaf,
-            effective_cartier_picard_class=None,
-            **rest,
-        ) -> None:
-            self._effective_cartier_picard_class = effective_cartier_picard_class
-            super().__init__(
-                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
-                **rest,
-            )
-            ambient = self.inclusion().codomain()
-            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
-                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
-                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
-                f"{self.ideal_sheaf().category()}"
-            )
-
-        def is_effective_cartier_divisor(self) -> bool:
-            return True
-
-        def picard_class(self):
-            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
-            match self._effective_cartier_picard_class:
-                case None:
-                    raise AssertionError(
-                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
-                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
-                        "supply a represented class"
-                    )
-                case picard_class:
-                    return picard_class
-
-
-class ClosedSubschemes(OwnedCategoryOverBaseRing):
-    r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
-
-    ``ClosedEmbeddings(X)`` is the fibre of this category over one scheme
-    ``X``; this category collects those fibres over all ``R``-schemes so that
-    being a closed subscheme is a placement a session can ask without naming
-    the codomain of the immersion.  Its objects are constructed in both.
-    """
-
-    def an_object(self):
-        r"""The origin of the affine line."""
-        line = AffineSpaces(self.base_ring())(1)
-        return line.closed_subscheme(next(iter(line.coordinate_algebra().algebra_generators())))
-
-    def _repr_object_names(self):
-        return f"closed subschemes of schemes over {self.base_ring()}"
-
-    def super_categories(self):
-        return [Schemes(self.base_ring())]
 
 
 class OpenImmersions(_SchemeSubobjectsOf):
