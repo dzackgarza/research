@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings and the Prime field refinement are the eleven complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The Division pass is ready for closure, and the Fields owner pass is active. The remaining 620 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement and Division are the twelve complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The Fields owner pass and the adjacent Nontrivial/NoZeroDivisors passes are active. The remaining 619 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,7 +259,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed `placement-owner-ownedrings-division-commutative-prime` (2026-10-11):** both original introductions, the characteristic constructor, all 28 strict authored ancestors and the inherited RingMor are complete. Both public PrimeField entries now construct through this owner: zero selects QQ and positive prime p selects GF(p), while composite characteristics cannot select extension fields. Prime-domain map uniqueness precedes source transport and model access; GF(4)'s distinct Frobenius remains excluded from that theorem. This completes the eleventh of 631 owner passes. Division is next for closure; the Fields pass is active. Existing required computation boundaries and all runtime assertions remain under T.
+**Closed `placement-owner-ownedrings-division` (2026-10-11):** all four introductions, all 17 strict authored ancestors and the actual inherited ring arrows have their own completed pass. The unit theorem now uses owned negation of zero equality, retaining decided answers and undecided propositions. Nontriviality is explicit, and the nonunit 2 in ZZ prevents promotion to weaker ring properties. This completes the twelfth of 631 owner passes. Fields and the adjacent Nontrivial/NoZeroDivisors passes are active; inverse-computation boundaries and runtime assertions remain under T.
+
+**Closed `placement-owner-ownedrings-division-commutative-prime` (`ab4aaa2466`, 2026-10-11):** both original introductions, the characteristic constructor, all 28 strict authored ancestors and the inherited RingMor are complete. Both public PrimeField entries now construct through this owner: zero selects QQ and positive prime p selects GF(p), while composite characteristics cannot select extension fields. Prime-domain map uniqueness precedes source transport and model access; GF(4)'s distinct Frobenius remains excluded from that theorem. This completed the eleventh of 631 owner passes; both changed Python files passed post-commit stdlib AST parsing. Division is independently closed above; the Fields pass is active. Existing required computation boundaries and all runtime assertions remain under T.
 
 **Closed `placement-owner-formalpowerseriesrings` (`7012101c20`, 2026-10-11):** all ten original introductions, the corrected parameter declaration, all 26 strict authored ancestors and the actual unital algebra Mor have their own complete pass. Source generator positions, formal labels and scalar coefficients now agree without replacing the actual coefficient map by the completion map. The selected zero-ring and empty-family construction data are retained in `13d391e8f2`. This completed the tenth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. The Prime refinement is independently closed above; Division is ready for closure, with Fields active. Runtime assertions and the stated coefficient/cardinality computation frontiers remain under T.
 
@@ -275,7 +277,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: eleven complete and 620 unchecked. FormalPowerSeriesRings and the Prime refinement are independently closed. Division is ready for closure; the Fields pass is active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: twelve complete and 619 unchecked. FormalPowerSeriesRings, the Prime refinement and Division are independently closed. Fields and the adjacent Nontrivial/NoZeroDivisors passes are active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -363,6 +365,114 @@ These are source-level closure correspondences, not executed Sage results. The a
 
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
+
+### Whole-category placement: `OwnedRings.Division` (2026-10-11; source pass closed)
+
+**Closed independent owner pass: `placement-owner-ownedrings-division`.** The whole four-introduction declaration is source-reviewed and repaired. The nested Fields and Prime declarations keep their distinct inventory identities; their additional hypotheses do not become Division ancestors.
+
+A division ring is nontrivial and every nonzero element has a two-sided
+multiplicative inverse. The patch makes nontriviality explicit in the class
+doc and expresses the unit theorem using owned logical negation. There are
+exactly four introduced methods and no new public operation or algorithm.
+
+| Introduction | Complete disposition |
+| --- | --- |
+| `_repr_object_names()` | Retain the category's division-ring name. |
+| `an_object()` | Retain the owned `GF(2)` witness. A commutative example is valid in this broader category and does not impose commutativity on every object. |
+| `extra_super_categories()` | Retain exactly NoZeroDivisors and Nontrivial. Clarify both consequences in its doc. If `xy=0` and `x` is nonzero, multiplication by its inverse gives `y=0`; nontriviality is part of the division-ring convention. |
+| `ElementMethods._unit_decision()` | Retain this specialized supplier at Division. Replace `self != zero` with `negation(self == zero)`, preserving an undecided owned equality through the existing monoid-unit contract. |
+
+No promotion is justified. In `ZZ`, the nonzero element `2` is not a unit,
+although the ring is nontrivial and has no zero divisors. Thus even the meet
+of those two weaker ring properties does not supply this formula. More
+general ancestors forget still more, and monoids alone do not supply zero.
+The public `is_unit()` operation correctly remains at Monoids; Division
+supplies its theorem through that owner's protected hook. Nontriviality
+matters: zero is a unit in the zero ring, which is excluded from Division.
+
+#### Entire strict authored up-set: 17 owners
+
+The CategoryWithAxiom mechanism retains OwnedRings and propagates its authored
+ancestors; the two explicit edges add NoZeroDivisors and Nontrivial. Generated
+axiom intersections and implementation wrappers are not extra owner identities.
+
+| Authored ancestor | Retained structure |
+| --- | --- |
+| `OwnedRings.NoZeroDivisors` | Products vanish only when a factor vanishes. |
+| `OwnedRings.Nontrivial` | `1 != 0`. |
+| `OwnedRings` | Associative unital ring. |
+| `OwnedSemirings` | Unital multiplication, commutative addition, distributivity. |
+| `OwnedRngs` | Associative multiplication and additive inverses. |
+| `Monoids` | Associative unital multiplication. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication and identity. |
+| `Magmas` | Multiplication. |
+| `AdditiveGroups.AdditiveCommutative` | Additive abelian group. |
+| `AdditiveGroups` | Additive group. |
+| `AdditiveMonoids` | Associative addition and zero. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Addition. |
+| `Sets` | Underlying set. |
+| `Objects` | Owned object. |
+
+There is no authored commutative-ring, field, finite-set, coefficient-algebra,
+Local, or Complete ancestor here. The multiplicative set including zero is
+not a group. Nested `Division.Commutative` and its `Prime` refinement are
+separately tracked descendants; their extra edges do not propagate upward.
+
+#### Actual Mor and proposition contracts
+
+Division introduces neither a Mor override nor an arrow provider.
+OwnedRings declares `RingMorCategoryConstruction`; that family's fixed
+category is `RingMor`, whose actual ElementMethods provider is
+`RingMorphism`. The packet selector follows the declared supercategories on
+the same literal endpoints and reuses this inherited fixed Mor. Its generated
+arrow type retains RingMorphism and the underlying semiring, rng, monoid,
+additive, and set providers. The identity and composition are the existing
+ring constructions, with exact endpoint checks; an endpoint's additional
+algebra placement does not replace this category-level ring Mor.
+
+These are unital ring maps. Such maps automatically preserve inverses of
+nonzero elements: applying a map to both inverse equations gives the inverse
+equations in the codomain. No new inverse-preservation test or specialized
+arrow representation is needed.
+
+`Monoids.ElementMethods._unit_decision` permits a Boolean or owned proposition;
+its sole caller `is_unit()` returns that value unchanged. The Division
+supplier obeys this inherited contract and adds no protected caller.
+For the owned zero-equality proposition `P`, `negation(P)` returns its Boolean
+complement when decided and a Negation object otherwise. It never calls
+`bool(P)`. This removes dependence on a separately implemented `__ne__`, whose
+inherited implementation can negate equality using Python Boolean coercion.
+Computing an actual inverse remains the separate monoid inverse algorithm
+and its existing availability boundary.
+
+#### Source closure assertions and evidence
+
+These are source assertions, not execution results:
+
+- The existing owned `GF(2)` witness remains in Division and its two declared
+  consequences. Its native equality supplies unit status False for zero and
+  True for one.
+- Whenever `a == D.zero()` returns True, the supplier returns False; when it
+  returns False, the supplier returns True.
+- If that equality returns an Atomic proposition, the supplier and public
+  monoid `is_unit()` retain its Negation without Boolean coercion or an
+  invented inverse computation. Concrete realization overrides keep their
+  existing contracts and algorithms.
+- For admitted endpoints `D,E`, the category's fixed Mor remains the existing
+  ring Mor on exactly `D,E`, preserving identity, addition, multiplication,
+  and composition. No field, scalar, finiteness, or commutativity premise is
+  added.
+- The zero ring is excluded; the `ZZ(2)` counterexample prevents promotion to
+  either weaker ring owner or their meet.
+
+#### Source evidence and retained computation frontier
+
+The complete live Division declaration and adjacent ring refinements were read in `src/dzack_research/preamble/categories/rings/ring_foundation.py`, together with its actual inherited RingMor/RingMorphism definitions. The actual semiring, magma, set and object ancestor definitions, the logic owner's negation implementation, and the existing category-with-axiom, Mor packet and generated-arrow sources supply the inheritance and proposition proof. The source inventory records Division and its nested descendants separately. No source inference here relies on an executed MRO or the commutativity of the selected GF(2) witness.
+
+Public monoid unit status retains a Boolean or owned proposition. Computing an inverse is a separate existing operation with its own availability boundary; this pass does not manufacture inverse data from a nonzero proposition. Concrete realization overrides keep their existing algorithms. These limits remain within this node and T. No project import, runtime test, new owner provider or prerequisite is part of this M1 closure.
 
 ### Whole-category placement: `OwnedRings.Division.Commutative.Prime` (2026-10-11; source pass closed)
 

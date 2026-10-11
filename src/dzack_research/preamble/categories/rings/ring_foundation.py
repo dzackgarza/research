@@ -2368,7 +2368,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _own_ring(SageZZ)
 
     class Division(CategoryWithAxiom):
-        r"""Division rings: every nonzero element is a unit."""
+        r"""Nontrivial rings in which every nonzero element is a unit."""
 
         @classmethod
         def _repr_object_names(cls):
@@ -2379,13 +2379,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return GF(2)
 
         def extra_super_categories(self):
-            r"""A division ring has ``1 != 0`` (Mathlib ``DivisionRing.toNontrivial``)."""
+            r"""A division ring is nontrivial and has no zero divisors."""
             return [OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial()]
 
         class ElementMethods:
             def _unit_decision(self):
-                r"""In a division ring, precisely the nonzero elements are units."""
-                return self != self.parent().zero()
+                r"""Unit status is the negation of the possibly undecided zero equality."""
+                return negation(self == self.parent().zero())
 
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
