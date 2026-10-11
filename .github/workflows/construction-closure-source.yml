@@ -1,0 +1,30 @@
+name: Construction closure source audit
+
+on:
+  pull_request:
+    paths:
+      - 'src/dzack_research/utilities/construction_closure.py'
+      - 'src/dzack_research/utilities/category_graph.py'
+      - 'tests/utilities/test_construction_closure_source.py'
+      - '.github/workflows/construction-closure-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Parse source and run synthetic construction-rule tests
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m py_compile src/dzack_research/utilities/construction_closure.py
+          python -m py_compile src/dzack_research/utilities/category_graph.py
+          python -m unittest discover -s tests/utilities -p 'test_construction_closure_source.py' -v
