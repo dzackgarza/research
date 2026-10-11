@@ -16,7 +16,10 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
-from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.finite_families import (
+    finite_family,
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
@@ -404,8 +407,65 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             )
 
         def normalized_volume(self):
-            integers = _own_ring(SageZZ)
-            return integers(factorial(int(self.dimension())) * self.volume())
+            r"""Volume normalized in the lattice parallel to the affine hull.
+
+            For affine dimension ``d`` the measure is ``d!`` times lattice
+            measure, so a unimodular simplex has volume one even when it
+            lies in a larger ambient lattice. A rational polytope need not
+            have integral normalized volume. The empty polytope has volume
+            zero and a point has volume one.
+
+            The full-dimensional case retains the existing exact ambient
+            engine computation. In lower dimension the selected polyhedral
+            engine must supply its exact ``induced_lattice`` measure; an
+            unavailable relative-volume algorithm is a computation frontier.
+            """
+            polyhedron = self._engine_polyhedron()
+            dimension = int(self.dimension())
+            if dimension < 0:
+                value = SageQQ.zero()
+            elif dimension == 0:
+                value = SageQQ.one()
+            elif dimension == polyhedron.ambient_dim():
+                value = factorial(dimension) * SageQQ(polyhedron.volume())
+            else:
+                value = SageQQ(polyhedron.volume(measure="induced_lattice"))
+            target = SageZZ if self.is_lattice_polytope() else SageQQ
+            return _owned_engine_element(target, target(value))
+
+        @cached_method
+        def integral_invariants(self):
+            r"""The dimension, volumes and lattice-point counts of this polytope.
+
+            These invariants require only a rational polytope in its chosen
+            lattice. The ``volume`` entry uses ambient Lebesgue measure;
+            ``normalized_volume`` uses the lattice parallel to the affine
+            hull. Dimension is integral, volumes are rational (normalized
+            volume is integral for a lattice polytope), and the counts are
+            cardinals. The selected algorithms are those of the individual
+            operations, with no toric or ADE hypothesis.
+            """
+            labels = finite_ordered_set(
+                (
+                    "dimension",
+                    "volume",
+                    "normalized_volume",
+                    "n_integral_points",
+                    "n_interior_points",
+                    "n_boundary_points",
+                )
+            )
+            values = {
+                "dimension": self.dimension(),
+                "volume": self.volume(),
+                "normalized_volume": self.normalized_volume(),
+                "n_integral_points": self.n_integral_points(),
+                "n_interior_points": self.n_interior_points(),
+                "n_boundary_points": self.n_boundary_points(),
+            }
+            return finite_indexed_family(
+                labels, values.__getitem__, name=f"Integral invariants of {self}"
+            )
 
         def is_compact(self) -> bool:
             return True

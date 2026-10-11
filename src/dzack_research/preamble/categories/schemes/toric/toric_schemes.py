@@ -89,6 +89,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.refine import RealizationHook
 
 
 def _integers():
@@ -516,6 +517,22 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def fan(self):
             r"""The fan ``Sigma`` in ``N_R`` this variety was built from."""
             return self._toric_fan
+
+        @RealizationHook
+        def _affineness_decision(self):
+            r"""Supply scheme affineness from the exact fan and coefficient ring.
+
+            A fan with at most one maximal cone gives an affine scheme.
+            With more than one, every nonempty field fiber is nonaffine:
+            an affine toric variety has the faces of a single cone as its
+            fan (CLS, Section 3.1). Thus this scheme is affine exactly when
+            its coefficient ring is zero. This also retains an undecided
+            zero-ring proposition instead of assuming the base is a field.
+            """
+            if len(tuple(self.fan().maximal_cones())) <= 1:
+                return True
+            base = self.scheme_base_ring()
+            return base.zero() == base.one()
 
         def toric_fixed_point_blowup(self, center_cone):
             r"""Blow up the torus-fixed point indexed by ``center_cone``."""

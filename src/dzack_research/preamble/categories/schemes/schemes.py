@@ -116,6 +116,7 @@ from dzack_research.preamble.lexicon.category_theory import (
     ObjectOfCategory,
 )
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -2591,6 +2592,34 @@ class Schemes(OwnedCategoryOverBaseRing):
                         SageZZ(_engine_scheme(self).dimension_relative()),
                     )
 
+        def is_affine(self):
+            r"""Whether the structure morphism to ``Spec R`` is affine.
+
+            Since the base is affine, this is equivalent to this scheme
+            being affine (Stacks, Definition 29.11.1). It is independent
+            of any additional Dynkin type or other chosen structure.
+            An affine placement decides it; a selected construction supplies
+            its decision otherwise. A scheme given without that computation
+            retains the exact proposition. Having a native scheme model
+            alone does not supply an affineness algorithm.
+            """
+            match self:
+                case _ if self in Schemes(self.scheme_base_ring()).Affine():
+                    return True
+                case _:
+                    return self._affineness_decision()
+
+        @RealizationHook
+        def _affineness_decision(self):
+            r"""Supply the affineness proposition from retained construction data.
+
+            Protected scheme computation contract. The public predicate
+            calls this supplier; a toric fan or a retained underlying scheme
+            can decide it without requiring a native engine. The default
+            retains the proposition when no algorithm has been selected.
+            """
+            return AtomicProposition("is_affine", self)
+
         def is_smooth(self) -> bool:
             r"""Whether ``X -> Spec R`` is smooth: by placement, else by the realization's Jacobian criterion."""
             match self:
@@ -3291,9 +3320,6 @@ class Schemes(OwnedCategoryOverBaseRing):
             def underlying_space(self):
                 r"""The prime spectrum ``Spec A`` underlying the affine scheme ``Spec A``."""
                 return self.coordinate_algebra().spectrum()
-
-            def is_affine(self):
-                return True
 
             def _prime_point(self, point):
                 r"""``point`` as an element of ``Spec A``: a prime point, or the prime it is given by."""

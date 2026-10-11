@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 30 complete passes and 610 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. After these current wrong-answer repairs, the first literal ready row is `placement-owner-adelogpairs`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 640 canonical category-owner passes: the original 633 plus the seven actual unit/semiring providers reconciled in the source closure below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 31 complete passes and 609 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. After the remaining current group/algebra wrong-answer repairs, the first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -263,6 +263,148 @@ and rng ideal generation each retain their named selected-supplier boundary.
 Nothing turns an unavailable algorithm into a negative predicate. These are
 complete M1 source closures; executable constructor/arithmetic/unknown cases
 remain under T. No Sage, imports, tests, QC, build or consumer gate was run.
+
+## ADE log-pair owner source closure (2026-10-11)
+
+**Closed node:** `placement-owner-adelogpairs`.
+**Owner and delta:** the complete ADELogPairs inventory, its seven strict
+authored ancestors, and both selected AT21 realization suppliers were read.
+Scheme affineness now belongs to Schemes; the toric supplier decides it
+from the fan and retains an unknown zero-ring predicate. Toric log-pair
+codimension zero belongs to ToricLogPairs. The polygon invariant family
+belongs to ConvexPolytopes, with rational normalized volume and the relative
+lattice measure in lower dimension. ADE wrappers select their retained
+geometric data and reuse those owners.
+
+**Complete introductions and mathematical data.**
+
+| Surface | Complete introduced operations and their retained data |
+| --- | --- |
+| ADE category | `an_object`, `_call_`, `at21`, naming and `super_categories`; construction selects an admitted type, polygon, point and side data |
+| ADE parent views | `base`, `is_base`, `is_cover`, `dynkin_letter`, `dynkin_rank`, `letter`, `rank`, `dynkin_variant`, `variant`, `is_affine_type`, `coxeter_diagram`, `dynkin_diagram`; these inspect the selected ADE datum |
+| ADE polygon views | `polygon`, `polygon_vertex_order`, `vertices`, `distinguished_point`, `p_star`, `polarizing_polytope`, `side_decorations`, `ade_svg`, `_repr_svg_`, `integral_invariants`; the invariant computation delegates to the polygon |
+| ADE geometric constructions | `_blue_rays`, `distinguished_boundary_points`, `blue_divisor`, `blue_line_divisor`, `complementary_divisor`, `pyramid`, `cover_toric_threefold`; these use the selected point and polygon to choose the boundary and height-two pyramid |
+| AT21 base supplier | Initialization/representation; `base_pair`, `scheme`, `toric_scheme`, `complementary_divisor`, `source_variant`, type/rank/affine-type/polygon/point/side/diagram/pyramid/threefold views; `branch_divisor_class`, `branch_line_bundle`, `branch_section_space`, `branch_section`, `full_newton_branch_section`, `branch_newton_polygon`, `source_normal_form_section`, `branch_subscheme`, `branch_log_canonicity`, `double_cover` |
+| AT21 cover supplier | Initialization/representation; `base_pair`, `cover_base_scheme`, `branch_section`, `branch_subscheme`, `ambient_toric_threefold`, `ambient_polarizing_divisor`, `ambient_hypersurface_section`, `scheme`, `ambient_projection`, `ambient_open_immersion`, `ade_pair_condition`, `_cover_structure`, `cover_morphism`, `local_cover_map`, `deck_involution`, `local_deck_involution`, `ramification_subscheme`, `boundary_subscheme`, `pulled_back_boundary`, `base_boundary_subscheme`, `boundary_divisor`, `log_boundary_coefficient_ring`, `log_boundary_divisor`, `equipped_pair`, `dynkin_diagram`, `polarizing_polytope`, `local_surface_equation`, `local_surface_singularity`, `local_global_singularity_comparison` |
+
+The strict chain is ToricLogPairs (toric scheme with invariant boundary),
+LogPairs (scheme with chosen boundary), Schemes (scheme over the selected
+Spec R), LocallyRingedSpaces (local stalks), RingedSpaces (structure sheaf
+of rings), SheafedSpaces (space with a chosen sheaf), and Objects. Their
+actual definitions were inspected. SheafedSpaces has no authored Sets or
+TopologicalSpaces edge. ToricSchemes is a retained realization supplier,
+not an ancestor of ToricLogPairs. The ADE type, point and side choices are
+not uniformly supplied by any strict ancestor, so their specific views and
+the constructions that require them stay here.
+
+**Correct hypotheses and preserved input.** The low-level polygon constructor
+and the AT21 entry now share the admitted shape range. The branch-pair
+enhancement has the precise characteristic-zero-field hypothesis; the
+polygon constructor remains available over general admitted rings. Rank and
+exponent ingress uses the existing exact integer boundary, refusing 3/2
+before conversion to a Python integer. Owned coefficients use their actual
+ring ingress, while raw engine numerals cross the existing numeral boundary.
+No coefficient is discarded merely because its zero predicate is unknown.
+
+The selected branch divisor is a representative of a linear-equivalence
+class, not a claimed literal equality with twice the complementary divisor.
+The D/E source normal form retains coefficient +1 on x^2*y^2. The zero section
+is not an effective branch divisor. A general nonzero branch equation gives
+a hypersurface with its separate represented log-canonicity proposition;
+construction does not declare that proposition True.
+
+**Actual projection and arrow inheritance.** Let P be the pyramid over Q
+with apex (p*,2). A neighborhood of the apex has a maximal normal cone whose
+height projection covers the entire base cocharacter space. Thus the full
+normal fan does not give a toric map V_P -> Y. The open U obtained by deleting
+only that apex maximal cone, and retaining its proper faces, does map to Y.
+Its inclusion in V_P uses the identity lattice map. The ambient section has
+apex coefficient one, so its local coefficient is a unit on the deleted
+orbit and the hypersurface misses that orbit scheme-theoretically.
+
+The construction retains V_P, its divisor and its section, restricts the
+actual Cartier coefficients to U through the inclusion's chart pullbacks,
+and cuts out X chartwise. It does not ask an incomplete fan for the existing
+complete-fan global-section algorithm. Its arrows are X -> U -> Y with
+literal endpoints. The cover's `base_scheme()` again inherits Spec R;
+`cover_base_scheme()` identifies Y and is used by the local-equation
+consumer. These two bases are mathematically distinct.
+
+Schemes selects the common SchemeMor category, through its locally ringed
+space fixed-Mor construction. U's glued presentation selects
+_GluedSchemeMorCategory. The retained inclusion lambda is passed through
+that constructor to SchemeMorCategory, which evaluates it at the canonical
+fixed H and returns the resulting arrow literally after requiring parent H.
+The lambda's `toric_morphism` constructs ToricSchemeMorphism in that same
+endpoint-cached H. Consequently `chart_target` and `chart_pullback` remain
+on the selected inclusion; no generic arrow conversion erases them.
+ToricSchemeMorphism inherits SchemeMorphism. The deck action and the glued
+cover maps likewise reuse the actual common scheme/gluing arrow providers;
+ADE introduces no private competing Mor theory.
+
+**True closure specimens retained under T.**
+
+- The toric affine shapes D6, E7 and E8 are admitted; affine A and E6 have no
+  represented toric polygon. Affine D4 has a diagonal/conic boundary, so is
+  outside this torus-invariant-boundary representation. Primed A1 and the
+  represented primed D4 row are excluded; primed A2 and D6 are admitted.
+  Primed A4 has right vertex (3,0).
+- A2 right-short has selected side lengths 2,1; left-short has 1,2.
+  Finite E8 has two length-one sides. Affine D6 and E7 have one length-four
+  selected side, and affine E8 one length-three side. Side data are computed
+  from all actual sides through p*, including the affine side's interior.
+- Geometric affineness is independent of Dynkin naming. The toric affine
+  line over QQ is affine and the toric projective line is not; both are
+  outside ADELogPairs. A toric log pair on P1 has codimension zero in its
+  retained toric scheme. A multi-cone toric scheme over a nonzero ring has a
+  nonaffine field fiber; over the zero ring it is empty and affine.
+- The rational triangle (0,0),(1/2,0),(0,1/2) has normalized volume 1/4 and
+  area 1/8. The integral diagonal segment (0,0),(1,1) has relative normalized
+  volume 1 and ambient area zero. The unit lattice square has normalized
+  volume 2, area 1, four lattice points and no interior lattice points.
+  These assertions witness the polygon owner outside ADE.
+- For pure finite E8, the retained origin-chart equation is
+  z^2+x^2*y^2+y^3+x^5+c0. Setting c0=0 and c0=1 gives different sections
+  and Newton polygons. With c0=1 the origin does not lie on the hypersurface.
+  The equation operation preserves the selected constant and every other
+  branch coefficient.
+- On each semigroup character (m,h), the deck pullback multiplies by (-1)^h.
+  Squaring gives the identity; base characters have height zero, so
+  pi*iota=pi. The boundary is the scheme-theoretic pullback of the selected
+  base boundary. The apex monomial divisor on U is twice its positive-height
+  base-facet prime; restricting that prime gives divisorial ramification R,
+  locally z=0. It excludes the possible isolated deck-fixed points. The
+  short A2 case separates R from the entire fixed subscheme.
+- X.base_scheme() is Spec R; X.cover_base_scheme() is Y. The structure map
+  ends in Spec R and the cover map ends in Y, with the same coefficient base.
+  Admitted sections retain unknown coefficient equalities; a Newton support
+  computation asks for those exact zero decisions instead of guessing.
+
+For the actual diagonal section z^2+y^3+x^5, the gradient ideal has quotient
+basis x^i*y^j, 0<=i<4, 0<=j<2. It is supported only at the origin, so the
+existing global Jacobian calculation gives the correct local mu=tau=8.
+For z^2+x^2*y^2+y^3+x^5, the gradient also vanishes at
+(x,y,z)=(-45/8,-675/32,0), where the equation has value x^5/6 != 0.
+A global Jacobian dimension therefore cannot be substituted for the local
+Milnor dimension at the origin. The operation retains the actual equation
+and names the needed localization algorithm. No hard-coded different germ
+or unsupplied coordinate change is returned.
+
+**Sources and remaining computation boundaries.** Shape limits, linear
+equivalence, branch conditions and the distinction between ramification
+and isolated fixed points were checked against Alexeev--Thompson,
+[ADE surfaces and their moduli](https://arxiv.org/pdf/1712.07932v3),
+Definitions 2.1 and 3.2, Lemma 3.4, Tables 1, 4 and 5, and Theorem 5.9.
+The explicit projection, character action, polytope measures and gradient
+calculations above also give independent separating proofs. Affineness uses
+[Stacks 01S5](https://stacks.math.columbia.edu/tag/01S5) and the single-cone
+criterion for toric varieties. The selected polytope measure follows
+[Sage's exact volume contract](https://doc.sagemath.org/html/en/reference/discrete_geometry/sage/geometry/polyhedron/base7.html).
+General branch log canonicity, undecided Newton support, relative-volume
+backend availability and localized singularity computation remain named
+frontiers in the same owner; they create no prerequisite node. The complete
+source assertions and selected constructor/Mor routes are closed. Executable
+instances remain under T: no Sage, imports, tests, QC or build was run.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

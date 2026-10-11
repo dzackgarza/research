@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes, _scheme_with_structure
+from dzack_research.preamble.refine import RealizationHook
 
 
 class LogPairs(OwnedCategoryOverBaseRing):
@@ -66,6 +67,11 @@ class LogPairs(OwnedCategoryOverBaseRing):
         def log_scheme(self):
             r"""The variety ``X`` of the pair."""
             return self._log_scheme
+
+        @RealizationHook
+        def _affineness_decision(self):
+            r"""The chosen boundary does not change affineness of its scheme."""
+            return self.log_scheme().is_affine()
 
         def scheme(self):
             r"""Return the underlying scheme ``X`` of this log pair."""
@@ -148,6 +154,14 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         def toric_scheme(self):
             r"""Return the underlying toric scheme of this toric log pair."""
             return self.log_scheme()
+
+        def codimension_in_toric_scheme(self):
+            r"""Zero: this pair's scheme is its retained toric ambient scheme."""
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+            return _own_ring(SageZZ).zero()
 
         def is_toric_boundary(self) -> bool:
             r"""Whether ``Delta`` is the full toric boundary ``sum_rho D_rho``."""
