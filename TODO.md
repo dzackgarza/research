@@ -731,7 +731,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ChamberSystems` in `src/dzack_research/preamble/categories/chamber_systems.py`.
   **Closure assertions:** the complete `ChamberSystems` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ChamberSystems`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-charactersets`**. **Needs:** none.
+- [x] **`placement-owner-charactersets`**. **Needs:** none.
   **Owner pass:** `CharacterSets` in `src/dzack_research/preamble/categories/group/characters.py`.
   **Closure assertions:** the complete `CharacterSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CharacterSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

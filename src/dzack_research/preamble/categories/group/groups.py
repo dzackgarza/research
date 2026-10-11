@@ -4303,7 +4303,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 # index of isotypic components and is compared by identity.
                 return finite_ordered_set(
                     tuple(
-                        self.character_set()(
+                        self.character_set()._from_known_character(
                             self.class_function(
                                 field,
                                 tuple(
@@ -4342,7 +4342,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         f"{supplied} cannot be the values of a character of {self}: a character takes one value on each of "
                         f"the {representatives.cardinality()} conjugacy classes, but {len(supplied)} values were given"
                     )
-                candidate = self.character_set()(
+                candidate = self.character_set()._from_known_character(
                     self.class_function(
                         field,
                         tuple(field(value) for value in supplied),
@@ -4398,7 +4398,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 gap_group = _gap_model(self)
                 field = CyclotomicField(int(gap_group.Exponent()))
                 representatives = self.conjugacy_classes_representatives()
-                return self.character_set()(
+                return self.character_set()._from_known_character(
                     self.class_function(
                         field,
                         tuple(field.one() for _representative in representatives),
