@@ -1033,7 +1033,7 @@ class LocalizationRings(OwnedCategory):
         _derived_construction_parameters = frozenset({"base_ring"})
 
         def _cardinality_decision(self):
-            r"""Supply the exact cardinality of a localization of a domain.
+            r"""Supply the cardinality for a zero source or an integral-domain source.
 
             If ``0 in S`` then ``S^-1 R`` is the zero ring.  Otherwise the
             canonical map ``R -> S^-1 R`` is injective. A finite domain is a
@@ -1043,7 +1043,13 @@ class LocalizationRings(OwnedCategory):
             gives ``|S^-1 R| = |R|``.
             """
             source = self.localization_source()
-            match source in OwnedRings().Commutative().NoZeroDivisors():
+            if (source.one() == source.zero()) is True:
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                return Cardinalities().one()
+            match source in OwnedIntegralDomains():
                 case True:
                     from dzack_research.preamble.categories.rings.commutative_algebra import (
                         _submonoid_contains_zero_in_domain,
@@ -1342,7 +1348,7 @@ class LocalizationRings(OwnedCategory):
                     return False
                 return AtomicProposition("is_parent_of", self, value)
             if (
-                source not in OwnedRings().Commutative().NoZeroDivisors()
+                source not in OwnedIntegralDomains()
                 or parent is not source.fraction_field()
             ):
                 return AtomicProposition("is_parent_of", self, value)
@@ -2530,76 +2536,122 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
-        class Commutative(CategoryWithAxiom):
-            r"""Integral domains, spelled as Sage spells them: ``Domains().Commutative()``."""
+        class Nontrivial(CategoryWithAxiom):
+            r"""Nontrivial rings without zero divisors, with no commutativity assumption."""
 
             @classmethod
             def _repr_object_names(cls):
-                return "integral domains"
+                return "nontrivial rings without zero divisors"
 
             def an_object(self):
-                r"""The integers."""
+                r"""The integers, whose zero and one are distinct."""
                 return _own_ring(SageZZ)
 
             class ParentMethods:
-                def fractional_ideal(self, *module_generators):
-                    r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
-                    from dzack_research.preamble.categories.modules.fractional_ideals import (
-                        _fractional_ideal,
-                    )
-
-                    if len(module_generators) == 1 and isinstance(
-                        module_generators[0], (tuple, list)
-                    ):
-                        module_generators = tuple(module_generators[0])
-                    return _fractional_ideal(self, tuple(module_generators))
-
                 @cached_method
                 def nonzero_multiplicative_submonoid(self):
-                    r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
+                    r"""Return the multiplicative submonoid ``R - {0}`` of this ring.
+
+                    Nontriviality puts one in this subset; the zero-product
+                    axiom makes it closed under multiplication. A ring map
+                    restricts to these submonoids only when it preserves
+                    nonzero elements.
+                    """
                     from dzack_research.preamble.categories.rings.commutative_algebra import (
                         _nonzero_element_submonoid,
                     )
 
                     return _nonzero_element_submonoid(self)
 
-                @cached_method
-                def fraction_field_localization(self):
-                    r"""Return the represented localization ``(R-{0})^-1 R``."""
-                    from dzack_research.preamble.categories.rings.commutative_algebra import (
-                        _localization_at_submonoid,
-                    )
+        class Commutative(CategoryWithAxiom):
+            r"""Commutative rings satisfying the zero-product axiom.
 
-                    if self in OwnedRings().Division().Commutative():
-                        return self
-                    return _localization_at_submonoid(
-                        self,
-                        self.nonzero_multiplicative_submonoid(),
-                    )
+            This intersection still allows the zero ring. Integral domains
+            are its existing ``Nontrivial`` refinement; nonzero denominators
+            and fraction fields require that additional hypothesis.
+            """
 
-                @cached_method
-                def fraction_field_map(self):
-                    r"""Return the localization map ``R -> Frac(R)``.
+            @classmethod
+            def _repr_object_names(cls):
+                return "commutative rings without zero divisors"
 
-                    This is the localization of ``R`` at its nonzero elements, so it is
-                    injective exactly because ``R`` is a domain.  Scalar extension along
-                    it is the generic fibre: a module dies under it exactly on its
-                    torsion, and an ideal extends along it to the unit ideal exactly
-                    when it is nonzero.
-                    """
-                    if self in OwnedRings().Division().Commutative():
-                        return OwnedRings().Mor(self, self).identity()
-                    localization = self.fraction_field_localization()
-                    return (
-                        localization.fraction_field_comparison()
-                        * localization.localization_map()
-                    )
+            def an_object(self):
+                r"""The integers."""
+                return _own_ring(SageZZ)
 
-                def fraction_field(self):
-                    r"""Return the fraction field through its nonzero-element localization."""
-                    if self in OwnedRings().Division().Commutative():
-                        return self
-                    return self.fraction_field_localization().fraction_field_realization()
+            class Nontrivial(CategoryWithAxiom):
+                r"""Integral domains: nonzero commutative rings without zero divisors.
+
+                The inherited arrows remain all unital ring maps. The
+                fraction-field operations below construct objects and their
+                canonical injections; they do not assert a functor on every
+                domain map, since a noninjective map need not extend to
+                fraction fields.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "integral domains"
+
+                def an_object(self):
+                    r"""The integers."""
+                    return _own_ring(SageZZ)
+
+                class ParentMethods:
+                    def fractional_ideal(self, *module_generators):
+                        r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
+                        from dzack_research.preamble.categories.modules.fractional_ideals import (
+                            _fractional_ideal,
+                        )
+
+                        if len(module_generators) == 1 and isinstance(
+                            module_generators[0], (tuple, list)
+                        ):
+                            module_generators = tuple(module_generators[0])
+                        return _fractional_ideal(self, tuple(module_generators))
+
+                    @cached_method
+                    def fraction_field_localization(self):
+                        r"""Return the target of the localization ``(R-{0})^-1 R``.
+
+                        For a field the target is this same field. Otherwise
+                        the existing localization owner retains the source,
+                        nonzero submonoid and selected field realization.
+                        """
+                        from dzack_research.preamble.categories.rings.commutative_algebra import (
+                            _localization_at_submonoid,
+                        )
+
+                        if self in OwnedRings().Division().Commutative():
+                            return self
+                        return _localization_at_submonoid(
+                            self,
+                            self.nonzero_multiplicative_submonoid(),
+                        )
+
+                    @cached_method
+                    def fraction_field_map(self):
+                        r"""Return the localization map ``R -> Frac(R)``.
+
+                        Scalar extension along it is the generic fibre: its
+                        kernel on a module is exactly the torsion submodule.
+                        An ideal extends to the unit ideal exactly when it
+                        is nonzero. The source is nontrivial, so ``R-{0}``
+                        contains the multiplicative identity.
+                        """
+                        if self in OwnedRings().Division().Commutative():
+                            return OwnedRings().Mor(self, self).identity()
+                        localization = self.fraction_field_localization()
+                        return (
+                            localization.fraction_field_comparison()
+                            * localization.localization_map()
+                        )
+
+                    def fraction_field(self):
+                        r"""Return the fraction field through its nonzero-element localization."""
+                        if self in OwnedRings().Division().Commutative():
+                            return self
+                        return self.fraction_field_localization().fraction_field_realization()
 
     class Noetherian(CategoryWithAxiom):
         r"""Noetherian rings: the ascending chain condition on ideals."""
@@ -3140,7 +3192,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     # this finite set, hence surjective; every regular
                     # element is already a unit, including in nonreduced rings.
                     return OwnedRings().Mor(self, self).identity()
-                if self in OwnedRings().Commutative().NoZeroDivisors():
+                if self in OwnedIntegralDomains():
                     return self.fraction_field_map()
                 morphism = self._total_quotient_map_decision()
                 assert morphism is not None, (
@@ -3162,19 +3214,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self.total_quotient_map().codomain()
 
         class ElementMethods:
-            def is_regular(self) -> bool:
+            def is_regular(self):
                 r"""Return whether this scalar is a non-zerodivisor.
 
                 Multiplication by ``r`` is injective exactly when nothing
                 nonzero is killed by it, that is when the colon ideal
                 ``(0 : r)`` is zero.  Over a domain that reduces to being
                 nonzero, which is a theorem about domains rather than a second
-                definition.
+                definition. In the zero ring its sole element is regular,
+                since its multiplication map on the singleton is injective.
                 """
 
                 ring = self.parent()
-                if ring in OwnedRings().Commutative().NoZeroDivisors():
-                    return not self.is_zero()
+                if (ring.one() == ring.zero()) is True:
+                    return True
+                if ring in OwnedIntegralDomains():
+                    return negation(self.is_zero())
                 zero_ideal = ring.ideal(ring.zero())
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
@@ -3183,9 +3238,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return AtomicProposition("is_integral_domain", self)
 
         def is_integral_domain(self):
+            r"""Return whether this is a nonzero commutative ring without zero divisors."""
             match self:
-                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                case _ if self in OwnedIntegralDomains():
                     return True
+                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                    return negation(self.one() == self.zero())
                 case _:
                     return self._integral_domain_decision()
 
@@ -3602,13 +3660,13 @@ class OwnedOrderedRings(OwnedCategory):
 
 
 def OwnedIntegralDomains():
-    r"""``OwnedRings().Commutative().NoZeroDivisors()``, the session name for integral domains."""
-    return OwnedRings().Commutative().NoZeroDivisors()
+    r"""The nontrivial commutative rings satisfying the zero-product axiom."""
+    return OwnedRings().Commutative().NoZeroDivisors().Nontrivial()
 
 
 def OwnedPrincipalIdealDomains():
-    r"""``OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()``, the session name for PIDs."""
-    return OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+    r"""The integral domains in which every ideal is principal."""
+    return OwnedIntegralDomains().PrincipalIdeals()
 
 
 def _engine_krull_dimension(ring):
@@ -3757,7 +3815,7 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
 
         return [
             Algebras(_owned_integers()).Associative().Unital().Commutative().FinitelyGenerated(),
-            OwnedRings().Commutative().NoZeroDivisors().Noetherian(),
+            OwnedIntegralDomains().Noetherian(),
         ]
 
     def fraction_field_adjunction(self):
@@ -3827,9 +3885,9 @@ def _unit_group(ring):
     has an inverse by the very predicate that admitted it, so the group law is
     the ring's multiplication and nothing is chosen.
 
-    Invertibility is asked of the ring element.  A ring whose elements do not
-    decide it has no represented unit group, and that absence is a gap on the
-    element interface rather than a second construction here.
+    Invertibility is asked of the ring element, and an undecided membership
+    proposition is retained by the predicate submonoid. Computing an actual
+    inverse remains the element's existing inverse-computation boundary.
     """
     from dzack_research.preamble.categories.group.groups import OwnedGroups
 
@@ -5134,13 +5192,12 @@ def _placed_nonzero(ring) -> bool:
     r"""Whether the placement of ``ring`` states ``1 != 0``.
 
     A nontrivial ring states it: division rings, local rings and ``ZZ/nZZ``
-    for ``n >= 2`` are placed there by their categories and constructor.  A
-    domain has ``1 != 0`` by definition, and an infinite ring has more than
-    one element.  The zero ring ``ZZ/1ZZ`` is the finite ring these exclude.
+    for ``n >= 2`` are placed there by their categories and constructor. An
+    infinite ring has more than one element. The bare zero-product axiom
+    alone does not exclude the zero ring ``ZZ/1ZZ``.
     """
     return (
         ring in OwnedRings().Nontrivial()
-        or ring in OwnedRings().Commutative().NoZeroDivisors()
         or ring in owned_sets.CountablyInfiniteSets()
         or ring in owned_sets.UncountableSets()
     )
@@ -5180,8 +5237,9 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
     with finitely many indeterminates:
 
     - ``A`` is commutative when ``R`` is;
-    - ``A`` is a domain when ``R`` is (the leading or lowest-order term of a
-      product is the product of those terms);
+    - ``A`` has no zero divisors when ``R`` does (the leading or lowest-order
+      term of a product is the product of those terms);
+    - ``A`` is nontrivial when ``R`` is, since the constants embed;
     - ``A`` is Noetherian when ``R`` is (Hilbert's basis theorem, and its
       power series form; a localization of a Noetherian ring is Noetherian).
 
@@ -5195,10 +5253,12 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
         placements.append(OwnedRings().Commutative())
     if coefficients in OwnedRings().Commutative().NoZeroDivisors():
         placements.append(OwnedRings().Commutative().NoZeroDivisors())
+    if coefficients in OwnedRings().Nontrivial():
+        placements.append(OwnedRings().Nontrivial())
     if coefficients in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     if univariate_over_field_is_principal and coefficients in OwnedRings().Division().Commutative():
-        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
+        placements.append(OwnedPrincipalIdealDomains())
     return tuple(placements)
 
 
@@ -5251,7 +5311,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     )
     from dzack_research.preamble.owned_category import owned_category_join
 
-    domain = OwnedRings().Commutative().NoZeroDivisors()
+    domain = OwnedIntegralDomains()
     principal = domain.PrincipalIdeals()
     noetherian = OwnedRings().Noetherian()
     # A field is a commutative division ring; its only ideals are 0 and
@@ -5292,9 +5352,14 @@ def _presented_ring_category(engine: Ring) -> Category:
             # construction, and for n >= 2 the ring has 1 != 0 (Mathlib
             # ``ZMod.nontrivial`` under ``Fact (1 < n)``).  Whether n is
             # prime or a prime power is computed, never a datum of the
-            # construction, so it places nothing here.
+            # construction, so it places nothing here. For n = 1 the ring is
+            # zero and satisfies the bare zero-product property vacuously.
             nontrivial = (OwnedRings().Nontrivial(),) if engine.order() >= 2 else ()
-            placements = (OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(), *nontrivial)
+            zero_product = (OwnedRings().NoZeroDivisors(),) if engine.order() == 1 else ()
+            placements = (
+                OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(),
+                *nontrivial, *zero_product,
+            )
         case NumberField():
             # A number field K = QQ[x]/(f) with f irreducible, presented by
             # its chosen generator.
@@ -5382,7 +5447,18 @@ def _presented_ring_category(engine: Ring) -> Category:
                         coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
                     )
                 case False:
-                    inherited = ()
+                    # Constants embed. The greatest words in two nonzero
+                    # finite supports have a unique greatest product, whose
+                    # coefficient is the product of their coefficients.
+                    # These facts do not make the variables commute.
+                    inherited = tuple(
+                        placement
+                        for placement in (
+                            OwnedRings().NoZeroDivisors(),
+                            OwnedRings().Nontrivial(),
+                        )
+                        if coefficients in placement
+                    )
             placements = (*inherited, _size_of_finitely_supported_families(coefficients, engine.ngens()))
         case CartesianProduct():
             # Finite products use coordinatewise ring operations. Commutative,

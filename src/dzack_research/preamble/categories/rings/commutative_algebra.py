@@ -52,6 +52,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
+    OwnedPrincipalIdealDomains,
     OwnedRings,
     _engine_element,
     _engine_krull_dimension,
@@ -3350,8 +3352,8 @@ def _quotient_ring(source, defining_ideal):
     quotient_is_field = False
     quotient_is_domain = False
     if not exact_source_quotient:
-        quotient_is_field = bool(defining_ideal.is_maximal())
-        quotient_is_domain = quotient_is_field or bool(defining_ideal.is_prime())
+        quotient_is_field = defining_ideal.is_maximal() is True
+        quotient_is_domain = quotient_is_field or defining_ideal.is_prime() is True
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
     placements = []
@@ -3360,7 +3362,8 @@ def _quotient_ring(source, defining_ideal):
     if quotient_is_field:
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
-        placements.append(OwnedRings().Commutative().NoZeroDivisors())
+        # A prime ideal is proper, so this quotient is also nontrivial.
+        placements.append(OwnedIntegralDomains())
     if (
         source in FiniteSets()
         or isinstance(quotient_engine, IntegerModRing_generic)
@@ -3428,8 +3431,9 @@ def _submonoid_contains_zero_in_domain(source, submonoid):
     _localization_size_placements, _finite_generated_localization, the
     LocalizationRings._cardinality_decision computation, and
     LocalizedModules._fraction_equality_status after its domain and
-    torsion-free hypotheses are established. The source is an actual domain
-    and the submonoid is selected in that same source. The result is True,
+    torsion-free hypotheses are established. The source is an actual integral
+    domain, with distinct zero and one, and the submonoid is selected in that
+    same source. The result is True,
     False, or an owned proposition; an undecided result supplies neither
     domain placement nor a negative equality answer.
 
@@ -3438,7 +3442,7 @@ def _submonoid_contains_zero_in_domain(source, submonoid):
     chosen generator is zero.  Predicate-defined submonoids use their selected
     membership predicate instead.
     """
-    assert source in OwnedRings().Commutative().NoZeroDivisors(), (
+    assert source in OwnedIntegralDomains(), (
         f"cannot decide whether 0 lies in {submonoid} by its generators: {source} is not "
         f"known to be an integral domain, and outside a domain a product of nonzero "
         f"elements can vanish"
@@ -3467,7 +3471,7 @@ def _localization_size_placements(source, submonoid):
     """
     if source in FiniteSets():
         return (FiniteSets(),)
-    if source not in OwnedRings().Commutative().NoZeroDivisors():
+    if source not in OwnedIntegralDomains():
         return ()
     contains_zero = _submonoid_contains_zero_in_domain(source, submonoid)
     if contains_zero is not False:
@@ -3690,17 +3694,20 @@ def _finite_generated_localization(source, submonoid):
     placements = list(_localization_size_placements(source, submonoid))
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
+    if source in OwnedRings().Commutative().NoZeroDivisors():
+        # The zero-product property survives even the zero localization.
+        placements.append(OwnedRings().Commutative().NoZeroDivisors())
     # Localization preserves a domain (and a PID) only when zero is not
     # inverted. Noetherianity also holds for the zero localization. An
     # undecided zero-membership predicate supplies no nontriviality edge.
     if (
-        source in OwnedRings().Commutative().NoZeroDivisors()
+        source in OwnedIntegralDomains()
         and _submonoid_contains_zero_in_domain(source, submonoid) is False
     ):
-        if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
-            placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
+        if source in OwnedPrincipalIdealDomains():
+            placements.append(OwnedPrincipalIdealDomains())
         else:
-            placements.append(OwnedRings().Commutative().NoZeroDivisors())
+            placements.append(OwnedIntegralDomains())
     base = source.base_ring()
     algebra_source = (
         source
@@ -3726,13 +3733,24 @@ def _finite_generated_localization(source, submonoid):
 
 @cached_function
 def _nonzero_element_submonoid(source):
-    r"""Return the represented multiplicative submonoid ``R - {0}`` of a domain."""
-    if source not in OwnedRings().Commutative().NoZeroDivisors():
-        raise ValueError(
-            f"R - {{0}} is multiplicative only when R is an integral domain, but {source} is not known to be one"
+    r"""Construct the predicate submonoid of nonzero elements of ``source``.
+
+    Protected constructor under OWN-05. Its caller is the ring owner's
+    ``nonzero_multiplicative_submonoid`` method. The source is an owned
+    nontrivial ring without zero divisors: these hypotheses supply the
+    identity and multiplication-closure premises of ``predicate_submonoid``.
+    The result retains this literal source, its nonzero predicate, its
+    monoid inclusion, and the existing ``nonzero_elements`` construction
+    tag. No commutativity, fraction construction, or restriction of an
+    arbitrary ring map is asserted.
+    """
+    if source not in OwnedRings().NoZeroDivisors().Nontrivial():
+        raise TypeError(
+            f"the nonzero multiplicative submonoid requires a nontrivial ring without "
+            f"zero divisors, but {source} is not placed in that category"
         )
     return source.predicate_submonoid(
-        lambda element: element != source.zero(),
+        lambda element: negation(element == source.zero()),
         f"Nonzero multiplicative elements of {source}",
         structure_data={"kind": "nonzero_elements"},
     )
@@ -3740,7 +3758,7 @@ def _nonzero_element_submonoid(source):
 
 def _fraction_field_localization(source, submonoid):
     r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
-    if source not in OwnedRings().Commutative().NoZeroDivisors():
+    if source not in OwnedIntegralDomains():
         raise ValueError(
             f"the fraction field (R - {{0}})^-1 R needs R an integral domain, but {source} is not known to be one"
         )
@@ -3770,7 +3788,7 @@ def _fraction_field_localization(source, submonoid):
         case _:
             fraction_engine = engine.fraction_field()
     field = _own_ring(fraction_engine)
-    placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
+    placements = [OwnedIntegralDomains(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     base = source.base_ring()
@@ -4093,7 +4111,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
             placements.append(OwnedRings().Noetherian())
         if source in OwnedRings().Commutative().NoZeroDivisors():
             placements.append(OwnedRings().Commutative().NoZeroDivisors())
-    if source in OwnedRings().Commutative().NoZeroDivisors():
+    if source in OwnedIntegralDomains():
         fraction_engine = _engine_ring(source.fraction_field())
     else:
         fraction_engine = None
@@ -4206,12 +4224,16 @@ def _adic_completion_from_owned_data(source, defining, precision):
             completion_map_kernel=(
                 source.ideal(source.zero()) if source in OwnedRings().Noetherian() else None
             ),
+            # The selected maximal ideal is proper, so the completion has
+            # a nonzero residue quotient.
+            extra_categories=(OwnedRings().Nontrivial(),),
         )
     defining_engine = _engine_ideal(source, defining)
     generators = tuple(defining_engine.gens())
     engine = _engine_ring(source)
     zero_ideal = source.ideal(source.zero())
     unit_ideal = source.ideal(source.one())
+    defining_is_unit = defining == unit_ideal
     degenerate_formal_data = {}
     base = source.base_ring()
     if source in SymmetricAlgebras(base) and source.is_framed_algebra() is True:
@@ -4233,7 +4255,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
                 "formal_parameter_labels": tuple(labels),
                 "extra_categories": (FormalPowerSeriesRings(base),),
             }
-    if (defining == unit_ideal) is True:
+    if defining_is_unit is True:
         zero_quotient = source.quotient_ring(unit_ideal)
         zero_engine = _engine_ring(zero_quotient)
         assert zero_engine is not zero_quotient, (
@@ -4257,6 +4279,16 @@ def _adic_completion_from_owned_data(source, defining, precision):
             completion_image=completion_image,
             completion_map_kernel=unit_ideal,
             **degenerate_formal_data,
+        )
+    # Completion maps onto R/I; proper I implies nontrivial completion.
+    # This says nothing about zero divisors or a truncation model's domain status.
+    nontrivial_categories = (
+        (OwnedRings().Nontrivial(),) if defining_is_unit is False else ()
+    )
+    if nontrivial_categories:
+        degenerate_formal_data["extra_categories"] = (
+            *degenerate_formal_data.get("extra_categories", ()),
+            *nontrivial_categories,
         )
     if (defining == zero_ideal) is True:
         def projection_lift(value, _exponent):
@@ -4297,6 +4329,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
             precision,
             projection_lift=projection_lift,
             completion_map_kernel=zero_ideal,
+            extra_categories=nontrivial_categories,
         )
 
     base = source.base_ring()
@@ -4349,6 +4382,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
                 arithmetic_mode=arithmetic_mode,
                 completion_image=completion_image,
                 completion_map_kernel=completion_map_kernel,
+                extra_categories=nontrivial_categories,
             )
 
     source_engine = _engine_ring(source)
@@ -4381,11 +4415,11 @@ def _adic_completion_from_owned_data(source, defining, precision):
 
     algebra_base = None
     formal_parameter_labels = None
-    extra_categories = ()
+    extra_categories = nontrivial_categories
     if len(selected_variables) == len(engine_variables):
         algebra_base = base
         formal_parameter_labels = tuple(source_engine.variable_names())
-        extra_categories = (FormalPowerSeriesRings(base),)
+        extra_categories = (FormalPowerSeriesRings(base), *nontrivial_categories)
     return _AdicCompletionAlgebraParent(
         completion_engine,
         source,

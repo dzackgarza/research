@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial and NoZeroDivisors are the fifteen complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The commutative NoZeroDivisors refinement is active, including its domain hypotheses and fraction constructions. The remaining 616 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 633 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial, NoZeroDivisors, its commutative refinement and both nontrivial zero-product refinements are the eighteen complete whole-owner passes and are marked [x]. The authored Adic.Local provider and the two providers for existing nontrivial zero-product meets are each added and closed in their source banks. The domain correction retains true hypotheses, undecided propositions and the actual canonical fraction maps. Noetherian is the next active existing owner pass. The remaining 615 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,7 +259,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed `placement-owner-ownedrings-nozerodivisors` (2026-10-11):** both introductions, all 15 strict authored ancestors and the inherited ring arrows have their complete pass. The category now names its exact zero-product axiom and states that commutativity and nontriviality are separate. Its integer witness and ordinary, possibly noninjective ring maps are preserved. This completes the fifteenth of 631 owner passes. The commutative refinement's domain hypotheses and fraction constructions are active in its existing node; no new prerequisite has been filed. Runtime assertions remain under T.
+**Closed domain-owner passes (2026-10-11):** `placement-owner-ownedrings-nozerodivisors-commutative`, `placement-owner-ownedrings-nozerodivisors-nontrivial` and `placement-owner-ownedrings-nozerodivisors-commutative-nontrivial` each have a complete source pass and are [x]. The two new authored providers expose existing axiom meets and are added and closed in the same bank. Nonzero submonoids now use the weakest existing sufficient structure, including the actual noncommutative QQ<x,y> example; fraction constructions require commutativity and nontriviality. Selected fraction maps, normalized fractional-ideal data, zero-ring behavior and owned undecided propositions are preserved. Their full records below include the actual arrows and all constructor repairs. Protected construction assertions are unchanged; the missing category-level fraction-field entry and unsupported computations remain named inside the existing domain work and T. Eighteen of 633 whole-owner passes are closed. The existing Noetherian pass is active next; no new prerequisite has been filed.
+
+**Closed `placement-owner-ownedrings-nozerodivisors` (2026-10-11; `1a93093f4c`):** both introductions, all 15 strict authored ancestors and the inherited ring arrows have their complete pass. The category now names its exact zero-product axiom and states that commutativity and nontriviality are separate. Its integer witness and ordinary, possibly noninjective ring maps are preserved. This was the fifteenth of 631 owner passes at its bank; the sole changed Python file passed the required post-commit stdlib AST check. The commutative refinement and both new existing-meet providers are independently closed in the later domain bank below. Runtime assertions remain under T.
 
 **Closed `placement-owner-ownedrings-nontrivial` (`0f443d4665`, 2026-10-11):** both introductions, all 15 strict authored ancestors and the actual inherited ring arrows are complete. The existing native integer constructor now explicitly records 0 != 1, admitting the owner's literal ZZ witness without a new recognition procedure or general Domain/Order implication. Nontriviality adds no injectivity requirement to ring maps. This completed the fourteenth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. NoZeroDivisors is independently closed above; the commutative refinement's domain and fraction-field work is active in its existing node. Runtime assertions remain under T.
 
@@ -283,7 +285,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: fifteen complete and 616 unchecked. FormalPowerSeriesRings, the Prime refinement, Division, Fields, Nontrivial and NoZeroDivisors are independently closed. The existing commutative NoZeroDivisors refinement pass is active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. Subsequent independent Localization, Local/Complete/Adic, FormalPowerSeriesRings, Prime, Division, Fields, Nontrivial and NoZeroDivisors passes are closed. The newly authored AdicCompletions.Local provider received its complete pass in the same source bank, giving 631 owners. The domain correction closes the existing commutative NoZeroDivisors pass and adds and closes the complete passes for the two authored providers on existing Nontrivial zero-product meets. There are now 633 owners: eighteen complete and 615 unchecked. Noetherian is active next. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; explicit new-provider accounting does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -372,6 +374,128 @@ These are source-level closure correspondences, not executed Sage results. The a
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
 
+### Whole-category placement: the three zero-product/domain owners (2026-10-11; source passes closed)
+
+This bank completes three independent owner passes in `categories/rings/ring_foundation.py`. The existing commutative zero-product owner is corrected, and two providers are authored on existing Nontrivial axiom intersections. Each new provider has its complete pass in this bank; neither is an unfinished prerequisite.
+
+| Complete owner pass | Original and remaining introductions | Strict authored ancestors |
+| --- | --- | ---: |
+| `OwnedRings.NoZeroDivisors.Commutative` | Seven original; two remain. | 18 |
+| `OwnedRings.NoZeroDivisors.Nontrivial` | All three new introductions. | 17 |
+| `OwnedRings.NoZeroDivisors.Commutative.Nontrivial` | All six new introductions. | 21 |
+
+#### Definitions and the whole original inventory
+
+The zero-product axiom says that `xy = 0` implies `x = 0` or `y = 0`. It holds in the zero ring. Nontriviality is the separate assertion `1 != 0`. A commutative ring with both properties is an integral domain. These definitions separate hypotheses that the former commutative provider conflated. They agree with the actual axiom declarations and the selected integer, field, quotient and localization constructions read before the repair.
+
+For a nontrivial zero-product ring R, the subset R minus zero contains one and is multiplicatively closed. This does not require commutativity. A commutative fraction field instead needs the full integral-domain meet. A finite family of fractions spans a fractional R-ideal because the product of their nonzero denominators is a common nonzero denominator; Noetherianity or principality is not needed for this mathematical definition.
+
+| Original introduction on the commutative zero-product owner | Complete disposition |
+| --- | --- |
+| `_repr_object_names()` | Retain here, naming commutative rings without zero divisors and allowing the zero ring. |
+| `an_object()` | Retain the canonical owned ZZ witness. Its stronger placement does not strengthen this category's definition. |
+| `nonzero_multiplicative_submonoid()` | Move to `NoZeroDivisors.Nontrivial`, removing unnecessary commutativity while adding necessary nontriviality. Keep the cached single existing construction. |
+| `fractional_ideal(*module_generators)` | Move to `NoZeroDivisors.Commutative.Nontrivial`; retain the selected finite-family normalization and existing fractional-ideal constructor. |
+| `fraction_field_localization()` | Move to the same exact domain owner; retain localization at the selected nonzero submonoid. |
+| `fraction_field_map()` | Move with its selected canonical localization and field comparison maps. |
+| `fraction_field()` | Move with the same selected target, retaining a field itself in the field case. |
+
+The noncommutative provider introduces only its exact category name, canonical owned ZZ witness, and the moved cached nonzero-submonoid method. The full domain provider introduces only its name, the same canonical witness, and the four fraction operations above; it inherits the submonoid method. Neither adds an element provider, extra axiom implication, parameter, public forwarding layer, parallel constructor or arrow family. `OwnedIntegralDomains()` is the exact commutative/NoZeroDivisors/Nontrivial meet. `OwnedPrincipalIdealDomains()` adds PrincipalIdeals to that meet, and the exported aliases continue to delegate to these same owners.
+
+Deleting Nontrivial admits the zero ring, whose complement of zero is empty and does not contain one. Deleting NoZeroDivisors admits ZZ/6, whose nonzero classes 2 and 3 multiply to zero. Deleting commutativity admits the selected QQ<x,y>, whose nonzero elements form a submonoid but which cannot embed in a commutative field. These separators establish the required hypotheses. The four fraction operations undergo a necessary-hypothesis correction; no impossible outside-old-home assertion is claimed for that restriction.
+
+#### Complete strict authored up-sets
+
+The three columns below enumerate every strict authored ancestor. C denotes the bare commutative zero-product owner, N the nontrivial zero-product owner, and D the full domain owner. Their respective totals are 18, 17 and 21. The existing CategoryWithAxiom propagation supplies the meets; generated axiom intersections and implementation wrappers are not additional authored identities.
+
+| Authored ancestor | Definition retained | C | N | D |
+| --- | --- | :---: | :---: | :---: |
+| `OwnedRings.NoZeroDivisors.Commutative` | Commutative zero-product ring, possibly zero. | — | — | yes |
+| `OwnedRings.NoZeroDivisors.Nontrivial` | Nontrivial zero-product ring, without commutativity. | — | — | yes |
+| `OwnedRings.NoZeroDivisors` | The zero-product axiom. | yes | yes | yes |
+| `OwnedRings.Nontrivial` | Distinct zero and one. | — | yes | yes |
+| `OwnedRings.Commutative` | Commutative unital ring. | yes | — | yes |
+| `Magmas.Commutative` | Commutative multiplication. | yes | — | yes |
+| `OwnedRings` | Associative unital ring. | yes | yes | yes |
+| `OwnedSemirings` | Unital multiplication, commutative addition and distributivity. | yes | yes | yes |
+| `OwnedRngs` | Associative multiplication and additive inverses. | yes | yes | yes |
+| `Monoids` | Associative multiplication with identity. | yes | yes | yes |
+| `Semigroups` | Associative multiplication. | yes | yes | yes |
+| `Magmas.Unital` | Multiplication with a two-sided identity. | yes | yes | yes |
+| `Magmas` | Binary multiplication. | yes | yes | yes |
+| `AdditiveGroups.AdditiveCommutative` | Abelian addition. | yes | yes | yes |
+| `AdditiveGroups` | Addition with inverses. | yes | yes | yes |
+| `AdditiveMonoids` | Associative addition with zero. | yes | yes | yes |
+| `AdditiveSemigroups` | Associative addition. | yes | yes | yes |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. | yes | yes | yes |
+| `AdditiveMagmas` | Binary addition. | yes | yes | yes |
+| `Sets` | Underlying set. | yes | yes | yes |
+| `Objects` | Owned mathematical object. | yes | yes | yes |
+
+No strict ancestor of N supplies both of its necessary premises; no strict ancestor of D supplies all three domain premises. Division, Fields, Local, Complete, Noetherian, PrincipalIdeals, finiteness and a selected scalar algebra are not uniform consequences of these owners. The new authored providers also become strict ancestors of already reviewed descendants: Division now has 18 rather than 17, Fields 29 rather than 27, and Prime 30 rather than 28. Their complete records above/below explicitly include these newly reviewed providers; their introductions and arrows do not change.
+
+#### Actual arrows, inclusion and canonical fraction maps
+
+All three owners inherit the ordinary RingMor packet. The owned axiom wrapper uses CategoryPacketMethods, whose fixed-endpoint selector walks the actual supercategories and retains the literal endpoints. OwnedRings supplies RingMorCategoryConstruction, its fixed RingMor and actual RingMorphism element provider, including the existing semiring, rng, multiplicative, additive and set providers. Identity and composition retain those exact endpoints; no property intersection introduces an injection-only or coefficient-algebra arrow restriction.
+
+The existing nonzero-submonoid constructor retains the exact source R, its predicate, facade elements and `kind="nonzero_elements"` metadata. Its cached inclusion is `Monoids().Mor(S, R)._from_submonoid_inclusion()`, sending the source elements to themselves under multiplication. It does not select a fraction ring as codomain or enumerate the predicate truth set.
+
+For a nonfield domain with the existing selected computation, set L to `R.fraction_field_localization()` and K to `R.fraction_field()`.
+
+| Retained map | Exact domain | Exact codomain | Definition |
+| --- | --- | --- | --- |
+| `L.localization_map()` | R | L | r maps to r/1. |
+| `L.fraction_field_comparison()` | L | K | The same fraction in the selected field realization. |
+| `R.fraction_field_map()` | R | K | The comparison composed with the localization map, with literal middle object L. |
+
+If R is already a field, K and the localization target are literally R, and the fraction map is the explicit ordinary RingMor identity. The fractional-ideal module companion now reads this actual fraction map and its codomain for scalar restriction; it does not reconstruct a map from a conversion callback. The same supplied finite family reaches the existing constructor. Its prior normalization is preserved: over ZZ the family is reduced by `_zz_fractional_generator` to the selected principal generator, so no claim is made that the original family remains verbatim as a framing.
+
+The ordinary unital map ZZ to GF(2) is admissible and kills 2. It cannot restrict to the two nonzero submonoids or extend to QQ, where 2 is a unit. Thus neither operation is asserted to be a functor on all inherited ring arrows. No arrow restriction or nonexistent universal extension is added.
+
+#### Undecided membership and affected consumers
+
+The public predicate-submonoid contract now states the caller's actual premises: the truth set contains one and is closed under multiplication. The existing constructor still rejects proved false membership of one; it recognizes an owned Predicate before Boolean conversion. A one-point check is not presented as a closure proof.
+
+The same engine's owned `is_parent_of` first examines membership in the exact source. Proved nonmembership returns False; proved membership permits normalization and evaluation; undecided ingress returns an Atomic proposition without applying the predicate outside its domain. An owned predicate result survives unchanged. Element construction rejects proved nonmembership and gives its explicit assertion for undecided admission; it does not use Python `in` internally. The nonzero predicate is owned `negation(element == R.zero())`. External Python `in` remains a Boolean protocol. Generated-submonoid membership and actual inverse algorithms are not expanded.
+
+| Affected owner or consumer | Source correction and retained assertion |
+| --- | --- |
+| `is_integral_domain()` | True on the exact domain placement. On a bare commutative zero-product ring, return owned `negation(one == zero)`; zero is False and unknown stays a proposition. Other existing hooks remain. |
+| `is_regular()` | The unique zero-ring element is regular because multiplication on the singleton is injective. A true domain uses owned negation of zero status; other rings retain the colon-ideal definition. |
+| `total_quotient_map()` and Cartier | Preserve zero/finite identity cases; use a fraction field only for a true domain. Cartier asks this existing common map directly and retains its actual codomain. |
+| `_placed_nonzero()` | Bare NoZeroDivisors no longer implies nontriviality; actual Nontrivial and infinite placement evidence remain. |
+| Localization cardinality and fraction-value admission | Proved zero source gives cardinality one before domain handling. The domain helper and optional source fraction model require the full meet; undecided answers retain the existing boundary. The localized-module caller already uses the corrected IntegralDomains alias. |
+| `FractionalIdeals` | Its existing parameter-category protocol requires the exact domain owner. Its module scalar restriction reuses the retained fraction map, without changing the selected ZZ/order algorithms. |
+
+Literal weak zero-product occurrences were judged by their own mathematics. Multiplication by a nonzero ideal generator remains injective under the bare axiom. Zero/unit ideal cases already precede proper ideal cases. A prime localization has a proper prime and hence a nontrivial Local target. These correct uses are preserved.
+
+#### Constructor evidence and actual outside-old-home witness
+
+| Selected construction | Exact placement justified by its data |
+| --- | --- |
+| Native ZZ, fields, orders and DVR cases | Use the corrected exact domain/PID aliases where already justified. Native ZZ retains its explicit Nontrivial placement; orders use the actual integral-domain/Noetherian component. |
+| Polynomial, Laurent and formal-series rings | Inherit Nontrivial independently through the constant embedding, alongside applicable zero-product placement. |
+| Native ZZ/1 | Receives the bare zero-product axiom, never Nontrivial. |
+| Native free associative algebra | Inherits NoZeroDivisors and Nontrivial independently from the coefficient ring, with no commutativity or Noetherian inference. |
+| Quotients | A proved prime ideal is proper and yields the strict domain meet; a proved maximal ideal yields Fields. Only literal True predicates justify those placements. |
+| Finite selected localization | Preserves the bare zero-product axiom even when zero is inverted. Strict domain/PID inheritance additionally requires proved exclusion of zero from S. |
+| Prime localization | Properness and Local supply Nontrivial; weak zero-product inheritance remains correct. The optional source fraction model requires a strict source domain. |
+| Adic completion | A proved proper defining ideal gives a surjection to a nonzero first quotient and hence Nontrivial. The unit-ideal zero case is preserved; an unknown properness test gives no such inference. No general completed-domain claim is taken from the truncation engine. |
+
+The actual tensor-algebra construction on the framed QQ-module with labels x,y enters `_tensor_algebra_on`, `_native_free_algebra`, `_NativeFreeAlgebraParent`, `_OwnedAlgebraParent`, `_OwnedRingParent` and the common classifier. It retains the literal coefficient field, labels, word basis and finite coefficient data. In a degree/word order, the product of the largest words is the unique largest product and its coefficient is the nonzero product of leading coefficients. Constants embed, so zero differs from one. The distinct words xy and yx prove that this actual A = QQ<x,y> is outside the old commutative home. Its nonzero submonoid method is now supplied by N; x, y and xy belong, zero does not, and its exact inclusion preserves one and multiplication. These are source closure assertions, not execution results.
+
+Selected ZZ retains its cached nonzero submonoid and literal QQ fraction target; its canonical map sends an integer to the same rational integer. QQ itself retains the field identity case. The fractional ideal of ZZ spanned by 2 retains its module in QQ, normalized generating family, inclusion and actual scalar map. Zero inversion and undecided propositions do not create a strict domain placement.
+
+#### Named computation remainders and verification boundary
+
+The current nonfield fraction factory still needs a supplied distinct computation model; an opaque self-realized domain without one retains its explicit assertion. The fractional-ideal realization still supplies the selected ZZ and OwnedOrders cases. General domain syzygies, ideal inverses, predicate decisions and generated-submonoid membership algorithms are not supplied merely by correcting placement.
+
+The protected assertion `IntegralDomains().fraction_field()(ZZ) is QQ` in `tests/constructions/test_functors_construct.sage` is unchanged. The current implementation supplies `ZZ.fraction_field()` but not that requested category-level entry. The missing entry remains an interface/computation obligation inside this existing domain node and T. The assertion fixes the object result QQ; it does not demand a Frac extension on every ring arrow. No protected assertion is edited, relabeled, disabled or executed.
+
+The protected additive NN assertions in `tests/constructions/test_group_actions_construct.sage` also remain fixed: even NN and the additive submonoid generated by 3 and 5, including 8 and 0 but excluding 7, need the additive construction. The current multiplicative entry requires one and does not supply it. This representation remainder is named at the existing unchecked AdditiveMonoids node, with no prerequisite and no whole-pass claim for that owner.
+
+Source evidence comprises all three complete owner bodies, the entire relevant 379-row occurrence ledger, the complete fractional-ideal and predicate-submonoid sources, the actual producer chains and selected construction/map callers, and the already read full ring/semiring/magma/additive/set/object ancestry, owned axiom propagation and actual fixed-Mor definitions. Companion fixes do not count as complete passes at FractionalIdeals, Monoids, AdditiveMonoids, PrincipalIdeals or RingMor. M1 / DEV-58 limits this bank to focused source review, a diff check and post-commit stdlib AST of exactly the six changed Python files. Runtime assertions and generated views remain under T.
+
 ### Whole-category placement: `OwnedRings.NoZeroDivisors` (2026-10-11; source pass closed)
 
 This is the complete pass for `placement-owner-ownedrings-nozerodivisors`.
@@ -457,12 +581,12 @@ Boolean, no unknown proposition is decided, and no finite data or division
 algorithm is selected. Identity and composition preserve the actual ring
 contracts.
 
-**Named remainder in the existing descendant.**
-`placement-owner-ownedrings-nozerodivisors-commutative` remains open for
-its own integral-domain/nontriviality convention, the common domain
-decision and fraction-field consumers. Closing this parent neither closes
-that descendant nor endorses its unreconciled stronger claims. No new
-prerequisite node was created.
+**Independent descendant closure.** The later domain bank closes
+`placement-owner-ownedrings-nozerodivisors-commutative` on its own entire
+inventory and adds and closes both authored existing-meet providers. Its
+complete record reconciles the nontriviality convention, common domain
+decision and fraction-field consumers. Named computation limits remain
+inside that existing domain work and T; no prerequisite was created.
 
 Evidence is the complete own declaration and nested boundary; the source
 inventory and raw bases; the complete relevant semiring/rng and
@@ -544,7 +668,7 @@ The true ZZ, Zmod(6), zero-ring and reduction-map assertions stay under T. No ar
 
 ### Whole-category placement: `OwnedRings.Division.Commutative` (2026-10-11; source pass closed)
 
-**Closed independent owner pass: `placement-owner-ownedrings-division-commutative`.** The complete Fields provider, its actual ancestor definitions, selected local data, concrete Mor delivery and all affected callers have been reviewed. The source repair is independently checked and closes this owner without adding a provider or changing the 631-owner inventory. Division and nested Prime remain separately recorded completed passes.
+**Closed independent owner pass: `placement-owner-ownedrings-division-commutative`.** The complete Fields provider, its actual ancestor definitions, selected local data, concrete Mor delivery and all affected callers have been reviewed. The source repair is independently checked and closes this owner without adding a provider or changing the then-current 631-owner inventory. Division and nested Prime remain separately recorded completed passes.
 
 #### Disposition and focused repair
 
@@ -577,14 +701,16 @@ After removal there are nine declarations at this provider. The one common Local
 
 The three removed operations use only the hypothesis of a commutative local ring. A selected localization source, a field, a coefficient algebra, a basis and an algorithmic field model are unnecessary for their definitions. None of the strict ancestors of Local uniformly singles out a unique maximal ideal, so Local remains their weakest available owner. The other field operations retain their actual field meaning: the selected field-generating family and field embeddings are not substitutions for a general ring's chosen algebra generators or for all injective maps of underlying sets; the absolute Galois construction is the field construction with its existing retained closure data.
 
-#### Complete strict authored up-set: 27 owners
+#### Complete strict authored up-set: 29 owners
 
-These are authored mathematical providers, not a runtime C3 linearization. Generated axiom intersections and framework category bases are not additional owners.
+The original bank reviewed 27 strict authored ancestors. The domain bank adds and completely reviews two providers on existing Nontrivial meets, bringing the current up-set to 29. These are authored mathematical providers, not a runtime C3 linearization. Generated axiom intersections and framework category bases are not additional owners.
 
 | Strict authored ancestor | Structure retained or forgotten |
 | --- | --- |
 | `OwnedRings.Division` | Every nonzero element is invertible; commutativity is forgotten. |
-| `OwnedRings.NoZeroDivisors.Commutative` | The authored integral-domain refinement. |
+| `OwnedRings.NoZeroDivisors.Commutative.Nontrivial` | The exact integral-domain meet, with its complete new-provider fraction-construction pass. |
+| `OwnedRings.NoZeroDivisors.Nontrivial` | The nontrivial zero-product meet and its nonzero submonoid. |
+| `OwnedRings.NoZeroDivisors.Commutative` | Commutative zero-product rings, allowing the zero ring. |
 | `OwnedRings.NoZeroDivisors` | A product can vanish only when a factor vanishes. |
 | `OwnedRings.Commutative.PrincipalIdeals` | All field ideals are principal. |
 | `OwnedRings.Artinian` | The two-ideal lattice has descending chain condition. |
@@ -611,7 +737,7 @@ These are authored mathematical providers, not a runtime C3 linearization. Gener
 | `Sets` | The underlying set. |
 | `Objects` | The authored mathematical root. |
 
-Division supplies NoZeroDivisors and Nontrivial; the existing axiom propagation reaches the authored commutative domain refinement. Fields' explicit edges supply PrincipalIdeals, Artinian and Complete Local. Complete Local reaches the common chosen-adic owner. The two ring supercategories supply the multiplicative and additive branches, and Sets reaches Objects. The patch changes none of these edges.
+Division supplies NoZeroDivisors and Nontrivial; the existing axiom propagation reaches the authored commutative zero-product refinement and both now-authored Nontrivial meets. Fields' explicit edges supply PrincipalIdeals, Artinian and Complete Local. Complete Local reaches the common chosen-adic owner. The two ring supercategories supply the multiplicative and additive branches, and Sets reaches Objects. The patch changes none of these edges.
 
 A field need not be finite, ordered, a number field, finitely generated over its prime field, algebraically closed, or supplied with an enumerable family of embeddings into every other field. None of those is a uniform ancestor. Additional coefficient-algebra and selected localization or quotient placements belong to particular constructions. They do not redefine the ordinary field arrows.
 
@@ -635,7 +761,7 @@ The Complete defining-ideal supplier still obtains the actual maximal ideal thro
 
 #### True source closure assertions, unexecuted
 
-1. The existing F_2 witness belongs to Fields and all 27 authored ancestors. Its dimension supplier returns owned integer zero. The zero ring is excluded by the inherited Nontrivial edge. QQ is an infinite field, so the witness does not supply universal finite placement.
+1. The existing F_2 witness belongs to Fields and all 29 authored ancestors. Its dimension supplier returns owned integer zero. The zero ring is excluded by the inherited Nontrivial edge. QQ is an infinite field, so the witness does not supply universal finite placement.
 2. For native owned QQ or GF(p) with no selected local datum, `local_ring_construction()` returns the cached canonical record. `residue_field()` is literally that field, and `residue_map()` is an actual `OwnedRings().Mor(K, K)` identity with those literal endpoints. Reading either does not evaluate the zero-ideal factory.
 3. On that canonical path, `maximal_ideal()` is the existing owned zero ideal with `ideal.ring() is K`. Its construction is requested only by the ideal accessor. Repeated access uses the same selected record and its cached datum.
 4. If an actual Fields object already supplies a record D, `local_ring_construction() is D`; its selected maximal ideal, residue-field model and quotient map survive unchanged. In particular a source-selected field realization is not forced to replace its retained residue model by itself. A supplied record's missing map retains the named common Local computation boundary.
@@ -690,14 +816,18 @@ The public `is_unit()` operation correctly remains at Monoids; Division
 supplies its theorem through that owner's protected hook. Nontriviality
 matters: zero is a unit in the zero ring, which is excluded from Division.
 
-#### Entire strict authored up-set: 17 owners
+#### Entire strict authored up-set: 18 owners
 
-The CategoryWithAxiom mechanism retains OwnedRings and propagates its authored
-ancestors; the two explicit edges add NoZeroDivisors and Nontrivial. Generated
-axiom intersections and implementation wrappers are not extra owner identities.
+The original bank reviewed 17 authored ancestors. The domain bank additionally
+authors and completely reviews `OwnedRings.NoZeroDivisors.Nontrivial` on the
+existing meet, bringing the current up-set to 18. CategoryWithAxiom retains
+OwnedRings and its authored ancestors; the two explicit edges add
+NoZeroDivisors and Nontrivial. Generated axiom intersections and implementation
+wrappers are not extra owner identities.
 
 | Authored ancestor | Retained structure |
 | --- | --- |
+| `OwnedRings.NoZeroDivisors.Nontrivial` | Distinct zero and one with the zero-product axiom; its complete new-provider pass supplies the nonzero submonoid. |
 | `OwnedRings.NoZeroDivisors` | Products vanish only when a factor vanishes. |
 | `OwnedRings.Nontrivial` | `1 != 0`. |
 | `OwnedRings` | Associative unital ring. |
@@ -776,7 +906,7 @@ Public monoid unit status retains a Boolean or owned proposition. Computing an i
 
 ### Whole-category placement: `OwnedRings.Division.Commutative.Prime` (2026-10-11; source pass closed)
 
-**Closed independent owner pass: `placement-owner-ownedrings-division-commutative-prime`.** The authored declaration supplies this canonical TODO identity; the source graph's equivalent axiom-order vertex is `OwnedRings.Commutative.Division.Prime`. Ordinary Fields and RingMor retain their independent pending owner passes. This bank adds no category provider and leaves the 631-owner inventory unchanged.
+**Closed independent owner pass: `placement-owner-ownedrings-division-commutative-prime`.** The authored declaration supplies this canonical TODO identity; the source graph's equivalent axiom-order vertex is `OwnedRings.Commutative.Division.Prime`. Ordinary Fields was independently closed in its later bank; RingMor retains its own pending pass. This original bank added no category provider and left the then-current 631-owner inventory unchanged.
 
 #### Disposition and bounded repair
 
@@ -800,9 +930,9 @@ A narrow inherited RingMor companion makes PrimeFields uniqueness the first matc
 
 The original owner had the first two methods only. It declares no ParentMethods, ElementMethods, extra-supercategory, Mor override or further child. The `Prime()` refinement selector belongs to Fields; the `PrimeFields()` spelling remains an alias of this exact category. No mathematical operation is promoted to a strict ancestor. The general finite-field constructor GF remains at its existing home and continues to construct GF(4).
 
-#### Complete strict authored up-set: 28 owners
+#### Complete strict authored up-set: 30 owners
 
-The ten ring refinements beyond the previously read common Local ring spine are:
+The original bank reviewed 28 strict authored ancestors. The domain bank adds and completely reviews `OwnedRings.NoZeroDivisors.Nontrivial` and `OwnedRings.NoZeroDivisors.Commutative.Nontrivial`, bringing the current up-set to 30. Their definitions and operations are recorded in the complete domain pass. The original ten ring refinements beyond the previously read common Local ring spine are:
 
 1. `OwnedRings.Division.Commutative`
 2. `OwnedRings.Division`
@@ -817,7 +947,7 @@ The ten ring refinements beyond the previously read common Local ring spine are:
 
 The remaining eighteen are `OwnedRings.Commutative`, `OwnedRings.Nontrivial`, `OwnedRings`, `OwnedSemirings`, `OwnedRngs`, `Monoids`, `Semigroups`, `Magmas.Unital`, `Magmas.Commutative`, `Magmas`, `AdditiveGroups.AdditiveCommutative`, `AdditiveGroups`, `AdditiveMonoids`, `AdditiveSemigroups`, `AdditiveMagmas.AdditiveCommutative`, `AdditiveMagmas`, `Sets`, and `Objects`.
 
-These are source-declared mathematical owners, not an executed MRO. Framework bases and generated axiom intersections are not extra owners. Division supplies NoZeroDivisors and Nontrivial; commutativity propagates to the authored domain refinement. Fields supplies principal ideals, Artinian and Complete Local. Principal ideals and Artinian each reach Noetherian; Complete Local reaches the chosen adic owner, using the zero maximal ideal for fields. The ring spine supplies both distributive operations, and Sets reaches the actual Objects root. No new graph edge is added.
+These are source-declared mathematical owners, not an executed MRO. Framework bases and generated axiom intersections are not extra owners. Division supplies NoZeroDivisors and Nontrivial; commutativity propagates to the authored zero-product refinement and both now-authored Nontrivial meets. Fields supplies principal ideals, Artinian and Complete Local. Principal ideals and Artinian each reach Noetherian; Complete Local reaches the chosen adic owner, using the zero maximal ideal for fields. The ring spine supplies both distributive operations, and Sets reaches the actual Objects root. No new graph edge is added.
 
 Finite-set, ordered-ring and number-field placements belong to particular constructor results, not uniformly to this refinement. In particular QQ is infinite, while F_p is finite; positive-characteristic fields are not ordered rings. The review reads Fields as ancestry and does not certify all of its algorithms or declare that owner closed.
 
@@ -831,7 +961,7 @@ The outside-home separator is GF(4): its identity and Frobenius a↦a² are dist
 
 #### True closure assertions, unexecuted
 
-- `PrimeFields()` is the canonical Prime refinement; its witness is the existing F_2 and belongs to all 28 declared ancestors.
+- `PrimeFields()` is the canonical Prime refinement; its witness is the existing F_2 and belongs to all 30 declared ancestors.
 - Both public `PrimeField(0)` wrappers, the existing session-exported entry and `PrimeFields()(0)` return literal owned QQ, including through supported owned/preparsed integer ingress. Characteristic zero is not a request for a finite field of order zero.
 - For prime p, both public wrappers and the category entry return the existing GF(p), with characteristic p and PrimeFields placement. The exported characteristic-3 specimen retains F_3; `PrimeFields()(ZZ(5))` and `GF(5)` retain the same existing owned result.
 - Inputs -2, 1, 4 and 9 raise the stated invalid-characteristic error through both wrappers and the category entry. An unresolved primality answer cannot become an admission.

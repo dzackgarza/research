@@ -281,6 +281,13 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
         ):
             r"""Return the represented submonoid cut out by ``predicate``.
 
+            The caller supplies the mathematical premises that its truth set
+            contains the identity and is closed under multiplication. The
+            predicate is defined on this ambient monoid; its values may be
+            undecided owned propositions. The constructor retains this datum
+            and rejects a proved failure at the identity, without claiming
+            that a one-point check establishes the submonoid laws.
+
             A specialized construction may supply theorem-backed stronger
             ``placements``; they are part of the object's category at
             construction rather than a later refinement.
