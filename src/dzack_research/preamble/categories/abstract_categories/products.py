@@ -14,7 +14,11 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat, _FunctorCategory
+from dzack_research.preamble.categories.abstract_categories.cat import (
+    Cat,
+    CategoryFunctorMorphism,
+    _FunctorCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -450,6 +454,68 @@ class FiniteSequenceDiagram(Functor):
         for position in range(source + 1, target):
             composite = self._transitions[position] * composite
         return composite
+
+
+class _FiniteSequenceFunctorCategory(_FunctorCategory):
+    r"""The canonical functor category on a finite ordinal, with its adjacent arrows."""
+
+    def object(
+        self,
+        functor: Functor | CategoryFunctorMorphism | tuple[Morphism, ...] | list[Morphism],
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
+        r"""Read a functor or its ordered family of consecutive arrows."""
+        if isinstance(functor, (tuple, list)):
+            transitions = tuple(functor)
+            size = int(self.domain_category().object_set().cardinality())
+            expected = max(0, size - 1)
+            if len(transitions) != expected:
+                raise ValueError(
+                    f"a diagram on a finite ordinal with {size} objects needs {expected} adjacent arrows, "
+                    f"but {len(transitions)} were given"
+                )
+            if size == 1:
+                raise ValueError(
+                    "an empty transition family does not specify the object of a one-object diagram; "
+                    "supply the actual functor"
+                )
+            base = self.codomain_category()
+            for transition in transitions:
+                if not isinstance(transition, Morphism) or not _category_accepts_morphism(
+                    base, transition.domain(), transition.codomain(), transition
+                ):
+                    raise TypeError(
+                        f"each transition must be a morphism in {base}, but got {transition}"
+                    )
+            objects = (
+                (transitions[0].domain(), *(transition.codomain() for transition in transitions))
+                if transitions else ()
+            )
+            functor = FiniteSequenceDiagram(objects, transitions, base)
+        return super().object(
+            functor,
+            _engine=_engine,
+            construction_data=construction_data,
+        )
+
+    __call__ = object
+
+    class ParentMethods:
+        @cached_method
+        def arrows(self):
+            r"""Return adjacent arrows with their ordinal positions and repetitions."""
+            functor = self.functor()
+            shape = functor.domain()
+            length = max(0, int(shape.object_set().cardinality()) - 1)
+            return indexed_family(
+                Sets.Δ[length - 1],
+                lambda position: functor(
+                    shape.Mor(shape(int(position)), shape(int(position) + 1)).unique()
+                ),
+                name="Adjacent arrows of a finite sequence",
+            )
 
 
 class ParallelPairMorphism(Morphism):

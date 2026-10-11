@@ -113,8 +113,10 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
     """
 
     def __init__(self, group, locus, **rest) -> None:
-        if group.lattice() is not locus.universe():
-            raise ValueError(f"{group} cannot act on {locus}: the group acts on {group.lattice()}, but the primitive isotropic vectors lie in {locus.universe()}")
+        # The cached public locus can be a finite represented subset or a
+        # condition set; its identity retains the same exact lattice in both.
+        if locus is not group.lattice().primitive_isotropic_vectors():
+            raise ValueError(f"{group} cannot act on {locus}: it is not the primitive isotropic vector locus of {group.lattice()}")
         self._group = group
         self._locus = locus
         representatives = []
@@ -135,7 +137,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def orbit_of(self, vector):
         if vector not in self.locus():
-            raise ValueError(f"{vector} has no orbit in {self}: it is not a primitive isotropic vector of {self.locus().universe()}")
+            raise ValueError(f"{vector} has no orbit in {self}: it is not a primitive isotropic vector of {self.group().lattice()}")
         for orbit in self:
             if vector in orbit:
                 return orbit
@@ -146,7 +148,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
-            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be primitive isotropic vectors of {self.locus().universe()}")
+            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be primitive isotropic vectors of {self.group().lattice()}")
         return self.group().vector_equivalence_witness(source, target)
 
 
@@ -820,6 +822,7 @@ def _marked_isotropic_object(obj, *, flag):
                 )
             line, plane = terms
             line_into_plane = line.inclusion().factor_through(plane.inclusion())
+            line_into_plane = line.Emb(plane)(line_into_plane)
             return _marked_isotropic_category(obj.lattice(), flag=True).object(
                 (line_into_plane, plane.inclusion())
             )

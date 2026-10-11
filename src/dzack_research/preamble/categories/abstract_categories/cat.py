@@ -246,11 +246,14 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
         )
         from dzack_research.preamble.categories.abstract_categories.products import (
             FiniteOrdinalCategory,
+            _FiniteSequenceFunctorCategory,
         )
 
         match domain.represented_category():
             case shape if shape is FiniteOrdinalCategory(2):
                 return _WalkingArrowFunctorCategory
+            case FiniteOrdinalCategory():
+                return _FiniteSequenceFunctorCategory
             case _:
                 return self.fixed_category_class()
 

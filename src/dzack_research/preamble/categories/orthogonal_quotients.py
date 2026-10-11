@@ -372,13 +372,12 @@ def _subgroup_vector_orbit_representatives(subgroup, square):
     lattice = orthogonal_group.domain()
     square = lattice.base_ring()(square)
 
-    if square == lattice.base_ring().zero():
-        from dzack_research.preamble.categories.lattice_morphisms import (
-            _primitive_pointed_classes,
+    if square == lattice.base_ring().zero() and not lattice.is_definite():
+        primitive_orbits = orthogonal_group.orbit_decomposition(
+            lattice.primitive_isotropic_vectors()
         )
-
         primitive_representatives = []
-        for representative in _primitive_pointed_classes(lattice, square):
+        for representative in primitive_orbits.representatives():
             stabilizer = orthogonal_group.vector_stabilizer_generators(representative)
             primitive_representatives.extend(
                 splitting(representative)
