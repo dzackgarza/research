@@ -14,6 +14,18 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Protected well-order reversal expects eager validation
+
+The three-point reversal r(k)=2-k is not monotone: 0<=1, but r(0)=2 is
+not <=r(1)=1. The protected
+`tests/sets/test_cardinal_and_ordinal_order_morphisms.sage` expects this
+failure during default construction. Under `OWN-22`, that true failed
+inequality is diagnosed by an explicit check, while construction retains
+the defining map. The existing `triage-long-tail` node owns reconciliation
+of that timing. T retains the failed reversal, positive monotone maps and
+the fact that the composite of two reversals is the identity. The protected
+file is unchanged and unexecuted; no source repair remains for this entry.
+
 
 
 ### Slice and coslice arrows still need their actual base-arrow initialization
