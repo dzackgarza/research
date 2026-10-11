@@ -285,7 +285,7 @@ class GradedModuleMorphismMethods:
             return NotImplemented
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
+        left, right = _scalar_identity_coefficient(self, parent), _scalar_identity_coefficient(summand, parent)
         if left is not None and right is not None:
             return parent._scalar_identity(left + right)
         return parent._from_constructed_graded_map(
@@ -300,7 +300,7 @@ class GradedModuleMorphismMethods:
             return super().__neg__()
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        scalar = _scalar_identity_coefficient(self)
+        scalar = _scalar_identity_coefficient(self, parent)
         if scalar is not None:
             return parent._scalar_identity(-scalar)
         return parent._from_constructed_graded_map(
@@ -395,7 +395,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             raise TypeError(f"composition in {self} needs two admitted graded endomorphisms")
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
+        left_scalar, right_scalar = _scalar_identity_coefficient(left, self), _scalar_identity_coefficient(right, self)
         if left_scalar is not None and right_scalar is not None:
             return self._scalar_identity(left_scalar * right_scalar)
         return self._from_constructed_graded_map(
@@ -411,7 +411,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         scalar = self.base_ring()(scalar)
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        coefficient = _scalar_identity_coefficient(morphism)
+        coefficient = _scalar_identity_coefficient(morphism, self)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
         return self._from_constructed_graded_map(

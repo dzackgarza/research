@@ -14,6 +14,23 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### A module annihilator uses the additive endomorphism representation
+
+For a left module M over a possibly noncommutative ring R, the defining
+scalar representation is rho:R->End_Ab(U(M)), and Ann_R(M)=ker(rho).
+Left multiplication by r need not be R-linear: on the regular left
+module of M_2(QQ), r=E12 and s=E21 give r*s=E11 but s*r=E22.
+Thus writing the scalar representation with target End_R(M) adds an
+unavailable commutativity hypothesis.
+
+`categories/modules/pure/modules.py:_ring_morphism_defining_module_action`
+already constructs the actual ring arrow into End_Ab(U(M)). The two
+`End_R(M)` mentions in its adjacent generic `annihilator` docstring still
+state the wrong target. This documentation remainder belongs to the
+existing `placement-owner-modules` in TODO.md; the AdditiveMor scalar
+repair does not alter the already correct defining map.
+
+
 ### An integral isotropic partner with minimal pairing can fail to exist
 
 [Research #401](https://github.com/dzackgarza/research/issues/401) requests,

@@ -780,7 +780,7 @@ class ModuleMorphismMethods:
             return NotImplemented
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
+        left, right = _scalar_identity_coefficient(self, parent), _scalar_identity_coefficient(summand, parent)
         if left is not None and right is not None:
             return parent._scalar_identity(left + right)
         return parent.element_class(
@@ -795,7 +795,7 @@ class ModuleMorphismMethods:
         parent = self._pointwise_mor()
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        scalar = _scalar_identity_coefficient(self)
+        scalar = _scalar_identity_coefficient(self, parent)
         if scalar is not None:
             return parent._scalar_identity(-scalar)
         return parent.element_class(
@@ -829,7 +829,7 @@ class ModuleMorphismMethods:
             return op == op_EQ
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        left, right = _scalar_identity_coefficient(self, self.parent()), _scalar_identity_coefficient(other, self.parent())
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         undecided = AtomicProposition("equal", self, other)
@@ -1934,15 +1934,15 @@ class ModuleMorphismMethods:
         )(forward, inverse)
 
     def _is_the_identity(self) -> bool:
-        r"""Return whether this is the selected scalar realization of the identity."""
+        r"""Return whether the retained scalar datum establishes the identity."""
         if self.domain() is not self.codomain():
             return False
         from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
         )
 
-        scalar = _scalar_identity_coefficient(self)
-        return scalar is not None and scalar == self.parent().base_ring().one()
+        scalar = _scalar_identity_coefficient(self, self.parent())
+        return scalar is not None and (scalar == self.parent().base_ring().one()) is True
 
     def __mul__(self, other):
         r"""Return ``self . other`` for a composable arrow, or ``other * self`` for a scalar."""
@@ -2606,8 +2606,8 @@ class _ModuleMorCommonMethods:
             _scalar_identity_coefficient,
         )
 
-        left_scalar = _scalar_identity_coefficient(left)
-        right_scalar = _scalar_identity_coefficient(right)
+        left_scalar = _scalar_identity_coefficient(left, self)
+        right_scalar = _scalar_identity_coefficient(right, self)
         if left_scalar is not None and right_scalar is not None:
             return self._scalar_identity(left_scalar * right_scalar)
         return self.element_class(
@@ -2631,7 +2631,7 @@ class _ModuleMorCommonMethods:
         scalar = self.base_ring()(scalar)
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        coefficient = _scalar_identity_coefficient(morphism)
+        coefficient = _scalar_identity_coefficient(morphism, self)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
         return self.element_class(

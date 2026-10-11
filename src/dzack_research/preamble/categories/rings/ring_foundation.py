@@ -3716,8 +3716,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             In a framed algebra it is enough to commute with the selected
             algebra generators: scalar coefficients are central and the
             commuting relation is preserved by sums and products.  In an
-            endomorphism algebra a represented scalar map ``r id`` is central
-            because every linear ``h`` satisfies ``h(r x) = r h(x)``.
+            endomorphism algebra a map ``r id`` represented in that exact
+            algebra's scalar action is central because every admitted ``h``
+            satisfies ``h(r x) = r h(x)``. A scalar map for a stronger module
+            theory does not establish centrality in a weaker additive End.
             """
             match element in self:
                 case False:
@@ -3743,7 +3745,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     )
 
                     match self:
-                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element) is not None:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element, self) is not None:
                             return True
                         case _:
                             assert False, (

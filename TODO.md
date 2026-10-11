@@ -395,6 +395,7 @@ Repair the existing public construction routes and inherited methods before prov
 - [x] **`placement-owner-additivemor`**. **Needs:** none.
   **Owner pass:** `AdditiveMor` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
   **Closure assertions:** the complete `AdditiveMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AdditiveMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Completed whole-owner source pass (2026-10-11):** all nine direct parent methods, the thirteen-method AdditiveMorphism provider, complete actual object/enrichment ancestors, fixed-Mor generation, public ingress and both higher-arrow paths are reconciled in HANDOFF.md's AdditiveMor section. The concurrent admission guard in 8fcc529eb3 preserves already-admitted stronger arrows and rejects a foreign weaker Morphism. The contextual scalar adapter banked in 29d3604c1b and this bank's complete module/graded/centrality callers require the exact retained action and endpoints, select the native module evaluator, preserve premise-bearing pointwise fallbacks and consume only decided equality for identity. Integer arithmetic, the mixed QQ/integer sum, the GF(4) noncentrality separator, torsion and unknown equality are retained as true assertions under T. No runtime acceptance or new prerequisite is claimed.
 
 - [x] **`placement-owner-additivemorgroups`**. **Needs:** none.
   **Owner pass:** `AdditiveMorGroups` in `src/dzack_research/preamble/categories/group/additive_mors.py`.
@@ -1761,6 +1762,7 @@ Repair the existing public construction routes and inherited methods before prov
 - [ ] **`placement-owner-modules`**. **Needs:** none.
   **Owner pass:** `Modules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
   **Closure assertions:** the complete `Modules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Modules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
+  **Observed remainder inside this owner (2026-10-11, AdditiveMor consumer review):** the actual scalar action correctly lands in End_Ab(U(M)), but both End_R(M) mentions in the generic annihilator docstring need that additive target for a possibly noncommutative R. On the regular left module R, left multiplication by r need not be R-linear: for R=M_2(QQ), r=E12, s=E21 and m=1, r(sm)=E11 differs from s(rm)=E22. Correct the two formulas with this owner's documentation; no extra prerequisite is introduced.
 
 - [ ] **`placement-owner-modules-finitelygenerated`**. **Needs:** none.
   **Owner pass:** `Modules.FinitelyGenerated` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
