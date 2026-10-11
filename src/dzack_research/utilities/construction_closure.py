@@ -210,6 +210,18 @@ def _arguments(method: ast.FunctionDef, container: str) -> tuple[str, ...]:
 
 def inventory(root: Path) -> dict:
     """Read every declared category and all source-level operation returns."""
+    root = root.resolve()
+    repo_root = root.parents[2] if root.parts[-3:] == ("src", "dzack_research", "preamble") else root
+
+    def location(path: Path | str, line: int) -> str:
+        # Machine-independent provenance: an audit on a CI runner and one on
+        # a developer checkout describe the same mathematical source.
+        try:
+            relative = Path(path).resolve().relative_to(repo_root)
+        except ValueError:
+            relative = Path(path)
+        return f"{relative}:{line}"
+
     declarations = read_tree(root)
     names = {d.name for d in declarations}
     # Preserve parameters and axioms as distinct category schemes; never
@@ -223,13 +235,13 @@ def inventory(root: Path) -> dict:
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         except (OSError, SyntaxError) as err:
-            exceptions.append({"path": str(path), "error": repr(err)})
+            exceptions.append({"path": location(path, 0), "error": repr(err)})
             continue
         classes = {c.lineno: c for c in ast.walk(tree) if isinstance(c, ast.ClassDef)}
         for declaration in group:
             node = classes.get(declaration.line)
             if node is None:
-                exceptions.append({"path": str(path), "error": f"missing class at {declaration.line}"})
+                exceptions.append({"path": location(path, declaration.line), "error": f"missing class at {declaration.line}"})
                 continue
             for container in ("Category", *CONTAINERS):
                 methods = _methods(node, container)
@@ -243,7 +255,7 @@ def inventory(root: Path) -> dict:
                             f"{declaration.vertex}:{container}.{method_name}@{method.lineno}",
                             declaration.vertex, container, method_name,
                             _arguments(method, container), None, "<no return>",
-                            (), f"{path}:{method.lineno}", "none", "no-return",
+                            (), location(path, method.lineno), "none", "no-return",
                         ))
                     for index, statement in enumerate(ret):
                         if statement.value is None:
@@ -255,15 +267,19 @@ def inventory(root: Path) -> dict:
                             )
                             expr = _source(statement.value)
                         conditions = _conditions(method, statement)
-                        status = "resolved" if target and not target.startswith("$dispatch:") else (
-                            "unresolved" if evidence.startswith("unresolved") or evidence == "depth-limited"
-                            else "non-object" if evidence in {"non-object-or-container", "none"} else "symbolic"
+                        status = (
+                            "unresolved" if target and target.startswith("$dispatch:") else
+                            "symbolic" if target and target.startswith("$method:") else
+                            "resolved" if target else
+                            "unresolved" if evidence.startswith("unresolved") or evidence == "depth-limited" else
+                            "non-object" if evidence in {"non-object-or-container", "none"} else
+                            "symbolic"
                         )
                         rules.append(Rule(
                             f"{declaration.vertex}:{container}.{method_name}@{statement.lineno}:{index}",
                             declaration.vertex, container, method_name,
                             _arguments(method, container), target, expr,
-                            conditions, f"{path}:{statement.lineno}", evidence, status,
+                            conditions, location(path, statement.lineno), evidence, status,
                         ))
 
     category_edges = sorted(_all_edges(declarations))
@@ -277,7 +293,7 @@ def inventory(root: Path) -> dict:
         "categories": [
             {
                 "vertex": d.vertex,
-                "source": f"{d.path}:{d.line}",
+                "source": location(d.path, d.line),
                 "bases": list(d.bases),
                 "summary": d.summary,
                 "axiom_of": d.axiom_of,
@@ -524,7 +540,9 @@ node(780,y,206,op.output||"unknown","result",()=>{
 $("detail").textContent=JSON.stringify({...op,derivations:db.derivations[op.output]||[]},null,2);});});
 panel.append(svg);
 }
-function draw(){const needle=$("filter").value.toLowerCase();const matches=rows().filter(x=>JSON.stringify(x).toLowerCase().includes(needle));
+function draw(){
+$("graph").replaceChildren();$("detail").textContent="Select a category or rule.";
+const needle=$("filter").value.toLowerCase();const matches=rows().filter(x=>JSON.stringify(x).toLowerCase().includes(needle));
 $("items").replaceChildren();$("count").textContent=matches.length+" entries";
 for(const entry of matches.slice(0,5000)){const button=document.createElement("button");
 button.textContent=entry.label;button.onclick=()=>{
