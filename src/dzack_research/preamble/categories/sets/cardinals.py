@@ -417,8 +417,13 @@ class Cardinalities(OwnedCategory):
             CountablyInfiniteSets, UncountableSets, EnumeratedSets,
         )
 
-        finite_exponent = Sets().is_provably_finite(exponent)
-        finite_codomain = Sets().is_provably_finite(codomain)
+        # Constructing a function set must not execute its endpoints' cardinality
+        # algorithms: those algorithms may themselves need maps into the endpoint
+        # (for example the augmentation of a presented module).  Use the supplied
+        # categorical finiteness here; computing cardinality remains an operation
+        # on the constructed set.
+        finite_exponent = exponent in FiniteSets()
+        finite_codomain = codomain in FiniteSets()
         if finite_exponent and finite_codomain:
             return FiniteSets()
 
