@@ -2084,6 +2084,26 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
+        def is_symmetric(self):
+            r"""Whether ``b(x,y)=b(y,x)`` for all ``x,y``.
+
+            A selected finite spanning family decides symmetry from its pairwise
+            values by bilinearity.  Without such a finite determining family,
+            retain the exact proposition instead of forcing an infinite check.
+            """
+            module = self.unformed_module()
+            if (
+                not module.has_selected_module_resolution()
+                or module.module_generating_set().is_finite() is not True
+            ):
+                return AtomicProposition("is_symmetric", self)
+            generators = tuple(self.module_generators())
+            return conjunction(
+                self.b(left, right) == self.b(right, left)
+                for left in generators
+                for right in generators
+            )
+
         def is_even(self):
             r"""Whether ``b(x,x)`` lies in ``2W`` for every ``x``.
 
@@ -2125,6 +2145,27 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 for value in probes
             )
 
+        @cached_method
+        def square_fibre(self, square):
+            r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
+            values = self.value_module()
+            square = values(square)
+            return OwnedSets().equalizer_construction(
+                OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
+                OwnedSets().Mor(self, values)(lambda vector: square),
+            )
+
+        def square_fibre_action(self, square, *, orbit_relation=None):
+            r"""The automorphism action on the complete diagonal-value fibre."""
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+
+            points = self.square_fibre(square).object()
+            return GObjects(self.Aut(), OwnedSets()).on_set(
+                points,
+                lambda isometry, vector: isometry(vector),
+                orbit_relation=orbit_relation,
+            )
+
     def _call_(
         self,
         form,
@@ -2164,33 +2205,13 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     class Symmetric(CategoryWithAxiom):
         r"""Modules with a symmetric bilinear form."""
 
-        def an_object(self):
-            r"""The hyperbolic plane U, whose form is symmetric."""
-            from dzack_research.preamble.categories.lattices import Lattices
+        _certifying_predicate = "is_symmetric"
 
-            return Lattices(self.base_ring())("U")
+        def an_object(self):
+            r"""Return the generic bilinear-form witness, already symmetric by construction."""
+            return BilinearFormModules(self.base_ring()).an_object()
 
         class ParentMethods:
-            @cached_method
-            def square_fibre(self, square):
-                r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
-                values = self.value_module()
-                square = values(square)
-                return OwnedSets().equalizer_construction(
-                    OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
-                    OwnedSets().Mor(self, values)(lambda vector: square),
-                )
-
-            def square_fibre_action(self, square, *, orbit_relation=None):
-                r"""The orthogonal action on the complete square fibre."""
-                from dzack_research.preamble.categories.group.g_objects import GObjects
-
-                points = self.square_fibre(square).object()
-                return GObjects(self.Aut(), OwnedSets()).on_set(
-                    points, lambda isometry, vector: isometry(vector),
-                    orbit_relation=orbit_relation,
-                )
-
             def vector_of_sign(self, sign):
                 r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
 
@@ -2310,10 +2331,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     half_norm(generator)
 
                 return unformed.equip_quadratic_form(ring, half_norm)
-
-            def correlation_isomorphism(self):
-
-                return _correlation_isomorphism(self)
 
             def hodge_discriminant(self, volume):
 
@@ -2964,6 +2981,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 self, injective=injective
             )
             return correlation.is_injective() and correlation.is_surjective()
+
+        def correlation_isomorphism(self):
+            r"""Return the correlation isomorphism when this free formed module is unimodular."""
+            return _correlation_isomorphism(self)
 
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
