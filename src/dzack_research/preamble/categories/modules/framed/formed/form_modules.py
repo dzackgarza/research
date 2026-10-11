@@ -2108,10 +2108,11 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
         r"""Finitely presented modules with a bilinear form."""
 
         def an_object(self):
-            r"""The discriminant group of U."""
-            from dzack_research.preamble.categories.lattices import Lattices
-
-            return Lattices(self.base_ring())("U").discriminant_group()
+            r"""Return the zero finitely presented module with its zero bilinear form."""
+            ring = self.base_ring()
+            module = ring.free_module(0)
+            form = module.bilinear_forms(ring)(lambda left, right: ring.zero())
+            return BilinearFormModules(ring)(form, _extra_categories=(self,))
 
         class Torsion(CategoryWithAxiom):
             r"""Finitely presented torsion modules with a bilinear form."""
