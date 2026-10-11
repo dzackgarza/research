@@ -1837,6 +1837,48 @@ against the current project location. The owning repair is to reconcile the
 book recipes and checker with the source root; the inspected boundary is
 these recipes, the checker path, and `research/.book/_quarto.yml`.
 
+### Semantic lattice dispatch must retain the represented orbit, flag and sign data
+
+The source-only review of `lattice-algorithm-dispatch` on 2026-10-11 found
+three mathematical losses after the semantic port calls were installed.
+Asking `O(U).vector_orbit_representatives(0)` selected only primitive null
+classes, although zero and all positive contents are distinct integral-vector
+orbits. The finite materializing consumers are character-subgroup orbit
+splitting and the primitive Eichler covering. They need, respectively, all
+contents and only the finite primitive classes.
+
+Converting a returned primitive flag selected any plane basis vector outside
+the line. For the line ZZ(2e1+3e2) in the plane ZZ e1+ZZ e2 in 2U, either
+standard basis choice spans a proper sublattice. Earlier in the same route,
+the canonical Fun([2],Lattices) did not accept the adjacent-arrow tuple or
+expose the arrows required by both research and the frozen port. The existing
+finite-sequence functor and the line-in-plane cokernel's free trivialization
+supply the actual diagram and an integral basis completion.
+
+The hyperbolic owner admits both signatures (1,n) and (n,1), but its new
+literal-lattice edgewalk call passed the former convention to a specialization
+requiring the latter. Negating the form preserves the reflection geometry;
+returning its result requires transport to the original lattice, with reversed
+wall-root signs, rather than dropping the admitted sign convention.
+
+**Owning repair:** the existing `lattice-algorithm-dispatch` node, including
+the reached canonical diagram and finite/countable representative-set inputs.
+The public primitive-locus entry must also retain the binary finite subset:
+its inclusion gives the ambient lattice, while the former `universe()` check
+assumed only a condition-set representation. Both mathematical consumers now
+use the existing public orbit decomposition, with the definite square-zero
+singleton and finite nonzero-square covering route retained.
+The reviewed boundary is the public lattice, isotropic, character-subgroup,
+primitive-covering, perfect-domain and edgewalk callers and their selected
+semantic suppliers. The required mathematical assertions remain under T;
+no runtime test or specialized port algorithm was executed in this M1 review.
+**Source resolution:** the canonical ordinal functor realization now reuses
+the actual finite-sequence diagram and retains repeated adjacent arrows;
+flag ingress supplies its lattice embedding; and the public primitive-locus
+operation accepts both of its existing representations. Edgewalk uses the
+actual form twist, underlying-module identification and transported report
+on the original lattice. The twelve closure groups are retained under T.
+
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
