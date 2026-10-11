@@ -852,14 +852,18 @@ def _product_on(multiplication):
 
 
 def _decide_on_module_generators(module, identity, arity, statement):
-    r"""Decide an ``R``-multilinear identity on tuples of module generators of ``module``.
+    r"""Decide an algebra law by its determining equations on module generators.
 
-    Both sides of every identity decided here are ``R``-multilinear in their
-    arguments, so agreement on each tuple of module generators is agreement on
-    all of ``module``.  Only literally proved finiteness permits traversal.
-    A module stating no finite framing, or leaving its finiteness undecided,
-    leaves the identity undecided: it is not enumerated (``DEV-52``), and the answer is
-    ``statement``, the proposition that the identity holds.
+    Associativity and Jacobi are trilinear, commutativity is bilinear, and
+    the equations for a fixed unit are linear. Their equations on spanning
+    generators therefore determine the law. Alternation instead uses the
+    diagonal and polarized equations supplied by ``_alternation``; its
+    diagonal equation is quadratic, not multilinear in the tuple arguments.
+
+    Only literally proved finiteness permits traversal. With no selected
+    determining family, the answer is ``statement``, the owned proposition
+    of the law. The existing module and set suppliers retain their own
+    exact-cardinality and enumeration frontiers (``DEV-52``).
     """
     ring = module.base_ring()
     match module:
@@ -884,7 +888,14 @@ def _commutativity(multiplication):
 
 
 def _alternation(multiplication):
-    r"""``[x, x] = 0`` on generators and ``[x, y] + [y, x] = 0`` on pairs: alternation of a bilinear map."""
+    r"""The diagonal and polarized generator criterion for an alternating bilinear map.
+
+    For ``x = sum_i r_i e_i``, bilinearity expands ``[x,x]`` as the sum of
+    ``r_i^2 [e_i,e_i]`` and ``r_i r_j ([e_i,e_j]+[e_j,e_i])`` for ``i<j``.
+    Thus both equations are needed on a spanning family, including in
+    characteristic two. Skew-symmetry alone does not force the diagonal
+    brackets to vanish.
+    """
     product = _product_on(multiplication)
     zero = multiplication.codomain().zero()
     return lambda x, y: conjunction((
@@ -2322,6 +2333,11 @@ class Algebras(OwnedCategoryOverBaseRing):
     class Lie(CategoryWithAxiom):
         r"""Algebras whose bilinear multiplication is a Lie bracket: alternating and satisfying the Jacobi identity.
 
+        Alternation means ``[x,x]=0`` in every characteristic. Together
+        with bilinearity it implies ``[x,y]=-[y,x]``; the converse need
+        not hold in characteristic two. Jacobi is the cyclic sum
+        ``[x,[y,z]] + [y,[z,x]] + [z,[x,y]] = 0``.
+
         No associativity or unit is implied: the multiplication at this node
         is the bracket itself, so the algebra Mor already has the right
         morphisms, the linear maps preserving it.
@@ -2339,7 +2355,13 @@ class Algebras(OwnedCategoryOverBaseRing):
             )
 
         def _call_(self, module, multiplication):
-            r"""The Lie algebra on ``(M, m)``, ``m`` its bracket: alternation and the Jacobi identity decided on module generators."""
+            r"""Retain ``(M, m)`` under its alternation and Jacobi premises.
+
+            The selected finite generator criteria decide the two laws
+            independently. A refutation rejects the bracket; an undecided
+            law remains its original owned proposition in
+            ``alternation_decision()`` or ``jacobi_decision()``.
+            """
             alternation = _decide_on_module_generators(
                 module, _alternation(multiplication), 2,
                 AtomicProposition("is_alternating", multiplication),
@@ -2359,6 +2381,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         class ParentMethods:
             def bracket(self, left, right):
+                r"""Evaluate the defining Lie multiplication on the two elements."""
                 return self.product(left, right)
 
             @cached_method
@@ -2370,6 +2393,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                 makes left and right annihilation equivalent in every
                 characteristic. Bilinearity permits the equalizer equations
                 to be checked on a finite chosen module generating family.
+                The result is the underlying ``R``-submodule with its exact
+                inclusion; the existing module kernels retain their own
+                coefficient and presentation computation frontiers.
                 The inherited ``center`` instead uses the bracket as a magma
                 multiplication and includes its nucleus equations.
                 """

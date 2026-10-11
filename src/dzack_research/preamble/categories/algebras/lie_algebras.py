@@ -5,11 +5,22 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 
 
 def LieAlgebraMorphism(parent, linear):
-    r"""Read the bracket-preserving linear map through the root algebra equation."""
-    category = Algebras(parent.domain().base_ring()).Lie()
-    assert parent.mor_category().is_subcategory(category), (
-        f"a morphism of Lie algebras must lie in {category}, but {parent} is a set of morphisms in "
-        f"{parent.mor_category()}"
+    r"""Read a map between Lie algebras through their actual algebra Mor.
+
+    Lie identities add no arrow law, so the property category can reuse
+    the root algebra Mor literally. Check the actual Lie endpoints and
+    multiplication-preserving arrow theory, not the reused parent's
+    category label. A bare module Mor is insufficient.
+    """
+    algebras = Algebras(parent.domain().base_ring())
+    category = algebras.Lie()
+    assert (
+        parent.domain() in category
+        and parent.codomain() in category
+        and parent.mor_category().is_subcategory(algebras)
+    ), (
+        f"a Lie algebra morphism needs two objects of {category} and their "
+        f"multiplication-preserving algebra Mor, but got {parent}"
     )
     return parent(linear)
 

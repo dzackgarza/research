@@ -14,6 +14,31 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Finite coefficient module kernels need exact coefficient presentations
+
+For `R=Zmod(4)`, the kernel of multiplication by `2` is the actual submodule
+`2R`. It is isomorphic to `R/2R`, not to a free rank-one `R`-module. The
+Lie algebra `L=R h direct_sum R e` with `[h,e]=2e` therefore has center
+`2L`, since centrality of `a h+b e` is exactly `2a=2b=0`.
+
+**Source evidence (2026-10-11):** read the direct modular-ring placement,
+the framed-free kernel hook, `_selected_presentation_kernel`, its PID/CAP
+dispatch, and the Singular coefficient-presentation and kernel adapters.
+The direct `Zmod(4)` object has no selected PID or exact polynomial cover
+for this computation. Its nonzero adjoint kernel reaches the existing
+assertion requiring an exact polynomial coefficient presentation. A
+possible abstract quotient presentation does not itself transport this
+literal coefficient ring, its modules or their maps.
+
+**Searched / Found / Conclusion:** the existing module equalizer and
+intersection constructions supply the Lie-center route, with the actual
+kernel inclusion when computed. Their selected coefficient adapter is the
+remaining boundary for the direct modular-ring case. The existing
+`placement-owner-selectedfinitepresentationmodules` owns that computation
+and transport review. Confidence is high for these read source paths;
+no runtime result, general solver-absence claim or new prerequisite is
+asserted. Retain the named computation boundary at the Lie consumer.
+
 ### Generic commutative-algebra specimens impose stronger laws
 
 A commutative bilinear product need not be associative or unital. For the
@@ -25,6 +50,14 @@ alone therefore does not justify the centre-rank-two expectation in
 source bank already records the correct centre; the protected expectation
 remains unreconciled. Its bare product-table input also predates the actual
 bilinear-map ingress used by the current algebra constructor.
+
+The same ingress mismatch remains in `tests/algebras/test_lie_cokernels.sage`:
+its raw tables enter root `Algebras(QQ)`, which neither interprets a table
+as the defining tensor-domain morphism nor infers Lie axioms. The asserted
+Cartan-ideal theorem in `sl_2(QQ)` is true: brackets with `h` give `2e,-2f`,
+so the generated Lie ideal is the whole algebra. Its protected spelling
+still needs the actual bilinear bracket and explicit Lie entry; the
+existing `triage-long-tail` reconciliation retains this valid theorem.
 
 Likewise, the standard polynomial tensor cocone is a coproduct in
 associative unital commutative algebras, with unit-preserving arrows. The
