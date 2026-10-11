@@ -683,7 +683,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `Cardinalities` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
   **Closure assertions:** the complete `Cardinalities` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Cardinalities`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-cardinalitymor`**. **Needs:** none.
+- [x] **`placement-owner-cardinalitymor`**. **Needs:** none.
   **Owner pass:** `CardinalityMor` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
   **Closure assertions:** the complete `CardinalityMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CardinalityMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
