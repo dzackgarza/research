@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.validation import validator
 
 
 class MagmaMorphism:
@@ -31,6 +32,81 @@ class MagmaMorphism:
 
     def _composition(self, right):
         return _compose_operation_preserving_mor(self, right, super()._composition)
+
+    @RealizationHook
+    def _multiplicativity_decision(self):
+        r"""Supply the decision of the admitted multiplication-preservation law.
+
+        Protected predicate contract under OWN-05. The sole caller is
+        ``is_multiplicative``. A realization may derive the law from its
+        construction or decide its defining equations. The default checks
+        every pair in a finite enumerated source, and otherwise retains the
+        proposition; admission to this Mor alone is not a computation of
+        that proposition.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
+
+        domain = self.domain()
+        if domain in FiniteSets() and domain in EnumeratedSets():
+            return conjunction(
+                self(left * right) == self(left) * self(right)
+                for left in domain for right in domain
+            )
+        return AtomicProposition("is_multiplicative", self)
+
+    @cached_method
+    def is_multiplicative(self):
+        r"""Return the decision or proposition that ``f(x*y) == f(x)*f(y)``.
+
+        The map-on-elements datum states this law as its admission premise.
+        This diagnostic can establish it, refute it, or leave it undecided;
+        no addition, scalar action, associativity or unit is required.
+        """
+        return self._multiplicativity_decision()
+
+    @validator
+    def validate_multiplicativity(self) -> None:
+        r"""Raise ``ValueError`` only when multiplication preservation is false.
+
+        An undecided owned proposition remains the stated admission premise
+        under OWN-22; validation does not turn it into a Boolean proof.
+        """
+        if self.is_multiplicative() is False:
+            raise ValueError(
+                f"{self} does not preserve the multiplication from {self.domain()} "
+                f"to {self.codomain()}: f(x*y) != f(x)*f(y)"
+            )
+
+    @RealizationHook
+    def _center_corestriction(self):
+        r"""Supply the represented factor through the codomain's centre.
+
+        Protected construction contract under OWN-05. The sole caller is
+        ``corestrict_to_center``. A stronger arrow owner may compute a centre
+        inclusion and the unique multiplication-preserving factor through it,
+        or reject a decided noncentral image. When the selected centre is
+        already the codomain, the original arrow is exactly that factor.
+        """
+        codomain = self.codomain()
+        match codomain.center() is codomain:
+            case True:
+                return self
+            case False:
+                assert False, (
+                    f"corestricting {self} to the centre of {codomain} needs "
+                    "a selected central-image decision and a lift through "
+                    "the centre inclusion"
+                )
+
+    def corestrict_to_center(self):
+        r"""Factor this magma map through a represented centre of its codomain.
+
+        This factor exists exactly when the image is central, and is unique
+        because the centre inclusion is injective. Its defining triangle
+        preserves multiplication without needing addition or a unit.
+        """
+        return self._center_corestriction()
 
 
 class MagmaMor(CategoricalMor):
@@ -160,6 +236,10 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             return self._regularity_decision()
 
     class ParentMethods:
+        def product(self, left, right):
+            r"""Evaluate this magma's selected binary law on two elements."""
+            return self(left) * self(right)
+
         @cached_method
         @RealizationHook
         def _center_construction(self):

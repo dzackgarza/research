@@ -1,8 +1,10 @@
 r"""Restriction of scalars for algebras along a specified ring morphism.
 
-For ``f : R -> S`` and an ``S``-algebra ``B``, restriction changes only the
-chosen algebra structure map, from ``S -> B`` to ``R -> S -> B``.  The
-underlying computation ring is therefore retained.  When both ``S/R`` and
+For ``f : R -> S`` and an ``S``-algebra ``B=(M,m)``, restriction retains the
+additive group and multiplication and lets ``r`` act as ``f(r)``. The
+defining module is the exact ``Res_f(M)``. No associativity or unit is
+inferred; these laws and the other absolute algebra identities are retained
+only when the source supplies them. When both ``S/R`` and
 ``B/S`` carry the live commutative polynomial-quotient presentations, this
 module also constructs an exact finite ``R``-presentation of the restricted
 algebra.  That presentation is what makes the represented Mor surface and the
@@ -11,24 +13,31 @@ a second authoritative ring implementation.
 """
 
 from sage.categories.map import Map
-from sage.misc.classcall_metaclass import typecall
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
-    _OwnedAlgebraParent,
+    _algebra_on_module,
     _fix_selected_algebra_presentation,
+    _root_algebra_law_decisions,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
+    _restricted_scalars_view,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     _engine_element,
     _engine_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.refine import RealizationHook
 
 _RESTRICTED_SCALAR_ALGEBRAS = {}
 
@@ -56,9 +65,23 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         return "restricted-scalars algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring()).Associative().Unital()]
+        return [Algebras(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            algebra_over_extension,
+            ring_map,
+            restricted_scalar_generator_labels=None,
+            restricted_algebra_generator_labels=None,
+            **rest,
+        ) -> None:
+            self._algebra_over_extension = algebra_over_extension
+            self._restricted_scalars_ring_map = ring_map
+            self._restricted_scalar_generator_labels = restricted_scalar_generator_labels
+            self._restricted_algebra_generator_labels = restricted_algebra_generator_labels
+            super().__init__(**rest)
+
         def ring_map(self):
             r"""Return the selected scalar map ``R -> S``."""
             return self._restricted_scalars_ring_map
@@ -76,65 +99,76 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         def restricted_algebra_generator_labels(self):
             return self._restricted_algebra_generator_labels
 
+        def _element_constructor_(self, value):
+            r"""Read exact source-module data, or the selected unital coefficient input.
 
-class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
-    r"""A restricted algebra with its scalar map and presentation constructor-owned."""
-
-    def __init__(
-        self,
-        algebra,
-        ring_map,
-        labels,
-        generator_values,
-        restricted_scalar_labels,
-        restricted_algebra_labels,
-        *,
-        presentation_data=None,
-    ) -> None:
-        base_ring = _owned_ring(ring_map.domain())
-        self._algebra_over_extension = algebra
-        self._restricted_scalars_ring_map = ring_map
-        self._restricted_scalar_generator_labels = restricted_scalar_labels
-        self._restricted_algebra_generator_labels = restricted_algebra_labels
-        source_structure = algebra.algebra_structure_morphism()
-        presentation_ring = None
-
-        if presentation_data is not None:
-            (
-                presentation_ring,
-                selected_relations,
-                presentation_ideal,
-                lift_to_presentation,
-            ) = presentation_data
-
-        categories = [RestrictedScalarsAlgebras(base_ring)]
-        if presentation_data is not None:
-            categories.extend(
-                (
-                    FinitelyPresentedAlgebras(base_ring),
-                    AlgebrasWithChosenFinitePresentation(base_ring),
+            The module realization continues to own coordinate syntax. An
+            element of the original algebra is transported through its
+            retained module, while a scalar of the new base enters a unital
+            algebra through its selected restricted scalar action.
+            """
+            source = element_parent(value)
+            if source is self:
+                return value
+            base = self.base_ring()
+            if source in Modules(base) and self._built_on_the_same_data(source):
+                return self._element_on_the_same_data(source, value)
+            original = self.algebra_over_extension()
+            original_module = original.unformed_module()
+            module = self.unformed_module()
+            if self in Algebras(base).Unital() and source is base:
+                unit = module.wrap(original_module(original.one()))
+                return self._element_from_unformed_module(
+                    module.scalar_multiple(value, unit)
                 )
+            if source is original or source is original_module:
+                return self._element_from_unformed_module(
+                    module.wrap(original_module(value))
+                )
+            return super()._element_constructor_(value)
+
+        def _element_from_unformed_module(self, element):
+            r"""Transport a datum of ``Res_f(M)`` without applying ``f`` again."""
+            if self.has_selected_module_resolution():
+                return Algebras.ParentMethods._element_from_unformed_module(self, element)
+            module = self.unformed_module()
+            return self._element_from_underlying_set(
+                module._underlying_additive_element(module(element))
             )
 
-        # Restriction along f: R -> S makes r act on B as f(r) acts:
-        # r * 1 is the image of f(r) under the structure morphism of B.
-        _OwnedAlgebraParent.__init__(
-            self,
-            _engine_ring(algebra),
-            base_ring,
-            labels,
-            scalar_structure=lambda scalar: source_structure(ring_map(scalar)),
-            generator_values=generator_values,
-            categories=tuple(categories),
-            algebra_framing_source=presentation_ring,
-        )
-        if presentation_data is not None:
-            _fix_selected_algebra_presentation(
-                self,
-                presentation_ring,
-                selected_relations,
-                presentation_ideal,
-                lift_to_presentation,
+        @RealizationHook
+        def _selected_engine_ring(self):
+            r"""Supply the original ring's optional computation model.
+
+            Protected OwnedRings realization contract. Only its engine
+            dispatcher asks for this datum; a general nonring algebra has no
+            ring model. The model supplies computation, never algebra laws.
+            """
+            original = self.algebra_over_extension()
+            if original not in OwnedRings():
+                return None
+            return original._selected_engine_ring()
+
+        def _engine_element(self, value):
+            r"""Lower through ``Res_f(M)`` and the original algebra's ring adapter.
+
+            This is the protected OwnedRings lowering contract, called only
+            after its dispatcher has selected the original ring model.
+            """
+            original = self.algebra_over_extension()
+            module_element = self.unformed_module()(self(value))
+            return _engine_element(original, original(module_element.underlying_element()))
+
+        def _from_engine_element(self, value):
+            r"""Raise a ring computation through the exact restricted module.
+
+            This is the protected OwnedRings raising contract. Its caller
+            has already selected the original algebra's ring realization.
+            """
+            original = self.algebra_over_extension()
+            original_value = _owned_engine_element(original, value)
+            return self._element_from_unformed_module(
+                self.unformed_module().wrap(original.unformed_module()(original_value))
             )
 
 
@@ -257,7 +291,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
             )
         else:
             value = algebra.algebra_generator(tagged.summand_element())
-        return _engine_element(algebra, value)
+        return algebra(value)
 
     def lift_to_presentation(element):
         representative = _engine_element(algebra, algebra(element)).lift()
@@ -283,15 +317,34 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
 def _restrict_algebra_scalars(algebra, ring_map):
     r"""Return ``Res_f(B)`` for ``f : R -> S`` and an ``S``-algebra ``B``.
 
-    The returned algebra retains the exact underlying computation ring of
-    ``B`` and composes its structure
-    map with ``f``.  The stronger chosen finite presentation is retained only
+    If ``B=(M,m)``, the defining module is ``Res_f(M)`` and the product is
+    ``m`` on its unchanged underlying additive elements. Since ``m`` is
+    ``S``-bilinear it is ``R``-bilinear for the action ``r*x=f(r)*x``.
+    Every retained associative, unit, commutative, alternating and Jacobi law
+    is the very same equation in those elements. No additional law follows
+    from restriction. The stronger chosen finite presentation is retained only
     when it can be constructed from chosen presentations of both ``S/R`` and
     ``B/S`` along the selected structure map of ``S``.
     """
     if not isinstance(ring_map, Map):
         raise TypeError(
             f"restriction of scalars of {algebra} is along a ring morphism, but {ring_map!r} is not a map"
+        )
+
+    extension_ring = algebra.algebra_base_ring()
+    base_ring = _owned_ring(ring_map.domain())
+    if ring_map.codomain() is not extension_ring:
+        raise ValueError(
+            f"restriction of scalars for {algebra} requires a map into the exact coefficient ring "
+            f"{extension_ring}, got codomain {ring_map.codomain()}"
+        )
+    if base_ring not in OwnedRings().Commutative():
+        raise TypeError(
+            f"restriction of an algebra to {base_ring} requires a commutative coefficient ring"
+        )
+    if ring_map not in OwnedRings().Mor(base_ring, extension_ring):
+        raise TypeError(
+            f"restriction of scalars requires an owned unital ring map {base_ring} -> {extension_ring}"
         )
 
     cache_key = (id(algebra), id(ring_map))
@@ -303,13 +356,37 @@ def _restrict_algebra_scalars(algebra, ring_map):
     ):
         return cached
 
-    extension_ring = algebra.base_ring()
-    if _engine_ring(ring_map.codomain()) is not _engine_ring(extension_ring):
-        raise ValueError(
-            f"restriction of scalars for {algebra} requires a map into "
-            f"{extension_ring}, got codomain {ring_map.codomain()}"
-        )
-    base_ring = _owned_ring(ring_map.domain())
+    original_module = algebra.unformed_module()
+    # A native algebra may realize its own module. Select the module owner
+    # directly, so its stronger algebra method cannot recurse into this one.
+    module = _restricted_scalars_view(original_module, ring_map)
+    original_multiplication = algebra.multiplication()
+    multiplication = module.tensor_product(module).from_bilinear_map(
+        module,
+        lambda left, right: module.wrap(
+            original_multiplication(left.underlying_element(), right.underlying_element())
+        ),
+    )
+    source_algebras = Algebras(extension_ring)
+    target_algebras = Algebras(base_ring)
+    placement = [RestrictedScalarsAlgebras(base_ring)]
+    for source, target in (
+        (source_algebras.Associative(), target_algebras.Associative()),
+        (source_algebras.Unital(), target_algebras.Unital()),
+        (source_algebras.Commutative(), target_algebras.Commutative()),
+        (source_algebras.Lie(), target_algebras.Lie()),
+    ):
+        if algebra in source:
+            placement.append(target)
+    unit = (
+        module.wrap(original_module(algebra.one()))
+        if algebra in source_algebras.Unital()
+        else None
+    )
+    construction_data = {
+        "algebra_over_extension": algebra,
+        "ring_map": ring_map,
+    }
 
     has_selected_presentation = (
         extension_ring in AlgebrasWithChosenFinitePresentation(base_ring)
@@ -327,32 +404,45 @@ def _restrict_algebra_scalars(algebra, ring_map):
             restricted_scalar_labels,
             restricted_algebra_labels,
         ) = _chosen_restriction_presentation(algebra, extension_ring, base_ring)
-    else:
-        labels = None
-        generator_values = None
-        restricted_scalar_labels = None
-        restricted_algebra_labels = None
+        placement.extend(
+            (
+                FinitelyPresentedAlgebras(base_ring),
+                AlgebrasWithChosenFinitePresentation(base_ring),
+            )
+        )
+        construction_data.update(
+            algebra_generating_family=indexed_family(
+                labels,
+                lambda label: module.wrap(original_module(generator_values(label))),
+                name="Restricted algebra generators",
+            ),
+            algebra_framing_source=presentation_ring,
+            restricted_scalar_generator_labels=restricted_scalar_labels,
+            restricted_algebra_generator_labels=restricted_algebra_labels,
+        )
 
-    presentation_data = (
-        (
+    restricted = _algebra_on_module(
+        module,
+        multiplication,
+        placement=tuple(placement),
+        categories=tuple(
+            category for category in algebra.category().all_super_categories()
+            if category._without_axioms() is OwnedRings() or category._without_axioms() is Sets()
+        ),
+        unit=unit,
+        construction_data=construction_data,
+        law_decisions=_root_algebra_law_decisions(algebra),
+    )
+    if has_selected_presentation:
+        _fix_selected_algebra_presentation(
+            restricted,
             presentation_ring,
             selected_relations,
             presentation_ideal,
-            lift_to_presentation,
+            lambda element: lift_to_presentation(
+                module(restricted(element)).underlying_element()
+            ),
         )
-        if has_selected_presentation
-        else None
-    )
-    restricted = typecall(
-        _RestrictedScalarsAlgebraParent,
-        algebra,
-        ring_map,
-        labels,
-        generator_values,
-        restricted_scalar_labels,
-        restricted_algebra_labels,
-        presentation_data=presentation_data,
-    )
     _RESTRICTED_SCALAR_ALGEBRAS[cache_key] = restricted
     return restricted
 

@@ -3,13 +3,13 @@ r"""Tensor and symmetric products on the module of relationful words."""
 from math import prod
 from typing import Any
 
-from sage.categories.morphism import SetMorphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
-from dzack_research.preamble.categories.algebras.algebras import Algebras, _AlgebraMorCommonMethods, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import Algebras, MultiplicativeAlgebraMorphism, _AlgebraMorCommonMethods, _algebra_on_module
 from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules, IntegerGradedModules
@@ -141,17 +141,33 @@ def _uses_free_construction_mor(domain):
 
 
 def _compose_with_free_construction(left, right):
-    r"""Compose through a sparse/free map without assuming a free source."""
-    if right.codomain() is not left.domain():
+    r"""Compose in the common theory before selecting free generator evaluation."""
+    if not isinstance(right, Morphism) or right.codomain() is not left.domain():
         return NotImplemented
+    right_parent = element_parent(right)
+    if not isinstance(right_parent, CategoricalMor):
+        return NotImplemented
+    algebras = Algebras(left.domain().algebra_base_ring())
+    left_category = left.parent().mor_category()
+    right_category = right_parent.mor_category()
+    if not (
+        left_category.is_subcategory(algebras)
+        and right_category.is_subcategory(algebras)
+    ):
+        return NotImplemented
+    category = Cat().join((left_category, right_category))
+    if not category.is_subcategory(algebras.Associative().Unital()):
+        return MultiplicativeAlgebraMorphism.__mul__(left, right)
     source = right.domain()
     target = left.codomain()
     if _uses_free_construction_mor(source):
-        return source.Mor(target)(lambda label: left(right(source.algebra_generator(label))))
+        return category.Mor(source, target)(
+            lambda label: left(right(source.algebra_generator(label)))
+        )
 
-    underlying = Algebras(source.base_ring()).underlying_module()
+    underlying = algebras.underlying_module()
     linear = underlying(left) * underlying(right)
-    return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(linear)
+    return category.Mor(source, target)(linear)
 
 
 class SparseFreeAlgebraMorphism:

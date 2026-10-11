@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 33 complete passes and 608 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. After the remaining current algebra wrong-answer repairs, the first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split. The parent now Needs all 641 canonical category-owner passes: the original 633 plus seven actual unit/semiring providers and the finite-magma-generation axiom reconciled in the source closures below. The existing twenty completed ring-owner passes remain closed. `Magmas.Unital`, `UnitalMagmaMor`, its fixed-category construction, and `Monoids.Commutative` are also closed. The complete nonunital semiring owner, its Commutative refinement, its Mor and fixed-Mor construction, OwnedSemirings and OwnedRngs are now closed as well: 34 complete passes and 607 unchecked. The required pending consumer changes were banked separately; a consumer repair closes its whole owner only after the full inventory and actual arrow path are discharged. The current bounded consumer reviews retain their outstanding mathematical obligations inside their existing nodes. `placement-owner-adelogpairs` is now closed on its full owner and selected-cover source assertions. The complete OwnedGroups pass and the new Magmas.FinitelyGeneratedAsMagma provider are also closed. The complete Algebras pass is now closed on its exact scalar datum, weaker operation homes, centre and arrow assertions. The current first literal ready row is `placement-owner-abeliangroupendomorphismrings`. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -587,6 +587,225 @@ and
 The displayed normalizer, center, inverse and cyclic calculations supply
 independent separating proofs. Only focused source and whitespace checks
 were run; no Sage, imports, tests, QC, build or consumer-repository gate.
+
+## Algebra owner source closure (2026-10-11)
+
+**Closed node:** `placement-owner-algebras`. The selected scalar-action
+consumer was banked in `455a45e93a`; this unit closes the complete root
+Algebras owner and its required consumers. The separate algebra refinements,
+Mor-owner passes, `restricted-algebras-are-restricted-modules` and
+`module-and-algebra-slice-objects-lie-in-their-slice` remain unchecked.
+
+**Mathematical owner.** For a commutative unital coefficient ring R, an
+algebra is an R-module M with an R-linear multiplication
+m: M tensor_R M -> M. Thus r(xy)=(rx)y=x(ry). Associativity, a unit,
+commutativity, alternation and Jacobi are additional laws. The root is not
+restricted to associative unital algebras. For an associative unital
+algebra the scalar datum is equivalently its selected central map
+R -> Z(A) -> A. The parameter category now states the commutative-ring
+hypothesis required by this tensor construction. A general noncommutative
+left coefficient ring supplies no such uniform bilinear product: in
+M_2(QQ), r=E12, x=E21, y=I give r(xy)=E11 but x(ry)=E22.
+
+**Complete direct inventory.** The entire root definition, its selected
+suppliers and the affected consumer paths were read.
+
+| Introductions | Mathematical data and disposition |
+| --- | --- |
+| Category surface | Parameter category, `an_object`, naming, supercategories, underlying-module functor, fixed `Mor`, `_MorCategory`, and `_call_(module, multiplication)` retain the exact coefficient/module/multiplication datum |
+| Subcategory surface | Underlying-module functor, `base_change_adjunction`, `scalar_extension`, `restriction_of_scalars`, and the Associative/Unital/Commutative/Lie selectors retain their stated categories. The existing scalar-change functors are explicitly the ambient associative-unital functors; calling them through a refinement does not claim a restricted functor |
+| Construction-premise accessors | `associativity_decision`, `unit_laws_decision`, `commutativity_decision`, `alternation_decision`, `jacobi_decision` read the admitted data, not generic law predicates. Redundant overrides that replaced an unknown admitted law by True are removed |
+| Algebra and module datum | `unformed_module`, `multiplication`, `multiplication_morphism`, `algebra_structure_morphism`, `algebra_base_ring`, `underlying_module` retain their exact maps and endpoints |
+| Scalar change and derivations | `restrict_scalars`, `derivations`, `vector_fields` retain their general definitions and the available computation hypotheses |
+| Membership and framing | `is_algebra`, `algebra_framing_owner`, `is_framed_algebra`, `selected_algebra_resolution`, `algebra_framing_source`, `algebra_framing_morphism`, `algebra_generating_set`, `algebra_generator_morphism`, `algebra_generator`, `algebra_generators`, `number_of_algebra_generators`, `finite_algebra_generators`, `product_on_algebra_generators` use the actual selected resolution, not a finite-generation property substituted for chosen data |
+| Ideals, quotients and maps | Parent `Mor`, `algebra_ideal_generated_by`, `quotient_by_algebra_ideal`, `quotient_by_generated_algebra_ideal`, `algebra_quotient_projection`, `algebra_quotient_ideal` retain the actual ideal, quotient and projection |
+| Element multiplication | `ElementMethods._mul_` supplies the inherited magma product from the retained bilinear map |
+| Protected construction suppliers | Initialization, retained law/datum storage, cardinality, specialized structure construction, both unformed-module element crossings, selected scalar structure map, `_with_structure`, commutativity, centre construction and `_Hom_` were read with their actual callers |
+| Root arrows and selected providers | Linear-map admission, multiplicativity supplier, centre-factor supplier, cokernel/projection and composition were read with the unital, legacy, presented, framed-free, sparse-free, power and cohomology implementations |
+
+The table includes all 33 retained public root parent operations. A selected
+consumer repair does not close that consumer's independent whole-owner row.
+
+**Actual ancestor definitions and delivered arrows.** The strict authored
+up-set is Modules(R), ModulesOverCommutativeRings,
+AdditiveGroups.AdditiveCommutative, AdditiveGroups, AdditiveMonoids,
+AdditiveSemigroups, AdditiveMagmas.AdditiveCommutative, AdditiveMagmas,
+Magmas, Sets and Objects, with the propagated additive-commutativity axiom
+expressions. Modules(R) supplies a fixed scalar action; its varying-base
+ancestor supplies a module together with its commutative scalar ring and
+semilinear arrows. The additive ancestors successively forget inverses,
+the zero, associativity and commutativity. Magmas supplies only the
+multiplication; Sets and Objects supply no algebra law. These definitions
+were read rather than inferred from method availability. GeneralModules
+is a selected realization over Modules(R), not an extra root ancestor.
+
+For a represented group-algebra coefficient ring, the actual Modules
+dispatch may select ModulesOverGroupAlgebra. Its superclass is the generic
+Modules category on the same literal scalar ring, and GroupModuleMor reaches
+that ordinary fixed module Mor. This adds selected action data; it is not a
+cross-base inclusion.
+
+AlgebraMorCategoryConstruction selects MultiplicativeAlgebraMor and
+MultiplicativeAlgebraMorphism. Its module branch reaches ModuleMor/
+ModuleMorphismMethods, SemilinearModuleMor/SemilinearModuleMorphism,
+AdditiveMor/AdditiveMorphism, AdditiveMonoidMor/AdditiveMonoidMorphism,
+AdditiveMagmaMor/AdditiveMagmaMorphism and SetMorCategory/OwnedSetMorphism.
+The independent multiplicative branch reaches MagmaMor/MagmaMorphism.
+The selected unital, legacy, presented, free, sparse, power and cohomology
+Mors inherit these actual providers. The packet supercategory construction
+transports fixed endpoints along the declared graph; CategoricalMor's
+generated arrow type collects its ElementMethods. No additive arrow is
+thereby given multiplicativity. The native Sage substrate is not an
+authored mathematical ancestor.
+
+**Upward moves and outside-owner assertions.**
+
+| Operation and home | Retained true specimen outside the original fixed algebra owner |
+| --- | --- |
+| `product` at Magmas | S3 has its selected group product g h without an R-module datum |
+| `center` and `center_inclusion` at Magmas, already established in the group closure | The selected centre of C3 is literally C3 with its typed identity inclusion |
+| `corestrict_to_center` at MagmaMorphism | The identity of C3 corestricts as that same identity |
+| `is_multiplicative` and its validator at MagmaMorphism | A magma identity satisfies f(xy)=f(x)f(y) without addition or scalars. Finite-pair evaluation needs both finite and enumerated source placement; otherwise it retains the proposition |
+| `tensor_square_morphism` at ModuleMorphismMethods over commutative R | On the plain module QQ^2, (2 id) tensor (2 id)=4 id on its tensor square, without choosing an algebra multiplication |
+| `affine_equation_family` at OwnedRings.Commutative | Spec(F_p[x]/(x^2)) -> Spec(F_p) is defined, while F_p admits no unital QQ-algebra structure |
+
+The magma multiplicativity validator rejects only a proved False. Admission
+to a Mor states its law; it is not itself a computation deciding that law.
+
+**Exact scalar-action and element assertions.** Let R=QQ[t],
+phi(t)=t^2, A=phi.as_algebra(), M=A.unformed_module(), and x=A(M(t)).
+Then A(t) has underlying value t^2, while x has underlying value t.
+The underlying values of x+0, -x, t*x and x*x are respectively
+t, -t, t^3 and t^2. GeneralModules owns one result-data ingress, used by
+construction, iteration, zero, addition, negation and both scalar-action
+directions. Algebra arithmetic therefore never reinterprets a computed
+module element as a fresh scalar input. For R=F_2 x F_2 with
+phi(a,b)=(a,a), iteration still yields all four underlying elements.
+The action given by t->t^3 remains a different selected datum from phi.
+
+Both unformed-module coordinate crossings use the existing finite
+containing coefficient family. An undecided zero coefficient is retained;
+no predicate support is enumerated to reconstruct it.
+
+For f:R->S, object restriction retains the exact module
+U(Res_f A)=Res_f(U(A)), the action rho_A composed with f, the multiplication
+and precisely the admitted source laws. Nonassociative/nonunital input
+does not acquire a ring host. The general structure-change route uses the
+existing defining-object construction. The ordinary route uses the actual
+selected centre inclusion and checks its endpoints. The false implicit
+Algebras(S)<=Algebras(R) relation is removed; scalar restriction uses f.
+This proves the retained module datum, not the stronger direct
+RestrictedScalarsModules interface deferred to its existing node.
+
+**Centre assertions and hypotheses.** The common magma centre is the
+commutant intersected with the nucleus. For a central z:
+zx=xz, (zx)y=z(xy), and (xy)z=x(yz); these imply the middle associator
+equation. Finite chosen module generators turn these into linear
+equalizers in z, with pairs of generators for the nucleus. The induced
+centre algebra is commutative and associative, with a unit only when the
+ambient selected construction supplies one. The finite group-algebra
+class-sum computation remains available.
+
+Over QQ, the algebra with basis x,y and x^2=y, xy=yx=x, y^2=0 is
+commutative but nonassociative. For z=a x+b y the left associators with
+(x,y) and (x,x) are -a y and b y. Its magma centre is therefore zero;
+its commutant is all of A. The former rank-two centre expectation is not
+a true assertion and is recorded for correction under T.
+
+In the characteristic-two Heisenberg Lie algebra, [x,y]=[y,x]=z and
+[z,L]=0. All triple products vanish, so the bracket magma is associative
+and commutative and has centre L. The Lie centre is only span(z), computed
+as the kernel of the adjoint map. The qualified lie_center and
+lie_center_inclusion retain that distinct operation.
+
+For the source-owned exterior fixture E=Lambda_ZZ(e1,e2), algebra framing
+is selected but finite module framing is not. The ordinary finite-algebra-
+generator fallback follows the richer module branches and returns the
+existing cached predicate ring centre with its actual inclusion.
+Writing z=e1 e2, the map ZZ[t]->E, t->z, still factors with codomain
+literally E.ring_center(); t and 1+t have their original values, and t^2
+maps to zero. Indeed Z(E)=ZZ*1+ZZ*z with z^2=0. The archived QQ case is
+preserved as well.
+
+For a finite-module target M_2(QQ), the selected algebra centre is QQ*I.
+A polynomial-source map with central image lifts through that exact
+centre inclusion and returns an actual Alg_QQ factor. If i_Z is the
+retained inclusion and g the factor, dom(i_Z)=cod(g) literally and
+i_Z g=f in a shared arrow theory. Injectivity proves uniqueness. A ring
+factor is used only for a literally selected predicate/scalar ring
+centre, never by substituting an unrelated centre representation.
+
+For tensor algebras, the scalar-centre word argument needs at least two
+free module basis generators. A cyclic generating module gives a
+commutative tensor algebra. The relationful module ZZ/2 direct-sum ZZ/3
+has two generators but zero mixed tensor products; its tensor algebra is
+commutative, so generator count alone cannot justify the free-rank-two
+answer. The existing cardinal owner sends undecided cardinality to its
+named normal-form assertion; it does not classify it as infinite.
+
+**Derivations and arrow laws.** A derivation is R-linear and satisfies
+D(xy)=D(x)y+xD(y), using both target actions. The current Kahler-
+differential solver is selected only on commutative associative unital
+algebras. Other inputs reach the named missing solver with both actions;
+vector_fields follows this same route.
+
+Composition checks literal middle endpoints and admission under the same
+Alg_R before selecting Cat().join of the two actual Mor theories, hence
+their common laws. A unital identity composed with a root zero endomap
+is the root zero map and sends 1 to 0. Sparse generator substitution no
+longer turns it into augmentation. Matching free/power/cohomology maps
+retain their specialized algorithms; mixed admitted algebra maps use the
+root composition of the actual underlying linear maps.
+
+An arbitrary exact-endpoint Map supplies no construction-derived True
+algebra-law decision. For the linear map f(x)=2x on QQ, f(1)=2!=1 and
+f(1*1)=2!=4=f(1)^2. The multiplicativity diagnostic uses
+U(f)m_A=m_B(U(f) tensor U(f)) in the actual module Mor. Exact module-map
+ingress stores its datum without an eager finite-source check or Boolean
+coercion of an unknown equation.
+
+Presented relations have a lazy decision and an OWN-22 validator. For
+R[t]/(a t), assigning t->1 is admitted under the relation premise a=0.
+An undecided coefficient equality remains that premise. Decided relation
+equations may justify the descended laws; generic algebra-law diagnostics
+remain distinct. Inequality uses logical negation of the equality
+proposition.
+
+**Ideals and root cokernels.** The root category is pointed, and the
+cokernel of f:A->B is B modulo the two-sided ideal generated by im(f).
+For f:QQ->M_2(QQ), a->a E11, the image has dimension one but generates
+all of M_2(QQ) as a two-sided ideal: E_i1 E11 E_1j=E_ij. The module
+cokernel has dimension three, whereas the algebra cokernel is zero.
+For a unit-preserving f the image ideal contains 1, again giving zero.
+This is a cokernel after forgetting unit preservation; no pointed
+unital-category assertion is made.
+
+The selected field/finite-generator ideal algorithm adjoins left and
+right products. True containment stops it, false containment increases
+dimension, and undecided containment reaches its named computation
+assertion. Finite dimension proves termination in the decided case.
+The quotient retains its descended algebra laws. Its exact projection
+is returned in the root Alg_R Mor, without asserting matrix, free or
+graded object data discarded by the quotient.
+
+**Source acceptance and T.** All displayed mathematical assertions are
+retained for execution under T. Named frontiers remain for general
+scalar-change functor/arrow suppliers beyond the available ordinary
+adjunction, general derivation solvers, unsupported centre and relationful
+tensor-centre computations, unavailable exact centre lifts, ideal closure
+without the selected finite field data or with undecided containment, and
+the represented image/module quotient computations used by cokernels.
+An unknown law or relation remains a proposition. No new prerequisite was
+filed and no computation failure is asserted to be mathematical
+nonexistence.
+
+The mathematical definitions were checked against Mathlib's
+[centre](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Center.html)
+and [Lie centre](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Lie/Abelian.html);
+the displayed scalar-action, associator, exterior, tensor, composition and
+matrix-ideal calculations provide independent proofs of the separators.
+Only focused source/whitespace checks were used. No imports, Sage, tests,
+QC, build, live survey or other repository's progress is claimed.
 
 ## Step-3 duplicates (survey 2026-10-10; fixed inventory)
 

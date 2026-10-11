@@ -4076,6 +4076,9 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def _element_constructor_(self, value):
             if isinstance(value, self.element_class) and value.parent() is self:
                 return value
+            source = element_parent(value)
+            if source in Modules(self.base_ring()) and source.unformed_module() is self:
+                return source._element_of_unformed_module(value)
             if isinstance(value, RestrictedScalarsModules.ElementMethods):
                 value = value.underlying_element()
             return self.wrap(self.module_over_extension()(value))

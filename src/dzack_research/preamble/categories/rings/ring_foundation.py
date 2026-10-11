@@ -2846,6 +2846,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 r"""Supply the common nonunital-semiring nilradical from this ideal owner."""
                 return self.ideal(self.zero()).radical()
 
+            def affine_equation_family(self, relative_variables, equations):
+                r"""Return ``Spec(self[x]/I) -> Spec(self)`` for the stated equations.
+
+                This construction needs a commutative unital coefficient
+                ring; no additional choice of an algebra structure is used.
+                """
+                from dzack_research.preamble.categories.schemes.families import (
+                    _relative_affine_family,
+                )
+
+                return _relative_affine_family(self, relative_variables, equations)
+
             @RealizationHook
             def _reducedness_decision(self) -> bool | Predicate:
                 r"""Return whether this commutative ring has zero nilradical."""

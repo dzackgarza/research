@@ -266,6 +266,20 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 if value.parent() is self:
                     return value
                 value = value.underlying_element()
+            return self._element_from_underlying_set(value)
+
+        def _element_from_underlying_set(self, value):
+            r"""Construct the module element on a datum of its retained underlying set.
+
+            Protected GeneralModules construction contract (``OWN-05``).
+            The element constructor, this owner's arithmetic and iteration,
+            and a realization of further structure on this module call it
+            with an underlying-set value and receive an element of this
+            exact module. Its normalization and element allocation have one
+            owner here. Further structure may give coefficient inputs a
+            different meaning, so computed additive or scalar-action results
+            cannot re-enter through that public input interpretation.
+            """
             underlying = self.underlying_set()
             normalized = value if value in underlying else underlying(value)
             assert normalized in underlying, (
@@ -290,17 +304,17 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return value in self.underlying_set()
 
         def __iter__(self):
-            return (self(value) for value in self.underlying_set())
+            return (self._element_from_underlying_set(value) for value in self.underlying_set())
 
         def zero(self):
-            return self(self._zero_value)
+            return self._element_from_underlying_set(self._zero_value)
 
         def an_element(self):
             r"""The zero element, which every module contains."""
             return self.zero()
 
         def _add_elements(self, left, right):
-            return self(
+            return self._element_from_underlying_set(
                 self._addition(
                     self(left).underlying_element(),
                     self(right).underlying_element(),
@@ -308,16 +322,20 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             )
 
         def _negate_element(self, element):
-            return self(self._negation(self(element).underlying_element()))
+            return self._element_from_underlying_set(
+                self._negation(self(element).underlying_element())
+            )
 
         def _owned_scalar_multiple(self, scalar, element):
             scalar = self.base_ring()(scalar)
             value = self(element).underlying_element()
             match self._rho:
                 case None:
-                    return self(self._elementwise_scalar_action(scalar, value))
+                    return self._element_from_underlying_set(
+                        self._elementwise_scalar_action(scalar, value)
+                    )
                 case rho:
-                    return self(rho(scalar)(value))
+                    return self._element_from_underlying_set(rho(scalar)(value))
 
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""

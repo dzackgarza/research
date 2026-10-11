@@ -43,6 +43,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedRings,
+    PredicateSubrings,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -61,6 +63,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.refine import RealizationHook
 
 
 def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
@@ -1305,24 +1308,42 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             r"""Return the exact center of the represented free tensor algebra.
 
             On zero or one generator the tensor algebra is commutative.  On at
-            least two generators, comparison of coefficients in the word basis
-            shows that an element commuting with two distinct generators has no
-            nonconstant word, so the center is exactly the scalar ring.
+            least two free module generators, comparison of coefficients in
+            the word basis shows that an element commuting with two distinct
+            generators has no nonconstant word, so the center is exactly the
+            scalar ring. A relationful generating module needs a computation
+            using its tensor relations; its generator count alone does not
+            establish this word-basis theorem.
             """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+
             size = self.algebra_generating_set().cardinality()
             if size.is_finite() and int(size.finite_value()) <= 1:
                 return self
+            assert self.generating_module() in FramedFreeModules(self.algebra_base_ring()), (
+                f"the centre of {self} needs a computation with its tensor relations; "
+                "the available scalar-centre theorem needs a chosen free module basis"
+            )
             return self.algebra_base_ring()
 
         @cached_method
-        def center_inclusion(self):
-            r"""Return the inclusion ``Z(T) -> T`` under the selected center identification."""
+        @RealizationHook
+        def _center_construction(self):
+            r"""Supply the inherited magma centre from the tensor word-basis theorem.
 
-
+            The retained centre and inclusion satisfy Magmas'
+            ``_center_construction`` contract. A scalar centre uses the exact
+            coefficient ring as endpoint, regardless of any other algebra
+            structures that ring itself carries.
+            """
             center = self.ring_center()
             if center is self:
-                return self.Mor(self)(lambda element: element)
-            return center.Mor(self)(lambda scalar: self(scalar))
+                return center, self.Mor(self).identity()
+            if center in PredicateSubrings():
+                return center, center.inclusion()
+            return center, OwnedRings().Mor(center, self)(lambda scalar: self(scalar))
 
 
     class ElementMethods:

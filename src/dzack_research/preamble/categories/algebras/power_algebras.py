@@ -11,7 +11,7 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import Algebras, MultiplicativeAlgebraMorphism, _algebra_on_module
 from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -181,7 +181,7 @@ class PowerAlgebraMorphism:
 
     def __mul__(self, other):
         if not isinstance(other, PowerAlgebraMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+            return MultiplicativeAlgebraMorphism.__mul__(self, other)
         if self.is_identity():
             return other
         if other.is_identity():

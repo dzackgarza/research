@@ -925,6 +925,30 @@ class ModuleMorphismMethods:
 
         return _alternating_extension(self)
 
+    @cached_method
+    def tensor_square_morphism(self):
+        r"""Return ``f tensor f: M tensor_R M -> N tensor_R N`` for this R-linear map.
+
+        R is commutative. The exact source and target are the selected module
+        tensor products, also used by algebra multiplication classifiers;
+        neither module needs an algebra multiplication. The existing tensor
+        product map supplies the induced arrow on those endpoints.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        ring = self.domain().base_ring()
+        assert ring in OwnedRings().Commutative(), (
+            f"the tensor square of {self} as a map of left {ring}-modules needs "
+            "commutative coefficients for this tensor construction"
+        )
+        modules = Modules(ring)
+        return self.tensor_product_map(
+            self,
+            source=modules.tensor_product((self.domain(), self.domain())),
+            target=modules.tensor_product((self.codomain(), self.codomain())),
+        )
+
     def tensor_product_map(self, other, *, source=None, target=None):
         r"""Return the induced map ``self tensor other`` on selected tensor products."""
         from dzack_research.preamble.categories.modules.tensor_products import (
