@@ -325,7 +325,7 @@ def closure(data: dict) -> dict:
         return seen
 
     def declared_family(expression: str) -> str | None:
-        match = re.match(r"^([A-Za-z_]\\w*)", expression)
+        match = re.match(r"^([A-Za-z_]\w*)", expression)
         return match.group(1) if match else None
 
     by_owner = defaultdict(list)
