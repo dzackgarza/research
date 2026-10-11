@@ -142,7 +142,7 @@ Everything here is general mathematics. An operation is accepted by true asserti
 Research implements the following, including their computations:
 
 - Lattice and marked-lattice objects, Isom/Aut homsets, subobjects, forms, perpendiculars, quotients and discriminant/gluing objects.
-- Group actions and their effective stabilizer, orbit, kernel, image, preimage, intersection and coset operations from the data required by the selected general algorithm (#396).
+- Group actions and their effective stabilizer, orbit, kernel, image, preimage, intersection and coset operations from the data required by the selected general algorithm (#396). `rational_integral_stabilizers.py:IntegralStructureAction` also owns invariant-module closure under a justified bound and the resulting finite residue action. Remove the callback to deleted port `groups.integral_structures`; no port-specific group class is required (#396/#401/#403).
 - Restriction and quotient-action morphisms for an isotropic marking; their sections/multisections, fibres and kernels. `R.rational_lifts(target, isometry)` and its `integral_members()` computation stay here (#401). `R.pointwise_perpendicular_kernel()` is a research computation (#398), not an import from the deleted port `indefinite.isotropic_lifts` module.
 - `G.centralizer(f)` and the reusable invariant-decomposition/gluing computation in `categories/lattice_centralizers.py` (#397). An indefinite component's O(L) computation may call the port; do not move the centralizer operation or the general gluing construction there.
 - GL of free modules, module-flag stabilizers, radical extensions from supplied factor groups, isometry extension, exact module solving, finite configurations and polyhedra (#398–#401).
@@ -153,7 +153,7 @@ The port implements the following algorithms; research calls them rather than du
 - `indefinite.recursive.EichlerRecursion`: recursive indefinite orthogonal groups and plain/pointed isometries and stabilizers (port #18).
 - `indefinite.isotropic_induction.IsotropicInduction`: isotropic line, plane and flag classification and the recursive stabilizer algorithm (port #18). Research supplies sections and kernels; it does not implement this whole recursion for the port.
 - `indefinite.lorentzian_cells`: perfect-cell search, flips, side pairings and traversal; `indefinite.edgewalk`: the Allcock edgewalk (port #15).
-- The reference algorithm's arithmetic integral-model search for its rational groups, with its boundedness hypotheses; the resulting module quotients and finite-action computations use the research operations above (port #18; research #396).
+- The rational groups and lattice inclusions arising in those algorithms, with proofs of the hypotheses required by research's general integral-structure computation (port #18).
 
 Research #403 owns the calls into these algorithms. Use `marked_lattices.isometry(category, source, target)`, `automorphism_group_generators(category, marked)` and `primitive_marking_classes(category, source, lattice)`, plus `perfect_domain_traversal(lattice, mode)` and `edgewalk_fundamental_domain(lattice)`. These take preamble objects. Replace obsolete imports of `isotropic_flags` and module-level `recursive` functions and the Gram-row/dictionary calling conventions. No port-specific group or lattice class is a prerequisite for a research operation.
 
