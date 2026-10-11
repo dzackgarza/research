@@ -792,7 +792,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CohomologyAlgebraMorCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py`.
   **Closure assertions:** the complete `CohomologyAlgebraMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyAlgebraMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-cohomologyalgebras`**. **Needs:** none.
+- [x] **`placement-owner-cohomologyalgebras`**. **Needs:** none.
   **Owner pass:** `CohomologyAlgebras` in `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py`.
   **Closure assertions:** the complete `CohomologyAlgebras` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CohomologyAlgebras`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
