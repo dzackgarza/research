@@ -5868,7 +5868,7 @@ class _AlgebraGluingCechPresheaf(Functor):
         return f"Čech presheaf of {self.gluing_datum()}"
 
 
-class AlgebraGluingMorphism(Morphism):
+class AlgebraGluingMorphism(CategoricalMor.ElementMethods):
     r"""A compatible family of local algebra morphisms between descent data."""
 
     def __init__(self, parent, local_maps) -> None:
@@ -5957,14 +5957,6 @@ class AlgebraGluingMorphism(Morphism):
         )
 
         return _relative_spectrum_morphism(self)
-
-    def then(self, other):
-        if other.domain() is not self.codomain():
-            raise ValueError(
-                f"cannot compose {self} and then {other}: the codomain {self.codomain()} of the first is "
-                f"not the domain {other.domain()} of the second"
-            )
-        return other * self
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():

@@ -558,6 +558,15 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
 
+        def then(self, other):
+            r"""Return ``other ∘ self`` for composable represented arrows."""
+            if other.domain() is not self.codomain():
+                raise ValueError(
+                    f"cannot compose {self} and then {other}: the codomain {self.codomain()} of the first "
+                    f"is not the domain {other.domain()} of the second"
+                )
+            return other * self
+
         def _transport_initialization_to_mor(self, mor):
             r"""Return cooperative constructor data for this arrow in ``mor``.
 
