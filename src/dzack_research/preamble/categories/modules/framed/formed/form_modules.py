@@ -1847,6 +1847,48 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
     _MorCategory = FormedModuleMorCategoryConstruction
 
+    class ParentMethods:
+        def is_even(self):
+            r"""Whether ``b(x,x)`` lies in ``2W`` for every ``x``.
+
+            Over a commutative scalar ring, for a selected finite spanning
+            family ``g_i`` it is enough to test ``q(g_i)`` and
+            ``q(g_i+g_j)`` in ``2W``, where ``q(x)=b(x,x)``: the cross term
+            ``b(g_i,g_j)+b(g_j,g_i)`` is their difference from the two
+            diagonal values.  Hence these values generate the image of ``q``
+            modulo ``2W``.  When the finite spanning/value-module computation
+            is unavailable, retain the exact proposition instead of forcing a
+            Boolean answer.
+            """
+            ring = self.base_ring()
+            module = self.unformed_module()
+            values = _represented_module(self.value_module(), ring)
+            if (
+                ring not in OwnedRings().Commutative()
+                or not module.has_selected_module_resolution()
+                or module.module_generating_set().is_finite() is not True
+                or not values.has_selected_module_resolution()
+                or values.module_generating_set().is_finite() is not True
+            ):
+                return AtomicProposition("is_even", self)
+
+            generators = tuple(self.module_generators())
+            two = ring(2)
+            doubling = values.module_category().Mor(values, values)._from_constructed_element_map(
+                lambda element: values.scalar_multiple(two, element)
+            )
+            probes = tuple(self.b(generator, generator) for generator in generators) + tuple(
+                self.b(left + right, left + right)
+                for left_position, left in enumerate(generators)
+                for right in generators[left_position + 1 :]
+            )
+            return conjunction(
+                doubling.is_in_image(
+                    _as_module_element(self.value_module(), ring, value)
+                )
+                for value in probes
+            )
+
     def _call_(
         self,
         form,
@@ -2059,10 +2101,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
         _certifying_predicate = "is_even"
 
         def an_object(self):
-            r"""The hyperbolic plane U, on which every square is even."""
-            from dzack_research.preamble.categories.lattices import Lattices
-
-            return Lattices(self.base_ring())("U")
+            r"""Return the generic bilinear-form witness, already even by construction."""
+            return BilinearFormModules(self.base_ring()).an_object()
 
     class FinitelyPresented(CategoryWithAxiom):
         r"""Finitely presented modules with a bilinear form."""
