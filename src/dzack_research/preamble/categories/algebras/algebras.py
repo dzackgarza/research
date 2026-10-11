@@ -2491,18 +2491,32 @@ class Algebras(OwnedCategoryOverBaseRing):
 
 
     class Commutative(CategoryWithAxiom):
-        r"""Algebras whose multiplication is commutative."""
+        r"""``R``-modules with an ``R``-bilinear commutative product.
+
+        For the defining map ``m : M tensor_R M -> M`` and the tensor
+        transposition ``tau``, the additional law is ``m = m . tau``.
+        Associativity and a unit are separate hypotheses. Morphisms are
+        the inherited ``R``-linear maps preserving ``m``; this object law
+        adds no condition to the root algebra morphisms.
+        """
 
         @classmethod
         def _repr_object_names(cls):
             return "commutative algebras"
 
         def an_object(self):
-            r"""A commutative product supplied by an ordinary commutative ring."""
+            r"""The symmetric algebra on the selected rank-one module over this base."""
             return Algebras(self.base_ring()).Associative().Unital().Commutative().an_object()
 
         def _call_(self, module, multiplication):
-            r"""The commutative algebra on ``(M, m)``: ``xy = yx`` decided on module generators of ``M``."""
+            r"""Retain ``(M, m)`` subject to ``m(x, y) = m(y, x)``.
+
+            Bilinearity makes a selected finite spanning family sufficient
+            to decide this law; no basis or finite-dimensional hypothesis
+            is needed. A literal refutation is rejected. An undecided law
+            remains the original owned premise, available through the
+            resulting algebra's ``commutativity_decision()`` accessor.
+            """
             commutativity = _decide_on_module_generators(
                 module, _commutativity(multiplication), 2,
                 AtomicProposition("is_commutative", multiplication),

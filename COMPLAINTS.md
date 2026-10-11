@@ -14,6 +14,44 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Generic commutative-algebra specimens impose stronger laws
+
+A commutative bilinear product need not be associative or unital. For the
+algebra over `QQ` with `x^2=y`, `xy=yx=x`, `y^2=0`, the commutant is the
+whole module. Its nucleus, hence its magma centre, is zero: for `z=ax+by`,
+the associators with `(x,y)` and `(x,x)` are `-ay` and `by`. Commutativity
+alone therefore does not justify the centre-rank-two expectation in
+`tests/algebras/test_algebra_preservation.sage`. The earlier algebra-owner
+source bank already records the correct centre; the protected expectation
+remains unreconciled. Its bare product-table input also predates the actual
+bilinear-map ingress used by the current algebra constructor.
+
+Likewise, the standard polynomial tensor cocone is a coproduct in
+associative unital commutative algebras, with unit-preserving arrows. The
+root theory admits the maps `p -> (p(0),0)` and `q -> (0,q(0))` from
+`QQ[x]` and `QQ[y]` to `QQ x QQ`. Their images of `1` differ, so there is
+no factor through the tensor cocone's shared unit.
+`tests/algebras/test_native_free_algebra_module_factor.sage` nevertheless
+asks root `Algebras(QQ).Commutative()` for that coproduct.
+
+**Actual supplier boundary:** root `Algebras.Commutative` inherits
+`Modules.SubcategoryMethods.coproduct`, its module colimit supplier and
+the module biproduct construction. That route supplies no algebra
+multiplication or root-algebra coproduct universal property. The genuine
+tensor supplier is on the distinct associative-unital commutative owner;
+it is not selected from the two inputs' stronger object properties.
+
+**Searched / Found / Conclusion:** read both complete protected
+specimens, the common centre and tensor-classified product construction,
+the root and associative-unital commutative owners, and the inherited
+module coproduct/biproduct route. The equations above establish two false
+specification identifications, not runtime failures. Existing
+`triage-long-tail` owns reconciliation of the protected specifications;
+`placement-owner-modules` owns the remaining inherited module-supplier
+applicability. Preserve the valid centre, bilinear product and tensor
+constructions. No test was changed or run, and this independent remainder
+is not a prerequisite of the root commutative owner's three operations.
+
 ### Free algebra constructions do not uniformly supply associative projective sources
 
 Projectivity of an associative `R`-algebra is relative to a specified class
