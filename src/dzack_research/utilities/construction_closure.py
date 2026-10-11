@@ -75,9 +75,17 @@ def _returns(method: ast.FunctionDef | ast.AsyncFunctionDef) -> list[ast.Return]
 
 def _methods(node: ast.ClassDef, container: str) -> dict[str, ast.FunctionDef]:
     if container == "Category":
+        # The Python-private spelling of a category constructor is still a
+        # mathematical construction: C(data), C._call_(data), and special
+        # _element_constructor_ admission must not disappear from the audit.
+        construction_hooks = {
+            "__call__", "__classcall__", "_call_", "_element_constructor_",
+            "_object_of", "_from_constructed_data",
+        }
         return {
             method.name: method for method in node.body
-            if isinstance(method, ast.FunctionDef) and not method.name.startswith("_")
+            if isinstance(method, ast.FunctionDef)
+            and (not method.name.startswith("_") or method.name in construction_hooks)
         }
     return _container_methods(node, container)
 
@@ -487,7 +495,15 @@ return db.rules.filter(x=>mode!=="unresolved"||x.status==="unresolved")
 function draw(){const needle=$("filter").value.toLowerCase();const matches=rows().filter(x=>JSON.stringify(x).toLowerCase().includes(needle));
 $("items").replaceChildren();$("count").textContent=matches.length+" entries";
 for(const entry of matches.slice(0,5000)){const button=document.createElement("button");
-button.textContent=entry.label;button.onclick=()=>{$("detail").textContent=JSON.stringify(entry.record,null,2);
+button.textContent=entry.label;button.onclick=()=>{
+let detail=entry.record;
+if($("mode").value==="categories"){
+  detail={...entry.record,
+    supercategories:db.category_edges.filter(e=>e.from===entry.record.vertex),
+    subcategories:db.category_edges.filter(e=>e.to===entry.record.vertex),
+    operations:db.rules.filter(r=>r.owner===entry.record.vertex)};
+}
+$("detail").textContent=JSON.stringify(detail,null,2);
 document.querySelectorAll(".selected").forEach(x=>x.classList.remove("selected"));button.classList.add("selected");};
 $("items").append(button);}}
 $("filter").oninput=draw;$("mode").onchange=draw;draw();
