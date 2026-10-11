@@ -473,6 +473,8 @@ input,select{padding:10px;border:1px solid #afb9c5;border-radius:6px;width:100%;
 button{cursor:pointer;padding:8px;border:0;background:transparent;color:#1b527d;text-align:left;width:100%;border-bottom:1px solid #edf0f3}
 button:hover,button.selected{background:#ecf2f8}
 #items{height:65vh;overflow:auto}#detail{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}
+#graph{max-height:410px;overflow:auto;margin-bottom:12px}#graph svg{background:#fafbfd;border:1px solid #dde4ee;border-radius:6px}
+#graph text{font-family:system-ui,sans-serif}#graph g{cursor:pointer}
 small{color:#64798d}code{background:#eff2f5;padding:2px 4px}h1{margin:0 0 8px}h2{font-size:16px}
 @media(max-width:800px){main{grid-template-columns:1fr}#items{height:36vh}}
 </style><header><h1>Preamble construction closure</h1><div id="metrics"></div></header>
@@ -481,7 +483,7 @@ small{color:#64798d}code{background:#eff2f5;padding:2px 4px}h1{margin:0 0 8px}h2
 <select id="mode"><option value="categories">Categories</option><option value="rules">Operation and return rules</option>
 <option value="unresolved">Unresolved destinations</option><option value="reachable">Reachable symbolic schemes</option></select>
 <p id="count"></p><div id="items"></div></section>
-<section><h2>Selected construction</h2><div id="detail">Select a category or rule.</div></section></main>
+<section><h2>Selected construction</h2><div id="graph"></div><div id="detail">Select a category or rule.</div></section></main>
 <script type="application/json" id="model">''' + escaped + '''</script>
 <script>
 const db=JSON.parse(document.getElementById("model").textContent);
@@ -492,17 +494,49 @@ if(mode==="categories")return db.categories.map(x=>({label:x.vertex,record:x}));
 if(mode==="reachable")return db.reachable_schemes.map(x=>({label:x,record:{scheme:x,witnesses:db.derivations[x]}}));
 return db.rules.filter(x=>mode!=="unresolved"||x.status==="unresolved")
  .map(x=>({label:x.owner+" · "+x.receiver+"."+x.method+" → "+(x.output||"?"),record:x}));}
+function ego(vertex){
+const panel=$("graph");panel.replaceChildren();
+const supers=db.category_edges.filter(e=>e.from===vertex).map(e=>e.to).slice(0,10);
+const subs=db.category_edges.filter(e=>e.to===vertex).map(e=>e.from).slice(0,10);
+const ops=db.rules.filter(r=>r.owner===vertex&&r.output).slice(0,30);
+const count=Math.max(ops.length,supers.length+subs.length,1);
+const width=1000,height=Math.max(220,80+count*39);
+const ns="http://www.w3.org/2000/svg";const svg=document.createElementNS(ns,"svg");
+svg.setAttribute("viewBox",`0 0 ${width} ${height}`);svg.setAttribute("width",width);svg.setAttribute("height",height);
+function element(tag,attrs,parent=svg){const n=document.createElementNS(ns,tag);
+for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);parent.append(n);return n;}
+function arrow(x1,y1,x2,y2){element("line",{x1,y1,x2,y2,stroke:"#a2afbe","stroke-width":1.5});}
+function node(x,y,w,title,kind,onclick){const g=element("g",{});element("rect",{x,y,width:w,height:28,rx:5,
+ fill:kind==="category"?"#dbe6f3":kind==="operation"?"#ece4f5":"#dceee5",
+ stroke:"#99aabb"},g);
+const t=element("text",{x:x+7,y:y+18,"font-size":11,fill:"#26384a"},g);
+t.textContent=title.length>43?title.slice(0,41)+"…":title;
+g.addEventListener("click",onclick);}
+function jump(name){$("mode").value="categories";$("filter").value=name;draw();}
+node(320,22,230,vertex,"category",()=>jump(vertex));
+[...supers.map((x,i)=>({name:x,i,relation:"super"})),...subs.map((x,i)=>({name:x,i:i+supers.length,relation:"sub"}))]
+ .forEach(item=>{const y=60+item.i*39;node(10,y,230,item.name,"category",()=>jump(item.name));
+ arrow(240,y+14,320,36);});
+ops.forEach((op,i)=>{const y=60+i*39;arrow(550,36,580,y+14);
+node(580,y,175,op.method,"operation",()=>{$("detail").textContent=JSON.stringify(op,null,2);});
+arrow(755,y+14,780,y+14);
+node(780,y,206,op.output||"unknown","result",()=>{
+$("detail").textContent=JSON.stringify({...op,derivations:db.derivations[op.output]||[]},null,2);});});
+panel.append(svg);
+}
 function draw(){const needle=$("filter").value.toLowerCase();const matches=rows().filter(x=>JSON.stringify(x).toLowerCase().includes(needle));
 $("items").replaceChildren();$("count").textContent=matches.length+" entries";
 for(const entry of matches.slice(0,5000)){const button=document.createElement("button");
 button.textContent=entry.label;button.onclick=()=>{
 let detail=entry.record;
 if($("mode").value==="categories"){
+  ego(entry.record.vertex);
   detail={...entry.record,
     supercategories:db.category_edges.filter(e=>e.from===entry.record.vertex),
     subcategories:db.category_edges.filter(e=>e.to===entry.record.vertex),
     operations:db.rules.filter(r=>r.owner===entry.record.vertex)};
 }
+if($("mode").value!=="categories")$("graph").replaceChildren();
 $("detail").textContent=JSON.stringify(detail,null,2);
 document.querySelectorAll(".selected").forEach(x=>x.classList.remove("selected"));button.classList.add("selected");};
 $("items").append(button);}}
