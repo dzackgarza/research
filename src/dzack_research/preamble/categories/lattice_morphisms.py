@@ -73,6 +73,32 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.lattices import Lattices
 
 
+def _pointed_marking(lattice, vector):
+    r"""Return the coslice category and marked lattice ``<q(v)> -> L``."""
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    lattices = Lattices(lattice.base_ring())
+    source = lattices([[lattice.q(vector)]])
+    category = lattices.CosliceUnder(source)
+    arrow = source.Mor(lattice)(lambda _label: vector)
+    return category, category.object(arrow)
+
+
+def _primitive_pointed_classes(lattice, square):
+    r"""Return primitive vector classes of square ``square`` through the frozen marked API."""
+    from dzack_research.preamble.categories.lattices import Lattices
+    from sage_indefinite_port.indefinite.marked_lattices import (
+        primitive_marking_classes,
+    )
+
+    lattices = Lattices(lattice.base_ring())
+    source = lattices([[square]])
+    category = lattices.CosliceUnder(source)
+    classes = primitive_marking_classes(category, source, lattice)
+    label = next(iter(source.module_generating_set()))
+    return tuple(marked.arrow()(source.module_generator(label)) for marked in classes)
+
+
 def _framing_tuple(element):
     r"""Return ordered framing coefficients only at a private engine boundary."""
     parent = element.parent()
@@ -2212,11 +2238,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if lattice.is_definite():
             generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
         else:
-            from sage_indefinite_port.indefinite.recursive import (
-                orthogonal_group_generators,
+            from dzack_research.preamble.categories.lattices import Lattices
+            from sage_indefinite_port.indefinite.marked_lattices import (
+                automorphism_group_generators,
             )
 
-            generators = tuple(self(generator) for generator in orthogonal_group_generators(self))
+            category = Lattices(lattice.base_ring())
+            generators = tuple(
+                self(generator)
+                for generator in automorphism_group_generators(category, lattice)
+            )
         positions = Sets.Δ[len(generators) - 1]
         return FiniteOrderedSets().from_indexed(
             positions,
@@ -2297,11 +2328,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if lattice.q(left) != lattice.q(right):
             return None
         if not lattice.is_definite():
-            from sage_indefinite_port.indefinite.recursive import (
-                vector_equivalence_witness,
+            from sage_indefinite_port.indefinite.marked_lattices import (
+                isometry,
             )
 
-            return vector_equivalence_witness(self, left, right)
+            category, marked_left = _pointed_marking(lattice, left)
+            source = category.base_object()
+            marked_right = category.object(
+                source.Mor(lattice)(lambda _label: right)
+            )
+            return isometry(category, marked_left, marked_right)
         for automorphism in self:
             if automorphism(left) == right:
                 return automorphism
@@ -2320,11 +2356,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         lattice = self.domain()
         element = element if element_parent(element) is lattice else lattice(element)
         if not lattice.is_definite():
-            from sage_indefinite_port.indefinite.recursive import (
-                vector_stabilizer_generators,
+            from sage_indefinite_port.indefinite.marked_lattices import (
+                automorphism_group_generators,
             )
 
-            return vector_stabilizer_generators(self, element)
+            category, marked = _pointed_marking(lattice, element)
+            return automorphism_group_generators(category, marked)
         stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
         engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
         return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
@@ -2338,11 +2375,18 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         lattice = self.domain()
         square = lattice.base_ring()(int(square))
         if not lattice.is_definite():
-            from sage_indefinite_port.indefinite.recursive import (
-                vector_orbit_representatives,
-            )
-
-            return vector_orbit_representatives(self, square)
+            if square == lattice.base_ring().zero():
+                return finite_ordered_set(_primitive_pointed_classes(lattice, square))
+            representatives = []
+            for content in abs(square).divisors():
+                if square % (content * content) != lattice.base_ring().zero():
+                    continue
+                primitive_square = square // (content * content)
+                representatives.extend(
+                    lattice.scalar_multiple(content, representative)
+                    for representative in _primitive_pointed_classes(lattice, primitive_square)
+                )
+            return finite_ordered_set(tuple(representatives))
         remaining = {_framing_tuple(vector): vector for vector in lattice.vectors_of_square(square)}
         representatives = []
         while remaining:
@@ -2591,9 +2635,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 return (True, None, None)
             return (False, self._isometry_from_column_matrix(binary_witness), None)
 
-        from sage_indefinite_port.indefinite.recursive import isometry
+        from dzack_research.preamble.categories.lattices import Lattices
+        from sage_indefinite_port.indefinite.marked_lattices import isometry
 
-        witness = isometry(domain, codomain)
+        witness = isometry(Lattices(domain.base_ring()), domain, codomain)
         if witness is None:
             return (True, None, None)
         return (False, witness, None)
