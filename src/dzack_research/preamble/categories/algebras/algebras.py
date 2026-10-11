@@ -388,7 +388,7 @@ def _scalar_module(ring):
         case True:
             return ring
         case False:
-            return OwnedRings().Mor(ring, ring).identity().as_algebra()
+            return ring.as_algebra_over(ring)
 
 
 def _unit_morphism_from_element(module, unit, ring):
@@ -932,14 +932,15 @@ def _algebra_structure_morphism(algebra):
         return selected
     ring = algebra.algebra_base_ring()
     if ring is algebra:
-        return ring.Mor(ring, category=OwnedRings()).identity()
+        return OwnedRings().Mor(ring, ring).identity()
     rho = algebra.scalar_action()
     match algebra:
         case _ if algebra in Algebras(ring).Associative().Unital():
             center = algebra.ring_center()
+            module = algebra.unformed_module()
             unit = algebra._underlying_additive_element(algebra.one())
-            return ring.Mor(center, category=OwnedRings())(
-                lambda scalar: center(algebra(rho(ring(scalar))(unit))),
+            return OwnedRings().Mor(ring, center)(
+                lambda scalar: center(algebra(module(rho(ring(scalar))(unit)))),
             )
         case _:
             return rho
@@ -1392,9 +1393,19 @@ class Algebras(OwnedCategoryOverBaseRing):
             levels that add structure on a received object (slices, coslices).
             """
             added_categories, added_data = self._added_structure(construction_data)
+            structure_map = self.algebra_structure_morphism()
+            if (
+                self in Algebras(self.algebra_base_ring()).Associative().Unital()
+                and structure_map.codomain() is not self
+            ):
+                center_inclusion = structure_map.codomain().inclusion()
+                assert center_inclusion.domain() is structure_map.codomain() and center_inclusion.codomain() is self, (
+                    "the centre inclusion used to retain an algebra action must end at this exact algebra"
+                )
+                structure_map = center_inclusion * structure_map
             return _algebra_structure_on(
                 self,
-                self.algebra_structure_morphism(),
+                structure_map,
                 categories=(*added_categories, *categories),
                 construction_data=added_data,
                 engine=engine,
@@ -3491,17 +3502,17 @@ def _algebra_with_structure(
 
 
 class _ScalarAlgebraEngine:
-    r"""Native ring conversion for an algebra built on a scalar-action module.
+    r"""Element conversion for an algebra built on a scalar-action module.
 
     Engine adapter (``OWN-06``).  The module owner supplies all arithmetic and
-    the algebra root supplies multiplication.  This class only reads native
-    ring data and translates elements between that realization and the exact
-    module used at the algebra entry.
+    the algebra root supplies multiplication. This class retains the exact
+    source ring and its optional computation realization, and translates
+    elements through the module used at the algebra entry.
     """
 
     def __init__(self, native_ring, **rest) -> None:
         self._native_ring = native_ring
-        self._preamble_engine_ring = _engine_ring(native_ring)
+        self._preamble_engine_ring = native_ring._selected_engine_ring()
         super().__init__(**rest)
 
     def _element_constructor_(self, value):
@@ -3510,13 +3521,31 @@ class _ScalarAlgebraEngine:
             return value
         if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
             return self._element_on_the_same_data(source, value)
+        if source is self.base_ring():
+            module = self.unformed_module()
+            scalar_value = module.scalar_multiple(value, module(self._native_ring.one()))
+            return self._element_from_unformed_module(scalar_value)
         return super()._element_constructor_(self._native_ring(value))
 
+    def _element_from_unformed_module(self, element):
+        r"""Read retained module data without applying the coefficient map again.
+
+        This is the existing Modules protected data-crossing contract. The
+        scalar-action view and its engine-result adapter supply module data;
+        a plain coefficient input instead enters through the scalar action.
+        These differ when the underlying ring is also the coefficient ring
+        and its selected endomorphism is not the identity.
+        """
+        module = self.unformed_module()
+        return super()._element_constructor_(module._underlying_additive_element(module(element)))
+
     def _from_engine_element(self, value):
-        return self(_owned_engine_element(self._native_ring, value))
+        return self._element_from_unformed_module(
+            self.unformed_module()(_owned_engine_element(self._native_ring, value))
+        )
 
     def _selected_engine_ring(self):
-        r"""Return the native ring realization selected for this algebra view."""
+        r"""Return this view's retained ring realization, or ``None``."""
         return self._preamble_engine_ring
 
     def _engine_element(self, value):
@@ -3569,9 +3598,14 @@ def _algebra_structure_on(
     the levels a caller adds on the data of ``ring`` (``OWN-16``), and
     ``engine`` is that caller's private computation class.  Every call
     constructs a new object: two slice objects on one ring are distinct.
-    """
-    from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring_category
 
+    The incoming map is retained by the module action on the literal ring.
+    The intrinsic structure map of the resulting view is separately derived
+    at the algebra owner and ends in the centre of that new view. Only actual
+    source ring axioms and size properties are retained as placements; old
+    coefficient/framing data and the properties of a larger private engine
+    are not properties of this newly selected scalar structure.
+    """
     selected_ring = _own_ring(ring)
     assert structure_map.codomain() is selected_ring, (
         f"the structure map R -> A of an algebra must end at A = {selected_ring}, but {structure_map} "
@@ -3582,15 +3616,21 @@ def _algebra_structure_on(
         f"{selected_ring} is an algebra over {base} through {structure_map} only if {base} is "
         "commutative, and it is not known to be"
     )
-    center = selected_ring.ring_center()
+    assert structure_map in OwnedRings().Mor(base, selected_ring), (
+        "the scalar structure of an associative unital algebra must be an owned unital ring map"
+    )
+    central_by_structure = selected_ring in OwnedRings().Commutative() or base is _owned_integers()
+    center = None if central_by_structure else selected_ring.ring_center()
 
     def scalar_action(scalar, element):
-        central_scalar = center(structure_map(base(scalar)))
+        central_scalar = structure_map(base(scalar))
+        if center is not None:
+            central_scalar = center(central_scalar)
         return selected_ring(central_scalar) * selected_ring(element)
 
-    additive_group = selected_ring.underlying_additive_group()
+    additive_group = selected_ring
     additive_endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
-    rho = base.Mor(additive_endomorphisms, category=OwnedRings())(
+    rho = OwnedRings().Mor(base, additive_endomorphisms)(
         lambda scalar: additive_endomorphisms.elementwise(
             lambda element: scalar_action(scalar, element)
         )
@@ -3605,14 +3645,21 @@ def _algebra_structure_on(
     if selected_ring in OwnedRings().Commutative():
         algebras = algebras.Commutative()
         law_decisions["commutativity"] = True
-    category = Cat().meet((
-        algebras, _owned_ring_category(_engine_ring(selected_ring), scalar_base=base),
-    ))
+    retained_categories = tuple(
+        category for category in selected_ring.category().all_super_categories()
+        if category._without_axioms() is OwnedRings() or category._without_axioms() is Sets()
+    )
+    category = Cat().meet((algebras, *retained_categories))
+    # Conversion specializes both the algebra's data crossing and the
+    # actual module realization's element ingress. Their relative sibling
+    # order is not a semantic priority; stronger algebra laws stay above
+    # this private adapter at their own providers.
+    engine_owner = Cat().meet((Algebras(base), module.category()))
     return _algebra_on_module(
         module, multiplication, placement=(category,), categories=categories,
         unit=module(selected_ring.one()),
         construction_data={
-            "_engine": (OwnedRings(), _scalar_algebra_engine(engine), None),
+            "_engine": (engine_owner, _scalar_algebra_engine(engine), None),
             "native_ring": selected_ring,
             **dict(construction_data or {}),
         },
@@ -3670,26 +3717,36 @@ def _unit_from_multiplication(multiplication):
     return unit
 
 
-@cached_function
 def _own_algebra(structure_map):
-    r"""Return the codomain of the ring map ``R -> A`` read as an ``R``-algebra through it."""
+    r"""Read a central ring map as its algebra, preserving the exact selected map.
+
+    The view cache is keyed by map identity and retains that map in its
+    module action. No outer equality cache may identify different supplied
+    actions, and an identity shortcut needs no cache because it returns its
+    literal ring.
+    """
     base = _owned_ring(structure_map.domain())
+    target = _owned_ring(structure_map.codomain())
+    assert base in OwnedRings().Commutative(), (
+        "an algebra requires a commutative coefficient ring; a noncommutative ring's identity is not central"
+    )
+    assert structure_map in OwnedRings().Mor(base, target), (
+        "an algebra's selected central map must be an owned unital ring morphism"
+    )
     if (
-        structure_map.codomain() is base
+        target is base
         and base.base_ring() is base
-        and structure_map is base.Mor(base).identity()
+        and structure_map.is_identity() is True
     ):
         # The existing regular scalar structure is literally id_R.  Creating
         # another engine view here would replace its exact ring endpoint.
-        placement = Algebras(base).Associative().Unital()
-        if base in OwnedRings().Commutative():
-            placement = placement.Commutative()
+        placement = Algebras(base).Associative().Unital().Commutative()
         assert base in placement, (
             "the regular algebra structure of a self-based owned ring is fixed "
             "by its ring constructor"
         )
         return base
-    return _algebra_structure_view(structure_map.codomain(), structure_map)
+    return _algebra_structure_view(target, structure_map)
 
 
 def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_images):
