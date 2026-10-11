@@ -30,10 +30,12 @@ from sage.graphs.graph import Graph
 from sage.misc.cachefunc import cached_method
 from sage.matrix.constructor import matrix
 from sage.rings.rational_field import QQ as SageQQ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -309,6 +311,8 @@ class _SpanningConfiguration:
     """Private graph realization of a supplied finite spanning family."""
 
     def __init__(self, lattice, vectors, colours):
+        if lattice.base_ring() is not _own_ring(SageZZ):
+            raise TypeError("integral ambient configuration isometries require a lattice over ZZ")
         self.lattice = lattice
         self.vectors = tuple(vectors)
         colours = tuple(colours)

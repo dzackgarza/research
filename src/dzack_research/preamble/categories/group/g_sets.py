@@ -355,13 +355,19 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                     f"points of {self.point_set()}"
                 )
             group = self.acting_group()
-            assert group.is_finite() is True, (
-                f"cannot search for an element of {group} carrying {source} to {target}: "
-                f"{group} is not known to be finite"
-            )
-            for group_element in group:
-                if self.act(group_element, source) == target:
-                    return group_element
+            generators = tuple(group.group_generators())
+            points = [source]
+            witnesses = [group.one()]
+            position = 0
+            while position < len(points):
+                if points[position] == target:
+                    return witnesses[position]
+                for generator in generators:
+                    image = self.act(generator, points[position])
+                    if image not in points:
+                        points.append(image)
+                        witnesses.append(generator * witnesses[position])
+                position += 1
             raise ValueError(
                 f"{source} and {target} lie in different orbits of {self}: no element of "
                 f"{group} carries {source} to {target}"
