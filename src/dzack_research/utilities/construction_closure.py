@@ -164,6 +164,10 @@ def _target(
     if isinstance(expression, ast.Call):
         target = _category_target(expression, names)
         if target is not None:
+            # C(data) constructs a category, not an object of C.
+            # C(data)(object_data) constructs an object of C.
+            if isinstance(expression.func, ast.Name) and expression.func.id in names:
+                return f"Cat({target})", "category-value"
             return target, "explicit-category"
         fun = expression.func
         if isinstance(fun, ast.Name) and fun.id == "_object_of":
