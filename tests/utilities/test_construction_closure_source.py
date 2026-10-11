@@ -58,6 +58,8 @@ class Child(Base):
     class ParentMethods:
         def special(self):
             return Result()(0)
+        def via(self):
+            return self.special()
 
 class Result(OwnedCategory):
     def super_categories(self):
@@ -90,6 +92,11 @@ class Result(OwnedCategory):
         # Base operations. A result must be expandable beyond the first hop.
         self.assertTrue(
             any(r.get("from") == "Child()" and "special" in r.get("operation", "")
+                for r in model["derivations"]["Result()"])
+        )
+        self.assertTrue(
+            any(r.get("from") == "Child()" and "via" in r.get("operation", "")
+                and len(r.get("call_chain", [])) == 2
                 for r in model["derivations"]["Result()"])
         )
         unresolved = next(x for x in rules if x["method"] == "unresolved")
