@@ -2355,7 +2355,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self._with_axiom("Noetherian")
 
         def Artinian(self):
-            r"""Return this category with the descending chain condition on ideals."""
+            r"""Return this category with the descending chain condition on left ideals."""
             return self._with_axiom("Artinian")
 
         def Nontrivial(self):
@@ -2673,7 +2673,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _own_ring(SageZZ)
 
     class Artinian(CategoryWithAxiom):
-        r"""Artinian rings: the descending chain condition on ideals."""
+        r"""Left Artinian rings: the descending chain condition on left ideals.
+
+        The left regular module is Artinian (Mathlib ``IsArtinianRing R``).
+        In the commutative case this is the usual Artinian condition. The
+        zero ring is allowed; no right-module condition or selected
+        composition series is part of this axiom.
+        """
 
         @classmethod
         def _repr_object_names(cls):
@@ -2684,7 +2690,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return GF(2)
 
         def extra_super_categories(self):
-            r"""Hopkins–Levitzki: an artinian ring is noetherian."""
+            r"""Hopkins–Levitzki: a left Artinian unital ring is left Noetherian."""
             return [OwnedRings().Noetherian()]
 
     class Commutative(CategoryWithAxiom):
@@ -3260,6 +3266,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return True if self in OwnedRings().Noetherian() else AtomicProposition("is_noetherian", self)
 
         def is_artinian(self):
+            r"""Return whether the left regular module is Artinian."""
             return True if self in OwnedRings().Artinian() else AtomicProposition("is_artinian", self)
 
         def is_local(self):
@@ -3721,7 +3728,7 @@ def OwnedNoetherianRings():
 
 
 def OwnedArtinianRings():
-    r"""``OwnedRings().Commutative().Artinian()``, the session name for Artinian rings."""
+    r"""The session shorthand for commutative Artinian rings."""
     return OwnedRings().Commutative().Artinian()
 
 
