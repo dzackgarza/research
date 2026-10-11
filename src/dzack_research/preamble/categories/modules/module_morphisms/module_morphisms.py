@@ -495,14 +495,23 @@ class ModuleMorphismMethods:
         relations are checked.  Elementwise maps are either decided in an
         effective regime, derived by a named universal construction, or retain
         the unresolved hypothesis explicitly.  An arrow built by a Mor
-        operation from a family of linear maps, on elements or by generator
-        images, has the conjoined decision of that family.
+        operation from a family of linear maps has a sufficient construction
+        proof when every premise is established.  Undecided or refuted
+        premises do not decide the resulting map's linearity: its own
+        generator relations or elementwise diagnostic are used instead.
         """
         match self._linearity_premises:
             case None:
                 pass
             case premises:
-                return _combined_linearity_decision(premises)
+                try:
+                    construction_decision = _combined_linearity_decision(premises)
+                except ValueError:
+                    # A refuted input law does not refute the output law.
+                    pass
+                else:
+                    if construction_decision is True:
+                        return True
         match self._element_function:
             case None:
                 return self._generator_image_linearity_derivation()
@@ -1460,6 +1469,11 @@ class ModuleMorphismMethods:
                     "the given lift returned no preimage, but that lift is not known to find every preimage"
                 )
             candidate = self.domain()(candidate)
+            # The selected construction proves both which values have a
+            # preimage and that a returned value is its section. Consume
+            # that same certificate on a successful lift as on None.
+            if self.selected_lift_exactness_decision() is True:
+                return candidate
             target = element if element.parent() is self.codomain() else self.codomain()(element)
             section_equation = self(candidate) == target
             if section_equation is False:
