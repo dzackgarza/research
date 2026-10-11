@@ -621,23 +621,11 @@ def _lorentzian_reduction_complex(lattice, marked_vectors=None):
     assert marked_vectors is None, (
         f"cannot compute the reduction complex of {lattice} marked by {marked_vectors}: only the unmarked perfect-domain decomposition of a Lorentzian lattice is available"
     )
-    signature = lattice.signature_pair()
-    positive = signature.first()
-    negative = signature.second()
-    gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
-    match int(positive), int(negative):
-        case _, 1:
-            engine_gram = gram
-        case 1, _:
-            engine_gram = -gram
-        case _:
-            raise ValueError(f"{lattice} has no Lorentzian perfect-domain decomposition: it must have signature (1, n) or (n, 1), but its signature is {signature}")
     from sage_indefinite_port.indefinite.lorentzian_cells import (
         perfect_domain_traversal,
     )
 
-    records = perfect_domain_traversal([list(row) for row in engine_gram.rows()])
-    return _perfect_domain_traversal_from_records(lattice, records)
+    return perfect_domain_traversal(lattice, "total")
 
 
 __all__ = [
