@@ -14,47 +14,67 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### Arithmetic orthogonal images and constructive stabilization lack their provider
+### Explicit isometries and automorphism generators lack their indefinite provider
 
-For a nondegenerate even integral lattice `M` and a positive integer `d`,
-primitive isotropic orbit enumeration requires the actual image of
-`O(M) -> Aut(M/dM)`. Recovering lattice-vector representatives also requires
-source lifts and an explicit isometry `U orthogonal-sum K -> M` for each
-selected complement genus representative `K`. The pointwise stabilizer of a
-chosen null vector has its own required finite image. Membership predicates
-and incomplete families of isometries do not supply those images.
+A represented lattice needs distinct operations for deciding isometry,
+selecting an isometry, constructing its automorphism group, and computing a
+generating family of that group. Explicit isometries and generating data must
+compose with the general morphism and group-action operations.
 
-**Dependency path:** integral lattice and its isometry Mor -> full orthogonal
-action -> finite module quotient and induced action -> generated finite image
-and selected lifts -> marked submodule/coset stabilizer -> finite orbit set.
-Stabilization additionally requires the nonempty isometry Mor to supply an
-explicit element. In the split even case, transvections and extended
-automorphisms of `K` supply the pointwise stabilizer construction.
+**Dependency path:** formed module and its isometry Mor -> selected isometry
+or automorphism-group generators -> group morphisms and actions -> subgroup
+constructions.
 
-**Searched:** live `categories/lattice_morphisms.py`, `lattices.py`,
-`orthogonal_quotients.py`, `rational_integral_stabilizers.py`, the group/action
-owners, and the `sage-indefinite-port` source tree at `993029f`, on 2026-10-11.
-**Found:** source implementations of finite images with lifts, congruence
-module actions, predicate stabilizers, overlattices, genera and transvections.
-Indefinite generators (`lattice_morphisms.py:2215`) and general indefinite
-isometries (`:2593`) import `indefinite.recursive`; that module is not in the
-inspected port `src/` tree. Levi-image computation (`lattices.py:6542`) also
-restricts its reduction to the definite case.
-**Conclusion:** the inspected source has an unmet indefinite provider
-contract. The existing finite algebra is reusable once complete arithmetic
-inputs are supplied. **Confidence:** source-level contract mismatch is
-established; execution and algorithm correctness are unverified.
-**Gaps:** frozen port snapshots, other installed distributions and independent
-arithmetic engines are outside this provider comparison.
+**Observed source boundary, 2026-10-11:** the public lattice and isometry
+owners expose these operations. Indefinite generators
+(`categories/lattice_morphisms.py:2215`) and general indefinite isometries
+(`:2593`) import `sage_indefinite_port.indefinite.recursive`; that module
+is absent from the inspected local port `src/` tree at `993029f`.
+Definite computation and selected generating resolutions are existing
+partial capabilities.
 
-**Consumers:** primitive isotropic orbit enumeration, congruence orbit
-splitting and representative recovery. The provider repair belongs to
-`sage-indefinite-port`; presentation and composition belong to the existing
-lattice-isometry, group-action and subgroup owners. Formal genus comparisons
-remain with `genera-present-their-formalization`, below. The
-[capability assessment](docs/preamble-isotropic-orbit-capabilities.md) states
-the remaining formalization questions and distinguishes count-only inputs
-from representative inputs.
+**Conclusion:** the inspected checkout has an unmet computation dependency.
+**Consumers:** lattice comparison, changes of representation, automorphism
+group actions and their subgroup operations. The computation repair belongs
+to `sage-indefinite-port`; public presentation belongs to the existing
+isometry and automorphism owners. **Coverage:** frozen snapshots, installed
+distributions and other engines are outside this source comparison;
+execution and mathematical completeness remain unverified.
+
+### Group morphisms lose computational closure across represented data
+
+Explicit group morphisms, their images and inverse images, and selected
+preimages should compose through their public mathematical maps.
+
+**Observed source boundary, 2026-10-11:** `GroupMorphism` accepts generator
+images, an elementwise rule or a GAP map. Its ordinary `image()` and
+element-preimage route call `_gap_morphism_crossing()`, which requires
+generator images or a GAP realization
+(`categories/group/groups.py:2167,2248,2291`). An evaluable elementwise
+map therefore need not support the same operations. The existing
+`finite_image_lifts` algorithm (`:3479-3563`) can use evaluation and
+source generators, but returns a dictionary rather than an image subgroup,
+factorization and selected set section. The general action stabilizer
+(`group/g_objects.py:1115`) returns a predicate subgroup without connecting
+its retained action to available finite-index generator computations.
+
+**Dependency path:** selected generating data and evaluable morphism ->
+image subgroup with inclusion and factorization -> chosen preimages ->
+subgroup images and inverse images; represented action -> stabilizer
+inclusion -> generating description where computable. **Partial capability:**
+generator evaluation, finite images with source witnesses, subgroup inverse
+images and finite-index Schreier generators already exist.
+
+**Consumers:** general group maps, actions and subgroup compositions.
+**Owner:** the group-morphism, subgroup and action owners. **Coverage:**
+inspection of the named source routes; execution remains unverified. Finite
+generation of the ambient group alone does not imply decidability or finite
+generation of its subgroups. The represented object and its computation
+hypotheses must remain distinct.
+
+The existing `images-of-subgroups-and-predicate-subsets` and
+`finite-index-subgroup-generators` nodes in [TODO.md](TODO.md) own the
+corresponding image and generator work.
 
 ### Effective group pullbacks require general products and equalizers
 
@@ -64,23 +84,47 @@ map. The `pullbacks-in-every-category` node owns this construction.
 
 **Observed source boundary, 2026-10-11:** `Cat.fiber_product`
 (`categories/abstract_categories/cat.py:840`) composes products and
-equalizers. The inspected `OwnedGroups._categorical_product_construction`
-(`categories/group/groups.py:2997`) requires finite factors; the inspected
-group owner files contain no equalizer realization. Predicate inverse images
-and finite-index Schreier generators are existing partial capabilities.
-Effective evaluation of generator-defined maps additionally needs relation
-descent and word lifts. The finite group case and inverse images under an
-already evaluable map do not supply a general infinite generated-group
-pullback algorithm.
+equalizers but returns the equalizer result rather than a selected pullback
+cone. The inspected `OwnedGroups._categorical_product_construction`
+(`categories/group/groups.py:2997`) accepts only nonempty finite families
+of finite groups. The inspected group owner files contain no equalizer
+realization. Selected products and equalizers at the general category owner,
+predicate inverse images and finite-index Schreier generators are existing
+partial capabilities.
 
 **Dependency path:** group morphisms -> product -> equalizer -> pullback
-cone -> generating description where computable. **Consumers:** gluing
-stabilizers and arithmetic group maps. The isotropic-orbit strategy can use
-finite images without this general algorithm. **Coverage:** source inspection
-of the named category and group owners; execution and other representations
-remain unverified. Present the formal group pullback at this owner and retain
-the computability boundary. Request additional mathematics from
+cone -> generating description where computable. **Consumers:** group
+cospans and subgroup intersections. **Coverage:** source inspection of the
+named category and group owners; execution and other representations remain
+unverified. Present the formal group pullback at this owner and retain its
+computability boundary. Request additional mathematics from
 `lean-categories` only after checking its existing pullback constructions.
+
+The [expressive-power assessment](docs/preamble-expressive-power.md) records
+the general interfaces and their composition boundaries.
+
+### Module images require finite selected generators at the inspected owner
+
+An image is a subobject of a morphism's codomain. Finite generation is a
+hypothesis of a spanning algorithm, not of this definition.
+
+**Observed source boundary, 2026-10-11:**
+`categories/modules/module_morphisms/module_morphisms.py:1204` requires the
+domain's selected generating set to be finite, then constructs the span of
+its images. That route does not represent images for infinite selected
+generating sets. The kernel and cokernel routes already consult represented
+endpoint computations. `modules/pure/modules.py:3105` composes a kernel and
+an image to construct a submodule intersection, so the image boundary also
+limits that composition.
+
+**Dependency path:** represented module morphism -> image subobject and
+factorization -> subobject compositions. **Partial capability:** finite
+spanning images with inclusions, represented kernels and quotient maps.
+**Consumers:** module maps and subobject intersections. **Owner:** the module
+morphism image operation. **Coverage:** the named source route; other map
+types and execution remain unverified. Present the formal image independently
+of its finite spanning computation; inspect existing representations before
+requesting further mathematics from `lean-categories`.
 
 ### An integral isotropic partner with minimal pairing can fail to exist
 
@@ -605,20 +649,19 @@ theorem for even genera [nikulin1979integral, Cor. 1.9.4, Thm. 1.10.1]; and
 the classification of genera by local symbols [CS10, Ch. 15, §7]. Repair is the
 `genera-present-their-formalization` node in [TODO.md](TODO.md).
 
-Primitive isotropic orbit enumeration is another consumer of this foundation.
-The [capability assessment](docs/preamble-isotropic-orbit-capabilities.md)
-adds its dependency account. In the inspected preamble, `_Genus` exposes
-lattice representatives as facade points, without a class projection or a
-selected section to the formal `GenusClass` set. `Core` retains the objects
-and their isomorphisms; its connected components supply the class set.
-The existing finite-family `isometry_classes` operation supplies a partition
-of its input family, not those maps for an entire genus. Presentation of the
-formal genus class set and its representative maps belongs to this same
-owner. Stabilization uniqueness, the divisibility-one orbit correspondence,
-isotropic-overlattice reduction and finite-quotient orbit splitting remain
-formalization questions: the local `Valued/` slice at `29ff4ad` did not locate
-these reduction theorems, and the released registry and dependent-library
-search remains open. No global absence claim follows from that slice.
+The [expressive-power assessment](docs/preamble-expressive-power.md)
+identifies a general class-set presentation gap. In the inspected preamble,
+`_Genus` accepts lattices as facade points and iterates over selected
+representatives, without a separate class projection or selected section to
+the formal `GenusClass` set. The finite-family `isometry_classes` operation
+partitions its input family; it supplies no such maps for an entire genus.
+The category core retains objects and isomorphisms; its component quotient
+supplies the class set. Class projections, representative sections and
+isomorphism witnesses are distinct maps. Their general presentation belongs
+to the quotient and category owners, with the genus as a consumer. The local
+formalization slice at `29ff4ad` supplies genus classes and positive-definite
+finiteness. Further classification and finiteness coverage remains with this
+existing foundation owner.
 
 ### Dynamic peeking stands in for category membership across the preamble
 
