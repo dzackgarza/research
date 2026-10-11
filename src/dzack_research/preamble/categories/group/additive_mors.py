@@ -88,12 +88,9 @@ class AdditiveMonoidMor(CategoricalMor):
     def _element_constructor_(self, datum):
         return _additive_operation_mor_element(self, datum)
 
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
-            )
-        return self(lambda element: element)
+    # The identity function preserves both addition and zero. Bind the same
+    # cached descriptor to this Mor and its generated additive-monoid arrow.
+    identity = SetMorCategory.__dict__["identity"]
 
 
 class _ScalarIdentityEvaluation:
