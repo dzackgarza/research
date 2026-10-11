@@ -2975,6 +2975,23 @@ class TensorProductModuleMorphismMethods:
             name="Bilinear coordinate values",
         )
 
+    def values_matrix(self):
+        r"""Return the pairing values indexed by the two selected framings."""
+        from dzack_research.preamble.categories.sets.coordinate_families import (
+            _coordinate_family_from_function,
+            _finite_framing,
+        )
+
+        left_labels = _finite_framing(self.left_module())
+        right_labels = _finite_framing(self.right_module())
+        return _coordinate_family_from_function(
+            left_labels,
+            right_labels,
+            self.codomain(),
+            self._gram_entry,
+            name="Pairing values on the selected framings",
+        )
+
     def _gram_entry(self, left_label, right_label):
         r"""``b(e_l, e_r)``, the value of this map at the framing generator ``e_l ⊗ e_r``.
 
