@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
     _category_accepts_morphism,
     _category_mor_parent,
+    _category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -348,7 +349,16 @@ class _DegreeZeroResolutionTransport(Functor):
 
 
 class Resolutions(OwnedCategory):
-    r"""The category of chosen n-truncated resolutions with levels in P."""
+    r"""The category of chosen n-truncated resolutions with levels in P.
+
+    ``augmentation_family`` states the represented covering arrows used by
+    the bare degree-zero constructor. It defaults to categorical
+    epimorphisms of the base. A theory may instead supply a stronger exact
+    family, such as epimorphisms of the underlying sets for algebra
+    generation. The supplied projective class is projective relative to
+    those covering arrows; this is part of the resolution datum, not a
+    theorem inferred from an arbitrary category's name.
+    """
 
     _MorCategory = ResolutionMorCategoryConstruction
 
@@ -359,18 +369,22 @@ class Resolutions(OwnedCategory):
         projective_class: Category,
         truncation=0,
         level_category=None,
+        augmentation_family=None,
     ):
         match level_category:
             case None:
                 level_category = projective_class
             case _:
                 pass
+        if augmentation_family is None:
+            augmentation_family = _category_packet(base_category).Epis()
         return Category.__classcall__(
             cls,
             base_category,
             projective_class,
             _normalize_truncation(truncation),
             level_category,
+            augmentation_family,
         )
 
     def __init__(
@@ -379,6 +393,7 @@ class Resolutions(OwnedCategory):
         projective_class: Category,
         truncation=0,
         level_category=None,
+        augmentation_family=None,
     ) -> None:
         truncation = _normalize_truncation(truncation)
         match level_category:
@@ -386,6 +401,8 @@ class Resolutions(OwnedCategory):
                 level_category = projective_class
             case _:
                 pass
+        if augmentation_family is None:
+            augmentation_family = _category_packet(base_category).Epis()
         match projective_class.is_subcategory(base_category):
             case False:
                 raise TypeError(
@@ -405,6 +422,7 @@ class Resolutions(OwnedCategory):
         self._base_category = base_category
         self._projective_class = projective_class
         self._level_category = level_category
+        self._augmentation_family = augmentation_family
         self._truncation = truncation
         super().__init__()
 
@@ -418,6 +436,10 @@ class Resolutions(OwnedCategory):
         r"""Return the category imposed levelwise on this chosen truncation."""
         return self._level_category
 
+    def augmentation_family(self):
+        r"""Return the exact covering-arrow family for bare degree-zero data."""
+        return self._augmentation_family
+
     def truncation(self):
         return self._truncation
 
@@ -427,7 +449,8 @@ class Resolutions(OwnedCategory):
     def _repr_(self) -> str:
         return (
             f"{self.truncation()}-truncated resolutions in {self.base_category()} "
-            f"with projective class {self.projective_class()} and levels in {self.level_category()}"
+            f"with projective class {self.projective_class()}, levels in {self.level_category()}, "
+            f"and augmentations in {self.augmentation_family()}"
         )
 
     def an_object(self):
@@ -497,7 +520,13 @@ class Resolutions(OwnedCategory):
         )
 
     def degree_zero(self, augmentation, *, length=Unknown):
-        r"""Return the truncation-zero resolution represented by an epimorphism."""
+        r"""Return degree-zero data with represented covering-arrow evidence.
+
+        Failure of admission to the selected family may mean that its
+        predicate is undecided; it does not establish that the map fails
+        the covering condition. Constructor-selected generating data enter
+        separately through ``selected_degree_zero`` with their own premise.
+        """
         match self.truncation():
             case 0:
                 pass
@@ -506,17 +535,13 @@ class Resolutions(OwnedCategory):
                     f"a bare generating epimorphism belongs to truncation zero, but {self} has "
                     f"truncation {self.truncation()}"
                 )
-        match self.base_category().Epi(
-            augmentation.domain(), augmentation.codomain()
-        ).accepts(augmentation):
-            case False:
-                raise ValueError(
-                    f"{augmentation} is not a represented epimorphism of {self.base_category()}; "
-                    "use a theorem-backed constructor for a generating epimorphism whose epi structure "
-                    "is known by construction"
-                )
-            case True:
-                pass
+        if self.augmentation_family().accepts(augmentation) is not True:
+            raise ValueError(
+                f"the degree-zero resolution of {augmentation.codomain()} needs represented "
+                f"admission of {augmentation} to {self.augmentation_family()}; no such evidence "
+                "was supplied by this map's current realization. Constructor-selected "
+                "generating augmentations use selected_degree_zero with their defining premise"
+            )
         return self._object(
             augmentation.codomain(),
             lambda degree: augmentation.domain(),

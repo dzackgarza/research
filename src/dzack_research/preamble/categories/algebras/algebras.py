@@ -1487,6 +1487,34 @@ class Algebras(OwnedCategoryOverBaseRing):
                 or self.has_selected_resolution(associative.Commutative())
             )
 
+        def is_finitely_generated_as_algebra(self):
+            r"""Whether finitely many elements generate this ``R``-algebra.
+
+            Generation uses the retained scalar action, addition and
+            multiplication, with arbitrary parenthesization when needed.
+            It is defined without associativity or a unit. Forgetting an
+            existing unit preserves finite generation by adjoining that one
+            element to a finite generating family.
+
+            A finite algebra generating family or a finitely generated
+            underlying module proves the property. An infinite selected
+            family, failure of module finite generation, or absence of a
+            selected family does not refute algebra finite generation.
+            """
+            ring = self.algebra_base_ring()
+            match self:
+                case _ if self in Algebras(ring).Associative().Unital().FinitelyGeneratedAsAlgebra():
+                    return True
+                case _ if (
+                    self.is_framed_algebra()
+                    and self.algebra_generating_set().is_finite() is True
+                ):
+                    return True
+                case _ if self.unformed_module().is_finitely_generated() is True:
+                    return True
+                case _:
+                    return AtomicProposition("is_finitely_generated_as_algebra", self)
+
         def selected_algebra_resolution(self):
             return self.selected_resolution(self.algebra_framing_owner())
 
@@ -1515,8 +1543,9 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def finite_algebra_generators(self):
             labels = self.algebra_generating_set()
-            assert labels.cardinality().is_finite(), (
-                f"{self} has no finite chosen set of algebra generators: it has {labels.cardinality()}"
+            assert labels.cardinality().is_finite() is True, (
+                f"computing the selected finite algebra generators of {self} needs a known finite "
+                f"chosen family; its selected label set has cardinality {labels.cardinality()}"
             )
             return FiniteOrderedSets().from_indexed(
                 labels,
@@ -2016,27 +2045,39 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                 @cached_method
                 def resolution_category(self):
+                    r"""Return finite generating surjections from projective tensor algebras.
+
+                    A tensor algebra with projective underlying R-module has
+                    projective degree-one module, so its maps lift through
+                    underlying surjections. Categorical algebra epimorphisms
+                    alone need not be surjective and do not express finite
+                    generation. The construction requires the stated
+                    projective-module placement; it does not choose a basis
+                    or decide projectivity of an unclassified realization.
+                    """
                     from dzack_research.preamble.categories.abstract_categories.resolutions import (
                         Resolutions,
                     )
                     from dzack_research.preamble.categories.algebras.free_algebras import (
-                        FreeAlgebras,
+                        TensorAlgebras,
                     )
 
                     ordinary = Algebras(self.base_ring()).Associative().Unital()
-                    free = FreeAlgebras(self.base_ring())
-                    finite_free = Cat().meet(
-                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    projective_tensors = Cat().meet((
+                        TensorAlgebras(self.base_ring()),
+                        Modules(self.base_ring()).Projective(),
+                    ))
+                    finite_projective_tensors = Cat().meet(
+                        (projective_tensors, ordinary.FinitelyGeneratedAsAlgebra())
                     )
-                    return Resolutions(ordinary, free, 0, finite_free)
+                    return Resolutions(
+                        ordinary, projective_tensors, 0, finite_projective_tensors,
+                        augmentation_family=Sets().category_packet().Epis(),
+                    )
 
                 @cached_method
                 def resolution_classifier(self):
                     return self.resolution_category().target_functor()
-
-                class ParentMethods:
-                    def is_finitely_generated_as_algebra(self) -> bool:
-                        return True
 
             class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
                 r"""Algebras that admit a finite algebra presentation.

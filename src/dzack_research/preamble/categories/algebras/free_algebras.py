@@ -186,7 +186,8 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 module_placement = FinitelyGeneratedFreeModules(base)
             case False:
                 pass
-        match labels.cardinality().is_finite():
+        algebra_placements = ()
+        match labels.is_finite():
             case True:
                 algebra_placements = (
                     (
@@ -196,8 +197,8 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                         .FinitelyGeneratedAsAlgebra()
                     ),
                 )
-            case False:
-                algebra_placements = ()
+            case _:
+                pass
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -316,7 +317,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
     engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
-        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+        and algebra_generating_set.is_finite() is not True
     ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
@@ -338,7 +339,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
     engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
-        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+        and algebra_generating_set.is_finite() is not True
     ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_tensor_algebra_of,
