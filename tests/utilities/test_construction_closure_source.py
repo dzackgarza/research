@@ -57,7 +57,7 @@ class Child(Base):
         return [Base()]
     class ParentMethods:
         def special(self):
-            return Result()
+            return Result()(0)
 
 class Result(OwnedCategory):
     def super_categories(self):
@@ -100,6 +100,11 @@ class Result(OwnedCategory):
         self.assertIn("Preamble construction closure", page)
         self.assertIn("application/json", page)
         json.dumps(model)
+
+    def test_category_values_are_not_misplaced_as_category_objects(self):
+        expr = ast.parse("Result()", mode="eval").body
+        self.assertEqual(_target(expr, {"Result"}, {}, set()),
+                         ("Cat(Result())", "category-value"))
 
     def test_unknown_results_never_become_verified_objects(self):
         model = {
