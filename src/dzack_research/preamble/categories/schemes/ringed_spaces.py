@@ -9,6 +9,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import parent as element_parent
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -33,6 +34,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.logic import negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -1217,15 +1219,20 @@ class AffineQuasiCoherentSheafMorphismMethods:
         category = QuasiCoherentSheaves(self.domain().scheme())
         return category.associated_sheaf(self.underlying_module_morphism().cokernel())
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, AffineQuasiCoherentSheafMorphismMethods)
-            and other.parent() is self.parent()
-            and other.underlying_module_morphism() == self.underlying_module_morphism()
-        )
+    def _richcmp_(self, other, op):
+        r"""Compare through the affine equivalence without collapsing unknown equality."""
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if not isinstance(other, AffineQuasiCoherentSheafMorphismMethods) or other.parent() is not self.parent():
+            return op == op_NE
+        equal = self.underlying_module_morphism() == other.underlying_module_morphism()
+        return equal if op == op_EQ else negation(equal)
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __eq__(self, other):
+        return self._richcmp_(other, op_EQ)
+
+    def __ne__(self, other):
+        return self._richcmp_(other, op_NE)
 
     def __mul__(self, other):
         if not isinstance(other, AffineQuasiCoherentSheafMorphismMethods):
