@@ -456,7 +456,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `AffineGroupSchemes` in `src/dzack_research/preamble/categories/schemes/group_schemes.py`.
   **Closure assertions:** the complete `AffineGroupSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineGroupSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-affinemodulefibres`**. **Needs:** none.
+- [x] **`placement-owner-affinemodulefibres`**. **Needs:** none.
   **Owner pass:** `AffineModuleFibres` in `src/dzack_research/preamble/categories/modules/affine_fibres.py`.
   **Closure assertions:** the complete `AffineModuleFibres` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `AffineModuleFibres`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
