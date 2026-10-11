@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions and its Local refinement are the nine complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. FormalPowerSeriesRings is ready for its own closure, while the Division and prime-field refinement passes are active. The remaining 622 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement and FormalPowerSeriesRings are the ten complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The Division and prime-field refinement passes are ready for closure, and the Fields owner pass is active. The remaining 621 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,7 +259,9 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed `placement-owner-adiccompletions` and `placement-owner-adiccompletions-local` (2026-10-11):** all 27 original Adic introductions, its 18 strict authored ancestors, full selected-supplier inventory and delivered RingMor are reviewed and repaired. The new Local provider's two introductions and 21 strict ancestors have their own completed pass. Scalar and residue maps use their common owners; induced maps have actual endpoints and true hypotheses; exact source projection and finite precision remain distinct. The provider is added and closed in this bank, so nine of 631 owner passes are complete. FormalPowerSeriesRings is next for closure; Division and prime-field refinement work is active. Evaluation without exact source data remains explicitly named inside Adic and T, with no new prerequisite.
+**Closed `placement-owner-formalpowerseriesrings` (2026-10-11):** all ten original introductions, the corrected parameter declaration, all 26 strict authored ancestors and the actual unital algebra Mor have their own complete pass. Source generator positions, formal labels and scalar coefficients now agree without replacing the actual coefficient map by the completion map. The selected zero-ring and empty-family construction data are retained in `13d391e8f2`. This completes the tenth of 631 owner passes; Division and prime-field refinement are ready for closure, with Fields active. Runtime assertions and the stated coefficient/cardinality computation frontiers remain under T.
+
+**Closed `placement-owner-adiccompletions` and `placement-owner-adiccompletions-local` (`13d391e8f2`, 2026-10-11):** all 27 original Adic introductions, its 18 strict authored ancestors, full selected-supplier inventory and delivered RingMor are reviewed and repaired. The new Local provider's two introductions and 21 strict ancestors have their own completed pass. Scalar and residue maps use their common owners; induced maps have actual endpoints and true hypotheses; exact source projection and finite precision remain distinct. The provider is added and closed in this bank, completing the eighth and ninth of 631 owner passes. All three changed Python files passed post-commit stdlib AST parsing. FormalPowerSeriesRings is independently closed above. Evaluation without exact source data remains explicitly named inside Adic and T, with no new prerequisite.
 
 **Closed `placement-owner-ownedadicallycompleterings` (`0af4238b7b`, 2026-10-11):** all five introductions, all 17 strict authored ancestors and delivered RingMor have their own completed review. The common accessor exposes the actual chosen target ideal, preserves explicit supplier authority and accepts independent zero-adic native fields. Source, target and maximal ideals remain distinct. This completed the seventh owner pass; the selected Adic and its Local provider passes are independently closed above. The parent remains open, with runtime assertions retained under T.
 
@@ -271,7 +273,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: nine complete and 622 unchecked. FormalPowerSeriesRings is ready for closure; Division and the prime-field refinement are active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: ten complete and 621 unchecked. FormalPowerSeriesRings is independently closed. Division and the prime-field refinement are ready for closure; the Fields pass is active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -359,6 +361,240 @@ These are source-level closure correspondences, not executed Sage results. The a
 
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
+
+### Whole-category placement: `FormalPowerSeriesRings` (2026-10-11; source pass closed)
+
+**Closed independent owner pass: `placement-owner-formalpowerseriesrings`.** The full declaration and all actual ancestors justify this bounded source closure. No public formal-coordinate operation belongs at a weaker existing ancestor. The parameter declaration is corrected to the commutative coefficient rings required by the uniformly declared commutative algebra structure, including zero rings and non-Noetherian rings. The coefficient, label-correspondence and optional-cardinality repairs preserve the actual R-module action and both defining maps.
+
+The coordinated selected-construction repair is banked in `13d391e8f2`: an actual framed symmetric-algebra source supplies retained finite ordered labels on the proved zero-source branch, or on the empty-family zero-ideal branch. An empty-family unit completion over a nonzero base receives no false Formal placement. General unframed sources keep their previous zero/unit paths. Thus the degenerate cases retain their data rather than acquire a new nontriviality or positive-variable hypothesis. Native empty-family parser notation remains unexecuted; the selected empty polynomial-source completion supplies that mathematical entry.
+
+#### Mathematical datum and complete introduction inventory
+
+The coefficient ring is the literal owned commutative ring `R`. The existing
+constructor selects an ordered finite family `X`, the polynomial source
+`P = R[X]`, its variable ideal `I`, and the completion `A = lim P/I^n`, together
+with `lambda: P -> A`. The family consists of formal parameters; finiteness of
+`X` does not say that these elements generate `A` as an ordinary algebra.
+The constant-series map `c: R -> A` is the actual retained scalar action.
+
+The original declaration contains exactly ten methods, including category
+construction methods. The patch adds the parameter-category override and
+introduces no new public element operation, Mor family, arrow provider,
+nested refinement, comparison record, or series algorithm.
+
+| Introduction | Disposition and owner justification |
+| --- | --- |
+| `an_object()` | Keep the existing one-variable formal series construction over the category's actual `R`. It is a category witness, not an operation on an arbitrary adically complete ring. |
+| `_repr_object_names()` | Keep the name of this particular category. |
+| `super_categories()` | Keep the unital commutative `R`-algebra and chosen-adic implications. Neither of them selects formal coordinates by itself. |
+| `_call_(*args, **kwargs)` | Keep the established notation parser and the single AdicCompletions construction. It retains the parsed variables and computational precision, then enters through `R[X]` and its variable ideal. There is no parallel completion realization. |
+| `formal_parameter_set()` | Keep the chosen family here. No strict ancestor supplies formal variables. An absent datum now gives an informative assertion instead of saying that an object already in the category is not a power-series ring. An empty supplied family remains a valid value. |
+| `formal_parameter(label)` | Keep the evaluation of a retained formal label through `lambda`. The selected position now identifies the source's actual algebra label before its generator is passed through the completion map. Native names can differ from those source labels. |
+| `power_series_variable()` | Keep the convenience accessor for a supplied family of cardinality one. A several-variable or empty-family object has no unique variable for this no-argument operation. Its exact cardinality request is part of this arity question, not an optional availability probe. |
+| `_cardinality_decision()` | Keep this as a supplier for the existing Sets cardinality owner. The formula uses the coefficient cardinal and parameter cardinal supplied by the same retained data. The finite-parameter guard prevents a supplied infinite or unevaluated cardinal from being forced through `finite_value()`. |
+| `ElementMethods.coefficient(degree)` | Keep scalar coefficient extraction here because it depends on the formal coordinates. The repair accepts exact integral exponents, uses an exponent tuple for several variables, and returns an element of the literal coefficient ring. |
+| `ElementMethods.__getitem__(degree)` | Keep the syntax delegation to that one coefficient operation. It introduces no second implementation. |
+| Added `parameter_category()` | State `OwnedRings().Commutative()` at the actual parameterized owner. A noncommutative ring cannot supply the declared commutative constant-series algebra with its faithful coefficient map. |
+
+The category wrapper `OwnedCategoryOverBaseRing` normalizes an ordinary native
+ring to its owned ring and then retains that parameter. Its bootstrap branch
+preserves the actual under-construction owned parent. This patch does not
+replace the parameter by an abstractly isomorphic ring, a residue field, the
+polynomial source, or a native coefficient parent.
+
+#### Complete strict authored up-set: 26 owners
+
+The following is the authored mathematical ancestry with the existing axiom
+propagation. It is not an executed Python MRO. Generated intersections of
+axioms are not extra authored owner identities. Every parameterized algebra
+or fixed module ancestor below retains the same `R`.
+
+| Strict authored ancestor | Structure and parameter retained |
+| --- | --- |
+| `Algebras.Associative.Unital.Commutative(R)` | Commutative associative unital multiplication on the actual `R`-module. |
+| `Algebras.Associative.Unital(R)` | Associative unital `R`-algebra; its declared ring implication supplies the ring branch. |
+| `Algebras.Associative(R)` | Associative `R`-bilinear multiplication. |
+| `Algebras.Unital(R)` | `R`-bilinear multiplication with its actual two-sided unit. |
+| `Algebras.Commutative(R)` | Commutative `R`-bilinear multiplication. |
+| `Algebras(R)` | The actual `R`-module and its bilinear multiplication. |
+| `Modules(R)` | The fixed scalar ring and action; no finite module basis follows. |
+| `ModulesOverCommutativeRings` | The module together with its commutative scalar ring. The fixed `R` branch lies over the identity scalar map. |
+| `OwnedAdicallyCompleteRings` | Completeness for the selected target ideal, without selecting a polynomial presentation. |
+| `OwnedRings.Commutative` | A commutative unital associative ring. |
+| `OwnedRings` | A unital associative ring with additive inverses and distributivity. |
+| `OwnedSemirings` | Commutative additive and unital multiplicative monoids, with distributivity and zero. |
+| `OwnedRngs` | An additive abelian group and associative distributive multiplication. |
+| `Monoids` | Associative multiplication with a two-sided identity. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication with a two-sided identity. |
+| `Magmas.Commutative` | Commutative multiplication. |
+| `Magmas` | Multiplication as a binary operation. |
+| `AdditiveGroups.AdditiveCommutative` | An additive abelian group. |
+| `AdditiveGroups` | An additive group. |
+| `AdditiveMonoids` | Associative addition and zero. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Addition as a binary operation. |
+| `Sets` | The underlying set and its common cardinality contract. |
+| `Objects` | The common owned-object category. |
+
+`OwnedCategoryOverBaseRing`, OwnedCategory, and the category-with-axiom
+machinery are construction infrastructure, not additional mathematical
+ancestors. AdicCompletions is a simultaneous construction placement of the
+represented examples; it is not an authored superclass of FormalPowerSeriesRings.
+Local, Complete, Nontrivial, Noetherian, integral domains, fields, finite sets,
+free modules, finite modules, framed algebras, and finitely generated algebras
+are not uniform ancestors of this owner.
+
+In particular, `R[[X]]` is complete for the variable ideal independently of
+whether `R` is Noetherian or local. If the selected coefficient ring is local,
+the existing constructor can additionally place the result as local. It uses
+the maximal ideal `m_R A + (X)`, and supplies completeness for that maximal
+ideal only under its actual complete-local or field hypotheses. That ideal
+must not replace a separately retained chosen adic ideal `(X)`.
+
+#### Actual Mor packet and literal maps
+
+FormalPowerSeriesRings introduces no `_MorCategory`, Mor override, or
+MorphismMethods. Its algebra ancestry supplies the existing unital
+`R`-algebra Mor family. The common adic branch supplies RingMor, which is
+already an underlying Mor of the unital algebra branch. The packet selector
+walks declared semantic supercategories with the same literal endpoints and
+discards a Mor candidate that is strictly above another. It does not select a
+stronger category merely because an endpoint also has a selected completion
+presentation.
+
+For the actual selected formal-series parents, `_AdicCompletionAlgebraParent`
+passes `algebra_labels=None` to `_OwnedAlgebraParent`. The latter returns
+without supplying an algebra resolution. The Unital algebra owner therefore
+selects `UnitalMultiplicativeAlgebraMor`, through its existing
+`_algebra_mor_class()` choice. Formal parameters have not been mislabeled as
+ordinary algebra generators. This Mor retains an actual `R`-linear map and
+the product/unit equations. Its identity uses the underlying module identity;
+this route does not require a finite list of algebra generators. The existing
+generated arrow graph also retains the underlying ring, monoid, additive,
+module, and set operations appropriate to those declarations.
+
+No separate continuity condition, preservation of selected variable labels,
+or equality of chosen adic ideals is added by this Mor declaration. Any
+automatic continuity theorem requires its own mathematical hypotheses; it is
+not a new assertion of this pass.
+
+The two important arrows have different sources:
+
+| Arrow | Literal endpoints and equation |
+| --- | --- |
+| Polynomial coefficient inclusion `i` | `R -> P = R[X]`. |
+| Completion map `lambda` | `P -> A`; for corresponding formal/source labels `x_j, q_j`, `formal_parameter(x_j) = lambda(P.algebra_generator(q_j))`. |
+| Coefficient structure map `c` | `R -> A`; `c(r) = rho(r)(1_A)` and `c = lambda * i`. |
+| Local residue map when selected | `A -> k(R)`; `f -> residue_R(coefficient(f, 0))`. |
+
+The common ring-center owner returns `A` itself for a commutative ring, so
+the scalar structure map's center codomain is literally `A` here. In the
+Adic owner repair in `13d391e8f2`, the completion realization supplies `lambda`
+to the common algebra structure-map hook only when its scalar ring is its
+completion source. For Formal parents the coefficient ring is `R`, not `P`,
+so the existing derivation from the retained `R`-action supplies `c` instead.
+No formal coefficient map is replaced by the completion map with the wrong
+domain. Both are ordinary owned ring maps when used at that interface.
+
+#### Coefficient repair and source proof
+
+The installed LazyModuleElement indexing implementation returns the degree
+`d` homogeneous component of a several-variable series. For `d > 0` that
+component is generally a polynomial in the formal variables, not an element
+of `R`. The former method attempted to cross that polynomial into the owned
+coefficient ring. Its degree-zero use was valid because the homogeneous
+component there is constant.
+
+The repaired operation first normalizes exact integral indices using Python's
+index protocol. A tuple has exactly one exponent for each selected parameter.
+Integer indexing retains the one-variable convention, and integer zero means
+the constant term in every arity. Negative exponents return `R.zero()`.
+A positive integer without a variable choice in arity other than one gives an
+informative input error rather than fabricating one scalar coefficient.
+
+The native free-algebra constructor also establishes the required source-label
+correspondence. It retains the actual ordered module labels as its algebra
+labels, while `_variable_names` may rename them for the native polynomial
+model. Its generator evaluator sends the label at position `j` to native
+`engine.gen(j)`. The positive-variable completion retains those native names
+in the same source order. Therefore the formal parameter at position `j`
+must use the source's actual algebra label at that position. The corrected
+accessor does exactly this before applying the retained completion map. For
+example, original label `0` can have native/formal name `x0` without asking the
+source algebra to treat `x0` as its label. All retained labels and maps remain
+unchanged.
+
+For an exponent vector `a`, the multivariate operation reads the homogeneous
+component of total degree `sum(a)` and asks its existing polynomial index for
+the monomial coefficient. Installed libsingular source returns a scalar in its
+actual base ring, or that ring's zero when the monomial is absent. The generic
+polynomial documentation also specifies this exponent-tuple interface.
+`_owned_engine_element(R, coefficient)` then performs the existing owned
+crossing. No second coefficient algorithm, support enumeration, scalar
+Boolean conversion, or new presentation is introduced.
+
+Native completion preserves the requested variable order, which can differ
+from the polynomial source's order when an ideal's selected generators are
+permuted. The public exponent tuple refers to `formal_parameter_set()` order.
+The patch permutes it by variable name into the native parent order before
+the scalar lookup. It does not reorder or replace the retained parameter set.
+
+The coefficient algorithm requires a selected finite ordered parameter
+family before enumeration. A different or infinite parameter presentation
+has an explicit computation frontier; it is not silently iterated or declared
+finite. A proved zero coefficient ring returns its actual zero without
+requiring the degenerate completion engine to have a series index. With an
+empty family, the unique coefficient is the actual constant crossed into `R`.
+An undecided equation `1_R = 0_R` is not coerced to Boolean and does not trigger
+the zero-ring shortcut.
+
+The existing completion element class, its owned algebra element base, and
+the owned ring element base introduce no competing element coefficient or
+indexing method. The category's element provider therefore reaches this
+repair through the actual selected realization.
+
+#### Cardinality, bases, and source closure assertions
+
+For `n = |X|` finite, the coefficient functions are indexed by `N^n`.
+When `n = 0`, this monomial set has one element, so the cardinal is `|R|`.
+When `n > 0`, it is countably infinite, so the cardinal is `|R|^aleph0`.
+The patch keeps this existing formula and the common optional cardinality
+supplier contract. It never calls `R.cardinality()` just to discover whether
+the coefficient cardinal is available.
+
+| Source assertion | Justification and qualification |
+| --- | --- |
+| For `A = QQ[[t]]`, `coefficient(3 + 2t + 5t^2, 2) = QQ(5)`, and `[2]` gives the same value. | Integer indexing follows the existing one-variable native coefficient path and the actual QQ crossing. `(2,)` names the same exponent. |
+| For retained `A = ZZ[[x,y]]`, the coefficient of `(1,0)` in `3 + 2x + 5y^2 + 7xy` is `ZZ(2)`, of `(0,2)` is `ZZ(5)`, and of `(1,1)` is `ZZ(7)`. | Homogeneous degrees one and two followed by the corresponding native monomial index. The result parents are the literal owned ZZ. |
+| `coefficient(f, 0)` equals `coefficient(f, (0,0))` in that two-variable ring. | Both select its homogeneous constant and then the zero-exponent monomial. This preserves the Local residue-map consumer. |
+| A completion of `P = R[x,y]` whose selected variable generators occur as `(y,x)` still interprets `(1,0)` as the coefficient of `x` when the retained formal labels are `(x,y)`. | The native completion keeps `(y,x)`; the new name-based permutation sends the public exponent tuple to `(0,1)` for that native index. |
+| A native symmetric algebra on a free module with actual label `0` and native variable name `x0` yields `formal_parameter("x0") = lambda(P.algebra_generator(0))`. | Both labels have selected position zero. The source generator evaluator was explicitly constructed by that position; no equality between the integer label and the native string is assumed. |
+| A negative exponent has coefficient `R.zero()`; wrong tuple length or a nonconstant integer index in several variables gives an informative error. | These branches need no scalar-equality decision or coefficient scan. Exact index conversion does not truncate a nonintegral input. |
+| Over `R = ZZ/(9)`, the selected local residue map on `R[[x,y]]` sends constant `R(4)` to its class `1` in the actual residue field. | The existing explicit RingMor composes coefficient zero with the base's actual residue map; its maximal ideal is generated by the base maximal ideal and the formal variables. No field assumption on `R` is needed. |
+| Over a finite nontrivial coefficient ring and positive finite `n`, the cardinal is continuum. | The retained finite cardinal is at least two, and its countable power is the existing cardinal expression. This includes finite nonfields as well as finite fields. |
+| Over a countably infinite coefficient ring and positive finite `n`, the cardinal is continuum. | The formula is `aleph0^aleph0`; it does not require a field or characteristic zero. |
+| For an arbitrary supplied infinite coefficient cardinal `kappa`, positive finite `n` supplies `kappa^aleph0`. | No continuum-hypothesis simplification or stronger size claim is made. |
+| A retained empty family supplies cardinal `|R|`, and coefficient `()` or integer `0` lies in the actual `R`. | The guarded Adic metadata companion preserves the selected zero-variable case. Native parser notation is not claimed to have run. |
+| Over the zero coefficient ring, every coefficient is its actual zero and the finite-variable cardinal is one, while the selected variable labels are retained. | The guarded degenerate Formal metadata branch supplies those actual labels and base. This gives no Nontrivial or Local placement. |
+| Missing coefficient cardinal, missing parameter cardinal, or a supplied nonnormal or infinite parameter cardinal returns no optional formula. | The owner neither forces an exact count nor extends the countably-many-monomials formula to an unsupported infinite parameter presentation. |
+| A commutative non-Noetherian coefficient ring is an admissible parameter; a bare noncommutative ring is not. | The parameter correction follows the commutative constant-series structure. Native realization or ideal computations can still have their existing reported frontier. |
+
+These witnesses exercise positive degree and constants, one and several
+variables, reordered native variables, finite and infinite coefficient sets,
+finite nonfield local coefficients, and the two degenerate parameter cases.
+They do not infer finite generation of the completed ring as an algebra or
+module, flatness of arbitrary completion maps, locality for every coefficient
+ring, or a native computation for every abstract commutative ring.
+
+#### Exact source evidence and retained computation frontiers
+
+The complete owner, selected completion factory, completion parent/element classes and Local constant-coefficient consumer were read in `src/dzack_research/preamble/categories/rings/commutative_algebra.py`. The literal ring wrapper and commutative center are in `categories/rings/ring_foundation.py`; the fixed algebra parameters, `_OwnedAlgebraParent`, scalar-map hook and actual multiplicative Mor providers are in `categories/algebras/algebras.py`. The native free-algebra constructor, variable-name normalization and position-to-generator correspondence are in `categories/algebras/free_algebras.py`. The actual module ancestors are in `categories/modules/pure/modules.py` and `categories/modules/fibered_modules.py`. The ring, semiring, magma, set and object definitions, axiom framework and actual Mor packet selector were read at their existing owners; these are authored source deductions, not runtime MRO observations. Paths abbreviated with `categories/` are relative to `src/dzack_research/preamble/`.
+
+Installed primary Sage source was read for lazy-series degree indexing and multivariate homogeneous components (`sage/rings/lazy_series.py`), exact scalar monomial indexing (`sage/rings/polynomial/multi_polynomial_libsingular.pyx`), and polynomial completion's requested variable order, empty family and exact lazy mode (`sage/rings/polynomial/multi_polynomial_ring_base.pyx`). The corresponding public [lazy-series](https://doc.sagemath.org/html/en/reference/power_series/sage/rings/lazy_series.html), [multivariate polynomial coefficient](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_libsingular.html), and [polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html) interfaces support the retained algorithms.
+
+Native realization of an arbitrary coefficient ring, an unselected or infinite formal parameter presentation, an unavailable coefficient computation and missing exact cardinal data remain computation frontiers inside this pass and T. They do not deny the corresponding mathematics. No project import, Sage execution, runtime test or additional prerequisite is part of this M1 closure. The original once-only Step-3 denominator remains 18.
 
 ### Whole-category placement: `AdicCompletions.Local` (2026-10-11; source pass closed)
 

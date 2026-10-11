@@ -1,6 +1,7 @@
 r"""Basic commutative-algebra constructions needed by affine scheme theory."""
 
 from math import factorial
+from operator import index
 
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
@@ -64,7 +65,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _ring_morphisms_equal,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
@@ -4401,7 +4405,17 @@ def _adic_completion_from_owned_data(source, defining, precision):
 
 
 class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
-    r"""Formal power-series rings ``R[[t]]`` over the owned ring ``R``."""
+    r"""Formal power-series rings over the owned commutative ring ``R``.
+
+    The selected construction retains a finite ordered family of formal
+    variables and the completion map from the polynomial ring on that family.
+    The coefficient ring remains ``R`` with its actual constant-series map;
+    the formal variables need not generate the completed ring as an algebra.
+    """
+
+    def parameter_category(self):
+        r"""The coefficient ring is commutative, with the zero ring allowed."""
+        return OwnedRings().Commutative()
 
     def an_object(self):
         r"""The formal power series ring in one variable."""
@@ -4446,21 +4460,21 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def formal_parameter_set(self):
-            r"""Return the selected formal variables, not algebra generators."""
+            r"""Return the formal labels in the polynomial generator order."""
             labels = self._preamble_formal_parameter_labels
-            if labels is None:
-                raise ArithmeticError(
-                    f"{self} is not a power series ring: it has no formal variables"
-                )
+            assert labels is not None, (
+                f"the realization of {self} supplies no selected formal parameter family"
+            )
             return labels
 
         def formal_parameter(self, label):
-            r"""Return the image of one polynomial variable in the completion."""
+            r"""Return the corresponding polynomial generator's completion image."""
             labels = self.formal_parameter_set()
             normalized = labels(label)
-            return self.completion_map()(
-                self.completion_source().algebra_generator(normalized)
-            )
+            position = int(labels.ranking_map()(normalized))
+            source = self.completion_source()
+            source_label = source.algebra_generating_set()[position]
+            return self.completion_map()(source.algebra_generator(source_label))
 
         def power_series_variable(self):
             labels = self.formal_parameter_set()
@@ -4471,14 +4485,26 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
             return self.formal_parameter(labels[0])
 
         def _cardinality_decision(self):
-            r"""Supply ``|R|^aleph0`` from the retained coefficient cardinal."""
+            r"""Supply the finite-variable formula from retained cardinal data.
+
+            An empty variable family gives ``|R|``.  A positive finite family
+            has countably many monomials, giving ``|R|^aleph0``.  A missing
+            coefficient cardinal or an unsupported parameter cardinal leaves
+            this optional computation unavailable.
+            """
             coefficient_size = self.base_ring()._cardinality_decision()
             if coefficient_size is None:
                 return None
             parameter_size = self.formal_parameter_set()._cardinality_decision()
             if parameter_size is None:
                 return None
-            parameter_count = int(cardinal(parameter_size).finite_value())
+            parameter_size = cardinal(parameter_size)
+            if (
+                not parameter_size.expression().is_normal_form()
+                or parameter_size.is_finite() is not True
+            ):
+                return None
+            parameter_count = int(parameter_size.finite_value())
             match parameter_count:
                 case 0:
                     return cardinal(coefficient_size)
@@ -4489,13 +4515,65 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
     class ElementMethods:
         def coefficient(self, degree):
-            degree = int(degree)
-            if degree < 0:
-                return self.parent().base_ring().zero()
+            r"""Return one coefficient in the actual coefficient ring.
+
+            In one variable, ``degree`` may be an integer.  In several
+            variables it is an exponent tuple in ``formal_parameter_set``
+            order.  The integer zero also denotes the constant coefficient
+            in every arity.  Negative exponents have coefficient zero.
+
+            This computation uses the selected finite ordered variable family
+            and the existing exact series realization.  Native multivariate
+            series indexing first returns a homogeneous polynomial; the
+            exponent tuple then selects its scalar monomial coefficient.
+            """
             parent = self.parent()
             base = parent.base_ring()
+            parameters = parent.formal_parameter_set()
+            assert parameters in FiniteOrderedSets(), (
+                f"coefficient extraction in {parent} currently requires a selected "
+                "finite ordered formal parameter family"
+            )
+            labels = tuple(parameters)
+            if isinstance(degree, (tuple, list)):
+                exponents = tuple(index(exponent) for exponent in degree)
+                if len(exponents) != len(labels):
+                    raise ValueError(
+                        f"a coefficient of {parent} needs {len(labels)} exponents "
+                        f"in formal parameter order, but {degree} supplies {len(exponents)}"
+                    )
+            else:
+                exponent = index(degree)
+                if exponent < 0:
+                    return base.zero()
+                if exponent == 0:
+                    exponents = (0,) * len(labels)
+                elif len(labels) == 1:
+                    exponents = (exponent,)
+                else:
+                    raise ValueError(
+                        f"a coefficient of {parent} needs an exponent tuple in "
+                        "formal parameter order; only the constant coefficient "
+                        "has the integer index zero in this arity"
+                    )
+            if any(exponent < 0 for exponent in exponents):
+                return base.zero()
+            if (base.one() == base.zero()) is True:
+                return base.zero()
             backend = parent._engine_element(self)
-            return _owned_engine_element(base, backend[degree])
+            if not labels:
+                return _owned_engine_element(base, backend)
+            if len(labels) == 1:
+                coefficient = backend[exponents[0]]
+            else:
+                homogeneous = backend[sum(exponents)]
+                exponent_by_label = dict(zip(labels, exponents, strict=True))
+                native_exponents = tuple(
+                    exponent_by_label[label]
+                    for label in backend.parent().variable_names()
+                )
+                coefficient = homogeneous[native_exponents]
+            return _owned_engine_element(base, coefficient)
 
         def __getitem__(self, degree):
             return self.coefficient(degree)
