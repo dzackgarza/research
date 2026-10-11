@@ -121,32 +121,6 @@ theory/placement review. Confidence is high for these source paths; no
 runtime failure or global absence theorem is claimed. This does not gate
 the repaired finite-generation selector on another repository.
 
-### Free generator evaluators omit commuting-image hypotheses
-
-A map from a symmetric algebra into an associative algebra must send its
-generating module to pairwise commuting elements. Sending `x,y` in
-`QQ[x,y]` to the two free generators of `QQ<x,y>` violates multiplication:
-`xy=yx` in the source and the two target words differ. Valid maps into a
-noncommutative target with commuting images must remain available, and
-undecided commuting equations remain hypotheses rather than `True`.
-
-**Source evidence (2026-10-11):** the complete generator evaluators
-`FramedFreeAlgebraMorphism` in `free_algebras.py` and
-`SparseFreeAlgebraMorphism` in `sparse_free_algebras.py` were read. Both
-return unconditional multiplicativity from their derivation supplier;
-their generic image ingress does not retain the symmetric commuting-image
-equations. The sparse route must also retain its generating module's
-relations. The selected finite-presentation factory now supplies genuine
-free maps in its actual theory; this remaining finding concerns the
-separate generic evaluator ingress, not those constructed cofork maps.
-
-**Searched / Found / Conclusion:** traced the actual fixed-Mor provider,
-image normalization, module-map construction, evaluation and law supplier.
-The two existing `placement-owner-framedfreealgebramor` and
-`placement-owner-sparsefreealgebramor` nodes own this admission repair.
-Confidence is high for the read paths and the explicit counterexample;
-no runtime result or whole-tree absence claim is made.
-
 ### Selected algebra presentations exceed the polynomial computations
 
 Finite associative algebra presentations include noncommutative tensor

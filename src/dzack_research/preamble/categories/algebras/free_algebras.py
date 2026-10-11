@@ -10,6 +10,7 @@ from sage.all import (
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
+from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -29,6 +30,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
+    MultiplicativeAlgebraMorphism,
+    UnitalMultiplicativeAlgebraMor,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _algebra_with_structure,
@@ -36,6 +39,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphismMethods,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -1064,11 +1070,14 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
             return FramedFreeAlgebraMor
 
         def Mor(self, codomain, category=None):
-            r"""Use the free-algebra universal Mor before the inherited ring Mor."""
-            ordinary = Algebras(self.base_ring()).Associative().Unital()
-            if category is None:
-                return ordinary.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
+            r"""Select the algebra arrow theory before the inherited ring Mor.
+
+            The common algebra selector retains the requested theory and the
+            actual endpoint laws. In particular, a nonassociative unital
+            target uses its unital linear-map constructor rather than an
+            associative free-algebra word extension.
+            """
+            return Algebras.ParentMethods.Mor(self, codomain, category=category)
 
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
@@ -1839,19 +1848,92 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
 
 
+def _symmetric_generator_images_commute(codomain, images):
+    r"""Decide the commuting-image condition for a symmetric extension.
+
+    In an associative target, the tensor lift descends through the
+    symmetric relations exactly when the generator images commute. Actual
+    commutative placement proves this without inspecting any labels. A
+    known finite label family supplies the conjunction of its exact
+    commutator equations; otherwise ``None`` leaves the existing algebra
+    diagnostic in charge. Finiteness availability does not request an exact
+    cardinal, and an undecided coefficient equality remains a proposition.
+    """
+    if codomain in Algebras(codomain.algebra_base_ring()).Commutative():
+        return True
+    labels = images.index_set()
+    if labels.is_finite() is not True:
+        return None
+    values = tuple(images[label] for label in labels)
+    return conjunction(
+        left * right == right * left
+        for position, left in enumerate(values)
+        for right in values[position + 1:]
+    )
+
+
 class FramedFreeAlgebraMorphism:
-    r"""A generator-defined map from a framed free algebra to any algebra."""
+    r"""An exact map or a word extension from a framed free algebra.
+
+    An untagged function gives generator images. A map with the literal
+    algebra endpoints instead retains its whole elementwise function, with
+    its product and unit equations left to the ordinary diagnostics. For
+    generator data the free word basis gives a linear extension; tensor
+    multiplicativity uses the retained generating-module map, while a
+    symmetric source also requires pairwise commuting images.
+    """
+
+    # The common composition retains the whole underlying linear map. A
+    # generator-only reconstruction would change a supplied nonunital map.
+    __mul__ = MultiplicativeAlgebraMorphism.__mul__
 
     def _multiplicativity_derivation(self):
-        return True
+        if self._source_element_map is not None:
+            return None
+        linearity = self._generating_module_morphism.linearity_decision()
+        if self.domain() in TensorAlgebras(self.domain().algebra_base_ring()):
+            return linearity
+        commuting = _symmetric_generator_images_commute(self.codomain(), self._images)
+        return None if commuting is None else conjunction((linearity, commuting))
 
     def _unit_preservation_derivation(self):
-        return True
+        return None if self._source_element_map is not None else True
 
     def __init__(self, parent, images) -> None:
         domain = cast(Any, parent.domain())
         codomain = parent.codomain()
+        generating = domain.generating_module()
         labels = domain.algebra_generating_set()
+        generator_mor = generating.module_category().Mor(generating, codomain)
+        self._source_element_map = None
+        self._generating_module_morphism = None
+        if isinstance(images, Map):
+            if images.codomain() is not codomain:
+                raise ValueError(
+                    f"a map into {codomain} must retain that exact codomain, but {images} "
+                    f"ends at {images.codomain()}"
+                )
+            if images.domain() is domain:
+                self._source_element_map = images
+                images = indexed_family(
+                    labels,
+                    lambda label: codomain(self._source_element_map(domain.algebra_generator(label))),
+                    name="Generator images",
+                )
+            elif images.domain() is generating:
+                self._generating_module_morphism = (
+                    images if images in generator_mor else generator_mor.elementwise(images)
+                )
+                images = indexed_family(
+                    labels,
+                    lambda label: self._generating_module_morphism(generating.module_generator(label)),
+                    name="Generator images",
+                )
+            elif images.domain() is not labels:
+                raise ValueError(
+                    f"a map out of {domain} must be stated on that algebra, its generating "
+                    f"module {generating}, or its generator labels {labels}, not on {images.domain()}"
+                )
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             self._images = indexed_family(
@@ -1903,28 +1985,30 @@ class FramedFreeAlgebraMorphism:
             raise TypeError(
                 f"a morphism out of {domain} is given by the images of its algebra generators, but got {images!r}"
             )
-        self._generator_images = self._images
         self._engine_morphism = None
-        self._element_function = None
         self._preamble_is_identity = False
-        generating = domain.generating_module()
-        generating.module_category().Mor(
-            generating, codomain.underlying_module()
-        )(self._images.value)
-        linear = domain.module_category().Mor(
-            domain, codomain
-        )._from_constructed_element_map(
-            lambda element: self._call_(element)
-        )
+        linear_mor = domain.module_category().Mor(domain, codomain)
+        if self._source_element_map is not None:
+            linear = linear_mor.elementwise(self._source_element_map)
+        else:
+            if self._generating_module_morphism is None:
+                self._generating_module_morphism = generator_mor(self._images.value)
+            # Ordered words give an R-linear map on this free module basis
+            # even when the generator images do not commute. Retain the
+            # actual generating-map premise independently of multiplicativity.
+            linear = linear_mor._from_constructed_element_map(
+                lambda element: self._call_(element),
+                premises=(self._generating_module_morphism,),
+            )
         super().__init__(parent, linear)
 
     def algebra_generator_images(self):
-        return self._generator_images
+        return self._images
 
     def algebra_generator_morphism(self):
         return SetMorphism(
             Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.value,
+            self._images.value,
         )
 
     def _tensor_terms(self, element):
@@ -1982,6 +2066,8 @@ class FramedFreeAlgebraMorphism:
     def _call_(self, element):
         domain = self.domain()
         element = domain(element)
+        if self._source_element_map is not None:
+            return self.codomain()(self._source_element_map(element))
         terms = (
             self._tensor_terms(element)
             if domain in TensorAlgebras(domain.base_ring())
@@ -2006,19 +2092,31 @@ class FramedFreeAlgebraMorphism:
         return self._preamble_is_identity
 
     def _richcmp_(self, other, op):
-        r"""Decide equality on the algebra generators of the free source.
+        r"""Compare selected word extensions on their defining generator images.
 
-        By the universal property of the free algebra, two algebra maps out
-        of it are equal exactly when they agree on its algebra generators.
-        The module-map comparison this overrides decides on the module
-        generators, which for a free algebra are all its words.
+        Two such extensions have the same values on every word precisely
+        when their generator images agree. An arbitrary retained whole map
+        has no such construction theorem: use the existing module comparison,
+        which may retain an undecided equality on an infinite word module.
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented
+        if other not in self.parent():
+            return op == op_NE
         if self is other:
             return op == op_EQ
+        if (
+            not isinstance(other, FramedFreeAlgebraMorphism)
+            or self._source_element_map is not None
+            or other._source_element_map is not None
+        ):
+            # Admission may preserve a stronger arrow's original parent.
+            # The faithful forgetful functor retains both functions and
+            # their linearity premises in the same actual module Mor.
+            forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
+            return ModuleMorphismMethods._richcmp_(forget(self), forget(other), op)
         labels = self.domain().algebra_generating_set()
-        if not labels.cardinality().is_finite():
+        if labels.is_finite() is not True:
             equal = AtomicProposition("equal", self, other)
         else:
             equal = conjunction(
@@ -2028,7 +2126,7 @@ class FramedFreeAlgebraMorphism:
         return equal if op == op_EQ else negation(equal)
 
 
-class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
+class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
     ElementMethods = FramedFreeAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
@@ -2040,20 +2138,13 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
         )
 
     def _element_constructor_(self, datum):
-        r"""An algebra map out of a free algebra, from the images of its algebra generators.
+        r"""Retain a whole map, or extend explicitly supplied generator data.
 
-        A linear map with these endpoints, stated to be an algebra map, is
-        read by its values on the algebra generators: by the universal
-        property of the free algebra those values determine the map.
+        A linear map with these endpoints is its actual elementwise datum.
+        Agreement on the algebra generators alone cannot replace it: the
+        zero linear map and the generator-zero augmentation differ at 1.
         """
-        domain = self.domain()
-        match datum:
-            case _ if element_parent(datum) is domain.module_category().Mor(domain, self.codomain()):
-                return self.element_class(
-                    self, lambda label: datum(domain.algebra_generator(label))
-                )
-            case _:
-                return self.element_class(self, datum)
+        return self.element_class(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():
