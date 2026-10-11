@@ -966,6 +966,10 @@ class QuotientRings(OwnedCategory):
             return self.defining_ideal().is_prime()
 
         def _krull_dimension_decision(self):
+            assert self._is_zero_ring() is not True, (
+                "the empty prime spectrum has Krull dimension -infinity; "
+                "an owned extended-dimension representation is not yet supplied"
+            )
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
             source = self.quotient_source()
@@ -3343,8 +3347,8 @@ def _quotient_ring(source, defining_ideal):
                 quotient_engine = engine.quotient(defining)
 
     dimension = None
-    # R/R is the zero ring, whose empty spectrum has no Krull dimension.
-    if finite_order_quotient:
+    # R/R has dimension -infinity, outside this finite-integer datum.
+    if finite_order_quotient and not defining.is_one():
         dimension = 0
     elif quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
         dimension = _krull_dimension_of_engine(quotient_engine)
@@ -4075,10 +4079,15 @@ def _quotient_completion_comparison(source_quotient, source_ideal, *, precision=
 def _residue_field_at(source, ideal):
     r"""Return ``R/m`` for a represented maximal ideal ``m`` of ``R``."""
     defining = _owned_ideal(source, ideal)
-    if not bool(defining.is_maximal()):
+    maximal = defining.is_maximal()
+    if maximal is False:
         raise ValueError(
             f"the residue field R/m needs a maximal ideal m, but {defining} is not maximal in {source}"
         )
+    assert maximal is True, (
+        f"the residue field R/m requires maximality of {defining} in {source}, "
+        "but that proposition is undecided"
+    )
     quotient = source.quotient_ring(defining)
     if quotient not in OwnedRings().Division().Commutative():
         raise ArithmeticError(
@@ -4140,25 +4149,36 @@ def _prime_localization_from_input(source, prime):
             f"the localization R_p needs a commutative ring R, but {source} is in {source.category()}"
         )
     prime_ideal = _owned_ideal(source, prime)
-    if not prime_ideal.is_prime():
+    primality = prime_ideal.is_prime()
+    if primality is False:
         raise ValueError(
             f"the localization R_p needs a prime ideal p, but {prime_ideal} is not prime in {source}"
         )
+    assert primality is True, (
+        f"the localization R_p requires primality of {prime_ideal} in {source}, "
+        "but that proposition is undecided"
+    )
     return _prime_localization(source, prime_ideal)
 
 
-@cached_function
+@cached_function(key=lambda source, prime_ideal: (id(source), id(prime_ideal)))
 def _prime_localization(source, prime_ideal):
-    r"""Return the one ``R_p`` for this ring and this prime.
+    r"""Return ``R_p`` retaining this exact source and selected prime ideal.
 
     The complement of a prime is a predicate submonoid, freshly built on each
-    call and never recognizable as a copy of itself, so the interning is keyed
-    on the prime instead.  That key is exact, because the prime is an ideal and
-    ideals decide their own equality.
+    call and never recognizable as a copy of itself. Interning therefore
+    uses the identities of the source and prime-ideal datum, without deciding
+    equality of arbitrary ideals. Distinct equal ideal presentations need
+    not produce the same parent. The common ring's
+    ``localize_at_prime`` entry establishes primality before this protected
+    constructor is called. The resulting predicate uses membership in that
+    exact owned ideal, including its retained quotient or localization data;
+    a larger fraction-field computation model does not determine the subset.
+    Undecided membership remains a proposition. Primality supplies the unit
+    and multiplication-closure premises of the predicate submonoid.
     """
-    prime_engine = _engine_ideal(source, prime_ideal)
     complement = source.predicate_submonoid(
-        lambda element: _engine_ring_value(source, element) not in prime_engine,
+        lambda element: negation(prime_ideal.contains_ambient_element(source(element))),
         f"{source} \\ {prime_ideal}",
         structure_data={"kind": "prime_complement", "prime_ideal": prime_ideal},
     )

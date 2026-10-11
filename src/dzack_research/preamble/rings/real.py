@@ -506,17 +506,14 @@ class ExactRealNumber(FieldElement):
     def is_negative(self):
         return self < self.parent().zero()
 
-    def is_square(self) -> bool:
+    def _squareness_decision(self):
         r"""Whether this is ``y^2`` for a real ``y``: exactly when it is nonnegative.
 
         A nonnegative real has the real square root :meth:`sqrt`, and a square
-        is nonnegative, so squareness is the sign.
+        is nonnegative. The exact sign relation may remain undecided and is
+        returned as that proposition to the magma squareness owner.
         """
-        nonnegative = self >= self.parent().zero()
-        assert nonnegative is True or nonnegative is False, (
-            f"cannot decide whether {self} is a square in the real field: whether {self} >= 0 is undecided"
-        )
-        return nonnegative
+        return self >= self.parent().zero()
 
     def __bool__(self):
         relation = self != self.parent().zero()

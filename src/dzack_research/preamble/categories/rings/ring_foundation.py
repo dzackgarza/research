@@ -43,6 +43,7 @@ from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.infinity import Infinity as SageInfinity
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -74,7 +75,7 @@ from dzack_research.preamble.categories.rings.semirings import (
     RingMorCategoryConstruction,
 )
 from dzack_research.preamble.categories import sets as owned_sets
-from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook, realize_owned_category
 
@@ -563,13 +564,16 @@ class RngMor(CategoricalMor):
 def _is_ring_map_into(candidate, target) -> bool:
     r"""Whether ``candidate`` is a ring morphism ending at ``target``.
 
-    Composition is asked of an arbitrary right operand, so this is the one
-    site that decides whether it is a map at all (Sage's ``Map`` protocol).
+    RingMorphism composition calls this protected admission predicate on its
+    right operand. Its actual ordinary RingMor membership supplies unitality;
+    ring endpoints alone do not upgrade a set, magma or nonunital rng map.
+    Native engine maps first enter through the owned RingMor constructor.
     """
     return (
         isinstance(candidate, Map)
         and candidate.codomain() is target
         and candidate.domain() in OwnedRings()
+        and candidate in OwnedRings().Mor(candidate.domain(), target)
     )
 
 
@@ -2333,10 +2337,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
     # Functors out of rings, sited on their domain.
 
-    def unit_group(self):
-        r"""``R |-> R^x : Ring -> Grp``."""
-        return UnitGroupFunctor()
-
     def center_functor(self):
         r"""Return ``Z : Core(Ring) -> CRing``."""
         return RingCenterFunctor()
@@ -2536,6 +2536,17 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
+        class ParentMethods:
+            def _reducedness_decision(self):
+                r"""The zero-product axiom excludes nonzero positive-power nilpotents.
+
+                Induction on the positive exponent proves the assertion
+                without commutativity or nontriviality; the zero ring also
+                satisfies it. This supplies the inherited nonunital-semiring
+                predicate and needs no ideal or radical computation.
+                """
+                return True
+
         class Nontrivial(CategoryWithAxiom):
             r"""Nontrivial rings without zero divisors, with no commutativity assumption."""
 
@@ -2704,15 +2715,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
-        @cached_method
-        def square_class_group(self):
-            r"""``R |-> R^×/(R^×)^2 : CRing -> Grp``, the square-class group functor."""
-            from dzack_research.preamble.categories.rings.square_classes import (
-                SquareClassGroupFunctor,
-            )
-
-            return SquareClassGroupFunctor()
-
         class SubcategoryMethods:
             def Local(self):
                 r"""Return this category with the axiom of a unique maximal ideal."""
@@ -2839,17 +2841,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return [OwnedRings().Noetherian()]
 
         class ParentMethods:
-            def nilradical(self):
-                r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
+            @RealizationHook
+            def _nilradical_decision(self):
+                r"""Supply the common nonunital-semiring nilradical from this ideal owner."""
                 return self.ideal(self.zero()).radical()
 
-            def _reducedness_decision(self) -> bool:
+            @RealizationHook
+            def _reducedness_decision(self) -> bool | Predicate:
                 r"""Return whether this commutative ring has zero nilradical."""
                 zero_ideal = self.ideal(self.zero())
                 return self.nilradical() == zero_ideal
-
-            def is_reduced(self) -> bool:
-                return self._reducedness_decision()
 
             @RealizationHook
             def _normality_decision(self):
@@ -2955,62 +2956,88 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 )
                 return data.normalization_cokernel.annihilator()
 
-            @cached_method
-            def square_class_group(self):
-                r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.
-
-                For a field ``K`` this is the codomain of the spinor norm of a
-                quadratic space over ``K`` (Gritsenko--Hulek--Sankaran,
-                *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
-                """
-                from dzack_research.preamble.categories.rings.square_classes import (
-                    _square_class_group,
-                )
-
-                return _square_class_group(self)
-
             @RealizationHook
             def _krull_dimension_decision(self):
-                r"""Protected selected dimension computation, or None.
+                r"""Supply the common prime-chain dimension from the selected ring model.
 
-                Only krull_dimension calls this hook. A more specific category
-                or owned ring realization supplies its exact owned dimension;
-                otherwise the common selected ring-engine adapter is used.
+                The inherited krull_dimension operation calls this hook.
+                More specific categories and owned realizations retain their
+                selected computations. This default keeps the existing exact
+                ring-engine route, including its explicit availability frontier.
                 """
-                return None
-
-            def krull_dimension(self):
-                r"""Return the supremum of lengths of chains of prime ideals."""
-                dimension = self._krull_dimension_decision()
-                if dimension is not None:
-                    return dimension
+                assert (self.one() == self.zero()) is not True, (
+                    "the empty prime spectrum has Krull dimension -infinity; "
+                    "an owned extended-dimension representation is not yet supplied"
+                )
                 return _engine_krull_dimension(self)
 
+            @cached_method(key=lambda self, base_ring: id(_own_ring(base_ring)))
             def as_algebra_over(self, base_ring):
+                r"""Read this ring through its selected canonical coefficient map.
+
+                A commutative target makes any unital map from a
+                commutative coefficient ring central. The selected scalar
+                tower, the identity, and the unique integer map supply such
+                maps without a foreign realization. A native coercion is
+                used only when its two parents realize the actual endpoints;
+                a larger computation model supplies no coefficient action
+                on a proper subring. Use an explicit central ring map and
+                its ``as_algebra`` operation to select another action.
+                """
                 base = _own_ring(base_ring)
                 from dzack_research.preamble.categories.algebras.algebras import (
                     Algebras,
                 )
 
-                selected = Algebras(base).Associative().Unital().Commutative()
-                match (self.base_ring() is base, self in selected):
-                    case (True, True):
-                        return self
-                    case _:
-                        pass
-                engine = _engine_ring(self)
-                if not engine.has_coerce_map_from(_engine_ring(base)):
-                    raise ValueError(
-                        f"{self} is not an algebra over {base}: there is no canonical ring morphism {base} -> {self}"
+                if base not in OwnedRings().Commutative():
+                    raise TypeError(
+                        f"an algebra over {base} requires a commutative coefficient ring"
                     )
-                match base is self:
-                    case True:
-                        structure_map = self.Mor(self).identity()
-                    case False:
-                        structure_map = base.Mor(self)(
-                            engine.coerce_map_from(_engine_ring(base))
-                        )
-                return structure_map.as_algebra()
+                selected = Algebras(base).Associative().Unital().Commutative()
+                if self.base_ring() is base and self in selected:
+                    return self
+                if base is self:
+                    return OwnedRings().Mor(self, self).identity().as_algebra()
+                if base is _owned_integers():
+                    return self.as_ZZ_algebra()
+
+                current = self
+                coefficient_map = OwnedRings().Mor(self, self).identity()
+                seen = set()
+                while id(current) not in seen:
+                    seen.add(id(current))
+                    current_base = current.base_ring()
+                    if current_base is current or current_base not in OwnedRings():
+                        break
+                    current_algebras = Algebras(current_base).Associative().Unital().Commutative()
+                    if current not in current_algebras:
+                        break
+                    selected_map = current.algebra_structure_morphism()
+                    assert selected_map.domain() is current_base and selected_map.codomain() is current, (
+                        "the selected coefficient map of a commutative algebra must retain "
+                        "its literal coefficient and algebra endpoints"
+                    )
+                    coefficient_map = coefficient_map * selected_map
+                    if current_base is base:
+                        return coefficient_map.as_algebra()
+                    current = current_base
+
+                engine = self._selected_engine_ring()
+                base_engine = base._selected_engine_ring()
+                assert (
+                    engine is not None and base_engine is not None
+                    and _own_ring(engine) is self and _own_ring(base_engine) is base
+                ), (
+                    f"no canonical coefficient map {base} -> {self} is supplied by the retained "
+                    "scalar tower or exact native endpoints; state the chosen ring map and use its as_algebra"
+                )
+                engine_map = engine.coerce_map_from(base_engine)
+                if engine_map is None:
+                    raise ValueError(
+                        f"no canonical coefficient map {base} -> {self} is supplied by the retained "
+                        "scalar tower or exact native realization; an explicit ring map may state another action"
+                    )
+                return OwnedRings().Mor(base, self)(engine_map).as_algebra()
 
             def affine_spectrum(self, base_ring=None):
                 r"""Return the affine scheme represented by this commutative ring or algebra."""
@@ -3020,11 +3047,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _affine_spectrum(self, base_ring=base_ring)
 
-            def as_ZZ_algebra(self):
-                return self.as_algebra_over(_own_ring(SageZZ))
+            @RealizationHook
+            def _ideal_generated_by(self, generators):
+                r"""Supply the inherited two-sided ideal from owned commutative-ideal data.
 
-            def ideal(self, *generators):
-                r"""Return the ideal of this ring generated by the elements given.
+                The common rng-ideal constructor is the caller;
+                its tuple consists of elements of this exact ring. The result
+                retains the ordinary ideal's inclusion in this ring's regular
+                module. Commutativity makes every ordinary ideal two-sided.
 
                 In a localization every denominator is a unit, so
                 ``(a_1/s_1, ..., a_r/s_r)`` is the extension of the source ideal
@@ -3040,8 +3070,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     _commutative_ideal,
                 )
 
-                if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
-                    generators = tuple(generators[0])
                 if self in LocalizationRings():
                     source = self.localization_source()
                     numerators = tuple(
@@ -3049,9 +3077,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         for generator in generators
                     )
                     return source.ideal(*numerators).extension_to_localization(self)
-                return _commutative_ideal(self, tuple(generators))
+                return _commutative_ideal(self, generators)
 
-            def quotient_ring(self, ideal):
+            @RealizationHook
+            def _quotient_ring_construction(self, ideal):
+                r"""Supply the common ring quotient from its owned commutative ideal.
+
+                The inherited quotient_ring operation is the caller. Its
+                represented ideal or generator input is interpreted by the
+                existing ideal owner in this exact ring. Every such ideal is
+                two-sided, so the quotient retains this ring as its source
+                and its actual kernel and canonical projection.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     _owned_ideal,
                     _quotient_ring,
@@ -3081,15 +3118,30 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _residue_field_at(self, ideal)
 
-            def dual_numbers(self, name="epsilon"):
-                r"""Return ``self[epsilon]/(epsilon^2)``."""
+            @RealizationHook
+            def _dual_numbers_construction(self, name):
+                r"""Supply the inherited semiring dual numbers from the retained quotient.
+
+                The common semiring dual_numbers operation is the caller.
+                The existing commutative-algebra constructor retains its
+                actual coefficient ring, quotient source, defining ideal,
+                parameter and selected rank-two module coordinates.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     _dual_numbers,
                 )
 
                 return _dual_numbers(self, name=name)
 
-            def adic_completion(self, ideal, precision=20):
+            @RealizationHook
+            def _adic_completion_construction(self, ideal, precision):
+                r"""Supply the common ring completion from its selected adic construction.
+
+                The inherited adic_completion operation is the caller. The
+                existing commutative construction keeps its source, defining
+                ideal, completion map and quotient projections, with only
+                the completeness refinements its represented case proves.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     AdicCompletions,
                 )
@@ -3112,59 +3164,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     topology_data=_PrimeSpectrumTopologyData(self),
                 )
 
-            def prime_ideal_locus(self):
-                r"""All prime ideals as subsets of this commutative ring.
-
-                The full power set includes ideals without a finite generating
-                presentation. The predicate does not assert a decision algorithm.
-                """
-                return self.power_set().condition_set(
-                    lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
-                )
-
-            def minimal_prime_locus(self):
-                r"""All prime-ideal subsets minimal under inclusion."""
-                return self.prime_ideal_locus().condition_set(
-                    lambda ideal_subset: AtomicProposition(
-                        "is_minimal_prime_ideal_subset", ideal_subset, self
-                    )
-                )
-
-            @RealizationHook
-            def _finite_minimal_primes(self):
-                r"""Protected finite minimal-prime computation, or None.
-
-                Only minimal_primes calls this hook. An owned realization or
-                more specific category may return a finite owned set of ideals
-                of this exact ring when finiteness is established. The default
-                supplies no enumeration and leaves the general locus intact.
-                """
-                return None
-
-            @cached_method
-            def minimal_primes(self):
-                r"""The minimal-prime locus, with a finite realization when supplied."""
-                primes = self._finite_minimal_primes()
-                return self.minimal_prime_locus() if primes is None else primes
-
-            def irreducible_component_locus(self):
-                r"""The possibly infinite family of closed components of Spec R.
-
-                Each is V(p) for a minimal prime p. Reducedness is unnecessary
-                (Stacks, Section 10.26, Lemma 10.26.1).
-                """
-                from dzack_research.preamble.categories.sets.set_categories import Sets
-
-                prime_subsets = self.prime_ideal_locus()
-                return Sets().image_set(
-                    lambda minimal_prime: prime_subsets.condition_set(
-                        lambda prime: AtomicProposition(
-                            "contains_ideal_subset", prime, minimal_prime
-                        )
-                    ),
-                    self.minimal_prime_locus(),
-                )
-
             @RealizationHook
             def _finite_irreducible_components(self):
                 r"""Protected finite component-ring computation, or None.
@@ -3172,16 +3171,34 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 Only irreducible_components calls this hook. An owned ring
                 realization may retain a finite set of component domains R/p
                 for its minimal primes, including their selected presentations.
-                This preserves the existing computational ring-valued route;
-                the general component locus consists of closed subsets.
+                These are the same ring-valued objects represented by the
+                public operation's general image of the minimal-prime locus.
+                The separately named irreducible_component_locus consists of
+                closed subsets of the prime spectrum.
                 """
                 return None
 
             @cached_method
             def irreducible_components(self):
-                r"""Selected finite component domains, or the general closed-component locus."""
+                r"""The component domains ``R/p`` indexed by the minimal primes.
+
+                A selected finite computation retains its quotient-ring
+                presentations. Otherwise this is the image of the full
+                minimal-prime locus under ``p |-> R/p``; no finite generation
+                or enumeration of prime ideals is inferred. Evaluation at a
+                particular prime still requires that ideal-subset quotient
+                construction to be represented. The closed subsets ``V(p)``
+                themselves are returned by irreducible_component_locus.
+                """
                 components = self._finite_irreducible_components()
-                return self.irreducible_component_locus() if components is None else components
+                if components is not None:
+                    return components
+                from dzack_research.preamble.categories.sets.set_categories import Sets
+
+                return Sets().image_set(
+                    lambda minimal_prime: self.quotient_ring(minimal_prime),
+                    self.minimal_prime_locus(),
+                )
 
             @RealizationHook
             def _total_quotient_map_decision(self):
@@ -3228,8 +3245,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self.total_quotient_map().codomain()
 
         class ElementMethods:
-            def is_regular(self):
-                r"""Return whether this scalar is a non-zerodivisor.
+            def _regularity_decision(self):
+                r"""Supply the magma regularity predicate by ring ideal computations.
 
                 Multiplication by ``r`` is injective exactly when nothing
                 nonzero is killed by it, that is when the colon ideal
@@ -3248,6 +3265,30 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        @cached_method
+        def as_ZZ_algebra(self):
+            r"""Read this unital ring with its unique central integer action.
+
+            The map sends ``n`` to ``n*1``. Its nonnegative part is the
+            existing initial semiring map, and additive inverses determine
+            its values on negative integers. This applies to noncommutative
+            rings and the zero ring, without a centre computation or a
+            selected foreign engine. An existing selected ZZ-algebra keeps
+            its literal parent and scalar data.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            integers = _owned_integers()
+            if self.base_ring() is integers and self in Algebras(integers).Associative().Unital():
+                return self
+            natural_map = OwnedSemirings().initial_morphism(self)
+
+            def image(integer):
+                value = int(integer)
+                return natural_map(value) if value >= 0 else -natural_map(-value)
+
+            return OwnedRings().Mor(integers, self)(image).as_algebra()
+
         def _integral_domain_decision(self):
             return AtomicProposition("is_integral_domain", self)
 
@@ -3306,6 +3347,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             callers are the ring owner's lowering/raising dispatchers,
             ring-local computation adapters, and the existing cardinality
             and selected-presentation field-rank/Smith computation suppliers.
+            The canonical coefficient-map selector and scalar-action algebra
+            view constructor may retain this optional realization as well.
             These optional suppliers retain ``None`` when a construction
             has no selected model; required engine computations enter through
             ``_engine_ring``, which asserts at that frontier. No model is
@@ -3362,6 +3405,65 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return _polynomial_ring(self, *args, **kwargs)
 
+        @RealizationHook
+        def _quotient_ring_construction(self, ideal):
+            r"""Protected selected quotient by a two-sided ideal, or None.
+
+            Only quotient_ring calls this hook. Its ideal or represented
+            generator input is interpreted in this exact ring. A supplier
+            retains the two-sided ideal, the quotient ring and its canonical
+            source map with that kernel. An arbitrary left ideal does not
+            suffice. None means that no such quotient construction is
+            represented; no smaller mathematical input domain is inferred.
+            """
+            return None
+
+        def quotient_ring(self, ideal):
+            r"""Return the unital quotient ring by the specified two-sided ideal.
+
+            The additive quotient carries multiplication because the ideal
+            absorbs multiplication from both sides. Its canonical map has
+            this exact source and the given ideal as kernel; commutativity
+            is unnecessary. Selected generator input denotes its generated
+            two-sided ideal. A mere left ideal does not define a quotient ring.
+            """
+            result = self._quotient_ring_construction(ideal)
+            assert result is not None, (
+                f"the quotient ring of {self} by a two-sided ideal is defined, "
+                "but this exact ideal and canonical-map construction is not represented"
+            )
+            return result
+
+        @RealizationHook
+        def _adic_completion_construction(self, ideal, precision):
+            r"""Protected selected inverse limit of the quotients ``R/I^n``, or None.
+
+            Only adic_completion calls this hook. The input is a represented
+            two-sided ideal (or its generator input) of this exact ring and
+            the requested computation precision. A supplier retains the
+            source, ideal, canonical completion map and quotient projections.
+            Completeness for the extended ideal is a separate assertion;
+            it is not inferred for arbitrary infinitely generated ideals.
+            None supplies no selected inverse-limit computation.
+            """
+            return None
+
+        def adic_completion(self, ideal, precision=20):
+            r"""Return ``lim_n R/I^n`` for the specified two-sided ideal.
+
+            Every transition and source map is a unital ring map; this
+            definition needs no commutativity. Precision selects computation
+            data for that limit. Identifying its inverse-limit topology with
+            the topology of the extended ideal requires further hypotheses;
+            the returned construction carries only established refinements.
+            """
+            result = self._adic_completion_construction(ideal, precision)
+            assert result is not None, (
+                f"the adic inverse limit of {self} is defined for a two-sided "
+                "ideal, but this source, ideal and completion-map construction is not represented"
+            )
+            return result
+
         def laurent_polynomial_ring(self, *args, **kwargs):
             r"""Return the Laurent polynomial ring over this ring with the stated variables."""
             from dzack_research.preamble.categories.algebras.free_algebras import (
@@ -3409,11 +3511,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 
             return self.free_module(exponent)
-
-        @cached_method
-        def unit_group(self):
-            r"""Return ``self^×``, the group of units of this ring."""
-            return _unit_group(self)
 
         @cached_method
         def regular_module(self):
@@ -3700,10 +3797,16 @@ def _krull_dimension_of_engine(engine):
     engine but one: the generic quotient ``S/I`` of a multivariate polynomial
     ring falls to the ``CommutativeRings`` default, which raises.  There
     ``dim S/I = dim I``, the dimension Singular computes for ``I`` (TRAPS.md).
-    A quotient of a principal ideal domain ``D/(d)`` -- ``Zmod(n)`` is one, over
-    ``ZZ`` -- has dimension zero for ``d != 0`` and the dimension of ``D`` for
-    ``d = 0``.  A univariate quotient ``K[x]/(f)`` answers its own.
+    A nonzero quotient of a principal ideal domain ``D/(d)`` has dimension
+    zero for nonzero, nonunit ``d``, and the dimension of ``D`` for ``d = 0``.
+    The empty spectrum has dimension -infinity (Stacks, Tags 0055 and 00KD),
+    for which this finite-integer adapter provides no owned representation.
+    A univariate quotient ``K[x]/(f)`` answers its own.
     """
+    assert (engine.one() == engine.zero()) is not True, (
+        "the empty prime spectrum has Krull dimension -infinity; "
+        "an owned extended-dimension representation is not yet supplied"
+    )
     match engine:
         case PolynomialQuotientRing_generic():
             dimension = engine.krull_dimension()
@@ -3719,6 +3822,10 @@ def _krull_dimension_of_engine(engine):
                     dimension = defining.dimension()
         case _:
             dimension = engine.krull_dimension()
+    assert dimension not in (SageInfinity, -SageInfinity) and dimension >= 0, (
+        "this Krull dimension requires an owned extended-dimension representation; "
+        "the selected adapter currently represents finite nonnegative dimensions"
+    )
     return _owned_engine_element(SageZZ, SageZZ(dimension))
 
 
@@ -3889,65 +3996,6 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
 def PrimeFields():
     r"""``OwnedRings().Division().Commutative().Prime()``, the session name for prime fields."""
     return OwnedRings().Division().Commutative().Prime()
-
-
-@cached_function
-def _unit_group(ring):
-    r"""Return \(R^\times\), the group of units of the owned ring ``ring``.
-
-    A ring is a monoid under multiplication, and its invertible elements are a
-    submonoid: the identity is invertible, and a product of invertibles is
-    invertible.  That submonoid is a group, because every one of its elements
-    has an inverse by the very predicate that admitted it, so the group law is
-    the ring's multiplication and nothing is chosen.
-
-    Invertibility is asked of the ring element, and an undecided membership
-    proposition is retained by the predicate submonoid. Computing an actual
-    inverse remains the element's existing inverse-computation boundary.
-    """
-    from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-    assert ring in OwnedRings(), (
-        f"the unit group R^* needs a ring R of this session, but {ring!r} is not one"
-    )
-    units = ring.predicate_submonoid(
-        lambda element: element.is_unit(),
-        f"{ring}^×",
-        placements=(OwnedGroups(),),
-    )
-    return units
-
-
-class UnitGroupFunctor(Functor):
-    r"""\(R\mapsto R^\times\) and \(f\mapsto f|_{R^\times}\), from rings to groups.
-
-    A ring morphism carries a unit to a unit: from \(rs = 1\) it gives
-    \(f(r)f(s) = 1\), so the restriction is defined with no further data, and
-    functoriality is the functoriality of restriction.
-
-    Applied to \(\operatorname{End}_{\mathbf C}(X)\) this is
-    \(\operatorname{Aut}_{\mathbf C}(X)\): an endomorphism is invertible in the
-    endomorphism ring exactly when it is an isomorphism of \(X\).
-    """
-
-    def __init__(self) -> None:
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-        super().__init__(OwnedRings(), OwnedGroups())
-
-    def _apply_object(self, ring):
-        return ring.unit_group()
-
-    def _apply_morphism(self, morphism):
-        source = self.object_image(morphism.domain())
-        target = self.object_image(morphism.codomain())
-        return SetMorphism(
-            source.Mor(target),
-            lambda unit: target(morphism(unit)),
-        )
-
-    def _repr_(self):
-        return "Unit group functor"
 
 
 def _center_transport_of_ring_isomorphism(morphism):
@@ -4601,8 +4649,12 @@ class _OwnedRingElement(RingElement):
         r"""The binomial coefficient of this element over the natural number ``m``."""
         return _owned_engine_element(self.parent(), self._backend().binomial(int(m)))
 
-    def is_square(self):
-        return bool(self._backend().is_square())
+    def _squareness_decision(self):
+        r"""Supply the retained exact ring-element square procedure to Magmas."""
+        decision = self._backend().is_square()
+        if decision is True or decision is False or isinstance(decision, Predicate):
+            return decision
+        return AtomicProposition("is_square", self)
 
     def sqrt(self):
         return _cross_engine_ring_value(self._backend().sqrt())
