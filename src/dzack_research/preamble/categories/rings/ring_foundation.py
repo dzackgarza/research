@@ -685,16 +685,19 @@ def _ring_morphisms_equal(left, right):
 
     domain = left.domain()
     match domain:
+        case _ if domain in PrimeFields():
+            # An existing unital map from a prime field is uniquely determined
+            # by 1, including when the field has a quotient or localization
+            # presentation.  No source transport or engine is needed.
+            return True
         case _ if domain in LocalizationRings():
             source_map = domain.localization_map()
             return _ring_morphisms_equal(left * source_map, right * source_map)
         case _ if domain in QuotientRings():
             quotient_map = domain.quotient_map()
             return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
-        case _ if _engine_ring(domain) is SageZZ or domain in PrimeFields():
-            # A unital map out of Z, or out of a prime field when it exists, is
-            # unique.  This includes Q and F_p; proper finite-field extensions
-            # are excluded because they can have distinct embeddings.
+        case _ if _engine_ring(domain) is SageZZ:
+            # A unital map out of Z is uniquely determined by 1.
             return True
         case _ if _is_finite_or_number_field(domain):
             # A map of fields fixes the prime field, so it is determined by its
@@ -2425,7 +2428,37 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def an_object(self):
                     r"""The field of two elements."""
-                    return GF(2)
+                    return self(2)
+
+                def _call_(self, characteristic):
+                    r"""Return the prime field of characteristic zero or a positive prime.
+
+                    Characteristic zero selects the owned rational field;
+                    characteristic ``p`` selects the existing field ``GF(p)``.
+                    The input is a characteristic, not a finite-field order.
+                    """
+                    integers = _owned_integers()
+                    selected = _owned_engine_element(
+                        integers, _engine_numeral(integers, characteristic)
+                    )
+                    if selected.is_zero() is True:
+                        return _own_ring(SageQQ)
+                    if (selected < integers.zero()) is True:
+                        raise ValueError(
+                            f"a prime field has characteristic zero or a positive prime, but got {selected}"
+                        )
+                    match selected.is_prime():
+                        case True:
+                            return GF(selected)
+                        case False:
+                            raise ValueError(
+                                f"a prime field has characteristic zero or a positive prime, but got {selected}"
+                            )
+                        case _:
+                            assert False, (
+                                f"constructing the prime field of characteristic {selected} requires its "
+                                "primality to be established"
+                            )
 
             class ParentMethods:
                 def _krull_dimension_decision(self):
@@ -5666,7 +5699,8 @@ FiniteField = GF
 
 
 def PrimeField(characteristic):
-    return GF(characteristic)
+    r"""Return the prime field of the given characteristic through its category owner."""
+    return PrimeFields()(characteristic)
 
 
 def Zmod(*args, **kwargs):
