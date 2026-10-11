@@ -30,7 +30,7 @@ Do the work in this order. Do not start a later step while an earlier step has r
 
 A commit is not a stopping point. After banking a unit, take the next unchecked item under "Next checks" or "In progress" in the same turn, without re-reading the governing documents, and end a turn only when this file has no unchecked item left or a check is genuinely blocked on something outside the repository.
 
-Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields and Nontrivial are the fourteen complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The NoZeroDivisors pass is ready for closure; the commutative NoZeroDivisors refinement is active. The remaining 617 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
+Step 1 is complete: `indefinite-port-primitives` is accepted on true mathematical assertions at each owner. Nothing in research waits on `sage-indefinite-port`; how the port consumes these operations is its own concern. Step 2's 36-item denominator and Step 3's fixed 18-item denominator are complete. The three descendant source pieces in the steward chain are closed. The earlier bounded `placement-audit` closure is superseded by the steward's 2026-10-11 owner-pass split: the parent is open and Needs all 631 canonical category-owner passes in TODO.md. QuotientRings, PrimeLocalizations, LocalizationRings, LocalizationRings.Local, the common Local owner, its Complete refinement, the common Adic owner, AdicCompletions, its Local refinement, FormalPowerSeriesRings, the Prime field refinement, Division, Fields, Nontrivial and NoZeroDivisors are the fifteen complete whole-owner passes and are marked [x]. The one new authored Adic.Local provider is added and closed in its source bank. The commutative NoZeroDivisors refinement is active, including its domain hypotheses and fraction constructions. The remaining 616 owner passes are unchecked. Completed edits at another owner during a consumer pass are evidence for that owner's pending pass, not completion. The parent closes only after every owner pass and final inventory reconciliation. Normalization/coefficient-data work retains its existing obligations. M1 source work remains open. The module-specific `normalization-quotient-coefficient-dimension` node and the finite affine piece of `normalization-extensions-retain-coefficients` are now closed. Its five public operations have moved to their mathematical owners and consume the actual normalization module and coefficient map. Known infinite dimension now also survives a selected finite field restriction at the existing module and field-basis owners. The finite-localization source piece is now closed with its actual module, maps, component survival and finite-annihilator transport. The admitted finite-localization coefficient presentation now supplies the shared dimension and preimage routines, closing the remaining nonzero cusp coefficient calculation. The complete PrimeLocalizations category pass is now closed: its local/residue operations inherit their actual owners, its selected maps and lazy datum remain coherent, and its field/dimension decisions keep their true hypotheses. LocalizationRings has now closed its whole operation/ancestor/arrow pass, including its final cardinality and fraction equality/admission work; the independent Local refinement pass is also closed. General nonfinite computations and the remaining category-survey obligations stay required.
 
 **Step-3 owner cleanup:** The two selected finite Noetherian ideal-family algorithms (`finite_primary_decomposition` and `finite_associated_primes`) now share the private engine-to-owned-ideal family ingress. Their distinct mathematical definitions and applicability checks stay at their public owners. No changes to general nonenumerated loci.
 
@@ -259,9 +259,11 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 ## In progress
 
-**Closed `placement-owner-ownedrings-nontrivial` (2026-10-11):** both introductions, all 15 strict authored ancestors and the actual inherited ring arrows are complete. The existing native integer constructor now explicitly records 0 != 1, admitting the owner's literal ZZ witness without a new recognition procedure or general Domain/Order implication. Nontriviality adds no injectivity requirement to ring maps. This completes the fourteenth of 631 owner passes. NoZeroDivisors is ready for closure; the commutative refinement's domain and fraction-field work is active in its existing node. Runtime assertions remain under T.
+**Closed `placement-owner-ownedrings-nozerodivisors` (2026-10-11):** both introductions, all 15 strict authored ancestors and the inherited ring arrows have their complete pass. The category now names its exact zero-product axiom and states that commutativity and nontriviality are separate. Its integer witness and ordinary, possibly noninjective ring maps are preserved. This completes the fifteenth of 631 owner passes. The commutative refinement's domain hypotheses and fraction constructions are active in its existing node; no new prerequisite has been filed. Runtime assertions remain under T.
 
-**Closed `placement-owner-ownedrings-division-commutative` (`820698c1b2`, 2026-10-11):** the Fields pass accounts for all twelve original introductions, all 27 strict authored ancestors and the actual inherited RingMor. Three public residue operations now inherit common Local, preserving selected quotient data and providing a lazy canonical field default only when needed. Field embedding enumeration explicitly selects ordinary ring arrows. This completed the thirteenth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. Nontrivial is independently closed above; NoZeroDivisors is ready for closure; the commutative NoZeroDivisors refinement is active. Existing generator, enumeration, closure and selected-data computation limits remain inside this node and T.
+**Closed `placement-owner-ownedrings-nontrivial` (`0f443d4665`, 2026-10-11):** both introductions, all 15 strict authored ancestors and the actual inherited ring arrows are complete. The existing native integer constructor now explicitly records 0 != 1, admitting the owner's literal ZZ witness without a new recognition procedure or general Domain/Order implication. Nontriviality adds no injectivity requirement to ring maps. This completed the fourteenth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. NoZeroDivisors is independently closed above; the commutative refinement's domain and fraction-field work is active in its existing node. Runtime assertions remain under T.
+
+**Closed `placement-owner-ownedrings-division-commutative` (`820698c1b2`, 2026-10-11):** the Fields pass accounts for all twelve original introductions, all 27 strict authored ancestors and the actual inherited RingMor. Three public residue operations now inherit common Local, preserving selected quotient data and providing a lazy canonical field default only when needed. Field embedding enumeration explicitly selects ordinary ring arrows. This completed the thirteenth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. Nontrivial and NoZeroDivisors are independently closed above; the commutative NoZeroDivisors refinement is active. Existing generator, enumeration, closure and selected-data computation limits remain inside this node and T.
 
 **Closed `placement-owner-ownedrings-division` (`cfbf12acff`, 2026-10-11):** all four introductions, all 17 strict authored ancestors and the actual inherited ring arrows have their own completed pass. The unit theorem now uses owned negation of zero equality, retaining decided answers and undecided propositions. Nontriviality is explicit, and the nonunit 2 in ZZ prevents promotion to weaker ring properties. This completed the twelfth of 631 owner passes; its sole changed Python file passed post-commit stdlib AST parsing. Fields is independently closed above; inverse-computation boundaries and runtime assertions remain under T.
 
@@ -281,7 +283,7 @@ The common owner repair is in `utilities/category_graph.py`: category property-p
 
 **Closed `placement-owner-localizationrings` (`fdf89acdf5`, 2026-10-11):** the remaining fraction equality/admission and cardinality repairs complete this category's full source pass. The operation/ancestor disposition and retained assertions are in its whole-category section below. This completed the third owner pass; its Local refinement is independently closed below and the parent remains open. The optional count/dimension/engine cases were traced through their actual consumers, with no Sage execution or new prerequisite node.
 
-**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: fourteen complete and 617 unchecked. FormalPowerSeriesRings, the Prime refinement, Division, Fields and Nontrivial are independently closed. NoZeroDivisors is ready for closure; the existing commutative NoZeroDivisors refinement pass is active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
+**Owner-pass DAG split (steward instruction, 2026-10-11):** `placement-audit` is open and Needs one node for each canonical category owner. The original source-only inventory has 644 declarations, with 14 source-proved exclusions and 630 owner passes. At split commit `ad02191213`, QuotientRings and PrimeLocalizations were complete. The subsequent independent Localization, common Local/Complete/Adic and selected Adic passes are now closed. The newly authored AdicCompletions.Local provider receives its complete pass in the same source bank, giving 631 current owners: fifteen complete and 616 unchecked. FormalPowerSeriesRings, the Prime refinement, Division, Fields, Nontrivial and NoZeroDivisors are independently closed. The existing commutative NoZeroDivisors refinement pass is active. TODO.md records each pass and every parent dependency. The completed Step-2 and Step-3 surveys are unchanged; new provider accounting is explicit and does not restart either survey.
 
 **Closed `placement-audit` finite-integer localization field decision (2026-10-11):** the existing field hook supplies False when the selected inverted system has a finite generating family and the actual source lies in Modules(ZZ).Free().FinitelyGenerated(). No basis, rank, norm, characteristic computation, domain decision or engine classification is requested. A hypothetical nonzero field localization would contain ZZ injectively by torsion-freeness and be of finite type over it; [Stacks 00G4](https://stacks.math.columbia.edu/tag/00G4) and [0CY7](https://stacks.math.columbia.edu/tag/0CY7) exclude this. The zero localization is not a field either. The exact integer/order source ancestry was read, restoring the decided negative predicate for ZZ[1/2] through a general theorem. Predicate-S cases delegate through the same common Local provider and preserve the actual maximal-ideal zero decision. No new recognition layer or prerequisite is introduced; all execution assertions stay under T.
 
@@ -369,6 +371,110 @@ These are source-level closure correspondences, not executed Sage results. The a
 
 **Banked quotient-owner source checks:** `8b392727bb` passed focused Python AST parsing together with the committed indexed-family and Čech changes. The TODO graph has 130 unique nodes, resolved dependencies and no cycle. The required source-only `just category-graph constructions --select QuotientRings --select OwnedRings.Commutative --select OwnedSemirings --select Monoids` completed in under a minute; all 36 returned lines in `.tmp/quotient-owner-constructions.txt` were read. Its unresolved hook returns are static-inference limits, not computed mathematical answers. No Sage or tests were run.
 
+
+### Whole-category placement: `OwnedRings.NoZeroDivisors` (2026-10-11; source pass closed)
+
+This is the complete pass for `placement-owner-ownedrings-nozerodivisors`.
+Its defining assertion is `xy = 0 => x = 0 or y = 0`. This property holds
+in the zero ring and does not assume commutativity. The old display name
+`domains` obscured that independent nontriviality convention; it now says
+`rings without zero divisors`, with those boundaries stated in the
+definition. This changes no category edge, constructor, arithmetic,
+predicate implementation or morphism.
+
+**Complete introductions.** Exactly two methods are introduced here.
+
+| Introduction | Placement and closure |
+| --- | --- |
+| `_repr_object_names()` | The category-specific name belongs here and now states the actual zero-product axiom. |
+| `an_object()` | The literal canonical owned ZZ remains the stronger category's witness under the common category-witness contract. |
+
+There is no own ParentMethods, ElementMethods, MorphismMethods, Mor-family,
+protected computation hook, parameter or extra supercategory. The nested
+Commutative class is a separately inventoried owner. No public mathematical
+operation needs promotion to a weaker owner: category names and witnesses
+implement the common category contract at their actual category. The
+complete 50-line source/specimen search found no behavior selected by the
+old display string; consumers select the axiom. Other integral-domain names
+belong to the separate commutative refinement.
+
+**Entire strict authored up-set: 15 owners.** CategoryWithAxiom retains
+OwnedRings and all its authored ancestors; this owner adds no edge.
+
+| Strict ancestor | Retained structure |
+| --- | --- |
+| `OwnedRings` | Associative unital ring. |
+| `OwnedSemirings` | Unital multiplication, commutative addition and distributivity. |
+| `OwnedRngs` | Associative multiplication and additive inverses. |
+| `Monoids` | Associative unital multiplication. |
+| `Semigroups` | Associative multiplication. |
+| `Magmas.Unital` | Multiplication and its identity. |
+| `Magmas` | Multiplication. |
+| `AdditiveGroups.AdditiveCommutative` | Additive abelian group. |
+| `AdditiveGroups` | Additive group. |
+| `AdditiveMonoids` | Associative addition and zero. |
+| `AdditiveSemigroups` | Associative addition. |
+| `AdditiveMagmas.AdditiveCommutative` | Commutative addition. |
+| `AdditiveMagmas` | Addition. |
+| `Sets` | Underlying set. |
+| `Objects` | Owned object. |
+
+Generated axiom intersections and implementation wrappers create no
+additional authored identity. Nontrivial, commutative rings, Division,
+Fields, Local, Complete, Noetherian, finite sets and scalar algebras are
+not uniform ancestors. A commutative witness cannot establish a commutative
+edge; descendant implications do not propagate upward.
+
+**Actual fixed arrows.** The owned axiom base carries CategoryPacketMethods,
+where an object property adds no new arrows. Fixed-endpoint selection walks
+the actual supercategories, retains literal endpoints and reuses their
+unique inherited fixed Mor. OwnedRings selects RingMorCategoryConstruction,
+whose fixed category is RingMor and whose actual element provider is
+RingMorphism. Its semiring, rng, multiplicative, additive and set providers
+remain in the existing packet. This owner declares no competing arrow
+provider. These are all unital ring maps between the admitted objects.
+The map `ZZ -> GF(2)` is a true noninjective specimen: both endpoints
+satisfy the zero-product axiom, but 2 maps to zero. The existing RingMor
+elementwise ingress represents that map through the target's conversion
+from owned integers, keeping the exact retained parents.
+
+The existing identity requires equal literal endpoints and retains the
+elementwise identity with its datum. Existing RingMorphism composition
+checks the intermediate endpoint and composes the element functions on
+the retained source and target. Endpoint refinements do not silently
+replace these arrows with algebra arrows. This pass introduces no unit,
+inverse, kernel or injectivity computation.
+
+**True closure assertions and separators.** The integer witness is admitted
+by the native principal-domain placement, which reaches this parent.
+The independent GF(2) constructor reaches it through Fields and Division's
+explicit NoZeroDivisors edge. The zero ring satisfies the definition while
+failing Nontrivial; no zero-ring recognizer was added by this pass. In
+`ZZ/6`, the nonzero classes of 2 and 3 multiply to zero, so the property
+cannot move to all rings. The nonunit 2 in ZZ prevents promotion of the
+stronger Division unit theorem to this owner. No equality is forced to a
+Boolean, no unknown proposition is decided, and no finite data or division
+algorithm is selected. Identity and composition preserve the actual ring
+contracts.
+
+**Named remainder in the existing descendant.**
+`placement-owner-ownedrings-nozerodivisors-commutative` remains open for
+its own integral-domain/nontriviality convention, the common domain
+decision and fraction-field consumers. Closing this parent neither closes
+that descendant nor endorses its unreconciled stronger claims. No new
+prerequisite node was created.
+
+Evidence is the complete own declaration and nested boundary; the source
+inventory and raw bases; the complete relevant semiring/rng and
+magma/additive ancestry; Sets' Objects edge; the owned category-witness and
+axiom propagation contracts; the fixed-Mor selector; and the actual
+RingMor/RingMorphism endpoint, identity, composition and native-constructor
+definitions already read for the adjacent passes. This closes this
+owner's introductions and placement, without claiming a whole pass at
+any ancestor or separately tracked descendant. M1 verification is limited
+to a focused diff and post-commit stdlib AST of the changed Python file.
+Runtime computation assertions remain under T; no Sage, project import,
+runtime, notebook, test or generated-document build belongs to this bank.
 
 ### Whole-category placement: `OwnedRings.Nontrivial` (2026-10-11; source pass closed)
 

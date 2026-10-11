@@ -2516,11 +2516,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return AbsoluteGaloisGroup(self)
 
     class NoZeroDivisors(CategoryWithAxiom):
-        r"""Domains: rings in which ``xy = 0`` forces ``x = 0`` or ``y = 0``."""
+        r"""Rings in which ``xy = 0`` forces ``x = 0`` or ``y = 0``.
+
+        This axiom allows the zero ring. Nontriviality is the separate
+        ``Nontrivial`` axiom, and commutativity is not assumed.
+        """
 
         @classmethod
         def _repr_object_names(cls):
-            return "domains"
+            return "rings without zero divisors"
 
         def an_object(self):
             r"""The integers."""
