@@ -4939,6 +4939,16 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         def biproduct_factor(self, index):
             return self.biproduct_factors()[index]
 
+        def _binary_biproduct_labels(self):
+            r"""Return the first and second labels of a selected binary biproduct."""
+            labels = self.biproduct_factors().index_set()
+            assert labels.cardinality() == cardinal(2), (
+                f"the binary left/right operations of {self} need exactly two factors, "
+                f"but its factor index set {labels} has cardinality {labels.cardinality()}"
+            )
+            ranking = labels.ranking_map()
+            return ranking.inverse()(0), ranking.inverse()(1)
+
         def injection(self, index):
             r"""Return \(\iota_i : M_i \to \bigoplus_{j \in I} M_j\).
 
@@ -4964,23 +4974,27 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, summand)(image)
 
         def left_inclusion(self):
-            r"""Return \(\iota_0\), the injection at the first index."""
-            return self.injection(0)
+            r"""Return the injection at the first selected factor."""
+            left, _right = self._binary_biproduct_labels()
+            return self.injection(left)
 
         def right_inclusion(self):
-            r"""Return \(\iota_1\), the injection at the second index."""
-            return self.injection(1)
+            r"""Return the injection at the second selected factor."""
+            _left, right = self._binary_biproduct_labels()
+            return self.injection(right)
 
         left_injection = left_inclusion
         right_injection = right_inclusion
 
         def left_projection(self):
-            r"""Return \(\pi_0\), the projection at the first index."""
-            return self.projection(0)
+            r"""Return the projection onto the first selected factor."""
+            left, _right = self._binary_biproduct_labels()
+            return self.projection(left)
 
         def right_projection(self):
-            r"""Return \(\pi_1\), the projection at the second index."""
-            return self.projection(1)
+            r"""Return the projection onto the second selected factor."""
+            _left, right = self._binary_biproduct_labels()
+            return self.projection(right)
 
         def from_coproduct_cocone(self, legs):
             r"""The unique map \(\bigoplus_i M_i \to X\) with the stated legs.
@@ -5056,11 +5070,23 @@ class BiproductModules(OwnedCategoryOverBaseRing):
 
         def from_summands(self, left_map, right_map):
             r"""Return the unique map ``self -> X`` extending both summand maps."""
-            return self.from_coproduct_cocone((left_map, right_map))
+            labels = self._binary_biproduct_labels()
+            legs = indexed_family(
+                self.biproduct_factors().index_set(),
+                lambda label: left_map if label == labels[0] else right_map,
+                name="Binary coproduct cocone legs",
+            )
+            return self.from_coproduct_cocone(legs)
 
         def to_product(self, left_map, right_map):
             r"""Return the unique map ``X -> self`` with the specified projections."""
-            return self.from_product_cone((left_map, right_map))
+            labels = self._binary_biproduct_labels()
+            legs = indexed_family(
+                self.biproduct_factors().index_set(),
+                lambda label: left_map if label == labels[0] else right_map,
+                name="Binary product cone legs",
+            )
+            return self.from_product_cone(legs)
 
 
 @cached_function(key=lambda factors: (factors.index_set(), tuple(factors)))
@@ -5118,12 +5144,14 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
             (left_morphism.codomain(), right_morphism.codomain())
         )
 
-    if source.biproduct_factor(0) is not left_morphism.domain() or source.biproduct_factor(1) is not right_morphism.domain():
+    source_left, source_right = source._binary_biproduct_labels()
+    target_left, target_right = target._binary_biproduct_labels()
+    if source.biproduct_factor(source_left) is not left_morphism.domain() or source.biproduct_factor(source_right) is not right_morphism.domain():
         raise ValueError(
             f"the direct sum of {left_morphism} and {right_morphism} cannot start at {source}: its summands "
             f"must be {left_morphism.domain()} and {right_morphism.domain()}"
         )
-    if target.biproduct_factor(0) is not left_morphism.codomain() or target.biproduct_factor(1) is not right_morphism.codomain():
+    if target.biproduct_factor(target_left) is not left_morphism.codomain() or target.biproduct_factor(target_right) is not right_morphism.codomain():
         raise ValueError(
             f"the direct sum of {left_morphism} and {right_morphism} cannot end at {target}: its summands "
             f"must be {left_morphism.codomain()} and {right_morphism.codomain()}"
@@ -5131,9 +5159,13 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
 
     return source.module_category().Mor(source, target)(
         lambda label: (
-            target.left_inclusion()(left_morphism(left_morphism.domain().module_generator(label.summand_element())))
-            if int(label.summand_index()) == 0
-            else target.right_inclusion()(right_morphism(right_morphism.domain().module_generator(label.summand_element())))
+            target.injection(target_left)(
+                left_morphism(left_morphism.domain().module_generator(label.summand_element()))
+            )
+            if label.summand_index() == source_left
+            else target.injection(target_right)(
+                right_morphism(right_morphism.domain().module_generator(label.summand_element()))
+            )
         )
     )
 

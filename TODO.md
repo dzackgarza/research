@@ -667,7 +667,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `BiproductLattices` in `src/dzack_research/preamble/categories/lattices.py`.
   **Closure assertions:** the complete `BiproductLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BiproductLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-biproductmodules`**. **Needs:** none.
+- [x] **`placement-owner-biproductmodules`**. **Needs:** none.
   **Owner pass:** `BiproductModules` in `src/dzack_research/preamble/categories/modules/pure/modules.py`.
   **Closure assertions:** the complete `BiproductModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BiproductModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
