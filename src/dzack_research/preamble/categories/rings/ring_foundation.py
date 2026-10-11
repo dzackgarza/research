@@ -297,6 +297,11 @@ class RingMorphism:
         already contains every image.  So this needs nothing of ``f`` beyond
         its values, and the localization of an ideal is the case where ``f``
         inverts a submonoid.
+
+        For the retained completion map of a Noetherian source, flatness
+        also transports the ideal's presented inclusion. A different map
+        into that same completed ring need not be flat, so that construction
+        is selected only for the actual canonical completion arrow.
         """
 
         domain = self.domain()
@@ -308,7 +313,11 @@ class RingMorphism:
             AdicCompletions,
         )
 
-        if codomain in AdicCompletions() and domain in OwnedRings().Noetherian():
+        if (
+            codomain in AdicCompletions()
+            and domain in OwnedRings().Noetherian()
+            and self is codomain.completion_map()
+        ):
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 _flat_extension_commutative_ideal,
             )
@@ -2391,11 +2400,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return GF(2)
 
             def extra_super_categories(self):
-                r"""The ideals of a field are ``0`` and the field."""
+                r"""A field has ideals ``0`` and itself and is complete for ``(0)``.
+
+                Its unique maximal ideal is zero, so its maximal-adic
+                completion is the field itself.
+                """
                 return [
                     OwnedRings().Commutative().PrincipalIdeals(),
                     OwnedRings().Artinian(),
-                    OwnedRings().Commutative().Local(),
+                    OwnedRings().Commutative().Local().Complete(),
                 ]
 
             class SubcategoryMethods:
@@ -2662,8 +2675,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return _own_ring(SageZZ).adic_completion(2)
 
                 def extra_super_categories(self):
-                    r"""The maximal ideal is the ideal of definition, so the datum is determined."""
+                    r"""The maximal ideal supplies a canonical complete adic structure.
+
+                    An independently chosen ideal of definition is retained
+                    when supplied; it need not be the maximal ideal.
+                    """
                     return [OwnedAdicallyCompleteRings()]
+
+                class ParentMethods:
+                    @RealizationHook
+                    def _selected_adic_defining_ideal(self):
+                        r"""Supply the canonical maximal-adic datum to ``ideal_of_definition``.
+
+                        An owned realization's explicit selected-ideal
+                        supplier takes precedence over this default.
+                        """
+                        return self.maximal_ideal()
 
         class PrincipalIdeals(CategoryWithAxiom):
             r"""Principal ideal rings: every ideal is principal (Mathlib's ``IsPrincipalIdealRing``)."""
@@ -3120,8 +3147,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return selected local-ring quotient data, or ``None``.
 
             Protected ring-construction contract under OWN-05. The callers
-            are the local-ring datum accessor, the local field decision, and
-            the local-ring installation adapter. A construction owner returns
+            are the local-ring datum accessor, the local field decision,
+            the local-ring installation adapter, and the adic-completion
+            residue-map selector. A construction owner returns
             a ``LocalRingConstruction`` for this exact ring: its selected
             maximal ideal, the owned residue field, and its quotient map when
             selected. The local field decision uses the ideal's zero predicate
@@ -3575,6 +3603,8 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
     r"""Commutative rings with a chosen ideal of definition for which they are adically complete.
 
     The ideal is a chosen datum: every ring is complete for its zero ideal.
+    The inherited arrows are unital ring maps; no continuity condition is
+    imposed on this category's ``Mor``.
     """
 
     def an_object(self):
@@ -3586,10 +3616,41 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
 
     class ParentMethods:
         def is_adically_complete(self):
+            r"""Return the completeness supplied by this chosen adic structure."""
             return True
 
+        @RealizationHook
+        def _selected_adic_defining_ideal(self):
+            r"""Supply the selected defining ideal of this exact ring, or ``None``.
+
+            Only ``ideal_of_definition`` calls this protected datum supplier.
+            A complete-local category supplies its actual maximal ideal by
+            default. An owned completion realization supplies the extension
+            of its fixed source ideal along its fixed completion map, using
+            the existing cached ideal-extension construction. These are
+            evaluations of already selected data, not choices of topology
+            made by this accessor. An explicit supplier takes precedence
+            over the complete-local default; its ``None`` means that its
+            selected datum is unavailable, never that the maximal ideal
+            should be substituted.
+            """
+            return None
+
         def ideal_of_definition(self):
-            return self._adic_defining_ideal
+            r"""Return the selected defining ideal as an owned ideal of ``self``."""
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
+            selected = self._selected_adic_defining_ideal()
+            assert selected is not None, (
+                f"the selected adic structure of {self} has no supplied defining ideal"
+            )
+            assert selected in CommutativeIdeals(self) and selected.ring() is self, (
+                f"the defining ideal of the selected adic structure of {self} must be "
+                f"an owned ideal of that ring, but the supplied datum is {selected}"
+            )
+            return selected
 
 
 def OwnedCompleteLocalRings():

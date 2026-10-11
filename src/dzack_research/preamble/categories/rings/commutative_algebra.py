@@ -2346,7 +2346,7 @@ class IdealExtensionData(SageObject):
 
 
 class AdicCompletions(Category):
-    r"""Adic completions equipped with source and ideal of definition."""
+    r"""Adic completions equipped with a source ring and its chosen completion ideal."""
 
     def an_object(self):
         r"""The 2-adic completion of the owned integers."""
@@ -2377,6 +2377,14 @@ class AdicCompletions(Category):
     class ParentMethods:
         def completion_source(self):
             return self._adic_completion_source
+
+        def completion_ideal(self):
+            r"""Return the retained ideal ``I`` of ``completion_source()``.
+
+            Its extension along ``completion_map()`` is the defining ideal
+            of this completed ring, returned by ``ideal_of_definition()``.
+            """
+            return self._adic_completion_ideal
 
         def completion_map(self):
             morphism = self._realized_completion_map
@@ -2416,10 +2424,14 @@ class AdicCompletions(Category):
 
         @cached_method
         def ideal_extension(self):
-            r"""Return the construction ``I -> I A^`` along the completion map."""
+            r"""Realize the fixed construction ``I -> I A^`` along the completion map.
+
+            The source ideal and map are fixed at construction; evaluating
+            their extension stays lazy, at this existing algorithm boundary.
+            """
             return IdealExtensionData(
                 self.completion_map(),
-                self.ideal_of_definition(),
+                self.completion_ideal(),
             )
 
         def extended_ideal(self):
@@ -2432,7 +2444,7 @@ class AdicCompletions(Category):
             target = self.adic_truncation(exponent)
             return IdealExtensionData(
                 target.quotient_map(),
-                self.ideal_of_definition(),
+                self.completion_ideal(),
             )
 
         @cached_method
@@ -2449,7 +2461,7 @@ class AdicCompletions(Category):
             if represented is not None:
                 return represented
             zero = source.ideal(source.zero())
-            defining = self.ideal_of_definition()
+            defining = self.completion_ideal()
             if defining == zero:
                 return zero
             square = defining.power(2)
@@ -2504,7 +2516,7 @@ class AdicCompletions(Category):
             if exponent <= 0:
                 raise ValueError(f"the truncation A/I^n needs n > 0, but n = {exponent}")
             source = self.completion_source()
-            defining = self.ideal_of_definition()
+            defining = self.completion_ideal()
             return source.quotient_ring(defining.power(exponent))
 
         def adic_artin_truncation(self, exponent):
@@ -2571,10 +2583,10 @@ class AdicCompletions(Category):
                     f"cannot induce a map {self} -> {target_completion} from {source_morphism}: it must end at "
                     f"{target_completion.completion_source()}, but it ends at {source_morphism.codomain()}"
                 )
-            target_ideal = target_completion.ideal_of_definition()
+            target_ideal = target_completion.completion_ideal()
             if any(
                 not target_ideal.contains_ambient_element(source_morphism(generator))
-                for generator in self.ideal_of_definition().ideal_generators()
+                for generator in self.completion_ideal().ideal_generators()
             ):
                 raise ValueError("the source ideal does not map into the target ideal")
             if (
@@ -2600,7 +2612,7 @@ class AdicCompletions(Category):
 
         @cached_method
         def maximal_localization_comparison(self):
-            r"""Return ``R^_m ~= (R_m)^`` when the ideal of definition is maximal.
+            r"""Return ``R^_m ~= (R_m)^`` when the source completion ideal is maximal.
 
             For Noetherian ``R`` completion at a maximal ideal agrees with
             completion after localizing at that maximal ideal.  Both arrows
@@ -2609,7 +2621,7 @@ class AdicCompletions(Category):
             arbitrary localization.
             """
             source = self.completion_source()
-            maximal = self.ideal_of_definition()
+            maximal = self.completion_ideal()
             if source not in OwnedRings().Noetherian():
                 raise TypeError(
                     f"the comparison of completion and localization at a maximal ideal needs a Noetherian ring, "
@@ -2620,7 +2632,7 @@ class AdicCompletions(Category):
                     pass
                 case False:
                     raise TypeError(
-                        f"the comparison of completion and localization needs a maximal ideal of definition, but "
+                        f"the comparison of completion and localization needs a maximal completion ideal, but "
                         f"{maximal} is not maximal in {source}"
                     )
                 case _:
@@ -2646,12 +2658,30 @@ class AdicCompletions(Category):
 
         @cached_method
         def residue_map(self):
-            r"""Return ``A^ -> A/I`` when the adic ideal is maximal."""
-            if not bool(self.ideal_of_definition().is_maximal()):
-                raise TypeError(
-                    f"a residue map A^ -> A/m needs a maximal ideal of definition, but "
-                    f"{self.ideal_of_definition()} is not maximal"
-                )
+            r"""Return the selected local quotient, or ``A^ -> A/I`` for maximal ``I``.
+
+            A local completion may have a nonmaximal chosen completion
+            ideal. Its supplied local quotient remains the residue map.
+            """
+            construction = self._selected_local_ring_construction()
+            if construction is not None:
+                selected = construction.residue_map()
+                if selected is not None:
+                    return selected
+            defining = self.completion_ideal()
+            match defining.is_maximal():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        f"a residue map A^ -> A/m needs a maximal completion ideal "
+                        f"when no local quotient map is supplied, but {defining} is not maximal"
+                    )
+                case _:
+                    assert False, (
+                        f"the residue map of {self} needs maximality of the completion "
+                        f"ideal {defining} to be established or a supplied local quotient map"
+                    )
             residue = self.residue_field()
             projection = self.adic_projection(1)
             if projection.codomain() is residue:
@@ -2660,7 +2690,7 @@ class AdicCompletions(Category):
 
         @cached_method
         def source_residue_map(self):
-            r"""Return the comparison ``A -> A^ -> kappa(I)`` for maximal ``I``."""
+            r"""Compose ``A -> A^`` with the completed ring's selected residue map."""
             return self.residue_map() * self.completion_map()
 
         @cached_method
@@ -2919,7 +2949,7 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
                 "element of the ring being completed"
             )
         refined = self.parent().completion_source().adic_completion(
-            self.parent().ideal_of_definition(), precision=int(precision)
+            self.parent().completion_ideal(), precision=int(precision)
         )
         return refined.completion_map()(source_expression)
 
@@ -2975,7 +3005,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             )
 
         self._adic_completion_source = source
-        self._adic_defining_ideal = defining_ideal
+        self._adic_completion_ideal = defining_ideal
         self._adic_completion_precision = int(precision)
         self._adic_projection_lift = projection_lift
         self._adic_arithmetic_mode = arithmetic_mode
@@ -3047,19 +3077,29 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     )
                     for label in self._preamble_formal_parameter_labels
                 )
-                maximal_ideal = _maximal_ideal_over_local_base(
-                    self,
-                    formal_base,
-                    formal_parameters,
-                )
                 residue = formal_base.residue_field()
-                _install_local_ring_construction(self, maximal_ideal, residue)
+                residue_map = OwnedRings().Mor(self, residue)(
+                    lambda value: formal_base.residue_map()(
+                        self(value).coefficient(0)
+                    )
+                )
+                self._local_ring_construction = LocalRingConstruction(
+                    maximal_ideal_factory=lambda: _maximal_ideal_over_local_base(
+                        self, formal_base, formal_parameters
+                    ),
+                    residue_field=residue,
+                    residue_map=residue_map,
+                )
             case (_, True):
                 maximal_ideal = completion_map.extension_of_ideal(defining_ideal)
                 residue = source.residue_field_at(defining_ideal)
                 _install_local_ring_construction(self, maximal_ideal, residue)
             case _:
                 pass
+
+    def _selected_adic_defining_ideal(self):
+        r"""Supply this completion's fixed target ideal to ``ideal_of_definition``."""
+        return self.ideal_extension().extended_ideal()
 
     def completion_arithmetic_mode(self):
         return self._adic_arithmetic_mode
@@ -3157,16 +3197,51 @@ def _maximal_ideal_over_local_base(algebra, base, uniformizers):
 
     The residue field is unchanged by the extra generators, because
     ``A/(m A + (t)) = R/m``.
-    """
 
-    engine = _engine_ring(algebra)
+    Protected local-construction supplier under OWN-05--07. Its callers are
+    the selected maximal-ideal factories of the formal-power-series and
+    dual-number constructors. The input variables are actual target
+    elements; a formal variable additionally retains its exact expression
+    in the polynomial completion source. The result is an owned ideal
+    subobject of this literal algebra, with its regular-module inclusion.
+    The existing ideal and module owners supply the required source
+    relations; unavailable computations remain their ordinary frontier.
+
+    Completion uses the existing flat extension of the polynomial ideal
+    when its source is Noetherian. A dual quotient uses the actual quotient
+    source and its ordered relations, without treating the quotient map as
+    flat. No generator is removed by forcing an undecided zero predicate.
+    """
+    if base in LocalizationRings() and base not in OwnedRings().Division().Commutative():
+        assert base._has_selected_exact_coefficient_presentation(), (
+            f"cannot construct the maximal ideal over {base}: its polynomial "
+            "ideal computations need an exact coefficient presentation, not "
+            "a larger localization computation model"
+        )
+    source = algebra.completion_source() if algebra in AdicCompletions() else algebra
+    coefficient_map = source.algebra_structure_morphism()
+    if coefficient_map.codomain() is not source:
+        coefficient_map = coefficient_map.codomain().inclusion() * coefficient_map
+    assert coefficient_map.domain() is base and coefficient_map.codomain() is source, (
+        "a local-base ideal must use the retained map from that exact coefficient ring"
+    )
     base_maximal = tuple(
-        _owned_engine_element(algebra, engine(_engine_element(base, generator)))
+        coefficient_map(generator)
         for generator in base.maximal_ideal().ideal_generators()
     )
-    return GeneratedIdealView(
-        algebra,
-        tuple(generator for generator in (*base_maximal, *uniformizers) if not generator.is_zero()),
+    if algebra in AdicCompletions():
+        variables = tuple(variable.exact_source_expression() for variable in uniformizers)
+        assert all(variable is not None for variable in variables), (
+            "the selected formal variables must retain their polynomial source expressions"
+        )
+        source_ideal = source.ideal(*base_maximal, *variables)
+        return algebra.completion_map().extension_of_ideal(source_ideal)
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        _quotient_source_commutative_ideal,
+    )
+
+    return _quotient_source_commutative_ideal(
+        algebra, (*base_maximal, *uniformizers)
     )
 
 
@@ -4382,6 +4457,19 @@ def Zp(*args, **kwargs):
 class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
+    class Element(_OwnedAlgebraElement):
+        def __init__(self, parent, backend_value):
+            r"""Supply the inherited quotient lift's actual source datum.
+
+            The native element constructor and every ring-arithmetic result
+            enter through this selected element class. The public lift
+            operation remains at QuotientRings.ElementMethods.
+            """
+            super().__init__(parent, backend_value)
+            self._representative = _owned_engine_element(
+                parent.quotient_source(), backend_value.lift()
+            )
+
     def algebra_base_ring(self):
         r"""Return the selected coefficient ring of the dual-number algebra."""
         return self.base_ring()
@@ -4438,30 +4526,27 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
         )
         if base in OwnedRings().Commutative().Local():
             epsilon_bar = self._from_engine_element(engine.gen())
-            maximal_ideal = _maximal_ideal_over_local_base(
-                self,
-                base,
-                (epsilon_bar,),
+            residue = base.residue_field()
+            residue_map = OwnedRings().Mor(self, residue)(
+                lambda value: base.residue_map()(basis_coordinates(self(value))[0])
             )
-            _install_local_ring_construction(
-                self,
-                maximal_ideal,
-                base.residue_field(),
+            self._local_ring_construction = LocalRingConstruction(
+                maximal_ideal_factory=lambda: _maximal_ideal_over_local_base(
+                    self, base, (epsilon_bar,)
+                ),
+                residue_field=residue,
+                residue_map=residue_map,
             )
 
 
 def _dual_numbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
-    polynomial = _algebra_with_structure(
-        _own_ring(_SagePolynomialRing(_engine_ring(base), name)),
-        base,
-        (name,),
-    )
+    polynomial = base.polynomial_ring(name)
     engine_polynomial = _engine_ring(polynomial)
-    epsilon = engine_polynomial.gen()
-    defining_ideal = engine_polynomial.ideal(epsilon**2)
-    quotient_engine = engine_polynomial.quotient(defining_ideal)
+    epsilon = polynomial.algebra_generator(name)
+    defining_ideal = polynomial.ideal(epsilon**2)
+    quotient_engine = engine_polynomial.quotient(_engine_ideal(polynomial, defining_ideal))
     return _DualNumbersAlgebraParent(
         quotient_engine,
         base,
