@@ -645,7 +645,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `BilinearFormModules.FinitelyPresented` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
   **Closure assertions:** the complete `BilinearFormModules.FinitelyPresented` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.FinitelyPresented`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-bilinearformmodules-finitelypresented-torsion`**. **Needs:** none.
+- [x] **`placement-owner-bilinearformmodules-finitelypresented-torsion`**. **Needs:** none.
   **Owner pass:** `BilinearFormModules.FinitelyPresented.Torsion` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
   **Closure assertions:** the complete `BilinearFormModules.FinitelyPresented.Torsion` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `BilinearFormModules.FinitelyPresented.Torsion`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
