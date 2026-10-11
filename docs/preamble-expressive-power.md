@@ -1,9 +1,10 @@
 # Preamble completeness: mathematical constructions and composition
 
-The inspected preamble has incomplete public constructions for group images
-and their factorizations, sections, subgroup generating data, group limits,
-and quotients of represented sets. These defects also obstruct the
-presentation of class sets. A foundational semantic defect affects several
+The inspected preamble has gaps in effective image factorizations, finite
+limits and colimits, quotients, and preservation of the categories justified
+by a construction. The gaps differ between groups, modules and sets;
+several module constructions already supply actual objects and universal
+maps. A foundational semantic defect affects several
 stabilizer constructions: string labels occupy fields that should retain
 actual represented actions. The subgroups exist, but their defining
 mathematical structure is incomplete. Computed generating data also fail
@@ -35,6 +36,43 @@ Mathematical ownership and acceptance follow [INTENT.md](../INTENT.md):
 mathematical acceptance assertions. Source tracing below establishes what
 the constructors retain and return. It does not certify their answers.
 
+## Image objects, presentations and category placement
+
+For `f: M -> N` in `R-Mod`, the required image is an actual submodule
+`I = im(f) <= N`, with maps
+
+\[
+M\xrightarrow{e}I\xrightarrow{i}N,\qquad i\circ e=f,
+\]
+
+where `e` is surjective and `i` is the submodule inclusion. If selected
+generators of `M` are supplied, their images generate `I`. When `I` is
+finitely presented, selected generators and relations define a finite
+presentation `R^a -> R^b ->> I`. These are mathematical data of the
+submodule; the API must return that submodule and its maps.
+
+The group requirement is the same image factorization, with a subgroup
+inclusion. Finite generation of the source supplies finite generators of
+its image. Finite presentation of the result requires its own hypotheses
+and relations.
+
+Each limit or colimit must retain its diagram, cone or cocone, and universal
+factorization. Products and coproducts require projections and injections.
+Kernels require inclusions; cokernels and quotients require quotient maps.
+General finite diagrams compose products with equalizers, or coproducts
+with coequalizers, under the applicable existence hypotheses.
+
+The result must also carry every mathematical structure that the
+construction preserves. Closure hypotheses matter. Over a coherent
+commutative ring, finitely presented modules form an abelian category;
+over a Noetherian ring, finitely generated modules do too. Their images,
+kernels and cokernels then remain in those categories. See the
+[Stacks Project, coherent rings](https://stacks.math.columbia.edu/tag/05CU)
+and [abelian categories of modules](https://stacks.math.columbia.edu/tag/0AZ5).
+An ambient kernel that is not finitely generated cannot be assigned to the
+category of finitely generated objects merely because its endpoints lie
+there.
+
 ## Missing or defective parts of the public constructions
 
 Source paths in this table are relative to
@@ -46,11 +84,15 @@ Source paths in this table are relative to
 | Section of a surjection in sets | `s: U(I) -> U(G)` with `U(e) s = id` | A public method computes selected preimages but returns a dictionary. The corresponding section is absent from its output. |
 | Generating data for a subgroup | A represented family in the subgroup and its generating epimorphism `F(S) ->> P` | Public Schreier methods return tuples. The computed family and augmentation are not supplied as preamble objects attached to the subgroup. |
 | Retention of mathematical defining data | Actual objects, morphisms and functors, with their defining diagrams | Several stabilizer constructors retain string labels as their defining actions. This foundational semantic defect prevents composition through the promised action datum. The subgroup objects and inclusions do exist. |
-| Group products and equalizers | Actual groups, universal cones and universal factorization maps | The inspected product implementation requires finite factors and a nonempty family. No equalizer realization was found in the inspected group owners. |
-| Pullback construction from limits | The apex, both legs and universal factorization | The general method returns an equalizer result and does not expose a selected pullback cone. |
+| Group products and coproducts | Actual groups, projections or injections, and universal factorization maps | Both routes require nonempty families of finite groups. They exclude infinite finitely presented factors. |
+| Group equalizers and coequalizers | Equalizer subgroups or quotient groups, with universal maps | No category-level realization was found in the inspected group owners. Normal-closure quotients from chosen finite presentations already exist. |
+| Group cokernels | The quotient by the normal closure of the image, with its quotient map | The inspected route accepts finite codomains or subgroup inclusions into abelian groups. |
+| Pullbacks and pushouts | The apex, both legs and universal factorization | The general methods return equalizer or coequalizer results without selected pullback or pushout cones. |
 | Quotient of a represented set by a relation | A quotient set, projection and universal factorization | The general set coequalizer implementation requires finite source and target sets. It does not represent the quotient of an infinite relation by that route. |
 | Class set of a represented groupoid | The quotient of objects by isomorphism, with its class projection | The inspected core retains objects and isomorphisms. Genus enumeration returns lattice representatives without a distinct class projection or representative section. The general quotient route has the preceding finiteness restriction. |
-| Image of a module morphism | An image subobject and factorization | The inspected image method requires finite selected domain generators and returns no image object through that route outside this case. |
+| Image of a module morphism | An actual image submodule, inclusion and induced surjection | The inspected finite-generator route returns an actual submodule. Its factorization composes with the existing module `factor_through` operation. The image method rejects infinite selected generating families. |
+| Empty module products and coproducts | The zero module with its universal maps | The biproduct constructor rejects the empty family. The product constructor uses the general module route for the empty family and rejects stricter module categories. |
+| Preservation of category structure | One result carrying the structures preserved by the construction | General submodule joins and meets do not retain ideal structure; ideal specializations maintain separate implementations. |
 
 The following sections give the construction traces and boundaries of these
 findings.
@@ -97,8 +139,8 @@ from the map's retained data.
 Generator-defined morphisms at `:2049-2128` retain their generator images
 and use the source's private presentation to evaluate words and check
 relations. This establishes that the generator-map construction exists.
-Whether its source representation supports arbitrary word decomposition is
-a further capability to check at that representation; it is not needed to
+Whether its selected source presentation supports effective word decomposition
+is a further computational question; it is not needed to
 form an image from already given generator images.
 
 ## Sections and subgroup generating data
@@ -184,7 +226,7 @@ Generator computation for this subgroup has the public-output defect
 described above. A generating description must remain data of the same
 subgroup and compose with its inclusion and applicable group morphisms.
 
-## Limits and quotients
+## Finite limits, colimits, cokernels and quotients
 
 The group product constructor at `groups.py:2997-3067` constructs an
 actual product group, group-morphism projections and a
@@ -192,13 +234,68 @@ actual product group, group-morphism projections and a
 groups. This supplies real structure in that case. Its explicit assertions
 exclude the empty family and any factor not known to be finite.
 
-No `_categorical_equalizer` realization was found in the inspected group
-owner files. At the general category owner,
+The coproduct constructor at `groups.py:3068` supplies the free product
+and its injections, but imposes the same restrictions on the factors. Thus
+both category operations exclude infinite finitely presented groups even
+though finite presentations give the usual constructions. For example,
+from `G = <x | R>` and `H = <y | S>`, the free product has presentation
+`<x,y | R,S>`, and the direct product adds the relations `[x_i,y_j]=1`.
+
+No category-level equalizer or coequalizer realization was found in the
+inspected group owner files. This is a gap in the general group operations,
+not evidence that quotient construction is wholly absent:
+`quotient_by_relators` at `groups.py:3468` uses existing free-group or
+finite-presentation quotients. For parallel group maps `a,b: G -> H`,
+their coequalizer is the quotient of `H` by the normal closure of
+`a(g)b(g)^-1`. A generating family of `G` suffices for these relations.
+
+The group cokernel route at `groups.py:2383-2415` supplies a quotient group
+and projection for finite codomains and for subgroup inclusions into abelian
+groups. It rejects other cases, including the general chosen-presentation
+case for which normal-closure quotient construction already exists.
+
+At the general category owner,
 `Cat.fiber_product` (`abstract_categories/cat.py:840`) constructs a
 product and returns the equalizer of the two induced maps. It does not
 retain the cospan as a selected pullback construction with both legs and
-universal factorization. These are missing parts of the public limit
-construction, owned by `pullbacks-in-every-category`.
+universal factorization. Dually, `Cat.pushout` at `:901` returns a
+coequalizer result. Both composite constructions need their own universal
+cones or cocones. The pullback work is owned by `pullbacks-in-every-category`.
+
+The general diagram owner at `abstract_categories/products.py:1592-1836`
+already constructs finite limits from products and equalizers, and finite
+colimits from coproducts and coequalizers. The missing category operations
+therefore obstruct those existing compositions.
+
+### Modules
+
+The module owners already implement these constructions:
+
+| Operation | Construction at the inspected owner |
+| --- | --- |
+| Product | `modules/pure/modules.py:744` constructs a finite biproduct for selected free or finite-presentation data, or a module of tuples through the underlying-set functor. It retains the product cone and universal factorization. |
+| Finite coproduct | `:798` uses the biproduct, retaining injections and universal factorization. The biproduct computation accepts chosen free bases or finite presentations (`:4928`). |
+| Equalizer | `:829` constructs `ker(f-g)` for chosen finite presentations, or the submodule where the underlying maps agree, with its inclusion and universal cone. |
+| Coequalizer | `:916` constructs `coker(f-g)`, with its quotient map and universal cocone. Its effective coverage depends on the cokernel computation. |
+| Cokernel | `modules/module_morphisms/module_morphisms.py:1939` returns an actual quotient module; `:1964` returns its quotient map. Selected finite-presentation computation adds the generator images as relations. |
+
+Their coverage is incomplete, rather than uniformly absent. The finite
+biproduct constructor rejects an empty family (`modules/pure/modules.py:4928`).
+For an empty product, the product constructor selects the general module
+construction and asserts that the requested category is all modules
+(`:744,4470`). This excludes the zero object from that route in stricter
+module categories, including finitely presented modules. The chosen
+finite-presentation cokernel route requires finite selected source
+generators and a chosen finite presentation of the target
+(`framed/finitely_generated/finitely_presented_modules.py:2803`).
+
+The source construction of a kernel from chosen finite presentations selects
+PID, CAP or Singular computations (`:2265`). The presence of this route
+does not establish algorithm coverage over every base ring. The relevant
+data are the ring, module generators, relations, maps and hypotheses of the
+chosen computation.
+
+### Sets and class quotients
 
 For sets, `_categorical_coequalizer_construction` at
 `sets/set_categories.py:1178` returns an actual quotient and a
@@ -210,7 +307,7 @@ The action owner already supplies a more general represented quotient:
 `_OrbitSet` and `_orbit_set` (`group/g_sets.py:567,632`) retain the
 action and return a preamble orbit set with a set-morphism projection.
 Enumeration is restricted separately to finite acted-on sets. The general
-set quotient construction needs comparable representation coverage and
+set quotient construction must admit general relation diagrams and retain
 its universal maps.
 
 For a represented small groupoid `C`, its class set is the coequalizer
@@ -239,16 +336,43 @@ formal class-set maps. The existing
 
 `ModuleMorphism.image` at
 `modules/module_morphisms/module_morphisms.py:1204` constructs an image
-subobject from the images of a finite selected generating family. It asserts
-finiteness before returning a subobject. For an infinite selected generating
-set, that route supplies no represented image.
+submodule from the images of a finite selected generating family.
+`ModuleSubobjects` (`modules/pure/modules.py:2996`) retains its actual
+ambient inclusion. The selected finite-presentation `subobject_on` route
+constructs the submodule from a free cover and the kernel of its spanning
+map (`framed/finitely_generated/finitely_presented_modules.py:718`).
+
+For this case, the induced surjection can be constructed by
+`f.factor_through(f.image().inclusion())`.
+The module factorization route at
+`module_morphisms/module_morphisms.py:1510-1544` accepts a noninjective
+source map and returns an actual module morphism. Thus these inspected
+module operations already compose to supply the image factorization.
+The image method itself asserts that the selected generating family is
+finite; outside that case, it returns no image submodule through this route.
 
 This limitation propagates into the otherwise mathematical intersection
 construction at `modules/pure/modules.py:3105`: it composes a biproduct,
-a kernel, projections and an image. The image owner must present the
-subobject at the formal domain of the operation, using available
-representations rather than making the finite spanning algorithm its only
-construction.
+a kernel, projections and an image. Its applicability therefore depends on
+whether those operations supply actual submodules and maps for the input
+modules, with their selected data and hypotheses.
+
+### Preservation of mathematical categories
+
+Category placement is a separate requirement from obtaining an isomorphic
+abstract result. A preserved structure must remain attached to the same
+constructed object, with its maps and inherited operations.
+
+An observed example is the sum and intersection of commutative ideals.
+These are the general sum and intersection of submodules of the regular
+module, and their results are again ideals. The general module-subobject
+constructions return only module subobjects; the ideal owners preserve ideal
+structure by maintaining separate computations. The existing
+[complaint](../COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
+records this failure to transport the preserved category structure. This is
+an established example, not a count of all misplaced constructions.
+
+### Arithmetic maps
 
 The lattice owner supplies actual maps for some arithmetic constructions.
 For example, `lattices.py:3476-3574` builds an integral extension and
@@ -290,7 +414,7 @@ GAP also supplies the private
 ## Evidence boundary
 
 This audit is dated 2026-10-11. It inspects the named research owners at
-`0eabc22c28`, local `lean-categories` at `29ff4adef9`, and local
+`68261c6bfb`, local `lean-categories` at `29ff4adef9`, and local
 `sage-indefinite-port` at `993029fe54`.
 
 The findings are construction and return-value facts established from
