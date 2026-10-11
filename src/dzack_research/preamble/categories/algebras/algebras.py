@@ -94,8 +94,10 @@ if TYPE_CHECKING:
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
 
-# Qualified relative finiteness properties of the algebra structure are
+# Qualified relative properties of the algebra structure are
 # distinct from the corresponding module properties.
+if "ProjectiveAsAlgebra" not in all_axioms:
+    all_axioms.add("ProjectiveAsAlgebra")
 if "FinitelyGeneratedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyGeneratedAsAlgebra")
 if "FinitelyPresentedAsAlgebra" not in all_axioms:
@@ -620,13 +622,22 @@ def _fix_selected_algebra_resolution(
             Resolutions,
         )
         from dzack_research.preamble.categories.algebras.free_algebras import (
-            FreeAlgebras,
+            SymmetricAlgebras,
         )
 
         ordinary = Algebras(algebra.base_ring()).Associative().Unital()
-        free = FreeAlgebras(algebra.base_ring())
+        if owner.is_subcategory(ordinary.Commutative()):
+            projectives = Cat().meet((
+                SymmetricAlgebras(algebra.base_ring()),
+                Modules(algebra.base_ring()).Projective(),
+            ))
+        else:
+            projectives = ordinary.ProjectiveAsAlgebra()
         source = source_factory()
-        return Resolutions(ordinary, free, 0, free).selected_degree_zero(
+        return Resolutions(
+            owner, projectives, 0,
+            augmentation_family=Sets().category_packet().Epis(),
+        ).selected_degree_zero(
             algebra,
             source,
             augmentation_factory(source),
@@ -699,7 +710,16 @@ def _fix_selected_algebra_presentation(
     presentation_ideal,
     lift_to_presentation,
 ) -> None:
-    r"""Promote selected algebra generators to one truncation-one resolution."""
+    r"""Promote a selected finite presentation in its actual algebra theory.
+
+    A polynomial presentation on several variables has a commutative free
+    degree one. Its degeneracy cannot send commuting variables to distinct
+    generators of a noncommutative tensor algebra. When degree zero also
+    represents an associative projective algebra, the associative diagram
+    retains that stronger lifting property and its original augmentation.
+    The supplying constructors fix a free presentation on these actual
+    labels; projectivity alone would not justify this generator inclusion.
+    """
     owner = algebra.algebra_framing_owner()
     degree_zero = algebra.selected_algebra_resolution()
     match degree_zero.truncation():
@@ -719,16 +739,42 @@ def _fix_selected_algebra_presentation(
         case True:
             pass
     labels = degree_zero.generating_set()
+    if labels.is_finite() is not True or relations.index_set().is_finite() is not True:
+        raise NotImplementedError(
+            f"the selected finite presentation of {algebra} needs proved finite "
+            "generator and relation families before its two free levels can be formed; "
+            "undecided finiteness does not refute finite presentation"
+        )
     relation_labels = finite_ordered_set(tuple(relations.index_set()))
 
     def selected_resolution():
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebras,
+        )
+
         degree_one_labels = finite_ordered_set(
             tuple(("generator", label) for label in labels)
             + tuple(("relation", index) for index in relation_labels)
         )
         base = algebra.base_ring()
-        degree_one = base.free_module(degree_one_labels).tensor_algebra()
-        relation_source = base.free_module(relation_labels).tensor_algebra()
+        ordinary = Algebras(base).Associative().Unital()
+        if presentation_ring in ordinary.ProjectiveAsAlgebra():
+            presentation_owner = ordinary
+            degree_one = base.free_module(degree_one_labels).tensor_algebra()
+            relation_source = base.free_module(relation_labels).tensor_algebra()
+        elif presentation_ring in Cat().meet((
+            SymmetricAlgebras(base), Modules(base).Projective(),
+        )):
+            presentation_owner = ordinary.Commutative()
+            degree_one = base.free_module(degree_one_labels).symmetric_algebra()
+            relation_source = base.free_module(relation_labels).symmetric_algebra()
+        else:
+            raise NotImplementedError(
+                f"the retained presentation ring {presentation_ring} of {algebra} "
+                "needs represented projectivity in its associative or commutative "
+                "algebra theory before a selected projective presentation can be formed; "
+                "its defining ring, relations and augmentation are retained"
+            )
 
         def first_face_value(tagged):
             match tagged[0]:
@@ -759,11 +805,7 @@ def _fix_selected_algebra_presentation(
             )
         )
         resolution_category = (
-            Algebras(base)
-            .Associative()
-            .Unital()
-            .FinitelyPresentedAsAlgebra()
-            .resolution_category()
+            presentation_owner.FinitelyPresentedAsAlgebra().resolution_category()
         )
         return resolution_category.selected_presentation(
             algebra,
@@ -1725,8 +1767,11 @@ class Algebras(OwnedCategoryOverBaseRing):
             ring = self.algebra_base_ring()
             match self:
                 case _ if (
-                    self in SymmetricAlgebras(ring)
-                    or self in AlgebrasWithChosenFinitePresentation(ring)
+                    self in Algebras(ring).Associative().Unital().Commutative()
+                    and (
+                        self in SymmetricAlgebras(ring)
+                        or self in AlgebrasWithChosenFinitePresentation(ring)
+                    )
                 ):
                     return _quotient_by_algebra_elements_backend(self, elements)
                 case _ if ring in OwnedFields() and (
@@ -1800,8 +1845,11 @@ class Algebras(OwnedCategoryOverBaseRing):
             ring = self.algebra_base_ring()
             match self:
                 case _ if (
-                    self in SymmetricAlgebras(ring)
-                    or self in AlgebrasWithChosenFinitePresentation(ring)
+                    self in Algebras(ring).Associative().Unital().Commutative()
+                    and (
+                        self in SymmetricAlgebras(ring)
+                        or self in AlgebrasWithChosenFinitePresentation(ring)
+                    )
                 ):
                     return AlgebrasWithChosenFinitePresentation(ring)._call_(
                         self,
@@ -2009,6 +2057,31 @@ class Algebras(OwnedCategoryOverBaseRing):
                 law_decisions={"associativity": associativity},
             )
 
+        class ParentMethods:
+            def is_finitely_presented_as_algebra(self):
+                r"""Whether this algebra has a finite associative ``R``-algebra presentation.
+
+                The presentation theory does not require a unit. A finite
+                unital presentation gives one here by adjoining ``e`` with
+                ``e^2=e`` and ``e*x_i=x_i=x_i*e``, and replacing scalar
+                constants ``r`` in its relations by ``r*e``. Associativity
+                extends these finitely many unit equations to all words.
+
+                A finite presentation of the retained underlying module
+                also suffices: add its finitely many multiplication-table
+                relations to the finite linear relations. Finite algebra
+                generation alone does not prove finite presentation, and
+                missing or undecided presentation data do not refute it.
+                """
+                ring = self.algebra_base_ring()
+                match self:
+                    case _ if self in Algebras(ring).Associative().Unital().FinitelyPresentedAsAlgebra():
+                        return True
+                    case _ if self.unformed_module().is_finitely_presented() is True:
+                        return True
+                    case _:
+                        return AtomicProposition("is_finitely_presented_as_algebra", self)
+
         class Unital(CategoryWithAxiom):
             r"""Associative unital algebras: the ring objects among algebras."""
 
@@ -2025,6 +2098,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             _MorCategory = UnitalAlgebraMorCategoryConstruction
 
             class SubcategoryMethods:
+                def ProjectiveAsAlgebra(self):
+                    r"""Return algebras projective relative to underlying surjections."""
+                    return self._with_axiom("ProjectiveAsAlgebra")
+
                 def FinitelyGeneratedAsAlgebra(self):
                     r"""Return the refinement whose objects admit finitely many algebra generators."""
                     return self._with_axiom("FinitelyGeneratedAsAlgebra")
@@ -2032,6 +2109,30 @@ class Algebras(OwnedCategoryOverBaseRing):
                 def FinitelyPresentedAsAlgebra(self):
                     r"""Return the refinement whose objects admit a finite algebra presentation."""
                     return self._with_axiom("FinitelyPresentedAsAlgebra")
+
+            class ProjectiveAsAlgebra(CategoryWithAxiom):
+                r"""Projective associative unital ``R``-algebras.
+
+                For every surjective associative unital ``R``-algebra map
+                ``p: B -> C``, every algebra map ``f: A -> C`` admits an
+                algebra lift ``h: A -> B`` with ``p*h = f``. Surjectivity
+                concerns the underlying sets; a categorical epimorphism
+                alone is insufficient. This is an existence property and
+                does not select a lift, generators, or a presentation.
+
+                The inherited ``Projective()`` retains its distinct module
+                meaning. For example, ``R[x,y]`` has a free underlying
+                module, but need not have this associative algebra lifting
+                property. Free tensor algebras do have it, as do free
+                symmetric algebras on at most one generator.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "projective associative unital algebras"
+
+                def an_object(self):
+                    return self.base_ring().free_module(("x",)).tensor_algebra()
 
             class FinitelyGeneratedAsAlgebra(CategoryWithAxiom):
                 r"""Algebras that admit a finite algebra generating set."""
@@ -2100,19 +2201,42 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                 @cached_method
                 def resolution_category(self):
+                    r"""Return finite projective presentation data in the actual theory.
+
+                    Associative presentations use algebra-projective
+                    sources. Commutative presentations use symmetric
+                    algebras with projective degree-one modules, witnessed
+                    here by their projective underlying modules. Finite
+                    levels and an underlying-surjective augmentation are
+                    required; the reflexive coequalizer laws belong to the
+                    represented presentation data. No presentation is
+                    chosen by this property selector.
+                    """
                     from dzack_research.preamble.categories.abstract_categories.resolutions import (
                         Resolutions,
                     )
                     from dzack_research.preamble.categories.algebras.free_algebras import (
-                        FreeAlgebras,
+                        SymmetricAlgebras,
                     )
 
                     ordinary = Algebras(self.base_ring()).Associative().Unital()
-                    free = FreeAlgebras(self.base_ring())
-                    finite_free = Cat().meet(
-                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    commutative = ordinary.Commutative()
+                    if self.is_subcategory(commutative):
+                        theory = commutative
+                        projectives = Cat().meet((
+                            SymmetricAlgebras(self.base_ring()),
+                            Modules(self.base_ring()).Projective(),
+                        ))
+                    else:
+                        theory = ordinary
+                        projectives = ordinary.ProjectiveAsAlgebra()
+                    finite_projectives = Cat().meet(
+                        (projectives, ordinary.FinitelyGeneratedAsAlgebra())
                     )
-                    return Resolutions(ordinary, free, 1, finite_free)
+                    return Resolutions(
+                        theory, projectives, 1, finite_projectives,
+                        augmentation_family=Sets().category_packet().Epis(),
+                    )
 
                 @cached_method
                 def resolution_classifier(self):
@@ -2121,10 +2245,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
                     return _dual_numbers_example(self.base_ring())
-
-                class ParentMethods:
-                    def is_finitely_presented_as_algebra(self) -> bool:
-                        return True
 
             def _call_(self, module, multiplication, unit):
                 r"""The associative unital algebra on ``(M, m)`` with unit ``1 in M``, both identities decided on module generators."""
@@ -2638,7 +2758,12 @@ def _dual_numbers_example(base_ring):
 
 
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
-    r"""Finitely presented algebras carrying one selected finite presentation."""
+    r"""Associative unital algebras carrying one selected finite presentation.
+
+    The selected presentation may use a free associative algebra or a
+    polynomial algebra. Commutativity belongs to the actual construction,
+    rather than to the presence of finite generators and relations.
+    """
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
@@ -2651,7 +2776,6 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             Algebras(self.base_ring()).Associative().Unital().FinitelyPresentedAsAlgebra(),
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
         ]
 
     def _call_(
@@ -2669,6 +2793,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 f"an algebra over {self.base_ring()} given by generators and relations needs a polynomial ring "
                 f"over {self.base_ring()}, but {presentation_ring} is over {presentation_ring.base_ring()}"
             )
+        assert presentation_ring in Algebras(self.base_ring()).Associative().Unital().Commutative(), (
+            f"computing a finite presentation quotient of {presentation_ring} needs a selected "
+            "associative quotient algorithm; this constructor supplies the commutative polynomial computation"
+        )
         from dzack_research.preamble.categories.algebras.free_algebras import (
             _finitely_presented_algebra_from_data,
         )
@@ -2832,12 +2960,20 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         def presentation_normal_form_terms(self, element):
             r"""Return the selected reduced presentation representative as owned monomial terms.
 
-            The chosen finite presentation fixes a polynomial representative
-            for every quotient element.  Its computational normal form is
-            private; this method raises that representative to a finite mapping
-            from owned presentation monomials to owned scalar coefficients.
+            The available computation reads the exponent vectors of a
+            polynomial presentation. A tensor presentation instead needs a
+            word-term computation. The returned finite mapping retains owned
+            presentation monomials and owned scalar coefficients.
             """
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                SymmetricAlgebras,
+            )
+
             presentation = self.presentation_ring()
+            assert presentation in SymmetricAlgebras(self.base_ring()), (
+                f"computing normal-form terms for {self} from {presentation} needs the selected "
+                "word-term algorithm; the available supplier reads a polynomial presentation"
+            )
             representative = self.lift_to_presentation(self(element))
             backend = _engine_element(presentation, representative)
             labels = tuple(presentation.algebra_generating_set())

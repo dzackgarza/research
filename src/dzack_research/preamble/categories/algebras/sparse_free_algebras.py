@@ -352,7 +352,23 @@ def _sparse_free_algebra_of(source, flavor):
         case False:
             pass
     if source in FramedFreeModules(ring):
-        categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
+        # The source basis gives a free direct sum on words or monomials.
+        # Projectivity records that theorem while component coordinates
+        # remain supplied by the existing word-module realization.
+        categories = (
+            *categories, FreeAlgebras(ring), GradedFreeAlgebras(ring),
+            Modules(ring).Projective(),
+        )
+        if flavor == "tensor":
+            categories += (
+                Algebras(ring).Associative().Unital().ProjectiveAsAlgebra(),
+            )
+        if source.module_generating_set().is_finite() is True:
+            # Finite free tensor generators need no relations; a symmetric
+            # algebra additionally has finitely many commutator relations.
+            categories += (
+                Algebras(ring).Associative().Unital().FinitelyPresentedAsAlgebra(),
+            )
     realization_owner = Cat().meet((
         GeneralModules(ring), GradedModules(ring),
         ModulesWithChosenComponentPresentation(ring), Algebras(ring), *categories,

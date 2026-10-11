@@ -6,6 +6,10 @@ simplicial resolutions through degree n whose resolved levels lie in P; its
 morphisms are maps of the augmented truncated simplicial objects.  The target
 projection remembers only the augmentation target.  Hence this is not a
 subcategory of C: several resolution objects can lie over the same object.
+For finite truncation the resolution equations concern the augmentation
+and degrees below the last chosen level. A degree-one presentation gives
+its degree-zero coequalizer, not vanishing of top-degree homotopy or a
+resolution terminating in degree one.
 
 The common owner supplies three constructions whose acyclicity follows from
 the construction itself: a projective-source epimorphism in truncation zero,
@@ -624,7 +628,13 @@ class Resolutions(OwnedCategory):
         relation_source=None,
         relations=None,
     ):
-        r"""Store a chosen presentation as a 1-truncated reflexive resolution."""
+        r"""Store a chosen presentation as a 1-truncated reflexive resolution.
+
+        The constructor's presentation premise identifies the target with
+        the coequalizer of the two faces. It supplies the represented two
+        levels, not a theorem that the projective resolution terminates in
+        degree one. The full resolution length therefore remains unknown.
+        """
         match self.truncation():
             case 1:
                 pass
@@ -695,7 +705,7 @@ class Resolutions(OwnedCategory):
             augmentation,
             face_function=face,
             degeneracy_function=degeneracy_map,
-            length=1,
+            length=Unknown,
             model="selected-presentation",
             resolution_generating_set=generating_set,
             resolution_generator_morphism=generator_morphism,
@@ -1020,6 +1030,13 @@ class Resolutions(OwnedCategory):
                     return degeneracy_function(degree, index)
 
         def is_acyclic_through_truncation(self) -> bool:
+            r"""The exactness asserted by these partial resolution data.
+
+            In a finite truncation the last chosen level has unresolved
+            higher relations. In particular, a selected presentation
+            asserts its degree-zero coequalizer, not vanishing of degree-one
+            homotopy. Resolution length is an independent datum.
+            """
             return True
 
         def _validate_resolution_morphism_to(

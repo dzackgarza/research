@@ -391,6 +391,8 @@ def _restrict_algebra_scalars(algebra, ring_map):
     has_selected_presentation = (
         extension_ring in AlgebrasWithChosenFinitePresentation(base_ring)
         and algebra in AlgebrasWithChosenFinitePresentation(extension_ring)
+        and extension_ring in Algebras(base_ring).Associative().Unital().Commutative()
+        and algebra in Algebras(extension_ring).Associative().Unital().Commutative()
         and ring_map is extension_ring.algebra_structure_morphism()
     )
     if has_selected_presentation:

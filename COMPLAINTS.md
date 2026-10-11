@@ -33,11 +33,14 @@ existing intersection of `TensorAlgebras(R)` and `Modules(R).Projective()`,
 and the actual underlying-set surjection family. Other uses of the common
 free-algebra placement still require their own theory-specific review.
 
-**Retained computation frontier:** the inspected sparse tensor construction
-does not declare projectivity of its whole carrier from projectivity of its
-generating module. Its homogeneous pieces do not by themselves supply that
-selected whole-object placement to the classifier. Establish the justified
-placement or an actual comparison/transport, preserving all defining maps.
+**Retained computation frontier:** the sparse construction on an actual
+framed-free generating module supplies whole-module projectivity, and its
+tensor algebra supplies qualified associative algebra projectivity. Other
+represented projective generating modules still need the corresponding
+property placement or an actual comparison/transport. Their homogeneous
+pieces do not by themselves establish that the needed whole-object
+placement is present. Preserve all defining maps; absence of placement is
+not a theorem of nonprojectivity.
 
 **Searched / Found / Conclusion:** read `FreeAlgebras`, its native and
 relationful producers, the sparse producer, the tensor/module categories,
@@ -46,6 +49,66 @@ above; the existing `placement-owner-freealgebras` owns the unresolved
 theory/placement review. Confidence is high for these source paths; no
 runtime failure or global absence theorem is claimed. This does not gate
 the repaired finite-generation selector on another repository.
+
+### Free generator evaluators omit commuting-image hypotheses
+
+A map from a symmetric algebra into an associative algebra must send its
+generating module to pairwise commuting elements. Sending `x,y` in
+`QQ[x,y]` to the two free generators of `QQ<x,y>` violates multiplication:
+`xy=yx` in the source and the two target words differ. Valid maps into a
+noncommutative target with commuting images must remain available, and
+undecided commuting equations remain hypotheses rather than `True`.
+
+**Source evidence (2026-10-11):** the complete generator evaluators
+`FramedFreeAlgebraMorphism` in `free_algebras.py` and
+`SparseFreeAlgebraMorphism` in `sparse_free_algebras.py` were read. Both
+return unconditional multiplicativity from their derivation supplier;
+their generic image ingress does not retain the symmetric commuting-image
+equations. The sparse route must also retain its generating module's
+relations. The selected finite-presentation factory now supplies genuine
+free maps in its actual theory; this remaining finding concerns the
+separate generic evaluator ingress, not those constructed cofork maps.
+
+**Searched / Found / Conclusion:** traced the actual fixed-Mor provider,
+image normalization, module-map construction, evaluation and law supplier.
+The two existing `placement-owner-framedfreealgebramor` and
+`placement-owner-sparsefreealgebramor` nodes own this admission repair.
+Confidence is high for the read paths and the explicit counterexample;
+no runtime result or whole-tree absence claim is made.
+
+### Selected algebra presentations exceed the polynomial computations
+
+Finite associative algebra presentations include noncommutative tensor
+quotients. For example `T_ZZ(ZZ/2 direct_sum ZZ)=ZZ<x,y>/(2x)` has distinct
+mixed words `xy,yx`. A computation for polynomial exponent vectors cannot
+interpret those words, and a polynomial elimination algorithm is not a
+general associative quotient, scalar-kernel or torsion algorithm.
+
+**Source evidence (2026-10-11):** read the complete chosen-presentation
+owner, `_PresentedAlgebraParent`, the tensor-from-linear-module-relations
+supplier, both public algebra quotient paths and selected scalar
+restriction. The current computation supplies commutative polynomial
+quotients and exponent-vector normal forms, a separate selected linear
+tensor quotient, and the finite-module ideal quotient route. The public
+normal-form and quotient boundaries now name their actual applicability.
+General tensor word-term extraction and other associative quotient
+computations remain absent from these inspected entries. The integral-PID
+torsion supplier also relies on its integral-domain and polynomial
+elimination hypotheses; it does not decide every presented algebra.
+
+**Remaining transport:** selected polynomial presentation transport under
+scalar restriction needs actual commutative presentations and the literal
+coefficient structure map. Other associative restrictions retain their
+actual module, multiplication, unit and scalar map, while their selected
+presentation computation remains to be supplied. No negative
+finite-presentation claim follows from that boundary.
+
+**Searched / Found / Conclusion:** the existing
+`placement-owner-algebraswithchosenfinitepresentation` and
+`placement-owner-restrictedscalarsalgebras` own these computation cases.
+Preserve the selected ideal, quotient, lift and exact coefficients.
+The inspected source establishes these boundaries with high confidence;
+no runtime failure is claimed and no new prerequisite is created.
 
 ### A finite-generation reference confuses a property with a chosen family
 

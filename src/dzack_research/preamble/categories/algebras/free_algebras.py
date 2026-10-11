@@ -189,16 +189,32 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         algebra_placements = ()
         match labels.is_finite():
             case True:
+                # A finite free tensor algebra has no defining relations;
+                # its symmetric quotient has finitely many commutators.
+                # This property chooses no presentation data and implies
+                # the previous finite algebra generation placement.
                 algebra_placements = (
                     (
                         Algebras(base)
                         .Associative()
                         .Unital()
-                        .FinitelyGeneratedAsAlgebra()
+                        .FinitelyPresentedAsAlgebra()
                     ),
                 )
             case _:
                 pass
+        # The selected generating module is free. Its tensor algebra has
+        # the associative algebra lifting property. A symmetric realization
+        # has that same property when at most one generator is known; no
+        # tensor realization or projectivity is inferred for larger or
+        # undecided symmetric families.
+        if flavor == "tensor" or (
+            labels.is_finite() is True
+            and (labels.cardinality() <= cardinal(1)) is True
+        ):
+            algebra_placements += (
+                Algebras(base).Associative().Unital().ProjectiveAsAlgebra(),
+            )
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
