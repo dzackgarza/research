@@ -7,9 +7,11 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     _algebra_on_module,
     _root_algebra_law_decisions,
+    _scalar_module,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
+    DividedPowerAlgebras,
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
@@ -72,19 +74,24 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def augmentation(self):
+            r"""The selected augmentation on this exact structured endpoint.
+
+            The wrapper retains the same module, multiplication and unit.
+            Transport therefore uses the selected map's actual linearity,
+            multiplication and unit premises, without a finite generator
+            comparison or a fresh assertion of any undecided law.
+            """
+            from dzack_research.preamble.categories.algebras.comparison_maps import _constructed_algebra_morphism
+
             selected = self._preamble_selected_augmentation
             source = self.unformed_module()
             target = selected.codomain()
-            # The selected augmentation read on this structured endpoint is
-            # linear exactly when the selected augmentation is.
-            linear = self.module_category().Mor(self, target)._from_constructed_element_map(
+            return _constructed_algebra_morphism(
+                self,
+                target,
                 lambda element: selected(source(element)),
-                premises=(selected,),
+                transported_morphism=selected,
             )
-            parent = Algebras(self.base_ring()).Associative().Unital().Mor(
-                self, target
-            )
-            return parent(linear)
 
 
 class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -159,8 +166,14 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
 
 
 def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
+    r"""An augmentation lands in the base with its canonical scalar structure.
+
+    A ring such as ``QQ[t]`` may already carry a different coefficient base.
+    Its canonical algebra over itself is the existing ``_scalar_module``
+    realization, not a change of the augmentation's mathematical target.
+    """
     _ = domain
-    return codomain is base
+    return codomain is base or codomain is _scalar_module(base)
 
 
 def _declared_graded_algebra_category(domain):
@@ -195,6 +208,8 @@ def _graded_algebra_placement(domain, base):
         placement.append(TensorAlgebras(base))
     if domain in AlternatingAlgebras(base):
         placement.append(AlternatingAlgebras(base))
+    if domain in DividedPowerAlgebras(base):
+        placement.append(DividedPowerAlgebras(base))
     return placement
 
 
@@ -238,6 +253,15 @@ def _augmented_algebra(augmentation):
     if _declared_graded_algebra_category(domain) is not None:
         law_decisions["grading"] = domain.grading_compatibility_decision()
     data = {"selected_augmentation": selected}
+    # A power algebra's defining input is M, not its whole graded module.
+    # Pass that exact datum through construction before cooperative init;
+    # the direct-sum realization retains the same graded-piece family.
+    if domain in AlternatingAlgebras(base):
+        data["generating_module"] = domain.generating_module()
+        data["power_flavor"] = "alternating"
+    elif domain in DividedPowerAlgebras(base):
+        data["generating_module"] = domain.generating_module()
+        data["power_flavor"] = "divided"
     if domain.is_framed_algebra():
         framing_owner = domain.algebra_framing_owner()
         data["algebra_generating_family"] = domain.algebra_generators()

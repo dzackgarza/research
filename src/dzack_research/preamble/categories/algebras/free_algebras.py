@@ -1669,7 +1669,28 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
-    r"""Exterior/alternating algebras."""
+    r"""Exterior algebras ``Lambda_R(M)`` of modules over a commutative ring.
+
+    The actual module ``M`` is retained, and its image is the degree-one
+    summand. The exterior algebra is the quotient of ``T_R(M)`` by all
+    ``m tensor m``; hence every odd homogeneous element squares to zero,
+    including over rings with 2-torsion. Sign-supercommutativity alone does
+    not impose that equation in characteristic two.
+
+    Its construction morphisms are the graded unital algebra maps induced
+    by actual linear maps of the retained modules. They act in degree
+    ``n`` by ``Lambda^n`` and in degree zero by the identity of ``R``.
+    An ordinary, possibly non-graded algebra map is requested in the
+    associative-unital algebra category. The construction also supplies
+    the canonical augmentation through ``AugmentedAlgebras``.
+
+    See Mathlib ``LinearAlgebra/ExteriorAlgebra/Basic``: the quotient,
+    ``ι_sq_zero``, ``lift``, ``map`` and ``algebraMapInv``.
+    """
+
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
 
     def an_object(self):
         r"""The exterior algebra on the free module of rank one."""
@@ -1689,7 +1710,12 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
+        assert module in Modules(self.base_ring()), (
+            f"the exterior algebra over {self.base_ring()} needs an actual "
+            f"module over that ring, but received {module}"
+        )
         assert module.base_ring() is self.base_ring(), (
             f"the power algebra over {self.base_ring()} needs a module over {self.base_ring()}, but "
             f"{module} is over {module.base_ring()}"
@@ -1936,6 +1962,47 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return _power_algebra_of(module, "divided")
 
     class ParentMethods(_PowerAlgebra):
+        def divided_power(self, value, exponent):
+            r"""Return the canonical divided power of a degree-one element.
+
+            For the retained module ``M``, this computes
+            ``gamma_n(iota(m))`` in ``Gamma^n(M)``. The equations
+            ``gamma_0(x) = 1`` and ``gamma_n(0) = 0`` for positive ``n``
+            hold independently of a chosen homogeneous degree for zero.
+            A divided power on another element of the augmentation ideal
+            needs a further computation; this degree-one supplier does not
+            assert that such a divided power is undefined.
+            """
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_numeral
+
+            # This existing numeral boundary admits exact integral input;
+            # Python int alone would truncate, for example, 3/2 to 1.
+            exponent = int(_engine_numeral(SageZZ, exponent))
+            if exponent < 0:
+                raise ValueError(f"the divided power x^[n] needs n >= 0, but n = {exponent}")
+            value = self(value)
+            if exponent == 0:
+                return self.one()
+            if (value == self.zero()) is True:
+                return value
+            assert value.is_homogeneous() is True and (value.degree() == 1) is True, (
+                f"cannot compute gamma_{exponent}({value}) in {self}: the selected "
+                "divided-power computation needs a represented degree-one element "
+                "or proved zero; no computation on a general augmentation-ideal "
+                "element is selected"
+            )
+            return self.from_component(
+                exponent,
+                self.generating_module().divided_power_element(
+                    exponent,
+                    value.homogeneous_component(1),
+                ),
+            )
+
+        gamma = divided_power
+
         def Mor(self, codomain, category=None):
             divided = DividedPowerAlgebras(self.base_ring())
             if category is None and codomain in divided:

@@ -14,6 +14,27 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Selected exterior computations and the protected augmentation spelling
+
+The existing exterior-power realization selects a framed free module or
+a chosen finite presentation for its higher pieces. The current
+arbitrary-target exterior extension also selects a finite module-generating
+family. Mathematical existence does not select those computational data;
+the corresponding construction assertions remain named under T. The
+inverse factorial comparison uses an actual rational coefficient
+structure (apart from the proved zero-module case), and an arbitrary
+whole divided-power algebra map still needs a procedure establishing
+compatibility with the divided powers. These are the bounded existing
+computation frontiers, not assertions that no other algorithm exists.
+
+`tests/algebras/test_power_algebras.sage` still uses
+`divided.augmentation(value)` for scalar evaluation, whereas the declared
+augmentation operation returns the structural map. The true equation
+`epsilon(1+x+gamma_2(y))=1` is retained under T; `triage-long-tail` owns
+reconciliation of the protected spelling. The file is unchanged and
+unexecuted. The source findings of `placement-owner-alternatingalgebras`
+are resolved; its complete audit belongs in that delivery commit.
+
 ### Finite coefficient module kernels need exact coefficient presentations
 
 For `R=Zmod(4)`, the kernel of multiplication by `2` is the actual submodule

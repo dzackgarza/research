@@ -3397,19 +3397,62 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
 class AlgebraMorphism:
     r"""An ``R``-algebra morphism specified by the images of algebra generators."""
 
+    @cached_method
+    def _constructed_algebra_map_decision(self):
+        r"""The retained hypotheses of the selected algebra-map construction.
+
+        The supplying construction proves the algebra laws from its actual
+        linear maps and defining equations. A failed or undecided sufficient
+        premise is not a refutation of the chosen evaluator; only a literal
+        True supplies a derivation, and otherwise the ordinary diagnostics
+        remain authoritative.
+        """
+        transported = self._transported_algebra_morphism
+        if transported is not None:
+            return conjunction((
+                transported.linearity_decision(),
+                transported.is_multiplicative(),
+                transported.preserves_unit(),
+            ))
+        if self._constructed_algebra_map_premises is None:
+            return None
+        maps, equations = self._constructed_algebra_map_premises
+        return conjunction((
+            conjunction(morphism.linearity_decision() for morphism in maps),
+            conjunction(equations),
+        ))
+
+    def _elementwise_linearity_derivation(self):
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.linearity_decision()
+        if self._constructed_algebra_map_decision() is True:
+            return True
+        return super()._elementwise_linearity_derivation()
+
     def _multiplicativity_derivation(self):
         r"""Generator extension proves the law; arbitrary map ingress states it."""
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.is_multiplicative()
+        if self._constructed_algebra_map_decision() is True:
+            return True
         return self._generator_extension_laws
 
     def _unit_preservation_derivation(self):
+        if self._transported_algebra_morphism is not None:
+            return self._transported_algebra_morphism.preserves_unit()
+        if self._constructed_algebra_map_decision() is True:
+            return True
         return self._generator_extension_laws
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        self._constructed_algebra_map_premises = _construction_premises
+        self._transported_algebra_morphism = _transported_morphism
         self._generator_extension_laws = None
         domain = parent.domain()
         codomain = parent.codomain()
-        engine_domain = _engine_ring(domain)
-        engine_codomain = _engine_ring(codomain)
         framed_domain = domain.is_framed_algebra()
         self._engine_morphism = None
         self._source_element_map = None
@@ -3459,6 +3502,8 @@ class AlgebraMorphism:
                 )
                 super().__init__(parent, linear)
                 return
+            engine_domain = _engine_ring(domain)
+            engine_codomain = _engine_ring(codomain)
             if images.domain() is not engine_domain or images.codomain() is not engine_codomain:
                 raise ValueError(
                     f"cannot view {images} as an algebra morphism {domain} -> {codomain}: it is a map "
@@ -3485,6 +3530,8 @@ class AlgebraMorphism:
             )
             super().__init__(parent, linear)
             return
+        engine_domain = _engine_ring(domain)
+        engine_codomain = _engine_ring(codomain)
         assert framed_domain, (
             f"{domain} has no chosen algebra generators, so a morphism out of it must be given as a ring "
             f"map, not as {images!r}"
@@ -3624,8 +3671,14 @@ class AlgebraMorphism:
             return op == op_EQ
         if (
             not isinstance(other, AlgebraMorphism)
-            or self._generator_extension_laws is not True
-            or other._generator_extension_laws is not True
+            or (
+                self._generator_extension_laws is not True
+                and self._constructed_algebra_map_decision() is not True
+            )
+            or (
+                other._generator_extension_laws is not True
+                and other._constructed_algebra_map_decision() is not True
+            )
         ):
             forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
             return ModuleMorphismMethods._richcmp_(forget(self), forget(other), op)
@@ -3975,26 +4028,56 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
-    def _from_constructed_element_map(self, evaluator):
-        r"""Construct an algebra map whose supplying construction proves the algebra laws.
+    def _from_constructed_element_map(
+        self, evaluator, *, linearity_premises=(), equations=(),
+        transported_morphism=None,
+    ):
+        r"""Construct an algebra map under the actual premises of its construction.
 
         This protected route is for canonical maps such as the factorial
         comparison ``Gamma(M) -> Sym(M)``.  It retains the ordinary algebra-Mor
         parent and an actual owned set map; arbitrary user element functions do
-        not enter through this route.
+        not enter through this route. The supplying construction proves
+        linearity, multiplication and unit preservation when the retained
+        module maps are linear and the defining equations hold. Empty families
+        mean that the construction alone proves these laws. Undecided premises
+        remain available to the actual arrow's ordinary diagnostics.
+
+        ``transported_morphism`` is the existing algebra map when a structured
+        wrapper retains its domain's exact module, product and unit, as in
+        augmentation. This is transport of the same defining data, not a new
+        extension: each law retains that map's own decision independently.
+        Only ``AugmentedAlgebras.augmentation`` supplies this private datum:
+        ``_augmented_algebra`` constructs its source from ``A`` and the literal
+        ``A.multiplication_morphism()`` and ``A.one()``. The endpoint check
+        below checks those retained endpoints; it is not by itself a proof
+        that an arbitrary new product on the same module agrees with the old.
         """
         if not callable(evaluator):
             raise TypeError(
                 f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, but {evaluator!r} "
                 "is not callable"
             )
+        if transported_morphism is not None:
+            if (
+                not isinstance(transported_morphism, ModuleMorphismMethods)
+                or transported_morphism.domain() is not self.domain().unformed_module()
+                or transported_morphism.codomain() is not self.codomain()
+            ):
+                raise ValueError(
+                    f"transporting an algebra map to {self.domain()} -> {self.codomain()} "
+                    "requires its exact retained module domain and unchanged codomain"
+                )
         represented = SetMorphism(
             Sets().Mor(self.domain(), self.codomain()),
             lambda element: self.codomain()(evaluator(self.domain()(element))),
         )
-        morphism = self.element_class(self, represented)
-        morphism._generator_extension_laws = True
-        return morphism
+        return self.element_class(
+            self,
+            represented,
+            _construction_premises=(tuple(linearity_premises), tuple(equations)),
+            _transported_morphism=transported_morphism,
+        )
 
     @cached_method
     def identity(self):
