@@ -691,7 +691,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CardinalityMorCategoryConstruction` in `src/dzack_research/preamble/categories/sets/cardinals.py`.
   **Closure assertions:** the complete `CardinalityMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CardinalityMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-cartesianproductsofadditivemonoids`**. **Needs:** none.
+- [x] **`placement-owner-cartesianproductsofadditivemonoids`**. **Needs:** none.
   **Owner pass:** `CartesianProductsOfAdditiveMonoids` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
   **Closure assertions:** the complete `CartesianProductsOfAdditiveMonoids` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CartesianProductsOfAdditiveMonoids`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
