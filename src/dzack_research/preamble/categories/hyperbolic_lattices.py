@@ -793,59 +793,17 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _edgewalk(self):
-            r"""Run Allcock's edgewalk and return the decision with the roots.
+            r"""Walk the reflection chamber through the port's owned lattice API.
 
-            A second producer of the object Vinberg's algorithm enumerates,
-            walking the edges of a fundamental polyhedron rather than growing
-            it from a controlling vector.  It takes no controlling vector and
-            no bound, because it terminates on every input.
-
-            The engine works in signature \((n,1)\), so the roots come back
-            negated whenever the transport negated the form, exactly as in
-            :meth:`_vinberg_search`.
+            The hyperbolic category has signature ``(n, 1)``, the convention
+            used by the edgewalk. Its report retains this lattice as ambient
+            object for roots, vertex cones and chamber isometries.
             """
-            assert self.base_ring() is _own_ring(SageZZ), (
-                f"cannot run Allcock's edgewalk on {self}: the available implementation works only for lattices over ZZ, and {self} is over {self.base_ring()}"
-            )
-            gram, negated = self._engine_gram_of_signature_n_1()
             from sage_indefinite_port.indefinite.edgewalk import (
                 edgewalk_fundamental_domain,
             )
 
-            record = edgewalk_fundamental_domain(gram)
-            roots = tuple(self(tuple(row)) for row in record["simple_root_rows"])
-            match negated:
-                case True:
-                    roots = tuple(-root for root in roots)
-                case False:
-                    pass
-
-            from dzack_research.preamble.categories.polyhedral_cones import (
-                RationalPolyhedralCones,
-            )
-
-            vertices = []
-            for generator_row, incident_rows in record["vertices"]:
-                incident = tuple(
-                    self(tuple(int(entry) for entry in row))
-                    for row in incident_rows
-                )
-                match negated:
-                    case True:
-                        incident = tuple(-root for root in incident)
-                    case False:
-                        pass
-                vertices.append(RationalPolyhedralCones(self).from_rays((self(tuple(generator_row)),), wall_roots=incident))
-
-            automorphisms = self.O()
-            isometry_generators = tuple(automorphisms(tuple(self(tuple(row)) for row in rows)) for rows in record["isometry_generator_rows"])
-            return AllcockEdgewalkReport(
-                self,
-                reflective=record["is_reflective"],
-                simple_roots=roots,
-                vertices=tuple(vertices),
-                isometry_generators=isometry_generators,
-            )
+            return edgewalk_fundamental_domain(self)
 
         def allcock_edgewalk(self):
             r"""Return Allcock's full owned fundamental-domain report."""
