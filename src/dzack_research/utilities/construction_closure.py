@@ -325,6 +325,38 @@ def closure(data: dict) -> dict:
         if rule["output"] is not None:
             by_owner[rule["owner"]].append(rule)
 
+    def expanded_returns(rule: dict, visiting: frozenset[str] = frozenset()) -> list[tuple[str, tuple[str, ...]]]:
+        """Follow same-object methods, including inherited methods, to their results.
+
+        A call cycle is represented by the recursive rule itself rather than
+        unfolded without bound. Multiple return branches remain distinct.
+        """
+        dest = rule["output"]
+        if not dest:
+            return []
+        if not dest.startswith(("$dispatch:", "$method:")):
+            return [(dest, (rule["id"],))]
+        selected_method = dest.split(":", 1)[1]
+        if rule["id"] in visiting:
+            return []
+        from_owner = [rule["owner"], *sorted(ancestors(rule["owner"]) - {rule["owner"]})]
+        matches = [
+            candidate
+            for owner in from_owner
+            for candidate in by_owner[owner]
+            if candidate["method"] == selected_method
+            and candidate["receiver"] == rule["receiver"]
+        ]
+        # Method dispatch is resolved against the closest authored owner.
+        if matches:
+            owner = matches[0]["owner"]
+            matches = [candidate for candidate in matches if candidate["owner"] == owner]
+        return [
+            (destination, (rule["id"], *path))
+            for candidate in matches
+            for destination, path in expanded_returns(candidate, visiting | {rule["id"]})
+        ]
+
     # A scheme carries symbolic arguments; a source declaration is NOT a
     # constructibility witness. "Candidate" means that some input instance
     # could realize the rule. Conditions remain explicit on each derivation.
@@ -355,25 +387,29 @@ def closure(data: dict) -> dict:
         }
         for owner in sorted(applicable):
             for rule in by_owner[owner]:
-                target = rule["output"]
-                if target == "$receiver":
-                    target = scheme
-                if not target or target.startswith(("$dispatch:", "$method:")):
-                    continue
-                required = bool(rule["inputs"]) or bool(rule["conditions"])
-                witness = {
-                    "kind": "candidate-construction",
-                    "operation": rule["id"],
-                    "from": scheme,
-                    "conditional": required,
-                    "inputs": list(rule["inputs"]),
-                    "conditions": list(rule["conditions"]),
-                }
-                if target not in reasons:
-                    reasons[target] = [witness]
-                    work.append(target)
-                elif witness not in reasons[target]:
-                    reasons[target].append(witness)
+                for target, source_path in expanded_returns(rule):
+                    if target == "$receiver":
+                        target = scheme
+                    # A recursive call or an unclassified helper is not a
+                    # produced mathematical type. Its unresolved rule remains
+                    # in the inventory and counts toward the coverage gap.
+                    if not target or target.startswith("$"):
+                        continue
+                    required = bool(rule["inputs"]) or bool(rule["conditions"])
+                    witness = {
+                        "kind": "candidate-construction",
+                        "operation": rule["id"],
+                        "call_chain": list(source_path),
+                        "from": scheme,
+                        "conditional": required,
+                        "inputs": list(rule["inputs"]),
+                        "conditions": list(rule["conditions"]),
+                    }
+                    if target not in reasons:
+                        reasons[target] = [witness]
+                        work.append(target)
+                    elif witness not in reasons[target]:
+                        reasons[target].append(witness)
 
     data["reachable_schemes"] = sorted(reasons)
     data["derivations"] = reasons
