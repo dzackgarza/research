@@ -234,7 +234,8 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
                 cycle = current(cycle)
             outgoing = complex_.differential_component(degree)
             target = outgoing.codomain()
-            if outgoing(cycle) != target.zero():
+            closed = outgoing(cycle) == target.zero()
+            if closed is False:
                 raise ValueError(
                     f"{cycle} has no class in {self}: only a cocycle has a cohomology class, "
                     f"but d^{degree}({cycle}) = {outgoing(cycle)} is nonzero"
