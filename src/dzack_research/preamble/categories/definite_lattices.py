@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets, finite_ordinal_set
+from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )

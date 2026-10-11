@@ -614,9 +614,8 @@ def _perfect_domain_traversal_from_records(lattice, records):
 def _lorentzian_reduction_complex(lattice, marked_vectors=None):
     r"""Return the completed Lorentzian perfect-domain traversal of ``lattice``.
 
-    The external provider works in signature ``(n,1)``.  Negating a form of
-    signature ``(1,n)`` changes no integral orthogonal-group element and no
-    lattice-coordinate ray, so only the private engine Gram matrix is negated.
+    The port receives this lattice and handles either Lorentzian sign
+    convention. Its cells and isometries retain this same ambient object.
     A marked perfect-domain traversal is a different arithmetic operation: the
     local marked-cell objects above do not turn an unmarked traversal into the
     orbit decomposition of marked cells.
