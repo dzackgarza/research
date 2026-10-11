@@ -559,6 +559,22 @@ decision terminate. Degenerate lattices use the finite-group realization.
 Formal comparison, port adoption, and independent acceptance remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
 
+The supplied-data route selected by
+[`bounded-rational-group-integral-structures`](TODO.md#immediate-priority-repairs)
+also needs the actual finite-action maps. The current finite stabilizer is
+a subgroup of the permutation image, whereas the preimage constructor
+requires a subgroup of the morphism's literal codomain. Replacing its
+preimage with another generated subgroup discards that defining morphism.
+Likewise, a caught factorization/type error cannot certify that two lattices
+have no transporter. On Gram `diag(4,1)`, the involution exchanging `e1/2`
+and `e2` gives a finite residue action with two lattice classes; `3L` is
+excluded by the decided failure of `2M subset 3L`. The existing left-coset
+owner and orbit quotient must retain the coset projection and section;
+raw representative tuples do not supply those constructions. Stability of
+a supplied bound is an explicit diagnostic under `OWN-22`, and absence of a
+finite bound remains a computation frontier. These are inspected source
+obligations, with execution deferred under `DEV-58`.
+
 ### Isotropic-reduction lifts need a kernel torsor with nonlinear evaluation
 
 The frozen lift-family contract in [research #401](https://github.com/dzackgarza/research/issues/401)

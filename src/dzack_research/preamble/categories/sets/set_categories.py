@@ -41,7 +41,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.owned_category import _object_of, owned_category_join
+from dzack_research.preamble.owned_category import OwnedParent, _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
@@ -412,7 +412,13 @@ class OwnedSetMorphism(SetMorphism):
         self,
         parent: SetMorCategory,
         function: Callable[[SourcePointT], TargetPointT],
+        *,
+        composite_factors=None,
     ) -> None:
+        self._composition_factors = composite_factors
+        if composite_factors is not None:
+            left, right = composite_factors
+            function = lambda point, *args, **kwargs: left(right(point), *args, **kwargs)
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
@@ -429,6 +435,12 @@ class OwnedSetMorphism(SetMorphism):
         the source's own ingress.
         """
         function = self._owned_function
+        if self._composition_factors is not None:
+            # Composition retains the actual factors. The right factor owns
+            # source ingress and the left factor owns its admitted range;
+            # asking the target to admit that image again can discard a
+            # subgroup word or a subset-inclusion premise (OWN-09, OWN-14).
+            return function(element, *args, **kwargs)
         if (
             isinstance(function, Morphism)
             and function.domain() is self.domain()
@@ -437,7 +449,11 @@ class OwnedSetMorphism(SetMorphism):
             # The retained arrow owns both ingress and its admitted range.
             # Re-admitting its value can discard a subset-inclusion premise.
             return function(element, *args, **kwargs)
-        point = self.domain()(element)
+        source = self.domain()
+        if isinstance(source, OwnedParent) and source.category().is_subcategory(Sets()):
+            point = source._normalize_admitted_element(element)
+        else:
+            point = source(element)
         return self.codomain()(function(point, *args, **kwargs))
 
     def __eq__(self, other: Any) -> bool | Predicate:
@@ -710,7 +726,7 @@ class OwnedSetMorphism(SetMorphism):
         mor = Sets().Mor(right.domain(), self.codomain())
         if self.domain() is self.codomain() and self is self.parent().identity() and right.parent() is mor:
             return right
-        return mor(lambda element: self(right(element)))
+        return mor.element_class(mor, None, composite_factors=(self, right))
 
 
 class SetMorCategory(CategoricalMor):
@@ -1576,6 +1592,18 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        @RealizationHook
+        def _normalize_admitted_element(self, element):
+            r"""Normalize an admitted source point for evaluation of an actual set arrow.
+
+            Protected caller: OwnedSetMorphism. The default retains ordinary
+            constructor ingress. A realization with an actual facade datum may
+            preserve that arrow's source premise through its existing ambient
+            normalization; this does not admit a fresh member or decide a
+            predicate. Public set construction and membership are unchanged.
+            """
+            return self(element)
+
         def is_parent_of(self, element) -> bool | Predicate:
             r"""Whether the candidate belongs to this represented set.
 

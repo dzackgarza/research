@@ -602,6 +602,83 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         def target_subgroup(self):
             return self._target_subgroup
 
+        def schreier_generating_morphism(self, *, generators=None):
+            r"""A finite free-group augmentation onto this finite-index preimage.
+
+            Write ``P = rho^-1(H)`` inside ``G``. The selected augmentation
+            ``pi: F -> G`` supplies formal source words without deciding
+            membership of their values in a generated subgroup of a larger
+            group. Schreier's formula is computed for ``rho*pi`` in ``F``.
+            The resulting word map ``w: E -> F`` satisfies
+            ``rho*pi(w(E)) <= H``, so ``pi*w`` defines the returned map
+            ``E -> P`` with this literal preimage as codomain.
+
+            Its finite basis indexes the complete Schreier family, retaining
+            repeated and identity words. The actual word map and ambient
+            augmentation are retained by the defining group-map composite.
+            No value is readmitted by the predicate-subgroup constructor.
+            Explicit generators may replace the selected augmentation; these
+            must be admitted elements generating the ambient group.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import (
+                Sets,
+                finite_ordinal_set,
+            )
+
+            morphism = self.preimage_morphism()
+            ambient = self.supergroup()
+            if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
+                resolution = ambient.selected_group_resolution()
+                free = resolution.level(0)
+                augmentation = resolution.augmentation()
+            else:
+                source_generators = tuple(generators)
+                for generator in source_generators:
+                    admitted = ambient.is_parent_of(generator)
+                    if admitted is False:
+                        raise ValueError(
+                            f"cannot compute Schreier generators of {self}: {generator} is not an element of {ambient}"
+                        )
+                    assert admitted is True, (
+                        f"cannot compute Schreier generators of {self}: membership of the supplied "
+                        f"generator {generator} in {ambient} is undecided"
+                    )
+                source_labels = finite_ordinal_set(len(source_generators))
+                free = OwnedGroups.Free(index_set=source_labels)
+                augmentation = free.Mor(ambient)(
+                    Sets().Mor(source_labels, ambient)(
+                        lambda label: source_generators[int(label)]
+                    )
+                )
+
+            target = self.target_subgroup()
+            free_generators = tuple(free.group_generators())
+            finite_map = morphism * augmentation
+            lifts = free.finite_image_lifts(finite_map, generators=free_generators)
+            representatives = []
+            for image in lifts:
+                if not any((~representative) * image in target for representative in representatives):
+                    representatives.append(image)
+
+            def representative_of(image):
+                return next(rep for rep in representatives if (~rep) * image in target)
+
+            words = tuple(
+                (~lifts[representative_of(finite_map(generator) * image)]) * generator * lifts[image]
+                for image in representatives
+                for generator in free_generators
+            )
+            labels = finite_ordinal_set(len(words))
+            source = OwnedGroups.Free(index_set=labels)
+            word_map = source.Mor(free)(
+                Sets().Mor(labels, free)(lambda label: words[int(label)])
+            )
+            return source.Mor(self)._from_elementwise_rule(augmentation * word_map)
+
         def schreier_generators(self, *, generators=None):
             r"""Generate a finite-index preimage using cosets ``t J`` of its image.
 
@@ -627,31 +704,9 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 sage: any(g == s*s or g == ~(s*s) for g in generators)
                 True
             """
-            morphism = self.preimage_morphism()
-            ambient = self.supergroup()
-            target = self.target_subgroup()
-            if generators is None:
-                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
-                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
-                    "selected finite generating set; pass a finite generating family"
-                )
-                source_generators = tuple(ambient.group_generators())
-            else:
-                source_generators = tuple(generators)
-            lifts = ambient.finite_image_lifts(morphism, generators=source_generators)
-            representatives = []
-            for image in lifts:
-                if not any((~representative) * image in target for representative in representatives):
-                    representatives.append(image)
-
-            def representative_of(image):
-                return next(rep for rep in representatives if (~rep) * image in target)
-
-            return tuple(
-                self((~lifts[representative_of(morphism(generator) * image)]) * generator * lifts[image])
-                for image in representatives
-                for generator in source_generators
-            )
+            augmentation = self.schreier_generating_morphism(generators=generators)
+            source = augmentation.domain()
+            return tuple(augmentation(generator) for generator in source.group_generators())
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
