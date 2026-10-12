@@ -171,6 +171,7 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     assert affine_c2.is_subcategory(OwnedGroups().Infinite())
     assert hyperbolic_triangle.is_subcategory(OwnedGroups().Infinite())
     assert not spherical_triangle.is_subcategory(OwnedGroups().Infinite())
+    assert spherical_triangle.is_subcategory(OwnedGroups().Finite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
