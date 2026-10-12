@@ -443,6 +443,13 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert from_operation.presenting_free_group() is free
     assert tuple(from_operation.defining_relations()) == relators
 
+    try:
+        quotient.quotient_by_relators((Groups.C(2).one(),))
+    except ValueError as error:
+        assert "group being quotiented" in str(error)
+    else:
+        assert False, "the normal closure accepted an element of another group"
+
 
 def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
     cyclic = Groups.C(3)

@@ -956,6 +956,11 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
     owned group is not a change of its category, so that intermediate
     owned realization must not replace the selected quotient constructor.
     """
+    # The normal closure is taken inside this group, not in an unrelated
+    # group whose elements happen to admit backend coercion to words.
+    relators = tuple(relators)
+    if any(relator not in group for relator in relators):
+        raise ValueError("quotient relators must be elements of the group being quotiented")
     engine = _engine_group(group)
     match engine:
         case FreeGroup_class():
