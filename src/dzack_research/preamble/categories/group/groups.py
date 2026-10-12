@@ -915,6 +915,11 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
         augmentation = _group_generating_epimorphism(
             group, source, labels, generator_morphism
         )
+        # A presentation of G requires each selected relator to lie in the
+        # kernel of F(S) -> G. Membership in F(S) alone does not establish
+        # this: otherwise a false relator changes the claimed quotient.
+        if any(augmentation(relation) != group.one() for relation in selected_relations):
+            raise ValueError("a selected defining relation is not killed by the presentation augmentation")
         return OwnedGroups().FinitelyPresentedAsGroup().resolution_category().selected_presentation(
             group,
             source,
