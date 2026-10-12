@@ -247,7 +247,14 @@ class IndexedFamily[IndexT, ValueT]:
         if not isinstance(other, IndexedFamily):
             return False
 
-        same_indices = self.index_set() == other.index_set()
+        # Families on the identical retained index object have the same
+        # domain without asking an equality algorithm for that set. This
+        # matters when its representation has undecidable extensional
+        # equality, but its chosen finite enumeration is available.
+        same_indices = (
+            True if self.index_set() is other.index_set()
+            else self.index_set() == other.index_set()
+        )
         if same_indices is False:
             return False
         if same_indices is not True or self.cardinality().is_finite() is not True:
