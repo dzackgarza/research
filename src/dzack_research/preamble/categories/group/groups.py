@@ -977,7 +977,10 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
             # G = F/R and G/<<S>> = F/<<R, S>>, with S lifted to words in F.
             free = engine.free_group()
             relations = list(engine.relations()) + [free(group._to_engine(group(relator)).Tietze()) for relator in relators]
-            return _own_group(free.quotient(relations))
+            # Retain the actual quotient ancestor, not just the new
+            # abstract presentation: the projection from G is part of the
+            # selected construction and differs from F -> G/<<S>>.
+            return _own_group(free.quotient(relations), presentation_source_group=group)
         case _:
             assert False, f"the quotient of {group} by the normal closure of {relators} cannot be computed: this is available only for free groups and finitely presented groups"
 
