@@ -3976,9 +3976,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             quotient_generators = tuple(quotient.group_generators())
             if len(source_generators) != len(quotient_generators):
                 raise ValueError("the quotient engine does not preserve the source generator positions")
-            projection = self.Mor(quotient)(
-                dict(zip(source_generators, quotient_generators, strict=True))
-            )
+            # Engine word presentations can have redundant generator
+            # positions whose images in the source coincide. A dictionary
+            # loses those positions and does not define their quotient
+            # images. Keep the ordered engine generator family; the checked
+            # Group Mor owner verifies that it respects all source relators.
+            projection = self.Mor(quotient)(quotient_generators, check=True)
             return quotient, projection
 
         def finite_image_lifts(
