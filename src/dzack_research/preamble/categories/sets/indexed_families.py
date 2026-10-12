@@ -211,11 +211,14 @@ class IndexedFamily[IndexT, ValueT]:
                 return False
             if size.is_finite() is False or (size.is_finite() is True and size.finite_value() > 0):
                 return True if candidate is constant else constant == candidate
-        if self.cardinality().is_finite() is not True:
-            raise TypeError(
-                "value membership without a selected constant value is represented only for a finite indexed family"
-            )
-        from dzack_research.preamble.logic import conjunction, negation
+        from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        # Finiteness does not select an enumeration, and an infinite image
+        # remains a set with a definite mathematical membership proposition
+        # even when the given representation cannot decide that proposition.
+        if self.cardinality().is_finite() is not True or self.index_set() not in EnumeratedSets():
+            return AtomicProposition("is_member", candidate, self)
 
         return negation(conjunction(
             negation(True if (value := self._value_at_normalized_index(index)) is candidate else value == candidate)
