@@ -189,6 +189,10 @@ class OrderedEnumeratedSets(OwnedCategory):
                 raise TypeError("finite-set membership must be a truth value or proposition")
             return self._index_of_function(element) is not None
 
+        # Keep an unresolved membership proposition in the owned set API.
+        # Python's `in` protocol would otherwise demand a Boolean result.
+        is_parent_of = __contains__
+
         def __call__(self, element):
             return self._element_constructor_(element)
 
