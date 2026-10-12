@@ -187,7 +187,14 @@ class OrderedEnumeratedSets(OwnedCategory):
                 if isinstance(decision, Predicate):
                     return decision
                 raise TypeError("finite-set membership must be a truth value or proposition")
-            return self._index_of_function(element) is not None
+            index = self._index_of_function(element)
+            if index is None:
+                return False
+            admitted = self.index_set().is_parent_of(index)
+            if admitted is not True:
+                return admitted
+            value = self._element_at_function(self.index_set()(index))
+            return True if value is element else value == element
 
         # Keep an unresolved membership proposition in the owned set API.
         # Python's `in` protocol would otherwise demand a Boolean result.
