@@ -1805,6 +1805,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 return Sets().Mor(self, codomain)
             return _category_mor(category, self, codomain)
 
+        def End(self):
+            r"""The endomorphisms in the category selected by this set's Mor."""
+            return Sets().End(self)
+
+        def Aut(self):
+            r"""The automorphisms of this set in its selected category."""
+            return Sets().Aut(self)
+
         def condition_set(self, predicate) -> Sets().ObjectType:
             r"""Return the represented subset of ``self`` cut out by ``predicate``."""
             return Sets().condition_set(self, predicate)
