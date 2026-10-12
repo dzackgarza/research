@@ -99,6 +99,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert theory.relators() == relators
     assert quotient in theory
     assert quotient.order() == 6
+    assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
 
 def test_general_linear_group_retains_ring_and_rank() -> None:
@@ -108,6 +109,7 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert category.coefficient_ring() is GF(2)
     assert category.degree() == 2
     assert group.order() == 6
+    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
 
 def test_the_heisenberg_group_over_z_mod_three_has_twenty_seven_elements() -> None:
