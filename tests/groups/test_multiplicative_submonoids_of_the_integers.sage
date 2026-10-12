@@ -40,3 +40,19 @@ def test_the_powers_of_four_lie_in_the_powers_of_two() -> None:
     factor = powers_of_four.inclusion().factor_through(powers_of_two.inclusion())
 
     assert powers_of_two.inclusion()(factor(powers_of_four(4))) == 4
+
+
+def test_signed_and_zero_integer_multiplicative_generators() -> None:
+    negative = ZZ.generated_submonoid([-2])
+    assert -8 in negative
+    assert 16 in negative
+    assert 8 not in negative
+    assert -16 not in negative
+
+    zero = ZZ.generated_submonoid([0])
+    assert 0 in zero and 1 in zero
+    assert 2 not in zero
+
+    negative_unit = ZZ.generated_submonoid([-1])
+    assert -1 in negative_unit and 1 in negative_unit
+    assert -2 not in negative_unit
