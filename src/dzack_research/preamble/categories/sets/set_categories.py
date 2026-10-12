@@ -2199,8 +2199,22 @@ class SetInjection(OwnedSetMorphism):
         r"""The characteristic map \(\chi_m\colon X\to\Delta[1]\): \(1\) exactly on the image of \(m\)."""
         truth_values = Sets.Δ[1]
         image = self.image()
+
+        def characteristic(point):
+            # A total map to 2 requires a decision for every input. An
+            # unresolved image-membership proposition is not false.
+            admitted = image.is_parent_of(point)
+            if admitted is True:
+                return truth_values(1)
+            if admitted is False:
+                return truth_values(0)
+            raise ValueError(
+                f"the characteristic value at {point!r} is undecided: "
+                f"membership in the image {image} has not been established"
+            )
+
         return Sets().Mor(self.codomain(), truth_values)(
-            lambda point: truth_values(int(point in image))
+            characteristic
         )
 
     def __mul__(self, other):

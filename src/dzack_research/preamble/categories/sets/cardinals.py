@@ -513,7 +513,7 @@ class Cardinalities(OwnedCategory):
         categories. For products, an empty factor dominates every other size.
         """
         from dzack_research.preamble.categories.sets.set_categories import (
-            Sets, FiniteSets, InfiniteSets, CountableSets,
+            Sets, EnumeratedSets, FiniteSets, InfiniteSets, CountableSets,
             CountablyInfiniteSets, UncountableSets,
         )
 
