@@ -160,6 +160,15 @@ class CyclicGroups(OwnedCategory):
         def __iter__(self):
             return iter(self._finite_elements())
 
+        @cached_method
+        def _cyclic_engine_subgroup(self):
+            r"""Selected ambient engine realization of the generated subgroup, if any."""
+            ambient = self.supergroup()
+            supplier = getattr_static(ambient, "_engine_subgroup_from_generators", None)
+            if supplier is None or isinstance(supplier, RealizationHook):
+                return None
+            return ambient._engine_subgroup_from_generators((self.group_generator(),))
+
         def is_parent_of(self, element):
             ambient = self.supergroup()
             admitted = ambient.is_parent_of(element)
@@ -176,9 +185,8 @@ class CyclicGroups(OwnedCategory):
             # is not known. Without that realization, retain the proposition.
             # The unresolved group realization hook is callable but supplies
             # no engine; only a concrete realization can decide membership.
-            supplier = getattr_static(ambient, "_engine_subgroup_from_generators", None)
-            if supplier is not None and not isinstance(supplier, RealizationHook):
-                engine_subgroup = ambient._engine_subgroup_from_generators((self.group_generator(),))
+            engine_subgroup = self._cyclic_engine_subgroup()
+            if engine_subgroup is not None:
                 return ambient._engine_subgroup_contains(element, engine_subgroup)
             return AtomicProposition("is_member", element, self)
 

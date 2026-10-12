@@ -3165,15 +3165,18 @@ class _ImageSetEngine:
         r"""Whether ``element`` is a value \(f(a)\) for a point \(a\) of the source."""
         source = self.source_set()
         match source:
+            case _ if self._image_inverse is not None:
+                # The defining inverse is a membership witness independently
+                # of the source's cardinality. In particular, a finite image
+                # with an inverse must not reconstruct its entire value set.
+                preimage = self._image_inverse(element)
+                return preimage in source and self.image_map()(source(preimage)) == element
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 values = self._distinct_values()
                 assert values is not None, (
                     "cannot decide membership through the distinct image values: their equality is undecided"
                 )
                 return element in values
-            case _ if self._image_inverse is not None:
-                preimage = self._image_inverse(element)
-                return preimage in source and self.image_map()(source(preimage)) == element
             case _:
                 assert self._image_inverse is not None, (
                     f"cannot decide whether {element!r} lies in the image {self}: the source is infinite and no "
