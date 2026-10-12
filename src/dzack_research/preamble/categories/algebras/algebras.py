@@ -1134,6 +1134,20 @@ class Algebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Modules(self.base_ring()), Magmas()]
 
+    def _categorical_coproduct(self, left, right):
+        r"""Do not substitute a module direct sum for an algebra coproduct.
+
+        The root theory has multiplicative, not necessarily unital or
+        associative, arrows. The tensor coproduct supplier belongs only to
+        associative unital commutative algebras; the inherited additive
+        coproduct does not have the root algebra universal property.
+        """
+        raise NotImplementedError(
+            f"a binary coproduct of {left} and {right} in root {self} "
+            "requires a multiplicative universal construction; neither the "
+            "module sum nor the unital commutative tensor coproduct supplies it"
+        )
+
     def underlying_module(self):
         r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
         from dzack_research.preamble.categories.functors.algebra_modules import (
