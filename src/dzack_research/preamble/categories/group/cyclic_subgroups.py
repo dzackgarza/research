@@ -114,6 +114,9 @@ class CyclicGroups(OwnedCategory):
             if generator_order is not None:
                 return generator_order
             if self.supergroup() in FiniteGroups():
+                engine_subgroup = self._cyclic_engine_subgroup()
+                if engine_subgroup is not None:
+                    return cardinal(engine_subgroup.order())
                 return cardinal(len(self._finite_elements()))
             assert False, (
                 f"the cardinality of {self} is the order of {self.group_generator()}, but no "
