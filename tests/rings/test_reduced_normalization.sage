@@ -11,12 +11,14 @@ def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
     assert node.is_reduced()
     assert node.minimal_primes().cardinality() == 2
     assert node.irreducible_components().cardinality() == 2
-    for prime, quotient in zip(node.minimal_primes(), node.irreducible_components()):
+    for quotient in node.irreducible_components():
         # Components are quotients of the actual node, not merely abstractly
-        # isomorphic quotients of its polynomial presentation.
+        # isomorphic quotients of its polynomial presentation. The chosen
+        # enumeration of components need not order the minimal primes alike.
         assert quotient.quotient_source() is node
         assert quotient.quotient_map().domain() is node
         assert quotient.defining_ideal().ring() is node
+        assert any(quotient.defining_ideal() == prime for prime in node.minimal_primes())
     components = node.normalization_components()
     assert components.cardinality() == 2
     for minimal_prime, component, component_map in components:
