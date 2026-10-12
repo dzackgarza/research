@@ -857,6 +857,11 @@ def _fix_selected_group_resolution(group, *, free_basis=None) -> None:
 def _fix_selected_group_presentation(group, source, relations) -> None:
     r"""Install one constructor-selected presentation as a truncation-one resolution."""
     labels = source.free_basis()
+    # The rank condition belongs to the shared selected-presentation owner,
+    # not only FreeGroupQuotients: degree-one resolution construction below
+    # enumerates the free basis and asserts a *finite* presentation.
+    if labels not in FiniteSets():
+        raise ValueError("a selected finite group presentation requires a finite free basis")
     generators = _engine_generators(group)
     assert generators.cardinality() == labels.cardinality(), (
         f"{group} has {generators.cardinality()} generators, but the presentation on {source} has "
