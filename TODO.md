@@ -1192,7 +1192,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `FiniteOrdinalMor` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
   **Closure assertions:** the complete `FiniteOrdinalMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrdinalMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-finiteordinalmorcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-finiteordinalmorcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `FiniteOrdinalMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
   **Closure assertions:** the complete `FiniteOrdinalMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrdinalMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
