@@ -5073,9 +5073,10 @@ class CoxeterGroups(OwnedCategory):
                 remaining.difference_update(neighbours)
                 boundary.extend(neighbours)
             components.append(tuple(component))
-        # A simply-laced path on n vertices presents the finite Weyl group
-        # of type A_n. The component decomposition was already computed;
-        # no separate group order or diagram realization is required.
+        # Finite classical Coxeter diagrams A_n and B_n are paths. A_n
+        # has all bonds 3; B_n has one terminal bond 4 and all others 3.
+        # A terminal condition matters: a 4-bond in the middle of a path
+        # of rank four produces the infinite affine C_3 diagram.
         def spherical_component(component):
             if len(component) <= 3:
                 return True
@@ -5084,10 +5085,16 @@ class CoxeterGroups(OwnedCategory):
                 for left, right in combinations(component, 2)
                 if self._engine_coxeter_matrix[left, right] != 2
             ]
-            return (
-                len(edges) == len(component) - 1
-                and all(self._engine_coxeter_matrix[left, right] == 3 for left, right in edges)
-                and all(sum(vertex in edge for edge in edges) <= 2 for vertex in component)
+            if len(edges) != len(component) - 1:
+                return False
+            degrees = {vertex: sum(vertex in edge for edge in edges) for vertex in component}
+            if any(degree > 2 for degree in degrees.values()):
+                return False
+            marked = [edge for edge in edges if self._engine_coxeter_matrix[edge] != 3]
+            return not marked or (
+                len(marked) == 1
+                and self._engine_coxeter_matrix[marked[0]] == 4
+                and any(degrees[vertex] == 1 for vertex in marked[0])
             )
 
         if all(spherical_component(component) for component in components):
