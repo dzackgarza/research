@@ -48,6 +48,7 @@ class IndexedFamily[IndexT, ValueT]:
         self._index_set = index_set
         self._value_function = value
         self._value_cache: dict[int, list[tuple[IndexT, ValueT]]] = {}
+        self._rank_value_cache: dict[int, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
         self._diagram = None
@@ -104,6 +105,17 @@ class IndexedFamily[IndexT, ValueT]:
         for an identical or decided-equal label. An undecided comparison keeps
         the labels separate without asserting that they are unequal.
         """
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+        indices = self.index_set()
+        if Sets().is_provably_finite(indices) and indices in EnumeratedSets():
+            # The selected enumeration is a bijection: equal labels have
+            # precisely the same ordinal rank. Use that mathematical datum
+            # rather than a hash or an undecidable equality comparison.
+            rank = int(indices.ranking_map()(normalized))
+            if rank not in self._rank_value_cache:
+                self._rank_value_cache[rank] = self._value_function(normalized)
+            return self._rank_value_cache[rank]
         try:
             index_hash = hash(normalized)
         except TypeError:
