@@ -4002,6 +4002,25 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 projection = quotient.quotient_projection()
                 if projection.domain() is not self or projection.codomain() is not quotient:
                     raise ValueError("the selected free quotient projection has incorrect endpoints")
+            elif isinstance(_engine_group(self), CoxeterMatrixGroup):
+                # Coxeter matrix elements do not have GAP element models.
+                # Read their canonical reduced reflection words and apply
+                # the images of those reflections under the selected free
+                # presentation augmentation of the constructed quotient.
+                indices = tuple(_engine_group(self).coxeter_matrix().index_set())
+                presented_free = quotient.presenting_free_group()
+                basis = tuple(presented_free.free_basis())
+                if len(indices) != len(basis):
+                    raise ValueError("the Coxeter quotient has an incompatible presenting free basis")
+                images = dict(zip(indices, (
+                    quotient.quotient_projection()(presented_free.free_generator(label))
+                    for label in basis
+                ), strict=True))
+                projection = self.Mor(quotient)(
+                    lambda element: reduce(mul, (
+                        images[label] for label in self._to_engine(self(element)).reduced_word()
+                    ), quotient.one())
+                )
             else:
                 source_generators = tuple(self.group_generators())
                 quotient_generators = tuple(quotient.group_generators())
