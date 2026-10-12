@@ -121,6 +121,18 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert projection.domain() is free
     assert projection.codomain() is quotient
     assert all(projection(relation) == quotient.one() for relation in relators)
+    descended = quotient.descend_homomorphism(projection)
+    assert descended.domain() is quotient
+    assert descended.codomain() is quotient
+    assert all(descended(projection(generator)) == projection(generator) for generator in (a, b))
+    cyclic = Groups.C(2)
+    wrong = free.Mor(cyclic)({a: cyclic.one(), b: cyclic.group_generators()[0]})
+    try:
+        quotient.descend_homomorphism(wrong)
+    except ValueError as error:
+        assert "defining relators" in str(error)
+    else:
+        assert False, "a map not killing the relations descended to the quotient"
     assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
     # The ordinary quotient operation is another entry into the same

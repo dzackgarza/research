@@ -4929,6 +4929,26 @@ class FreeGroupQuotients(OwnedCategory):
         source = self.free_group()
         return _engine_quotient_by_relators(source, self.relators(), quotient_category=self)
 
+    class ParentMethods:
+        def descend_homomorphism(self, source_map):
+            r"""Factor ``f:F -> H`` uniquely through the selected quotient.
+
+            This computes the universal factor from the images of the
+            quotient generators, provided each relator maps to the unit.
+            The endpoint and relation tests are on actual owned arrows.
+            """
+            projection = self.quotient_projection()
+            source = projection.domain()
+            if source_map.domain() is not source:
+                raise ValueError("quotient descent requires the chosen presenting free-group source")
+            target = source_map.codomain()
+            if any(source_map(relator) != target.one() for relator in self.defining_relations()):
+                raise ValueError("the map does not kill all defining relators")
+            original = tuple(source.group_generators())
+            quotiented = tuple(self.group_generators())
+            assert len(original) == len(quotiented), "the quotient must retain its generating family"
+            return self.Mor(target)({image: source_map(generator) for generator, image in zip(original, quotiented)})
+
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
 
