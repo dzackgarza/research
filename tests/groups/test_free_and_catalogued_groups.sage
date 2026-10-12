@@ -287,6 +287,18 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert b2_quotient.order() == 2
     assert b2_map(b2_reflection) == b2_quotient.one()
 
+    # Imposing (s*t)^2 in the dihedral Coxeter group I_2(4)
+    # forces s and t to commute, giving C2 x C2 rather than C2.
+    # This separates the transport of a nontrivial reduced-word relation
+    # from the normal closure of an individual reflection.
+    b2_s, b2_t = tuple(b2.group_generators())
+    commuting_quotient, commuting_map = b2.quotient_by_relators(
+        ((b2_s * b2_t)**2,), return_projection=True
+    )
+    assert commuting_quotient.order() == 4
+    assert commuting_map(b2_s) != commuting_map(b2_t)
+    assert commuting_map(b2_s * b2_t) == commuting_map(b2_t * b2_s)
+
     # The matrix-group realization must carry the Coxeter presentation
     # through the common GroupsWithChosenFinitePresentation Mor owner.
     source = group.presenting_free_group()
