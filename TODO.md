@@ -987,7 +987,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DescentDataOnCover` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
   **Closure assertions:** the complete `DescentDataOnCover` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DescentDataOnCover`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-differentiablemanifolds`**. **Needs:** none.
+- [x] **`placement-owner-differentiablemanifolds`**. **Needs:** none.
   **Owner pass:** `DifferentiableManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
   **Closure assertions:** the complete `DifferentiableManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DifferentiableManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
