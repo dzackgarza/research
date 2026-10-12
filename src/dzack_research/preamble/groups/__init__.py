@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     OwnedInfiniteGroups,
     Subgroups,
+    SymmetricGroups,
     groups,
     _own_group,
 )
@@ -133,6 +134,7 @@ __all__ = [
     'OwnedGroups',
     'OwnedInfiniteGroups',
     'Subgroups',
+    'SymmetricGroups',
     'PredicateSubgroups',
     'PrimeProlongation',
     'ProfiniteCharacter',

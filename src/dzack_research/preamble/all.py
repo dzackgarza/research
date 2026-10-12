@@ -227,6 +227,7 @@ from dzack_research.preamble.groups import (
     QuadraticCharacter,
     RestrictedProfiniteCharacter,
     Subgroups,
+    SymmetricGroups,
     Torsors,
     groups,
 )

@@ -101,7 +101,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets, OwnedSetMorphism, Sets, finite_ordinal_set
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, OwnedSetMorphism, Sets, finite_ordinal_set
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import (
     _implementation_with_engine,
@@ -1333,12 +1333,13 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None: (
         id(group),
         refinements,
         description,
         id(free_basis),
         id(presentation_source_group),
+        id(symmetric_points),
     )
 )
 def _own_group(
@@ -1347,6 +1348,7 @@ def _own_group(
     description=None,
     free_basis=None,
     presentation_source_group=None,
+    symmetric_points=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1402,6 +1404,7 @@ def _own_group(
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **presentation_data,
                 )
             else:
@@ -1412,6 +1415,7 @@ def _own_group(
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     free_basis=free_basis,
                     **presentation_data,
                 )
@@ -4690,6 +4694,50 @@ class PermutationGroups(OwnedCategory):
         def is_transitive(self) -> bool:
             r"""Whether the natural action has one orbit."""
             return self.natural_g_set().is_transitive_action()
+
+
+class SymmetricGroups(OwnedParameterizedCategory):
+    r"""Full permutation groups of a chosen finite enumerated set."""
+
+    def parameter_category(self):
+        return EnumeratedSets()
+
+    def super_categories(self):
+        return [PermutationGroups(), OwnedGroups().Finite()]
+
+    def an_object(self):
+        return self()
+
+    def _call_(self):
+        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+        points = self.parameter()
+        assert points in FiniteSets(), "the full symmetric group needs a finite chosen set"
+        return _own_group(
+            SymmetricGroup(int(cardinal(points.cardinality()).finite_value())),
+            refinements=(self,), symmetric_points=points,
+        )
+
+    class ParentMethods:
+        def __init__(self, symmetric_points=None, **rest):
+            self._symmetric_points = symmetric_points
+            super().__init__(**rest)
+
+        def natural_points(self):
+            return self._symmetric_points
+
+        def natural_g_set(self):
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            points = self.natural_points()
+            labels = tuple(points)
+            ranking = points.ranking_map()
+
+            def action(element, point):
+                position = int(ranking(points(point))) + 1
+                return labels[int(self._to_engine(self(element))(position)) - 1]
+
+            return FiniteGSets(self)(points, action)
 
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):

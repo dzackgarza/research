@@ -51,6 +51,19 @@ def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
     assert (generator**2).cyclic_subgroup().order() == 2
 
 
+def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
+    points = Sets.Δ[2]
+    group = SymmetricGroups(points)()
+    assert group in SymmetricGroups(points)
+    assert group.order() == 6
+    assert group.natural_points() is points
+    action = group.natural_g_set()
+    assert action.point_set() is points
+    identity = group.one()
+    for point in points:
+        assert action.act(identity, point) == point
+
+
 def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
     assert Groups.Weyl(["B", 2]).order() == 8
     assert Groups.PSL(2, 7).order() == 168
