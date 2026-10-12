@@ -1501,7 +1501,6 @@ class FiniteAtlasRefinementMethods:
             normalized_chart_maps,
             target_map=target_map,
         )
-        self._verify_overlap_compatibility()
 
     def coarse_datum(self):
         return self.codomain()
@@ -1542,10 +1541,10 @@ class FiniteAtlasRefinementMethods:
             into_coarse_chart
         )
 
-    def _verify_overlap_compatibility(self) -> None:
+    def overlap_compatibility_decision(self):
         fine = self.fine_datum()
         coarse = self.coarse_datum()
-        for source_index, target_index in fine.transition_index_set():
+        def commutes(source_index, target_index):
             fine_transition = fine.transition_between(source_index, target_index).forward()
             source_overlap = fine.overlap(source_index, target_index)
             target_overlap = fine.overlap(target_index, source_index)
@@ -1564,11 +1563,21 @@ class FiniteAtlasRefinementMethods:
                     * self.overlap_map(source_index, target_index)
                 )
                 right = self.overlap_map(target_index, source_index) * fine_transition
-            if left != right:
-                raise ValueError(
-                    f"the chart maps of the refinement {self} do not commute with the chart changes on the "
-                    f"overlap of the fine charts {source_index} and {target_index}"
-                )
+            return left == right
+
+        return conjunction(
+            commutes(source_index, target_index)
+            for source_index, target_index in fine.transition_index_set()
+        )
+
+    @validator
+    def validate_overlap_compatibility(self):
+        decision = self.overlap_compatibility_decision()
+        if decision is False:
+            raise ValueError(
+                f"the chart maps of the refinement {self} do not commute with the chart changes on some overlap"
+            )
+        return decision
 
     @cached_method
     def inverse_image_functor(self):
@@ -1736,10 +1745,12 @@ class FiniteAtlasMor(CoveringFamilyMor):
 
     ElementMethods = FiniteAtlasRefinementMethods
 
-    def _element_constructor_(self, index_map, chart_maps=None, *, target_map=None):
+    def _element_constructor_(self, index_map, chart_maps=None, *, target_map=None, check=False):
         match index_map:
             case FiniteAtlasRefinementMethods() if chart_maps is None and target_map is None:
                 if index_map.parent() is self:
+                    if check:
+                        index_map.validate_overlap_compatibility()
                     return index_map
                 if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
                     raise ValueError(
@@ -1760,12 +1771,15 @@ class FiniteAtlasMor(CoveringFamilyMor):
                 f"cannot build a refinement {self.domain()} -> {self.codomain()} from {index_map}: a map "
                 "from each fine chart to its coarse chart must be given"
             )
-        return self.element_class(
+        refinement = self.element_class(
             self,
             index_map,
             chart_maps,
             target_map=target_map,
         )
+        if check:
+            refinement.validate_overlap_compatibility()
+        return refinement
 
 
 class FiniteAtlasMorCategoryConstruction(CoveringFamilyMorCategoryConstruction):
