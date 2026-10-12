@@ -5,6 +5,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.logic import AtomicProposition, Propositions
+from dzack_research.preamble.validation import validator
 
 
 class GradedAlgebraModules(OwnedParameterizedCategory):
@@ -82,9 +84,24 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
         ]
 
     class ParentMethods:
-        def __init__(self, dg_algebra, regular_module_source=None, **rest) -> None:
+        def __init__(
+            self,
+            dg_algebra,
+            regular_module_source=None,
+            dg_module_leibniz_decision=None,
+            **rest,
+        ) -> None:
             self._preamble_dg_algebra = dg_algebra
             self._preamble_regular_dg_module_source = regular_module_source
+            if not (
+                dg_module_leibniz_decision is None
+                or dg_module_leibniz_decision is True
+                or dg_module_leibniz_decision in Propositions
+            ):
+                raise ValueError(
+                    "the DG-module Leibniz law is retained only as True, an owned proposition, or None"
+                )
+            self._preamble_dg_module_leibniz_decision = dg_module_leibniz_decision
             super().__init__(**rest)
 
         def dga(self):
@@ -92,6 +109,26 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
 
         def is_differential_graded_module(self) -> bool:
             return True
+
+        def dg_module_leibniz_decision(self):
+            r"""Return the retained law ``d(ma)=d(m)a+(-1)^|m| m d(a)``."""
+            selected = self._preamble_dg_module_leibniz_decision
+            return (
+                AtomicProposition("satisfies_dg_module_leibniz", self)
+                if selected is None
+                else selected
+            )
+
+        @validator
+        def validate_dg_module_leibniz(self):
+            r"""Reject only a proved failure of the DG-module Leibniz law."""
+            decision = self.dg_module_leibniz_decision()
+            if decision is False:
+                raise ValueError(
+                    f"{self} is not a differential graded module over {self.dga()}: "
+                    "its differential does not satisfy the graded module Leibniz rule"
+                )
+            return decision
 
         def unformed_module(self):
             source = self._preamble_regular_dg_module_source

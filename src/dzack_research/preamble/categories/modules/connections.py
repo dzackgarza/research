@@ -991,6 +991,7 @@ class ConnectionDeRhamModule:
                 "graded_algebra": dga,
                 "graded_algebra_action": right_action,
                 "dg_algebra": dga,
+                "dg_module_leibniz_decision": True,
             },
             _realization=(_ConnectionDeRhamDirectSum, GradedDirectSumElement),
         )

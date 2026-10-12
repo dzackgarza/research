@@ -245,6 +245,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
                     "graded_algebra": self,
                     "graded_algebra_action": right_action,
                     "dg_algebra": self,
+                    "dg_module_leibniz_decision": True,
                     "regular_module_source": source,
                 },
             )
