@@ -211,12 +211,11 @@ class OrderedEnumeratedSets(OwnedCategory):
             ask the ranking map: applying an arrow coerces its argument into
             the domain, and the domain is this parent.
             """
-            if self._contains_function is not None:
-                decision = self.__contains__(element)
-                if decision is False:
-                    raise ValueError(f"{element!r} is not in {self}")
-                if decision is not True:
-                    raise ValueError(f"membership of {element!r} in {self} is undecided")
+            decision = self.is_parent_of(element)
+            if decision is False:
+                raise ValueError(f"{element!r} is not in {self}")
+            if decision is not True:
+                raise ValueError(f"membership of {element!r} in {self} is undecided")
             index = self._index_of_function(element)
             if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
