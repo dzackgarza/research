@@ -312,6 +312,7 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     # contains an infinite cyclic subgroup of unipotent matrices.
     assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
     assert not GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Finite())
+    assert GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Infinite())
 
 
 def test_general_linear_rank_cannot_be_truncated() -> None:

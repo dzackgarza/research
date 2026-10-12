@@ -4903,6 +4903,11 @@ class GeneralLinearGroups(OwnedCategory):
             or (self.degree() == 1 and self.coefficient_ring() is ZZ)
         ):
             return [OwnedGroups().Finite()]
+        # For n >= 2, the elementary transvections I + k E_12 over ZZ
+        # are distinct for every k in ZZ. This establishes infinitude
+        # from the defining matrix datum without querying a group engine.
+        if self.coefficient_ring() is ZZ and self.degree() >= 2:
+            return [OwnedGroups().Infinite()]
         return [OwnedGroups()]
 
     def an_object(self):
