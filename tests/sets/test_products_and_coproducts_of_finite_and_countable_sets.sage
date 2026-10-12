@@ -56,6 +56,9 @@ def test_infinite_constant_additive_product_retains_its_monoid_and_projections()
     family = indexed_family(NN, factor)
     product = Sets().product(family)
     assert family.constant_value() is factor
+    assert factor in family
+    assert Sets.Δ[1] not in family
+    assert factor not in indexed_family(Sets.Δ[-1], factor)
     assert product in CartesianProductsOfAdditiveMonoids()
     assert product in AdditiveMonoids()
     varying = product(lambda index: factor(int(index)))

@@ -154,17 +154,28 @@ class IndexedFamily[IndexT, ValueT]:
         )
 
     def __contains__(self, candidate: object) -> bool | Predicate:
-        r"""Return whether candidate occurs among the values of a finite family.
+        r"""Return the image-membership proposition for a represented family.
 
         The family retains its indexing data and is not identified with its
-        image set.  For a finite family, however, occurrence among the selected
-        values is the finite existential of equality propositions. An
+        image set. For a constant family with a nonempty index set, membership
+        is equality with its selected value. For a finite family, occurrence
+        among the selected values is the finite existential. An
         undecided equality is not nonmembership; one decided match establishes
         membership even when other comparisons remain undecided.
         """
+        # The image of a constant family on a provably nonempty index set is
+        # a singleton, independently of the cardinality of that index set.
+        # On the empty set its image is empty. Neither case enumerates I.
+        constant = self.constant_value()
+        if constant is not None:
+            size = self.cardinality()
+            if size == 0:
+                return False
+            if size.is_finite() is False or (size.is_finite() is True and size.finite_value() > 0):
+                return True if candidate is constant else constant == candidate
         if self.cardinality().is_finite() is not True:
             raise TypeError(
-                "value membership is represented only for a finite indexed family"
+                "value membership without a selected constant value is represented only for a finite indexed family"
             )
         from dzack_research.preamble.logic import conjunction, negation
 
