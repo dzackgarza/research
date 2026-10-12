@@ -4657,6 +4657,12 @@ def _admitted_module_factor_family(modules, factors, *, name):
             )
         return indexed_family(family.index_set(), constant, name=name)
 
+    diagram = family.selected_diagram()
+    if diagram is not None and diagram.codomain() is modules:
+        # The selected diagram already supplies the required module-valued
+        # functor, including its infinite-index object and arrow action.
+        return family
+
     def admitted(index):
         factor = family.value(index)
         match factor in modules:
@@ -4703,9 +4709,15 @@ def _module_product_created_by_underlying_sets(base_ring, factors):
     modules = Modules(ring)
     forgetful = modules.underlying_set()
     constant = factors.constant_value()
+    diagram = factors.selected_diagram()
+    if constant is not None:
+        underlying_values = forgetful(constant)
+    elif diagram is not None and diagram.codomain() is modules:
+        underlying_values = diagram.then(forgetful)
+    else:
+        underlying_values = lambda index: forgetful(factors.value(index))
     underlying_factors = indexed_family(
-        factors.index_set(),
-        forgetful(constant) if constant is not None else lambda index: forgetful(factors.value(index)),
+        factors.index_set(), underlying_values,
         name="Underlying sets of module product factors",
     )
     underlying_product = Sets().product(underlying_factors)
