@@ -178,6 +178,30 @@ def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
         assert False, "a nonfree cyclic group was admitted as a free source"
 
 
+def test_quotient_descent_with_identified_presenting_generators() -> None:
+    free = Groups.Free(2)
+    a, b = tuple(free.group_generators())
+    quotient = FreeGroupQuotients(free, (a * ~b, a**2))()
+    projection = quotient.quotient_projection()
+    assert projection(a) == projection(b)
+
+    cyclic = Groups.C(2)
+    involution = cyclic.group_generators()[0]
+    compatible = free.Mor(cyclic)({a: involution, b: involution})
+    descended = quotient.descend_homomorphism(compatible)
+    assert descended.domain() is quotient
+    assert descended.codomain() is cyclic
+    assert descended(projection(a)) == descended(projection(b)) == involution
+
+    incompatible = free.Mor(cyclic)({a: involution, b: cyclic.one()})
+    try:
+        quotient.descend_homomorphism(incompatible)
+    except ValueError as error:
+        assert "defining relators" in str(error)
+    else:
+        assert False, "identified quotient generators received different target images"
+
+
 def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
     labels = Sets.Δ[1]
     free = Groups.Free(index_set=labels)
