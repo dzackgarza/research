@@ -3214,8 +3214,12 @@ class _ImageSetEngine:
                 )
 
     def _element_constructor_(self, element):
-        if element not in self:
+        membership = self.__contains__(element)
+        if membership is False:
             raise ValueError(f"{element!r} is not in {self}")
+        assert membership is True, (
+            f"cannot admit {element!r} into {self}: membership in this image is undecided"
+        )
         return element
 
     def _repr_(self) -> str:
