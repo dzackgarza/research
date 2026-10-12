@@ -4916,10 +4916,14 @@ class GeneralLinearGroups(OwnedCategory):
         # which need not be infinite (e.g. ZZ^×).
         if self.degree() >= 2 and self.coefficient_ring().is_finite() is False:
             return [OwnedGroups().Infinite()]
-        # The diagonal matrices diag(u,1,...,1) exhibit infinitely many
-        # units of QQ even in rank one; this does not assert that every
-        # infinite ring has an infinite unit group.
-        if self.degree() >= 1 and self.coefficient_ring() is QQ:
+        # An infinite field has infinitely many nonzero units. Their
+        # diagonal matrices give an infinite subgroup even in rank one;
+        # this implication does not extend to arbitrary infinite rings.
+        if (
+            self.degree() >= 1
+            and self.coefficient_ring().is_field() is True
+            and self.coefficient_ring().is_finite() is False
+        ):
             return [OwnedGroups().Infinite()]
         return [OwnedGroups()]
 
