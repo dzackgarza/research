@@ -475,6 +475,19 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
         descended_quotient(second_projection(projection(word))) == source_to_c2(projection(word))
         for word in (a, b, a*b, b*a, a*b*a, b**2*a)
     )
+    # Identity on S_3 does not descend through S_3 / <<b>>: the
+    # quotient kills b, whereas identity preserves its nontrivial image.
+    identity_on_source = quotient.Mor(quotient)(
+        tuple(quotient.group_generators()), check=True
+    )
+    try:
+        second_quotient.descend_homomorphism(
+            identity_on_source, through=second_projection
+        )
+    except ValueError:
+        pass
+    else:
+        assert False, "a map nontrivial on the quotient kernel descended"
     assert second_projection(projection(a * b * a)) == (
         second_projection(projection(a))
         * second_projection(projection(b))
