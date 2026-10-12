@@ -105,7 +105,7 @@ class IndexedFamily[IndexT, ValueT]:
         for an identical or decided-equal label. An undecided comparison keeps
         the labels separate without asserting that they are unequal.
         """
-        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         indices = self.index_set()
         if Sets().is_provably_finite(indices) and indices in EnumeratedSets():
@@ -367,7 +367,7 @@ def indexed_family[IndexT, ValueT](
 
     selected_functor = value if isinstance(value, Functor) else None
     if selected_functor is not None:
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
         from dzack_research.preamble.categories.abstract_categories.products import RestrictedDiagram
 
         provenance = selected_functor
@@ -399,7 +399,7 @@ def indexed_family[IndexT, ValueT](
     if value_category is not None:
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 
         constant = family.constant_value()
         if constant is not None and constant not in value_category:
@@ -411,14 +411,28 @@ def indexed_family[IndexT, ValueT](
                 "an infinite nonconstant family cannot establish its value category by declaring one: "
                 "supply a mathematically justified category-valued diagram"
             )
-        if Sets().is_provably_finite(index_set):
+        if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
             for index in index_set:
                 if family(index) not in value_category:
                     raise ValueError(
                         f"the selected family has value {family(index)} at {index}, outside {value_category}"
                     )
 
-        family._diagram = selected_functor or Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
+        if (
+            family.constant_value() is None
+            and selected_functor is None
+            and index_set not in EnumeratedSets()
+        ):
+            raise TypeError(
+                "a nonconstant family without selected index enumeration cannot certify its value category"
+            )
+
+        diagram_parent = Cat().Mor(DiscreteCategory(index_set), value_category)
+        family._diagram = (
+            selected_functor
+            or (diagram_parent.constant_functor(constant) if constant is not None
+                else diagram_parent.discrete_diagram(family))
+        )
     return family
 
 
