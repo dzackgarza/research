@@ -2820,6 +2820,14 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return morphism
 
     def _from_engine_generator_images(self, generator_models, image_models):
+        # This ingress is also used by product/coproduct constructions,
+        # bypassing _from_gap_generator_images. A truncated image family
+        # must never be passed to GroupHomomorphismByImagesNC.
+        if len(generator_models) != len(image_models):
+            raise ValueError(
+                f"the engine morphism from {self.domain()} has {len(generator_models)} "
+                f"selected generators but {len(image_models)} images"
+            )
         return self.element_class(self, self._engine_homomorphism(generator_models, image_models))
 
     def _from_group_generator_images(self, images):

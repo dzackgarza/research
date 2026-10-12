@@ -59,6 +59,8 @@ def test_generator_images_must_generate_the_whole_source() -> None:
 
 
 def test_engine_generator_image_family_has_exact_arity() -> None:
+    from dzack_research.preamble.categories.group.groups import _gap_model
+
     symmetric = Groups.S(3)
     cyclic = Groups.C(2)
     generators = list(symmetric.group_generators())
@@ -69,6 +71,14 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
         assert "images were supplied" in str(error)
     else:
         assert False, "an empty image tuple was accepted for a nontrivial group presentation"
+    try:
+        symmetric.Mor(cyclic)._from_engine_generator_images(
+            list(_gap_model(symmetric).GeneratorsOfGroup()), []
+        )
+    except ValueError as error:
+        assert "selected generators" in str(error)
+    else:
+        assert False, "direct engine-morphism ingress accepted missing generator images"
 
 
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
