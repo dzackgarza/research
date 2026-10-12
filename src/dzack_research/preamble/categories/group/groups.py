@@ -2053,7 +2053,15 @@ class GroupMorphism:
                     labels = source.free_basis()
                     projection = domain.quotient_projection()
                     projected = tuple(projection(source.free_generator(label)) for label in labels)
-                    if all(generator in self._generator_images for generator in projected):
+                    # Checking the relators of F only certifies the map on
+                    # the images of F's generators. If the Mor's selected
+                    # generating family contains additional elements, their
+                    # independently supplied images are not constrained by
+                    # that check. Use the engine presentation in that case.
+                    if (
+                        all(generator in self._generator_images for generator in projected)
+                        and all(generator in projected for generator in self._generator_images)
+                    ):
                         free_map = source.Mor(codomain)(
                             Sets().Mor(labels, codomain)(
                                 lambda label: self._generator_images[projection(source.free_generator(label))]
