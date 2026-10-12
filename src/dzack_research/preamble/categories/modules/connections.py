@@ -643,7 +643,7 @@ class ConnectionMorphism(Element):
             underlying, premises=(self, other)
         )
 
-    def _horizontal_on_generators(self) -> bool:
+    def _horizontal_on_generators(self):
         domain_connection = self.domain().connection()
         codomain_connection = self.codomain().connection()
         if domain_connection.algebra() is not codomain_connection.algebra():
@@ -679,7 +679,7 @@ class ConnectionMorphism(Element):
             f"so {domain_module} must have a chosen finite presentation over {ring}, but it is in "
             f"{domain_module.category()}"
         )
-        return all(
+        return conjunction(
             codomain_connection(underlying(generator)) == induced(domain_connection(generator))
             for generator in (
                 domain_module.module_generator(label) for label in domain_module.module_generating_set()
