@@ -656,9 +656,13 @@ def _enumerated_image_set(
         # as infinite sources. Scanning the finite source would discard that
         # map and incorrectly turn membership into an enumeration algorithm.
         preimage = inverse(value)
-        if preimage is None or preimage not in source:
+        if preimage is None:
             return False
-        return map_(source(preimage)) == value
+        admitted = source.is_parent_of(preimage)
+        if admitted is not True:
+            return admitted
+        image = map_(source(preimage))
+        return True if image is value else image == value
 
     return _object_of(
         placement,
