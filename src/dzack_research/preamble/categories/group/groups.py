@@ -3820,6 +3820,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def quotient_by_relators(self, relators):
             r"""Return ``G / <<relators>>``, the quotient by their normal closure."""
             match self:
+                case _ if isinstance(_engine_group(self), FreeGroup_class):
+                    # The free source and the caller's chosen relators
+                    # define this quotient. Preserve them at the family
+                    # constructor rather than discarding them on ingress.
+                    return FreeGroupQuotients(self, relators)()
                 case _ if self in GroupsWithChosenFinitePresentation():
                     return _engine_quotient_by_relators(self, relators)
                 case _:

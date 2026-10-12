@@ -117,6 +117,13 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert tuple(quotient.defining_relations()) == relators
     assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
+    # The ordinary quotient operation is another entry into the same
+    # mathematical construction, not a weaker anonymous presentation.
+    from_operation = free.quotient_by_relators(relators)
+    assert from_operation in theory
+    assert from_operation.presenting_free_group() is free
+    assert tuple(from_operation.defining_relations()) == relators
+
 
 def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
     cyclic = Groups.C(3)
