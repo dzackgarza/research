@@ -1024,7 +1024,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DiscreteCategories` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
   **Closure assertions:** the complete `DiscreteCategories` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteCategories`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-discretecategory`**. **Needs:** none.
+- [x] **`placement-owner-discretecategory`**. **Needs:** none.
   **Owner pass:** `DiscreteCategory` in `src/dzack_research/preamble/categories/abstract_categories/functors.py`.
   **Closure assertions:** the complete `DiscreteCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscreteCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
