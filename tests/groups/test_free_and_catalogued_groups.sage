@@ -442,6 +442,12 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert from_operation in theory
     assert from_operation.presenting_free_group() is free
     assert tuple(from_operation.defining_relations()) == relators
+    free_quotient, free_projection = free.quotient_by_relators(
+        relators, return_projection=True
+    )
+    assert free_projection is free_quotient.quotient_projection()
+    assert free_projection.domain() is free
+    assert free_projection.codomain() is free_quotient
 
     # Quotienting a presented group must adjoin the new normal relators
     # to its original free presentation, not treat its generators as free.

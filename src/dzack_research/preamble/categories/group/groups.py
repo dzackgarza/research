@@ -3981,16 +3981,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     )
             if not return_projection:
                 return quotient
-            source_generators = tuple(self.group_generators())
-            quotient_generators = tuple(quotient.group_generators())
-            if len(source_generators) != len(quotient_generators):
-                raise ValueError("the quotient engine does not preserve the source generator positions")
-            # Engine word presentations can have redundant generator
-            # positions whose images in the source coincide. A dictionary
-            # loses those positions and does not define their quotient
-            # images. Keep the ordered engine generator family; the checked
-            # Group Mor owner verifies that it respects all source relators.
-            projection = self.Mor(quotient)(quotient_generators, check=True)
+            if isinstance(_engine_group(self), FreeGroup_class):
+                # The selected presentation *is* the quotient of this free
+                # source. Reuse its retained augmentation instead of
+                # independently rebuilding a second arrow from GAP's
+                # generator order, which need not be the selected basis order.
+                projection = quotient.quotient_projection()
+                if projection.domain() is not self or projection.codomain() is not quotient:
+                    raise ValueError("the selected free quotient projection has incorrect endpoints")
+            else:
+                source_generators = tuple(self.group_generators())
+                quotient_generators = tuple(quotient.group_generators())
+                if len(source_generators) != len(quotient_generators):
+                    raise ValueError("the quotient engine does not preserve the source generator positions")
+                # Retain positions for a presented group's possibly
+                # redundant generators; dictionary keys would collapse them.
+                projection = self.Mor(quotient)(quotient_generators, check=True)
             if any(projection(relator) != quotient.one() for relator in relators):
                 raise ValueError("the selected quotient projection does not kill its defining relators")
             # Construction provenance supplies the quotient universal
