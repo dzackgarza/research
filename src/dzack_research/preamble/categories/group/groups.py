@@ -1758,7 +1758,7 @@ def _SmallGroup(order, index):
     return _own_group(PermutationGroup(gap_group=model))
 
 
-def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
+def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
     from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
 
     from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
@@ -1775,7 +1775,9 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
             implementation=implementation,
             base_ring=scalar_ring,
             index_set=index_set,
-        )
+        ),
+        refinements=refinements,
+        coxeter_matrix=selected_matrix,
     )
 
 
@@ -4868,9 +4870,9 @@ class CoxeterGroups(OwnedCategory):
         # and its generating reflections at the existing engine adapter.
         # The catalogue's default reflection realization need not carry
         # those presentation data even when the abstract group is the same.
-        return _own_group(
-            _engine_group(_Coxeter(self.coxeter_matrix(), implementation="matrix")),
-            refinements=(self,), coxeter_matrix=self.coxeter_matrix(),
+        return _Coxeter(
+            self.coxeter_matrix(), implementation="matrix",
+            refinements=(self,), selected_matrix=self.coxeter_matrix(),
         )
 
     class ParentMethods:
