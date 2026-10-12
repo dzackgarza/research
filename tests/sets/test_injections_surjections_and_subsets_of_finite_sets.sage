@@ -56,6 +56,32 @@ def test_a_rotation_of_three_points_has_the_inverse_rotation() -> None:
     assert rotation.as_isomorphism()(three(2)) == three(0)
 
 
+def test_finite_bijection_inverse_uses_codomain_positions() -> None:
+    r"""A permutation with a nontrivial cycle has its exact inverse at every position."""
+    five = Sets.Δ[4]
+    permutation = (3, 4, 1, 0, 2)
+    forward = Sets().Mor(five, five)(lambda x: five(permutation[int(x)]))
+    backward = forward.inverse()
+
+    for index in five:
+        assert backward(forward(index)) == index
+        assert forward(backward(index)) == index
+
+
+def test_injection_inverse_on_image_and_characteristic_are_compatible() -> None:
+    r"""The inverse exists exactly on image points and characteristic values agree."""
+    source = Sets.Δ[2]
+    target = Sets.Δ[6]
+    embedding = Sets().Mono(source, target)(lambda x: target(2 * x + 1))
+    inverse = embedding.inverse_on_image()
+    characteristic = embedding.characteristic_morphism()
+
+    for point in source:
+        assert inverse(embedding(point)) == point
+    for point in target:
+        assert characteristic(point) == Sets.Δ[1](int(int(point) in (1, 3, 5)))
+
+
 def test_the_power_set_of_four_points_is_the_set_of_characteristic_maps() -> None:
     four = Sets.Δ[3]
     two = Sets.Δ[1]
