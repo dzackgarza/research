@@ -688,8 +688,15 @@ class OwnedSetMorphism(SetMorphism):
         # coordinates, instead of searching the source on each application.
         ranking = codomain.ranking_map()
         inverse_values = [None] * int(codomain.cardinality().finite_value())
+        occupied = [False] * len(inverse_values)
         for source in domain:
-            inverse_values[int(ranking(self(source)))] = source
+            position = int(ranking(self(source)))
+            if occupied[position]:
+                raise ValueError("the map is not injective at this codomain position")
+            occupied[position] = True
+            inverse_values[position] = source
+        if not all(occupied):
+            raise ValueError("the map is not surjective onto its codomain")
 
         def preimage(target):
             return inverse_values[int(ranking(codomain(target)))]
