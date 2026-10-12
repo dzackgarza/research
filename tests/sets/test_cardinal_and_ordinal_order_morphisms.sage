@@ -163,3 +163,22 @@ def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
     assert (union.order_type(), intersection.order_type(), difference.order_type()) == (
         Ordinals()(4), Ordinals()(1), Ordinals()(2)
     )
+
+
+def test_finite_indexed_enumeration_evaluates_selected_points_once() -> None:
+    r"""The finite presentation retains its chosen values across all operations."""
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+    indices = Sets.Δ[2]
+    calls = []
+
+    def selected(index):
+        calls.append(int(index))
+        return ("point", int(index))
+
+    points = FiniteOrderedSets().from_indexed(indices, selected)
+    assert len(calls) == 3
+    assert tuple(points) == (("point", 0), ("point", 1), ("point", 2))
+    assert points.is_parent_of(("point", 1)) is True
+    assert int(points.ranking_map()(("point", 2))) == 2
+    assert len(calls) == 3
