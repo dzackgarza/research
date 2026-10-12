@@ -109,6 +109,17 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
 
+def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
+    cyclic = Groups.C(3)
+    assert cyclic.has_selected_group_resolution()
+    try:
+        FreeGroupQuotients(cyclic, (cyclic.one(),))
+    except AssertionError as error:
+        assert "actual free group" in str(error)
+    else:
+        assert False, "a nonfree cyclic group was admitted as a free source"
+
+
 def test_general_linear_group_retains_ring_and_rank() -> None:
     category = GeneralLinearGroups(GF(2), 2)
     group = category()

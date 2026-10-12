@@ -4856,8 +4856,12 @@ class FreeGroupQuotients(OwnedCategory):
 
     def __init__(self, free_group, relators):
         self._free_group = _owned_group(free_group)
+        assert isinstance(_engine_group(self._free_group), FreeGroup_class), (
+            "a free-group quotient requires an actual free group, not merely "
+            "a group equipped with a chosen generating set"
+        )
         assert self._free_group in GroupsWithChosenFreeBasis(), (
-            "a free-group quotient needs a chosen free source"
+            "the free source must retain its chosen free basis"
         )
         self._relators = tuple(self._free_group(relator) for relator in relators)
         super().__init__()
