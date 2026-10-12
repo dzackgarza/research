@@ -1356,6 +1356,39 @@ Ch. IV, 1.7, Prop. 4; Ch. IV, 2.2, Thm. 6.
 Repair: file the request with `lean-categories`. It runs beside the preamble
 computation and blocks no node.
 
+### The `even` ∧ `unimodular` join of owned lattices loses `delta()`
+
+Nikulin's invariant `delta` of an even lattice with `2 A_L = 0` (lattice-database
+`integral.delta`, `A_L = 0` included: `delta = 0` exactly when every diagonal entry
+of `G^{-1}` is integral) is not reachable on an even unimodular lattice object:
+`Lattices(ZZ)(G)` for the Gram tensor `G` of lattice-database card `029K`
+(`II_{2,26} = 2U + 3E_8(-1)`) constructs a lattice in the *Category of infinite
+countable finitely generated unimodular even lattices*, whose join category has
+no `delta`: `L.delta()` raises
+`AttributeError: 'OwnedJoinCategory.parent_class[_SparseFreeModuleParent].ObjectType' object has no attribute 'delta'`
+(observed 2026-10-12; the same failure on the Gram tensor of the new card `3ICV`,
+`II_{26,2} = 3E_8 + 2U`). `is_even()` answers from the join, so the join is the
+method-resolution surface that lost the method. Card `029K` itself stores
+`integral.delta: 0` from an earlier enrichment, so the join resolved `delta`
+before this regression.
+**Dependency path:** even lattice with `2 A_L = 0` -> Nikulin's `delta` of the
+discriminant form (trivial, `0`, when `A_L = 0`) -> the method belongs to the
+2-elementary lattice surface and the `unimodular` join must inherit it, as
+`is_even` already does.
+**Existing capability:** the stored value on `029K`; `is_p_elementary(2)`
+answers `True` but took 88.28 s (`029K`) and 91.30 s (`3ICV`) on a lattice
+with `A_L = 0`, where the answer is immediate from the discriminant group —
+the same probe measures a second cost defect on the same object.
+**Consumers:** `latticedb enrich` and `latticedb certify` for every even
+unimodular card (`records.py` `_integral` calls `lattice.delta()` under
+`is_even() and is_p_elementary(2)`, so the crash aborts the whole
+enrichment and no derived fields are written; card `3ICV`, authored
+2026-10-12, is the current specimen), and `latticedb verify` for every
+card that already stores `integral.delta`: `records.local_admission_problems`
+re-derives `owned.delta()` and crashes the whole verification run on card
+`029K` (observed 2026-10-12, on a tree where the defect precedes the new
+cards). No TODO node yet.
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
