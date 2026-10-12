@@ -3526,6 +3526,8 @@ class CartesianProductsOfSets(OwnedCategory):
                         diagram = maps.target()
                 if diagram is None or maps.target() is not diagram or maps.source().domain() is not index_category:
                     raise ValueError("the component transformation must target the product's exact indexed diagram")
+                if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(Sets()):
+                    raise TypeError("the component transformation must be set-valued")
                 if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
                     raise ValueError("the component transformation must have the selected constant source")
                 components = tuple(maps.component(index_category.object(label)) for label in labels)
@@ -3651,6 +3653,8 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                         diagram = maps.target()
                 if diagram is None or maps.target() is not diagram or maps.source().domain() is not shape:
                     raise ValueError("the component transformation must target the additive product's exact diagram")
+                if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(AdditiveMonoids()):
+                    raise TypeError("the component transformation must be additive-monoid-valued")
                 if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
                     raise ValueError("the component transformation must have the selected constant source")
                 components = tuple(maps.component(shape.object(label)) for label in labels)
