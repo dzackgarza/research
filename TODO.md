@@ -979,7 +979,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DerivationCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
   **Closure assertions:** the complete `DerivationCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DerivationCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-derivationspace`**. **Needs:** none.
+- [x] **`placement-owner-derivationspace`**. **Needs:** none.
   **Owner pass:** `DerivationSpace` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
   **Closure assertions:** the complete `DerivationSpace` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DerivationSpace`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
