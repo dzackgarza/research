@@ -743,8 +743,14 @@ class ModulesOverGroupAlgebra(Modules):
             """
             group = self.group()
             coefficient_module = self.unformed_module()
-            if group.is_finite() is True and coefficient_module in FinitelyGeneratedFreeModules(self.coefficient_ring()):
-                return FiniteFreeGroupRepresentations(self.group_algebra())(self).finite_isotypic_characters()
+            if (
+                group.is_finite() is True
+                and coefficient_module in FinitelyGeneratedFreeModules(self.coefficient_ring())
+                and self.coefficient_ring().characteristic() == 0
+            ):
+                return OrdinaryCharacterRepresentations(self.group_algebra())(
+                    self
+                ).finite_isotypic_characters()
             raise NotImplementedError(
                 f"the possibly infinite isotypic-character support of {self} "
                 "requires a represented character universe and component-nonvanishing locus"
@@ -1686,17 +1692,6 @@ class FiniteFreeGroupRepresentations(OwnedCategoryOverBaseRing):
             raise TypeError("a finite free representation requires a finite group and finite free coefficient module")
         return refine(module, self)
 
-    class ParentMethods:
-        def finite_isotypic_characters(self):
-            r"""Enumerate supported irreducible characters in the finite-free realization."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-            return finite_ordered_set(tuple(
-                character for character in _split_irreducible_characters(self)
-                if self.isotypic_component(character).module_rank() != 0
-            ))
-
-
 class OrdinaryCharacterRepresentations(FiniteFreeGroupRepresentations):
     r"""Finite free group representations in characteristic zero."""
 
@@ -1706,6 +1701,15 @@ class OrdinaryCharacterRepresentations(FiniteFreeGroupRepresentations):
         return super()._call_(module)
 
     class ParentMethods:
+        def finite_isotypic_characters(self):
+            r"""Enumerate supported ordinary/rational irreducible character indices."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            return finite_ordered_set(tuple(
+                character for character in _split_irreducible_characters(self)
+                if self.isotypic_component(character).module_rank() != 0
+            ))
+
         def character(self):
             r"""Return the ordinary trace character in characteristic zero."""
             group = self.group()
