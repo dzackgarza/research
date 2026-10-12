@@ -29,7 +29,7 @@ def test_gaussian_field_tensor_itself_over_qq_splits_by_an_idempotent() -> None:
     ``e^2 = e`` (as ``(i ⊗ i)^2 = i^2 ⊗ i^2 = 1``) and ``e ≠ 0, 1``, so the
     tensor product is not an integral domain."""
     gaussian = QuadraticField(-1, "i")
-    tensor = Algebras(QQ).Commutative().coproduct((gaussian, gaussian))
+    tensor = Algebras(QQ).Associative().Unital().Commutative().coproduct((gaussian, gaussian))
     i_left = tensor.left_coproduct_map()(gaussian.gen())
     i_right = tensor.right_coproduct_map()(gaussian.gen())
     idempotent = (tensor.one() + i_left * i_right) / 2
