@@ -2168,9 +2168,31 @@ class SetInjection(OwnedSetMorphism):
                     f"the inverse of {self} on its image exists, but it is read off the values of the map "
                     f"here only when {domain} is finite and enumerated"
                 )
-                return Sets().Mor(image, domain)(
-                    lambda value: next(point for point in domain if self(point) == value)
-                )
+                # The image engine owns membership; an injective finite map
+                # can additionally retain its computed inverse by a single
+                # lookup table, with Python's hash-table backend for keys.
+                pairs = tuple((self(point), point) for point in domain)
+                try:
+                    lookup = dict(pairs)
+                except TypeError:
+                    # A finite unhashable image has no dictionary backend.
+                    # Retain its represented pairs without assuming that
+                    # undecidable point equality is Boolean.
+                    def preimage(value):
+                        undecided = False
+                        for key, point in pairs:
+                            same = True if key is value else key == value
+                            if same is True:
+                                if undecided:
+                                    raise ValueError("image preimage is undecided")
+                                return point
+                            if same is not False:
+                                undecided = True
+                        raise ValueError("image preimage is absent or undecided")
+                else:
+                    def preimage(value):
+                        return lookup[value]
+                return Sets().Mor(image, domain)(preimage)
 
     @cached_method
     def characteristic_morphism(self) -> OwnedSetMorphism:
