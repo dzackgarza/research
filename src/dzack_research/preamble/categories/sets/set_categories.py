@@ -3217,10 +3217,9 @@ class _ImageSetEngine:
         # values while insertion order retains the selected enumeration.
         # Only a genuinely unhashable representation requires the general
         # equality procedure below, which can return an undecided result.
-        source = self.source_set()
-        if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+        values = self._finite_image_values()
+        if values is None:
             return None
-        values = tuple(self.image_map()(point) for point in source)
         try:
             return tuple(dict.fromkeys(values))
         except TypeError:
@@ -3240,6 +3239,17 @@ class _ImageSetEngine:
         return tuple(distinct)
 
     @cached_method
+    def _finite_image_values(self):
+        r"""The selected finite source enumeration mapped once to its image values.
+
+        These values can repeat: they are not an enumeration of the image.
+        """
+        source = self.source_set()
+        if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+            return None
+        return tuple(self.image_map()(point) for point in source)
+
+    @cached_method
     def _finite_image_hash_lookup(self):
         r"""The selected finite image's engine set, when its points are hashable.
 
@@ -3247,10 +3257,11 @@ class _ImageSetEngine:
         image may have undecidable distinctness of unhashable points while
         membership remains the finite existential proposition.
         """
-        if not Sets().is_provably_finite(self.source_set()) or self.source_set() not in EnumeratedSets():
+        values = self._finite_image_values()
+        if values is None:
             return None
         try:
-            return frozenset(self.image_map()(point) for point in self.source_set())
+            return frozenset(values)
         except TypeError:
             return None
 
@@ -3308,8 +3319,8 @@ class _ImageSetEngine:
                 from dzack_research.preamble.logic import conjunction, negation
 
                 return negation(conjunction(
-                    negation(True if element is (value := self.image_map()(point)) else element == value)
-                    for point in source
+                    negation(True if element is value else element == value)
+                    for value in self._finite_image_values()
                 ))
             case _:
                 # Without an inverse or a finite enumeration, existence of a
