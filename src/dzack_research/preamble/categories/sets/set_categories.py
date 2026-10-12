@@ -3647,15 +3647,22 @@ class CoproductsOfSets(OwnedCategory):
         def _repr_(self) -> str:
             return f"ι_{self.summand_index()}({self.summand_element()})"
 
-        def __eq__(self, other) -> bool:
-            return (
-                element_parent(other) is self.parent()
-                and other.summand_index() == self.summand_index()
-                and other.summand_element() == self.summand_element()
+        def __eq__(self, other):
+            from dzack_research.preamble.logic import conjunction
+
+            if element_parent(other) is not self.parent():
+                return False
+            return conjunction(
+                (
+                    other.summand_index() == self.summand_index(),
+                    other.summand_element() == self.summand_element(),
+                )
             )
 
-        def __ne__(self, other) -> bool:
-            return not self == other
+        def __ne__(self, other):
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
 
         def __hash__(self) -> int:
             # Neither summand indices nor summand points need a Python hash.
