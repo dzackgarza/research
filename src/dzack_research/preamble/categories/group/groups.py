@@ -675,8 +675,8 @@ def _owned_point(point):
 def _engine_element_action(group, backend_element, point):
     r"""Apply an engine element to a point.
 
-    A Galois group acts on its field by automorphisms; any other permutation
-    group acts on the points it permutes, and fixes every other point.
+    A Galois group acts on its field by automorphisms; a permutation
+    group acts on the points of its selected permutation domain.
     """
     engine = _engine_group(group)
     match engine:
@@ -4847,7 +4847,9 @@ class SymmetricGroups(OwnedParameterizedCategory):
         def _permutation_point_action(self, backend_element, point):
             points = self.natural_points()
             if point not in points:
-                return point
+                raise ValueError(
+                    f"{point} is outside the selected permutation domain {points}"
+                )
             ranking = points.ranking_map()
             position = int(ranking(points(point))) + 1
             # The inverse of the selected ranking map is the mathematical

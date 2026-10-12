@@ -90,6 +90,12 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     assert labelled_action.act(permutation, labelled("alpha")) == labelled("beta")
     assert permutation(labelled("alpha")) == labelled("beta")
     assert permutation(labelled("beta")) == labelled("alpha")
+    try:
+        permutation("outside")
+    except ValueError as error:
+        assert "outside the selected permutation domain" in str(error)
+    else:
+        assert False, "a permutation silently acquired a fixed point outside its selected domain"
     assert selected_action.act(permutation, labelled("alpha")) == labelled("beta")
     assert labelled_action.act(permutation, labelled("beta")) == labelled("alpha")
     assert labelled_action.act(permutation, labelled("gamma")) == labelled("gamma")
