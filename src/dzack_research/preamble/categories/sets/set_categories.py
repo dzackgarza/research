@@ -2184,10 +2184,17 @@ class SetInjection(OwnedSetMorphism):
                     f"the inverse of {self} on its image exists, but it is read off the values of the map "
                     f"here only when {domain} is finite and enumerated"
                 )
-                # The image engine owns membership; an injective finite map
-                # can additionally retain its computed inverse by a single
-                # lookup table, with Python's hash-table backend for keys.
-                pairs = tuple((self(point), point) for point in domain)
+                # Read image values from their existing computation owner;
+                # do not evaluate the defining arrow again merely to build
+                # its inverse. Source order is exactly its chosen enumeration.
+                image_values = (
+                    image._finite_image_values()
+                    if isinstance(image, _ImageSetEngine)
+                    else None
+                )
+                if image_values is None:
+                    image_values = tuple(self(point) for point in domain)
+                pairs = tuple(zip(image_values, domain, strict=True))
                 try:
                     lookup = dict(pairs)
                     if len(lookup) != len(pairs):
