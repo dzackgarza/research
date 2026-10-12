@@ -1324,7 +1324,7 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None: (
         id(group),
         refinements,
         description,
@@ -1332,6 +1332,7 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
         id(presentation_source_group),
         id(symmetric_points),
         id(chosen_presentation),
+        id(coxeter_matrix),
     )
 )
 def _own_group(
@@ -1342,6 +1343,7 @@ def _own_group(
     presentation_source_group=None,
     symmetric_points=None,
     chosen_presentation=None,
+    coxeter_matrix=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1398,6 +1400,7 @@ def _own_group(
                     engine=group,
                     description=description,
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
+                    **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     **presentation_data,
                 )
             else:
@@ -1409,6 +1412,7 @@ def _own_group(
                     engine=group,
                     description=description,
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
+                    **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     free_basis=free_basis,
                     **presentation_data,
                 )
@@ -4803,8 +4807,17 @@ class CoxeterGroups(OwnedCategory):
         # those presentation data even when the abstract group is the same.
         return _own_group(
             _engine_group(_Coxeter(self.coxeter_matrix(), implementation="matrix")),
-            refinements=(self,),
+            refinements=(self,), coxeter_matrix=self.coxeter_matrix(),
         )
+
+    class ParentMethods:
+        def __init__(self, selected_coxeter_matrix=None, **rest):
+            self._selected_coxeter_matrix = selected_coxeter_matrix
+            super().__init__(**rest)
+
+        def coxeter_matrix(self):
+            r"""The chosen Coxeter datum, not the engine's lowered matrix."""
+            return self._selected_coxeter_matrix
 
 
 class FreeGroupQuotients(OwnedCategory):

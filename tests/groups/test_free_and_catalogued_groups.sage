@@ -86,7 +86,9 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     group = theory()
     assert theory.coxeter_matrix() is matrix
     assert group in theory
+    assert group.coxeter_matrix() is matrix
     assert group.order() == 6
+    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
 
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
