@@ -569,7 +569,14 @@ class OwnedSetMorphism(SetMorphism):
                 Sets().is_provably_finite(domain)
                 and domain in EnumeratedSets()
             ):
-                return self.image().cardinality() == domain.cardinality()
+                # Finite domain enumeration does not decide equality of
+                # symbolic image values. Only an exact image-cardinality
+                # computation can certify injectivity or its failure.
+                image_size = self.image()._cardinality_decision()
+                domain_size = domain._cardinality_decision()
+                if image_size is not None and domain_size is not None:
+                    return image_size == domain_size
+                return AtomicProposition("is_injective", self)
             case _:
                 return AtomicProposition("is_injective", self)
 
