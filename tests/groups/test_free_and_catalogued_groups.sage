@@ -257,6 +257,24 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert collapse_map.codomain() is collapsed
     assert collapse_map(first_reflection) == collapsed.one()
 
+    # With no added normal relations, the map is an isomorphism of
+    # abstract groups. In particular it must respect noncommuting words,
+    # which detects reversing the Coxeter matrix and GAP word laws.
+    unchanged, unchanged_map = group.quotient_by_relators((), return_projection=True)
+    simple = tuple(group.group_generators())
+    assert unchanged.order() == group.order()
+    assert unchanged_map(simple[0] * simple[1]) == unchanged_map(simple[0]) * unchanged_map(simple[1])
+    assert unchanged_map(simple[1] * simple[0]) == unchanged_map(simple[1]) * unchanged_map(simple[0])
+    assert unchanged_map(simple[0] * simple[1]) != unchanged_map(simple[1] * simple[0])
+
+    # For an even Coxeter bond, killing one reflection leaves the other
+    # involution (unlike A2's odd bond, which kills both reflections).
+    b2 = CoxeterGroups([[1, 4], [4, 1]])()
+    b2_reflection = tuple(b2.group_generators())[0]
+    b2_quotient, b2_map = b2.quotient_by_relators((b2_reflection,), return_projection=True)
+    assert b2_quotient.order() == 2
+    assert b2_map(b2_reflection) == b2_quotient.one()
+
     # The matrix-group realization must carry the Coxeter presentation
     # through the common GroupsWithChosenFinitePresentation Mor owner.
     source = group.presenting_free_group()
