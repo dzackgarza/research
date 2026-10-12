@@ -453,6 +453,21 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert second_projection.domain() is quotient
     assert second_projection.codomain() is second_quotient
     assert second_projection(projection(b)) == second_quotient.one()
+    # Universal property of the *iterated* quotient, with the actual
+    # domain S_3 rather than the presenting free group: a homomorphism
+    # killing b factors through q, including on non-generator words.
+    target_c2 = Groups.C(2)
+    target_involution = tuple(target_c2.group_generators())[0]
+    source_to_c2 = quotient.Mor(target_c2)(
+        (target_involution, target_c2.one()), check=True
+    )
+    factored = second_quotient.Mor(target_c2)(
+        (target_involution, target_c2.one()), check=True
+    )
+    assert all(
+        factored(second_projection(projection(word))) == source_to_c2(projection(word))
+        for word in (a, b, a*b, b*a, a*b*a, b**2*a)
+    )
     assert second_projection(projection(a * b * a)) == (
         second_projection(projection(a))
         * second_projection(projection(b))
