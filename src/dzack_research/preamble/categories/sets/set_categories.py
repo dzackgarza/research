@@ -3186,7 +3186,16 @@ class _ImageSetEngine:
                 # of the source's cardinality. In particular, a finite image
                 # with an inverse must not reconstruct its entire value set.
                 preimage = self._image_inverse(element)
-                return preimage in source and self.image_map()(source(preimage)) == element
+                from dzack_research.preamble.logic import conjunction
+
+                admitted = source.is_parent_of(preimage)
+                if admitted is False:
+                    return False
+                if admitted is not True:
+                    from dzack_research.preamble.logic import AtomicProposition
+
+                    return AtomicProposition("is_member", element, self)
+                return conjunction((admitted, self.image_map()(source(preimage)) == element))
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 # Membership is the finite existential proposition
                 # exists a in A, f(a) = element. It does not require
