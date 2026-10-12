@@ -3209,6 +3209,8 @@ class _ImageSetEngine:
                 preimage = self._image_inverse(element)
                 from dzack_research.preamble.logic import conjunction
 
+                if preimage is None:
+                    return False
                 admitted = source.is_parent_of(preimage)
                 if admitted is False:
                     return False
