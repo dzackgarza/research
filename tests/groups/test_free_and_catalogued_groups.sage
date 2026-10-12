@@ -613,6 +613,19 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
     quotient_generators = tuple(via_operation.group_generators())
     assert operation_projection(free.free_generator(labels(0))) == quotient_generators[0]
     assert operation_projection(free.free_generator(labels(1))) == quotient_generators[1]
+    # The quotient universal arrow and the chosen presentation arrow are
+    # literally the same Mor for a free source. Descent through that Mor
+    # must reconstruct the identity without erasing the chosen labels.
+    through_free_quotient = via_operation.descend_homomorphism(
+        operation_projection, through=operation_projection
+    )
+    assert through_free_quotient.domain() is via_operation
+    assert through_free_quotient.codomain() is via_operation
+    assert all(
+        through_free_quotient(operation_projection(free.free_generator(i)))
+        == operation_projection(free.free_generator(i))
+        for i in labels
+    )
     descended = quotient.descend_homomorphism(projection)
     assert descended.domain() is quotient
     assert descended.codomain() is quotient
