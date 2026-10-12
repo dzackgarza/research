@@ -4760,6 +4760,19 @@ class SymmetricGroups(OwnedParameterizedCategory):
 
             return FiniteGSets(self)(points, action)
 
+        def action_on(self, points):
+            r"""The selected permutation action is on its actual point set.
+
+            A different set needs a separately specified action morphism;
+            applying the Sage ordinal permutation directly to its labels
+            is not a group action on those labels.
+            """
+            assert points is self.natural_points(), (
+                "the full symmetric group's selected action is on its defining "
+                "point set; specify a group action to act on another set"
+            )
+            return self.natural_g_set()
+
 
 class GeneralLinearGroups(OwnedCategory):
     r"""Automorphism groups of the chosen standard free module ``R^n``."""
