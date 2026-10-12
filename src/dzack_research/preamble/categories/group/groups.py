@@ -5002,6 +5002,14 @@ class CoxeterGroups(OwnedCategory):
                 # Two commuting involutions generate C2 x C2.
                 return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
             return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
+        # All Coxeter generators commute precisely when every off-diagonal
+        # exponent is two. Their presentation then gives (C2)^rank, hence
+        # a finite abelian group, irrespective of the number of generators.
+        if all(
+            self._engine_coxeter_matrix[left, right] == 2
+            for left, right in combinations(indices, 2)
+        ):
+            return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
     def an_object(self):
