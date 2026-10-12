@@ -1324,7 +1324,7 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None, linear_data=None: (
         id(group),
         refinements,
         description,
@@ -1333,6 +1333,7 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
         id(symmetric_points),
         id(chosen_presentation),
         id(coxeter_matrix),
+        id(linear_data),
     )
 )
 def _own_group(
@@ -1344,6 +1345,7 @@ def _own_group(
     symmetric_points=None,
     chosen_presentation=None,
     coxeter_matrix=None,
+    linear_data=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1401,6 +1403,7 @@ def _own_group(
                     description=description,
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
+                    **({"selected_linear_data": linear_data} if linear_data is not None else {}),
                     **presentation_data,
                 )
             else:
@@ -1413,6 +1416,7 @@ def _own_group(
                     description=description,
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
+                    **({"selected_linear_data": linear_data} if linear_data is not None else {}),
                     free_basis=free_basis,
                     **presentation_data,
                 )
@@ -4782,7 +4786,21 @@ class GeneralLinearGroups(OwnedCategory):
         from sage.groups.matrix_gps.catalog import GL
 
         ring = self.coefficient_ring()
-        return _own_group(GL(self.degree(), _engine_ring(ring)), refinements=(self,))
+        return _own_group(
+            GL(self.degree(), _engine_ring(ring)),
+            refinements=(self,), linear_data=(ring, self.degree()),
+        )
+
+    class ParentMethods:
+        def __init__(self, selected_linear_data=None, **rest):
+            self._selected_linear_data = selected_linear_data
+            super().__init__(**rest)
+
+        def coefficient_ring(self):
+            return self._selected_linear_data[0]
+
+        def degree(self):
+            return self._selected_linear_data[1]
 
 class CoxeterGroups(OwnedCategory):
     r"""The Coxeter group defined by the actual selected Coxeter matrix."""

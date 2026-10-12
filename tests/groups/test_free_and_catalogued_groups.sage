@@ -112,6 +112,8 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert group in category
     assert category.coefficient_ring() is GF(2)
     assert category.degree() == 2
+    assert group.coefficient_ring() is category.coefficient_ring()
+    assert group.degree() == category.degree()
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
