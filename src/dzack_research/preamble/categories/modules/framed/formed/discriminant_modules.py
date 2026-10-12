@@ -219,15 +219,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             )
             return self.subgroup_on(elements)
 
-        def form_vanishes_on(self, elements) -> bool:
-            r"""Return whether the bilinear form vanishes on all pairs."""
-            zero = self.bilinear_value_module().zero()
-            return all(
-                self.b(left, right) == zero
-                for left in elements
-                for right in elements
-            )
-
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which the bilinear form vanishes."""
@@ -334,59 +325,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 )
 
             return SetMorphism(Sets().Mor(self, characters), character)
-
-        @cached_method
-        def invariant_factor_form(self):
-            r"""Return the bilinear isometry to a normalized framed torsion form.
-
-            The discriminant module itself remains the literal cokernel
-            ``L^# / L`` on the selected dual-basis classes.  The codomain is a
-            different formed module on the non-unit Smith generators.  The
-            discriminant module is built through ``FormModules`` on its
-            descended form, so the normalization transports that form.
-            """
-            return _invariant_factor_form_isomorphism(self, quadratic=False)
-
-        def p_adic_jordan_decomposition(self):
-
-            return _p_adic_jordan_decomposition(self, quadratic=False)
-
-        def p_adic_jordan_module_generators(self):
-
-            return _p_adic_jordan_module_generators(self, quadratic=False)
-
-        def p_adic_jordan_form(self):
-
-            return _p_adic_jordan_form(self, quadratic=False)
-
-        normal_form = p_adic_jordan_form
-
-        def is_isomorphic(self, other) -> bool:
-
-
-            if other not in TorsionBilinearFormModules(self.base_ring()):
-                return False
-            return _forms_are_isomorphic(self, other, quadratic=False)
-
-        is_isometric_to = is_isomorphic
-
-        def is_anti_isometric(self, other) -> bool:
-
-            if other not in TorsionBilinearFormModules(self.base_ring()):
-                return False
-            return self.is_isomorphic(other.twist(-1))
-
-        @cached_method
-        def automorphism_group(self):
-            r"""Return ``O(A,b)`` as live form automorphisms."""
-
-            return _torsion_form_automorphism_group(self, quadratic=False)
-
-        def orthogonal_group(self):
-            return self.automorphism_group()
-
-        def O(self):  # noqa: E743 - standard mathematical notation O(A,b)
-            return self.automorphism_group()
 
 
 class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
