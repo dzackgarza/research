@@ -5011,6 +5011,17 @@ class CoxeterGroups(OwnedCategory):
             for left, right in combinations(indices, 2)
         ):
             return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
+        # The affine A2 triangle has three bonds of exponent 3. Its
+        # reflection representation is the Euclidean triangular tiling:
+        # products of parallel affine reflections give nonzero translations
+        # of infinite order. Every standard parabolic embeds, so the same
+        # witness applies when this triangle occurs in higher rank.
+        if any(
+            all(self._engine_coxeter_matrix[left, right] == 3
+                for left, right in combinations(triple, 2))
+            for triple in combinations(indices, 3)
+        ):
+            return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
         # All Coxeter generators commute precisely when every off-diagonal
         # exponent is two. Their presentation then gives (C2)^rank, hence
         # a finite abelian group, irrespective of the number of generators.

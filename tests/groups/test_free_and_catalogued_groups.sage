@@ -162,6 +162,9 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     assert commuting_rank_three.is_subcategory(OwnedGroups().Commutative())
     infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
     assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
+    affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
+    assert affine_a2.is_subcategory(OwnedGroups().Infinite())
+    assert not affine_a2.is_subcategory(OwnedGroups().Finite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
