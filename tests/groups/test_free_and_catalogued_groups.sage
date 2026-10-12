@@ -154,6 +154,19 @@ def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
         assert False, "a nonfree cyclic group was admitted as a free source"
 
 
+def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
+    labels = Sets.Δ[1]
+    free = Groups.Free(index_set=labels)
+    a = free.free_generator(labels(0))
+    b = free.free_generator(labels(1))
+    quotient = FreeGroupQuotients(free, (a**2, b**3, (a*b)**2))()
+    projection = quotient.quotient_projection()
+    descended = quotient.descend_homomorphism(projection)
+    assert descended.domain() is quotient
+    assert descended.codomain() is quotient
+    assert all(descended(projection(free.free_generator(i))) == projection(free.free_generator(i)) for i in labels)
+
+
 def test_general_linear_group_retains_ring_and_rank() -> None:
     category = GeneralLinearGroups(GF(2), 2)
     group = category()

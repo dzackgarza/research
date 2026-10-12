@@ -4957,10 +4957,19 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             target = source_map.codomain()
             if any(source_map(relator) != target.one() for relator in self.defining_relations()):
                 raise ValueError("the map does not kill all defining relators")
-            original = tuple(source.group_generators())
-            quotiented = tuple(self.group_generators())
-            assert len(original) == len(quotiented), "the presentation must retain its generating family"
-            return self.Mor(target)({image: source_map(generator) for generator, image in zip(original, quotiented)})
+            # The presenting free basis indexes both generator maps.
+            # A positional zip of independently enumerated group-generator
+            # collections does not encode their selected identification.
+            labels = source.free_basis()
+            quotient_labels = self.selected_group_resolution().generating_set()
+            assert quotient_labels is labels, (
+                "presentation descent requires the quotient generators to be indexed "
+                "by the selected presenting free basis"
+            )
+            return self.Mor(target)(
+                {self.group_generator(label): source_map(source.free_generator(label))
+                 for label in labels}
+            )
 
         def quotient_projection(self):
             r"""The presentation epimorphism from the selected free group.
