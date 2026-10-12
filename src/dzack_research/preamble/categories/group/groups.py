@@ -922,12 +922,26 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     )
 
 
-def _engine_quotient_by_relators(group, relators):
-    r"""Return ``G / <<relators>>`` computed from the engine's presentation."""
+def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
+    r"""Return ``G / <<relators>>`` with its actual quotient presentation.
+
+    A selected free-quotient category is passed into the *same* owned
+    construction that receives the quotient engine. Re-wrapping an already
+    owned group is not a change of its category, so that intermediate
+    owned realization must not replace the selected quotient constructor.
+    """
     engine = _engine_group(group)
     match engine:
         case FreeGroup_class():
-            return _own_group(engine.quotient([group._to_engine(group(relator)) for relator in relators]))
+            quotient = engine.quotient([group._to_engine(group(relator)) for relator in relators])
+            if quotient_category is None:
+                return _own_group(quotient)
+            return _own_group(
+                quotient,
+                refinements=(quotient_category,),
+                presentation_source_group=group,
+                chosen_presentation=(group, quotient_category.relators()),
+            )
         case FinitelyPresentedGroup():
             # G = F/R and G/<<S>> = F/<<R, S>>, with S lifted to words in F.
             free = engine.free_group()
@@ -4898,12 +4912,7 @@ class FreeGroupQuotients(OwnedCategory):
 
     def _call_(self):
         source = self.free_group()
-        result = _engine_quotient_by_relators(source, self.relators())
-        return _own_group(
-            _engine_group(result), refinements=(self,),
-            presentation_source_group=source,
-            chosen_presentation=(source, self.relators()),
-        )
+        return _engine_quotient_by_relators(source, self.relators(), quotient_category=self)
 
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
