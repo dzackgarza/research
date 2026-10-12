@@ -3331,6 +3331,11 @@ class _ImageSetEngine:
 
                 return AtomicProposition("is_member", element, self)
 
+    # Python's `element in parent` forces a Boolean. Preserve an undecided
+    # existential image-membership proposition at the owned set interface,
+    # as condition sets already do.
+    is_parent_of = __contains__
+
     def _element_constructor_(self, element):
         membership = self.__contains__(element)
         if membership is False:
