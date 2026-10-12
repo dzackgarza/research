@@ -3217,7 +3217,10 @@ class _ImageSetEngine:
         # values while insertion order retains the selected enumeration.
         # Only a genuinely unhashable representation requires the general
         # equality procedure below, which can return an undecided result.
-        values = tuple(self.image_map()(point) for point in self.source_set())
+        source = self.source_set()
+        if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+            return None
+        values = tuple(self.image_map()(point) for point in source)
         try:
             return tuple(dict.fromkeys(values))
         except TypeError:
