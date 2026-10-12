@@ -2146,11 +2146,19 @@ def _discrete_diagram(factors, target_category=None):
             )
         target = target_category
     else:
-        target = (
-            Cat().join(tuple(obj.category() for obj in family))
-            if target_category is None
-            else target_category
-        )
+        if target_category is not None:
+            target = target_category
+        elif family.constant_value() is not None:
+            target = family.constant_value().category()
+        elif family.selected_diagram() is not None:
+            target = family.selected_diagram().codomain()
+        else:
+            if not family.cardinality().is_finite() or family.index_set() not in EnumeratedSets():
+                raise TypeError(
+                    "the codomain of a nonconstant diagram without finite enumerated indices "
+                    "requires a selected category-valued diagram or an explicit target category"
+                )
+            target = Cat().join(tuple(obj.category() for obj in family))
 
     index = DiscreteCategory(family.index_set())
     return Cat().Mor(index, target).discrete_diagram(family)
