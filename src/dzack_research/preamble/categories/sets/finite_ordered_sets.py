@@ -444,8 +444,9 @@ class FiniteOrderedSets(OwnedCategory):
             Ordered as this set, followed by the points of ``other`` not
             already present, in the order of ``other``.
             """
-            assert other in Sets() and Sets().is_provably_finite(other), (
-                f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
+            assert other in Sets() and Sets().is_provably_finite(other) and other in EnumeratedSets(), (
+                f"the ordered union with {self} requires a finite enumerated second set, but {other} "
+                "does not supply a selected finite enumeration"
             )
             return FiniteOrderedSets()(chain(self, other))
 

@@ -165,6 +165,20 @@ def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
     )
 
 
+def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
+    r"""A finite cardinality does not provide a canonical order for the union."""
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    left = finite_ordered_set(("a", "b"))
+    unordered = Set(("b", "c"))
+    try:
+        left.union(unordered)
+    except (AssertionError, TypeError):
+        pass
+    else:
+        raise AssertionError("unordered finite points were treated as an ordered union")
+
+
 def test_finite_indexed_enumeration_evaluates_selected_points_once() -> None:
     r"""The finite presentation retains its chosen values across all operations."""
     from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
