@@ -2923,6 +2923,7 @@ class _ConditionSetEngine:
         self._universe = universe
         self._predicate = predicate
         self._admitted_members = []
+        self._admitted_member_ids = set()
         super().__init__(facade=True, **rest)
 
     def _retain_admitted_member(self, element):
@@ -2935,8 +2936,9 @@ class _ConditionSetEngine:
         the defining predicate and not a rule for admitting arbitrary data.
         """
         point = self.universe()(element)
-        if not any(point is prior or (point == prior) is True for prior in self._admitted_members):
+        if id(point) not in self._admitted_member_ids:
             self._admitted_members.append(point)
+            self._admitted_member_ids.add(id(point))
         return point
 
     def universe(self) -> Sets().ObjectType:
@@ -2996,7 +2998,7 @@ class _ConditionSetEngine:
                 return False
             case True:
                 point = universe(element)
-                if any(point is prior or (point == prior) is True for prior in self._admitted_members):
+                if id(point) in self._admitted_member_ids:
                     return True
                 member = self.predicate()(point)
                 if member is True:
