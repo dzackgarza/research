@@ -481,6 +481,12 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
         tuple(quotient.group_generators()), check=True
     )
     try:
+        quotient.descend_homomorphism(identity_on_source, through=identity_on_source)
+    except ValueError as error:
+        assert "selected normal-quotient" in str(error)
+    else:
+        assert False, "an arbitrary group Mor was admitted as a quotient witness"
+    try:
         second_quotient.descend_homomorphism(
             identity_on_source, through=second_projection
         )

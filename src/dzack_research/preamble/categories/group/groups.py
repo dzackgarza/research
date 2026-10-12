@@ -3993,6 +3993,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             projection = self.Mor(quotient)(quotient_generators, check=True)
             if any(projection(relator) != quotient.one() for relator in relators):
                 raise ValueError("the selected quotient projection does not kill its defining relators")
+            # Construction provenance supplies the quotient universal
+            # property; an arbitrary surjective-looking group map is not
+            # enough to assert it at the presentation descent owner.
+            projection._selected_normal_quotient = (self, quotient, relators)
             return quotient, projection
 
         def finite_image_lifts(
@@ -5277,6 +5281,9 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             if through is not None:
                 if through.codomain() is not self or through.domain() is not source_map.domain():
                     raise ValueError("quotient descent needs a Mor from the map's source into this quotient")
+                witness = getattr(through, "_selected_normal_quotient", None)
+                if witness is None or witness[0] is not through.domain() or witness[1] is not self:
+                    raise ValueError("quotient descent requires the selected normal-quotient construction Mor")
                 target = source_map.codomain()
                 free_map = source.Mor(target)(
                     tuple(source_map(through(projection(source.free_generator(label))))
