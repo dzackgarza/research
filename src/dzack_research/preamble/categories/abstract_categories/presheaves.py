@@ -401,7 +401,7 @@ class CoveringFamilyMorphism(Morphism):
     impose additional compatibility with those spans in a subclass.
     """
 
-    def __init__(self, parent, index_map, member_maps, *, target_map=None) -> None:
+    def __init__(self, parent, index_map, member_maps, *, target_map=None, check=False) -> None:
         Morphism.__init__(self, parent)
         source = self.domain()
         target = self.codomain()
@@ -446,11 +446,8 @@ class CoveringFamilyMorphism(Morphism):
                     f"the component {component} for {label} is not a morphism {fine_member.domain()} -> "
                     f"{coarse_member.domain()} of {site}"
                 )
-            if coarse_member * component != self.target_map() * fine_member:
-                raise ValueError(
-                    f"the component {component} for {label} does not commute over the targets: "
-                    f"{coarse_member} o {component} != {self.target_map()} o {fine_member}"
-                )
+        if check:
+            self.validate_triangles()
 
     def index_map(self, fine_index):
         return self._index_map[self.domain().index_set()(fine_index)]
@@ -462,6 +459,31 @@ class CoveringFamilyMorphism(Morphism):
 
     def target_map(self):
         return self._target_map
+
+    def triangle_decision(self, fine_index):
+        source = self.domain()
+        target = self.codomain()
+        label = source.index_set()(fine_index)
+        coarse_label = self.index_map(label)
+        return (
+            target.member(coarse_label) * self.component(label)
+            == self.target_map() * source.member(label)
+        )
+
+    def triangles_decision(self):
+        from dzack_research.preamble.logic import conjunction
+
+        return conjunction(
+            self.triangle_decision(label) for label in self.domain().index_set()
+        )
+
+    def validate_triangles(self):
+        decision = self.triangles_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a morphism of covering families: at least one component triangle does not commute"
+            )
+        return decision
 
     def __mul__(self, other):
         match other:
@@ -481,20 +503,29 @@ class CoveringFamilyMorphism(Morphism):
             case _:
                 return NotImplemented
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, CoveringFamilyMorphism)
-            and other.parent() is self.parent()
-            and other.target_map() == self.target_map()
-            and all(
-                other.index_map(label) == self.index_map(label)
-                and other.component(label) == self.component(label)
-                for label in self.domain().index_set()
+    def __eq__(self, other):
+        from dzack_research.preamble.logic import conjunction
+
+        if not isinstance(other, CoveringFamilyMorphism) or other.parent() is not self.parent():
+            return False
+        return conjunction(
+            (
+                other.target_map() == self.target_map(),
+                *(
+                    equality
+                    for label in self.domain().index_set()
+                    for equality in (
+                        other.index_map(label) == self.index_map(label),
+                        other.component(label) == self.component(label),
+                    )
+                ),
             )
         )
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __ne__(self, other):
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
 
 class CoveringFamilyMor(CategoricalMor):
@@ -502,7 +533,7 @@ class CoveringFamilyMor(CategoricalMor):
 
     Element = CoveringFamilyMorphism
 
-    def _element_constructor_(self, index_map, member_maps=None, *, target_map=None):
+    def _element_constructor_(self, index_map, member_maps=None, *, target_map=None, check=False):
         match index_map:
             case CoveringFamilyMorphism() if member_maps is None:
                 if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
@@ -532,6 +563,7 @@ class CoveringFamilyMor(CategoricalMor):
             index_map,
             member_maps,
             target_map=target_map,
+            check=check,
         )
 
     @cached_method
@@ -569,9 +601,8 @@ def _covering_family(category: Category, target: Parent, members, overlaps, *, _
     ``members`` are the cover arrows ``U_i -> U``; ``overlaps`` maps each pair
     of member labels to the span ``U_i <- U_ij -> U_j`` of the site, built by
     ``site.span``.  A pair given in the reverse order ``(j, i)`` carries the
-    span ``U_j <- U_ij -> U_i``.  Each overlap is checked to commute over
-    ``U``; the family is then built by ``category``'s entry on the target, the
-    members and the overlap spans.
+    span ``U_j <- U_ij -> U_i``.  The family retains these typed overlap spans;
+    their commutation equations are structural laws checked only on request.
     """
     site = category.site_category()
     if target not in site:
@@ -649,11 +680,6 @@ def _covering_family(category: Category, target: Parent, members, overlaps, *, _
             raise ValueError(
                 f"the right map of the overlap {overlap_object} must be a morphism {overlap_object} -> "
                 f"{right.domain()} of {site}, but it is {right_map}"
-            )
-        if (left * left_map == right * right_map) is not True:
-            raise ValueError(
-                f"the overlap {overlap_object} of {left} and {right} does not commute: "
-                f"{left} o {left_map} != {right} o {right_map}"
             )
         spans[pair] = span
     overlap_family = finite_indexed_family(
@@ -860,6 +886,28 @@ class CoveringFamilies(OwnedCategory):
 
         def overlaps(self) -> IndexedFamily:
             return self._overlaps
+
+        def overlap_commutation_decision(self, left_index, right_index):
+            span = self.overlap_span(left_index, right_index)
+            left = self.member(left_index)
+            right = self.member(right_index)
+            return left * span.left_leg() == right * span.right_leg()
+
+        def overlaps_commutation_decision(self):
+            from dzack_research.preamble.logic import conjunction
+
+            return conjunction(
+                self.overlap_commutation_decision(pair[0], pair[1])
+                for pair in self.pair_index_set()
+            )
+
+        def validate_overlaps(self):
+            decision = self.overlaps_commutation_decision()
+            if decision is False:
+                raise ValueError(
+                    f"{self} is not a valid covering-family presentation: at least one chosen overlap does not commute"
+                )
+            return decision
 
         def _repr_(self) -> str:
             return f"Covering family of {self.target()}"
