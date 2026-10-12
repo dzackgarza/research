@@ -4978,22 +4978,23 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             target = source_map.codomain()
             if any(source_map(relator) != target.one() for relator in self.defining_relations()):
                 raise ValueError("the map does not kill all defining relators")
-            # The presenting free basis indexes both generator maps.
-            # A positional zip of independently enumerated group-generator
-            # collections does not encode their selected identification.
+            # The presentation projection, rather than an identity test on
+            # enumeration objects, determines the generator correspondence.
+            # Different but isomorphic index presentations still define the
+            # same universal factorization when their projection is chosen.
             labels = source.free_basis()
-            quotient_labels = self.selected_group_resolution().generating_set()
-            assert quotient_labels is labels, (
-                "presentation descent requires the quotient generators to be indexed "
-                "by the selected presenting free basis"
-            )
+            generator_images = {
+                projection(source.free_generator(label)): source_map(source.free_generator(label))
+                for label in labels
+            }
+            if not all(generator in generator_images for generator in self.group_generators()):
+                raise ValueError("the chosen presentation projection does not cover the quotient generators")
             # The quotient's engine generator presentation may differ from
             # its chosen free-source presentation. Validate the induced
             # images against the former as well: a mere dictionary of
             # images does not by itself establish a group homomorphism.
             descended = self.Mor(target)(
-                {self.group_generator(label): source_map(source.free_generator(label))
-                 for label in labels}, check=True
+                generator_images, check=True
             )
             # The factorization equation is a statement about actual Mor
             # composition, not just the engine's chosen presentation.
