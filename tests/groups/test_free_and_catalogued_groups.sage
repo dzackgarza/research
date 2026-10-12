@@ -98,6 +98,22 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
         assert False, "an image of order three was accepted for a C4 generator"
 
 
+def test_gap_group_morphism_requires_its_selected_endpoints() -> None:
+    from dzack_research.preamble.categories.group.groups import _gap_model
+    from sage.libs.gap.libgap import libgap
+
+    two = Groups.C(2)
+    three = Groups.C(3)
+    identity_of_two = libgap.IdentityMapping(_gap_model(two))
+    try:
+        three.Mor(three)(identity_of_two)
+    except ValueError as error:
+        assert "does not have the selected endpoints" in str(error)
+    else:
+        assert False, "a GAP map of C2 was admitted as an endomorphism of C3"
+
+
+
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
     group = Groups.C(4)
     generator = group.group_generators()[0]

@@ -1949,6 +1949,18 @@ class GroupMorphism:
         self._generator_images = None
         match realization:
             case GapElement():
+                # Endpoint agreement is part of the datum of every Mor,
+                # independently of optional homomorphism-law checking.
+                # Without this, a GAP map between different groups could
+                # be installed in Mor(G,H) when check=False (the default).
+                if (
+                    realization.Source() != _gap_model(parent.domain())
+                    or realization.Range() != _gap_model(parent.codomain())
+                ):
+                    raise ValueError(
+                        f"the supplied GAP group map does not have the selected endpoints "
+                        f"{parent.domain()} and {parent.codomain()}"
+                    )
                 self._gap_homomorphism = realization
                 evaluator = self._evaluate_gap
             case dict():
