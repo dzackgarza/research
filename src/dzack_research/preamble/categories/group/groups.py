@@ -1331,9 +1331,15 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
         id(free_basis),
         id(presentation_source_group),
         id(symmetric_points),
-        id(chosen_presentation),
+        # These two inputs are assembled as temporary tuples at their
+        # constructors. Their tuple identities are neither mathematical
+        # data nor stable cache keys: a later temporary may reuse that id.
+        None if chosen_presentation is None else (
+            id(chosen_presentation[0]),
+            tuple(id(relator) for relator in chosen_presentation[1]),
+        ),
         id(coxeter_matrix),
-        id(linear_data),
+        None if linear_data is None else (id(linear_data[0]), linear_data[1]),
     )
 )
 def _own_group(

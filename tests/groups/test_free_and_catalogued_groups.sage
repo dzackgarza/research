@@ -131,6 +131,14 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
+    # Repeated constructions must retain the same selected ring and rank;
+    # the temporary pair passed to the engine cache is not a datum identity.
+    second_category = GeneralLinearGroups(GF(3), 2)
+    second_group = second_category()
+    assert second_group.coefficient_ring() is GF(3)
+    assert second_group.degree() == 2
+    assert second_group.order() == 48
+
 
 def test_the_heisenberg_group_over_z_mod_three_has_twenty_seven_elements() -> None:
     assert Groups.Heisenberg(1, 3).order() == 27
