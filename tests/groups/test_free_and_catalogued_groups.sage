@@ -603,6 +603,16 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
     b = free.free_generator(labels(1))
     quotient = FreeGroupQuotients(free, (a**2, b**3, (a*b)**2))()
     projection = quotient.quotient_projection()
+    via_operation, operation_projection = free.quotient_by_relators(
+        (a**2, b**3, (a*b)**2), return_projection=True
+    )
+    # The quotient arrow must use the actual labelled free source, not
+    # the incidental ordinal order of GAP's quotient generators.
+    assert operation_projection is via_operation.quotient_projection()
+    assert operation_projection.domain() is free
+    quotient_generators = tuple(via_operation.group_generators())
+    assert operation_projection(free.free_generator(labels(0))) == quotient_generators[0]
+    assert operation_projection(free.free_generator(labels(1))) == quotient_generators[1]
     descended = quotient.descend_homomorphism(projection)
     assert descended.domain() is quotient
     assert descended.codomain() is quotient
