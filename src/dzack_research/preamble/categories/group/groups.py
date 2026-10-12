@@ -4808,8 +4808,12 @@ class SymmetricGroups(OwnedParameterizedCategory):
             points = self.natural_points()
             if point not in points:
                 return point
-            position = int(points.ranking_map()(points(point))) + 1
-            return tuple(points)[int(backend_element(position)) - 1]
+            ranking = points.ranking_map()
+            position = int(ranking(points(point))) + 1
+            # The inverse of the selected ranking map is the mathematical
+            # unranking operation, even when the enumeration is not stored
+            # as a Python tuple or has a nontrivial selected order.
+            return ranking.inverse()(int(backend_element(position)) - 1)
 
         def natural_points(self):
             return self._symmetric_points
