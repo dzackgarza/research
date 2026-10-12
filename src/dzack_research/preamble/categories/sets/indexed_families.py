@@ -194,6 +194,11 @@ class IndexedFamily[IndexT, ValueT]:
             # A functor acts on the entire selected diagram, not merely on
             # its object callback. This retains morphism transport and the
             # codomain witness for nonconstant infinite factor families.
+            # When the diagram lands in a stronger category, its canonical
+            # inclusion is part of the composite; dropping the diagram or
+            # rejecting a legitimate restriction would lose its arrow data.
+            if diagram.codomain() is not function.domain() and diagram.codomain().is_subcategory(function.domain()):
+                diagram = diagram.then(diagram.codomain().inclusion_into(function.domain()))
             return indexed_family(self.index_set(), diagram.then(function), name=name)
         constant = self.constant_value()
         if constant is not None:
