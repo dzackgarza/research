@@ -1120,7 +1120,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `EvenTwoElementaryLattices` in `src/dzack_research/preamble/categories/lattices.py`.
   **Closure assertions:** the complete `EvenTwoElementaryLattices` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EvenTwoElementaryLattices`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-fiberproductschemes`**. **Needs:** none.
+- [x] **`placement-owner-fiberproductschemes`**. **Needs:** none.
   **Owner pass:** `FiberProductSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `FiberProductSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiberProductSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
