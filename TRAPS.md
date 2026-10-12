@@ -10,6 +10,46 @@ Write to it in the turn the measurement is made.
 
 ## Sage
 
+### Sage twists a rank-28 lattice in milliseconds; owned form scaling was reconstructing its Gram through the Mor
+
+Measured 2026-10-12, SageMath 10.10.beta8, one process and one first call per entry, excluding startup. The specimens are the *stored Gram matrices* of lattice-db `3ICT` (rank 23, odd unimodular), `3ICU` (rank 22, discriminant 3), and `3ICV` (rank 28, even unimodular). Construct Sage's `IntegralLattice(G)` directly, then call `.twist(2)`; construct the preamble's `Lattices(ZZ)(rows)` on those same rows, then call `.twist(2)` on the preamble object. The former measures the engine, the latter the owned constructor. These are individual data points, not an inferred asymptotic curve.
+
+| card, rank | Sage `IntegralLattice(G).twist(2)` | owned before repair | owned after repair |
+| --- | ---: | ---: | ---: |
+| `3ICT`, 23 | 0.00747 s | 16.2713 s | 0.0280 s |
+| `3ICU`, 22 | 0.00335 s | 6.7617 s after reusing the source form, before retaining its Gram | 0.0253 s |
+| `3ICV`, 28 | 0.00461 s | 17.5700 s after reusing the source form, before retaining its Gram | 0.0383 s |
+
+Source tracing identified **two** redundant object constructions. `_scaled_form_module` in `categories/modules/framed/formed/form_modules.py` first used `source._formed_form()`, rebuilding the form on the already formed source object instead of reading the original selected form `source.form()` and reusing its actual Hom parent. Then `forms(scalar * form.gram_tensor())` received the complete scaled tensor but discarded that knowledge: `scaled.gram_tensor()` derived it again by evaluating pairs through the Mor. On rank 23, a timed first call to `scaled.gram_tensor().is_symmetric()` cost 8.1743 s; an immediate subsequent `_form_module(scaled, ...)` took 0.0062 s. Thus **recovering the Gram**, not the intrinsic symmetry equality, incurred almost all of that first-call cost. This was preamble overhead, not Sage's twisting algorithm.
+
+The selected route reads `source.form()`, uses its existing `form.parent()` as the Hom, and retains the supplied scaled tensor in the morphism's established `gram_tensor` cache (the same mechanism already used by `_form_of_gram` in `categories/_lattice.py`). Scalar change transports symmetry, finite generation, and unit-scalar unimodularity through the relevant category inclusions; parity of a scaled lattice is determined from the already selected diagonal. No category check reconstructs the Hom or re-evaluates all generator pairs.
+
+The same investigation found `FreeFormModules.is_unimodular()` computing the full algebraic correlation and testing its injectivity/surjectivity instead of using the finite-free determinant criterion. On the rank-28 even unimodular orthogonal sum `2U+3E_8(-1)`, the old `L.twist(2).is_unimodular()` cost 10.6852 s; reading the Gram determinant in the existing matrix owner gives `False` in 0.0233 s. This route applies to a finite free scalar-valued form over a commutative ring, where the correlation is an isomorphism exactly when its determinant is a unit. It is not applied to arbitrary unframed or non-scalar-valued forms.
+
+Reproduce native timings with `direnv exec /home/dzack/research python3`, `sage.modules.free_quadratic_module_integer_symmetric.IntegralLattice`, and `sage.all.matrix(ZZ, frontmatter.load('lattice-database/lattices/3ICT.md').metadata['gram_tensor'])`. Reproduce owned timings by passing the `gram_tensor` **rows**, not a raw Sage matrix, to `dzack_research.preamble.categories.lattices.Lattices(ZZ)`, timing `L.twist(2)` with `time.perf_counter`. Do not time `L.twist(2).level()` as one operation: after the repair the twist takes milliseconds and the level itself is a separate exact matrix computation.
+
+Depends on this: all lattice twists, formed-module value scalings, lattice levels of twists, signatures, Gram-based categorizations, and repeated form constructions throughout the preamble.
+
+### A rank-28 unimodular discriminant group takes 0.05 s in Sage; the former owned presentation expanded a zero divided square
+
+Observed 2026-10-12, SageMath 10.10.beta8, on the actual Gram matrix of lattice-db card `029K`, `II_{2,26}=2U+3E_8(-1)`. `IntegralLattice(G).discriminant_group()` uses `TorsionQuadraticModule(self.dual_lattice(), self)` (`sage/modules/free_quadratic_module_integer_symmetric.py`, `discriminant_group`), and computes the *trivial* discriminant group directly. It does not spend minutes constructing the discriminant module.
+
+| lattice (Gram data from `029K`) | rank | Sage `IntegralLattice(G).discriminant_group()` | invariant factors |
+| --- | ---: | ---: | --- |
+| first hyperbolic block `U` | 2 | 0.0579 s | `()` |
+| one `E_8(-1)` block | 8 | 0.0210 s | `()` |
+| full `029K` | 28 | 0.0477 s | `()` |
+
+One invocation and one timing per size, excluding Sage startup and lattice construction. Earlier owned-first-call probes on this rank-28 lattice had reported `is_p_elementary(2)` at 88.28 s (`029K`) and 91.30 s (`3ICV`), and `discriminant_module()` at 243.3 s (`029K`, separate run); the latter figure was supplied by the interrupted probe, not reproduced in this investigation. After the first call, the cached `discriminant_module()` made repeated `is_p_elementary(2)` instantaneous.
+
+The preamble's `L.discriminant_module()` instead constructs the *selected* cokernel `coker(L -> L^#)` and forms it over `Q/2Z`. The original quadratic-form classifier expands `Gamma^2(A_L)` using the 28 selected generators and relations even when `A_L=0`. Profiling rank 8 gave 3.70 s cumulative in `module.divided_square()` out of 5.94 s under cProfile. Avoiding this zero-module expansion, while retaining the selected 28-generator cokernel, reduced the rank-28 discriminant construction to 10.758 s. The residual 9.276 s was in `correlation_morphism().cokernel()`: its lazy generator map evaluated all 784 pairings separately, each rebuilding the Gram's engine matrix in `tensor.contract` (rank-12 cProfile: 144 pairings, 0.93 s out of 1.53 s cokernel time).
+
+The selected route now forms `Gamma^2(0)=0`, uses the zero quadratic form on a zero quotient, and constructs the finite-rank correlation morphism by *currying the Gram tensor once*, through the tensor owner's `curry_bilinear` and the existing `Mor.from_rows`. On `029K` in one fresh preamble process: correlation construction 0.331 s, subsequent `discriminant_module()` 0.834 s, total 1.165 s (one run, excluding preamble startup and lattice construction). This preserves the literal selected cokernel, 28 named quotient generators, the form and the correlation/projection maps. It does **not** replace the owned discriminant module with Sage's normalized finite quadratic module: Sage's normalized presentation does not retain the selected cokernel data.
+
+Reproduce native measurements with `direnv exec /home/dzack/research python3` in `/home/dzack/research`, reading the `gram_tensor:` rows of `lattice-database/lattices/029K.md` using `ast.literal_eval`, making `sage.all.matrix(ZZ, rows)` and `sage.modules.free_quadratic_module_integer_symmetric.IntegralLattice(G)`, then timing `discriminant_group()`. Reproduce the owned measurements in a separate process on the same **nested list** rows (`Lattices(ZZ)(rows)`, since Sage matrices have tensor type `(1,1)`), timing `L.correlation_morphism()` and `L.discriminant_module()` with `time.perf_counter()`. The rank-28 row is deliberately one data point per route, not an inferred asymptotic cost curve.
+
+Depends on this: discriminant modules and forms, `L.is_p_elementary(p)`, and through them lattice-db `delta` and other discriminant-dependent certifications. The separate missing-`delta()` category-join regression is recorded in `COMPLAINTS.md`.
+
 ### Lazy Taylor series do not implement `is_field()`
 
 On SageMath 10.10.beta10, the lazy Taylor series parent used for `QQ[[t]]` raises `NotImplementedError` from `is_field()` rather than returning a Boolean.

@@ -2704,7 +2704,20 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             return _algebraic_correlation_morphism(self, injective=injective)
 
         def is_unimodular(self) -> bool:
-            r"""Return whether the algebraic correlation is an isomorphism."""
+            r"""Return whether the algebraic correlation is an isomorphism.
+
+            On a finite free module over a commutative ring, its selected
+            matrix is the Gram tensor, and the correlation is invertible
+            exactly when the Gram determinant is a unit.  No correlation
+            morphism or dual-module presentation needs constructing.
+            """
+            ring = self.base_ring()
+            if (
+                self.module_rank().is_finite()
+                and self.value_module() is ring
+                and ring in OwnedRings().Commutative()
+            ):
+                return bool(self.determinant().is_unit())
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             correlation = _algebraic_correlation_morphism(
                 self, injective=injective
@@ -2732,6 +2745,13 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
             def gram_matrix(self, basis=None):
                 r"""Return the coordinate matrix of the selected finite free form."""
+                if basis is None and _is_bilinear_form(self.form()) and self.value_module() in OwnedRings():
+                    size = int(self.module_rank())
+                    gram = self.gram_tensor()
+                    return self.value_module().matrix_space(size, size).from_rows(
+                        (gram[row, column] for column in range(size))
+                        for row in range(size)
+                    )
                 selected = tuple(self.module_generators()) if basis is None else tuple(basis)
                 if any(vector.parent() is not self for vector in selected):
                     raise ValueError(
@@ -2848,13 +2868,23 @@ def _scaled_form_module(source, scalar):
     """
     from dzack_research.preamble.categories.lattices import Lattices
 
-    form = source._formed_form()
+    # Scaling changes the selected form on its original module, not the
+    # form re-expressed on the already-formed parent.  The latter constructs
+    # a second tensor-product Hom object before any scaling takes place.
+    form = source.form()
     module = form.module()
     values = source.value_module()
     if _is_bilinear_form(form):
-        forms = module.bilinear_forms(values)
+        # This is already the defining Hom object of the form; rebuilding it
+        # from the module can allocate a fresh rank^2 tensor-power framing.
+        forms = form.parent()
         if form.codomain() in OwnedRings() and _has_finite_framing(module):
-            scaled = forms(scalar * form.gram_tensor())
+            scaled_gram = scalar * form.gram_tensor()
+            scaled = forms(scaled_gram)
+            # The constructor was supplied the complete Gram tensor.  Retain
+            # it at the form's existing cached datum rather than deriving it
+            # again by evaluating all n^2 generator pairs through the Mor.
+            scaled.gram_tensor.set_cache(scaled_gram)
         elif _has_finite_framing(module):
             scaled = forms(form.coordinate_values().map(lambda value: scalar * value))
         else:
@@ -2868,6 +2898,14 @@ def _scaled_form_module(source, scalar):
 
     ring = source.base_ring()
     categories = [FormValueScalings(ring)]
+    if _is_bilinear_form(form) and source in BilinearFormModules(ring).Symmetric():
+        # (sb)(x,y) = s b(x,y) = s b(y,x) = (sb)(y,x): symmetry
+        # transports through scalar change, without inspecting any entries.
+        categories.append(BilinearFormModules(ring).Symmetric())
+    if scalar.is_unit() and source in FormModules(ring).Unimodular():
+        # Multiplication by a unit is an isomorphism on the value module;
+        # the correlation of sb is the correlation of b composed with it.
+        categories.append(FormModules(ring).Unimodular())
     if source in FormModules(ring).Nondegenerate() and (
         scalar.is_unit() or (ring in OwnedIntegralDomains() and scalar != ring.zero())
     ):
@@ -2880,6 +2918,19 @@ def _scaled_form_module(source, scalar):
     if source in Lattices(ring):
         categories.append(Lattices(ring))
         data["gram_tensor"] = scaled.gram_tensor()
+        if source in Lattices(ring).FinitelyGenerated():
+            categories.append(Lattices(ring).FinitelyGenerated())
+        # The lattice parity axiom is determined by the scaled diagonal.
+        # The tensor has already been supplied and cached; no new pairing
+        # evaluation, tensor-product classifier or determinant is required.
+        from dzack_research.preamble.categories._lattice import _gram_is_even
+
+        if _gram_is_even(data["gram_tensor"], ring) is True:
+            categories.append(Lattices(ring).Even())
+        # The zero free module has an isomorphism 0 -> Hom(0,R) for every
+        # scalar, including zero and nonunits.
+        if source.module_rank().is_finite() and int(source.module_rank()) == 0:
+            categories.extend((Lattices(ring).Nondegenerate(), Lattices(ring).Unimodular()))
     return _form_module(scaled, _extra_categories=categories, _extra_construction_data=data)
 
 
@@ -2922,8 +2973,16 @@ def _form_module(
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
         has_finite_scalar_gram = form.codomain() in OwnedRings() and _has_finite_framing(module)
-        if has_finite_scalar_gram and form.gram_tensor().is_symmetric():
-            categories.append(BilinearFormModules(base_ring).Symmetric())
+        symmetric = BilinearFormModules(base_ring).Symmetric()
+        # An existing category inclusion already establishes symmetry.  For
+        # example Lattices(R) is a subcategory of symmetric bilinear forms,
+        # and scalar changes preserve this property.  Rechecking all tensor
+        # entries at construction would redo an established fact.
+        known_symmetric = any(
+            category.is_subcategory(symmetric) for category in _extra_categories
+        )
+        if known_symmetric or (has_finite_scalar_gram and form.gram_tensor().is_symmetric()):
+            categories.append(symmetric)
     else:
         categories.append(QuadraticFormModules(base_ring))
     categories.extend(tuple(_extra_categories))

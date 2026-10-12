@@ -52,6 +52,86 @@ def test_form_index_raising_lowering_twist_and_fraction_field_raise() -> None:
     assert twisted.b(twisted.module_generator(0), twisted.module_generator(1)) == 3
 
 
+def test_scaling_bilinear_forms_retains_the_original_module_and_selected_hom() -> None:
+    module = ZZ.free_module(2)
+    symmetric = module.equip_bilinear_form(ZZ, [[2, 1], [1, 2]])
+    asymmetric = module.equip_bilinear_form(ZZ, [[1, 2], [0, 1]])
+    symmetry = BilinearFormModules(ZZ).Symmetric()
+
+    for formed in (symmetric, asymmetric):
+        triple = formed.twist(3)
+        sextuple = triple.twist(2)
+        assert triple.unformed_module() is module
+        assert triple.form().parent() is formed.form().parent()
+        assert sextuple.unformed_module() is module
+        assert sextuple.form().parent() is formed.form().parent()
+        assert triple.gram_tensor() == 3 * formed.gram_tensor()
+        assert sextuple.gram_tensor() == 6 * formed.gram_tensor()
+        assert (triple in symmetry) == (formed in symmetry)
+        assert triple.twist(ZZ.one()) is triple
+        assert triple.twist(-3).gram_tensor() == -9 * formed.gram_tensor()
+
+
+def test_zero_scaling_of_a_unimodular_form_preserves_symmetry_not_nondegeneracy() -> None:
+    lattice = Lattices(ZZ)("U")
+    zero = lattice.twist(0)
+
+    assert zero.unformed_module() is lattice.unformed_module()
+    assert zero.gram_tensor() == tensor(ZZ, (), (2, 2), [[0, 0], [0, 0]])
+    assert zero in BilinearFormModules(ZZ).Symmetric()
+    assert zero in Lattices(ZZ).Even().FinitelyGenerated()
+    assert not zero.is_nondegenerate()
+    assert zero.b(zero.module_generator(0), zero.module_generator(1)) == 0
+
+
+def test_lattice_scalar_twists_transport_evenness_and_unimodularity_axioms() -> None:
+    lattices = Lattices(ZZ)
+    form_modules = FormModules(ZZ)
+    plane = lattices("U")
+    sign_change = plane.twist(-1)
+    doubled = plane.twist(2)
+
+    assert sign_change in lattices.Even().FinitelyGenerated()
+    assert sign_change in form_modules.Unimodular()
+    assert sign_change.is_unimodular()
+    assert doubled in lattices.Even().FinitelyGenerated()
+    assert doubled in form_modules.Nondegenerate()
+    assert doubled not in form_modules.Unimodular()
+    assert not doubled.is_unimodular()
+
+
+def test_finite_free_bilinear_form_is_unimodular_exactly_for_unit_determinant() -> None:
+    module = ZZ.free_module(2)
+    for gram, expected in (
+        ([[1, 0], [0, 1]], True),
+        ([[1, 2], [3, 5]], True),
+        ([[2, 1], [1, 2]], False),
+    ):
+        formed = module.equip_bilinear_form(ZZ, gram)
+        assert formed.is_unimodular() is expected
+        assert formed.twist(-1).is_unimodular() is expected
+
+
+def test_even_unimodular_rank_28_twists_retain_the_original_module_and_form_classifier() -> None:
+    lattices = Lattices(ZZ)
+    hyperbolic = lattices("U")
+    negative_e8 = lattices("E8").twist(-1)
+    lattice = hyperbolic + hyperbolic + negative_e8 + negative_e8 + negative_e8
+    doubled = lattice.twist(2)
+    sextuple = doubled.twist(3)
+
+    assert lattice.module_rank() == cardinal(28)
+    assert doubled.unformed_module() is lattice.unformed_module()
+    assert doubled.form().parent() is lattice.form().parent()
+    assert sextuple.unformed_module() is lattice.unformed_module()
+    assert sextuple.form().parent() is lattice.form().parent()
+    assert doubled.gram_tensor() == 2 * lattice.gram_tensor()
+    assert sextuple.gram_tensor() == 6 * lattice.gram_tensor()
+    assert doubled in SymmetricBilinearFormModules(ZZ)
+    assert doubled.is_even() and doubled.is_nondegenerate()
+    assert not doubled.is_unimodular()
+
+
 def test_form_base_change_keeps_the_pairing_over_the_rationals() -> None:
     form = _hyperbolic_form()
     inclusion = ZZ.Mor(QQ)(lambda integer: QQ(integer))
