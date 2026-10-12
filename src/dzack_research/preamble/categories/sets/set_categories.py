@@ -2181,7 +2181,16 @@ class SetInjection(OwnedSetMorphism):
                 pairs = tuple((self(point), point) for point in domain)
                 try:
                     lookup = dict(pairs)
+                    if len(lookup) != len(pairs):
+                        raise ValueError("a set injection cannot identify distinct source points")
                 except TypeError:
+                    for position, (key, _) in enumerate(pairs):
+                        for previous, _ in pairs[:position]:
+                            same = True if key is previous else key == previous
+                            if same is True:
+                                raise ValueError("a set injection cannot identify distinct source points")
+                            if same is not False:
+                                raise ValueError("injectivity of the selected image values is undecided")
                     # A finite unhashable image has no dictionary backend.
                     # Retain its represented pairs without assuming that
                     # undecidable point equality is Boolean.
