@@ -4903,10 +4903,16 @@ class GeneralLinearGroups(OwnedCategory):
             or (self.degree() == 1 and self.coefficient_ring() is ZZ)
         ):
             return [OwnedGroups().Finite()]
-        # For n >= 2, the elementary transvections I + k E_12 over ZZ
-        # are distinct for every k in ZZ. This establishes infinitude
-        # from the defining matrix datum without querying a group engine.
-        if self.coefficient_ring() is ZZ and self.degree() >= 2:
+        # For any infinite coefficient ring and n >= 2, the elementary
+        # transvections I + r E_12 give an injection of its underlying set
+        # into GL_n(R). The rank-one case instead detects the unit group,
+        # which need not be infinite (e.g. ZZ^×).
+        if self.degree() >= 2 and self.coefficient_ring().is_finite() is False:
+            return [OwnedGroups().Infinite()]
+        # The diagonal matrices diag(u,1,...,1) exhibit infinitely many
+        # units of QQ even in rank one; this does not assert that every
+        # infinite ring has an infinite unit group.
+        if self.degree() >= 1 and self.coefficient_ring() is QQ:
             return [OwnedGroups().Infinite()]
         return [OwnedGroups()]
 
