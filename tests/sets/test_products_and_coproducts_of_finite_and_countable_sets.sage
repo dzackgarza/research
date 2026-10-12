@@ -79,6 +79,41 @@ def test_infinite_constant_additive_product_retains_its_monoid_and_projections()
         raise AssertionError("an infinite constant nonmonoid was admitted as additive")
 
 
+def test_infinite_constant_additive_product_universal_morphism() -> None:
+    """The categorical cone has all its projection equations, not just object placement."""
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    additive = AdditiveMonoids()
+    factor = additive.an_object()
+    index = DiscreteCategory(NN)
+    constant = Cat().Mor(index, additive).constant_functor(factor)
+    product = Sets().product(indexed_family(NN, factor))
+    identity = additive.Mor(factor, factor).identity()
+    legs = NaturalTransformation(constant, constant, lambda _obj: identity)
+    factorization = product.from_maps(factor, legs)
+    assert factorization.parent() is additive.Mor(factor, product)
+    for label in (NN(0), NN(2), NN(9)):
+        for value in (factor.zero(), factor.one()):
+            assert product.projection(label)(factorization(value)) == identity(value)
+
+    # A Set arrow is not an additive-monoid cone leg merely because its
+    # underlying function has the right domain and codomain.
+    wrong = NaturalTransformation(
+        constant, constant,
+        lambda _obj: Sets().Mor(factor, factor).identity(),
+    )
+    invalid_factorization = product.from_maps(factor, wrong)
+    try:
+        product.projection(NN(4))(invalid_factorization(factor.one()))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("a Set-valued component falsely supplied an additive cone")
+
+
 def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.indexed_families import indexed_family
