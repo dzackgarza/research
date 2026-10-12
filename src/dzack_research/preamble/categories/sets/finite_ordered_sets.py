@@ -291,13 +291,12 @@ class FiniteOrderedSets(OwnedCategory):
                     contains=lambda element: element in source,
                 )
             case _:
-                # Choose the order once; separately iterating an unordered
-                # source for each position does not retain one enumeration.
-                points = tuple(source)
-                return self.from_indexed(
-                    index_set,
-                    lambda position: points[int(position)],
-                    contains=lambda element: element in source,
+                # Cardinality is not an enumeration.  An arbitrary finite
+                # set cannot be indexed merely because its size is known;
+                # the caller must supply an actual order of its points.
+                raise TypeError(
+                    f"the finite set {source} has no selected enumeration; "
+                    "supply its ordered points explicitly"
                 )
 
     def _on_points(self, points: Iterable[PointT]) -> ObjectOfCategory:
