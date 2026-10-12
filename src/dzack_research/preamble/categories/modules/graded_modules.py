@@ -528,6 +528,14 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 return self._graded_module_placement().Mor(self, codomain)
             return super().Mor(codomain, category)
 
+        def End(self):
+            r"""Endomorphisms preserving the chosen degree decomposition."""
+            return self._graded_module_placement().End(self)
+
+        def Aut(self):
+            r"""Automorphisms preserving the chosen degree decomposition."""
+            return self._graded_module_placement().Aut(self)
+
         def __init__(
             self,
             concentrated_degree=None,
