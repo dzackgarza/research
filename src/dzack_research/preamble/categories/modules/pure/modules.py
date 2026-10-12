@@ -779,7 +779,14 @@ class Modules(OwnedCategoryOverBaseRing):
             # actions for a nonconstant infinite family.
             diagram = family.selected_diagram()
             if diagram is None or diagram.codomain() is not self:
-                diagram = _discrete_diagram(family, self)
+                constant = family.constant_value()
+                if constant is not None:
+                    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+                    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+
+                    diagram = Cat().Mor(DiscreteCategory(family.index_set()), self).constant_functor(constant)
+                else:
+                    diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
                 lambda index: _module_product_projection(
