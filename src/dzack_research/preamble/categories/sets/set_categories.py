@@ -3208,10 +3208,13 @@ class _ImageSetEngine:
                     for point in source
                 ))
             case _:
-                assert self._image_inverse is not None, (
-                    f"cannot decide whether {element!r} lies in the image {self}: the source is infinite and no "
-                    "inverse on the image was given"
-                )
+                # Without an inverse or a finite enumeration, existence of a
+                # preimage is still a well-defined proposition. The inability
+                # to decide it does not make the image or its membership
+                # relation undefined.
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("is_member", element, self)
 
     def _element_constructor_(self, element):
         membership = self.__contains__(element)
