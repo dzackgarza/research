@@ -3022,10 +3022,15 @@ class _ConditionSetEngine:
 
     def __iter__(self):
         universe = self.universe()
-        assert Sets().is_provably_finite(universe) or universe in EnumeratedSets(), (
-            f"cannot list the elements of {self}: the set {universe} it is cut out of is neither finite "
-            "nor enumerated"
-        )
+        # A finite cardinality does not supply an enumeration. Only a
+        # selected iterator on the underlying representation can realize
+        # enumeration of the condition set.
+        if universe not in EnumeratedSets() and not isinstance(
+            universe, (_FiniteLiteralSet, _ImageSetEngine, _ConditionSetEngine)
+        ):
+            raise NotImplementedError(
+                f"cannot enumerate {self}: {universe} has no selected enumeration"
+            )
         for point in universe:
             member = self.is_parent_of(point)
             assert member is True or member is False, (
