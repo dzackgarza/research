@@ -927,7 +927,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CoveringObjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
   **Closure assertions:** the complete `CoveringObjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringObjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-coxrings`**. **Needs:** none.
+- [x] **`placement-owner-coxrings`**. **Needs:** none.
   **Owner pass:** `CoxRings` in `src/dzack_research/preamble/categories/divisors/cox_rings.py`.
   **Closure assertions:** the complete `CoxRings` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxRings`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
