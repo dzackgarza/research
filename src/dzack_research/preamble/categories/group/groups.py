@@ -5264,14 +5264,29 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
         ]
 
     class ParentMethods:
-        def descend_homomorphism(self, source_map):
+        def descend_homomorphism(self, source_map, *, through=None):
             r"""The unique descent of a map killing the chosen presentation relations.
 
             Every chosen presentation gives ``F -> G`` and the same
             universal property, regardless of which engine built ``G``.
+            ``through`` additionally allows a selected quotient arrow
+            ``H -> G``: then ``source_map`` starts at ``H``, not ``F``.
             """
             projection = self.quotient_projection()
             source = projection.domain()
+            if through is not None:
+                if through.codomain() is not self or through.domain() is not source_map.domain():
+                    raise ValueError("quotient descent needs a Mor from the map's source into this quotient")
+                target = source_map.codomain()
+                free_map = source.Mor(target)(
+                    tuple(source_map(through(projection(source.free_generator(label))))
+                          for label in source.free_basis()), check=True
+                )
+                descended = self.descend_homomorphism(free_map)
+                if any(descended(through(generator)) != source_map(generator)
+                       for generator in source_map.domain().group_generators()):
+                    raise ValueError("the source map does not factor through the selected quotient Mor")
+                return descended
             if source_map.domain() is not source:
                 raise ValueError("presentation descent requires the chosen free-group source")
             target = source_map.codomain()

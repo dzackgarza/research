@@ -464,8 +464,15 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     factored = second_quotient.Mor(target_c2)(
         (target_involution, target_c2.one()), check=True
     )
+    descended_quotient = second_quotient.descend_homomorphism(
+        source_to_c2, through=second_projection
+    )
     assert all(
         factored(second_projection(projection(word))) == source_to_c2(projection(word))
+        for word in (a, b, a*b, b*a, a*b*a, b**2*a)
+    )
+    assert all(
+        descended_quotient(second_projection(projection(word))) == source_to_c2(projection(word))
         for word in (a, b, a*b, b*a, a*b*a, b**2*a)
     )
     assert second_projection(projection(a * b * a)) == (
