@@ -5308,8 +5308,14 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                     for label, generator in zip(labels, lifted_generators, strict=True)
                 ):
                     raise ValueError("the quotient presentation generators do not lift through the selected quotient Mor")
+                # Use the selected basis-to-generator map, not GAP's
+                # positional generator order, which can differ from the
+                # selected labels of the owned free group.
                 free_map = source.Mor(target)(
-                    tuple(source_map(generator) for generator in lifted_generators), check=True
+                    {
+                        source.free_generator(label): source_map(generator)
+                        for label, generator in zip(labels, lifted_generators, strict=True)
+                    }, check=True
                 )
                 descended = self.descend_homomorphism(free_map)
                 if any(descended(through(generator)) != source_map(generator)
