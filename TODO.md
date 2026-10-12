@@ -943,7 +943,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CoxeterDiagrams` in `src/dzack_research/preamble/categories/coxeter_diagrams.py`.
   **Closure assertions:** the complete `CoxeterDiagrams` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoxeterDiagrams`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-curves`**. **Needs:** none.
+- [x] **`placement-owner-curves`**. **Needs:** none.
   **Owner pass:** `Curves` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
   **Closure assertions:** the complete `Curves` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Curves`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

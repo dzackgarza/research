@@ -233,38 +233,6 @@ class Curves(_DimensionSubcategoryOfVarieties):
             )
             return True
 
-        @cached_method
-        def genus_comparison(self):
-            from dzack_research.preamble.categories.schemes.curve_genus import _CurveGenusComparison
-
-            return _CurveGenusComparison(self)
-
-        def geometric_genus(self):
-            r"""The genus of the normalization, or the arithmetic genus when smooth."""
-            assert self.scheme_base_ring() in OwnedFields(), (
-                f"the geometric genus of {self} by normalization requires a field base, "
-                f"not {self.scheme_base_ring()}"
-            )
-            assert self in Schemes(self.scheme_base_ring()).Projective(), (
-                f"the geometric genus is computed only for projective curves, but {self} is not "
-                f"known to be projective over {self.scheme_base_ring()}"
-            )
-            match self._normalization_curve:
-                case None:
-                    assert self.is_smooth(), (
-                        f"the geometric genus of {self} needs its normalization: {self} is not "
-                        "known to be smooth and no normalization was given"
-                    )
-                    return ProjectiveCurves(self.scheme_base_ring())(self).arithmetic_genus()
-                case _:
-                    normalized = self.normalization_curve()
-                    return ProjectiveCurves(self.scheme_base_ring())(normalized).arithmetic_genus()
-
-        def genus(self):
-            r"""Return geometric genus, never arithmetic genus by convention."""
-            return self.geometric_genus()
-
-
 class Surfaces(_DimensionSubcategoryOfVarieties):
     r"""Varieties of relative dimension two over the stated base."""
 
@@ -365,6 +333,29 @@ class ProjectiveCurves(OwnedCategoryOverBaseRing):
             return integers.one() - integers(
                 defining_ideal.hilbert_polynomial_value(0)
             )
+
+        @cached_method
+        def genus_comparison(self):
+            from dzack_research.preamble.categories.schemes.curve_genus import _CurveGenusComparison
+
+            return _CurveGenusComparison(self)
+
+        def geometric_genus(self):
+            r"""The genus of the normalization, or the arithmetic genus when smooth."""
+            match self._normalization_curve:
+                case None:
+                    assert self.is_smooth(), (
+                        f"the geometric genus of {self} needs its normalization: {self} is not "
+                        "known to be smooth and no normalization was given"
+                    )
+                    return self.arithmetic_genus()
+                case _:
+                    normalized = self.normalization_curve()
+                    return ProjectiveCurves(self.scheme_base_ring())(normalized).arithmetic_genus()
+
+        def genus(self):
+            r"""Return geometric genus, never arithmetic genus by convention."""
+            return self.geometric_genus()
 
 
 
