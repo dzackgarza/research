@@ -103,6 +103,29 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
     def object(self):
         return _object_of(self)
 
+    @cached_method
+    def object_set(self):
+        r"""The singleton set of objects of the one-object category ``BG``.
+
+        The object here is the actual formal object of this category, not
+        the identity element of its endomorphism group.  In particular the
+        object set is unchanged when the group is replaced by another group.
+
+        Unexecuted mathematical specimen::
+
+            sage: from dzack_research.preamble.all import Groups, Sets
+            sage: B = Groups.S(3).classifying_category()
+            sage: B.object() in B.object_set()
+            True
+            sage: B.object_set().cardinality() == 1
+            True
+            sage: B.Mor(B.object(), B.object()).identity().group_element() == B.group().one()
+            True
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+        return finite_ordered_set((self.object(),))
+
     def an_object(self):
         return self.object()
 
