@@ -3470,8 +3470,39 @@ class CartesianProductsOfSets(OwnedCategory):
             source: Parent,
             maps: Callable[[IndexT], SetMorphism],
         ) -> SetMorphism:
-            r"""Return the unique map into the product with the stated components."""
-            return Sets().Mor(source, self)(lambda element: self(lambda index: maps(index)(element)))
+            r"""Return the unique map into the product with the stated components.
+
+            Infinite-index component families require a natural transformation
+            from the constant source diagram to the product's selected diagram.
+            A callback alone does not establish its component endpoints.
+            """
+            if source not in Sets():
+                raise TypeError(f"a set product map needs a set source, not {source}")
+            index = self.index_set()
+            if not Sets().is_provably_finite(index):
+                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
+                from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+                diagram = self.family().selected_diagram()
+                index_category = DiscreteCategory(index)
+                if diagram is None or not isinstance(maps, NaturalTransformation):
+                    raise TypeError("an infinite set product map needs a selected natural transformation")
+                if maps.target() is not diagram or maps.source().domain() is not index_category:
+                    raise ValueError("the component transformation must target the product's exact indexed diagram")
+                if diagram.codomain() is not Sets() or maps.source().codomain() is not Sets():
+                    raise TypeError("the component transformation must be set-valued")
+                if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
+                    raise ValueError("the component transformation must have the selected constant source")
+                return Sets().Mor(source, self)(
+                    lambda element: self(lambda label: maps.component(index_category.object(label))(element))
+                )
+            components = tuple((label, maps(label)) for label in index)
+            for label, morphism in components:
+                if morphism.parent() is not Sets().Mor(source, self.factor(label)):
+                    raise TypeError(f"the component at {label} is not a set morphism into {self.factor(label)}")
+            return Sets().Mor(source, self)(
+                lambda element: self(lambda label: next(morphism(element) for key, morphism in components if key == label))
+            )
 
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"
