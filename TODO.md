@@ -1088,7 +1088,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DivisorGroups` in `src/dzack_research/preamble/categories/divisors/divisor_groups.py`.
   **Closure assertions:** the complete `DivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-effectivecartierdivisors`**. **Needs:** none.
+- [x] **`placement-owner-effectivecartierdivisors`**. **Needs:** none.
   **Owner pass:** `EffectiveCartierDivisors` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `EffectiveCartierDivisors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EffectiveCartierDivisors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
