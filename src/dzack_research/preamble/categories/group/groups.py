@@ -957,14 +957,6 @@ def _engine_abelianity(engine):
 # that the property fails.
 
 
-def _is_arithmetic_witness(engine) -> bool:
-    match engine:
-        case NamedMatrixGroup_generic():
-            return engine.base_ring() is ZZ
-        case _:
-            return False
-
-
 def _is_abelian_witness(engine) -> bool:
     if engine.category().is_subcategory(SageGroups().Commutative()):
         return True
@@ -1021,7 +1013,6 @@ def _is_finitely_generated_witness(engine) -> bool:
     return (
         _engine_finiteness(engine) is True
         or _has_chosen_generators(engine)
-        or _is_arithmetic_witness(engine)
         or _is_finite_rank_free(engine)
     )
 
@@ -1191,7 +1182,7 @@ class _GroupEngine:
                 return AtomicProposition("is_abelian", self)
 
     def _arithmeticity_decision(self):
-        return True if _is_arithmetic_witness(self._engine) else AtomicProposition("is_arithmetic_group", self)
+        return AtomicProposition("is_arithmetic_group", self)
 
 
 class _GroupElement(MultiplicativeGroupElement):
@@ -1656,8 +1647,10 @@ def _SL(degree, ring, var="a"):
         # The standard integral modular group is arithmetic by its
         # defining integral matrix realization; the axiom does not follow
         # for arbitrary named matrix groups from their engine type alone.
-        group = _group_over_ring(SL, degree, ring, var=var)
-        return _own_group(_engine_group(group), refinements=(OwnedGroups().Arithmetic(),))
+        return _own_group(
+            SL(2, _engine_ring(ZZ), var=var),
+            refinements=(OwnedGroups().Arithmetic(), OwnedGroups().FinitelyGeneratedAsMagma()),
+        )
     return _group_over_ring(SL, degree, ring, var=var)
 
 
