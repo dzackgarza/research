@@ -683,15 +683,16 @@ class OwnedSetMorphism(SetMorphism):
             f"{self} has no inverse: it is not known to be a bijection {domain} -> {codomain} "
             "(injectivity and surjectivity are decided only between finite enumerated sets)"
         )
-        absent = object()
+        # The codomain's selected ranking is an exact equality decision for
+        # its elements. Construct the inverse table once, indexed by ordinal
+        # coordinates, instead of searching the source on each application.
+        ranking = codomain.ranking_map()
+        inverse_values = [None] * int(codomain.cardinality().finite_value())
+        for source in domain:
+            inverse_values[int(ranking(self(source)))] = source
 
         def preimage(target):
-            source = next((source for source in domain if self(source) == target), absent)
-            assert source is not absent, (
-                f"{self} was decided to be a bijection {domain} -> {codomain}, but no point of {domain} "
-                f"maps to {target}"
-            )
-            return source
+            return inverse_values[int(ranking(codomain(target)))]
 
         return Sets().Mor(codomain, domain)(preimage)
 
