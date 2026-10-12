@@ -2917,7 +2917,11 @@ def _scaled_form_module(source, scalar):
     data = dict(unscaled_form_module=source, form_scale=scalar)
     if source in Lattices(ring):
         categories.append(Lattices(ring))
-        data["gram_tensor"] = scaled.gram_tensor()
+        # The lattice's defining Gram is a tensor or a pairing rule, also at
+        # infinite rank.  The scaled form morphism cannot recover a Gram by
+        # listing basis pairs when its basis is infinite.  Scale the original
+        # selected Gram directly; pairing-rule tensors retain that rule.
+        data["gram_tensor"] = source.gram_tensor() * scalar
         if source in Lattices(ring).FinitelyGenerated():
             categories.append(Lattices(ring).FinitelyGenerated())
         # The lattice parity axiom is determined by the scaled diagonal.

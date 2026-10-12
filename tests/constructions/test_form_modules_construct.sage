@@ -132,6 +132,25 @@ def test_even_unimodular_rank_28_twists_retain_the_original_module_and_form_clas
     assert not doubled.is_unimodular()
 
 
+def test_countable_rank_lattice_twist_retains_its_pairing_rule_without_enumerating_a_gram() -> None:
+    lattice = Lattices(ZZ)(ZZ**NN)
+    doubled = lattice.twist(2)
+    sextuple = doubled.twist(3)
+
+    assert not lattice.module_rank().is_finite()
+    assert doubled.unformed_module() is lattice.unformed_module()
+    assert sextuple.unformed_module() is lattice.unformed_module()
+    assert doubled.form_scale() == ZZ(2)
+    assert sextuple.form_scale() == ZZ(6)
+    assert doubled.basis_vector(0) ** 2 == ZZ(2)
+    assert sextuple.basis_vector(1) ** 2 == ZZ(6)
+    assert doubled.b(doubled.basis_vector(1), doubled.basis_vector(2)) == ZZ.zero()
+    assert doubled.is_even() and doubled.is_nondegenerate()
+    assert not lattice.is_unimodular()
+    assert not doubled.is_unimodular()
+    assert doubled.twist(1) is doubled
+
+
 def test_form_base_change_keeps_the_pairing_over_the_rationals() -> None:
     form = _hyperbolic_form()
     inclusion = ZZ.Mor(QQ)(lambda integer: QQ(integer))

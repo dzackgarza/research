@@ -5731,6 +5731,19 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
         return [Lattices(self.base_ring()).Even().Nondegenerate()]
 
     class ParentMethods:
+        def is_unimodular(self) -> bool | Predicate:
+            r"""Decide whether the selected Gram pairing induces ``L ≅ L^∨``.
+
+            The finite-rank calculation uses the determinant; a represented
+            infinite-rank pairing rule may decide the same question without
+            constructing the full algebraic dual or a correlation cokernel.
+            """
+            from dzack_research.preamble.categories._lattice import (
+                _gram_is_unimodular,
+            )
+
+            return _gram_is_unimodular(self.gram_tensor(), self.base_ring())
+
         def delta(self):
             r"""Return Nikulin's ``delta`` for an even 2-elementary lattice.
 
