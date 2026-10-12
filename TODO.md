@@ -1012,7 +1012,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `Digraphs` in `src/dzack_research/preamble/categories/graph_categories.py`.
   **Closure assertions:** the complete `Digraphs` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `Digraphs`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-directsumobjects`**. **Needs:** none.
+- [x] **`placement-owner-directsumobjects`**. **Needs:** none.
   **Owner pass:** `DirectSumObjects` in `src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py`.
   **Closure assertions:** the complete `DirectSumObjects` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DirectSumObjects`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
