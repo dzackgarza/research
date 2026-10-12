@@ -167,7 +167,10 @@ class OrderedEnumeratedSets(OwnedCategory):
                 return self._element_at_function(index_ranking.inverse()(int(position)))
 
             def position_of(element):
-                index = self._index_of_function(element)
+                # Admission verifies the inverse's domain and its forward
+                # equation; a raw supplied inverse need not do either.
+                admitted = self._element_constructor_(element)
+                index = self._index_of_function(admitted)
                 if index is None:
                     raise ValueError(f"{element!r} is not in {self}")
                 return int(index_ranking(index))
