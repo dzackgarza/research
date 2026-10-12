@@ -5285,6 +5285,11 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 if witness is None or witness[0] is not through.domain() or witness[1] is not self:
                     raise ValueError("quotient descent requires the selected normal-quotient construction Mor")
                 target = source_map.codomain()
+                # The defining normal generators of ker(H -> G) must be
+                # annihilated by the proposed H -> K map. Checking the
+                # presentation of G alone cannot substitute for this test.
+                if any(source_map(relation) != target.one() for relation in witness[2]):
+                    raise ValueError("the source map does not annihilate the selected normal quotient relators")
                 # The presenting free group F maps onto the quotient G,
                 # whereas through has domain H. Never evaluate through on
                 # a point of F. The quotient construction retains matching

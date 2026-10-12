@@ -480,6 +480,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     identity_on_source = quotient.Mor(quotient)(
         tuple(quotient.group_generators()), check=True
     )
+    assert identity_on_source(projection(b)) != quotient.one()
     try:
         quotient.descend_homomorphism(identity_on_source, through=identity_on_source)
     except ValueError as error:
