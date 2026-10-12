@@ -5669,7 +5669,7 @@ class DefiniteLattices(OwnedCategoryOverBaseRing):
     r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
 
     def super_categories(self):
-        return [Lattices(self.base_ring())]
+        return [Lattices(self.base_ring()).FinitelyGenerated()]
 
     def an_object(self):
         return self(Lattices(self.base_ring()).an_object())
@@ -5677,7 +5677,8 @@ class DefiniteLattices(OwnedCategoryOverBaseRing):
     def _call_(self, lattice):
         from dzack_research.preamble.refine import refine
 
-        if lattice not in Lattices(self.base_ring()) or not (lattice.is_positive_definite() or lattice.is_negative_definite()):
+        finite = Lattices(self.base_ring()).FinitelyGenerated()
+        if lattice not in finite or not (lattice.is_positive_definite() or lattice.is_negative_definite()):
             raise ValueError("finite reflective-root enumeration requires a definite lattice")
         return refine(lattice, self)
 
