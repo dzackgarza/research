@@ -4031,6 +4031,16 @@ class CoproductsOfSets(OwnedCategory):
                         f"from {self.cofactor(index)} to {target}"
                     )
 
+            if index_set in EnumeratedSets():
+                ranking = index_set.ranking_map()
+                ordered_maps = tuple(morphism for _, morphism in components)
+
+                def induced(element):
+                    position = int(ranking(element.summand_index()))
+                    return ordered_maps[position](element.summand_element())
+
+                return Sets().Mor(self, target)(induced)
+
             def induced(element):
                 label = element.summand_index()
                 return next(morphism(element.summand_element()) for index, morphism in components if index == label)
