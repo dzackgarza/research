@@ -4805,7 +4805,17 @@ def _module_product_factor(product, factors, source, legs):
             constant_source, target,
             lambda obj: forgetful(legs.value(obj.value())),
         )
-        underlying_factor = underlying_product.from_maps(forgetful(source), components)
+        # The underlying set product also lies in the more specific
+        # CartesianProductsOfAdditiveMonoids category, whose `from_maps`
+        # classifies additive arrows and therefore requires an AddMon-valued
+        # transformation. Here the actual transported cone is Set-valued;
+        # invoke the inherited Set-product universal construction at its
+        # declared owner rather than misclassifying its component arrows.
+        from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfSets
+
+        underlying_factor = CartesianProductsOfSets.ParentMethods.from_maps(
+            underlying_product, forgetful(source), components
+        )
     else:
         # A module cone supplies these legs independently of an optional
         # set-valued diagram presentation; retain its exact pointwise map.
