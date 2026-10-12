@@ -1243,9 +1243,8 @@ class QuotientRings(OwnedCategory):
             target_engine = _engine_ring(target)
 
             def image(element):
-                lift = element.lift()
                 values = tuple(
-                    field_map(component(lift))
+                    field_map(component.quotient_map()(self(element)))
                     for component, field_map in zip(components, field_maps, strict=True)
                 )
                 if len(values) == 1:
