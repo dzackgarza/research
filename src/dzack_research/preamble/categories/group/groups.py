@@ -5192,7 +5192,10 @@ class FreeGroupQuotients(OwnedCategory):
         # attempting to exhaust its iterator into a Python tuple.
         if relators in Sets() and cardinal(relators.cardinality()).is_finite() is False:
             raise ValueError("a finite group presentation requires a finite relator family")
-        self._relators = tuple(self._free_group(relator) for relator in relators)
+        selected_relators = tuple(relators)
+        if any(relator not in self._free_group for relator in selected_relators):
+            raise ValueError("each defining relator must belong to the selected presenting free group")
+        self._relators = tuple(self._free_group(relator) for relator in selected_relators)
         super().__init__()
 
     def free_group(self):

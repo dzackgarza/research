@@ -472,6 +472,18 @@ def test_finitely_many_relators_require_a_finite_free_basis() -> None:
     else:
         assert False, "an infinite set of relators was assigned a finite presentation"
 
+    # Relations from another presented group are not words in this
+    # selected free source, even if both have one chosen generator.
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    other_free = Groups.Free(index_set=finite_ordered_set(("z",)))
+    other_generator = other_free.group_generators()[0]
+    try:
+        FreeGroupQuotients(finite_free, (other_generator,))
+    except ValueError as error:
+        assert "selected presenting free group" in str(error)
+    else:
+        assert False, "a relator from another free group changed the selected presentation"
+
 
 def test_quotient_descent_with_identified_presenting_generators() -> None:
     free = Groups.Free(2)
