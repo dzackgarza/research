@@ -1084,7 +1084,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DividedSquareModules` in `src/dzack_research/preamble/categories/modules/powers.py`.
   **Closure assertions:** the complete `DividedSquareModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DividedSquareModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-divisorgroups`**. **Needs:** none.
+- [x] **`placement-owner-divisorgroups`**. **Needs:** none.
   **Owner pass:** `DivisorGroups` in `src/dzack_research/preamble/categories/divisors/divisor_groups.py`.
   **Closure assertions:** the complete `DivisorGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DivisorGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
