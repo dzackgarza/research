@@ -439,8 +439,9 @@ def _filtered_ordered_set(
     ``Sets.condition_set`` needs this optional construction choice because
     the public ``filtered`` operation requires a represented enumeration.
     A successful computation selects the \(k\)-th satisfying point of
-    \(S\), indexed by the ordinal counting those points.  No point family
-    is materialized, and a declined computation constructs no order.
+    \(S\), indexed by the ordinal counting those points. Its finite selected
+    enumeration is materialized once, not recomputed on every rank query;
+    a declined computation constructs no order.
     """
     from dzack_research.preamble.logic import Predicate
 
@@ -449,11 +450,11 @@ def _filtered_ordered_set(
         "finite and enumerated"
     )
 
-    size = 0
+    selected = []
     for point in universe:
         match predicate(point):
             case True:
-                size += 1
+                selected.append(point)
             case False:
                 pass
             case Predicate():
@@ -464,30 +465,32 @@ def _filtered_ordered_set(
                     f"but returned {value!r} at {point!r}"
                 )
 
-    def survivors():
-        return (point for point in universe if predicate(point))
+    points = tuple(selected)
+    positions = tuple(range(len(points)))
+    try:
+        inverse_lookup = dict(zip(points, positions, strict=True))
+        position_of = inverse_lookup.get
+    except TypeError:
+        position_of = lambda value: next(
+            (i for i, point in enumerate(points) if point is value or point == value),
+            None,
+        )
 
     def element_at(index):
-        return next(islice(survivors(), int(index), None))
+        return points[int(index)]
 
     def index_of(element):
-        if element not in universe or not predicate(universe(element)):
-            return None
-        return next(
-            position
-            for position, point in enumerate(survivors())
-            if point == element
-        )
+        return position_of(element)
 
     return _object_of(
         FiniteOrderedSets(),
         _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
         universe=universe,
         predicate=predicate,
-        index_set=finite_ordinal_set(size),
+        index_set=finite_ordinal_set(len(points)),
         element_at=element_at,
         index_of=index_of,
-        contains=lambda element: element in universe and bool(predicate(universe(element))),
+        contains=lambda element: position_of(element) is not None,
         name=name,
     )
 
@@ -518,7 +521,7 @@ class _FilteredOrderedSetEngine:
         return Sets().Mono(self, self.universe())._from_subset_inclusion()
 
     def __iter__(self):
-        return (point for point in self.universe() if self.predicate()(point))
+        return (self.enumeration()(index) for index in self.index_set())
 
     def _repr_(self):
         return self._name or f"Ordered subset of {self.universe()}"
