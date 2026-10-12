@@ -856,6 +856,12 @@ def _fix_selected_group_resolution(group, *, free_basis=None) -> None:
 
 def _fix_selected_group_presentation(group, source, relations) -> None:
     r"""Install one constructor-selected presentation as a truncation-one resolution."""
+    # This owner is also reached by engine-derived presentations, bypassing
+    # FreeGroupQuotients. An infinite selected relation set cannot be
+    # exhausted into a finite presentation, nor enumerated to construct
+    # the degree-one face labels.
+    if relations in Sets() and cardinal(relations.cardinality()).is_finite() is False:
+        raise ValueError("a selected finite group presentation requires finite relations")
     labels = source.free_basis()
     # The rank condition belongs to the shared selected-presentation owner,
     # not only FreeGroupQuotients: degree-one resolution construction below
