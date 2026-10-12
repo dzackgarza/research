@@ -281,7 +281,7 @@ class Connection(Element):
                 self.generator_image(label),
             )
             d_coefficient = universal(self.algebra()(coefficient))
-            if d_coefficient != self.one_forms().zero():
+            if (d_coefficient == self.one_forms().zero()) is not True:
                 result += target.pure_tensor(
                     self.module().module_generator(label),
                     d_coefficient,
@@ -305,7 +305,7 @@ class Connection(Element):
             value = self._from_coefficients(
                 {label: relation(label) for label in relation.support().domain()}
             )
-            if value != self.target_module().zero():
+            if (value == self.target_module().zero()) is False:
                 raise ValueError(
                     f"the proposed connection is not well defined on {module}: it must send every relation "
                     f"among the module generators to zero, but it sends the relation {relation} to {value}"
