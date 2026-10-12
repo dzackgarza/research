@@ -5073,6 +5073,21 @@ class CoxeterGroups(OwnedCategory):
                 remaining.difference_update(neighbours)
                 boundary.extend(neighbours)
             components.append(tuple(component))
+        # An entire connected component consisting of a simply-laced
+        # chordless cycle of length at least four is affine A-type.
+        # Determine this from the already partitioned graph rather than
+        # enumerating arbitrary principal subsets of the Coxeter matrix.
+        for component in components:
+            if len(component) < 4:
+                continue
+            edges = [
+                (left, right) for left, right in combinations(component, 2)
+                if self._engine_coxeter_matrix[left, right] != 2
+            ]
+            if (len(edges) == len(component)
+                and all(self._engine_coxeter_matrix[edge] == 3 for edge in edges)
+                and all(sum(vertex in edge for edge in edges) == 2 for vertex in component)):
+                return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
         # Finite classical Coxeter diagrams A_n and B_n are paths. A_n
         # has all bonds 3; B_n has one terminal bond 4 and all others 3.
         # The remaining irreducible spherical path diagrams in rank four
