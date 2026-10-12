@@ -390,17 +390,17 @@ class FiniteOrderedSets(OwnedCategory):
                             raise ValueError("distinctness of the enumerated points is undecided")
                 def index_of(point):
                     undecided = False
+                    matched = None
                     for index, present in zip(indices, points, strict=True):
                         equal = True if point is present else point == present
                         if equal is True:
-                            if undecided:
-                                raise ValueError("the index of this point is undecided")
-                            return index
+                            matched = index
                         if equal is not False:
-                            undecided = True
+                            if equal is not True:
+                                undecided = True
                     if undecided:
                         raise ValueError("membership in this finite enumerated set is undecided")
-                    return None
+                    return matched
         if contains is None:
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
