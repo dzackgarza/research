@@ -4752,6 +4752,15 @@ class PermutationGroups(OwnedCategory):
             r"""The natural ``G``-set on the points the group permutes."""
             return self.action_on(self.natural_points())
 
+        def natural_permutation_representation(self):
+            r"""The group morphism expressing the selected faithful action.
+
+            Its defining datum belongs to the natural G-set, so this returns
+            that object's retained Mor rather than constructing a second
+            homomorphism from the backend permutation labels.
+            """
+            return self.natural_g_set().permutation_representation()
+
         def orbit(self, point):
             r"""The orbit ``G . point`` of the natural action."""
             action = self.natural_g_set()
