@@ -3957,6 +3957,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             The selected free-presentation augmentation has a different
             domain and cannot be substituted for this quotient arrow.
             """
+            # Finite presentations cannot use an explicitly infinite
+            # relator set. Check before materializing the family: otherwise
+            # a quotient request on NN never reaches either group backend.
+            if relators in Sets() and cardinal(relators.cardinality()).is_finite() is False:
+                raise ValueError("a finite group quotient presentation requires finite relators")
             # The same selected relators must determine both the quotient
             # and its projection, including when the caller supplied a
             # one-shot iterable of relations.

@@ -465,6 +465,13 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert second_quotient.presentation_isomorphism().domain() is second_quotient
 
     try:
+        quotient.quotient_by_relators(NN, return_projection=True)
+    except ValueError as error:
+        assert "finite relators" in str(error)
+    else:
+        assert False, "an infinite relation family was exhausted by the quotient constructor"
+
+    try:
         quotient.quotient_by_relators((Groups.C(2).one(),))
     except ValueError as error:
         assert "group being quotiented" in str(error)
