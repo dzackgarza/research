@@ -826,16 +826,16 @@ def _g_set_on_points(group, point_set, action, orbit_relation, stabilizer):
 
 
 def _permutation_from_point_map(permutation_group, point_set, mapping):
-    images = [mapping(point) for point in point_set]
-    for point in point_set:
-        assert sum(image == point for image in images) == 1, (
-            f"the map {mapping} on {point_set} is not a permutation: {point} has "
-            f"{sum(image == point for image in images)} preimages, not exactly one"
-        )
-
-    return permutation_group(
-        [_integer_engine_point(image) for image in images]
-    )
+    # A permutation is a bijection of the backend point domain. Let the
+    # permutation engine check that property instead of searching all pairs
+    # of points for preimage counts at this owned/engine boundary.
+    images = [_integer_engine_point(mapping(point)) for point in point_set]
+    try:
+        return permutation_group(images)
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            f"the map {mapping} on {point_set} is not represented by a permutation"
+        ) from error
 
 
 def _owned_point_set(point_set):

@@ -59,6 +59,14 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     assert group.natural_points() is points
     action = group.natural_g_set()
     assert action.point_set() is points
+    from dzack_research.preamble.categories.group.g_sets import _permutation_from_point_map
+
+    try:
+        _permutation_from_point_map(group, points, lambda _point: points(0))
+    except ValueError as error:
+        assert "not represented by a permutation" in str(error)
+    else:
+        assert False, "a constant point map was accepted as a permutation"
     identity = group.one()
     for point in points:
         assert action.act(identity, point) == point
