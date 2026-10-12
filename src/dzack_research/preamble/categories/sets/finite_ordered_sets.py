@@ -452,11 +452,13 @@ class FiniteOrderedSets(OwnedCategory):
 
         def intersection(self, other):
             r"""The points of this set that lie in ``other``, in this set's order."""
-            return self.filtered(lambda point: point in other)
+            return self.filtered(lambda point: other.is_parent_of(point))
 
         def difference(self, other):
             r"""The points of this set that do not lie in ``other``, in this set's order."""
-            return self.filtered(lambda point: point not in other)
+            from dzack_research.preamble.logic import negation
+
+            return self.filtered(lambda point: negation(other.is_parent_of(point)))
 
         def __or__(self, other):
             return self.union(other)
