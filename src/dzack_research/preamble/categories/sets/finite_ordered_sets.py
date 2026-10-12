@@ -546,10 +546,18 @@ def _filtered_ordered_set(
         inverse_lookup = dict(zip(points, positions, strict=True))
         position_of = inverse_lookup.get
     except TypeError:
-        position_of = lambda value: next(
-            (i for i, point in enumerate(points) if point is value or point == value),
-            None,
-        )
+        def position_of(value):
+            undecided = False
+            matched = None
+            for i, point in enumerate(points):
+                same = True if point is value else point == value
+                if same is True:
+                    matched = i
+                elif same is not False:
+                    undecided = True
+            if undecided:
+                raise ValueError("filtered-set membership equality is undecided")
+            return matched
 
     def element_at(index):
         return points[int(index)]
