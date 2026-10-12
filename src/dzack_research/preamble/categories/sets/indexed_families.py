@@ -298,7 +298,13 @@ class IndexedFamily[IndexT, ValueT]:
         )
         if same_indices is False:
             return False
-        if same_indices is not True or self.cardinality().is_finite() is not True:
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        if (
+            same_indices is not True
+            or self.cardinality().is_finite() is not True
+            or self.index_set() not in EnumeratedSets()
+        ):
             return AtomicProposition("equal", self, other)
         return conjunction(self.value(index) == other.value(index) for index in self.index_set())
 
