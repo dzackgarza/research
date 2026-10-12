@@ -4770,14 +4770,35 @@ def _module_product_factor(product, factors, source, legs):
         f"{legs.index_set()} and the factors by {factors.index_set()}"
     )
     forgetful = Modules(product.base_ring()).underlying_set()
-    # The module cone supplies the actual component morphisms. Its underlying
-    # map is their pointwise tuple; no unchecked family of Set morphisms is
-    # introduced into the universal Set-product constructor.
-    underlying_factor = Sets().Mor(forgetful(source), product.underlying_set())(
-        lambda point: product.underlying_set()(
-            lambda index: forgetful(legs.value(index))(point)
+    underlying_product = product.underlying_set()
+    underlying_family = underlying_product.family()
+    if not Sets().is_provably_finite(factors.index_set()) and (
+        underlying_family.selected_diagram() is not None
+        or underlying_family.constant_value() is not None
+    ):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+        from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+        shape = DiscreteCategory(factors.index_set())
+        functor_category = Cat().Mor(shape, Sets())
+        target = underlying_family.selected_diagram()
+        if target is None:
+            target = functor_category.constant_functor(underlying_family.constant_value())
+        constant_source = functor_category.constant_functor(forgetful(source))
+        components = NaturalTransformation(
+            constant_source, target,
+            lambda obj: forgetful(legs.value(obj.value())),
         )
-    )
+        underlying_factor = underlying_product.from_maps(forgetful(source), components)
+    else:
+        # A module cone supplies these legs independently of an optional
+        # set-valued diagram presentation; retain its exact pointwise map.
+        underlying_factor = Sets().Mor(forgetful(source), underlying_product)(
+            lambda point: underlying_product(
+                lambda index: forgetful(legs.value(index))(point)
+            )
+        )
     return source.module_category().Mor(source, product)._product_factor(
         underlying_factor,
         legs,
