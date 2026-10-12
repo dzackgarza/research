@@ -81,6 +81,14 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     assert labelled_action.act(permutation, labelled("beta")) == labelled("alpha")
     assert labelled_action.act(permutation, labelled("gamma")) == labelled("gamma")
 
+    # The defining action is transported along the actual ranking
+    # isomorphism: products and inverses must respect that transport.
+    cycle = labelled_group((1, 2, 3))
+    for point in labelled:
+        assert (permutation * cycle)(point) == permutation(cycle(point))
+        assert (~cycle)(cycle(point)) == point
+        assert labelled_action.act(cycle, point) == cycle(point)
+
 
 def test_finite_symmetric_group_category_rejects_infinite_point_set() -> None:
     try:
