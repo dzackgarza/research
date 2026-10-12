@@ -195,6 +195,10 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     ])
     assert f4.is_subcategory(OwnedGroups().Finite())
     assert h4.is_subcategory(OwnedGroups().Finite())
+    # The finite-type decision belongs to the selected Sage Coxeter
+    # matrix, not to a separately maintained ADE/B/H pattern catalogue.
+    assert f4._engine_coxeter_matrix.is_finite() is True
+    assert h4._engine_coxeter_matrix.is_finite() is True
     # E6: the central vertex has arms of lengths 1, 2, 2.
     e6 = CoxeterGroups([
         [1, 3, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2],

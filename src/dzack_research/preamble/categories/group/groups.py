@@ -4996,175 +4996,41 @@ class CoxeterGroups(OwnedCategory):
         return self._coxeter_matrix
 
     def super_categories(self):
-        # The public chosen datum is mutable for list-backed matrices.
-        # Category membership must not continue certifying a different
-        # Coxeter system after that datum changes.
+        # Check that the retained defining data have not been mutated.
         self.coxeter_matrix()
-        # Rank-two Coxeter presentations are dihedral:
-        # <s,t | s^2=t^2=(st)^m=1> has order 2m for finite m,
-        # while m=infinity yields the infinite dihedral group.
-        # Rank zero and one give the trivial and order-two groups.
+        # Sage's CoxeterMatrix owns the diagram classification, including
+        # reducible systems, exceptional finite types and affine systems.
+        # Its is_finite() returns True for certified finite type and False
+        # otherwise; False need not certify infinitude (unknown type).
+        finite = self._engine_coxeter_matrix.is_finite()
         indices = tuple(self._engine_coxeter_matrix.index_set())
-        if len(indices) <= 1:
-            return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
-        if len(indices) == 2:
-            bond = self._engine_coxeter_matrix[indices[0], indices[1]]
-            if bond == -1 or bond is infinity:
-                return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-            if bond == 2:
-                # Two commuting involutions generate C2 x C2.
-                return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
-            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # Standard parabolic subgroups of a Coxeter group are Coxeter
-        # groups on principal submatrices. An infinite bond supplies an
-        # infinite dihedral rank-two standard parabolic subgroup, hence
-        # proves infinitude of the entire group in every finite rank.
-        if any(
-            self._engine_coxeter_matrix[left, right] in (-1, infinity)
-            for left, right in combinations(indices, 2)
-        ):
-            return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # A rank-three Coxeter triangle with finite exponents p,q,r is
-        # Euclidean or hyperbolic exactly when 1/p + 1/q + 1/r <= 1.
-        # Such a standard parabolic embeds in the ambient Coxeter group,
-        # proving its infinitude even though no pair has an infinite bond.
-        # Keep the rational comparison exact; floating point equality at
-        # the affine boundary would be an invalid finiteness certificate.
-        if any(
-            sum((QQ(1) / ZZ(self._engine_coxeter_matrix[left, right])
-                 for left, right in combinations(triple, 2)), QQ(0)) <= 1
-            for triple in combinations(indices, 3)
-        ):
-            return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # All Coxeter generators commute precisely when every off-diagonal
-        # exponent is two. Their presentation then gives (C2)^rank, hence
-        # a finite abelian group, irrespective of the number of generators.
-        if all(
+        commutative = all(
             self._engine_coxeter_matrix[left, right] == 2
             for left, right in combinations(indices, 2)
-        ):
-            return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # In rank three, the complementary strict inequality is precisely
-        # the spherical triangle condition. Check the commuting case first
-        # so that the selected group retains its abelian refinement.
-        # This test cannot extend to higher rank: affine systems can have
-        # only finite proper standard parabolics.
-        if len(indices) == 3:
-            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # Coxeter generators in distinct connected components commute,
-        # and the Coxeter presentation splits as the direct product of its
-        # component presentations. A disconnected system of arbitrary
-        # rank is therefore finite when every connected component is a
-        # spherical Coxeter system of rank at most three. Larger connected
-        # components are left undecided by this particular construction.
-        remaining = set(indices)
-        components = []
-        while remaining:
-            seed = remaining.pop()
-            component = {seed}
-            boundary = [seed]
-            while boundary:
-                vertex = boundary.pop()
-                neighbours = {
-                    other for other in remaining
-                    if self._engine_coxeter_matrix[vertex, other] != 2
-                }
-                component.update(neighbours)
-                remaining.difference_update(neighbours)
-                boundary.extend(neighbours)
-            components.append(tuple(component))
-        # An entire connected component consisting of a simply-laced
-        # chordless cycle of length at least four is affine A-type.
-        # Determine this from the already partitioned graph rather than
-        # enumerating arbitrary principal subsets of the Coxeter matrix.
-        for component in components:
-            if len(component) < 4:
-                continue
-            edges = [
-                (left, right) for left, right in combinations(component, 2)
-                if self._engine_coxeter_matrix[left, right] != 2
-            ]
-            if (len(edges) == len(component)
-                and all(self._engine_coxeter_matrix[edge] == 3 for edge in edges)
-                and all(sum(vertex in edge for edge in edges) == 2 for vertex in component)):
-                return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-            # Affine C_(n-1), n>=4, is a path whose two terminal bonds
-            # have exponent 4 and whose internal bonds have exponent 3.
-            # Both 4-bonds are required: one gives finite type B_n.
-            if len(edges) == len(component) - 1:
-                degrees = {vertex: sum(vertex in edge for edge in edges) for vertex in component}
-                fours = [edge for edge in edges if self._engine_coxeter_matrix[edge] == 4]
-                if (all(degree <= 2 for degree in degrees.values())
-                    and len(fours) == 2
-                    and all(any(degrees[vertex] == 1 for vertex in edge) for edge in fours)
-                    and all(self._engine_coxeter_matrix[edge] in (3, 4) for edge in edges)):
-                    return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # Finite classical Coxeter diagrams A_n and B_n are paths. A_n
-        # has all bonds 3; B_n has one terminal bond 4 and all others 3.
-        # The remaining irreducible spherical path diagrams in rank four
-        # are F4 (labels 3,4,3) and H4 (labels 5,3,3, with 5 terminal).
-        def spherical_component(component):
-            if len(component) <= 3:
-                return True
-            edges = [
-                (left, right)
-                for left, right in combinations(component, 2)
-                if self._engine_coxeter_matrix[left, right] != 2
-            ]
-            if len(edges) != len(component) - 1:
-                return False
-            degrees = {vertex: sum(vertex in edge for edge in edges) for vertex in component}
-            marked = [edge for edge in edges if self._engine_coxeter_matrix[edge] != 3]
-            # D_n is the simply-laced tree with one trivalent vertex,
-            # two arms of length one, and a third arm of length n-3.
-            branching = [vertex for vertex in component if degrees[vertex] == 3]
-            if not marked and len(branching) == 1 and all(
-                degree <= 3 for degree in degrees.values()
-            ):
-                center = branching[0]
-                adjacent_leaves = sum(
-                    degrees[other] == 1
-                    for other in component
-                    if self._engine_coxeter_matrix[center, other] == 3
-                )
-                if adjacent_leaves >= 2:
-                    return True  # D_n, n >= 4
-                # The remaining finite simply-laced trivalent diagrams
-                # are E6, E7, E8, with branch lengths (1,2,2),
-                # (1,2,3), (1,2,4). Follow the three arms without
-                # confusing a longer affine E-type arm with a finite one.
-                lengths = []
-                for first in component:
-                    if self._engine_coxeter_matrix[center, first] != 3:
-                        continue
-                    previous, vertex, length = center, first, 1
-                    while degrees[vertex] == 2:
-                        following = next(
-                            other for other in component
-                            if other != previous and self._engine_coxeter_matrix[vertex, other] == 3
-                        )
-                        previous, vertex = vertex, following
-                        length += 1
-                    lengths.append(length)
-                return sorted(lengths) in ([1, 2, 2], [1, 2, 3], [1, 2, 4])
-            if any(degree > 2 for degree in degrees.values()):
-                return False
-            if len(component) == 4 and len(marked) == 1:
-                edge = marked[0]
-                bond = self._engine_coxeter_matrix[edge]
-                if bond == 4 and all(degrees[vertex] == 2 for vertex in edge):
-                    return True  # F4, central four-bond
-                if bond == 5 and any(degrees[vertex] == 1 for vertex in edge):
-                    return True  # H4, terminal five-bond
-            return not marked or (
-                len(marked) == 1
-                and self._engine_coxeter_matrix[marked[0]] == 4
-                and any(degrees[vertex] == 1 for vertex in marked[0])
+        )
+        categories = [OwnedGroups().FinitelyPresentedAsGroup()]
+        if finite is True:
+            categories.append(OwnedGroups().Finite())
+        elif (
+            self._engine_coxeter_matrix.is_affine() is True
+            or any(self._engine_coxeter_matrix[left, right] in (-1, infinity)
+                   for left, right in combinations(indices, 2))
+            or any(
+                sum((QQ(1) / ZZ(self._engine_coxeter_matrix[left, right])
+                     for left, right in combinations(triple, 2)), QQ(0)) <= 1
+                for triple in combinations(indices, 3)
+                if all(self._engine_coxeter_matrix[left, right] > 0
+                       for left, right in combinations(triple, 2))
             )
-
-        if all(spherical_component(component) for component in components):
-            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        return [OwnedGroups().FinitelyPresentedAsGroup()]
+        ):
+            # These are positive witnesses for infinite standard parabolic
+            # subsystems; the negative answer from is_finite() alone is not.
+            categories.append(OwnedGroups().Infinite())
+        if commutative:
+            # Commuting Coxeter involutions give (C2)^rank, including
+            # the empty diagram. This also independently proves finiteness.
+            categories.extend((OwnedGroups().Commutative(), OwnedGroups().Finite()))
+        return _distinct_supercategories(categories)
 
     def an_object(self):
         return self()
