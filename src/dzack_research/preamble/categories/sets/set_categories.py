@@ -3896,16 +3896,19 @@ class CoproductsOfSets(OwnedCategory):
             return f"ι_{self.summand_index()}({self.summand_element()})"
 
         def __eq__(self, other):
-            from dzack_research.preamble.logic import conjunction
-
             if element_parent(other) is not self.parent():
                 return False
-            return conjunction(
-                (
-                    other.summand_index() == self.summand_index(),
-                    other.summand_element() == self.summand_element(),
-                )
-            )
+            same_index = self.summand_index() == other.summand_index()
+            if same_index is False:
+                return False
+            if same_index is True:
+                return self.summand_element() == other.summand_element()
+            # With undecided index equality, the two values may inhabit
+            # different summands. They cannot be compared independently as
+            # points of one factor; retain the actual coproduct equation.
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("equal", self, other)
 
         def __ne__(self, other):
             from dzack_research.preamble.logic import negation
