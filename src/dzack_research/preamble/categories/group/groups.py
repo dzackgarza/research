@@ -5088,6 +5088,17 @@ class CoxeterGroups(OwnedCategory):
                 and all(self._engine_coxeter_matrix[edge] == 3 for edge in edges)
                 and all(sum(vertex in edge for edge in edges) == 2 for vertex in component)):
                 return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
+            # Affine C_(n-1), n>=4, is a path whose two terminal bonds
+            # have exponent 4 and whose internal bonds have exponent 3.
+            # Both 4-bonds are required: one gives finite type B_n.
+            if len(edges) == len(component) - 1:
+                degrees = {vertex: sum(vertex in edge for edge in edges) for vertex in component}
+                fours = [edge for edge in edges if self._engine_coxeter_matrix[edge] == 4]
+                if (all(degree <= 2 for degree in degrees.values())
+                    and len(fours) == 2
+                    and all(any(degrees[vertex] == 1 for vertex in edge) for edge in fours)
+                    and all(self._engine_coxeter_matrix[edge] in (3, 4) for edge in edges)):
+                    return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
         # Finite classical Coxeter diagrams A_n and B_n are paths. A_n
         # has all bonds 3; B_n has one terminal bond 4 and all others 3.
         # The remaining irreducible spherical path diagrams in rank four
