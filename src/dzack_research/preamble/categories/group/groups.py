@@ -4888,6 +4888,18 @@ class CoxeterGroups(OwnedCategory):
     r"""The Coxeter group defined by the actual selected Coxeter matrix."""
 
     def __init__(self, coxeter_matrix):
+        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+        # Category placement asserts that the datum is a Coxeter matrix,
+        # not merely a square array. Validate that law at category ingress,
+        # retaining the caller's exact datum for its mathematical identity.
+        self._engine_coxeter_matrix = (
+            _engine_coxeter_matrix_of(coxeter_matrix)
+            if isinstance(coxeter_matrix, IndexedFamily)
+            else CoxeterMatrix(coxeter_matrix)
+        )
         self._coxeter_matrix = coxeter_matrix
         super().__init__()
 
@@ -4906,7 +4918,7 @@ class CoxeterGroups(OwnedCategory):
         # The catalogue's default reflection realization need not carry
         # those presentation data even when the abstract group is the same.
         return _Coxeter(
-            self.coxeter_matrix(), implementation="matrix",
+            self._engine_coxeter_matrix, implementation="matrix",
             refinements=(self,), selected_matrix=self.coxeter_matrix(),
         )
 
