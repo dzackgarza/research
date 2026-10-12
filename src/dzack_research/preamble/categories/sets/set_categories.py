@@ -2622,7 +2622,7 @@ class PowerSets(OwnedCategory):
                 return self._from_finite_members(candidate)
             raise TypeError(f"{candidate!r} does not present a subset of {self.base_set()}")
 
-        def __contains__(self, candidate) -> bool:
+        def __contains__(self, candidate) -> bool | Predicate:
             r"""Whether ``candidate`` is a subset of \(X\): \(A\in P(X)\) exactly when \(A\subseteq X\).
 
             A subset is \(X\) itself, a set all of whose points lie in \(X\)
@@ -2651,6 +2651,9 @@ class PowerSets(OwnedCategory):
                 case _:
                     return False
 
+        # Preserve undecidable subset containment through the owned API.
+        is_parent_of = __contains__
+
         def top(self):
             return self.from_predicate(lambda _member: True)
 
@@ -2664,7 +2667,9 @@ class PowerSets(OwnedCategory):
                     f"{morphism} ends at {morphism.codomain()}"
                 )
             target = morphism.domain().power_set()
-            return Sets().Mor(self, target)(lambda subset: target.from_predicate(lambda member: morphism(member) in subset))
+            return Sets().Mor(self, target)(
+                lambda subset: target.from_predicate(lambda member: subset.is_parent_of(morphism(member)))
+            )
 
         def direct_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             r"""Direct image \(A\mapsto f(A)\) on subsets, as a set map \(P(X)\to P(Y)\)."""
