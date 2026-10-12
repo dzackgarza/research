@@ -1967,11 +1967,14 @@ class GroupMorphism:
                 generators, images = realization.MappingGeneratorsImages()
                 if libgap.Subgroup(realization.Source(), generators) != realization.Source():
                     raise ValueError("the supplied GAP map's generators do not generate its source")
-                if libgap.GroupHomomorphismByImages(
+                checked = libgap.GroupHomomorphismByImages(
                     realization.Source(), realization.Range(), generators, images
-                ).is_bool():
+                )
+                if checked.is_bool():
                     raise ValueError("the supplied GAP map does not satisfy the source relations")
-                self._gap_homomorphism = realization
+                # The checked map, not the unchecked supplied realization,
+                # is the mathematical arrow represented by these images.
+                self._gap_homomorphism = checked
                 evaluator = self._evaluate_gap
             case dict():
                 self._generator_images = realization
