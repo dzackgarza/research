@@ -593,6 +593,10 @@ class QuadraticModuleMor(ModuleMor):
 class DividedSquareModules(OwnedCategoryOverBaseRing):
     r"""Degree-two divided powers, classifying quadratic maps."""
 
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         r"""The divided square of the free module of rank one."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
