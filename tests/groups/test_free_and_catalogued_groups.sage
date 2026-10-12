@@ -139,6 +139,18 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     )
     cyclic = Groups.C(2)
     wrong = free.Mor(cyclic)({a: cyclic.one(), b: cyclic.group_generators()[0]})
+    # The same relator obstruction must hold at the shared GroupMor owner,
+    # not only in the convenience descent operation: b^3 is nontrivial.
+    quotient_a, quotient_b = tuple(quotient.group_generators())
+    try:
+        quotient.Mor(cyclic)(
+            {quotient_a: cyclic.one(), quotient_b: cyclic.group_generators()[0]},
+            check=True,
+        )
+    except ValueError as error:
+        assert "relations" in str(error)
+    else:
+        assert False, "the presented group Mor admitted generator images violating b^3"
     try:
         quotient.descend_homomorphism(wrong)
     except ValueError as error:
