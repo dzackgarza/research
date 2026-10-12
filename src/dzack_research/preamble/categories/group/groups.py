@@ -2129,6 +2129,10 @@ class GroupMorphism:
                         f"the GAP homomorphism is not a homomorphism into {codomain}: its range differs from {codomain}"
                     )
                 generators, images = engine.MappingGeneratorsImages()
+                if libgap.Subgroup(engine.Source(), generators) != engine.Source():
+                    raise ValueError(
+                        f"the supplied GAP morphism does not specify images for generators of all of {domain}"
+                    )
                 if libgap.GroupHomomorphismByImages(engine.Source(), engine.Range(), generators, images).is_bool():
                     raise ValueError(
                         f"the given images do not define a homomorphism {domain} -> {codomain}: they do not "
