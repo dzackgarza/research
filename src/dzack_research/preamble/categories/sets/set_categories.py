@@ -3135,9 +3135,18 @@ class _ImageSetEngine:
         equality. Enumeration requires the complete decided tuple. An
         unavailable tuple is not cached as permanent mathematical data.
         """
+        # A finite image is a set of values, not a list of pairwise
+        # comparisons. For hashable points the set engine decides duplicate
+        # values while insertion order retains the selected enumeration.
+        # Only a genuinely unhashable representation requires the general
+        # equality procedure below, which can return an undecided result.
+        values = tuple(self.image_map()(point) for point in self.source_set())
+        try:
+            return tuple(dict.fromkeys(values))
+        except TypeError:
+            pass
         distinct = []
-        for point in self.source_set():
-            value = self.image_map()(point)
+        for value in values:
             comparisons = tuple(
                 True if value is previous else value == previous
                 for previous in distinct
