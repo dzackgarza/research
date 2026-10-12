@@ -80,6 +80,23 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
     else:
         assert False, "direct engine-morphism ingress accepted missing generator images"
 
+    # The same ingress must reject maps which violate source relations,
+    # even with a complete generator-image family: C4 cannot map its
+    # generator to an element of order three.
+    from dzack_research.preamble.categories.group.groups import _element_to_engine
+
+    four = Groups.C(4)
+    three = Groups.C(3)
+    try:
+        four.Mor(three)._from_engine_generator_images(
+            list(_gap_model(four).GeneratorsOfGroup()),
+            [_element_to_engine(three, three.group_generators()[0])],
+        )
+    except ValueError as error:
+        assert "do not satisfy the source relations" in str(error)
+    else:
+        assert False, "an image of order three was accepted for a C4 generator"
+
 
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
     group = Groups.C(4)

@@ -2828,6 +2828,21 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 f"the engine morphism from {self.domain()} has {len(generator_models)} "
                 f"selected generators but {len(image_models)} images"
             )
+        # The unchecked GAP constructor alone does not certify a whole-group
+        # homomorphism. Check both the generating family and its relation law
+        # at this common ingress, including product/coproduct factorizers.
+        source = _gap_model(self.domain())
+        target = _gap_model(self.codomain())
+        if libgap.Subgroup(source, libgap(generator_models)) != source:
+            raise ValueError("the engine morphism generators do not generate its source group")
+        checked_images = (
+            [image.Inverse() for image in image_models]
+            if self._is_twisted() else image_models
+        )
+        if libgap.GroupHomomorphismByImages(
+            source, target, generator_models, checked_images
+        ).is_bool():
+            raise ValueError("the engine morphism images do not satisfy the source relations")
         return self.element_class(self, self._engine_homomorphism(generator_models, image_models))
 
     def _from_group_generator_images(self, images):
