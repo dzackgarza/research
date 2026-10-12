@@ -327,3 +327,12 @@ def test_sl2z_and_the_three_strand_braid_group_are_infinite() -> None:
     assert not modular.is_finite()
     assert modular.is_arithmetic_group()
     assert not Groups.Braid(3).is_finite()
+
+
+def test_special_linear_rank_is_not_truncated() -> None:
+    try:
+        Groups.SL(QQ(5) / 2, ZZ)
+    except ValueError as error:
+        assert "integral rank" in str(error)
+    else:
+        assert False, "SL of nonintegral degree was admitted as SL2"

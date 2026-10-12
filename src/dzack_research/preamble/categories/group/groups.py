@@ -1671,6 +1671,13 @@ def _GL(degree, ring, var="a"):
 def _SL(degree, ring, var="a"):
     from sage.groups.matrix_gps.catalog import SL
 
+    # Do not allow a nonintegral rank through either the arithmetic witness
+    # or the generic engine adapter. This is a defining group parameter,
+    # not an approximate numerical argument to be rounded or truncated.
+    if degree not in ZZ or degree != ZZ(degree):
+        raise ValueError("SL_n(R) requires an integral rank")
+    if degree < 1:
+        raise ValueError("SL_n(R) requires a positive rank")
     # The arithmetic refinement is specific to the actual integral rank
     # two group. Truncating first would incorrectly identify SL_(5/2)(ZZ)
     # with SL_2(ZZ), bypassing the engine's rank admission.
