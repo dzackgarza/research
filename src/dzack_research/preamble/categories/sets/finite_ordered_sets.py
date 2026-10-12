@@ -467,24 +467,31 @@ class FiniteOrderedSets(OwnedCategory):
         def __sub__(self, other):
             return self.difference(other)
 
-        def __eq__(self, other) -> bool:
+        def __eq__(self, other) -> bool | Predicate:
             r"""Equal to a finite set with the same points; two finite ordered sets also agree in order."""
+            from dzack_research.preamble.logic import conjunction
+
             match other:
                 case _ if other is self:
                     return True
                 case _ if other in FiniteOrderedSets():
-                    return self.cardinality() == other.cardinality() and all(
-                        left == right for left, right in zip(self, other, strict=True)
+                    if self.cardinality() != other.cardinality():
+                        return False
+                    return conjunction(
+                        True if left is right else left == right
+                        for left, right in zip(self, other, strict=True)
                     )
                 case _ if other in Sets() and Sets().is_provably_finite(other):
-                    return self.cardinality() == cardinal(other.cardinality()) and all(
-                        point in other for point in self
-                    )
+                    if self.cardinality() != cardinal(other.cardinality()):
+                        return False
+                    return conjunction(other.is_parent_of(point) for point in self)
                 case _:
                     return False
 
-        def __ne__(self, other) -> bool:
-            return not self == other
+        def __ne__(self, other) -> bool | Predicate:
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
 
         def __hash__(self) -> int:
             # Do not hash members: group/lattice elements may normalize expensively.
