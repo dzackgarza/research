@@ -3902,7 +3902,15 @@ class CoproductsOfSets(OwnedCategory):
                 return False
             left_index = self.summand_index()
             right_index = other.summand_index()
-            same_index = True if left_index is right_index else left_index == right_index
+            indices = self.parent().index_set()
+            if Sets().is_provably_finite(indices) and indices in EnumeratedSets():
+                # The chosen index enumeration is a bijection. Distinct
+                # ordinal positions certify distinct summands without asking
+                # for equality of symbolic or undecidable index points.
+                ranking = indices.ranking_map()
+                same_index = ranking(left_index) == ranking(right_index)
+            else:
+                same_index = True if left_index is right_index else left_index == right_index
             if same_index is False:
                 return False
             if same_index is True:
