@@ -1078,7 +1078,7 @@ class GroupModuleMorphismMethods:
         component = self.underlying_module_morphism()
         return NaturalTransformation(
             source, target, lambda _obj: component
-        ).morphism()
+        )
 
     def restrict_to(self, inclusion):
         r"""Restrict this equivariant endomorphism along an equivariant inclusion.
@@ -1600,7 +1600,7 @@ class _RestrictionAlongGroupInclusionFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self.object_image(morphism.domain())
         target = self.object_image(morphism.codomain())
-        return self.codomain().Mor(source, target)(morphism.natural_transformation())
+        return self.codomain().Mor(source, target)(morphism.underlying_module_morphism())
 
     def _repr_(self):
         return f"Restriction of {self.domain()} along {self._group} -> {self.domain().base_ring()}"
