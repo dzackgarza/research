@@ -174,9 +174,16 @@ class OrderedEnumeratedSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __contains__(self, element) -> bool:
+        def __contains__(self, element):
             if self._contains_function is not None:
-                return bool(self._contains_function(element))
+                decision = self._contains_function(element)
+                if decision is True or decision is False:
+                    return decision
+                from dzack_research.preamble.logic import Predicate
+
+                if isinstance(decision, Predicate):
+                    return decision
+                raise TypeError("finite-set membership must be a truth value or proposition")
             return self._index_of_function(element) is not None
 
         def __call__(self, element):
@@ -190,8 +197,12 @@ class OrderedEnumeratedSets(OwnedCategory):
             ask the ranking map: applying an arrow coerces its argument into
             the domain, and the domain is this parent.
             """
-            if self._contains_function is not None and not self._contains_function(element):
-                raise ValueError(f"{element!r} is not in {self}")
+            if self._contains_function is not None:
+                decision = self.__contains__(element)
+                if decision is False:
+                    raise ValueError(f"{element!r} is not in {self}")
+                if decision is not True:
+                    raise ValueError(f"membership of {element!r} in {self} is undecided")
             index = self._index_of_function(element)
             if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
