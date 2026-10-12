@@ -4754,7 +4754,9 @@ class PermutationGroups(OwnedCategory):
             engine = _engine_group(self)
             engine_point = _engine_point(engine, point)
             if engine_point not in engine.domain():
-                return point
+                raise ValueError(
+                    f"{point} is outside the selected permutation domain {self.natural_points()}"
+                )
             return _owned_point(backend_element(engine_point))
 
         def natural_points(self):

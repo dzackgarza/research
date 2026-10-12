@@ -72,6 +72,15 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     identity = group.one()
     for point in points:
         assert action.act(identity, point) == point
+    # The common PermutationGroups owner must not silently extend an
+    # unlabelled permutation's action beyond its represented domain.
+    unlabelled = Groups.S(3)
+    try:
+        unlabelled.one()(-1)
+    except ValueError as error:
+        assert "outside the selected permutation domain" in str(error)
+    else:
+        assert False, "the common permutation action silently fixed an external point"
 
     from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
