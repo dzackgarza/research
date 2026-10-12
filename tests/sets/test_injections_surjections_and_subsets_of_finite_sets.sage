@@ -68,6 +68,19 @@ def test_finite_bijection_inverse_uses_codomain_positions() -> None:
         assert forward(backward(index)) == index
 
 
+def test_finite_image_cardinality_separates_injectivity_and_surjectivity() -> None:
+    r"""Three points mapping onto two have a two-point image but no inverse."""
+    domain = Sets.Δ[2]
+    codomain = Sets.Δ[1]
+    collapse = Sets().Mor(domain, codomain)(lambda point: codomain(int(point) % 2))
+
+    assert collapse.image().cardinality() == cardinal(2)
+    assert collapse.is_injective() is False
+    assert collapse.is_surjective() is True
+    with pytest.raises(AssertionError):
+        collapse.inverse()
+
+
 def test_injection_inverse_on_image_and_characteristic_are_compatible() -> None:
     r"""The inverse exists exactly on image points and characteristic values agree."""
     source = Sets.Δ[2]
