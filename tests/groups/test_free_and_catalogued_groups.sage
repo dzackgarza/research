@@ -451,7 +451,8 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert second_quotient.order() == 2
     assert second_quotient.is_isomorphic_to(Groups.C(2))
     assert second_quotient.quotient_projection().domain() is second_quotient.presenting_free_group()
-    assert second_quotient.presentation_source_group() is quotient
+    assert second_quotient.presentation_source_group() is second_quotient
+    assert second_quotient.presentation_isomorphism().domain() is second_quotient
 
     try:
         quotient.quotient_by_relators((Groups.C(2).one(),))
