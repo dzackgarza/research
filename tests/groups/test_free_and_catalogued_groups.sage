@@ -97,6 +97,15 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
     else:
         assert False, "an image of order three was accepted for a C4 generator"
 
+    # The public dictionary constructor also has check=False by default.
+    # Its generator images must nevertheless descend through C4's relation.
+    try:
+        four.Mor(three)({four.group_generators()[0]: three.group_generators()[0]})
+    except ValueError as error:
+        assert "relations" in str(error)
+    else:
+        assert False, "an invalid generator assignment was admitted without check=True"
+
 
 def test_gap_group_morphism_requires_its_selected_endpoints() -> None:
     from dzack_research.preamble.categories.group.groups import _gap_model

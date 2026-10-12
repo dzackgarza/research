@@ -2840,6 +2840,12 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         match images:
             case dict():
                 morphism = self._from_group_generator_images(images)
+                # Generator-image data need to kill all defining relations
+                # before they describe any morphism G -> H. Unlike a
+                # pointwise callable, an invalid generator assignment is
+                # not even a map on the presented quotient. Enforce this
+                # regardless of the optional check flag.
+                morphism.validate_homomorphism(check=True)
             case GapElement():
                 morphism = self.element_class(self, images)
             case Morphism() if images.parent() is self:
