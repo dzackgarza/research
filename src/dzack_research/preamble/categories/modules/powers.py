@@ -242,6 +242,10 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
 
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         return Modules(self.base_ring()).an_object().divided_power_module(2)
 
