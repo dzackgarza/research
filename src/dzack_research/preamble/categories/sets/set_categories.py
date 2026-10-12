@@ -3314,13 +3314,12 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     diagram = family.selected_diagram()
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
-    if Sets().is_provably_finite(index_set):
+    if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
-        if index_set in EnumeratedSets():
-            factors = tuple(family(index) for index in index_set)
-            if all(factor in EnumeratedSets() for factor in factors):
-                placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
+        factors = tuple(family(index) for index in index_set)
+        if all(factor in EnumeratedSets() for factor in factors):
+            placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
 
 
