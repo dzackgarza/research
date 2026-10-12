@@ -42,6 +42,13 @@ def test_total_quotient_ring_of_reduced_node_is_product_of_component_fields() ->
     total_map = node.total_quotient_map()
     assert total_map.domain() is node
     assert total_map.codomain() is total
+    for component in node.irreducible_components():
+        # The total-quotient map is assembled from actual maps A -> A/p,
+        # not from arbitrary lifts to its polynomial presentation.
+        projection = component.quotient_map()
+        assert projection.domain() is node
+        assert projection(node(x * y)) == component.zero()
+        assert projection(node.one()) == component.one()
     assert total_map(node(x + y)).is_unit()
     assert not total_map(node(x)).is_unit()
 
