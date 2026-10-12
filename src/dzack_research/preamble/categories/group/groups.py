@@ -5075,8 +5075,8 @@ class CoxeterGroups(OwnedCategory):
             components.append(tuple(component))
         # Finite classical Coxeter diagrams A_n and B_n are paths. A_n
         # has all bonds 3; B_n has one terminal bond 4 and all others 3.
-        # A terminal condition matters: a 4-bond in the middle of a path
-        # of rank four produces the infinite affine C_3 diagram.
+        # The remaining irreducible spherical path diagrams in rank four
+        # are F4 (labels 3,4,3) and H4 (labels 5,3,3, with 5 terminal).
         def spherical_component(component):
             if len(component) <= 3:
                 return True
@@ -5123,6 +5123,13 @@ class CoxeterGroups(OwnedCategory):
                 return sorted(lengths) in ([1, 2, 2], [1, 2, 3], [1, 2, 4])
             if any(degree > 2 for degree in degrees.values()):
                 return False
+            if len(component) == 4 and len(marked) == 1:
+                edge = marked[0]
+                bond = self._engine_coxeter_matrix[edge]
+                if bond == 4 and all(degrees[vertex] == 2 for vertex in edge):
+                    return True  # F4, central four-bond
+                if bond == 5 and any(degrees[vertex] == 1 for vertex in edge):
+                    return True  # H4, terminal five-bond
             return not marked or (
                 len(marked) == 1
                 and self._engine_coxeter_matrix[marked[0]] == 4

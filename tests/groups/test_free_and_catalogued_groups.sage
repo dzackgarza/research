@@ -177,7 +177,7 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
         [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
     affine_c3 = CoxeterGroups([
-        [1, 3, 2, 2], [3, 1, 4, 2], [2, 4, 1, 3], [2, 2, 3, 1]
+        [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 4], [2, 2, 4, 1]
     ])
     assert b4.is_subcategory(OwnedGroups().Finite())
     assert not affine_c3.is_subcategory(OwnedGroups().Finite())
@@ -185,6 +185,14 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
         [1, 3, 3, 3], [3, 1, 2, 2], [3, 2, 1, 2], [3, 2, 2, 1]
     ])
     assert d4.is_subcategory(OwnedGroups().Finite())
+    f4 = CoxeterGroups([
+        [1, 3, 2, 2], [3, 1, 4, 2], [2, 4, 1, 3], [2, 2, 3, 1]
+    ])
+    h4 = CoxeterGroups([
+        [1, 5, 2, 2], [5, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
+    ])
+    assert f4.is_subcategory(OwnedGroups().Finite())
+    assert h4.is_subcategory(OwnedGroups().Finite())
     # E6: the central vertex has arms of lengths 1, 2, 2.
     e6 = CoxeterGroups([
         [1, 3, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2],
