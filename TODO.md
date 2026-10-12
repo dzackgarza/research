@@ -923,7 +923,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CoveringFamilyMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/presheaves.py`.
   **Closure assertions:** the complete `CoveringFamilyMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringFamilyMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-coveringobjectcategory`**. **Needs:** none.
+- [x] **`placement-owner-coveringobjectcategory`**. **Needs:** none.
   **Owner pass:** `CoveringObjectCategory` in `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py`.
   **Closure assertions:** the complete `CoveringObjectCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CoveringObjectCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
