@@ -80,6 +80,15 @@ def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
     assert Groups.PSL(2, 7).order() == 168
 
 
+def test_general_linear_group_retains_ring_and_rank() -> None:
+    category = GeneralLinearGroups(GF(2), 2)
+    group = category()
+    assert group in category
+    assert category.coefficient_ring() is GF(2)
+    assert category.degree() == 2
+    assert group.order() == 6
+
+
 def test_the_heisenberg_group_over_z_mod_three_has_twenty_seven_elements() -> None:
     assert Groups.Heisenberg(1, 3).order() == 27
 

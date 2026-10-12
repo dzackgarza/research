@@ -195,6 +195,7 @@ from dzack_research.preamble.groups import (
     FiniteGSets,
     FinitelyGeneratedGroups,
     FinitelyPresentedGroups,
+    GeneralLinearGroups,
     FrobeniusConjugacyClass,
     FrobeniusElement,
     GObjectMor,

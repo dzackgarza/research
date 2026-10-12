@@ -4740,6 +4740,33 @@ class SymmetricGroups(OwnedParameterizedCategory):
             return FiniteGSets(self)(points, action)
 
 
+class GeneralLinearGroups(OwnedCategory):
+    r"""Automorphism groups of the chosen standard free module ``R^n``."""
+
+    def __init__(self, ring, degree):
+        self._coefficient_ring = _owned_ring(ring)
+        self._degree = int(degree)
+        assert self._degree >= 0, "GL_n(R) requires a nonnegative rank"
+        super().__init__()
+
+    def coefficient_ring(self):
+        return self._coefficient_ring
+
+    def degree(self):
+        return self._degree
+
+    def super_categories(self):
+        return [OwnedGroups()]
+
+    def an_object(self):
+        return self()
+
+    def _call_(self):
+        from sage.groups.matrix_gps.catalog import GL
+
+        ring = self.coefficient_ring()
+        return _own_group(GL(self.degree(), _engine_ring(ring)), refinements=(self,))
+
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
 
