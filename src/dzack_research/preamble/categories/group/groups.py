@@ -684,20 +684,7 @@ def _engine_element_action(group, backend_element, point):
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
             return _owned_engine_element(field, backend_element.as_hom()(_engine_element(field, point)))
         case PermutationGroup_generic():
-            selected_points = getattr(group, "_symmetric_points", None)
-            if selected_points is not None:
-                # Sym(Omega) is represented using a permutation of the
-                # positions 1,...,|Omega|, not a permutation of Omega's
-                # literal elements. The element action must use the same
-                # transport as the selected natural G-set.
-                if point not in selected_points:
-                    return point
-                position = int(selected_points.ranking_map()(selected_points(point))) + 1
-                return tuple(selected_points)[int(backend_element(position)) - 1]
-            engine_point = _engine_point(engine, point)
-            if engine_point not in engine.domain():
-                return point
-            return _owned_point(backend_element(engine_point))
+            return group._permutation_point_action(backend_element, point)
         case _:
             assert False, f"an element of {group} cannot be applied to {point}: {group} is neither a permutation group nor a Galois group, so it has no action on points"
 
@@ -4717,6 +4704,13 @@ class PermutationGroups(OwnedCategory):
             return _owned_engine_element(ZZ, ZZ(self.parent()._to_engine(self).sign()))
 
     class ParentMethods:
+        def _permutation_point_action(self, backend_element, point):
+            engine = _engine_group(self)
+            engine_point = _engine_point(engine, point)
+            if engine_point not in engine.domain():
+                return point
+            return _owned_point(backend_element(engine_point))
+
         def natural_points(self):
             r"""The finite set the group permutes."""
             return finite_ordered_set(tuple(_owned_point(point) for point in _engine_group(self).domain()))
@@ -4787,6 +4781,13 @@ class SymmetricGroups(OwnedParameterizedCategory):
         def __init__(self, symmetric_points=None, **rest):
             self._symmetric_points = symmetric_points
             super().__init__(**rest)
+
+        def _permutation_point_action(self, backend_element, point):
+            points = self.natural_points()
+            if point not in points:
+                return point
+            position = int(points.ranking_map()(points(point))) + 1
+            return tuple(points)[int(backend_element(position)) - 1]
 
         def natural_points(self):
             return self._symmetric_points
