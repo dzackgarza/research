@@ -1060,7 +1060,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DistinguishedAffineCoverMorCategoryConstruction` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
   **Closure assertions:** the complete `DistinguishedAffineCoverMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedAffineCoverMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-distinguishedaffinecovers`**. **Needs:** none.
+- [x] **`placement-owner-distinguishedaffinecovers`**. **Needs:** none.
   **Owner pass:** `DistinguishedAffineCovers` in `src/dzack_research/preamble/categories/schemes/ringed_spaces.py`.
   **Closure assertions:** the complete `DistinguishedAffineCovers` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DistinguishedAffineCovers`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

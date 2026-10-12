@@ -34,9 +34,10 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.logic import AtomicProposition, negation
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
 
 
 if "Invertible" not in all_axioms:
@@ -915,27 +916,35 @@ class DistinguishedAffineCovers(OwnedCategory):
         def __init__(self, defining_elements, **rest) -> None:
             self._defining_elements = defining_elements
             super().__init__(**rest)
-            scheme = self.ambient_scheme()
-            algebra = scheme.coordinate_algebra()
             assert defining_elements.index_set() is self.index_set(), (
-                f"the elements f_i defining the opens D(f_i) of {scheme} are indexed by "
+                f"the elements f_i defining the opens D(f_i) of {self.ambient_scheme()} are indexed by "
                 f"{defining_elements.index_set()}, but the charts are indexed by {self.index_set()}"
             )
-            assert self.target().arrow() == scheme.categorical_identity_morphism(), (
-                f"a cover of {scheme} must map into {scheme} over its identity, but its target is "
-                f"{self.target().arrow()}"
-            )
-            assert algebra.ideal(*defining_elements).contains_ambient_element(algebra.one()), (
-                f"the opens D(f_i) do not cover {scheme}: the elements {tuple(defining_elements)} "
-                f"do not generate the unit ideal of {algebra}"
-            )
-            assert all(
-                self.open(label) is scheme.distinguished_open(self.defining_element(label))
-                for label in self.index_set()
-            ), (
-                f"some chart of the cover of {scheme} is not the distinguished open D(f_i) of its "
-                "element f_i"
-            )
+
+        def defining_data_decision(self):
+            r"""Return the retained decision that the selected family is ``{D(f_i) -> X}``."""
+            scheme = self.ambient_scheme()
+            algebra = scheme.coordinate_algebra()
+            return conjunction((
+                self.target().arrow() == scheme.categorical_identity_morphism(),
+                algebra.ideal(*self.defining_elements()).contains_ambient_element(algebra.one()),
+                conjunction(
+                    self.open(label)
+                    is scheme.distinguished_open(self.defining_element(label))
+                    for label in self.index_set()
+                ),
+            ))
+
+        @validator
+        def validate_defining_data(self):
+            r"""Reject only a proved mismatch between the cover and its defining elements."""
+            decision = self.defining_data_decision()
+            if decision is False:
+                raise ValueError(
+                    f"{self} does not realize its retained distinguished-open data as a cover of "
+                    f"{self.ambient_scheme()}"
+                )
+            return decision
 
         def _cache_key(self) -> int:
             return id(self)
