@@ -158,6 +158,13 @@ construction-universe out=".tmp" depth="6":
         --html "{{out}}/construction-universe.html"
     @echo "Audit browser: {{out}}/construction-universe.html"
 
+# Enumerate candidate type constructions and recursive method-result reachability.
+# Pure source analysis: does not execute the preamble or establish mathematical
+# correctness. Unresolved outcomes and parameter obligations remain explicit.
+[positional-arguments]
+category-universe output=".tmp/construction-closure":
+    PYTHONPATH=src python3 -m dzack_research.utilities.construction_closure --output "{{output}}"
+
 # The declared category graph as a rendered image, for reading the shape of it
 category-graph-svg:
     just category-graph dot > docs/declared-category-graph.dot

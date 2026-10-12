@@ -1,0 +1,42 @@
+name: Construction closure source audit
+
+on:
+  pull_request:
+    paths:
+      - 'src/dzack_research/utilities/construction_closure.py'
+      - 'src/dzack_research/utilities/category_graph.py'
+      - 'tests/utilities/test_construction_closure_source.py'
+      - '.github/workflows/construction-closure-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Parse source and run synthetic construction-rule tests
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m py_compile src/dzack_research/utilities/construction_closure.py
+          python -m py_compile src/dzack_research/utilities/category_graph.py
+          python -m unittest discover -s tests/utilities -p 'test_construction_closure_source.py' -v
+      - name: Extract the complete source tree and verify output contracts
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m dzack_research.utilities.construction_closure --output "$RUNNER_TEMP/construction-closure"
+          python -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"construction-closure"; d=json.loads((p/"universe.json").read_text()); assert d["summary"]["category_vertices"]>0; assert d["summary"]["operations_and_return_branches"]>0; assert (p/"universe.dot").stat().st_size>0; assert (p/"index.html").stat().st_size>0; print(d["summary"])'
+      - name: Attach searchable audit and machine-readable inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: construction-closure-audit
+          path: ${{ runner.temp }}/construction-closure/
+          if-no-files-found: error
