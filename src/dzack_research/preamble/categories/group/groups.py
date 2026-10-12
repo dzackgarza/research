@@ -2845,8 +2845,14 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
     def _from_gap_generator_images(self, images):
         r"""Images listed in the order of the GAP model's own generators."""
         codomain = self.codomain()
+        generators = list(_gap_model(self.domain()).GeneratorsOfGroup())
+        if len(images) != len(generators):
+            raise ValueError(
+                f"the engine presentation of {self.domain()} has {len(generators)} generators, "
+                f"but {len(images)} images were supplied"
+            )
         return self._from_engine_generator_images(
-            list(_gap_model(self.domain()).GeneratorsOfGroup()),
+            generators,
             [_element_to_engine(codomain, codomain(image)) for image in images],
         )
 

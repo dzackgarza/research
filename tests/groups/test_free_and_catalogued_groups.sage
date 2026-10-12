@@ -58,6 +58,19 @@ def test_generator_images_must_generate_the_whole_source() -> None:
         assert False, "an incomplete generator family defined a whole-group morphism"
 
 
+def test_engine_generator_image_family_has_exact_arity() -> None:
+    symmetric = Groups.S(3)
+    cyclic = Groups.C(2)
+    generators = list(symmetric.group_generators())
+    assert generators
+    try:
+        symmetric.Mor(cyclic)([])
+    except ValueError as error:
+        assert "images were supplied" in str(error)
+    else:
+        assert False, "an empty image tuple was accepted for a nontrivial group presentation"
+
+
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
     group = Groups.C(4)
     generator = group.group_generators()[0]
