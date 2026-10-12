@@ -1220,7 +1220,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `FixedIsoCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
   **Closure assertions:** the complete `FixedIsoCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedIsoCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-fixedmorcategory`**. **Needs:** none.
+- [x] **`placement-owner-fixedmorcategory`**. **Needs:** none.
   **Owner pass:** `FixedMorCategory` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
   **Closure assertions:** the complete `FixedMorCategory` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FixedMorCategory`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
