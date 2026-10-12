@@ -1167,7 +1167,7 @@ def _apex_morphism_equal(left, right):
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = False) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError(
@@ -1189,15 +1189,26 @@ class ConeMorphism(Morphism):
                 f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
                 f"{self.codomain().apex()} of the category the diagram takes values in"
             )
-        if verify and _commutes_with_diagram(self.domain(), self.codomain(), apex_map) is False:
-            raise ValueError(
-                f"{apex_map} is not a morphism of cones {self.domain()} -> {self.codomain()}: it does not "
-                "commute with the legs of the cones"
-            )
         self._apex_map = apex_map
+        if verify:
+            self.validate_commutation()
 
     def apex_map(self) -> Morphism:
         return self._apex_map
+
+    def commutation_decision(self):
+        return _commutes_with_diagram(
+            self.domain(), self.codomain(), self.apex_map()
+        )
+
+    def validate_commutation(self):
+        decision = self.commutation_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self.apex_map()} is not a morphism of cones {self.domain()} -> {self.codomain()}: "
+                "it does not commute with the legs of the cones"
+            )
+        return decision
 
     def __eq__(self, other: Any) -> bool | Predicate:
         return _apex_morphism_equal(self, other)
