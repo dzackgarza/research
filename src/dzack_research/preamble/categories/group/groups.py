@@ -4764,15 +4764,17 @@ class PermutationGroups(OwnedCategory):
             return finite_ordered_set(tuple(_owned_point(point) for point in _engine_group(self).domain()))
 
         def action_on(self, points):
-            r"""The ``G``-set on ``points`` with the natural action ``g . x = g(x)``."""
-            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
-            from dzack_research.preamble.categories.group.g_objects import GObjects
-            from dzack_research.preamble.categories.sets.set_categories import Sets, FiniteSets
+            r"""The natural ``G``-set on the selected permutation domain.
 
-            action = lambda group_element, point: group_element(point)
-            if points in FiniteSets():
-                return FiniteGSets(self)(points, action)
-            return GObjects(self, Sets()).on_set(points, action)
+            A different point set requires an independently specified action;
+            restricting or extending the engine's action is not automatic.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+            assert points == self.natural_points(), (
+                "the natural permutation action is defined only on its selected domain; "
+                "specify a separate group action for another point set"
+            )
+            return FiniteGSets(self)(points, lambda group_element, point: group_element(point))
 
         @cached_method
         def natural_g_set(self):
