@@ -4977,6 +4977,18 @@ class CoxeterGroups(OwnedCategory):
         return self._coxeter_matrix
 
     def super_categories(self):
+        # Rank-two Coxeter presentations are dihedral:
+        # <s,t | s^2=t^2=(st)^m=1> has order 2m for finite m,
+        # while m=infinity yields the infinite dihedral group.
+        # Rank zero and one give the trivial and order-two groups.
+        indices = tuple(self._engine_coxeter_matrix.index_set())
+        if len(indices) <= 1:
+            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
+        if len(indices) == 2:
+            bond = self._engine_coxeter_matrix[indices[0], indices[1]]
+            if bond == -1 or bond is infinity:
+                return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
+            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
     def an_object(self):

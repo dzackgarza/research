@@ -118,6 +118,7 @@ def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
 def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     matrix = [[1, 3], [3, 1]]
     theory = CoxeterGroups(matrix)
+    assert theory.is_subcategory(OwnedGroups().Finite())
     group = theory()
     assert theory.coxeter_matrix() is matrix
     assert group in theory
@@ -142,6 +143,14 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert descended.domain() is group
     assert descended.codomain() is symmetric
     assert all(descended(projection(g)) == f(g) for g in free_generators)
+
+
+def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
+    finite = CoxeterGroups([[1, 4], [4, 1]])
+    infinite = CoxeterGroups([[1, -1], [-1, 1]])
+    assert finite.is_subcategory(OwnedGroups().Finite())
+    assert infinite.is_subcategory(OwnedGroups().Infinite())
+    assert not infinite.is_subcategory(OwnedGroups().Finite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
