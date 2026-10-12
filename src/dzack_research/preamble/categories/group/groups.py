@@ -5149,6 +5149,12 @@ class FreeGroupQuotients(OwnedCategory):
 
     def __init__(self, free_group, relators):
         self._free_group = _owned_group(free_group)
+        # Check the mathematical finite-generation requirement before
+        # requiring Sage's finite-rank FreeGroup_class engine. Indexed free
+        # groups on infinite bases use a different backend representation.
+        if self._free_group in GroupsWithChosenFreeBasis():
+            if self._free_group.free_basis() not in FiniteSets():
+                raise ValueError("a finite group presentation requires a finite free basis")
         assert isinstance(_engine_group(self._free_group), FreeGroup_class), (
             "a free-group quotient requires an actual free group, not merely "
             "a group equipped with a chosen generating set"
@@ -5160,8 +5166,6 @@ class FreeGroupQuotients(OwnedCategory):
         # the free generating set must also be finite. In particular a
         # quotient of F(NN) by finitely many relations is not thereby an
         # object of GroupsWithChosenFinitePresentation().
-        if self._free_group.free_basis() not in FiniteSets():
-            raise ValueError("a finite group presentation requires a finite free basis")
         self._relators = tuple(self._free_group(relator) for relator in relators)
         super().__init__()
 
