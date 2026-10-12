@@ -773,7 +773,13 @@ class Modules(OwnedCategoryOverBaseRing):
                         self.base_ring(),
                         family,
                     )
-            diagram = _discrete_diagram(family, self)
+            # Reuse an established module-valued diagram rather than
+            # reclassifying its values through a new unchecked callback.
+            # This retains the original functor's actual object and arrow
+            # actions for a nonconstant infinite family.
+            diagram = family.selected_diagram()
+            if diagram is None or diagram.codomain() is not self:
+                diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
                 lambda index: _module_product_projection(
