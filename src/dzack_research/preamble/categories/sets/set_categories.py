@@ -2040,11 +2040,11 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def intersection(self, other):
         r"""The points of this set that lie in ``other``."""
-        return _FiniteLiteralSet(point for point in self if point in other)
+        return _FiniteLiteralSet(point for point in self if other.is_parent_of(point) is True)
 
     def difference(self, other):
         r"""The points of this set that do not lie in ``other``."""
-        return _FiniteLiteralSet(point for point in self if point not in other)
+        return _FiniteLiteralSet(point for point in self if other.is_parent_of(point) is False)
 
     def __or__(self, other):
         return self.union(other)
