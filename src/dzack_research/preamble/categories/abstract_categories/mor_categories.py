@@ -1440,19 +1440,6 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
 
 
 class FixedAutCategory(FixedIsoCategory):
-    def identity_automorphism(self) -> CategoricalIsomorphism:
-        r"""The identity of ``X``, the identity arrow of ``Core(C).Mor(X, X)``.
-
-        ``Aut_C(X)`` is ``Map_{C^≃}(X, X)`` (`lean-categories` FOUNDATIONS,
-        Definition 2.4), so its unit is the identity of ``X`` in the core of
-        ``C``: an isomorphism whose forward and inverse arrows are the identity
-        of ``C.Mor(X, X)``.
-        """
-        obj = self.domain_object()
-        return self.base_category().Core().Mor(obj, obj).identity()
-
-    one = identity_automorphism
-
     def super_categories(self):
         packet = _category_packet(self.base_category())
         obj = self.domain_object()
@@ -1463,9 +1450,6 @@ class FixedAutCategory(FixedIsoCategory):
         return _distinct_supercategories(
             [packet.Ends().Of(obj), packet.Isos().Of(obj, obj), *inherited]
         )
-
-    def _repr_(self) -> str:
-        return f"Aut_{self.base_category()}({self.domain_object()})"
 
 
 class MorCategories(OwnedCategoryBase):
