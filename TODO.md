@@ -1004,7 +1004,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DigraphMor` in `src/dzack_research/preamble/categories/graph_categories.py`.
   **Closure assertions:** the complete `DigraphMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DigraphMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-digraphmorcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-digraphmorcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `DigraphMorCategoryConstruction` in `src/dzack_research/preamble/categories/graph_categories.py`.
   **Closure assertions:** the complete `DigraphMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DigraphMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
