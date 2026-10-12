@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import RealizationHook
 
@@ -182,15 +182,17 @@ class CyclicGroups(OwnedCategory):
             element = ambient(element)
             if (element == ambient.one()) is True or (element == self.group_generator()) is True:
                 return True
-            # Membership is the ambient engine's subgroup decision, not a
-            # search through the chosen enumeration of the subgroup's points.
-            # A represented cyclic subgroup can be tested even when its order
-            # is not known. Without that realization, retain the proposition.
-            # The unresolved group realization hook is callable but supplies
-            # no engine; only a concrete realization can decide membership.
+            # Prefer the supplied engine's subgroup decision. A finite cyclic
+            # group without such an engine nevertheless has a complete finite
+            # power presentation: preserve its decided equality cases rather
+            # than replacing their answers by an atomic proposition.
             engine_subgroup = self._cyclic_engine_subgroup()
             if engine_subgroup is not None:
                 return ambient._engine_subgroup_contains(element, engine_subgroup)
+            if self.is_finite() is True:
+                return negation(conjunction(
+                    negation(element == candidate) for candidate in self._finite_elements()
+                ))
             return AtomicProposition("is_member", element, self)
 
         __contains__ = is_parent_of
