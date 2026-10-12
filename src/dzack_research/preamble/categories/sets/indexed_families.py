@@ -460,7 +460,10 @@ def finite_indexed_family_from_values(
                             "cannot select finite ordered labels from an indexed family "
                             "whose index set has no enumeration"
                         )
-                    labels = finite_ordered_set(tuple(values.index_set()))
+                    # Preserve the actual domain, not a different ordered
+                    # presentation of the same points. A copied enumeration
+                    # is not an identity map between the two set objects.
+                    labels = values.index_set()
                 case _:
                     # A family is a function on its exact index set. Equal
                     # cardinalities do not provide a reindexing map; a
