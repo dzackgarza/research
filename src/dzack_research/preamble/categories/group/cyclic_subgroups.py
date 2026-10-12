@@ -47,7 +47,10 @@ class CyclicGroups(OwnedCategory):
         return "cyclic groups"
 
     def super_categories(self):
-        return [OwnedAbelianGroups()]
+        return [
+            OwnedAbelianGroups(),
+            OwnedGroups().FinitelyGeneratedAsMagma(),
+        ]
 
     def _call_(self, generator, *, placements=(), **level_data):
         r"""Construct the cyclic subgroup from its selected generator.

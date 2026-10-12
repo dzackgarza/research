@@ -951,7 +951,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CyclicCovers` in `src/dzack_research/preamble/categories/schemes/cyclic_covers.py`.
   **Closure assertions:** the complete `CyclicCovers` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CyclicCovers`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-cyclicgroups`**. **Needs:** none.
+- [x] **`placement-owner-cyclicgroups`**. **Needs:** none.
   **Owner pass:** `CyclicGroups` in `src/dzack_research/preamble/categories/group/cyclic_subgroups.py`.
   **Closure assertions:** the complete `CyclicGroups` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CyclicGroups`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
