@@ -4899,6 +4899,14 @@ class GeneralLinearGroups(OwnedCategory):
         return self._degree
 
     def super_categories(self):
+        # GL_0(R) is trivial, and GL_1(R)=R^× is abelian for commutative R.
+        # Neither statement licenses commutativity of the unit group of an
+        # arbitrary noncommutative ring.
+        abelian = (
+            self.degree() == 0
+            or (self.degree() == 1 and self.coefficient_ring() in OwnedRings().Commutative())
+        )
+        refinements = [OwnedGroups().Commutative()] if abelian else []
         # GL_n(R) is a subset of the finite matrix set R^(n*n) whenever
         # R is finite; rank zero is the trivial group over any ring.
         # For rank one, the group is R^× rather than all of R. In
@@ -4909,13 +4917,13 @@ class GeneralLinearGroups(OwnedCategory):
             or self.coefficient_ring().is_finite() is True
             or (self.degree() == 1 and self.coefficient_ring() is ZZ)
         ):
-            return [OwnedGroups().Finite()]
+            return [OwnedGroups().Finite(), *refinements]
         # For any infinite coefficient ring and n >= 2, the elementary
         # transvections I + r E_12 give an injection of its underlying set
         # into GL_n(R). The rank-one case instead detects the unit group,
         # which need not be infinite (e.g. ZZ^×).
         if self.degree() >= 2 and self.coefficient_ring().is_finite() is False:
-            return [OwnedGroups().Infinite()]
+            return [OwnedGroups().Infinite(), *refinements]
         # An infinite field has infinitely many nonzero units. Their
         # diagonal matrices give an infinite subgroup even in rank one;
         # this implication does not extend to arbitrary infinite rings.
@@ -4924,8 +4932,8 @@ class GeneralLinearGroups(OwnedCategory):
             and self.coefficient_ring().is_field() is True
             and self.coefficient_ring().is_finite() is False
         ):
-            return [OwnedGroups().Infinite()]
-        return [OwnedGroups()]
+            return [OwnedGroups().Infinite(), *refinements]
+        return [OwnedGroups(), *refinements]
 
     def an_object(self):
         return self()

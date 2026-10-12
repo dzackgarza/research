@@ -352,6 +352,9 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     # GL_1(ZZ) is the group of units {+1,-1}, while GL_2(ZZ)
     # contains an infinite cyclic subgroup of unipotent matrices.
     assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
+    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Commutative())
+    assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Commutative())
+    assert not GeneralLinearGroups(GF(2), 2).is_subcategory(OwnedGroups().Commutative())
     assert not GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Finite())
     assert GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Infinite())
     assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Infinite())
