@@ -4983,10 +4983,20 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             # Different but isomorphic index presentations still define the
             # same universal factorization when their projection is chosen.
             labels = source.free_basis()
-            generator_images = {
-                projection(source.free_generator(label)): source_map(source.free_generator(label))
-                for label in labels
-            }
+            generator_images = {}
+            for label in labels:
+                generator = source.free_generator(label)
+                image = projection(generator)
+                target_image = source_map(generator)
+                # A presentation may have redundant generators. Distinct
+                # free generators can project to the same group element;
+                # the induced map must assign equal values to both, rather
+                # than silently retaining the last dictionary entry.
+                if image in generator_images and generator_images[image] != target_image:
+                    raise ValueError(
+                        "the proposed descent assigns incompatible images to equal quotient generators"
+                    )
+                generator_images[image] = target_image
             if not all(generator in generator_images for generator in self.group_generators()):
                 raise ValueError("the chosen presentation projection does not cover the quotient generators")
             # The quotient's engine generator presentation may differ from
