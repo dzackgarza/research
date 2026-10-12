@@ -975,7 +975,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DelPezzoSurfaces` in `src/dzack_research/preamble/categories/schemes/varieties.py`.
   **Closure assertions:** the complete `DelPezzoSurfaces` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DelPezzoSurfaces`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-derivationcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-derivationcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `DerivationCategoryConstruction` in `src/dzack_research/preamble/categories/algebras/derivations.py`.
   **Closure assertions:** the complete `DerivationCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DerivationCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
