@@ -1278,7 +1278,7 @@ class CategoricalIsomorphism(Morphism):
         forward: Morphism,
         inverse: Morphism,
         *,
-        verify: bool = True,
+        verify: bool = False,
     ) -> None:
         Morphism.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
@@ -1291,27 +1291,37 @@ class CategoricalIsomorphism(Morphism):
                 f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
                 f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
             )
-        if verify:
-            left = inverse * forward
-            right = forward * inverse
-            if (left == left.parent().identity()) is not True:
-                raise ValueError(
-                    f"{inverse} is not a left inverse of {forward}: {inverse} o {forward} is not the identity of "
-                    f"{self.domain()}"
-                )
-            if (right == right.parent().identity()) is not True:
-                raise ValueError(
-                    f"{inverse} is not a right inverse of {forward}: {forward} o {inverse} is not the identity of "
-                    f"{self.codomain()}"
-                )
         self._forward = forward
         self._inverse = inverse
+        if verify:
+            self.validate_inverse_pair()
 
     def forward(self) -> Morphism:
         return self._forward
 
     def inverse(self) -> Morphism:
         return self._inverse
+
+    def left_inverse_decision(self):
+        composite = self.inverse() * self.forward()
+        return composite == composite.parent().identity()
+
+    def right_inverse_decision(self):
+        composite = self.forward() * self.inverse()
+        return composite == composite.parent().identity()
+
+    def inverse_pair_decision(self):
+        from dzack_research.preamble.logic import conjunction
+
+        return conjunction((self.left_inverse_decision(), self.right_inverse_decision()))
+
+    def validate_inverse_pair(self):
+        decision = self.inverse_pair_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self.inverse()} is not an inverse of {self.forward()}: at least one inverse equation fails"
+            )
+        return decision
 
     def __call__(self, element):
         return self.forward()(element)
