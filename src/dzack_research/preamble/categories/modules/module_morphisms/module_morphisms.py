@@ -2817,6 +2817,8 @@ class TensorProductModuleMorphismMethods:
     """
 
     _bilinear_evaluation = None
+    _defining_pairing_tensor = None
+    _defining_pairing_values = None
 
     def __init__(
         self,
@@ -2896,7 +2898,8 @@ class TensorProductModuleMorphismMethods:
         return value
 
     def coordinate_values(self):
-
+        if self._defining_pairing_values is not None:
+            return self._defining_pairing_values
         labels = self.domain().module_generating_set()
         return indexed_family(
             labels,
@@ -2913,6 +2916,23 @@ class TensorProductModuleMorphismMethods:
         A map given by its values on the framing of the tensor product reads
         that value; a map given by a function is evaluated.
         """
+        # A finite pairing constructed from a covariant coordinate tensor
+        # retains exactly that tensor as its generating datum.  Read its
+        # components directly instead of recovering them by re-evaluating
+        # the classifying morphism on every pair of generators.
+        if self._defining_pairing_tensor is not None:
+            left_labels = self.left_module().module_generating_set()
+            right_labels = self.right_module().module_generating_set()
+            return self._defining_pairing_tensor[
+                int(left_labels.ranking_map()(left_label)),
+                int(right_labels.ranking_map()(right_label)),
+            ]
+        if self._defining_pairing_values is not None:
+            from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
+
+            labels = self.domain().module_generating_set()
+            return self._defining_pairing_values[_tensor_pair(labels, left_label, right_label)]
+
         from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
 
         match self._generator_image:
@@ -3189,24 +3209,54 @@ class TensorProductModuleMor(ModuleMor):
         from dzack_research.preamble.tensors.tensor import (
             Tensor,
             _covariant_bilinear_coordinate_rows,
+            tensor,
         )
 
+        # Re-reading an admitted pairing in an equivalent Mor parent retains
+        # its *same* selected coordinate datum, not just its evaluation.
+        defining_tensor = (
+            images._defining_pairing_tensor
+            if isinstance(images, TensorProductModuleMorphismMethods)
+            else None
+        )
+        defining_values = (
+            images._defining_pairing_values
+            if isinstance(images, TensorProductModuleMorphismMethods)
+            else None
+        )
         match images:
             case Tensor():
-                images = _covariant_bilinear_coordinate_rows(
+                rows = _covariant_bilinear_coordinate_rows(
                     images,
                     left_labels.cardinality(),
                     right_labels.cardinality(),
                 )
+                if self.codomain() in OwnedRings():
+                    defining_tensor = (
+                        images if images.base_ring() is self.codomain()
+                        else tensor(
+                            self.codomain(), (),
+                            (int(left_labels.cardinality()), int(right_labels.cardinality())),
+                            rows,
+                        )
+                    )
+                images = rows
             case _:
                 pass
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             raw_family = images
+            domain_labels = self.domain().module_generating_set()
+            defining_values = indexed_family(
+                domain_labels,
+                lambda pair: self.codomain()(raw_family[
+                    source_indices(lambda index: pair.component(index))
+                ]),
+                name="Selected bilinear coordinate tensor",
+            )
 
             def generator_image(pair):
-                source_pair = source_indices(lambda index: pair.component(index))
-                value = raw_family[source_pair]
+                value = defining_values[pair]
                 return value if element_parent(value) is self.codomain() else self.codomain()(value)
 
             images = generator_image
@@ -3219,21 +3269,45 @@ class TensorProductModuleMor(ModuleMor):
                 raise TypeError(f"cannot define a pairing {left} x {right} -> {self.codomain()} by an array of values: both modules must be finitely generated, but they have {left_size} and {right_size} generators")
             if len(images) != int(left_size.finite_value()) or any(len(row) != int(right_size.finite_value()) for row in images):
                 raise ValueError(f"cannot define a pairing {left} x {right} -> {self.codomain()} by the array {images}: it must have {left_size} rows of {right_size} entries")
-            # The array is read in the two framings' enumerations once, keyed
-            # by the pair of labels it belongs to.
-            by_labels = {
-                (left_label, right_label): images[i][j]
-                for i, left_label in enumerate(left_labels)
-                for j, right_label in enumerate(right_labels)
-            }
+            # Finite pairing coordinates are the defining tensor of the
+            # morphism, not a disposable input subsequently reconstructed by
+            # evaluating it on the framing.  The linear extension below reads
+            # this same tensor (or its W-valued rectangular coordinate family).
+            if defining_tensor is None and self.codomain() in OwnedRings():
+                defining_tensor = tensor(
+                    self.codomain(), (),
+                    (int(left_size.finite_value()), int(right_size.finite_value())),
+                    images,
+                )
+            coordinates = defining_tensor if defining_tensor is not None else tuple(
+                tuple(self.codomain()(entry) for entry in row) for row in images
+            )
+            left_ranking = left_labels.ranking_map()
+            right_ranking = right_labels.ranking_map()
+            if defining_tensor is None:
+                labels = self.domain().module_generating_set()
+                defining_values = indexed_family(
+                    labels,
+                    lambda pair: coordinates[
+                        int(left_ranking(pair.component(0)))
+                    ][int(right_ranking(pair.component(1)))],
+                    name="Selected bilinear coordinate tensor",
+                )
 
             def generator_image(pair):
-                value = by_labels[pair.component(0), pair.component(1)]
+                row = int(left_ranking(pair.component(0)))
+                column = int(right_ranking(pair.component(1)))
+                value = coordinates[row, column] if defining_tensor is not None else coordinates[row][column]
                 return value if element_parent(value) is self.codomain() else self.codomain()(value)
 
             images = generator_image
 
-        return super()._element_constructor_(images)
+        morphism = super()._element_constructor_(images)
+        if defining_tensor is not None:
+            morphism._defining_pairing_tensor = defining_tensor
+        if defining_values is not None:
+            morphism._defining_pairing_values = defining_values
+        return morphism
 
     def _from_bilinear_evaluation(self, evaluation, premises=None):
         r"""Classify a stated bilinear evaluation without proving it from a framing sample.

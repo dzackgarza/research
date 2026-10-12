@@ -262,17 +262,10 @@ def _form_of_gram(module, gram):
     rank = module.module_rank()
     match rank.is_finite():
         case True:
-            size = int(rank)
-            form = forms(
-                tuple(
-                    tuple(ring(gram[row, column]) for column in range(size))
-                    for row in range(size)
-                )
-            )
-            # The form was built so that its Gram tensor in this framing is
-            # ``gram``; record it rather than re-reading every entry.
-            form.gram_tensor.set_cache(gram)
-            return form
+            # The selected covariant tensor *is* the finite form's defining
+            # data.  Its universal Hom retains that exact tensor rather than
+            # lowering it to rows and recovering it from generator images.
+            return forms(gram)
         case False:
             return forms(lambda left, right: gram(left, right))
 

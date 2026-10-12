@@ -985,7 +985,13 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             return self._pairing_value_module()
 
         def is_base_ring_valued(self) -> bool:
-            r"""Return whether this finite framed pairing takes values in its base ring."""
+            r"""Decide whether the selected finite pairing tensor has entries in the base ring.
+
+            Bilinearity makes the generator-pair values sufficient.  For a
+            scalar-valued form, these values are *already* its defining
+            covariant tensor: testing its entries must not evaluate the
+            classifying Hom on all pairs of generators a second time.
+            """
             match self.left_module() is self.right_module() and self.left_module() is self:
                 case True:
                     pass
@@ -996,6 +1002,15 @@ class PairingObjects(OwnedCategoryOverBaseRing):
             match self.module_rank().is_finite():
                 case True:
                     ring = self.base_ring()
+                    form = self.form()
+                    if _is_bilinear_form(form) and form.codomain() in OwnedRings():
+                        gram = form.gram_tensor()
+                        size = int(self.module_rank())
+                        return all(
+                            gram[i, j] in ring
+                            for i in range(size)
+                            for j in range(size)
+                        )
                     generators = tuple(self.module_generators())
                     return all(
                         self.b(left, right) in ring
@@ -2881,10 +2896,7 @@ def _scaled_form_module(source, scalar):
         if form.codomain() in OwnedRings() and _has_finite_framing(module):
             scaled_gram = scalar * form.gram_tensor()
             scaled = forms(scaled_gram)
-            # The constructor was supplied the complete Gram tensor.  Retain
-            # it at the form's existing cached datum rather than deriving it
-            # again by evaluating all n^2 generator pairs through the Mor.
-            scaled.gram_tensor.set_cache(scaled_gram)
+            # The Hom constructor retains its defining tensor directly.
         elif _has_finite_framing(module):
             scaled = forms(form.coordinate_values().map(lambda value: scalar * value))
         else:
@@ -2921,7 +2933,11 @@ def _scaled_form_module(source, scalar):
         # infinite rank.  The scaled form morphism cannot recover a Gram by
         # listing basis pairs when its basis is infinite.  Scale the original
         # selected Gram directly; pairing-rule tensors retain that rule.
-        data["gram_tensor"] = source.gram_tensor() * scalar
+        data["gram_tensor"] = (
+            scaled_gram
+            if _is_bilinear_form(form) and form.codomain() in OwnedRings() and _has_finite_framing(module)
+            else source.gram_tensor() * scalar
+        )
         if source in Lattices(ring).FinitelyGenerated():
             categories.append(Lattices(ring).FinitelyGenerated())
         # The lattice parity axiom is determined by the scaled diagonal.

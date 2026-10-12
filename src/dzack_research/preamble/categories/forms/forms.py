@@ -118,6 +118,10 @@ class BilinearFormMors(OwnedCategoryOverBaseRing):
                     f"the Gram tensor of {self} needs values in a ring, but its values lie in {self.codomain()}"
                 )
 
+            defining_tensor = self._defining_pairing_tensor
+            if defining_tensor is not None:
+                return defining_tensor
+
             labels = self.left_module().module_generating_set()
             size = labels.cardinality()
             if not size.is_finite():

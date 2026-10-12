@@ -151,6 +151,62 @@ def test_countable_rank_lattice_twist_retains_its_pairing_rule_without_enumerati
     assert doubled.twist(1) is doubled
 
 
+def test_finite_bilinear_hom_retains_its_actual_defining_covariant_tensor() -> None:
+    module = ZZ.free_module(2)
+    gram = tensor(ZZ, (), (2, 2), [[2, 1], [1, 2]])
+    bilinear = module.bilinear_forms(ZZ)(gram)
+    formed = module.equip_bilinear_form(ZZ, gram)
+
+    assert bilinear.gram_tensor() is gram
+    assert formed.form().gram_tensor() is gram
+    assert formed.gram_tensor() is gram
+    assert bilinear.domain() is module.tensor_product(module)
+    assert bilinear(module.module_generator(0), module.module_generator(1)) == ZZ.one()
+    assert formed.twist(3).form().gram_tensor() is formed.twist(3).gram_tensor()
+
+
+def test_finite_module_valued_bilinear_hom_keeps_selected_pair_coordinates() -> None:
+    module = ZZ.free_module(2)
+    target = ZZ.free_module(1)
+    e = target.module_generator(0)
+    pairing = module.bilinear_forms(target)([[e, 2*e], [3*e, 4*e]])
+    selected = pairing.coordinate_values()
+
+    for pair in pairing.domain().module_generating_set():
+        x = int(pair.component(0))
+        y = int(pair.component(1))
+        assert selected[pair] == (1 + 2*x + y)*e
+        assert pairing(module.module_generator(x), module.module_generator(y)) == selected[pair]
+
+
+def test_finite_bilinear_tensor_respects_actual_selected_generator_labels() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    labels = finite_ordered_set(("left", "right"))
+    module = ZZ.free_module(labels)
+    gram = tensor(ZZ, (), (2, 2), [[1, 2], [3, 4]])
+    pairing = module.bilinear_forms(ZZ)(gram)
+    e = module.module_generator(labels[0])
+    f = module.module_generator(labels[1])
+
+    assert pairing.gram_tensor() is gram
+    assert pairing(e, f) == ZZ(2)
+    assert pairing(f, e) == ZZ(3)
+
+
+def test_integrality_of_finite_scalar_valued_form_reads_the_selected_tensor() -> None:
+    module = ZZ.free_module(2)
+    integral_gram = tensor(QQ, (), (2, 2), [[1, 0], [0, 2]])
+    nonintegral_gram = tensor(QQ, (), (2, 2), [[QQ(1)/2, 0], [0, 2]])
+    integral = module.equip_bilinear_form(QQ, integral_gram)
+    nonintegral = module.equip_bilinear_form(QQ, nonintegral_gram)
+
+    assert integral.form().gram_tensor() is integral_gram
+    assert nonintegral.form().gram_tensor() is nonintegral_gram
+    assert integral.is_base_ring_valued()
+    assert not nonintegral.is_base_ring_valued()
+
+
 def test_form_base_change_keeps_the_pairing_over_the_rationals() -> None:
     form = _hyperbolic_form()
     inclusion = ZZ.Mor(QQ)(lambda integer: QQ(integer))

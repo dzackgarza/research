@@ -236,7 +236,7 @@ def _integral(
     if lattice.determinant() != 0:
         invariants = tuple(
             abs(int(factor))
-            for factor in lattice.discriminant_group().invariant_factors()
+            for factor in lattice.correlation_morphism().cokernel().invariant_factors()
             if abs(int(factor)) > 1
         )
         block["discriminant_group"] = list(invariants)
@@ -400,6 +400,9 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
         int(formed_determinant.numerator()),
         int(formed_determinant.denominator()),
     )
+    # The selected finite Gram tensor is the datum of this formed module.
+    # Its ring-valuedness operation checks the entries directly, without
+    # reconstructing them by evaluating the classifying Hom.
     integral_lattice = (
         Lattices(ZZ)(gram)
         if formed.is_base_ring_valued()
@@ -565,15 +568,19 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
         return []
     found: list[str] = []
     gram = lattice.gram_tensor
-    formed = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
     integral = lattice.integral
     if integral is not None:
-        if not formed.is_base_ring_valued():
+        try:
+            # An integral Gram in the stated basis is exactly a Gram which
+            # the canonical ZZ-lattice constructor admits.  Do not first
+            # build an entire QQ-valued Hom(ZZ^n tensor ZZ^n, QQ) merely to
+            # test its n^2 basis values for integrality.
+            owned = Lattices(ZZ)(gram)
+        except (TypeError, ValueError):
             found.append(
                 "integral: the stored integral block requires the form to take values in ZZ"
             )
         else:
-            owned = Lattices(ZZ)(gram)
             if owned.determinant() != 0:
                 if integral.level is not None and integral.level != card_level(owned):
                     found.append(
@@ -598,7 +605,7 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
                 if integral.discriminant_group is not None:
                     factors = tuple(
                         abs(int(factor))
-                        for factor in owned.discriminant_group().invariant_factors()
+                        for factor in owned.correlation_morphism().cokernel().invariant_factors()
                         if abs(int(factor)) > 1
                     )
                     if tuple(integral.discriminant_group) != factors:
@@ -614,6 +621,11 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
                         found.append(
                             f"integral.delta: stated {integral.delta}, computed {int(owned.delta())}"
                         )
+    formed = (
+        ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+        if lattice.definite is not None or lattice.root_span is not None
+        else None
+    )
     definite = lattice.definite
     if definite is not None:
         if formed.definiteness() not in ("positive_definite", "negative_definite"):
