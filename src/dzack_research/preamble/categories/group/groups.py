@@ -991,7 +991,11 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
             lifted = []
             for relation in relators:
                 word = group._to_engine(group(relation)).reduced_word()
-                lifted.append(free([positions[label] for label in word]))
+                # Coxeter matrix elements multiply in the ordinary matrix
+                # order, while the owned free/presented word law reverses
+                # Sage's multiplication. Reverse the word when transporting
+                # it between these representations.
+                lifted.append(free([positions[label] for label in reversed(word)]))
             return _own_group(free.quotient(tuple(defining_relations) + tuple(lifted)))
         case _:
             assert False, f"the quotient of {group} by the normal closure of {relators} cannot be computed: this is available only for free groups and finitely presented groups"
@@ -4018,7 +4022,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 ), strict=True))
                 projection = self.Mor(quotient)(
                     lambda element: reduce(mul, (
-                        images[label] for label in self._to_engine(self(element)).reduced_word()
+                        images[label] for label in reversed(self._to_engine(self(element)).reduced_word())
                     ), quotient.one())
                 )
             else:
