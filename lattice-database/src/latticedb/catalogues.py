@@ -177,6 +177,7 @@ class LatticeFamily(CatalogueRecord):
                             "family_parameter",
                             "each expression in gram_template names the parameter and nothing else",
                         )
+                    _expression_value(tree, self.parameter, self.minimum)
         if not seen:
             raise PydanticCustomError(
                 "family_parameter",
