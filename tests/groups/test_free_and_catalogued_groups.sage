@@ -159,6 +159,12 @@ def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
     matrix[0][1] = 4
     matrix[1][0] = 4
     try:
+        category.super_categories()
+    except ValueError as error:
+        assert "changed after category construction" in str(error)
+    else:
+        assert False, "a mutated Coxeter matrix retained its category placement"
+    try:
         category.coxeter_matrix()
     except ValueError as error:
         assert "changed after category construction" in str(error)

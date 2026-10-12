@@ -4977,6 +4977,10 @@ class CoxeterGroups(OwnedCategory):
         return self._coxeter_matrix
 
     def super_categories(self):
+        # The public chosen datum is mutable for list-backed matrices.
+        # Category membership must not continue certifying a different
+        # Coxeter system after that datum changes.
+        self.coxeter_matrix()
         # Rank-two Coxeter presentations are dihedral:
         # <s,t | s^2=t^2=(st)^m=1> has order 2m for finite m,
         # while m=infinity yields the infinite dihedral group.
