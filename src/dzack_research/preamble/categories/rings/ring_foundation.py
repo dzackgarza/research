@@ -3252,6 +3252,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 components = self._finite_irreducible_components()
                 if components is not None:
                     return components
+                # A selected finite minimal-prime family already determines
+                # the actual component rings R/p. Do not discard this finite
+                # construction merely because no separate component hook was
+                # installed; each quotient keeps the literal source R.
+                minimal = self._finite_minimal_primes()
+                if minimal is not None:
+                    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                    return finite_ordered_set(tuple(self.quotient_ring(prime) for prime in minimal))
                 from dzack_research.preamble.categories.sets.set_categories import Sets
 
                 return Sets().image_set(
