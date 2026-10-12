@@ -125,6 +125,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert descended.domain() is quotient
     assert descended.codomain() is quotient
     assert all(descended(projection(generator)) == projection(generator) for generator in (a, b))
+    assert all(descended(projection(word)) == projection(word) for word in (a*b, b*a, a*b*a, b**2*a))
     cyclic = Groups.C(2)
     wrong = free.Mor(cyclic)({a: cyclic.one(), b: cyclic.group_generators()[0]})
     try:

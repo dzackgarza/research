@@ -4966,10 +4966,15 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 "presentation descent requires the quotient generators to be indexed "
                 "by the selected presenting free basis"
             )
-            return self.Mor(target)(
+            # The quotient's engine generator presentation may differ from
+            # its chosen free-source presentation. Validate the induced
+            # images against the former as well: a mere dictionary of
+            # images does not by itself establish a group homomorphism.
+            descended = self.Mor(target)(
                 {self.group_generator(label): source_map(source.free_generator(label))
-                 for label in labels}
+                 for label in labels}, check=True
             )
+            return descended
 
         def quotient_projection(self):
             r"""The presentation epimorphism from the selected free group.
