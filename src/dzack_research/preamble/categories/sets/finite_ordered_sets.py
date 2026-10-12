@@ -268,12 +268,11 @@ class FiniteOrderedSets(OwnedCategory):
         return [OrderedEnumeratedSets(), FiniteSets()]
 
     def _call_(self, elements: Parent | Iterable[PointT]) -> ObjectOfCategory:
-        r"""Construct the finite ordered set a finite set or finitely many points present.
+        r"""Construct the finite ordered set from an enumerated set or ordered points.
 
         The category call returns ``elements`` itself when it already is one.
-        A finite set is read through its own enumeration when it states one,
-        and in iteration order otherwise; finitely many points are taken in
-        order, with equal points identified.
+        A finite set must state its own enumeration; finitely many literal
+        points are taken in order, with equal points identified.
         """
         match elements:
             case _ if elements in Sets():
@@ -297,8 +296,8 @@ class FiniteOrderedSets(OwnedCategory):
                     self,
                     index_set=index_set,
                     element_at=lambda position: ranking.inverse()(int(position)),
-                    index_of=lambda element: ranking(element) if element in source else None,
-                    contains=lambda element: element in source,
+                    index_of=lambda element: ranking(element) if source.is_parent_of(element) is True else None,
+                    contains=source.is_parent_of,
                 )
             case _:
                 # Cardinality is not an enumeration.  An arbitrary finite
