@@ -3167,6 +3167,19 @@ class _ImageSetEngine:
                 return None
         return tuple(distinct)
 
+    @cached_method
+    def _finite_image_hash_lookup(self):
+        r"""The selected finite image's engine set, when its points are hashable.
+
+        This is a membership computation, not a choice of enumeration: an
+        image may have undecidable distinctness of unhashable points while
+        membership remains the finite existential proposition.
+        """
+        try:
+            return frozenset(self.image_map()(point) for point in self.source_set())
+        except TypeError:
+            return None
+
     def __iter__(self):
         assert Sets().is_provably_finite(self.source_set()) and self.source_set() in EnumeratedSets(), (
             f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
@@ -3205,6 +3218,12 @@ class _ImageSetEngine:
                     return AtomicProposition("is_member", element, self)
                 return conjunction((admitted, self.image_map()(source(preimage)) == element))
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
+                hashed = self._finite_image_hash_lookup()
+                if hashed is not None:
+                    try:
+                        return element in hashed
+                    except TypeError:
+                        pass
                 # Membership is the finite existential proposition
                 # exists a in A, f(a) = element. It does not require
                 # deciding equality *between* image values, which is needed
