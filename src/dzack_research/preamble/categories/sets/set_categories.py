@@ -3244,6 +3244,8 @@ class _ImageSetEngine:
         image may have undecidable distinctness of unhashable points while
         membership remains the finite existential proposition.
         """
+        if not Sets().is_provably_finite(self.source_set()) or self.source_set() not in EnumeratedSets():
+            return None
         try:
             return frozenset(self.image_map()(point) for point in self.source_set())
         except TypeError:
