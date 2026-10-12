@@ -112,6 +112,24 @@ def test_gap_group_morphism_requires_its_selected_endpoints() -> None:
     else:
         assert False, "a GAP map of C2 was admitted as an endomorphism of C3"
 
+    # The default Mor constructor does not request optional validation.
+    # Even so, an unchecked GAP mapping violating a defining relation
+    # cannot represent an arrow in the owned category of groups.
+    four = Groups.C(4)
+    model_four = _gap_model(four)
+    model_three = _gap_model(three)
+    bad = libgap.GroupHomomorphismByImagesNC(
+        model_four, model_three,
+        model_four.GeneratorsOfGroup(),
+        model_three.GeneratorsOfGroup(),
+    )
+    try:
+        four.Mor(three)(bad)
+    except ValueError as error:
+        assert "does not satisfy the source relations" in str(error)
+    else:
+        assert False, "unchecked GAP mapping C4 to a generator of C3 was admitted"
+
 
 
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:

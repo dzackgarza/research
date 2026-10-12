@@ -1961,6 +1961,16 @@ class GroupMorphism:
                         f"the supplied GAP group map does not have the selected endpoints "
                         f"{parent.domain()} and {parent.codomain()}"
                     )
+                # check=False suppresses optional mathematical validation,
+                # not the requirement that a supplied GAP realization be a
+                # map on the *whole* source satisfying its group law.
+                generators, images = realization.MappingGeneratorsImages()
+                if libgap.Subgroup(realization.Source(), generators) != realization.Source():
+                    raise ValueError("the supplied GAP map's generators do not generate its source")
+                if libgap.GroupHomomorphismByImages(
+                    realization.Source(), realization.Range(), generators, images
+                ).is_bool():
+                    raise ValueError("the supplied GAP map does not satisfy the source relations")
                 self._gap_homomorphism = realization
                 evaluator = self._evaluate_gap
             case dict():
