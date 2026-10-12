@@ -395,9 +395,8 @@ class FiniteOrderedSets(OwnedCategory):
                         equal = True if point is present else point == present
                         if equal is True:
                             matched = index
-                        if equal is not False:
-                            if equal is not True:
-                                undecided = True
+                        elif equal is not False:
+                            undecided = True
                     if undecided:
                         raise ValueError("membership in this finite enumerated set is undecided")
                     return matched
