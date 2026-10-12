@@ -5096,11 +5096,31 @@ class CoxeterGroups(OwnedCategory):
                 degree <= 3 for degree in degrees.values()
             ):
                 center = branching[0]
-                return sum(
+                adjacent_leaves = sum(
                     degrees[other] == 1
                     for other in component
                     if self._engine_coxeter_matrix[center, other] == 3
-                ) >= 2
+                )
+                if adjacent_leaves >= 2:
+                    return True  # D_n, n >= 4
+                # The remaining finite simply-laced trivalent diagrams
+                # are E6, E7, E8, with branch lengths (1,2,2),
+                # (1,2,3), (1,2,4). Follow the three arms without
+                # confusing a longer affine E-type arm with a finite one.
+                lengths = []
+                for first in component:
+                    if self._engine_coxeter_matrix[center, first] != 3:
+                        continue
+                    previous, vertex, length = center, first, 1
+                    while degrees[vertex] == 2:
+                        following = next(
+                            other for other in component
+                            if other != previous and self._engine_coxeter_matrix[vertex, other] == 3
+                        )
+                        previous, vertex = vertex, following
+                        length += 1
+                    lengths.append(length)
+                return sorted(lengths) in ([1, 2, 2], [1, 2, 3], [1, 2, 4])
             if any(degree > 2 for degree in degrees.values()):
                 return False
             return not marked or (

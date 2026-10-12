@@ -185,6 +185,21 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
         [1, 3, 3, 3], [3, 1, 2, 2], [3, 2, 1, 2], [3, 2, 2, 1]
     ])
     assert d4.is_subcategory(OwnedGroups().Finite())
+    # E6: the central vertex has arms of lengths 1, 2, 2.
+    e6 = CoxeterGroups([
+        [1, 3, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2],
+        [2, 3, 1, 3, 2, 3], [2, 2, 3, 1, 3, 2],
+        [2, 2, 2, 3, 1, 2], [2, 2, 3, 2, 2, 1],
+    ])
+    assert e6.is_subcategory(OwnedGroups().Finite())
+    # Affine E6 has three arms of length two, so it is not spherical.
+    affine_e6 = CoxeterGroups([
+        [1, 3, 2, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2, 2],
+        [2, 3, 1, 3, 2, 3, 2], [2, 2, 3, 1, 3, 2, 2],
+        [2, 2, 2, 3, 1, 2, 2], [2, 2, 3, 2, 2, 1, 3],
+        [2, 2, 2, 2, 2, 3, 1],
+    ])
+    assert not affine_e6.is_subcategory(OwnedGroups().Finite())
     infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
     assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
     affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
