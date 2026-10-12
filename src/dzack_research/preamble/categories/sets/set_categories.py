@@ -3496,17 +3496,40 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
             )
 
         def from_maps(self, source, maps):
-            r"""The additive map classified by a finite family of additive component maps."""
+            r"""The additive map classified by component additive morphisms.
+
+            For an infinite index the components must form a selected natural
+            transformation from the constant source diagram to the defining
+            additive-monoid diagram; an arbitrary callback is not evidence of
+            their common categorical codomain.
+            """
             from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
             if source not in AdditiveMonoids():
                 raise TypeError(f"an additive product map needs an additive-monoid source, not {source}")
             index = self.index_set()
             if not Sets().is_provably_finite(index):
-                raise TypeError(
-                    "a map into an infinite additive product needs a selected categorical "
-                    "family of additive morphisms, not an unchecked callback"
-                )
+                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
+                from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+                diagram = self.family().selected_diagram()
+                index_category = DiscreteCategory(index)
+                if not isinstance(maps, NaturalTransformation) or diagram is None:
+                    raise TypeError(
+                        "an infinite additive product map requires a selected natural transformation "
+                        "into its additive-monoid factor diagram"
+                    )
+                if maps.target() is not diagram or maps.source().domain() is not index_category:
+                    raise ValueError("the component transformation must target the product's exact indexed diagram")
+                if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(AdditiveMonoids()):
+                    raise TypeError("the component transformation must be additive-monoid-valued")
+                if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
+                    raise ValueError("the component transformation must have the selected constant source")
+
+                def induced(point):
+                    return self(lambda label: maps.component(index_category.object(label))(point))
+
+                return AdditiveMonoids().Mor(source, self)(induced)
             components = tuple((label, maps(label)) for label in index)
             for label, morphism in components:
                 if morphism.parent() is not AdditiveMonoids().Mor(source, self.factor(label)):
