@@ -3407,10 +3407,22 @@ class CartesianProductsOfSets(OwnedCategory):
             cached = self._resolved_component_identity.get(id(normalized))
             if cached is not None and cached[0] is normalized:
                 return cached[1]
+            undecided = False
             for prior_index, resolved in self._resolved_components:
-                if normalized is prior_index or normalized == prior_index:
+                equal = True if normalized is prior_index else normalized == prior_index
+                if equal is True:
+                    if undecided:
+                        raise ValueError(
+                            "cannot resolve this product component: equality with an earlier index is undecided"
+                        )
                     self._resolved_component_identity[id(normalized)] = (normalized, resolved)
                     return resolved
+                if equal is not False:
+                    undecided = True
+            if undecided:
+                raise ValueError(
+                    "cannot distinguish this product index from previously resolved indices"
+                )
             if self._positional_components is not None:
                 position = int(self.parent().index_set().ranking_map()(normalized))
                 resolved = self._positional_components[position]
