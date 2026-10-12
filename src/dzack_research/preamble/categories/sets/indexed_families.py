@@ -187,6 +187,14 @@ class IndexedFamily[IndexT, ValueT]:
     ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
             raise TypeError(f"cannot map {function!r} over the family {self}: it is not callable")
+        from dzack_research.preamble.categories.functors.core import Functor
+
+        diagram = self.selected_diagram()
+        if isinstance(function, Functor) and diagram is not None:
+            # A functor acts on the entire selected diagram, not merely on
+            # its object callback. This retains morphism transport and the
+            # codomain witness for nonconstant infinite factor families.
+            return indexed_family(self.index_set(), diagram.then(function), name=name)
         constant = self.constant_value()
         if constant is not None:
             mapped = function(constant)
