@@ -3951,21 +3951,35 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case False:
                     return size
 
-        def quotient_by_relators(self, relators):
-            r"""Return ``G / <<relators>>``, the quotient by their normal closure."""
+        def quotient_by_relators(self, relators, *, return_projection=False):
+            r"""Return ``G / <<relators>>``, optionally with its quotient Mor ``G -> G/N``.
+
+            The selected free-presentation augmentation has a different
+            domain and cannot be substituted for this quotient arrow.
+            """
             match self:
                 case _ if isinstance(_engine_group(self), FreeGroup_class):
                     # The free source and the caller's chosen relators
                     # define this quotient. Preserve them at the family
                     # constructor rather than discarding them on ingress.
-                    return FreeGroupQuotients(self, relators)()
+                    quotient = FreeGroupQuotients(self, relators)()
                 case _ if self in GroupsWithChosenFinitePresentation():
-                    return _engine_quotient_by_relators(self, relators)
+                    quotient = _engine_quotient_by_relators(self, relators)
                 case _:
                     assert False, (
                         f"the quotient of {self} by the normal closure of {relators} is defined for every group, "
                         "but the current preamble computes it only for groups with a chosen finite presentation"
                     )
+            if not return_projection:
+                return quotient
+            source_generators = tuple(self.group_generators())
+            quotient_generators = tuple(quotient.group_generators())
+            if len(source_generators) != len(quotient_generators):
+                raise ValueError("the quotient engine does not preserve the source generator positions")
+            projection = self.Mor(quotient)(
+                dict(zip(source_generators, quotient_generators, strict=True))
+            )
+            return quotient, projection
 
         def finite_image_lifts(
             self,

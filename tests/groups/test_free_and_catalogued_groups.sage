@@ -447,7 +447,12 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # to its original free presentation, not treat its generators as free.
     # S_3 / <<(123)>> = C_2, whereas a fresh free quotient would forget
     # the original a^2, b^3 and (ab)^2 relations.
-    second_quotient = quotient.quotient_by_relators((projection(b),))
+    second_quotient, second_projection = quotient.quotient_by_relators(
+        (projection(b),), return_projection=True
+    )
+    assert second_projection.domain() is quotient
+    assert second_projection.codomain() is second_quotient
+    assert second_projection(projection(b)) == second_quotient.one()
     assert second_quotient.order() == 2
     assert second_quotient.is_isomorphic_to(Groups.C(2))
     assert second_quotient.quotient_projection().domain() is second_quotient.presenting_free_group()
