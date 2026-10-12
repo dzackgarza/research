@@ -3254,7 +3254,6 @@ class FiniteAtlasModuleGluingMorphismMethods:
                 raise TypeError(
                     f"the local map on chart {index} must be an arrow of {local_mor}, but it is {local_map}"
                 )
-        self._verify_overlap_compatibility()
 
     def source_datum(self):
         return self.domain()
@@ -4103,8 +4102,8 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
     def __hash__(self):
         return hash(id(self.parent()))
 
-    def _verify_overlap_compatibility(self) -> None:
-        for source_index, target_index in self.source().gluing_datum().transition_index_set():
+    def overlap_compatibility_decision(self):
+        def commutes(source_index, target_index):
             source_transition = self.source().transition(source_index, target_index)
             target_transition = self.target().transition(source_index, target_index)
             source_side = self.source().restricted_local_map(
@@ -4117,11 +4116,22 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
                 target_side
             )
             right = SemilinearAlgebraMorphism.from_linear(source_side) * source_transition.pullback()
-            if left != right:
-                raise ValueError(
-                    f"the local maps of {self} do not glue: on the overlap of charts {source_index} and "
-                    f"{target_index} they do not commute with the chart changes"
-                )
+            return left == right
+
+        return conjunction(
+            commutes(source_index, target_index)
+            for source_index, target_index in self.source().gluing_datum().transition_index_set()
+        )
+
+    @validator
+    def validate_overlap_compatibility(self):
+        decision = self.overlap_compatibility_decision()
+        if decision is False:
+            raise ValueError(
+                f"the local maps of {self} do not glue: they fail compatibility with the chart changes "
+                "on some overlap"
+            )
+        return decision
 
 
 class FiniteAtlasAlgebraGluingMor(CategoricalMor):
@@ -4138,9 +4148,11 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
             )
         super().__init__(family, domain, codomain)
 
-    def _element_constructor_(self, local_maps):
+    def _element_constructor_(self, local_maps, *, check=False):
         match local_maps:
             case FiniteAtlasAlgebraGluingMorphism() if local_maps.parent() is self:
+                if check:
+                    local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasAlgebraGluingMorphism():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
@@ -4151,7 +4163,10 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
                 local_maps = local_maps.local_maps()
             case _:
                 pass
-        return self.element_class(self, local_maps)
+        morphism = self.element_class(self, local_maps)
+        if check:
+            morphism.validate_overlap_compatibility()
+        return morphism
 
     @cached_method
     def identity(self):
