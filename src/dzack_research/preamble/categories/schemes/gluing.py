@@ -84,6 +84,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+from dzack_research.preamble.validation import validator
 
 
 def _ordered_transition_images(datum, transition_data, source_index, target_index):
@@ -2315,17 +2316,24 @@ class FiniteAtlasAlgebraTransition(SageObject):
                 f"{reverse_scalar}, but it is a map {inverse_pullback.source()} -> "
                 f"{inverse_pullback.target()} over {inverse_pullback.scalar_map()}"
             )
-        if pullback * inverse_pullback != SemilinearAlgebraMorphism.identity(source_algebra):
+
+    def inverse_pair_decision(self):
+        return conjunction((
+            self.pullback() * self.inverse_pullback()
+            == SemilinearAlgebraMorphism.identity(self.source_algebra()),
+            self.inverse_pullback() * self.pullback()
+            == SemilinearAlgebraMorphism.identity(self.target_algebra()),
+        ))
+
+    @validator
+    def validate_inverse_pair(self):
+        decision = self.inverse_pair_decision()
+        if decision is False:
             raise ValueError(
-                f"cannot build an algebra chart change over {scheme_transition}: the stated inverse "
-                f"{inverse_pullback} followed by the pullback {pullback} is not the identity of "
-                f"{source_algebra}"
+                f"the stated pullback and inverse pullback of the algebra chart change over "
+                f"{self.scheme_transition()} are not mutually inverse"
             )
-        if inverse_pullback * pullback != SemilinearAlgebraMorphism.identity(target_algebra):
-            raise ValueError(
-                f"cannot build an algebra chart change over {scheme_transition}: the pullback {pullback} "
-                f"followed by its stated inverse {inverse_pullback} is not the identity of {target_algebra}"
-            )
+        return decision
 
     def scheme_transition(self):
         return self._scheme_transition
@@ -2462,9 +2470,6 @@ class _FiniteAtlasModuleGluingDatumEngine:
         self._transitions = []
         self._triple_transitions = []
         super().__init__(**rest)
-        for pair in gluing_datum.transition_index_set():
-            self.transition(*pair)
-        self._verify_cocycle()
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -3934,17 +3939,23 @@ class _FiniteAtlasAlgebraGluingDatumEngine:
         self._triple_transitions.append((key, transition))
         return transition
 
-    def _verify_cocycle(self) -> None:
+    def cocycle_decision(self):
         labels = tuple(self.chart_indices())
-        for left, middle, right in combinations(labels, 3):
-            left_middle = self.transition_on_triple(left, middle, right).pullback()
-            middle_right = self.transition_on_triple(middle, right, left).pullback()
-            left_right = self.transition_on_triple(left, right, middle).pullback()
-            if left_middle * middle_right != left_right:
-                raise ValueError(
-                    f"the algebra chart changes of {self} fail the cocycle condition on the triple overlap of "
-                    f"charts {left}, {middle} and {right}"
-                )
+        return conjunction(
+            self.transition_on_triple(left, middle, right).pullback()
+            * self.transition_on_triple(middle, right, left).pullback()
+            == self.transition_on_triple(left, right, middle).pullback()
+            for left, middle, right in combinations(labels, 3)
+        )
+
+    @validator
+    def validate_cocycle(self):
+        decision = self.cocycle_decision()
+        if decision is False:
+            raise ValueError(
+                f"the algebra chart changes of {self} fail the cocycle condition on some triple overlap"
+            )
+        return decision
 
     def restricted_local_map(self, target_datum, chart_index, other_index, local_map):
         if target_datum.gluing_datum() is not self.gluing_datum():
