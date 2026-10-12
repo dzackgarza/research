@@ -188,6 +188,37 @@ def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
     assert projection(point + unit) == projection(point) + projection(unit)
     assert projection(product.zero()) == odd.zero()
 
+    # The nonconstant product also has the actual AddMon universal arrow.
+    # The common source is the even factor, and its selected zero maps give
+    # compatible legs into both kinds of factors without identifying them.
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+    source_diagram = Cat().Mor(infinite_index, AdditiveMonoids()).constant_functor(even)
+    components = NaturalTransformation(
+        source_diagram, selected,
+        lambda obj: AdditiveMonoids().Mor(even, family(obj.value()))(
+            lambda _value: family(obj.value()).zero()
+        ),
+    )
+    induced = product.from_maps(even, components)
+    assert induced.parent() is AdditiveMonoids().Mor(even, product)
+    for index in (NN(0), NN(1), NN(6), NN(7)):
+        assert product.projection(index)(induced(even.one())) == family(index).zero()
+
+    wrong_components = NaturalTransformation(
+        source_diagram, selected,
+        lambda obj: Sets().Mor(even, family(obj.value()))(
+            lambda _value: family(obj.value()).zero()
+        ),
+    )
+    wrong_induced = product.from_maps(even, wrong_components)
+    try:
+        product.projection(NN(3))(wrong_induced(even.one()))
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("a Set-map component falsely certified the nonconstant additive product")
+
     unchecked = Cat().Mor(infinite_index, AdditiveMonoids()).discrete_diagram(
         indexed_family(NN, lambda n: even if int(n) % 2 == 0 else Sets.Δ[1])
     )
