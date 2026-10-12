@@ -443,6 +443,15 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert from_operation.presenting_free_group() is free
     assert tuple(from_operation.defining_relations()) == relators
 
+    # Quotienting a presented group must adjoin the new normal relators
+    # to its original free presentation, not treat its generators as free.
+    # S_3 / <<(123)>> = C_2, whereas a fresh free quotient would forget
+    # the original a^2, b^3 and (ab)^2 relations.
+    second_quotient = quotient.quotient_by_relators((projection(b),))
+    assert second_quotient.order() == 2
+    assert second_quotient.is_isomorphic_to(Groups.C(2))
+    assert second_quotient.quotient_projection().domain() is second_quotient.presenting_free_group()
+
     try:
         quotient.quotient_by_relators((Groups.C(2).one(),))
     except ValueError as error:
