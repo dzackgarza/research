@@ -71,6 +71,8 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     permutation = labelled_group((1, 2))
     labelled_action = labelled_group.natural_g_set()
     selected_action = labelled_group.action_on(labelled)
+    assert selected_action is labelled_group.natural_g_set()
+    assert selected_action.permutation_representation() is labelled_group.natural_g_set().permutation_representation()
     assert selected_action.acting_group() is labelled_group
     assert labelled_action.act(permutation, labelled("alpha")) == labelled("beta")
     assert permutation(labelled("alpha")) == labelled("beta")

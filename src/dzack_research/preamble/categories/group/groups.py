@@ -4814,6 +4814,7 @@ class SymmetricGroups(OwnedParameterizedCategory):
         def natural_points(self):
             return self._symmetric_points
 
+        @cached_method
         def natural_g_set(self):
             from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 
