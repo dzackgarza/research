@@ -849,7 +849,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ConeMorCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/products.py`.
   **Closure assertions:** the complete `ConeMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConeMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-connectioncategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-connectioncategoryconstruction`**. **Needs:** none.
   **Owner pass:** `ConnectionCategoryConstruction` in `src/dzack_research/preamble/categories/modules/connections.py`.
   **Closure assertions:** the complete `ConnectionCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConnectionCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
