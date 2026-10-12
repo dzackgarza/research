@@ -4645,6 +4645,18 @@ def _admitted_module_factor_family(modules, factors, *, name):
     """
     family = _factor_family(factors, name=name)
 
+    # A selected constant family already supplies every factor without
+    # enumerating its index set. Preserve that datum: replacing it with an
+    # opaque callback would erase the proof that the infinite product has
+    # one fixed module as every factor.
+    constant = family.constant_value()
+    if constant is not None:
+        if constant not in modules:
+            raise TypeError(
+                f"the product in {modules} is not defined: the constant factor {constant} is not a module"
+            )
+        return indexed_family(family.index_set(), constant, name=name)
+
     def admitted(index):
         factor = family.value(index)
         match factor in modules:
@@ -4690,9 +4702,10 @@ def _module_product_created_by_underlying_sets(base_ring, factors):
     ring = _owned_ring(base_ring)
     modules = Modules(ring)
     forgetful = modules.underlying_set()
+    constant = factors.constant_value()
     underlying_factors = indexed_family(
         factors.index_set(),
-        lambda index: forgetful(factors.value(index)),
+        forgetful(constant) if constant is not None else lambda index: forgetful(factors.value(index)),
         name="Underlying sets of module product factors",
     )
     underlying_product = Sets().product(underlying_factors)
