@@ -336,3 +336,13 @@ def test_special_linear_rank_is_not_truncated() -> None:
         assert "integral rank" in str(error)
     else:
         assert False, "SL of nonintegral degree was admitted as SL2"
+
+
+def test_named_matrix_group_families_require_integral_degree() -> None:
+    for constructor in (Groups.GL, Groups.Sp, Groups.SO):
+        try:
+            constructor(QQ(5) / 2, ZZ)
+        except ValueError as error:
+            assert "degree must be an integer" in str(error)
+        else:
+            assert False, "a matrix group was constructed at a fractional degree"

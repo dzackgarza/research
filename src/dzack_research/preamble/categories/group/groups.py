@@ -1651,6 +1651,11 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
 
 
 def _group_over_ring(constructor, degree, ring, *args, **kwargs):
+    # Matrix and affine group degrees are discrete structural parameters.
+    # The shared adapter must not ask an engine to interpret a fractional
+    # rank, independently of which named group family is being constructed.
+    if degree not in ZZ or degree != ZZ(degree):
+        raise ValueError("a group degree must be an integer")
     engine_args, engine_kwargs = _lowered_arguments(args, kwargs)
     return _own_group(
         constructor(
