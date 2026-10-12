@@ -285,14 +285,20 @@ class FiniteOrderedSets(OwnedCategory):
 
         Literal ingress: the points are read once, in order.
         """
-        # Owned mathematical objects need not be hashable.  Equality, not a
-        # Python hash implementation, is the set-theoretic identification here.
-        distinct_list = []
-        for point in points:
-            if any(point is present or point == present for present in distinct_list):
-                continue
-            distinct_list.append(point)
-        distinct = tuple(distinct_list)
+        # Dictionary insertion preserves the first occurrence and delegates
+        # hashable-point identification to the maintained hash-table engine.
+        # A genuinely unhashable point still requires the equality fallback;
+        # do not impose hashability on the mathematical points of a finite set.
+        supplied = tuple(points)
+        try:
+            distinct = tuple(dict.fromkeys(supplied))
+        except TypeError:
+            distinct_list = []
+            for point in supplied:
+                if any(point is present or point == present for present in distinct_list):
+                    continue
+                distinct_list.append(point)
+            distinct = tuple(distinct_list)
         return self.from_indexed(
             finite_ordinal_set(len(distinct)),
             lambda position: distinct[int(position)],
