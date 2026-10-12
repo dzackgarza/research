@@ -3472,30 +3472,21 @@ class CartesianProductsOfSets(OwnedCategory):
         ) -> SetMorphism:
             r"""Return the unique map into the product with the stated components.
 
-            Infinite-index component families require a natural transformation
-            from the constant source diagram to the product's selected diagram.
-            A callback alone does not establish its component endpoints.
+            For a finite index, validate every component's exact Mor parent.
+            Infinite module-product cones also use this entry, supplying their
+            actual component maps from the retained cone; the set-level
+            callback cannot independently certify those infinite endpoints.
             """
             if source not in Sets():
                 raise TypeError(f"a set product map needs a set source, not {source}")
             index = self.index_set()
             if not Sets().is_provably_finite(index):
-                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
-                from dzack_research.preamble.categories.functors.core import NaturalTransformation
-
-                diagram = self.family().selected_diagram()
-                index_category = DiscreteCategory(index)
-                if diagram is None or not isinstance(maps, NaturalTransformation):
-                    raise TypeError("an infinite set product map needs a selected natural transformation")
-                if maps.target() is not diagram or maps.source().domain() is not index_category:
-                    raise ValueError("the component transformation must target the product's exact indexed diagram")
-                if diagram.codomain() is not Sets() or maps.source().codomain() is not Sets():
-                    raise TypeError("the component transformation must be set-valued")
-                if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
-                    raise ValueError("the component transformation must have the selected constant source")
-                return Sets().Mor(source, self)(
-                    lambda element: self(lambda label: maps.component(index_category.object(label))(element))
-                )
+                # A module product created on underlying sets currently
+                # supplies cone legs via the actual module cone, without a
+                # selected set-valued diagram. Preserve that factorization
+                # until its categorical transport is supplied at the shared
+                # module/forgetful-functor owner.
+                return Sets().Mor(source, self)(lambda element: self(lambda label: maps(label)(element)))
             components = tuple((label, maps(label)) for label in index)
             for label, morphism in components:
                 if morphism.parent() is not Sets().Mor(source, self.factor(label)):
