@@ -3572,7 +3572,7 @@ class CartesianProductsOfSets(OwnedCategory):
             if source not in Sets():
                 raise TypeError(f"a set product map needs a set source, not {source}")
             index = self.index_set()
-            if not Sets().is_provably_finite(index):
+            if not Sets().is_provably_finite(index) or index not in EnumeratedSets():
                 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
                 from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
@@ -3595,7 +3595,7 @@ class CartesianProductsOfSets(OwnedCategory):
                         lambda element: self(lambda label: maps.component(index_category.object(label))(element))
                     )
                 raise TypeError(
-                    "an infinite set product factorization requires a selected "
+                    "a set product without finite enumerated indices requires a selected "
                     "natural transformation of component morphisms"
                 )
             # The chosen enumeration is a bijection, so it supplies the
@@ -3711,7 +3711,7 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
             if source not in AdditiveMonoids():
                 raise TypeError(f"an additive product map needs an additive-monoid source, not {source}")
             index = self.index_set()
-            if not Sets().is_provably_finite(index):
+            if not Sets().is_provably_finite(index) or index not in EnumeratedSets():
                 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
                 from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
@@ -3719,7 +3719,7 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 index_category = DiscreteCategory(index)
                 if not isinstance(maps, NaturalTransformation):
                     raise TypeError(
-                        "an infinite additive product map requires a selected natural transformation "
+                        "an additive product without finite enumerated indices requires a selected natural transformation "
                         "into its additive-monoid factor diagram"
                     )
                 target_diagram = maps.target()
