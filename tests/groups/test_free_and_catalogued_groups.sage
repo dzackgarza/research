@@ -148,8 +148,11 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
 
 
 def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
+    commuting = CoxeterGroups([[1, 2], [2, 1]])
     finite = CoxeterGroups([[1, 4], [4, 1]])
     infinite = CoxeterGroups([[1, -1], [-1, 1]])
+    assert commuting.is_subcategory(OwnedGroups().Commutative())
+    assert commuting.is_subcategory(OwnedGroups().Finite())
     assert finite.is_subcategory(OwnedGroups().Finite())
     assert infinite.is_subcategory(OwnedGroups().Infinite())
     assert not infinite.is_subcategory(OwnedGroups().Finite())

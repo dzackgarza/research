@@ -4993,11 +4993,14 @@ class CoxeterGroups(OwnedCategory):
         # Rank zero and one give the trivial and order-two groups.
         indices = tuple(self._engine_coxeter_matrix.index_set())
         if len(indices) <= 1:
-            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
+            return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
         if len(indices) == 2:
             bond = self._engine_coxeter_matrix[indices[0], indices[1]]
             if bond == -1 or bond is infinity:
                 return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
+            if bond == 2:
+                # Two commuting involutions generate C2 x C2.
+                return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
             return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
