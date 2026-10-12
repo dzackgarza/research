@@ -4748,6 +4748,7 @@ class PermutationGroups(OwnedCategory):
                 return FiniteGSets(self)(points, action)
             return GObjects(self, Sets()).on_set(points, action)
 
+        @cached_method
         def natural_g_set(self):
             r"""The natural ``G``-set on the points the group permutes."""
             return self.action_on(self.natural_points())
@@ -4828,16 +4829,6 @@ class SymmetricGroups(OwnedParameterizedCategory):
             return self._symmetric_points
 
         @cached_method
-        def natural_g_set(self):
-            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
-
-            points = self.natural_points()
-            # Use the same element action as g(x), which already transports
-            # Sage's ordinal permutation through the chosen enumeration.
-            # Two competing interpretations of the action would break its
-            # preservation by the canonical group-to-permutation Mor.
-            return FiniteGSets(self)(points, lambda element, point: element(point))
-
         def action_on(self, points):
             r"""The selected permutation action is on its actual point set.
 
@@ -4849,7 +4840,12 @@ class SymmetricGroups(OwnedParameterizedCategory):
                 "the full symmetric group's selected action is on its defining "
                 "point set; specify a group action to act on another set"
             )
-            return self.natural_g_set()
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            # The common PermutationGroups natural_g_set is the owner of
+            # the canonical action. Its constructor dispatches here, where
+            # the selected labelled point action is supplied by g(x).
+            return FiniteGSets(self)(points, lambda element, point: element(point))
 
 
 class GeneralLinearGroups(OwnedCategory):
