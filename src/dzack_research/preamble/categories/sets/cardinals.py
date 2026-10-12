@@ -483,7 +483,7 @@ class Cardinalities(OwnedCategory):
     def set_subset_category(self, source, *, fixed_size=None):
         r"""Place finite-subset sets from `2^|X|` or `|[X]^k|`."""
         from dzack_research.preamble.categories.sets.set_categories import (
-            Sets, FiniteSets, InfiniteSets, CountableSets,
+            Sets, EnumeratedSets, FiniteSets, InfiniteSets, CountableSets,
             CountablyInfiniteSets, UncountableSets,
         )
 
