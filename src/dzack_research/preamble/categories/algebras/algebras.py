@@ -3453,7 +3453,22 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
                 **{("left", label): left_map(left.algebra_generator(label)) for label in left.algebra_generating_set()},
                 **{("right", label): right_map(right.algebra_generator(label)) for label in right.algebra_generating_set()},
             }
-            return self.Mor(target)(images)
+            induced = self.Mor(target)(images)
+            # A coproduct is specified by its two injections, not merely
+            # by the ambient polynomial presentation. Check the defining
+            # triangles in the actual Mor graph on the chosen generators;
+            # these determine algebra morphisms out of either factor.
+            for injection, factor_map, factor in (
+                (self.left_coproduct_map(), left_map, left),
+                (self.right_coproduct_map(), right_map, right),
+            ):
+                if any(
+                    induced(injection(factor.algebra_generator(label)))
+                    != factor_map(factor.algebra_generator(label))
+                    for label in factor.algebra_generating_set()
+                ):
+                    raise ValueError("the proposed coproduct morphism does not factor the supplied cocone")
+            return induced
 
         tensor_map = from_cocone
 
