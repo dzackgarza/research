@@ -267,6 +267,18 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert unchanged_map(simple[1] * simple[0]) == unchanged_map(simple[1]) * unchanged_map(simple[0])
     assert unchanged_map(simple[0] * simple[1]) != unchanged_map(simple[1] * simple[0])
 
+    # Killing the product s*t in A2 identifies the two simple
+    # reflections, leaving one involution. Unlike killing s alone,
+    # this tests a genuinely nontrivial reduced-word relator and its
+    # orientation under the opposite GAP/free-group multiplication law.
+    identified, identification = group.quotient_by_relators(
+        (simple[0] * simple[1],), return_projection=True
+    )
+    assert identified.order() == 2
+    assert identification(simple[0]) == identification(simple[1])
+    assert identification(simple[0] * simple[1]) == identified.one()
+    assert identification(simple[1] * simple[0]) == identified.one()
+
     # For an even Coxeter bond, killing one reflection leaves the other
     # involution (unlike A2's odd bond, which kills both reflections).
     b2 = CoxeterGroups([[1, 4], [4, 1]])()
