@@ -2043,6 +2043,27 @@ class GroupMorphism:
         codomain = self.codomain()
         match self._generator_images, self._gap_homomorphism:
             case dict(), _:
+                if domain in GroupsWithChosenFinitePresentation():
+                    # The selected finite presentation already gives the
+                    # complete relation family for the generator map.
+                    # Use its actual free-source Mor rather than asking GAP
+                    # to rediscover relations in an unrelated generating
+                    # presentation of the same group.
+                    source = domain.presenting_free_group()
+                    labels = source.free_basis()
+                    selected_labels = domain.selected_group_resolution().generating_set()
+                    if selected_labels is labels:
+                        free_map = source.Mor(codomain)(
+                            Sets().Mor(labels, codomain)(
+                                lambda label: self._generator_images[domain.group_generator(label)]
+                            )
+                        )
+                        if any(free_map(relation) != codomain.one() for relation in domain.defining_relations()):
+                            raise ValueError(
+                                f"the given images do not define a homomorphism {domain} -> {codomain}: "
+                                "they do not satisfy the chosen presentation relations"
+                            )
+                        return
                 relators = _engine_generator_relators(domain, self._engine_generator_epimorphism())
                 if not all(
                     self._product_of_generator_images(relator) == codomain.one()
