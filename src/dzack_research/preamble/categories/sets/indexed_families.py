@@ -150,8 +150,21 @@ class IndexedFamily[IndexT, ValueT]:
         return iter(self)
 
     def get(self, index: IndexT, default=None):
-        r"""Return the value at ``index`` when indexed here, otherwise ``default``."""
-        return self.value(index) if index in self.index_set() else default
+        r"""Return a value only for decided index membership.
+
+        An undecided membership proposition cannot select the default: that
+        would assert absence of an index that may actually belong to the set.
+        """
+        match self.index_set().is_parent_of(index):
+            case True:
+                return self.value(index)
+            case False:
+                return default
+            case _:
+                raise ValueError(
+                    f"cannot select a value or default for {index!r}: "
+                    f"membership in {self.index_set()} is undecided"
+                )
 
     def __iter__(self) -> Iterator[ValueT]:
         return (
