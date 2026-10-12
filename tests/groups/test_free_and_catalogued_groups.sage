@@ -73,6 +73,8 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     selected_action = labelled_group.action_on(labelled)
     assert selected_action.acting_group() is labelled_group
     assert labelled_action.act(permutation, labelled("alpha")) == labelled("beta")
+    assert permutation(labelled("alpha")) == labelled("beta")
+    assert permutation(labelled("beta")) == labelled("alpha")
     assert selected_action.act(permutation, labelled("alpha")) == labelled("beta")
     assert labelled_action.act(permutation, labelled("beta")) == labelled("alpha")
     assert labelled_action.act(permutation, labelled("gamma")) == labelled("gamma")

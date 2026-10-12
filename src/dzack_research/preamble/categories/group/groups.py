@@ -684,6 +684,16 @@ def _engine_element_action(group, backend_element, point):
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
             return _owned_engine_element(field, backend_element.as_hom()(_engine_element(field, point)))
         case PermutationGroup_generic():
+            selected_points = getattr(group, "_symmetric_points", None)
+            if selected_points is not None:
+                # Sym(Omega) is represented using a permutation of the
+                # positions 1,...,|Omega|, not a permutation of Omega's
+                # literal elements. The element action must use the same
+                # transport as the selected natural G-set.
+                if point not in selected_points:
+                    return point
+                position = int(selected_points.ranking_map()(selected_points(point))) + 1
+                return tuple(selected_points)[int(backend_element(position)) - 1]
             engine_point = _engine_point(engine, point)
             if engine_point not in engine.domain():
                 return point
