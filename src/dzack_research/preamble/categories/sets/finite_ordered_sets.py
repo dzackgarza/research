@@ -366,6 +366,12 @@ class FiniteOrderedSets(OwnedCategory):
         if index_of is None:
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
+            # The finite presentation has already selected its points. Keep
+            # these exact objects as the forward enumeration instead of
+            # re-running an arbitrary defining callback during membership,
+            # ranking, and iteration. The index ranking supplies positions.
+            index_ranking = index_set.ranking_map()
+            element_at = lambda index: points[int(index_ranking(index))]
             # The declared enumeration must be injective. A dictionary
             # silently drops duplicate hashable points otherwise, and its
             # inverse would no longer be inverse to the chosen enumeration.
