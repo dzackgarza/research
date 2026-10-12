@@ -2585,9 +2585,9 @@ class PowerSets(OwnedCategory):
             base = self.base_set()
             normalized = []
             for member in members:
-                if member not in base:
+                if base.is_parent_of(member) is not True:
                     raise ValueError(
-                        f"{member!r} is not an element of {base}, so it cannot be a member of a subset of {base}"
+                        f"{member!r} is not proved to be an element of {base}, so its inclusion is not certified"
                     )
                 normalized.append(base(member))
             # ``finite_ordered_set`` identifies equal points; identifying them
@@ -2722,15 +2722,14 @@ def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
 
     def position_of(subset):
         subset = subset_set(subset)
-        remaining = int(cardinal(subset.cardinality()).finite_value())
         position = 0
-        source_position = 0
-        while remaining:
+        for source_position in range(int(source_size.finite_value())):
             point = point_at_source_rank(source_position)
-            if point in subset:
+            decision = subset.is_parent_of(point)
+            if decision is True:
                 position |= 1 << source_position
-                remaining -= 1
-            source_position += 1
+            elif decision is not False:
+                raise ValueError("subset ranking requires decided membership at each source point")
         return position
 
     return subset_set._ranking_isomorphism(position_of, point_at)
