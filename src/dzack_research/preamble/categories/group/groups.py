@@ -4921,17 +4921,6 @@ class FreeGroupQuotients(OwnedCategory):
         source = self.free_group()
         return _engine_quotient_by_relators(source, self.relators(), quotient_category=self)
 
-    class ParentMethods:
-        def quotient_projection(self):
-            r"""The defining group epimorphism from the selected free source.
-
-            The chosen presentation resolution owns this arrow, including
-            its source, target and generator images. No engine-only
-            homomorphism or independently reconstructed presentation is used.
-            """
-            return self.selected_group_resolution().augmentation()
-
-
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
 
@@ -4947,6 +4936,16 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
         ]
 
     class ParentMethods:
+        def quotient_projection(self):
+            r"""The presentation epimorphism from the selected free group.
+
+            Every group with a chosen finite presentation carries this
+            arrow, not only quotients constructed by FreeGroupQuotients.
+            Its actual endpoints and images belong to the selected
+            presentation resolution.
+            """
+            return self.selected_group_resolution().augmentation()
+
         def __init__(
             self,
             group_presentation_source=None,
