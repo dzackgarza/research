@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
-from sage.sets.set import Set as SageSet
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -342,13 +341,11 @@ class FiniteOrderedSets(OwnedCategory):
                     None,
                 )
         if contains is None:
-            try:
-                hashed_points = SageSet(points)
-                contains = hashed_points.__contains__
-            except TypeError:
-                contains = lambda point: any(
-                    point is present or point == present for present in points
-                )
+            # Membership is the domain of the selected enumeration inverse,
+            # not a second independent set reconstructed from its values.
+            # The inverse already uses a hash table when points are hashable,
+            # and retains the necessary equality fallback otherwise.
+            contains = lambda point: index_of(point) is not None
         return _object_of(
             self,
             index_set=index_set,
