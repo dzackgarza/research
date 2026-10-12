@@ -4797,8 +4797,13 @@ class CoxeterGroups(OwnedCategory):
         return self()
 
     def _call_(self):
+        # The Coxeter matrix realization exposes the Coxeter presentation
+        # and its generating reflections at the existing engine adapter.
+        # The catalogue's default reflection realization need not carry
+        # those presentation data even when the abstract group is the same.
         return _own_group(
-            _engine_group(_Coxeter(self.coxeter_matrix())), refinements=(self,)
+            _engine_group(_Coxeter(self.coxeter_matrix(), implementation="matrix")),
+            refinements=(self,),
         )
 
 
