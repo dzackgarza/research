@@ -1124,7 +1124,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `FiberProductSchemes` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `FiberProductSchemes` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiberProductSchemes`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-fiberedformedmodulemor`**. **Needs:** none.
+- [x] **`placement-owner-fiberedformedmodulemor`**. **Needs:** none.
   **Owner pass:** `FiberedFormedModuleMor` in `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py`.
   **Closure assertions:** the complete `FiberedFormedModuleMor` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiberedFormedModuleMor`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 

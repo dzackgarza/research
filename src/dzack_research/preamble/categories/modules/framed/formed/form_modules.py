@@ -913,7 +913,7 @@ class FiberedFormedModuleMorphism:
         )
 
     @validator
-    def validate_form_preservation(self) -> None:
+    def validate_form_preservation(self):
         r"""Reject a false scalar-extended square; retain its computation frontier."""
         decision = self.preserves_forms()
         if decision is False:
@@ -922,10 +922,7 @@ class FiberedFormedModuleMorphism:
                 f"{self.base_changed_domain()} -> {self.codomain()} over {self.ring_map()}: the value map "
                 f"applied to the source form is not the target form pulled back along the module map"
             )
-        assert decision is True, (
-            f"cannot decide form preservation of {self} over {self.ring_map()}: "
-            "the scalar-extended form-square equations remain undecided"
-        )
+        return decision
 
     def __mul__(self, other):
         if not isinstance(other, FiberedFormedModuleMorphism):
