@@ -104,6 +104,24 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
+    # The matrix-group realization must carry the Coxeter presentation
+    # through the common GroupsWithChosenFinitePresentation Mor owner.
+    source = group.presenting_free_group()
+    projection = group.quotient_projection()
+    assert projection.domain() is source
+    assert projection.codomain() is group
+    assert all(projection(relation) == group.one() for relation in group.defining_relations())
+    symmetric = SymmetricGroups(Sets.Δ[2])()
+    free_generators = tuple(source.group_generators())
+    f = source.Mor(symmetric)({
+        free_generators[0]: symmetric((1, 2)),
+        free_generators[1]: symmetric((2, 3)),
+    })
+    descended = group.descend_homomorphism(f)
+    assert descended.domain() is group
+    assert descended.codomain() is symmetric
+    assert all(descended(projection(g)) == f(g) for g in free_generators)
+
 
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     free = Groups.Free(2)
