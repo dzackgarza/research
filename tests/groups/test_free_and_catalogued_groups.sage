@@ -123,6 +123,19 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert all(descended(projection(g)) == f(g) for g in free_generators)
 
 
+def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
+    matrix = [[1, 3], [3, 1]]
+    category = CoxeterGroups(matrix)
+    matrix[0][1] = 4
+    matrix[1][0] = 4
+    try:
+        category()
+    except ValueError as error:
+        assert "changed after category construction" in str(error)
+    else:
+        assert False, "a mutated defining matrix silently changed the selected Coxeter group"
+
+
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())
