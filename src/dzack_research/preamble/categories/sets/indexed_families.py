@@ -440,20 +440,24 @@ def finite_indexed_family_from_values(
 
     match values:
         case IndexedFamily():
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+            supplied_cardinality = values.cardinality()
+            if supplied_cardinality.is_finite() is not True:
+                raise TypeError(
+                    f"cannot read {values} as a finite family: its index set has cardinality {supplied_cardinality}"
+                )
             match index_set:
                 case None:
+                    if values.index_set() not in EnumeratedSets():
+                        raise TypeError(
+                            "cannot select finite ordered labels from an indexed family "
+                            "whose index set has no enumeration"
+                        )
                     labels = finite_ordered_set(tuple(values.index_set()))
                 case _:
                     labels = index_set
             family = indexed_family(labels, values.value, name=name)
-            supplied_cardinality = values.cardinality()
-            match supplied_cardinality.is_finite():
-                case True:
-                    pass
-                case _:
-                    raise TypeError(
-                        f"cannot read {values} as a finite family: its index set has cardinality {supplied_cardinality}"
-                    )
             supplied_size = int(supplied_cardinality.finite_value())
         case Mapping():
             match index_set:
