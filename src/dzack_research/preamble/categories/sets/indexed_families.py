@@ -153,22 +153,25 @@ class IndexedFamily[IndexT, ValueT]:
             for index in self.index_set()
         )
 
-    def __contains__(self, candidate: object) -> bool:
+    def __contains__(self, candidate: object) -> bool | Predicate:
         r"""Return whether candidate occurs among the values of a finite family.
 
         The family retains its indexing data and is not identified with its
         image set.  For a finite family, however, occurrence among the selected
-        values is decidable and is the membership operation used by finite
-        invariant and generator families.
+        values is the finite existential of equality propositions. An
+        undecided equality is not nonmembership; one decided match establishes
+        membership even when other comparisons remain undecided.
         """
         if self.cardinality().is_finite() is not True:
             raise TypeError(
                 "value membership is represented only for a finite indexed family"
             )
-        return any(
-            (self._value_at_normalized_index(index) == candidate) is True
+        from dzack_research.preamble.logic import conjunction, negation
+
+        return negation(conjunction(
+            negation(True if (value := self._value_at_normalized_index(index)) is candidate else value == candidate)
             for index in self.index_set()
-        )
+        ))
 
     def __len__(self) -> int:
         r"""Return the Python length when the mathematical index set is finite."""
