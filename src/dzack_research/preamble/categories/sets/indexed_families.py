@@ -187,6 +187,15 @@ class IndexedFamily[IndexT, ValueT]:
     ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
             raise TypeError(f"cannot map {function!r} over the family {self}: it is not callable")
+        constant = self.constant_value()
+        if constant is not None:
+            mapped = function(constant)
+            if isinstance(mapped, Parent):
+                # Mapping an actually constant family produces a constant
+                # family. Preserve this defining datum even for an infinite
+                # index set: replacing it by a callback would erase the
+                # constant-family evidence used by categorical products.
+                return indexed_family(self.index_set(), mapped, name=name)
         return indexed_family(
             self.index_set(),
             lambda index: function(self.value(index)),
