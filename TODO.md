@@ -837,7 +837,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ComplexManifoldMorCategoryConstruction` in `src/dzack_research/preamble/categories/manifolds.py`.
   **Closure assertions:** the complete `ComplexManifoldMorCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ComplexManifoldMorCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-complexmanifolds`**. **Needs:** none.
+- [x] **`placement-owner-complexmanifolds`**. **Needs:** none.
   **Owner pass:** `ComplexManifolds` in `src/dzack_research/preamble/categories/manifolds.py`.
   **Closure assertions:** the complete `ComplexManifolds` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ComplexManifolds`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
