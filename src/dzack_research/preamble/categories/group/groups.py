@@ -872,6 +872,11 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
         lambda label: generators[int(ranking(label))]
     )
     selected_relations = finite_ordered_set(tuple(relations))
+    # The degree-one relation face lands in the presenting free group.
+    # A word merely belonging to another group cannot be used as a
+    # defining relator of this selected presentation.
+    if any(relation not in source for relation in selected_relations):
+        raise ValueError("defining relations must be elements of the presenting free group")
 
     def selected_resolution():
         relation_labels = finite_ordinal_set(int(selected_relations.cardinality()))
