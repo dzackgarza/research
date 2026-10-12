@@ -482,6 +482,19 @@ def finite_indexed_family_from_values(
                 case None:
                     labels = finite_ordered_set(tuple(values))
                 case _:
+                    from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+                    if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
+                        raise TypeError(
+                            f"mapping-valued finite family requires finite enumerated labels, not {index_set}"
+                        )
+                    if len(values) != int(index_set.cardinality().finite_value()) or any(
+                        label not in values for label in index_set
+                    ):
+                        raise ValueError(
+                            "the mapping keys must be precisely the selected index labels; "
+                            "equal cardinalities alone do not define a family on that index set"
+                        )
                     labels = index_set
             family = indexed_family(labels, values.__getitem__, name=name)
             supplied_size = len(values)
