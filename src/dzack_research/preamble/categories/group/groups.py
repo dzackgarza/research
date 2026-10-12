@@ -5002,6 +5002,15 @@ class CoxeterGroups(OwnedCategory):
                 # Two commuting involutions generate C2 x C2.
                 return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
             return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
+        # Standard parabolic subgroups of a Coxeter group are Coxeter
+        # groups on principal submatrices. An infinite bond supplies an
+        # infinite dihedral rank-two standard parabolic subgroup, hence
+        # proves infinitude of the entire group in every finite rank.
+        if any(
+            self._engine_coxeter_matrix[left, right] in (-1, infinity)
+            for left, right in combinations(indices, 2)
+        ):
+            return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
         # All Coxeter generators commute precisely when every off-diagonal
         # exponent is two. Their presentation then gives (C2)^rank, hence
         # a finite abelian group, irrespective of the number of generators.
