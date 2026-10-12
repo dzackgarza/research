@@ -5073,7 +5073,24 @@ class CoxeterGroups(OwnedCategory):
                 remaining.difference_update(neighbours)
                 boundary.extend(neighbours)
             components.append(tuple(component))
-        if all(len(component) <= 3 for component in components):
+        # A simply-laced path on n vertices presents the finite Weyl group
+        # of type A_n. The component decomposition was already computed;
+        # no separate group order or diagram realization is required.
+        def spherical_component(component):
+            if len(component) <= 3:
+                return True
+            edges = [
+                (left, right)
+                for left, right in combinations(component, 2)
+                if self._engine_coxeter_matrix[left, right] != 2
+            ]
+            return (
+                len(edges) == len(component) - 1
+                and all(self._engine_coxeter_matrix[left, right] == 3 for left, right in edges)
+                and all(sum(vertex in edge for edge in edges) <= 2 for vertex in component)
+            )
+
+        if all(spherical_component(component) for component in components):
             return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
