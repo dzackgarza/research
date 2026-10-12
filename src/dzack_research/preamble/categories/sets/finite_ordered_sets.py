@@ -336,10 +336,22 @@ class FiniteOrderedSets(OwnedCategory):
         if index_of is None:
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
+            # The declared enumeration must be injective. A dictionary
+            # silently drops duplicate hashable points otherwise, and its
+            # inverse would no longer be inverse to the chosen enumeration.
             try:
                 lookup = dict(zip(points, indices, strict=True))
+                if len(lookup) != len(points):
+                    raise ValueError("an enumeration must select distinct points at distinct indices")
                 index_of = lookup.get
             except TypeError:
+                for offset, present in enumerate(points):
+                    for earlier in points[:offset]:
+                        equal = True if present is earlier else present == earlier
+                        if equal is True:
+                            raise ValueError("an enumeration must select distinct points at distinct indices")
+                        if equal is not False:
+                            raise ValueError("distinctness of the enumerated points is undecided")
                 def index_of(point):
                     undecided = False
                     for index, present in zip(indices, points, strict=True):
