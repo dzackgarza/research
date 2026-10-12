@@ -2643,12 +2643,19 @@ class _GroupMorRealizationMixin:
         return _law_reversed(self.domain()) != _law_reversed(self.codomain())
 
     def _engine_homomorphism(self, generator_models, image_models):
-        r"""GAP's homomorphism between the selected endpoint engine models."""
+        r"""GAP's checked homomorphism on a generating family of the source."""
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
+        if len(generator_models) != len(image_models):
+            raise ValueError("the engine group morphism requires one image per generator")
+        if libgap.Subgroup(source, libgap(generator_models)) != source:
+            raise ValueError("the engine morphism generators do not generate its source group")
         if self._is_twisted():
             image_models = [model.Inverse() for model in image_models]
-        return libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
+        checked = libgap.GroupHomomorphismByImages(source, target, generator_models, image_models)
+        if checked.is_bool():
+            raise ValueError("the engine morphism images do not satisfy the source relations")
+        return checked
 
     def _from_realization_engine(self, engine, *args, **kwargs):
         r"""Insert one private realization behind the generated group-arrow type.
@@ -2828,26 +2835,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 f"the engine morphism from {self.domain()} has {len(generator_models)} "
                 f"selected generators but {len(image_models)} images"
             )
-        # The unchecked GAP constructor alone does not certify a whole-group
-        # homomorphism. Check both the generating family and its relation law
-        # at this common ingress, including product/coproduct factorizers.
-        source = _gap_model(self.domain())
-        target = _gap_model(self.codomain())
-        if libgap.Subgroup(source, libgap(generator_models)) != source:
-            raise ValueError("the engine morphism generators do not generate its source group")
-        checked_images = (
-            [image.Inverse() for image in image_models]
-            if self._is_twisted() else image_models
-        )
-        # Retain the validated GAP homomorphism itself. Reconstructing the
-        # same map with GroupHomomorphismByImagesNC discards the established
-        # relation law and duplicates the engine realization.
-        checked = libgap.GroupHomomorphismByImages(
-            source, target, generator_models, checked_images
-        )
-        if checked.is_bool():
-            raise ValueError("the engine morphism images do not satisfy the source relations")
-        return self.element_class(self, checked)
+        return self.element_class(self, self._engine_homomorphism(generator_models, image_models))
 
     def _from_group_generator_images(self, images):
         r"""The morphism out of a presented group given by the images of its chosen generators.
