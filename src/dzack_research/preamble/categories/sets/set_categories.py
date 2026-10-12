@@ -3387,9 +3387,23 @@ class CartesianProductsOfSets(OwnedCategory):
             # factor once and kept, not re-validated on every hash or comparison.
             self._resolved_components = []
             self._resolved_component_identity = {}
+            self._resolved_component_positions = {}
 
         def component(self, index: IndexT) -> SourcePointT:
             normalized = self.parent().index_set()(index)
+            indices = self.parent().index_set()
+            if self.parent().has_finite_index_set() and indices in EnumeratedSets():
+                # The selected ranking is a bijection, hence its integer
+                # coordinate decides index equality without pairwise tests.
+                position = int(indices.ranking_map()(normalized))
+                if position in self._resolved_component_positions:
+                    return self._resolved_component_positions[position]
+                if self._positional_components is not None:
+                    resolved = self._positional_components[position]
+                else:
+                    resolved = self.parent().factor(normalized)(self._components(normalized))
+                self._resolved_component_positions[position] = resolved
+                return resolved
             cached = self._resolved_component_identity.get(id(normalized))
             if cached is not None and cached[0] is normalized:
                 return cached[1]
