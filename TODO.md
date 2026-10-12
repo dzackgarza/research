@@ -1180,7 +1180,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `FiniteGSets` in `src/dzack_research/preamble/categories/group/g_sets.py`.
   **Closure assertions:** the complete `FiniteGSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteGSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-finiteorderedsets`**. **Needs:** none.
+- [x] **`placement-owner-finiteorderedsets`**. **Needs:** none.
   **Owner pass:** `FiniteOrderedSets` in `src/dzack_research/preamble/categories/sets/finite_ordered_sets.py`.
   **Closure assertions:** the complete `FiniteOrderedSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `FiniteOrderedSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
