@@ -3606,12 +3606,20 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                     return self(lambda label: maps.component(index_category.object(label))(point))
 
                 return AdditiveMonoids().Mor(source, self)(induced)
-            components = tuple((label, maps(label)) for label in index)
-            for label, morphism in components:
+            labels = tuple(index)
+            components = tuple(maps(label) for label in labels)
+            for label, morphism in zip(labels, components, strict=True):
                 if morphism.parent() is not AdditiveMonoids().Mor(source, self.factor(label)):
                     raise TypeError(f"the component at {label} is not an additive morphism into {self.factor(label)}")
+            if index in EnumeratedSets():
+                ranking = index.ranking_map()
+                return AdditiveMonoids().Mor(source, self)(
+                    lambda point: self(lambda label: components[int(ranking(label))](point))
+                )
             return AdditiveMonoids().Mor(source, self)(
-                lambda point: self(lambda label: next(morphism(point) for key, morphism in components if key == label))
+                lambda point: self(lambda label: next(
+                    morphism(point) for key, morphism in zip(labels, components, strict=True) if key == label
+                ))
             )
 
 
