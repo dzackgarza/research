@@ -3475,9 +3475,8 @@ class CartesianProductsOfSets(OwnedCategory):
             For a finite index, validate every component's exact Mor parent.
             For an infinite index, a selected natural transformation retains
             all component endpoints through the defining factor diagram.
-            Infinite module-product cones also use this entry, supplying their
-            actual component maps from the retained cone; their set-level
-            callback does not independently certify those infinite endpoints.
+            A bare infinite-index callback cannot establish the component
+            endpoint equations; use a selected natural transformation.
             """
             if source not in Sets():
                 raise TypeError(f"a set product map needs a set source, not {source}")
@@ -3498,12 +3497,10 @@ class CartesianProductsOfSets(OwnedCategory):
                     return Sets().Mor(source, self)(
                         lambda element: self(lambda label: maps.component(index_category.object(label))(element))
                     )
-                # A module product created on underlying sets currently
-                # supplies cone legs via the actual module cone, without a
-                # selected set-valued diagram. Preserve that factorization
-                # until its categorical transport is supplied at the shared
-                # module/forgetful-functor owner.
-                return Sets().Mor(source, self)(lambda element: self(lambda label: maps(label)(element)))
+                raise TypeError(
+                    "an infinite set product factorization requires a selected "
+                    "natural transformation of component morphisms"
+                )
             # The chosen enumeration is a bijection, so it supplies the
             # component selector without re-solving equality of index labels
             # on every evaluation (labels can themselves be unhashable).

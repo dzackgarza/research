@@ -4739,9 +4739,13 @@ def _module_product_factor(product, factors, source, legs):
         f"{legs.index_set()} and the factors by {factors.index_set()}"
     )
     forgetful = Modules(product.base_ring()).underlying_set()
-    underlying_factor = product.underlying_set().from_maps(
-        forgetful(source),
-        lambda index: forgetful(legs.value(index)),
+    # The module cone supplies the actual component morphisms. Its underlying
+    # map is their pointwise tuple; no unchecked family of Set morphisms is
+    # introduced into the universal Set-product constructor.
+    underlying_factor = Sets().Mor(forgetful(source), product.underlying_set())(
+        lambda point: product.underlying_set()(
+            lambda index: forgetful(legs.value(index))(point)
+        )
     )
     return source.module_category().Mor(source, product)._product_factor(
         underlying_factor,
