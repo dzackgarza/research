@@ -78,6 +78,15 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     assert labelled_action.act(permutation, labelled("gamma")) == labelled("gamma")
 
 
+def test_finite_symmetric_group_category_rejects_infinite_point_set() -> None:
+    try:
+        SymmetricGroups(NN)
+    except AssertionError as error:
+        assert "finite point set" in str(error)
+    else:
+        assert False, "the finite-group category admitted an infinite permutation domain"
+
+
 def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
     assert Groups.Weyl(["B", 2]).order() == 8
     assert Groups.PSL(2, 7).order() == 168

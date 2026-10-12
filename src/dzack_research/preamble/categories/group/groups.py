@@ -4727,6 +4727,13 @@ class PermutationGroups(OwnedCategory):
 class SymmetricGroups(OwnedParameterizedCategory):
     r"""Full permutation groups of a chosen finite enumerated set."""
 
+    def __init__(self, points):
+        super().__init__(points)
+        assert points in FiniteSets(), (
+            "a category of finite full symmetric groups requires a finite "
+            "point set; an infinite symmetric group is not a finite group"
+        )
+
     def parameter_category(self):
         return EnumeratedSets()
 
@@ -4740,7 +4747,6 @@ class SymmetricGroups(OwnedParameterizedCategory):
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
         points = self.parameter()
-        assert points in FiniteSets(), "the full symmetric group needs a finite chosen set"
         return _own_group(
             SymmetricGroup(int(cardinal(points.cardinality()).finite_value())),
             refinements=(self,), symmetric_points=points,
