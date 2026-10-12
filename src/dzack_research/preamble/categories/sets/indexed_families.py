@@ -462,6 +462,18 @@ def finite_indexed_family_from_values(
                         )
                     labels = finite_ordered_set(tuple(values.index_set()))
                 case _:
+                    # A family is a function on its exact index set. Equal
+                    # cardinalities do not provide a reindexing map; a
+                    # different set requires an explicit transport of labels.
+                    same_labels = (
+                        True if index_set is values.index_set()
+                        else index_set == values.index_set()
+                    )
+                    if same_labels is not True:
+                        raise ValueError(
+                            f"cannot reinterpret the family on {values.index_set()} "
+                            f"as a family on {index_set} without an index map"
+                        )
                     labels = index_set
             family = indexed_family(labels, values.value, name=name)
             supplied_size = int(supplied_cardinality.finite_value())
