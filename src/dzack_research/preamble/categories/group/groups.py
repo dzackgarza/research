@@ -980,6 +980,19 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
             # presentation_source_group slot certifies an isomorphic model
             # (presentation_isomorphism), not a quotient ancestor.
             return _own_group(free.quotient(relations))
+        case CoxeterMatrixGroup():
+            # A Coxeter group has a canonical free presentation on its
+            # simple reflections. Lift each additional normal relator by
+            # its reduced Coxeter word; do not coerce matrix elements into
+            # an unrelated finitely presented GAP parent.
+            matrix = engine.coxeter_matrix()
+            free, defining_relations = _coxeter_presentation(matrix)
+            positions = {label: position + 1 for position, label in enumerate(matrix.index_set())}
+            lifted = []
+            for relation in relators:
+                word = group._to_engine(group(relation)).reduced_word()
+                lifted.append(free([positions[label] for label in word]))
+            return _own_group(free.quotient(tuple(defining_relations) + tuple(lifted)))
         case _:
             assert False, f"the quotient of {group} by the normal closure of {relators} cannot be computed: this is available only for free groups and finitely presented groups"
 

@@ -245,6 +245,17 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert group.coxeter_matrix() is matrix
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    # The Coxeter realization is not Sage's FinitelyPresentedGroup; its
+    # canonical reduced words must nevertheless lift through the selected
+    # Coxeter presentation when adjoining a normal relator.
+    first_reflection = tuple(group.group_generators())[0]
+    collapsed, collapse_map = group.quotient_by_relators(
+        (first_reflection,), return_projection=True
+    )
+    assert collapsed.order() == 1
+    assert collapse_map.domain() is group
+    assert collapse_map.codomain() is collapsed
+    assert collapse_map(first_reflection) == collapsed.one()
 
     # The matrix-group realization must carry the Coxeter presentation
     # through the common GroupsWithChosenFinitePresentation Mor owner.
