@@ -3957,6 +3957,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             The selected free-presentation augmentation has a different
             domain and cannot be substituted for this quotient arrow.
             """
+            # The same selected relators must determine both the quotient
+            # and its projection, including when the caller supplied a
+            # one-shot iterable of relations.
+            relators = tuple(relators)
             match self:
                 case _ if isinstance(_engine_group(self), FreeGroup_class):
                     # The free source and the caller's chosen relators
@@ -3982,6 +3986,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             # images. Keep the ordered engine generator family; the checked
             # Group Mor owner verifies that it respects all source relators.
             projection = self.Mor(quotient)(quotient_generators, check=True)
+            if any(projection(relator) != quotient.one() for relator in relators):
+                raise ValueError("the selected quotient projection does not kill its defining relators")
             return quotient, projection
 
         def finite_image_lifts(

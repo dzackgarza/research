@@ -453,6 +453,11 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert second_projection.domain() is quotient
     assert second_projection.codomain() is second_quotient
     assert second_projection(projection(b)) == second_quotient.one()
+    assert second_projection(projection(a * b * a)) == (
+        second_projection(projection(a))
+        * second_projection(projection(b))
+        * second_projection(projection(a))
+    )
     assert second_quotient.order() == 2
     assert second_quotient.is_isomorphic_to(Groups.C(2))
     assert second_quotient.quotient_projection().domain() is second_quotient.presenting_free_group()
