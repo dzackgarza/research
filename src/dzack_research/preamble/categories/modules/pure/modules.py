@@ -4668,10 +4668,14 @@ def _admitted_module_factor_family(modules, factors, *, name):
         return indexed_family(family.index_set(), constant, name=name)
 
     diagram = family.selected_diagram()
-    if diagram is not None and diagram.codomain() is modules:
-        # The selected diagram already supplies the required module-valued
-        # functor, including its infinite-index object and arrow action.
-        return family
+    if diagram is not None and diagram.codomain().is_subcategory(modules):
+        # A diagram in a stricter module category also supplies a diagram
+        # in Mod_R. Transport along its actual category inclusion rather
+        # than discard its arrows by replacing it with an object callback.
+        if diagram.codomain() is modules:
+            return family
+        inclusion = diagram.codomain().inclusion_into(modules)
+        return indexed_family(family.index_set(), diagram.then(inclusion), name=name)
 
     def admitted(index):
         factor = family.value(index)
