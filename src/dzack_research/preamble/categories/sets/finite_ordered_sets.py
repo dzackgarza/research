@@ -294,8 +294,17 @@ class FiniteOrderedSets(OwnedCategory):
         except TypeError:
             distinct_list = []
             for point in supplied:
-                if any(point is present or point == present for present in distinct_list):
+                comparisons = tuple(
+                    True if point is present else point == present
+                    for present in distinct_list
+                )
+                if any(equal is True for equal in comparisons):
                     continue
+                if any(equal is not False for equal in comparisons):
+                    raise ValueError(
+                        "cannot form a finite set of distinct points: equality of supplied "
+                        "unhashable elements is undecided"
+                    )
                 distinct_list.append(point)
             distinct = tuple(distinct_list)
         return self.from_indexed(
