@@ -486,6 +486,13 @@ def finite_indexed_family_from_values(
             family = indexed_family(labels, values.__getitem__, name=name)
             supplied_size = len(values)
         case _:
+            if index_set is not None:
+                from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+                if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
+                    raise TypeError(
+                        f"positional finite-family data require a finite enumerated index set, not {index_set}"
+                    )
             entries = tuple(values)
             match index_set:
                 case None:
