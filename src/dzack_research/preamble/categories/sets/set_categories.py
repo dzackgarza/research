@@ -3513,8 +3513,24 @@ class CartesianProductsOfSets(OwnedCategory):
             # The chosen enumeration is a bijection, so it supplies the
             # component selector without re-solving equality of index labels
             # on every evaluation (labels can themselves be unhashable).
+            from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
+            from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
             labels = tuple(index)
-            components = tuple(maps(label) for label in labels)
+            if isinstance(maps, NaturalTransformation):
+                index_category = DiscreteCategory(index)
+                diagram = self.family().selected_diagram()
+                constant = self.family().constant_value()
+                if diagram is None and constant is not None:
+                    if isinstance(maps.target(), _ConstantDiagram) and maps.target().constant_value() is constant:
+                        diagram = maps.target()
+                if diagram is None or maps.target() is not diagram or maps.source().domain() is not index_category:
+                    raise ValueError("the component transformation must target the product's exact indexed diagram")
+                if not isinstance(maps.source(), _ConstantDiagram) or maps.source().constant_value() is not source:
+                    raise ValueError("the component transformation must have the selected constant source")
+                components = tuple(maps.component(index_category.object(label)) for label in labels)
+            else:
+                components = tuple(maps(label) for label in labels)
             for label, morphism in zip(labels, components, strict=True):
                 if morphism.parent() is not Sets().Mor(source, self.factor(label)):
                     raise TypeError(f"the component at {label} is not a set morphism into {self.factor(label)}")
