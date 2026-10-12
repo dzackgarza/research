@@ -115,6 +115,10 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert quotient.order() == 6
     assert quotient.presenting_free_group() is free
     assert tuple(quotient.defining_relations()) == relators
+    projection = quotient.quotient_projection()
+    assert projection.domain() is free
+    assert projection.codomain() is quotient
+    assert all(projection(relation) == quotient.one() for relation in relators)
     assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
     # The ordinary quotient operation is another entry into the same
