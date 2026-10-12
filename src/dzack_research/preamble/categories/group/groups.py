@@ -4974,6 +4974,19 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 {self.group_generator(label): source_map(source.free_generator(label))
                  for label in labels}, check=True
             )
+            # The factorization equation is a statement about actual Mor
+            # composition, not just the engine's chosen presentation.
+            # It suffices to check it on the chosen free basis: the
+            # presenting group is free on precisely those generators.
+            if any(
+                descended(projection(source.free_generator(label)))
+                != source_map(source.free_generator(label))
+                for label in labels
+            ):
+                raise ValueError(
+                    "the represented quotient generators do not implement "
+                    "the selected presentation projection"
+                )
             return descended
 
         def quotient_projection(self):
