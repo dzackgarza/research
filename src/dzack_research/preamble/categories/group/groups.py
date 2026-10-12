@@ -5039,6 +5039,30 @@ class CoxeterGroups(OwnedCategory):
         # only finite proper standard parabolics.
         if len(indices) == 3:
             return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
+        # Coxeter generators in distinct connected components commute,
+        # and the Coxeter presentation splits as the direct product of its
+        # component presentations. A disconnected system of arbitrary
+        # rank is therefore finite when every connected component is a
+        # spherical Coxeter system of rank at most three. Larger connected
+        # components are left undecided by this particular construction.
+        remaining = set(indices)
+        components = []
+        while remaining:
+            seed = remaining.pop()
+            component = {seed}
+            boundary = [seed]
+            while boundary:
+                vertex = boundary.pop()
+                neighbours = {
+                    other for other in remaining
+                    if self._engine_coxeter_matrix[vertex, other] != 2
+                }
+                component.update(neighbours)
+                remaining.difference_update(neighbours)
+                boundary.extend(neighbours)
+            components.append(tuple(component))
+        if all(len(component) <= 3 for component in components):
+            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
     def an_object(self):

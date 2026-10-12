@@ -160,6 +160,11 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     commuting_rank_three = CoxeterGroups([[1, 2, 2], [2, 1, 2], [2, 2, 1]])
     assert commuting_rank_three.is_subcategory(OwnedGroups().Finite())
     assert commuting_rank_three.is_subcategory(OwnedGroups().Commutative())
+    two_a2_components = CoxeterGroups([
+        [1, 3, 2, 2], [3, 1, 2, 2], [2, 2, 1, 3], [2, 2, 3, 1]
+    ])
+    assert two_a2_components.is_subcategory(OwnedGroups().Finite())
+    assert not two_a2_components.is_subcategory(OwnedGroups().Commutative())
     infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
     assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
     affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
