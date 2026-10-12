@@ -3590,12 +3590,22 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
 
                 diagram = self.family().selected_diagram()
                 index_category = DiscreteCategory(index)
-                if not isinstance(maps, NaturalTransformation) or diagram is None:
+                if not isinstance(maps, NaturalTransformation):
                     raise TypeError(
                         "an infinite additive product map requires a selected natural transformation "
                         "into its additive-monoid factor diagram"
                     )
-                if maps.target() is not diagram or maps.source().domain() is not index_category:
+                target_diagram = maps.target()
+                constant_factor = self.family().constant_value()
+                if diagram is None and constant_factor is not None:
+                    # The family indexed_family(I, A) is a mathematically
+                    # selected constant family even without a separately
+                    # stored functor. A selected constant target diagram at
+                    # that very A presents exactly its component endpoints.
+                    if not isinstance(target_diagram, _ConstantDiagram) or target_diagram.constant_value() is not constant_factor:
+                        raise ValueError("the target diagram does not present the product's constant factor")
+                    diagram = target_diagram
+                if diagram is None or target_diagram is not diagram or maps.source().domain() is not index_category:
                     raise ValueError("the component transformation must target the product's exact indexed diagram")
                 if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(AdditiveMonoids()):
                     raise TypeError("the component transformation must be additive-monoid-valued")
