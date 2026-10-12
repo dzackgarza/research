@@ -877,7 +877,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `ConvexPolytopes.Integral.Polygon` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
   **Closure assertions:** the complete `ConvexPolytopes.Integral.Polygon` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes.Integral.Polygon`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-convexpolytopes-polygon`**. **Needs:** none.
+- [x] **`placement-owner-convexpolytopes-polygon`**. **Needs:** none.
   **Owner pass:** `ConvexPolytopes.Polygon` in `src/dzack_research/preamble/categories/schemes/polytopes.py`.
   **Closure assertions:** the complete `ConvexPolytopes.Polygon` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `ConvexPolytopes.Polygon`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
