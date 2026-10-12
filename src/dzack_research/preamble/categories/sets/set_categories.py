@@ -3386,11 +3386,16 @@ class CartesianProductsOfSets(OwnedCategory):
             # A point of a product has fixed components; each is read into its
             # factor once and kept, not re-validated on every hash or comparison.
             self._resolved_components = []
+            self._resolved_component_identity = {}
 
         def component(self, index: IndexT) -> SourcePointT:
             normalized = self.parent().index_set()(index)
+            cached = self._resolved_component_identity.get(id(normalized))
+            if cached is not None and cached[0] is normalized:
+                return cached[1]
             for prior_index, resolved in self._resolved_components:
                 if normalized is prior_index or normalized == prior_index:
+                    self._resolved_component_identity[id(normalized)] = (normalized, resolved)
                     return resolved
             if self._positional_components is not None:
                 position = int(self.parent().index_set().ranking_map()(normalized))
@@ -3398,6 +3403,7 @@ class CartesianProductsOfSets(OwnedCategory):
             else:
                 resolved = self.parent().factor(normalized)(self._components(normalized))
             self._resolved_components.append((normalized, resolved))
+            self._resolved_component_identity[id(normalized)] = (normalized, resolved)
             return resolved
 
         def __getitem__(self, index):
