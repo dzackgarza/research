@@ -80,6 +80,15 @@ def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
     assert Groups.PSL(2, 7).order() == 168
 
 
+def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
+    matrix = [[1, 3], [3, 1]]
+    theory = CoxeterGroups(matrix)
+    group = theory()
+    assert theory.coxeter_matrix() is matrix
+    assert group in theory
+    assert group.order() == 6
+
+
 def test_general_linear_group_retains_ring_and_rank() -> None:
     category = GeneralLinearGroups(GF(2), 2)
     group = category()

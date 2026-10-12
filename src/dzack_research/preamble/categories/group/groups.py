@@ -4767,6 +4767,28 @@ class GeneralLinearGroups(OwnedCategory):
         ring = self.coefficient_ring()
         return _own_group(GL(self.degree(), _engine_ring(ring)), refinements=(self,))
 
+class CoxeterGroups(OwnedCategory):
+    r"""The Coxeter group defined by the actual selected Coxeter matrix."""
+
+    def __init__(self, coxeter_matrix):
+        self._coxeter_matrix = coxeter_matrix
+        super().__init__()
+
+    def coxeter_matrix(self):
+        return self._coxeter_matrix
+
+    def super_categories(self):
+        return [OwnedGroups().FinitelyPresentedAsGroup()]
+
+    def an_object(self):
+        return self()
+
+    def _call_(self):
+        return _own_group(
+            _engine_group(_Coxeter(self.coxeter_matrix())), refinements=(self,)
+        )
+
+
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
 
