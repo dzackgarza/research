@@ -1194,13 +1194,19 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def _finite_irreducible_components(self):
-            r"""The selected component domains, also for nonreduced quotients."""
-            primes = self._presentation_minimal_primes()
+            r"""The component quotients of this ring by its own minimal primes.
+
+            The primes computed in the presentation ring must first be
+            transported to ideals of this quotient. Quotienting the cover
+            directly loses the represented map out of this ring, even when
+            the resulting abstract component rings are isomorphic.
+            """
+            primes = self._finite_minimal_primes()
             if primes is None:
                 return None
             return finite_ordered_set(
                 tuple(
-                    self.quotient_source().quotient_ring(prime)
+                    self.quotient_ring(prime)
                     for prime in primes
                 )
             )
