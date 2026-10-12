@@ -55,6 +55,8 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     points = Sets.Δ[2]
     group = SymmetricGroups(points)()
     assert group in SymmetricGroups(points)
+    assert not SymmetricGroups(points).is_subcategory(OwnedGroups().Commutative())
+    assert SymmetricGroups(Sets.Δ[1]).is_subcategory(OwnedGroups().Commutative())
     assert group.order() == 6
     assert group.natural_points() is points
     action = group.natural_g_set()

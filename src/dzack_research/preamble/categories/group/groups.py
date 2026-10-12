@@ -4818,7 +4818,13 @@ class SymmetricGroups(OwnedParameterizedCategory):
         return EnumeratedSets()
 
     def super_categories(self):
-        return [PermutationGroups(), OwnedGroups().Finite()]
+        categories = [PermutationGroups(), OwnedGroups().Finite()]
+        # For at most two points S_n is trivial or cyclic of order two;
+        # for three points the transpositions (12) and (23) fail to
+        # commute. The axiom is determined by the chosen point set.
+        if cardinal(self.parameter().cardinality()).finite_value() <= 2:
+            categories.append(OwnedGroups().Commutative())
+        return categories
 
     def an_object(self):
         return self()
