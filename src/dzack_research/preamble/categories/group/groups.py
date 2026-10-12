@@ -4942,7 +4942,25 @@ class CoxeterGroups(OwnedCategory):
             super().__init__(**rest)
 
         def coxeter_matrix(self):
-            r"""The chosen Coxeter datum, not the engine's lowered matrix."""
+            r"""The chosen Coxeter datum, provided it still defines this group.
+
+            The engine was constructed from a matrix snapshot. A caller can
+            subsequently mutate a list used as the chosen matrix; returning
+            that altered list as the group's defining matrix would assert a
+            different Coxeter presentation without changing the group.
+            """
+            from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+            from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+            chosen = self._selected_coxeter_matrix
+            current = (
+                _engine_coxeter_matrix_of(chosen)
+                if isinstance(chosen, IndexedFamily)
+                else CoxeterMatrix(chosen)
+            )
+            if current != _engine_group(self).coxeter_matrix():
+                raise ValueError("the chosen Coxeter matrix changed after group construction")
             return self._selected_coxeter_matrix
 
 

@@ -135,6 +135,17 @@ def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
     else:
         assert False, "a mutated defining matrix silently changed the selected Coxeter group"
 
+    matrix = [[1, 3], [3, 1]]
+    realized = CoxeterGroups(matrix)()
+    assert realized.coxeter_matrix() is matrix
+    matrix[0][1] = matrix[1][0] = 4
+    try:
+        realized.coxeter_matrix()
+    except ValueError as error:
+        assert "changed after group construction" in str(error)
+    else:
+        assert False, "a realized Coxeter group reported a mutated defining matrix"
+
 
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     free = Groups.Free(2)
