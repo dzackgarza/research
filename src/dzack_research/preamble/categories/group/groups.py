@@ -2839,11 +2839,15 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
             [image.Inverse() for image in image_models]
             if self._is_twisted() else image_models
         )
-        if libgap.GroupHomomorphismByImages(
+        # Retain the validated GAP homomorphism itself. Reconstructing the
+        # same map with GroupHomomorphismByImagesNC discards the established
+        # relation law and duplicates the engine realization.
+        checked = libgap.GroupHomomorphismByImages(
             source, target, generator_models, checked_images
-        ).is_bool():
+        )
+        if checked.is_bool():
             raise ValueError("the engine morphism images do not satisfy the source relations")
-        return self.element_class(self, self._engine_homomorphism(generator_models, image_models))
+        return self.element_class(self, checked)
 
     def _from_group_generator_images(self, images):
         r"""The morphism out of a presented group given by the images of its chosen generators.
