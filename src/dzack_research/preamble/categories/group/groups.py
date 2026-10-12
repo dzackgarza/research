@@ -1671,7 +1671,10 @@ def _GL(degree, ring, var="a"):
 def _SL(degree, ring, var="a"):
     from sage.groups.matrix_gps.catalog import SL
 
-    if int(degree) == 2 and _owned_ring(ring) is ZZ:
+    # The arithmetic refinement is specific to the actual integral rank
+    # two group. Truncating first would incorrectly identify SL_(5/2)(ZZ)
+    # with SL_2(ZZ), bypassing the engine's rank admission.
+    if degree == 2 and _owned_ring(ring) is ZZ:
         # The standard integral modular group is arithmetic by its
         # defining integral matrix realization; the axiom does not follow
         # for arbitrary named matrix groups from their engine type alone.
