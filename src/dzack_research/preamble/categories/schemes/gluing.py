@@ -3535,7 +3535,8 @@ class FiniteAtlasModuleSheafMorphismMethods:
 
         The sheaf arrow and the descent arrow have different endpoints:
         ``F -> G`` versus ``datum(F) -> datum(G)``.  Local maps define the
-        latter only after the descent Mor owner checks their overlap squares.
+        latter in the descent Mor owner, which retains the same overlap-square
+        law and exposes its explicit validator.
         """
         source = self.source_datum()
         target = self.target_datum()
@@ -3554,14 +3555,12 @@ class FiniteAtlasModuleSheafMorphismMethods:
             case _:
                 return NotImplemented
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteAtlasModuleSheafMorphismMethods)
-            and other.parent() is self.parent()
-            and all(
-                self.local_map(index) == other.local_map(index)
-                for index in self.source_datum().chart_indices()
-            )
+    def __eq__(self, other):
+        if not isinstance(other, FiniteAtlasModuleSheafMorphismMethods) or other.parent() is not self.parent():
+            return False
+        return conjunction(
+            self.local_map(index) == other.local_map(index)
+            for index in self.source_datum().chart_indices()
         )
 
     def _richcmp_(self, other, op):
@@ -3569,7 +3568,7 @@ class FiniteAtlasModuleSheafMorphismMethods:
             case _ if op == op_EQ:
                 return self.__eq__(other)
             case _ if op == op_NE:
-                return not self.__eq__(other)
+                return negation(self.__eq__(other))
             case _:
                 return NotImplemented
 
@@ -3616,9 +3615,11 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
 
     ElementMethods = FiniteAtlasModuleSheafMorphismMethods
 
-    def _element_constructor_(self, local_maps):
+    def _element_constructor_(self, local_maps, *, check=False):
         match local_maps:
             case FiniteAtlasModuleSheafMorphismMethods() if local_maps.parent() is self:
+                if check:
+                    local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasModuleSheafMorphismMethods():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
@@ -3629,7 +3630,10 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
                 local_maps = local_maps.local_maps()
             case _:
                 pass
-        return self.element_class(self, local_maps)
+        morphism = self.element_class(self, local_maps)
+        if check:
+            morphism.validate_overlap_compatibility()
+        return morphism
 
     @cached_method
     def identity(self):
