@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     TorsionQuadraticFormModules,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects, Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets, finite_ordinal_set
 from dzack_research.preamble.tensors.tensor import _engine_quotient_form_family_contractions
 from dzack_research.preamble.owned_category import owned_category_join
+from dzack_research.preamble.logic import conjunction
 
 
 class DiscriminantModules(OwnedCategoryOverBaseRing):
@@ -51,7 +52,10 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+        return [
+            Modules(self.base_ring()).FinitelyPresented().Torsion(),
+            ModuleSubobjects(self.base_ring()),
+        ]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
@@ -569,7 +573,7 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
                 )
             return ambient.q(self.inclusion()(element))
 
-        def is_isotropic(self) -> bool:
+        def is_isotropic(self):
             ambient = self.ambient_discriminant_module()
             if ambient not in DiscriminantQuadraticModules(ambient.base_ring()):
                 raise TypeError(
@@ -577,7 +581,9 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
                     f"it is in {ambient.category()}"
                 )
             zero = ambient.quadratic_value_module().zero()
-            return all(ambient.q(element) == zero for element in self.embedded_elements())
+            return conjunction(
+                ambient.q(element) == zero for element in self.embedded_elements()
+            )
 
 
 def _subquotient_module(subgroup, larger):
