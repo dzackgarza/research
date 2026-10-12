@@ -43,6 +43,21 @@ def test_a_morphism_out_of_the_free_group_is_given_by_the_images_of_its_letters(
     assert morphism(a * b) == symmetric((1, 2)) * symmetric((1, 2, 3))
 
 
+def test_generator_images_must_generate_the_whole_source() -> None:
+    # A single transposition generates only C2 inside S3. Its image
+    # cannot specify a homomorphism on arbitrary elements of S3.
+    from dzack_research.preamble.categories.group.groups import _engine_generator_epimorphism
+
+    group = Groups.S(3)
+    transposition = group((1, 2))
+    try:
+        _engine_generator_epimorphism(group, (transposition,))
+    except ValueError as error:
+        assert "do not generate the source group" in str(error)
+    else:
+        assert False, "an incomplete generator family defined a whole-group morphism"
+
+
 def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
     group = Groups.C(4)
     generator = group.group_generators()[0]

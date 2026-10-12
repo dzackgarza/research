@@ -615,6 +615,13 @@ def _engine_generator_epimorphism(group, generators):
     generator ``i`` of ``F(S)`` is sent to the ``i``-th of ``generators``.
     """
     models = libgap([_element_to_engine(group, generator) for generator in generators])
+    # A map induced by generator images is defined on all of G only when
+    # these elements generate G. In particular GroupHomomorphismByImagesNC
+    # does not certify surjectivity or even its own homomorphism law.
+    if libgap.Subgroup(_gap_model(group), models) != _gap_model(group):
+        raise ValueError(
+            f"the selected generators do not generate the source group {group}"
+        )
     free = libgap.FreeGroup(models.Length())
     return libgap.GroupHomomorphismByImagesNC(
         free,
