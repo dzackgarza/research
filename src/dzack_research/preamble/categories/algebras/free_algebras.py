@@ -1943,6 +1943,10 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
 class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     r"""Divided-power algebras ``Gamma(M)`` with their canonical grading."""
 
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         r"""The divided-power algebra on the standard module witness."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
