@@ -3487,12 +3487,24 @@ class CartesianProductsOfSets(OwnedCategory):
                 # until its categorical transport is supplied at the shared
                 # module/forgetful-functor owner.
                 return Sets().Mor(source, self)(lambda element: self(lambda label: maps(label)(element)))
-            components = tuple((label, maps(label)) for label in index)
-            for label, morphism in components:
+            # The chosen enumeration is a bijection, so it supplies the
+            # component selector without re-solving equality of index labels
+            # on every evaluation (labels can themselves be unhashable).
+            labels = tuple(index)
+            components = tuple(maps(label) for label in labels)
+            for label, morphism in zip(labels, components, strict=True):
                 if morphism.parent() is not Sets().Mor(source, self.factor(label)):
                     raise TypeError(f"the component at {label} is not a set morphism into {self.factor(label)}")
+            if index not in EnumeratedSets():
+                return Sets().Mor(source, self)(
+                    lambda element: self(lambda label: next(
+                        morphism(element) for key, morphism in zip(labels, components, strict=True)
+                        if key == label
+                    ))
+                )
+            ranking = index.ranking_map()
             return Sets().Mor(source, self)(
-                lambda element: self(lambda label: next(morphism(element) for key, morphism in components if key == label))
+                lambda element: self(lambda label: components[int(ranking(label))](element))
             )
 
         def _repr_(self) -> str:
