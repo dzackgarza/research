@@ -4892,6 +4892,12 @@ class GeneralLinearGroups(OwnedCategory):
         return self._degree
 
     def super_categories(self):
+        # GL_n(R) is a subset of the finite matrix set R^(n*n) whenever
+        # R is finite; rank zero is the trivial group over any ring.
+        # An infinite coefficient ring alone establishes no converse:
+        # GL_1(ZZ), for example, has only two elements.
+        if self.degree() == 0 or self.coefficient_ring().is_finite() is True:
+            return [OwnedGroups().Finite()]
         return [OwnedGroups()]
 
     def an_object(self):

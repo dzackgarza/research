@@ -292,6 +292,7 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     category = GeneralLinearGroups(GF(2), 2)
     group = category()
     assert group in category
+    assert category.is_subcategory(OwnedGroups().Finite())
     assert category.coefficient_ring() is GF(2)
     assert category.degree() == 2
     assert group.coefficient_ring() is category.coefficient_ring()
@@ -306,6 +307,10 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert second_group.coefficient_ring() is GF(3)
     assert second_group.degree() == 2
     assert second_group.order() == 48
+
+    # The coefficient ring ZZ is infinite, but GL_1(ZZ) is finite:
+    # no implication in the reverse direction is justified.
+    assert not GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
 
 
 def test_general_linear_rank_cannot_be_truncated() -> None:
