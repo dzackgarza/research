@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
@@ -2110,6 +2110,10 @@ def _finite_factor_family(factors, *, name="Selected factors"):
             f"products and coproducts are computed here only for finitely many factors, but {name} has "
             f"cardinality {family.cardinality()}"
         )
+    if family.index_set() not in EnumeratedSets():
+        raise TypeError(
+            f"{name} has finite cardinality but no selected enumeration of its factor indices"
+        )
     return family
 
 
@@ -2127,6 +2131,8 @@ def _two_factors_of(factors, *, name="Selected factors"):
     assert family.cardinality() == cardinal(2), (
         f"this construction takes exactly two factors, but {name.lower()} has {family.cardinality()}"
     )
+    if family.index_set() not in EnumeratedSets():
+        raise TypeError(f"{name} needs an enumeration to select its two factors")
     labels = tuple(family.index_set())
     return family[labels[0]], family[labels[1]]
 
