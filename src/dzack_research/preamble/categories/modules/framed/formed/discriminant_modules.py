@@ -16,14 +16,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )
-from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-    _forms_are_isomorphic,
-    _invariant_factor_form_isomorphism,
-    _p_adic_jordan_decomposition,
-    _p_adic_jordan_form,
-    _torsion_form_automorphism_group,
-    _p_adic_jordan_module_generators,
-)
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -359,10 +351,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def quadratic_value_module(self):
             return self._preamble_quadratic_value_module
 
-        def twist(self, scalar):
-            r"""Return the same discriminant module equipped with ``scalar*q``."""
-            return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
-
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which ``q`` vanishes identically."""
@@ -404,11 +392,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             if int(lagrangians.cardinality()) == 0:
                 raise ValueError(f"the quadratic discriminant form {self} is not metabolic: it has no Lagrangian subgroup")
             return lagrangians[0]
-
-        def form_vanishes_on(self, elements) -> bool:
-            r"""Return whether ``q`` vanishes on every supplied element."""
-            zero = self.quadratic_value_module().zero()
-            return all(self.q(element) == zero for element in elements)
 
         @cached_method
         def associated_bilinear_form(self):
@@ -490,60 +473,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def discriminant_form_of_overlattice(self, subgroup):
             r"""Return ``H^perp/H``, the discriminant form of the glued overlattice."""
             return self.orthogonal_quotient(subgroup)
-
-        @cached_method
-        def invariant_factor_form(self):
-            r"""Return the quadratic isometry to invariant-factor framing.
-
-            The source remains the literal discriminant cokernel with the
-            classes of the selected dual basis as its framing.  The target is
-            a distinct finite quadratic module whose framing consists only of
-            the non-unit Smith factors.  The discriminant module is built
-            through ``FormModules`` on its descended quadratic form, so the
-            normalization transports that form.
-            """
-            return _invariant_factor_form_isomorphism(self, quadratic=True)
-
-        def p_adic_jordan_decomposition(self):
-
-            return _p_adic_jordan_decomposition(self, quadratic=True)
-
-        def p_adic_jordan_module_generators(self):
-
-            return _p_adic_jordan_module_generators(self, quadratic=True)
-
-        def p_adic_jordan_form(self):
-
-            return _p_adic_jordan_form(self, quadratic=True)
-
-        normal_form = p_adic_jordan_form
-
-        def is_isomorphic(self, other) -> bool:
-
-
-            if other not in TorsionQuadraticFormModules(self.base_ring()):
-                return False
-            return _forms_are_isomorphic(self, other, quadratic=True)
-
-        is_isometric_to = is_isomorphic
-
-        def is_anti_isometric(self, other) -> bool:
-
-            if other not in TorsionQuadraticFormModules(self.base_ring()):
-                return False
-            return self.is_isomorphic(other.twist(-1))
-
-        @cached_method
-        def automorphism_group(self):
-            r"""Return ``O(A,q)`` as live quadratic-form automorphisms."""
-
-            return _torsion_form_automorphism_group(self, quadratic=True)
-
-        def orthogonal_group(self):
-            return self.automorphism_group()
-
-        def O(self):  # noqa: E743 - standard mathematical notation O(A,q)
-            return self.automorphism_group()
 
     class ElementMethods:
         def additive_order(self):

@@ -1044,7 +1044,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `DiscriminantModules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
   **Closure assertions:** the complete `DiscriminantModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-discriminantquadraticmodules`**. **Needs:** none.
+- [x] **`placement-owner-discriminantquadraticmodules`**. **Needs:** none.
   **Owner pass:** `DiscriminantQuadraticModules` in `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py`.
   **Closure assertions:** the complete `DiscriminantQuadraticModules` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `DiscriminantQuadraticModules`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
