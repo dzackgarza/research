@@ -299,6 +299,22 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert commuting_map(b2_s) != commuting_map(b2_t)
     assert commuting_map(b2_s * b2_t) == commuting_map(b2_t * b2_s)
 
+    # The infinite dihedral Coxeter presentation has no braid relation.
+    # Adjoining (s*t)^3 makes precisely I_2(3) = S_3; the quotient is
+    # finite even though its source is provably infinite. This separates
+    # Coxeter presentation relations from inherited source finiteness.
+    infinite_dihedral = CoxeterGroups([[1, -1], [-1, 1]])()
+    infinite_s, infinite_t = tuple(infinite_dihedral.group_generators())
+    finite_dihedral, finite_projection = infinite_dihedral.quotient_by_relators(
+        ((infinite_s * infinite_t)**3,), return_projection=True
+    )
+    assert infinite_dihedral.is_finite() is False
+    assert finite_dihedral.order() == 6
+    assert finite_dihedral.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert finite_projection(infinite_s * infinite_t) == (
+        finite_projection(infinite_s) * finite_projection(infinite_t)
+    )
+
     # The matrix-group realization must carry the Coxeter presentation
     # through the common GroupsWithChosenFinitePresentation Mor owner.
     source = group.presenting_free_group()
