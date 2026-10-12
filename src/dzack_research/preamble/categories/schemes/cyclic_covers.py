@@ -843,7 +843,6 @@ class CyclicCovers(OwnedCategory):
             unit this has support ``V(z)`` and retains the expected
             ``(n-1)``-fold different for ``n>2``.
             """
-            self._assert_separable_degree()
             return self.differential_rank_drop_subscheme(0)
 
         @cached_method
