@@ -196,6 +196,11 @@ class IndexedFamily[IndexT, ValueT]:
                 # index set: replacing it by a callback would erase the
                 # constant-family evidence used by categorical products.
                 return indexed_family(self.index_set(), mapped, name=name)
+            # The map is already evaluated on the unique value of this
+            # family. Retain that same result even when it is not a parent;
+            # an opaque per-index callback would rerun the computation and
+            # could assign different objects to identical input values.
+            return indexed_family(self.index_set(), lambda _index: mapped, name=name)
         return indexed_family(
             self.index_set(),
             lambda index: function(self.value(index)),
