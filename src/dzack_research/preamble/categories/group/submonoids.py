@@ -294,6 +294,30 @@ class _SubmonoidEngine:
         if element == self.one():
             return True
         generators = tuple(self._monoid_generators)
+        # For a selected integer multiplication monoid and one generator,
+        # Sage's integer factorization decides the full power equation
+        # x = g^n (n >= 0), rather than merely recognizing the generator.
+        from sage.rings.integer_ring import ZZ as SageZZ
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        if len(generators) == 1 and ambient in OwnedRings() and ambient._selected_engine_ring() is SageZZ:
+            g = SageZZ(int(generators[0]))
+            x = SageZZ(int(element))
+            if g == 0:
+                return x == 0
+            if abs(g) == 1:
+                return x == g
+            if x == 0:
+                return False
+            factor_g = dict(abs(g).factor())
+            factor_x = dict(abs(x).factor())
+            if set(factor_g) != set(factor_x):
+                return False
+            exponents = {factor_x[p] // e for p, e in factor_g.items()}
+            if len(exponents) != 1:
+                return False
+            exponent = exponents.pop()
+            return all(factor_x[p] == exponent * e for p, e in factor_g.items()) and (x < 0) == (g < 0 and exponent % 2 == 1)
         is_selected_generator = any(element == generator for generator in generators)
         assert is_selected_generator, (
             f"cannot decide whether {element} lies in the submonoid {self} of {ambient}: "
