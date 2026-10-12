@@ -981,9 +981,12 @@ def _is_abelian_witness(engine) -> bool:
             # A bare finite presentation is not a cheap abelianity certificate:
             # Sage/GAP may launch a coset-table computation to decide it.
             return False
-        case _ if _engine_finiteness(engine) is True:
-            return bool(engine.is_abelian())
         case _:
+            # Finite order is not a certificate of commutativity. In
+            # particular Sage's Coxeter matrix groups may advertise finite
+            # order while their is_abelian() algorithm is unavailable.
+            # Membership in the commutative refinement requires a witness,
+            # not an eager general-purpose group computation at ingress.
             return False
 
 
