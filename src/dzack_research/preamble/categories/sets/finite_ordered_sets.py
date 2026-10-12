@@ -537,13 +537,17 @@ def _enumerated_image_set(
     ``None`` on candidates for which no preimage is represented.  Membership
     also checks the forward equation, so a total extension of an inverse
     cannot admit values outside the image.
+
+    Unexecuted separating specimen: for a finite source with an inverse
+    returning the correct preimage or ``None``, querying an absent value
+    invokes that inverse and never compares the candidate with every image
+    value. A total inverse extension selecting a source point for an absent
+    value is rejected by the forward equation. Both conditions apply equally
+    to finite and infinite index sets.
     """
     match source:
         case _ if Sets().is_provably_finite(source):
             placement = FiniteOrderedSets()
-
-            def contains(value):
-                return any(map_(point) == value for point in source)
         case _:
             # The image of an infinite set under an injection is infinite.
             placement = (
@@ -552,9 +556,15 @@ def _enumerated_image_set(
                 else OrderedEnumeratedSets()
             )
 
-            def contains(value):
-                preimage = inverse(value)
-                return preimage in source and map_(source(preimage)) == value
+
+    def contains(value):
+        # A supplied inverse determines image membership for finite as well
+        # as infinite sources. Scanning the finite source would discard that
+        # map and incorrectly turn membership into an enumeration algorithm.
+        preimage = inverse(value)
+        if preimage is None or preimage not in source:
+            return False
+        return map_(source(preimage)) == value
 
     return _object_of(
         placement,
