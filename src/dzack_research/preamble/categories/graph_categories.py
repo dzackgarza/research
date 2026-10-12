@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -138,14 +139,13 @@ class GraphMorphism:
             self.underlying_set_morphism() * other.underlying_set_morphism()
         )
 
-    def __eq__(self, other) -> bool:
-        return (
-            element_parent(other) is self.parent()
-            and other.underlying_set_morphism() == self.underlying_set_morphism()
-        )
+    def __eq__(self, other):
+        if element_parent(other) is not self.parent():
+            return False
+        return other.underlying_set_morphism() == self.underlying_set_morphism()
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __ne__(self, other):
+        return negation(self == other)
 
     __hash__ = None
 
@@ -155,21 +155,26 @@ class DigraphMor(CategoricalMor):
 
     ElementMethods = GraphMorphism
 
-    def _verify_graph_map(self, morphism) -> None:
-        for left, right in self.domain().edges():
-            if not self.codomain().has_edge(morphism(left), morphism(right)):
-                raise ValueError(
-                    f"{morphism} is not a graph morphism {self.domain()} -> "
-                    f"{self.codomain()}: it sends the edge ({left}, {right}) to "
-                    f"({morphism(left)}, {morphism(right)}), which is not an edge"
-                )
+    def _graph_map_decision(self, morphism):
+        return conjunction(
+            self.codomain().has_edge(morphism(left), morphism(right))
+            for left, right in self.domain().edges()
+        )
 
-    def _element_constructor_(self, datum):
+    def _verify_graph_map(self, morphism) -> None:
+        if self._graph_map_decision(morphism) is False:
+            raise ValueError(
+                f"{morphism} is not a graph morphism {self.domain()} -> {self.codomain()}: "
+                "some directed edge is not carried to an edge"
+            )
+
+    def _element_constructor_(self, datum, *, check=False):
         if element_parent(datum) is self:
             return datum
         set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
         morphism = self.element_class(self, set_morphism)
-        self._verify_graph_map(morphism)
+        if check:
+            self._verify_graph_map(morphism)
         return morphism
 
     def _from_graph_map(self, set_morphism):
@@ -190,28 +195,20 @@ class DigraphMor(CategoricalMor):
 class LabelledDigraphMor(DigraphMor):
     r"""Digraph morphisms preserving the selected vertex and edge labels."""
 
-    def _verify_graph_map(self, morphism) -> None:
-        super()._verify_graph_map(morphism)
-        for vertex in self.domain().vertices():
-            if self.domain().vertex_label(vertex) != self.codomain().vertex_label(
-                morphism(vertex)
-            ):
-                raise ValueError(
-                    f"{morphism} is not a morphism of labelled graphs: it sends the vertex "
-                    f"{vertex}, labelled {self.domain().vertex_label(vertex)}, to "
-                    f"{morphism(vertex)}, labelled "
-                    f"{self.codomain().vertex_label(morphism(vertex))}"
-                )
-        for left, right in self.domain().edges():
-            if self.domain().edge_label(left, right) != self.codomain().edge_label(
-                morphism(left), morphism(right)
-            ):
-                raise ValueError(
-                    f"{morphism} is not a morphism of labelled graphs: it sends the edge "
-                    f"({left}, {right}), labelled {self.domain().edge_label(left, right)}, "
-                    f"to an edge labelled "
-                    f"{self.codomain().edge_label(morphism(left), morphism(right))}"
-                )
+    def _graph_map_decision(self, morphism):
+        return conjunction((
+            super()._graph_map_decision(morphism),
+            conjunction(
+                self.domain().vertex_label(vertex)
+                == self.codomain().vertex_label(morphism(vertex))
+                for vertex in self.domain().vertices()
+            ),
+            conjunction(
+                self.domain().edge_label(left, right)
+                == self.codomain().edge_label(morphism(left), morphism(right))
+                for left, right in self.domain().edges()
+            ),
+        ))
 
 
 class DigraphMorCategoryConstruction(MorCategoryConstruction):
