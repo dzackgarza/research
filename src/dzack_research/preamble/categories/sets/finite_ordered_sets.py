@@ -324,10 +324,9 @@ class FiniteOrderedSets(OwnedCategory):
         assert index_set in EnumeratedSets(), (
             f"a finite ordered set needs an enumerated index set, but {index_set} is not enumerated"
         )
-        if index_of is None or contains is None:
+        if index_of is None:
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
-        if index_of is None:
             try:
                 lookup = dict(zip(points, indices, strict=True))
                 index_of = lookup.get
