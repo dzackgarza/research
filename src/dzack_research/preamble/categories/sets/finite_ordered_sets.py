@@ -380,8 +380,22 @@ class FiniteOrderedSets(OwnedCategory):
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
             # The inverse already uses a hash table when points are hashable,
-            # and retains the necessary equality fallback otherwise.
-            contains = lambda point: index_of(point) is not None
+            # and retains the necessary equality fallback otherwise. A
+            # supplied inverse can be extended arbitrarily off the image;
+            # only the forward equation certifies such a candidate.
+            def contains(point):
+                from dzack_research.preamble.logic import AtomicProposition
+
+                position = index_of(point)
+                if position is None:
+                    return False
+                admitted = index_set.is_parent_of(position)
+                if admitted is False:
+                    return False
+                if admitted is not True:
+                    return AtomicProposition("is_member", point, index_set)
+                image = element_at(index_set(position))
+                return True if image is point else image == point
         return _object_of(
             self,
             index_set=index_set,
