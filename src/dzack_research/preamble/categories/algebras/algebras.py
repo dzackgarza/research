@@ -3401,11 +3401,14 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
         @cached_method
         def coproduct_injection(self, index):
-            index = int(index)
-            if index not in (0, 1):
+            # Indices are the actual two-point set. Converting to int first
+            # would silently turn a nonintegral index such as 1/2 into 0,
+            # assigning a nonexistent coproduct leg to the left factor.
+            if index not in (0, 1) or index != int(index):
                 raise IndexError(
                     f"a coproduct of two algebras has injections 0 and 1, but got index {index}"
                 )
+            index = int(index)
             factor = self.coproduct_factors()[index]
             tag = "left" if index == 0 else "right"
             return factor.Mor(self)({label: self.algebra_generator((tag, label)) for label in factor.algebra_generating_set()})
