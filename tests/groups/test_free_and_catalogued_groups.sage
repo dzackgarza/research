@@ -63,6 +63,17 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     for point in points:
         assert action.act(identity, point) == point
 
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    labelled = finite_ordered_set(("alpha", "beta", "gamma"))
+    labelled_group = SymmetricGroups(labelled)()
+    assert labelled_group.natural_points() is labelled
+    permutation = labelled_group((1, 2))
+    labelled_action = labelled_group.natural_g_set()
+    assert labelled_action.act(permutation, labelled("alpha")) == labelled("beta")
+    assert labelled_action.act(permutation, labelled("beta")) == labelled("alpha")
+    assert labelled_action.act(permutation, labelled("gamma")) == labelled("gamma")
+
 
 def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
     assert Groups.Weyl(["B", 2]).order() == 8
