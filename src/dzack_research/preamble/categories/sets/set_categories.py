@@ -3491,6 +3491,12 @@ class CartesianProductsOfSets(OwnedCategory):
                 if isinstance(maps, NaturalTransformation):
                     diagram = self.family().selected_diagram()
                     index_category = DiscreteCategory(index)
+                    constant = self.family().constant_value()
+                    if diagram is None and constant is not None:
+                        target_diagram = maps.target()
+                        if not isinstance(target_diagram, _ConstantDiagram) or target_diagram.constant_value() is not constant:
+                            raise ValueError("the target diagram does not present the product's constant factor")
+                        diagram = target_diagram
                     if diagram is None or maps.target() is not diagram or maps.source().domain() is not index_category:
                         raise ValueError("the component transformation must target the product's exact indexed diagram")
                     if not diagram.codomain().is_subcategory(Sets()) or maps.source().codomain() is not diagram.codomain():
