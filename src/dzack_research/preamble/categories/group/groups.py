@@ -2051,11 +2051,12 @@ class GroupMorphism:
                     # presentation of the same group.
                     source = domain.presenting_free_group()
                     labels = source.free_basis()
-                    selected_labels = domain.selected_group_resolution().generating_set()
-                    if selected_labels is labels:
+                    projection = domain.quotient_projection()
+                    projected = tuple(projection(source.free_generator(label)) for label in labels)
+                    if all(generator in self._generator_images for generator in projected):
                         free_map = source.Mor(codomain)(
                             Sets().Mor(labels, codomain)(
-                                lambda label: self._generator_images[domain.group_generator(label)]
+                                lambda label: self._generator_images[projection(source.free_generator(label))]
                             )
                         )
                         if any(free_map(relation) != codomain.one() for relation in domain.defining_relations()):

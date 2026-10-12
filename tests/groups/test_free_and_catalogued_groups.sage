@@ -192,6 +192,10 @@ def test_quotient_descent_with_identified_presenting_generators() -> None:
     assert descended.domain() is quotient
     assert descended.codomain() is cyclic
     assert descended(projection(a)) == descended(projection(b)) == involution
+    checked = quotient.Mor(cyclic)(
+        {projection(a): involution}, check=True
+    )
+    assert checked(projection(a)) == checked(projection(b)) == involution
 
     incompatible = free.Mor(cyclic)({a: involution, b: cyclic.one()})
     try:
