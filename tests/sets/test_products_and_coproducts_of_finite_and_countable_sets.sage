@@ -232,6 +232,24 @@ def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
             raise AssertionError("unchecked infinite diagram incorrectly certified additive placement")
 
 
+def test_infinite_indexed_functor_map_retains_canonical_category_inclusion() -> None:
+    """A diagram in AddGroups maps through AddMon -> Sets without losing its arrows."""
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    shape = DiscreteCategory(NN)
+    group = AdditiveGroups().an_object()
+    diagram = Cat().Mor(shape, AdditiveGroups()).constant_functor(group)
+    family = indexed_family(NN, diagram)
+    forget_structure = AdditiveMonoids().inclusion_into(Sets())
+    mapped = family.map(forget_structure)
+    assert mapped.selected_diagram() is not None
+    assert mapped.selected_diagram().codomain() is Sets()
+    assert mapped.value(NN(4)) is group
+    assert mapped.selected_diagram()(shape.identity(shape.object(NN(4)))).domain() is group
+
+
 def test_the_product_of_two_and_three_points_has_six_points() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
