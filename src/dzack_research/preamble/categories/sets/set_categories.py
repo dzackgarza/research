@@ -3251,6 +3251,27 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     Finiteness is a fact about the index set and the factors; the product is
     built in the category it always belongs to, joined with the enumerated,
     finite or countable placement its factors establish.
+
+    Unexecuted infinite-index additive-monoid acceptance specimens::
+
+        sage: from dzack_research.preamble.all import *
+        sage: A = ZZ
+        sage: P = Sets().product(indexed_family(NN, A))
+        sage: P in AdditiveMonoids()
+        True
+        sage: x = P(lambda i: A(i)); y = P(lambda i: A(2*i + 1))
+        sage: P.projection(4)(x + y) == P.projection(4)(x) + P.projection(4)(y)
+        True
+        sage: P.projection(4)(P.zero()) == A.zero()
+        True
+
+    A bare callback cannot establish a common additive-monoid codomain,
+    even if its observed values happen to lie in that category. This is
+    separate from the constant family's selected defining datum::
+
+        sage: Q = Sets().product(indexed_family(NN, lambda i: A))
+        sage: Q in AdditiveMonoids()
+        False
     """
     index_set = family.index_set()
     placements = [
