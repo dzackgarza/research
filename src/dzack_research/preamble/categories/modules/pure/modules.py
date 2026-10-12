@@ -1195,7 +1195,10 @@ class Modules(OwnedCategoryOverBaseRing):
 
             For an algebra/ring viewed also as a module, two elements with the
             same owned ring parent multiply in that ring.  Only an element of
-            the module's scalar ring acts through ``R -> End_R(M)``.
+            the module's scalar ring acts through ``R -> End_Ab(U(M))``.
+            For the regular left module over ``M_2(QQ)``, the operators
+            given by left multiplication by ``E12`` and ``E21`` do not
+            commute; scalar multiplication need not be R-linear.
             """
             match scalar:
                 case _ if element_parent(scalar) is self.parent() and self.parent() in OwnedRings():
@@ -2188,12 +2191,13 @@ class Modules(OwnedCategoryOverBaseRing):
             return self._ring_morphism_defining_module_action()
 
         def annihilator(self):
-            r"""Return ``Ann_R(M)=ker(R -> End_R(M))``.
+            r"""Return ``Ann_R(M)=ker(rho_M: R -> End_Ab(U(M)))``.
 
-            The kernel is read from the presentation of this module rather
-            than from the morphism, which has no route to it: an ideal of
-            ``R`` cut out by a condition on ``End_R(M)`` is not something a
-            ring morphism can contract.
+            Here ``rho_M(r)(m)=rm`` is additive, but not necessarily
+            R-linear. Its kernel is precisely the two-sided ideal of scalars
+            annihilating every point. The selected module representation
+            computes this ideal without requiring a general algorithm for
+            kernels of morphisms between represented rings.
             """
             represented = self._represented_annihilator_ideal()
             assert represented is not NotImplemented, (
