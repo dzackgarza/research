@@ -5024,13 +5024,6 @@ class CoxeterGroups(OwnedCategory):
             for triple in combinations(indices, 3)
         ):
             return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # In rank three, the complementary strict inequality is precisely
-        # the spherical triangle condition. The finite reflection group
-        # acts on the corresponding spherical tessellation. This cannot be
-        # extended to higher rank by checking only rank-three parabolics:
-        # all proper parabolics of an affine Coxeter group may be finite.
-        if len(indices) == 3:
-            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         # All Coxeter generators commute precisely when every off-diagonal
         # exponent is two. Their presentation then gives (C2)^rank, hence
         # a finite abelian group, irrespective of the number of generators.
@@ -5039,6 +5032,13 @@ class CoxeterGroups(OwnedCategory):
             for left, right in combinations(indices, 2)
         ):
             return [OwnedGroups().Finite(), OwnedGroups().Commutative(), OwnedGroups().FinitelyPresentedAsGroup()]
+        # In rank three, the complementary strict inequality is precisely
+        # the spherical triangle condition. Check the commuting case first
+        # so that the selected group retains its abelian refinement.
+        # This test cannot extend to higher rank: affine systems can have
+        # only finite proper standard parabolics.
+        if len(indices) == 3:
+            return [OwnedGroups().Finite(), OwnedGroups().FinitelyPresentedAsGroup()]
         return [OwnedGroups().FinitelyPresentedAsGroup()]
 
     def an_object(self):
