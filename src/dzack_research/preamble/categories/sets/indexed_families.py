@@ -124,11 +124,17 @@ class IndexedFamily[IndexT, ValueT]:
 
     def __getitem__(self, index: IndexT) -> ValueT:
         r"""The value at a label, otherwise at a position in the index set's enumeration."""
-        match index in self.index_set():
+        match self.index_set().is_parent_of(index):
             case True:
                 return self.value(index)
             case False:
                 return self.value(self.index_set().ranking_map().inverse()(index))
+            case _:
+                raise ValueError(
+                    f"cannot select the value of {self} at {index!r}: "
+                    "membership in its index set is undecided, so this datum "
+                    "cannot be interpreted as either a label or a rank"
+                )
 
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return (
