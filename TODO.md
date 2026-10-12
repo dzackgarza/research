@@ -817,7 +817,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `CommutativeGradedIntegralDomains` in `src/dzack_research/preamble/categories/algebras/graded_algebras.py`.
   **Closure assertions:** the complete `CommutativeGradedIntegralDomains` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeGradedIntegralDomains`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-commutativeideals`**. **Needs:** none.
+- [x] **`placement-owner-commutativeideals`**. **Needs:** none.
   **Owner pass:** `CommutativeIdeals` in `src/dzack_research/preamble/categories/rings/commutative_ideals.py`.
   **Closure assertions:** the complete `CommutativeIdeals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `CommutativeIdeals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
