@@ -340,14 +340,19 @@ class FiniteOrderedSets(OwnedCategory):
                 lookup = dict(zip(points, indices, strict=True))
                 index_of = lookup.get
             except TypeError:
-                index_of = lambda point: next(
-                    (
-                        index
-                        for index, present in zip(indices, points, strict=True)
-                        if point is present or point == present
-                    ),
-                    None,
-                )
+                def index_of(point):
+                    undecided = False
+                    for index, present in zip(indices, points, strict=True):
+                        equal = True if point is present else point == present
+                        if equal is True:
+                            if undecided:
+                                raise ValueError("the index of this point is undecided")
+                            return index
+                        if equal is not False:
+                            undecided = True
+                    if undecided:
+                        raise ValueError("membership in this finite enumerated set is undecided")
+                    return None
         if contains is None:
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
