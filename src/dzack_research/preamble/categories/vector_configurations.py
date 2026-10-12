@@ -43,7 +43,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_basis_positions, _engine_row_family_gram
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -328,11 +328,11 @@ class _SpanningConfiguration:
         ])
         if self.rows.rank() != int(lattice.rank()):
             raise ValueError("the finite pairing action requires a spanning configuration")
-        self.basis_positions = self.rows.transpose().pivots()
+        self.basis_positions = _engine_row_basis_positions(self.rows)
         self.inverse_basis = self.rows.matrix_from_rows(self.basis_positions).inverse()
         self.graph = Graph(loops=True, multiedges=False)
         self.graph.add_vertices(range(len(self.vectors)))
-        pairings = self.rows * _engine_component_matrix(lattice.gram_tensor()) * self.rows.transpose()
+        pairings = _engine_row_family_gram(_engine_component_matrix(lattice.gram_tensor()), self.rows)
         for left, point in enumerate(self.vectors):
             self.graph.add_edge(left, left, ("vertex", colours[left], int(pairings[left, left])))
             for right in range(left):

@@ -476,18 +476,33 @@ class LorentzianPerfectDomainTraversal(SageObject):
         return True
 
     def unpaired_facets(self):
-        r"""Return representative facets missing from the quotient adjacency list.
+        r"""Return interior facets missing from the quotient adjacency list.
 
-        A traversal result is complete only when every irredundant facet of
-        every retained orbit representative occurs as the source-side common
-        face of a quotient adjacency.  This check prevents a finite traversal
-        prefix from being promoted to a complete reduction domain merely
-        because it used the complete-traversal entry point.
+        A Lorentzian perfect cell lies in one closed component of the
+        nonspacelike cone.  A face on the *exterior* boundary has no adjacent
+        cell across it.  This happens exactly when its linear span is totally
+        isotropic: all its generating rays have square zero and pairwise
+        pairing zero.  For a Lorentzian form such a face is a null ray (or
+        the origin).  All other facets require a quotient adjacency.
         """
-        return _unpaired_facets(
+        unpaired = _unpaired_facets(
             self.cells(),
             lambda cell: tuple(adjacency.common_face() for adjacency in self.adjacencies() if adjacency.source() is cell),
         )
+        lattice = self.lattice()
+        zero = lattice.base_ring().zero()
+        missing_interior = []
+        for facet in unpaired:
+            if facet.is_pointed():
+                rays = tuple(facet.primitive_rays())
+                if all(lattice.q(ray) == zero for ray in rays) and all(
+                    lattice.b(left, right) == zero
+                    for index, left in enumerate(rays)
+                    for right in rays[index + 1 :]
+                ):
+                    continue
+            missing_interior.append(facet)
+        return finite_ordered_set(tuple(missing_interior))
 
     def cell_stabilizer_generators(self, cell):
         if cell not in self.cells():

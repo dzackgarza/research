@@ -27,6 +27,7 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     _engine_inverse_form_pullback,
     _engine_row_action_matrix,
+    _engine_symmetrized_form_matrix,
     tensor,
 )
 from dzack_research.preamble.validation import validator
@@ -65,11 +66,8 @@ def _rational_signed_direction(gram, sign):
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
-    engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
-    diagonal, change = QuadraticForm(
-        SageQQ,
-        engine_gram + engine_gram.transpose(),
-    ).rational_diagonal_form(return_matrix=True)
+    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(SageQQ)
+    diagonal, change = QuadraticForm(SageQQ, engine_hessian).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
     index = next((
         index for index in range(diagonal_matrix.nrows())
