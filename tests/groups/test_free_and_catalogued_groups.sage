@@ -165,6 +165,12 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
     assert affine_a2.is_subcategory(OwnedGroups().Infinite())
     assert not affine_a2.is_subcategory(OwnedGroups().Finite())
+    affine_c2 = CoxeterGroups([[1, 4, 4], [4, 1, 2], [4, 2, 1]])
+    hyperbolic_triangle = CoxeterGroups([[1, 5, 5], [5, 1, 5], [5, 5, 1]])
+    spherical_triangle = CoxeterGroups([[1, 3, 3], [3, 1, 2], [3, 2, 1]])
+    assert affine_c2.is_subcategory(OwnedGroups().Infinite())
+    assert hyperbolic_triangle.is_subcategory(OwnedGroups().Infinite())
+    assert not spherical_triangle.is_subcategory(OwnedGroups().Infinite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:

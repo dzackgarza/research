@@ -50,6 +50,7 @@ from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.galois_group import GaloisGroup_v2 as SageGaloisGroup
+from sage.rings.rational_field import QQ
 from sage.structure.element import Element, MultiplicativeGroupElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
@@ -5011,14 +5012,15 @@ class CoxeterGroups(OwnedCategory):
             for left, right in combinations(indices, 2)
         ):
             return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
-        # The affine A2 triangle has three bonds of exponent 3. Its
-        # reflection representation is the Euclidean triangular tiling:
-        # products of parallel affine reflections give nonzero translations
-        # of infinite order. Every standard parabolic embeds, so the same
-        # witness applies when this triangle occurs in higher rank.
+        # A rank-three Coxeter triangle with finite exponents p,q,r is
+        # Euclidean or hyperbolic exactly when 1/p + 1/q + 1/r <= 1.
+        # Such a standard parabolic embeds in the ambient Coxeter group,
+        # proving its infinitude even though no pair has an infinite bond.
+        # Keep the rational comparison exact; floating point equality at
+        # the affine boundary would be an invalid finiteness certificate.
         if any(
-            all(self._engine_coxeter_matrix[left, right] == 3
-                for left, right in combinations(triple, 2))
+            sum((QQ(1) / ZZ(self._engine_coxeter_matrix[left, right])
+                 for left, right in combinations(triple, 2)), QQ(0)) <= 1
             for triple in combinations(indices, 3)
         ):
             return [OwnedGroups().Infinite(), OwnedGroups().FinitelyPresentedAsGroup()]
