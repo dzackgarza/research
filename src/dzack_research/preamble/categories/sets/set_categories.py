@@ -2040,11 +2040,25 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def intersection(self, other):
         r"""The points of this set that lie in ``other``."""
-        return _FiniteLiteralSet(point for point in self if other.is_parent_of(point) is True)
+        selected = []
+        for point in self:
+            decision = other.is_parent_of(point)
+            if decision is True:
+                selected.append(point)
+            elif decision is not False:
+                raise ValueError("intersection membership is undecided; no finite literal result is selected")
+        return _FiniteLiteralSet(selected)
 
     def difference(self, other):
         r"""The points of this set that do not lie in ``other``."""
-        return _FiniteLiteralSet(point for point in self if other.is_parent_of(point) is False)
+        selected = []
+        for point in self:
+            decision = other.is_parent_of(point)
+            if decision is False:
+                selected.append(point)
+            elif decision is not True:
+                raise ValueError("difference membership is undecided; no finite literal result is selected")
+        return _FiniteLiteralSet(selected)
 
     def __or__(self, other):
         return self.union(other)
