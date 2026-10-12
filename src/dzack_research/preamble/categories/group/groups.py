@@ -4039,6 +4039,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         images[label] for label in reversed(self._to_engine(self(element)).reduced_word())
                     ), quotient.one())
                 )
+                # The matrix index set, not an arbitrary permutation of the
+                # backend generators, defines the selected reflections. A
+                # quotient arrow must agree with the presentation on each
+                # actual indexed Coxeter generator before its construction
+                # witness can be retained for subsequent descent.
+                for position, label in enumerate(indices):
+                    reflection = self._from_engine(_engine_group(self).gen(position))
+                    if projection(reflection) != images[label]:
+                        raise ValueError("the Coxeter quotient map disagrees with its indexed simple reflection")
             else:
                 source_generators = tuple(self.group_generators())
                 quotient_generators = tuple(quotient.group_generators())
