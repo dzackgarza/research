@@ -308,9 +308,10 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert second_group.degree() == 2
     assert second_group.order() == 48
 
-    # The coefficient ring ZZ is infinite, but GL_1(ZZ) is finite:
-    # no implication in the reverse direction is justified.
-    assert not GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
+    # GL_1(ZZ) is the group of units {+1,-1}, while GL_2(ZZ)
+    # contains an infinite cyclic subgroup of unipotent matrices.
+    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
+    assert not GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Finite())
 
 
 def test_general_linear_rank_cannot_be_truncated() -> None:
