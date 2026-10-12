@@ -5171,6 +5171,11 @@ class FreeGroupQuotients(OwnedCategory):
         # the free generating set must also be finite. In particular a
         # quotient of F(NN) by finitely many relations is not thereby an
         # object of GroupsWithChosenFinitePresentation().
+        # An explicitly infinite selected relator *set* also cannot define
+        # an object of this finite-presentation category. Reject it before
+        # attempting to exhaust its iterator into a Python tuple.
+        if relators in Sets() and cardinal(relators.cardinality()).is_finite() is False:
+            raise ValueError("a finite group presentation requires a finite relator family")
         self._relators = tuple(self._free_group(relator) for relator in relators)
         super().__init__()
 

@@ -464,6 +464,14 @@ def test_finitely_many_relators_require_a_finite_free_basis() -> None:
     else:
         assert False, "an infinite-rank free group was assigned a finite presentation"
 
+    finite_free = Groups.Free(1)
+    try:
+        FreeGroupQuotients(finite_free, NN)
+    except ValueError as error:
+        assert "finite relator family" in str(error)
+    else:
+        assert False, "an infinite set of relators was assigned a finite presentation"
+
 
 def test_quotient_descent_with_identified_presenting_generators() -> None:
     free = Groups.Free(2)
