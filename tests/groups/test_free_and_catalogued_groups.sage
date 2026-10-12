@@ -181,6 +181,10 @@ def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
     ])
     assert b4.is_subcategory(OwnedGroups().Finite())
     assert not affine_c3.is_subcategory(OwnedGroups().Finite())
+    d4 = CoxeterGroups([
+        [1, 3, 3, 3], [3, 1, 2, 2], [3, 2, 1, 2], [3, 2, 2, 1]
+    ])
+    assert d4.is_subcategory(OwnedGroups().Finite())
     infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
     assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
     affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])

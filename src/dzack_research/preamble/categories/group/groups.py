@@ -5088,9 +5088,21 @@ class CoxeterGroups(OwnedCategory):
             if len(edges) != len(component) - 1:
                 return False
             degrees = {vertex: sum(vertex in edge for edge in edges) for vertex in component}
+            marked = [edge for edge in edges if self._engine_coxeter_matrix[edge] != 3]
+            # D_n is the simply-laced tree with one trivalent vertex,
+            # two arms of length one, and a third arm of length n-3.
+            branching = [vertex for vertex in component if degrees[vertex] == 3]
+            if not marked and len(branching) == 1 and all(
+                degree <= 3 for degree in degrees.values()
+            ):
+                center = branching[0]
+                return sum(
+                    degrees[other] == 1
+                    for other in component
+                    if self._engine_coxeter_matrix[center, other] == 3
+                ) >= 2
             if any(degree > 2 for degree in degrees.values()):
                 return False
-            marked = [edge for edge in edges if self._engine_coxeter_matrix[edge] != 3]
             return not marked or (
                 len(marked) == 1
                 and self._engine_coxeter_matrix[marked[0]] == 4
