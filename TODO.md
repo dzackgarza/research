@@ -1092,7 +1092,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `EffectiveCartierDivisors` in `src/dzack_research/preamble/categories/schemes/schemes.py`.
   **Closure assertions:** the complete `EffectiveCartierDivisors` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EffectiveCartierDivisors`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-endcategoryconstruction`**. **Needs:** none.
+- [x] **`placement-owner-endcategoryconstruction`**. **Needs:** none.
   **Owner pass:** `EndCategoryConstruction` in `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py`.
   **Closure assertions:** the complete `EndCategoryConstruction` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EndCategoryConstruction`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
