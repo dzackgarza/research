@@ -149,6 +149,15 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert second_group.order() == 48
 
 
+def test_general_linear_rank_cannot_be_truncated() -> None:
+    try:
+        GeneralLinearGroups(GF(2), QQ(3) / 2)
+    except AssertionError as error:
+        assert "integral rank" in str(error)
+    else:
+        assert False, "a nonintegral rank was silently truncated"
+
+
 def test_the_heisenberg_group_over_z_mod_three_has_twenty_seven_elements() -> None:
     assert Groups.Heisenberg(1, 3).order() == 27
 

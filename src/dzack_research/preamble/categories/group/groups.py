@@ -4792,6 +4792,11 @@ class GeneralLinearGroups(OwnedCategory):
 
     def __init__(self, ring, degree):
         self._coefficient_ring = _owned_ring(ring)
+        # An integral rank is part of the defining free-module datum.
+        # Casting first would silently identify GL_(3/2)(R) with GL_1(R).
+        assert degree in ZZ and degree == ZZ(degree), (
+            "GL_n(R) requires an integral rank"
+        )
         self._degree = int(degree)
         assert self._degree >= 0, "GL_n(R) requires a nonnegative rank"
         super().__init__()
