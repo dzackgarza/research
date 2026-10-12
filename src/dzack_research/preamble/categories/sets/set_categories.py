@@ -660,7 +660,7 @@ class OwnedSetMorphism(SetMorphism):
         Decided on finite enumerated endpoints; otherwise the answer is the
         proposition that ``f`` is surjective.
         """
-        from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
 
         domain = self.domain()
         codomain = self.codomain()
@@ -671,7 +671,9 @@ class OwnedSetMorphism(SetMorphism):
                 for end in (domain, codomain)
             ):
                 image = self.image()
-                return all(point in image for point in codomain)
+                # Surjectivity is the conjunction of image-membership
+                # propositions, not Python truthiness of those propositions.
+                return conjunction(image.is_parent_of(point) for point in codomain)
             case _:
                 return AtomicProposition("is_surjective", self)
 
