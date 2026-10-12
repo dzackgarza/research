@@ -1150,11 +1150,6 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
 class FixedEndCategory(FixedMorCategory):
     r"""The category ``End_C(A)`` of endomorphisms of one object."""
 
-    def identity_endomorphism(self) -> Morphism:
-        return self(self.arrow_set().identity())
-
-    one = identity_endomorphism
-
     def _repr_(self) -> str:
         return f"End_{self.base_category()}({self.domain_object()})"
 
