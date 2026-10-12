@@ -455,6 +455,16 @@ def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
         assert False, "a nonfree cyclic group was admitted as a free source"
 
 
+def test_finitely_many_relators_require_a_finite_free_basis() -> None:
+    infinite_free = Groups.Free(index_set=NN)
+    try:
+        FreeGroupQuotients(infinite_free, ())
+    except ValueError as error:
+        assert "finite free basis" in str(error)
+    else:
+        assert False, "an infinite-rank free group was assigned a finite presentation"
+
+
 def test_quotient_descent_with_identified_presenting_generators() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())

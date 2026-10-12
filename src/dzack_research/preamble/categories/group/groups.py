@@ -5156,6 +5156,12 @@ class FreeGroupQuotients(OwnedCategory):
         assert self._free_group in GroupsWithChosenFreeBasis(), (
             "the free source must retain its chosen free basis"
         )
+        # A finite relator family alone does not give a finite presentation:
+        # the free generating set must also be finite. In particular a
+        # quotient of F(NN) by finitely many relations is not thereby an
+        # object of GroupsWithChosenFinitePresentation().
+        if self._free_group.free_basis() not in FiniteSets():
+            raise ValueError("a finite group presentation requires a finite free basis")
         self._relators = tuple(self._free_group(relator) for relator in relators)
         super().__init__()
 
