@@ -173,6 +173,7 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
 )
 from dzack_research.preamble.groups import (
+    FreeGroupQuotients,
     CoxeterGroups,
     AbelianGroups,
     AbsoluteDecompositionGroup,

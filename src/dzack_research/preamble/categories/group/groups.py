@@ -4789,6 +4789,38 @@ class CoxeterGroups(OwnedCategory):
         )
 
 
+class FreeGroupQuotients(OwnedCategory):
+    r"""Groups presented by a chosen free group and finite relators."""
+
+    def __init__(self, free_group, relators):
+        self._free_group = _owned_group(free_group)
+        assert self._free_group in GroupsWithChosenFreeBasis(), (
+            "a free-group quotient needs a chosen free source"
+        )
+        self._relators = tuple(self._free_group(relator) for relator in relators)
+        super().__init__()
+
+    def free_group(self):
+        return self._free_group
+
+    def relators(self):
+        return self._relators
+
+    def super_categories(self):
+        return [GroupsWithChosenFinitePresentation()]
+
+    def an_object(self):
+        return self()
+
+    def _call_(self):
+        source = self.free_group()
+        result = _engine_quotient_by_relators(source, self.relators())
+        return _own_group(
+            _engine_group(result), refinements=(self,),
+            presentation_source_group=source,
+        )
+
+
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
 

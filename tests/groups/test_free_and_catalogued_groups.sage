@@ -89,6 +89,18 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert group.order() == 6
 
 
+def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
+    free = Groups.Free(2)
+    a, b = tuple(free.group_generators())
+    relators = (a**2, b**3, (a*b)**2)
+    theory = FreeGroupQuotients(free, relators)
+    quotient = theory()
+    assert theory.free_group() is free
+    assert theory.relators() == relators
+    assert quotient in theory
+    assert quotient.order() == 6
+
+
 def test_general_linear_group_retains_ring_and_rank() -> None:
     category = GeneralLinearGroups(GF(2), 2)
     group = category()

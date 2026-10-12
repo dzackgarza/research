@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.group.g_sets import (
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 
 from dzack_research.preamble.categories.group.groups import (
+    FreeGroupQuotients,
     CoxeterGroups,
     AbelianGroups,
     FiniteAbelianGroups,
@@ -83,6 +84,7 @@ from dzack_research.preamble.categories.group.profinite import (
 from dzack_research.preamble.categories.group.groups import groups as groups
 
 __all__ = [
+    'FreeGroupQuotients',
     'CoxeterGroups',
     'AbsoluteDecompositionGroup',
     'AbsoluteGaloisGroup',
