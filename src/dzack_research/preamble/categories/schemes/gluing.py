@@ -2401,17 +2401,24 @@ class FiniteAtlasModuleTransition(SageObject):
                 f"{reverse_scalar}, but it is a map {inverse_pullback.source()} -> "
                 f"{inverse_pullback.target()} over {inverse_pullback.scalar_map()}"
             )
-        if pullback * inverse_pullback != SemilinearModuleMorphism.identity(source_module):
+
+    def inverse_pair_decision(self):
+        return conjunction((
+            self.pullback() * self.inverse_pullback()
+            == SemilinearModuleMorphism.identity(self.source_module()),
+            self.inverse_pullback() * self.pullback()
+            == SemilinearModuleMorphism.identity(self.target_module()),
+        ))
+
+    @validator
+    def validate_inverse_pair(self):
+        decision = self.inverse_pair_decision()
+        if decision is False:
             raise ValueError(
-                f"cannot build a module chart change over {scheme_transition}: the stated inverse "
-                f"{inverse_pullback} followed by the pullback {pullback} is not the identity of "
-                f"{source_module}"
+                f"the stated pullback and inverse pullback of the module chart change over "
+                f"{self.scheme_transition()} are not mutually inverse"
             )
-        if inverse_pullback * pullback != SemilinearModuleMorphism.identity(target_module):
-            raise ValueError(
-                f"cannot build a module chart change over {scheme_transition}: the pullback {pullback} "
-                f"followed by its stated inverse {inverse_pullback} is not the identity of {target_module}"
-            )
+        return decision
 
     def scheme_transition(self):
         return self._scheme_transition
@@ -2669,17 +2676,23 @@ class _FiniteAtlasModuleGluingDatumEngine:
         self._triple_transitions.append((key, transition))
         return transition
 
-    def _verify_cocycle(self) -> None:
+    def cocycle_decision(self):
         labels = tuple(self.chart_indices())
-        for left, middle, right in combinations(labels, 3):
-            left_middle = self.transition_on_triple(left, middle, right).pullback()
-            middle_right = self.transition_on_triple(middle, right, left).pullback()
-            left_right = self.transition_on_triple(left, right, middle).pullback()
-            if left_middle * middle_right != left_right:
-                raise ValueError(
-                    f"the module chart changes of {self} fail the cocycle condition on the triple overlap of "
-                    f"charts {left}, {middle} and {right}"
-                )
+        return conjunction(
+            self.transition_on_triple(left, middle, right).pullback()
+            * self.transition_on_triple(middle, right, left).pullback()
+            == self.transition_on_triple(left, right, middle).pullback()
+            for left, middle, right in combinations(labels, 3)
+        )
+
+    @validator
+    def validate_cocycle(self):
+        decision = self.cocycle_decision()
+        if decision is False:
+            raise ValueError(
+                f"the module chart changes of {self} fail the cocycle condition on some triple overlap"
+            )
+        return decision
 
     def restricted_local_map(self, target_datum, chart_index, other_index, local_map):
         r"""Restrict one chart-linear map to the source-side pair overlap."""
