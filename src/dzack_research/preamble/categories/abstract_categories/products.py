@@ -2161,6 +2161,20 @@ def _discrete_diagram(factors, target_category=None):
             target = Cat().join(tuple(obj.category() for obj in family))
 
     index = DiscreteCategory(family.index_set())
+    if not family.cardinality().is_finite() or family.index_set() not in EnumeratedSets():
+        selected = family.selected_diagram()
+        if selected is not None:
+            if selected.domain() is not index or selected.codomain() is not target:
+                raise ValueError("the selected factor diagram does not have the requested exact endpoints")
+            return selected
+        constant = family.constant_value()
+        if constant is not None:
+            if constant not in target:
+                raise ValueError("the selected constant factor is outside the diagram's target category")
+            return Cat().Mor(index, target).constant_functor(constant)
+        raise TypeError(
+            "an unenumerated nonconstant factor family does not supply a verified discrete diagram"
+        )
     return Cat().Mor(index, target).discrete_diagram(family)
 
 
