@@ -1239,13 +1239,19 @@ class QuotientRings(OwnedCategory):
             components = tuple(self.irreducible_components())
             fields = tuple(component.fraction_field() for component in components)
             field_maps = tuple(component.fraction_field_map() for component in components)
+            # Compose genuine ring arrows A -> A/p -> Frac(A/p) at the
+            # categorical Mor owner. The component maps are independent of
+            # any chosen lift of a representative in the presentation ring.
+            component_maps = tuple(
+                field_map * component.quotient_map()
+                for component, field_map in zip(components, field_maps, strict=True)
+            )
             target = _finite_product_ring(fields)
             target_engine = _engine_ring(target)
 
             def image(element):
                 values = tuple(
-                    field_map(component.quotient_map()(self(element)))
-                    for component, field_map in zip(components, field_maps, strict=True)
+                    component_map(self(element)) for component_map in component_maps
                 )
                 if len(values) == 1:
                     return values[0]
