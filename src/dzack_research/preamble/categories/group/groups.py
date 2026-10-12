@@ -4020,6 +4020,20 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     quotient.quotient_projection()(presented_free.free_generator(label))
                     for label in basis
                 ), strict=True))
+                # The elementwise Coxeter evaluation does not go through
+                # GAP's checked generator-image owner. Verify the defining
+                # Coxeter presentation directly: these equations are
+                # precisely what makes reduced-word evaluation independent
+                # of the chosen word representative.
+                matrix = _engine_group(self).coxeter_matrix()
+                if any(images[label] * images[label] != quotient.one() for label in indices):
+                    raise ValueError("the quotient reflection images are not involutions")
+                if any(
+                    (images[left] * images[right]) ** ZZ(matrix[left, right]) != quotient.one()
+                    for left, right in combinations(indices, 2)
+                    if matrix[left, right] != -1 and matrix[left, right] is not infinity
+                ):
+                    raise ValueError("the quotient reflection images do not satisfy Coxeter braid orders")
                 projection = self.Mor(quotient)(
                     lambda element: reduce(mul, (
                         images[label] for label in reversed(self._to_engine(self(element)).reduced_word())
