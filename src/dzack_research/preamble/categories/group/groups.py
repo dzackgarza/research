@@ -4904,6 +4904,21 @@ class CoxeterGroups(OwnedCategory):
         super().__init__()
 
     def coxeter_matrix(self):
+        # The retained datum may be a mutable list. A category cannot
+        # continue to claim a different Coxeter matrix after its defining
+        # representation was selected; this check belongs on the category
+        # accessor too, not only on its group constructor and group accessor.
+        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+        current = (
+            _engine_coxeter_matrix_of(self._coxeter_matrix)
+            if isinstance(self._coxeter_matrix, IndexedFamily)
+            else CoxeterMatrix(self._coxeter_matrix)
+        )
+        if current != self._engine_coxeter_matrix:
+            raise ValueError("the chosen Coxeter matrix changed after category construction")
         return self._coxeter_matrix
 
     def super_categories(self):
@@ -4917,23 +4932,11 @@ class CoxeterGroups(OwnedCategory):
         # and its generating reflections at the existing engine adapter.
         # The catalogue's default reflection realization need not carry
         # those presentation data even when the abstract group is the same.
-        # A mutable caller-supplied matrix can change after this category
-        # has selected its realization. Refuse that inconsistency rather
-        # than returning a group carrying two different Coxeter matrices.
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-        current_matrix = (
-            _engine_coxeter_matrix_of(self._coxeter_matrix)
-            if isinstance(self._coxeter_matrix, IndexedFamily)
-            else CoxeterMatrix(self._coxeter_matrix)
-        )
-        if current_matrix != self._engine_coxeter_matrix:
-            raise ValueError("the chosen Coxeter matrix changed after category construction")
+        # Validate through the category's mathematical datum accessor.
+        selected_matrix = self.coxeter_matrix()
         return _Coxeter(
             self._engine_coxeter_matrix, implementation="matrix",
-            refinements=(self,), selected_matrix=self.coxeter_matrix(),
+            refinements=(self,), selected_matrix=selected_matrix,
         )
 
     class ParentMethods:
