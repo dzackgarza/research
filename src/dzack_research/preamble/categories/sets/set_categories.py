@@ -4331,9 +4331,13 @@ def _cartesian_product_morphism[IndexT](
     for index, arrow in components:
         if arrow.parent() is not Sets().Mor(source.factor(index), target.factor(index)):
             raise TypeError(f"component at {index} is not in its exact set Mor category")
+    # The finite enumeration gives the unique coordinate of each label.
+    # Do not search component labels with potentially symbolic equality.
+    ranking = index_set.ranking_map()
+    arrows = tuple(arrow for _, arrow in components)
     return Sets().Mor(source, target)(
         lambda element: target(
-            lambda index: next(arrow(element.component(index)) for label, arrow in components if label == index)
+            lambda index: arrows[int(ranking(index))](element.component(index))
         )
     )
 
@@ -4403,10 +4407,12 @@ def _coproduct_morphism[IndexT](
     for index, arrow in components:
         if arrow.parent() is not Sets().Mor(source.cofactor(index), target.cofactor(index)):
             raise TypeError(f"component at {index} is not in its exact set Mor category")
+    ranking = index_set.ranking_map()
+    arrows = tuple(arrow for _, arrow in components)
     return Sets().Mor(source, target)(
         lambda element: target(
             element.summand_index(),
-            next(arrow(element.summand_element()) for index, arrow in components if index == element.summand_index()),
+            arrows[int(ranking(element.summand_index()))](element.summand_element()),
         )
     )
 
