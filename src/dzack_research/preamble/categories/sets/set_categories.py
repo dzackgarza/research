@@ -2639,11 +2639,13 @@ class PowerSets(OwnedCategory):
                 case _ if candidate is base:
                     return True
                 case _ if candidate in Sets():
-                    return (
-                        Sets().is_provably_finite(candidate)
-                        and candidate in EnumeratedSets()
-                        and all(point in base for point in candidate)
-                    )
+                    if not Sets().is_provably_finite(candidate) or candidate not in EnumeratedSets():
+                        from dzack_research.preamble.logic import AtomicProposition
+
+                        return AtomicProposition("is_subset", candidate, base)
+                    from dzack_research.preamble.logic import conjunction
+
+                    return conjunction(base.is_parent_of(point) for point in candidate)
                 case _ if isinstance(candidate, Morphism):
                     return Sets().Subobjects(base).admits_arrow(candidate)
                 case _:
