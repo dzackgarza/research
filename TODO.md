@@ -1104,7 +1104,7 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner pass:** `EnumeratedByNaturals` in `src/dzack_research/preamble/categories/sets/enumerated/function_sets.py`.
   **Closure assertions:** the complete `EnumeratedByNaturals` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedByNaturals`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
-- [ ] **`placement-owner-enumeratedcoproductsofsets`**. **Needs:** none.
+- [x] **`placement-owner-enumeratedcoproductsofsets`**. **Needs:** none.
   **Owner pass:** `EnumeratedCoproductsOfSets` in `src/dzack_research/preamble/categories/sets/set_categories.py`.
   **Closure assertions:** the complete `EnumeratedCoproductsOfSets` operation inventory and actual ancestor definitions satisfy the per-pass closure contract above; its delivered Mor inheritance reaches every chosen arrow owner. Every move has a true new-home assertion outside `EnumeratedCoproductsOfSets`, and the existing defining maps, decided cases and undecided propositions are preserved. The pass record identifies each retained computation assertion under T.
 
