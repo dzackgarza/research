@@ -1652,6 +1652,12 @@ def _GL(degree, ring, var="a"):
 def _SL(degree, ring, var="a"):
     from sage.groups.matrix_gps.catalog import SL
 
+    if int(degree) == 2 and _owned_ring(ring) is ZZ:
+        # The standard integral modular group is arithmetic by its
+        # defining integral matrix realization; the axiom does not follow
+        # for arbitrary named matrix groups from their engine type alone.
+        group = _group_over_ring(SL, degree, ring, var=var)
+        return _own_group(_engine_group(group), refinements=(OwnedGroups().Arithmetic(),))
     return _group_over_ring(SL, degree, ring, var=var)
 
 
@@ -3718,6 +3724,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return AtomicProposition("is_finitely_presented_as_group", self)
 
         def is_arithmetic_group(self):
+            if self in OwnedGroups().Arithmetic():
+                return True
             return self._arithmeticity_decision()
 
         def _arithmeticity_decision(self):
@@ -4431,6 +4439,16 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @classmethod
         def _repr_object_names(cls):
             return "infinite groups"
+
+    class Arithmetic(CategoryWithAxiom):
+        r"""Groups with a supplied arithmeticity witness."""
+
+        def an_object(self):
+            return OwnedGroups().SL(2, ZZ)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "arithmetic groups"
 
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
