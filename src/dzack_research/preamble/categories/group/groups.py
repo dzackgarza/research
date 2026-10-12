@@ -5285,9 +5285,20 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 if witness is None or witness[0] is not through.domain() or witness[1] is not self:
                     raise ValueError("quotient descent requires the selected normal-quotient construction Mor")
                 target = source_map.codomain()
+                # The presenting free group F maps onto the quotient G,
+                # whereas through has domain H. Never evaluate through on
+                # a point of F. The quotient construction retains matching
+                # generator positions for H, F, and G; lift the selected
+                # free generators to the corresponding generators of H.
+                labels = tuple(source.free_basis())
+                lifted_generators = tuple(through.domain().group_generators())
+                if len(labels) != len(lifted_generators) or any(
+                    through(generator) != projection(source.free_generator(label))
+                    for label, generator in zip(labels, lifted_generators, strict=True)
+                ):
+                    raise ValueError("the quotient presentation generators do not lift through the selected quotient Mor")
                 free_map = source.Mor(target)(
-                    tuple(source_map(through(projection(source.free_generator(label))))
-                          for label in source.free_basis()), check=True
+                    tuple(source_map(generator) for generator in lifted_generators), check=True
                 )
                 descended = self.descend_homomorphism(free_map)
                 if any(descended(through(generator)) != source_map(generator)
