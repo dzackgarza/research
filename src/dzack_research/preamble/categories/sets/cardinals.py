@@ -413,7 +413,7 @@ class Cardinalities(OwnedCategory):
         A finite predicate subset need not supply either computation.
         """
         from dzack_research.preamble.categories.sets.set_categories import (
-            Sets, FiniteSets, InfiniteSets, CountableSets,
+            Sets, EnumeratedSets, FiniteSets, InfiniteSets, CountableSets,
             CountablyInfiniteSets, UncountableSets, EnumeratedSets,
         )
 
@@ -518,10 +518,11 @@ class Cardinalities(OwnedCategory):
         )
 
         index = family.index_set()
-        # Category refinement can lag behind an independently proved
-        # finiteness decision.  The finiteness of the index is the
-        # mathematical hypothesis, not membership in a particular category.
-        if not Sets().is_provably_finite(index):
+        # Finite cardinality alone does not select a list of factors.
+        # Computing finite sums/products requires the actual enumeration;
+        # otherwise retain only the ambient category rather than iterating
+        # an index set without a chosen order.
+        if not Sets().is_provably_finite(index) or index not in EnumeratedSets():
             return Sets()
         factors = tuple(family(i) for i in index)
         match operation:
