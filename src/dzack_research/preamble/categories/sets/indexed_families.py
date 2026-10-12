@@ -128,6 +128,13 @@ class IndexedFamily[IndexT, ValueT]:
             case True:
                 return self.value(index)
             case False:
+                from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+                if self.index_set() not in EnumeratedSets():
+                    raise ValueError(
+                        f"{index!r} is not an index of {self}, and its index set "
+                        "has no selected enumeration for positional lookup"
+                    )
                 return self.value(self.index_set().ranking_map().inverse()(index))
             case _:
                 raise ValueError(
