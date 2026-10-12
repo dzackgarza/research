@@ -206,7 +206,14 @@ class OrderedEnumeratedSets(OwnedCategory):
             index = self._index_of_function(element)
             if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
-            return self._element_at_function(index)
+            admissible_index = self.index_set().is_parent_of(index)
+            if admissible_index is not True:
+                raise ValueError(f"the proposed index {index!r} of {element!r} is not established in {self.index_set()}")
+            image = self._element_at_function(self.index_set()(index))
+            equal = True if image is element else image == element
+            if equal is not True:
+                raise ValueError(f"the proposed index of {element!r} does not establish the forward equation")
+            return image
 
         def _an_element_(self):
             r"""Return the first point of a nonempty enumeration."""
