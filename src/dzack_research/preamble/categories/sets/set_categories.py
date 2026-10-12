@@ -3614,11 +3614,26 @@ class CartesianProductsOfSets(OwnedCategory):
                 if morphism.parent() is not Sets().Mor(source, self.factor(label)):
                     raise TypeError(f"the component at {label} is not a set morphism into {self.factor(label)}")
             if index not in EnumeratedSets():
+                def component_at(label):
+                    undecided = False
+                    for key, morphism in zip(labels, components, strict=True):
+                        equal = True if key is label else key == label
+                        if equal is True:
+                            if undecided:
+                                raise ValueError(
+                                    f"cannot select product component at {label}: "
+                                    "equality with an earlier index is undecided"
+                                )
+                            return morphism
+                        if equal is not False:
+                            undecided = True
+                    raise ValueError(
+                        f"cannot select product component at {label}: "
+                        "the index set has no decided equality or selected ranking"
+                    )
+
                 return Sets().Mor(source, self)(
-                    lambda element: self(lambda label: next(
-                        morphism(element) for key, morphism in zip(labels, components, strict=True)
-                        if key == label
-                    ))
+                    lambda element: self(lambda label: component_at(label)(element))
                 )
             ranking = index.ranking_map()
             return Sets().Mor(source, self)(
