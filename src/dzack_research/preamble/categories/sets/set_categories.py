@@ -3292,7 +3292,8 @@ class _ImageSetEngine:
                     from dzack_research.preamble.logic import AtomicProposition
 
                     return AtomicProposition("is_member", element, self)
-                return conjunction((admitted, self.image_map()(source(preimage)) == element))
+                image_value = self.image_map()(source(preimage))
+                return True if image_value is element else image_value == element
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
                 hashed = self._finite_image_hash_lookup()
                 if hashed is not None:
