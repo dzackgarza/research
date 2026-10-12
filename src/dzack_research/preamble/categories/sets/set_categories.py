@@ -4024,10 +4024,10 @@ class CoproductsOfSets(OwnedCategory):
             if target not in Sets():
                 raise TypeError(f"a set coproduct map requires a set target, not {target}")
             index_set = self.index_set()
-            if not Sets().is_provably_finite(index_set):
+            if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
                 if not isinstance(maps, NaturalTransformation):
                     raise TypeError(
-                        "a map from an infinite coproduct needs a selected family of set morphisms, "
+                        "a map from a coproduct without finite enumerated indices needs a selected family of set morphisms, "
                         "not an unchecked component callback"
                     )
                 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -4305,12 +4305,12 @@ def _cartesian_product_morphism[IndexT](
             f"{source.index_set()} and {target} by {target.index_set()}"
         )
     index_set = source.index_set()
-    if not Sets().is_provably_finite(index_set):
+    if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         if not isinstance(component_morphisms, NaturalTransformation):
-            raise TypeError("componentwise product maps need a selected typed family on an infinite index")
+            raise TypeError("componentwise product maps need a selected typed family without finite enumerated indices")
         transformation = component_morphisms
         shape = DiscreteCategory(index_set)
         if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
@@ -4378,12 +4378,12 @@ def _coproduct_morphism[IndexT](
             f"{source.index_set()} and {target} by {target.index_set()}"
         )
     index_set = source.index_set()
-    if not Sets().is_provably_finite(index_set):
+    if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         if not isinstance(component_morphisms, NaturalTransformation):
-            raise TypeError("componentwise coproduct maps need a selected typed family on an infinite index")
+            raise TypeError("componentwise coproduct maps need a selected typed family without finite enumerated indices")
         transformation = component_morphisms
         shape = DiscreteCategory(index_set)
         if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
