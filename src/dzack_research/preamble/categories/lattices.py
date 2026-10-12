@@ -5699,7 +5699,10 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
     def super_categories(self):
         if _engine_ring(self.base_ring()) is not SageZZ:
             raise TypeError("2-elementary integral lattices require the integer coefficient ring")
-        return [Lattices(self.base_ring()).Even().Nondegenerate()]
+        return [
+            Lattices(self.base_ring()).Even().Nondegenerate(),
+            Lattices(self.base_ring()).FinitelyGenerated(),
+        ]
 
     class ParentMethods:
         def delta(self):
@@ -5740,6 +5743,8 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.refine import refine
 
         lattice = Lattices(self.base_ring())(lattice)
+        if lattice not in Lattices(self.base_ring()).FinitelyGenerated():
+            raise ValueError("a 2-elementary even lattice must have finite rank")
         if not lattice.is_even() or not lattice.is_nondegenerate() or not lattice.is_p_elementary(self.base_ring()(2)):
             raise ValueError("a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant")
         return refine(lattice, self)
