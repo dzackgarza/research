@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
@@ -143,15 +144,15 @@ class CoxeterDiagramMorphism:
             lambda vertex: self(other(vertex))
         )
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, CoxeterDiagramMorphism)
-            and other.parent() is self.parent()
-            and all(self(vertex) == other(vertex) for vertex in self.domain().index_set())
+    def __eq__(self, other):
+        if not isinstance(other, CoxeterDiagramMorphism) or other.parent() is not self.parent():
+            return False
+        return conjunction(
+            self(vertex) == other(vertex) for vertex in self.domain().index_set()
         )
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __ne__(self, other):
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(
@@ -167,10 +168,29 @@ class CoxeterDiagramMorphism:
             tuple(self(vertex) for vertex in self.domain().index_set())
         )
 
-    def is_identity(self) -> bool:
-        return self.domain() is self.codomain() and all(
+    def is_identity(self):
+        if self.domain() is not self.codomain():
+            return False
+        return conjunction(
             self(vertex) == vertex for vertex in self.domain().index_set()
         )
+
+    def preservation_decision(self):
+        r"""Return whether every Coxeter matrix entry is preserved."""
+        return conjunction(
+            self.domain().coxeter_entry(left, right)
+            == self.codomain().coxeter_entry(self(left), self(right))
+            for left in self.domain().index_set()
+            for right in self.domain().index_set()
+        )
+
+    def validate_preservation(self):
+        decision = self.preservation_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a morphism of Coxeter diagrams: it does not preserve every Coxeter matrix entry"
+            )
+        return decision
 
 
 class CoxeterDiagramMor(CategoricalMor):
@@ -178,7 +198,7 @@ class CoxeterDiagramMor(CategoricalMor):
 
     ElementMethods = CoxeterDiagramMorphism
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, *, check=False):
         if isinstance(datum, CoxeterDiagramMorphism):
             if datum.parent() is self:
                 return datum
@@ -199,17 +219,8 @@ class CoxeterDiagramMor(CategoricalMor):
             assignment = dict(zip(vertices, images, strict=True))
             function = assignment.__getitem__
         morphism = self.element_class(self, function)
-        for left in self.domain().index_set():
-            for right in self.domain().index_set():
-                if self.domain().coxeter_entry(left, right) != self.codomain().coxeter_entry(
-                    morphism(left), morphism(right)
-                ):
-                    raise ValueError(
-                        f"{morphism} is not a morphism of Coxeter diagrams: the vertices {left}, {right} "
-                        f"have Coxeter entry {self.domain().coxeter_entry(left, right)} in {self.domain()}, "
-                        f"but their images {morphism(left)}, {morphism(right)} have entry "
-                        f"{self.codomain().coxeter_entry(morphism(left), morphism(right))} in {self.codomain()}"
-                    )
+        if check:
+            morphism.validate_preservation()
         return morphism
 
     @cached_method
