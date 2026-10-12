@@ -3896,9 +3896,13 @@ class CoproductsOfSets(OwnedCategory):
             return f"ι_{self.summand_index()}({self.summand_element()})"
 
         def __eq__(self, other):
+            if self is other:
+                return True
             if element_parent(other) is not self.parent():
                 return False
-            same_index = self.summand_index() == other.summand_index()
+            left_index = self.summand_index()
+            right_index = other.summand_index()
+            same_index = True if left_index is right_index else left_index == right_index
             if same_index is False:
                 return False
             if same_index is True:
