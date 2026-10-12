@@ -99,6 +99,8 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert theory.relators() == relators
     assert quotient in theory
     assert quotient.order() == 6
+    assert quotient.presenting_free_group() is free
+    assert tuple(quotient.defining_relations()) == relators
     assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
 
 

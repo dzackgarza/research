@@ -1324,13 +1324,14 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None: (
         id(group),
         refinements,
         description,
         id(free_basis),
         id(presentation_source_group),
         id(symmetric_points),
+        id(chosen_presentation),
     )
 )
 def _own_group(
@@ -1340,6 +1341,7 @@ def _own_group(
     free_basis=None,
     presentation_source_group=None,
     symmetric_points=None,
+    chosen_presentation=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1372,18 +1374,18 @@ def _own_group(
             placement = (_owned_group_category(group), *refinements)
             presentation_data = {}
             if _has_chosen_presentation(group):
-                source_engine, backend_relations = _chosen_engine_presentation(group)
-                presentation_source = None if source_engine is None else _own_group(source_engine)
-                relation_source = presentation_source
-                if relation_source is None:
-                    owned_relations = finite_ordered_set(())
+                if chosen_presentation is not None:
+                    presentation_source, chosen_relations = chosen_presentation
+                    owned_relations = finite_ordered_set(chosen_relations)
                 else:
-                    owned_relations = finite_ordered_set(
-                        tuple(
-                            relation_source._from_engine(relation)
-                            for relation in backend_relations
+                    source_engine, backend_relations = _chosen_engine_presentation(group)
+                    presentation_source = None if source_engine is None else _own_group(source_engine)
+                    if presentation_source is None:
+                        owned_relations = finite_ordered_set(())
+                    else:
+                        owned_relations = finite_ordered_set(
+                            tuple(presentation_source._from_engine(relation) for relation in backend_relations)
                         )
-                    )
                 presentation_data = {
                     "group_presentation_source": presentation_source,
                     "group_presentation_relations": owned_relations,
@@ -4829,6 +4831,7 @@ class FreeGroupQuotients(OwnedCategory):
         return _own_group(
             _engine_group(result), refinements=(self,),
             presentation_source_group=source,
+            chosen_presentation=(source, self.relators()),
         )
 
 
