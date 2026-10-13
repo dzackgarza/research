@@ -30,6 +30,26 @@ def test_set_coequalizer_uses_selected_parallel_morphisms() -> None:
     assert projection * left == projection * right
 
 
+def test_empty_relation_on_infinite_target_has_identity_coequalizer() -> None:
+    r"""No identifications on ZZ give ZZ, not opaque symbolic classes."""
+    source = Sets.Δ[-1]
+    target = Sets()(ZZ)
+    left = Sets().Mor(source, target)(lambda _point: target(0))
+    right = Sets().Mor(source, target)(lambda _point: target(1))
+    construction = Sets().coequalizer_construction(left, right)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+    target_leg = Sets().Mor(target, target)(lambda value: target(2 * value))
+    cocone = construction.diagram().Cocones().cocone(
+        target, lambda index: target_leg * left if index is shape.source() else target_leg
+    )
+    factor = construction.factor(cocone).apex_map()
+
+    assert construction.object() is target
+    assert projection(target(3)) == target(3)
+    assert factor(projection(target(3))) == target(6)
+
+
 def test_set_equalizer_uses_selected_parallel_morphisms_and_inclusion() -> None:
     r"""The equalizer of the identity and a transposition fixes one point."""
     source = Sets.Δ[2]

@@ -1500,7 +1500,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if target in EnumeratedSets() and target.cardinality() == cardinal(1):
+            if Sets().is_provably_finite(source) and source.cardinality() == cardinal(0):
+                # An empty relation generates equality, even when the
+                # target is infinite and has no selected enumeration.
+                quotient = target
+                projection = Sets().Mor(target, target).identity()
+                representative_point = target
+            elif target in EnumeratedSets() and target.cardinality() == cardinal(1):
                 # Every equivalence relation on a singleton is equality,
                 # even if the relation source is infinite and unenumerated.
                 # Retain the literal target as quotient without asking to
@@ -1600,7 +1606,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if target in EnumeratedSets() and target.cardinality() == cardinal(1):
+            if Sets().is_provably_finite(source) and source.cardinality() == cardinal(0):
+                quotient = target
+                projection = Sets().Mor(target, target).identity()
+                representative_point = target
+            elif target in EnumeratedSets() and target.cardinality() == cardinal(1):
                 quotient = target
                 projection = Sets().Mor(target, target).identity()
                 representative_point = target
