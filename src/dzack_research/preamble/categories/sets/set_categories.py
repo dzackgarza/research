@@ -1214,6 +1214,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 raise TypeError(
                     f"an equalizer in the category of sets needs maps between sets, but {source} or {target} is not a set"
                 )
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError(
+                    "a set equalizer requires both parallel arrows to belong to its selected Mor category"
+                )
 
             equalizer = self.condition_set(
                 source,

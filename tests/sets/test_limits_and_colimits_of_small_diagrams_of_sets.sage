@@ -30,6 +30,22 @@ def test_set_coequalizer_uses_selected_parallel_morphisms() -> None:
     assert projection * left == projection * right
 
 
+def test_set_equalizer_uses_selected_parallel_morphisms_and_inclusion() -> None:
+    r"""The equalizer of the identity and a transposition fixes one point."""
+    source = Sets.Δ[2]
+    identity = Sets().Mor(source, source).identity()
+    transpose = Sets().Mor(source, source)(
+        lambda point: source(1 - point) if point < 2 else source(2)
+    )
+    construction = Sets().equalizer_construction(identity, transpose)
+    shape = construction.diagram().domain()
+    inclusion = construction.structure_morphism(shape.source())
+
+    assert construction.object().cardinality() == cardinal(1)
+    assert all(inclusion(point) == source(2) for point in construction.object())
+    assert identity * inclusion == transpose * inclusion
+
+
 def _cospan_shape():
     return PosetCategory(Sets()(("a", "b", "c")), le=lambda left, right: left == right or right == "c")
 
