@@ -114,6 +114,29 @@ def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> N
     assert twice * inclusion == zero * inclusion
 
 
+def test_module_equalizer_cone_factors_a_nonzero_torsion_map() -> None:
+    r"""The map ``Z/4 -> Z/4``, ``x |-> 2x``, factors through ``ker(2)``."""
+    modules = Modules(ZZ)
+    free = modules(ZZ**1)
+    (e,) = free.basis()
+    cyclic_four = free / free.span((4 * e,))
+    a = cyclic_four.projection()(e)
+    twice = cyclic_four.Mor(cyclic_four)({a: 2 * a})
+    zero = cyclic_four.Mor(cyclic_four)({a: cyclic_four.zero()})
+    construction = modules.equalizer_construction(twice, zero)
+    shape = construction.diagram().domain()
+    inclusion = construction.structure_morphism(shape.source())
+    cone = construction.diagram().Cones().cone(
+        cyclic_four,
+        lambda index: twice if index is shape.source() else zero,
+    )
+    factor = construction.factor(cone).apex_map()
+
+    assert construction.object().cardinality() == 2
+    assert inclusion * factor == twice
+    assert inclusion(factor(a)) == 2 * a
+
+
 def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:
     r"""The terminal set is the empty product; the initial set is the empty coproduct."""
     product = Sets().product(())
