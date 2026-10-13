@@ -4498,6 +4498,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             if generators is None:
                 if self.has_selected_group_resolution() and self.has_selected_finite_group_generating_set():
                     generators = tuple(self.group_generators())
+                elif hasattr(self, "supergroup") and self in GeneratedSubgroups(self.supergroup()):
+                    # This subgroup carries its own selected generating
+                    # family, even when no free resolution has been chosen
+                    # for the subgroup's represented realization.
+                    generators = tuple(self.selected_subgroup_generators())
                 elif self in OwnedFiniteGroups():
                     # The complete finite source is itself a generating
                     # family. No chosen presentation or GAP map is needed
