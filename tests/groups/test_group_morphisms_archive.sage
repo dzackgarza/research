@@ -142,6 +142,21 @@ def test_generated_subgroup_homomorphisms_are_determined_by_generators() -> None
     assert inclusion != trivial
 
 
+def test_composition_out_of_generated_subgroup_uses_its_generators() -> None:
+    r"""Composition of selected maps on ``<g²>`` retains their group law."""
+    cyclic = Groups.C(4)
+    g = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((g**2,))
+    selected = next(iter(subgroup.selected_subgroup_generators()))
+    inclusion = subgroup.Mor(cyclic)({selected: g**2})
+    square = cyclic.Mor(cyclic)({g: g**2})
+    composite = square * inclusion
+
+    assert composite.domain() is subgroup and composite.codomain() is cyclic
+    assert composite(selected) == cyclic.one()
+    assert composite == subgroup.Mor(cyclic).elementwise(lambda _point: cyclic.one())
+
+
 def test_finite_group_homomorphism_equality_uses_all_source_elements() -> None:
     r"""Maps ``C4 -> C2`` are distinguished by their actual pointwise action."""
     source = Groups.C(4)

@@ -2327,6 +2327,17 @@ class GroupMorphism:
             return source.Mor(self.codomain())(
                 {generator: self(right(generator)) for generator in source.group_generators()}
             )
+        if (
+            hasattr(source, "supergroup")
+            and source in GeneratedSubgroups(source.supergroup())
+            and (right._gap_homomorphism is not None or right._generator_images is not None)
+        ):
+            # Use the subgroup's defining generators as determining data
+            # for composition, just as the resolution route does. The
+            # existing Mor constructor checks their relations.
+            return source.Mor(self.codomain())(
+                {generator: self(right(generator)) for generator in source.selected_subgroup_generators()}
+            )
         return OwnedGroups().Mor(source, self.codomain())._from_elementwise_rule(
             lambda element: self(right(element))
         )
