@@ -4151,7 +4151,7 @@ class CoproductsOfSets(OwnedCategory):
                 index_category = DiscreteCategory(index_set)
                 if maps.source().domain() is not index_category or maps.target().domain() is not index_category:
                     raise ValueError("the component transformation must use the coproduct's exact discrete index category")
-                if maps.source().codomain() is not Sets() or maps.target().codomain() is not Sets():
+                if not maps.source().codomain().is_subcategory(Sets()) or not maps.target().codomain().is_subcategory(Sets()):
                     raise TypeError("the component transformation must be set-valued")
                 selected = self.family().selected_diagram()
                 constant = self.family().constant_value()
