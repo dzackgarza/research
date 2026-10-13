@@ -2953,6 +2953,11 @@ class _EnumeratedFixedCardinalitySubsetSetEngine:
         def position_of(subset):
             subset = self(subset)
             needed = self.subset_cardinality()
+            if needed == 0:
+                # The unique zero-element subset has combinadic rank zero;
+                # neither the size of its ambient set nor an enumeration of
+                # the empty subset is needed to select this rank.
+                return selections.ranking_map()(selections.from_source_rank_positions(()))
             members = subset.domain()
             if members in EnumeratedSets() and Sets().is_provably_finite(members):
                 # The actual finite member enumeration determines the rank
