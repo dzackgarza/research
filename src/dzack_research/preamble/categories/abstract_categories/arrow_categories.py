@@ -1812,7 +1812,7 @@ class SetSubobjectCategory(SliceCategory):
                 EnumeratedSets,
                 FiniteSets,
             )
-            from dzack_research.preamble.logic import AtomicProposition
+            from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
             if self is other:
                 return True
@@ -1820,7 +1820,18 @@ class SetSubobjectCategory(SliceCategory):
                 return False
             base = self.codomain()
             if base in FiniteSets() and base in EnumeratedSets():
-                return all((member in self) == (member in other) for member in base)
+                # Equality of subsets is equality of their characteristic
+                # predicates, not Python equality of their truth values.
+                # Either membership may remain undecided even over a finite
+                # enumerated ambient set.
+                return conjunction(
+                    conjunction((
+                        negation(conjunction((left, negation(right)))),
+                        negation(conjunction((right, negation(left)))),
+                    ))
+                    for member in base
+                    for left, right in ((self.is_parent_of(member), other.is_parent_of(member)),)
+                )
             left, right = self.domain(), other.domain()
             if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
                 return left.cardinality() == right.cardinality() and self <= other
