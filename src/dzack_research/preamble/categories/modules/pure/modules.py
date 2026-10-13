@@ -1,5 +1,7 @@
 """Owned categories of modules and vector spaces."""
 
+from __future__ import annotations
+
 import itertools
 import operator
 from dataclasses import dataclass

@@ -1,5 +1,7 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from sage.groups.matrix_gps.finitely_generated import MatrixGroup

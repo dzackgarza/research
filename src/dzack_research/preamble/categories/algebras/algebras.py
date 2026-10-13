@@ -14,6 +14,8 @@ algebra -- computes \((M, m)\) and reaches the same construction,
 :func:`_algebra_on_module`.
 """
 
+from __future__ import annotations
+
 import itertools
 from functools import reduce
 from typing import TYPE_CHECKING
