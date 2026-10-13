@@ -1156,6 +1156,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
 
             family = _factor_family(factors, name="Product factors")
             product = self.product(family)
+            if product not in self:
+                raise TypeError(
+                    f"the Cartesian product {product} is not an object of {self}; "
+                    "the selected subcategory does not contain this product"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
