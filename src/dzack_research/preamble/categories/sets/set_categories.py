@@ -2953,6 +2953,19 @@ class _EnumeratedFixedCardinalitySubsetSetEngine:
         def position_of(subset):
             subset = self(subset)
             needed = self.subset_cardinality()
+            members = subset.domain()
+            if members in EnumeratedSets() and Sets().is_provably_finite(members):
+                # The actual finite member enumeration determines the rank
+                # positions. Scanning the ambient enumeration does not
+                # terminate for sparse subsets of an infinite source.
+                positions = sorted(int(self.source().ranking_map()(member)) for member in members)
+                selection = selections.from_source_rank_positions(positions)
+                return selections.ranking_map()(selection)
+            if self.source() in Sets().Infinite():
+                raise ValueError(
+                    "ranking a fixed-size subset of an infinite set requires "
+                    "a selected finite enumeration of its members"
+                )
             point_at_source_rank = self.source().ranking_map().inverse()
 
             def source_positions():
