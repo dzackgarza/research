@@ -52,3 +52,19 @@ def test_group_product_retains_monoid_universal_property() -> None:
     assert induced.parent() is additive.Mor(source, product)
     for label in product.index_set():
         assert product.projection(label)(induced(source(3))) == ZZ(3)
+
+
+def test_mixed_finite_monoid_product_is_not_an_additive_group() -> None:
+    mixed = Sets().product((ZZ, NN))
+    assert mixed in AdditiveMonoids()
+    assert mixed not in AdditiveGroups()
+    assert mixed not in AdditiveGroups().AdditiveCommutative()
+    section = mixed((ZZ(-2), NN(3)))
+    assert mixed.projection(mixed.index_set()(0))(section) == ZZ(-2)
+    assert mixed.projection(mixed.index_set()(1))(section) == NN(3)
+
+
+def test_opaque_infinite_callback_does_not_claim_additive_group_structure() -> None:
+    opaque = Sets().product(indexed_family(NN, lambda _index: ZZ))
+    assert opaque not in AdditiveGroups()
+    assert opaque not in AdditiveMonoids()
