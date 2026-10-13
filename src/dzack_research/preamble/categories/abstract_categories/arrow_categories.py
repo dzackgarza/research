@@ -1809,7 +1809,11 @@ class SetSubobjectCategory(SliceCategory):
                 return conjunction(
                     other.is_parent_of(inclusion(point)) for point in domain
                 )
-            return self.factor_through_or_none(other) is not None
+            # Without a selected containment algorithm, absence of a
+            # factorization witness does not prove noncontainment.
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("subset", self, other)
 
         def union(self, other):
             from dzack_research.preamble.logic import conjunction, negation
