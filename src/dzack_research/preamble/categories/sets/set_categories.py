@@ -3297,7 +3297,7 @@ class _ImageSetEngine:
             return None
         try:
             return tuple(dict.fromkeys(values))
-        except TypeError:
+        except (TypeError, ValueError):
             pass
         distinct = []
         for value in values:
@@ -3337,7 +3337,7 @@ class _ImageSetEngine:
             return None
         try:
             return frozenset(values)
-        except TypeError:
+        except (TypeError, ValueError):
             return None
 
     def __iter__(self):
@@ -3388,7 +3388,7 @@ class _ImageSetEngine:
                 if hashed is not None:
                     try:
                         return element in hashed
-                    except TypeError:
+                    except (TypeError, ValueError):
                         pass
                 # Membership is the finite existential proposition
                 # exists a in A, f(a) = element. It does not require
