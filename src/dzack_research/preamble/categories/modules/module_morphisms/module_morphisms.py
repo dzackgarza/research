@@ -2910,6 +2910,67 @@ class TensorProductModuleMorphismMethods:
             name="Bilinear coordinate values",
         )
 
+    @cached_method
+    def _as_numerical_tensor(self):
+        r"""Read the selected finite coordinate tensor of this bilinear Hom element.
+
+        An admitted type-(0,2) tensor is returned *by identity*.  A Hom
+        constructed from a callable retains its morphism as the defining
+        datum and only evaluates the generating pairs on this request.  The
+        latter finite extraction is cached here, on the Hom element, rather
+        than on any formed module or lattice constructed from it.
+
+        An arbitrary ``R``-module ``W`` has no coefficient ring in which to
+        construct a scalar tensor; its W-valued coordinate family is the
+        corresponding representation.  Both require selected finite
+        framings.  This is private because choosing coordinates is not a
+        mathematical operation on the underlying Hom object.
+        """
+        left, right = self.left_module(), self.right_module()
+        if not (left.has_selected_module_resolution() and right.has_selected_module_resolution()):
+            raise TypeError(
+                f"the numerical coordinates of {self} require selected finite generators of both tensor factors"
+            )
+        left_labels, right_labels = left.module_generating_set(), right.module_generating_set()
+        left_size, right_size = left_labels.cardinality(), right_labels.cardinality()
+        if not (left_size.is_finite() and right_size.is_finite()):
+            raise TypeError(
+                f"the numerical coordinates of {self} require finite generator sets, got {left_size} and {right_size}"
+            )
+        if self._defining_pairing_tensor is not None:
+            return self._defining_pairing_tensor
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+        from dzack_research.preamble.tensors.tensor import tensor
+
+        n, m = int(left_size.finite_value()), int(right_size.finite_value())
+        if self.codomain() not in OwnedRings():
+            from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
+
+            values = self.codomain()
+            if values in RestrictedScalarsModules(left.base_ring()):
+                scalar_ring = values.module_over_extension()
+                if scalar_ring in OwnedRings():
+                    # Res_{R -> S}(S)-valued forms carry a selected scalar
+                    # extension. Numerical computations use the coefficients
+                    # in S, while the Hom itself remains R-linear into W.
+                    return tensor(
+                        scalar_ring, (), (n, m),
+                        (
+                            self._gram_entry(left_labels[i], right_labels[j]).underlying_element()
+                            for i in range(n)
+                            for j in range(m)
+                        ),
+                    )
+            return self.coordinate_values()
+        return tensor(
+            self.codomain(), (), (n, m),
+            (
+                self._gram_entry(left_labels[i], right_labels[j])
+                for i in range(n)
+                for j in range(m)
+            ),
+        )
+
     def _gram_entry(self, left_label, right_label):
         r"""``b(e_l, e_r)``, the value of this map at the framing generator ``e_l ⊗ e_r``.
 
@@ -2923,10 +2984,11 @@ class TensorProductModuleMorphismMethods:
         if self._defining_pairing_tensor is not None:
             left_labels = self.left_module().module_generating_set()
             right_labels = self.right_module().module_generating_set()
-            return self._defining_pairing_tensor[
+            value = self._defining_pairing_tensor[
                 int(left_labels.ranking_map()(left_label)),
                 int(right_labels.ranking_map()(right_label)),
             ]
+            return value if element_parent(value) is self.codomain() else self.codomain()(value)
         if self._defining_pairing_values is not None:
             from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
 
@@ -3240,6 +3302,15 @@ class TensorProductModuleMor(ModuleMor):
                             rows,
                         )
                     )
+                else:
+                    from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
+
+                    codomain = self.codomain()
+                    if (
+                        codomain in RestrictedScalarsModules(self.domain().base_ring())
+                        and codomain.module_over_extension() is images.base_ring()
+                    ):
+                        defining_tensor = images
                 images = rows
             case _:
                 pass

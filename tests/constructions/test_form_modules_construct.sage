@@ -6,10 +6,71 @@ and a fibrewise formed morphism over the identity of ``ZZ``.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+import pytest
 
 
 def _hyperbolic_form():
-    return ZZ.free_module(2).equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
+    module = ZZ.free_module(2)
+    return FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[0, 1], [1, 0]]))
+
+
+def test_bilinear_hom_constructor_is_the_only_ingress_to_a_formed_module() -> None:
+    module = ZZ.free_module(2)
+    gram = tensor(ZZ, (), (2, 2), [[2, 1], [1, 2]])
+    hom = module.bilinear_hom_space(ZZ)
+    assert hom is module.bilinear_forms(ZZ)
+    assert hom.domain() is module.tensor_product(module)
+
+    b = hom(gram)
+    formed = FormModules(ZZ)(b)
+    assert formed.form() is b and formed.unformed_module() is module
+    assert b._as_numerical_tensor() is gram
+
+    with pytest.raises(TypeError):
+        FormModules(ZZ)(gram)
+    with pytest.raises(TypeError):
+        FormModules(ZZ)(lambda x, y: ZZ.zero())
+    with pytest.raises(TypeError):
+        module.equip_bilinear_form(ZZ, gram)
+
+
+def test_bilinear_hom_values_must_belong_to_the_base_module_category() -> None:
+    module = ZZ.free_module(2)
+    with pytest.raises(TypeError):
+        module.bilinear_hom_space(QQ)
+    with pytest.raises(TypeError):
+        Modules(ZZ).Mor(module.tensor_product(module), QQ)
+
+
+def test_callable_is_admitted_by_the_hom_and_finite_coordinates_are_lazy() -> None:
+    module = ZZ.free_module(2)
+    calls = []
+
+    def bilinear(left, right):
+        calls.append((left, right))
+        return left.to_vector()(0) * right.to_vector()(1)
+
+    b = module.bilinear_hom_space(ZZ)(bilinear)
+    assert not calls
+    assert b(module.module_generator(0), module.module_generator(1)) == ZZ.one()
+    calls.clear()
+    gram = b._as_numerical_tensor()
+    assert gram == tensor(ZZ, (), (2, 2), [[0, 1], [0, 0]])
+    assert len(calls) == 4
+    assert b._as_numerical_tensor() is gram
+    assert len(calls) == 4
+
+
+def test_infinite_bilinear_hom_callable_never_requires_numerical_coordinates() -> None:
+    module = ZZ.free_module(NN)
+    b = module.bilinear_hom_space(ZZ)(
+        lambda left, right: ZZ.one() if left == right else ZZ.zero()
+    )
+    assert b(module.module_generator(0), module.module_generator(0)) == ZZ.one()
+    assert b(module.module_generator(0), module.module_generator(1)) == ZZ.zero()
+    with pytest.raises(TypeError):
+        b._as_numerical_tensor()
+    assert FormModules(ZZ)(b).unformed_module() is module
 
 
 def test_form_module_retains_unformed_left_right_and_value_modules() -> None:
@@ -54,8 +115,8 @@ def test_form_index_raising_lowering_twist_and_fraction_field_raise() -> None:
 
 def test_scaling_bilinear_forms_retains_the_original_module_and_selected_hom() -> None:
     module = ZZ.free_module(2)
-    symmetric = module.equip_bilinear_form(ZZ, [[2, 1], [1, 2]])
-    asymmetric = module.equip_bilinear_form(ZZ, [[1, 2], [0, 1]])
+    symmetric = module.equip_bilinear_form(module.bilinear_hom_space(ZZ)([[2, 1], [1, 2]]))
+    asymmetric = module.equip_bilinear_form(module.bilinear_hom_space(ZZ)([[1, 2], [0, 1]]))
     symmetry = BilinearFormModules(ZZ).Symmetric()
 
     for formed in (symmetric, asymmetric):
@@ -107,7 +168,7 @@ def test_finite_free_bilinear_form_is_unimodular_exactly_for_unit_determinant() 
         ([[1, 2], [3, 5]], True),
         ([[2, 1], [1, 2]], False),
     ):
-        formed = module.equip_bilinear_form(ZZ, gram)
+        formed = module.equip_bilinear_form(module.bilinear_hom_space(ZZ)(gram))
         assert formed.is_unimodular() is expected
         assert formed.twist(-1).is_unimodular() is expected
 
@@ -155,7 +216,7 @@ def test_finite_bilinear_hom_retains_its_actual_defining_covariant_tensor() -> N
     module = ZZ.free_module(2)
     gram = tensor(ZZ, (), (2, 2), [[2, 1], [1, 2]])
     bilinear = module.bilinear_forms(ZZ)(gram)
-    formed = module.equip_bilinear_form(ZZ, gram)
+    formed = module.equip_bilinear_form(module.bilinear_hom_space(ZZ)(gram))
 
     assert bilinear.gram_tensor() is gram
     assert formed.form().gram_tensor() is gram
@@ -198,8 +259,9 @@ def test_integrality_of_finite_scalar_valued_form_reads_the_selected_tensor() ->
     module = ZZ.free_module(2)
     integral_gram = tensor(QQ, (), (2, 2), [[1, 0], [0, 2]])
     nonintegral_gram = tensor(QQ, (), (2, 2), [[QQ(1)/2, 0], [0, 2]])
-    integral = module.equip_bilinear_form(QQ, integral_gram)
-    nonintegral = module.equip_bilinear_form(QQ, nonintegral_gram)
+    values = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
+    integral = module.equip_bilinear_form(module.bilinear_hom_space(values)(integral_gram))
+    nonintegral = module.equip_bilinear_form(module.bilinear_hom_space(values)(nonintegral_gram))
 
     assert integral.form().gram_tensor() is integral_gram
     assert nonintegral.form().gram_tensor() is nonintegral_gram

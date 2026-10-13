@@ -1412,7 +1412,15 @@ class Modules(OwnedCategoryOverBaseRing):
             return _pairings(self, right_module, value_module)
 
         def bilinear_forms(self, value_module):
-            r"""Return bilinear forms ``self x self -> value_module``."""
+            r"""Return the module Hom of bilinear maps ``self x self -> value_module``."""
+            return self.bilinear_hom_space(value_module)
+
+        def bilinear_hom_space(self, value_module):
+            r"""Return ``Hom_R(self \otimes_R self, W)``, with ``W`` an R-module.
+
+            The Cat-owned Mor constructor, not a form-specific fallback,
+            checks that the tensor product and ``W`` are both R-modules.
+            """
             from dzack_research.preamble.categories.forms.forms import _bilinear_forms
 
             return _bilinear_forms(self, value_module)
@@ -1437,13 +1445,18 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _quadratic_map_from_morphism(self, morphism)
 
-        def equip_bilinear_form(self, value_module, datum):
-            r"""Return this module construction equipped with the selected bilinear form."""
+        def equip_bilinear_form(self, form):
+            r"""Equip this module with ``b`` already constructed in its bilinear Hom.
+
+            A tensor or a callable is *not* a form: both are input data for
+            ``self.bilinear_hom_space(W)``, which constructs the morphism.
+            The formed-module constructor accepts only that morphism.
+            """
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
                 _bilinear_form,
             )
 
-            return _bilinear_form(self, value_module, datum)
+            return _bilinear_form(self, form)
 
         def equip_quadratic_form(self, value_module, datum):
             r"""Return this module construction equipped with the selected quadratic form."""

@@ -26,6 +26,8 @@ from pydantic import Field, model_validator
 from pydantic_core import PydanticCustomError
 
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
 from dzack_research.preamble.categories.vinberg_invariants import (
     VinbergInvariantMatrices,
@@ -37,6 +39,7 @@ from latticedb.model import GramTensor, Record, Slug, Yaml, rational
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
 QQ = _SESSION_RINGS["QQ"]
+_QQ_AS_ZZ_MODULE = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
 
 
 class GraphVertex(Record):
@@ -162,7 +165,8 @@ class WeightedGraph(Record):
                 gram = self._gram("norm_squared", self._mirror_pairing)
             case _:
                 return None
-        return ZZ.free_module(len(gram)).equip_bilinear_form(QQ, gram)
+        module = ZZ.free_module(len(gram))
+        return FormModules(ZZ)(module.bilinear_hom_space(_QQ_AS_ZZ_MODULE)(gram))
 
     def cartan_matrix(self) -> tuple[tuple[int, ...], ...] | None:
         """The generalized Cartan matrix the card states, or None when it states none."""

@@ -118,28 +118,7 @@ class BilinearFormMors(OwnedCategoryOverBaseRing):
                     f"the Gram tensor of {self} needs values in a ring, but its values lie in {self.codomain()}"
                 )
 
-            defining_tensor = self._defining_pairing_tensor
-            if defining_tensor is not None:
-                return defining_tensor
-
-            labels = self.left_module().module_generating_set()
-            size = labels.cardinality()
-            if not size.is_finite():
-                raise TypeError(
-                    f"the Gram tensor of {self} needs a finite generating set of {self.left_module()}, but its "
-                    f"generating set has cardinality {size}"
-                )
-            rank = int(size.finite_value())
-            return tensor(
-                self.codomain(),
-                (),
-                (rank, rank),
-                (
-                    self._gram_entry(labels[i], labels[j])
-                    for i in range(rank)
-                    for j in range(rank)
-                ),
-            )
+            return self._as_numerical_tensor()
 
         def pullback(self, morphism):
             if morphism.codomain() is not self.module():
@@ -175,10 +154,9 @@ class BilinearFormMors(OwnedCategoryOverBaseRing):
 def _bilinear_classifier_is_represented(left_module, right_module, value_module) -> bool:
     r"""Whether ``X x Y -> W`` is represented by ``Hom_R(X tensor Y, W)``.
 
-    The module owner now represents the algebraic tensor product for arbitrary
-    represented modules, including the unframed quotient route.  Thus a
-    module-valued bilinear map always has the tensor-Mor classifier; scalar or
-    otherwise non-module-valued forms retain the callable-value owner.
+    The module owner represents the algebraic tensor product for arbitrary
+    represented modules, including the unframed quotient route. A bilinear
+    form is always a module-Mor, never a separate extensional form object.
     """
     ring = left_module.base_ring()
     match right_module.base_ring() == ring, value_module in Modules(ring):
@@ -938,30 +916,25 @@ def _is_quadratic_form(form) -> bool:
 def _pairings(left_module, right_module, value_module):
     r"""Return the ``R``-bilinear maps ``X x Y -> W``.
 
-    For an R-module ``W`` this is always ``Hom_R(X \otimes_R Y, W)``; the
-    tensor owner chooses a free, presented, or general quotient realization.
-    Non-module-valued pairings retain the callable-value owner.
+    The tensor owner chooses a free, presented, or general quotient
+    realization. The Cat-owned module Mor ingress admits ``W`` only when
+    it is an object of ``Modules(R)``: there is no bypass for callables or
+    a codomain merely admitting a bilinear value interpretation.
     """
     match right_module:
         case _ if right_module is left_module:
             return left_module.bilinear_forms(value_module)
-        case _ if _bilinear_classifier_is_represented(left_module, right_module, value_module):
+        case _:
             tensor_product = left_module.module_category().tensor_product(
                 (left_module, right_module)
             )
-            return tensor_product.module_category().Mor(tensor_product, value_module)
-        case _:
-            return _callable_form_space(left_module, right_module, value_module, "bilinear")
+            return Modules(left_module.base_ring()).Mor(tensor_product, value_module)
 
 
 def _bilinear_forms(module, value_module):
-    r"""Return ``Hom_R(M \otimes_R M, W)`` for module values, else extensional forms."""
-    match module:
-        case _ if _bilinear_classifier_is_represented(module, module, value_module):
-            tensor_product = module.module_category().tensor_product((module, module))
-            return tensor_product.module_category().Mor(tensor_product, value_module)
-        case _:
-            return _callable_form_space(module, module, value_module, "bilinear")
+    r"""Return ``Hom_R(M \otimes_R M, W)`` through Cat's module-Mor ingress."""
+    tensor_product = module.module_category().tensor_product((module, module))
+    return Modules(module.base_ring()).Mor(tensor_product, value_module)
 
 
 def _quadratic_forms(module, value_module):

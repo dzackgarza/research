@@ -120,7 +120,10 @@ class LegendreMonodromyFamily(SageObject):
             generator,
         )
 
-        cohomology = integers.free_module(2).equip_bilinear_form(integers, [[0, 1], [-1, 0]])
+        underlying_cohomology = integers.free_module(2)
+        cohomology = FormModules(integers)(
+            underlying_cohomology.bilinear_hom_space(integers)([[0, 1], [-1, 0]])
+        )
         labels = tuple(cohomology.module_generating_set())
         alpha_dual = cohomology.module_generator(labels[0])
         beta_dual = cohomology.module_generator(labels[1])

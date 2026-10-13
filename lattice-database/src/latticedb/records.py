@@ -13,6 +13,8 @@ from itertools import combinations
 import yaml
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.rings import session_ring_objects
 
@@ -22,6 +24,7 @@ from latticedb.model import GramTensor, Lattice, Yaml
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
 QQ = _SESSION_RINGS["QQ"]
+_QQ_AS_ZZ_MODULE = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
 
 KEYS = (
     "tag",
@@ -390,7 +393,8 @@ def derive(record: dict[str, Yaml]) -> dict[str, Yaml]:
     """
     gram = gram_tensor(record["gram_tensor"])
     rank = len(gram)
-    formed = ZZ.free_module(rank).equip_bilinear_form(QQ, gram)
+    module = ZZ.free_module(rank)
+    formed = FormModules(ZZ)(module.bilinear_hom_space(_QQ_AS_ZZ_MODULE)(gram))
     signature = formed.signature_pair()
     n_plus = int(signature.first())
     n_minus = int(signature.second())
@@ -622,7 +626,9 @@ def local_admission_problems(lattice: Lattice) -> list[str]:
                             f"integral.delta: stated {integral.delta}, computed {int(owned.delta())}"
                         )
     formed = (
-        ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, gram)
+        FormModules(ZZ)(
+            ZZ.free_module(lattice.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(gram)
+        )
         if lattice.definite is not None or lattice.root_span is not None
         else None
     )
@@ -685,7 +691,9 @@ def relational_admission_problems(
             f"root_span.summands: the tag {tag} is not in the corpus" for tag in missing
         )
         if not missing and span.summands:
-            target = ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
+            target = FormModules(ZZ)(
+                ZZ.free_module(lattice.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(lattice.gram_tensor)
+            )
             offset = 0
             blocks = []
             valid = True
@@ -697,8 +705,8 @@ def relational_admission_problems(
                 if offset + source_record.rank > len(span.embedding):
                     valid = False
                     break
-                source = ZZ.free_module(source_record.rank).equip_bilinear_form(
-                    QQ, source_record.gram_tensor
+                source = FormModules(ZZ)(
+                    ZZ.free_module(source_record.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(source_record.gram_tensor)
                 ).twist(summand.scale)
                 rows = span.embedding[offset : offset + source_record.rank]
                 images = tuple(target(row) for row in rows)
@@ -744,7 +752,9 @@ def definite_isometry_problems(lattices: Sequence[Lattice]) -> dict[str, list[st
     )
     models = tuple(
         _integral_twist(
-            ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
+            FormModules(ZZ)(
+                ZZ.free_module(lattice.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(lattice.gram_tensor)
+            )
         )
         for lattice in definite
     )
@@ -778,11 +788,11 @@ def morphism_problems(morphism, source: Lattice, target: Lattice) -> list[str]:
         return [
             f"{morphism.name}: the matrix must have {target.rank} rows and {source.rank} columns"
         ]
-    source_formed = ZZ.free_module(source.rank).equip_bilinear_form(
-        QQ, source.gram_tensor
+    source_formed = FormModules(ZZ)(
+        ZZ.free_module(source.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(source.gram_tensor)
     ).twist(morphism.scale)
-    target_formed = ZZ.free_module(target.rank).equip_bilinear_form(
-        QQ, target.gram_tensor
+    target_formed = FormModules(ZZ)(
+        ZZ.free_module(target.rank).bilinear_hom_space(_QQ_AS_ZZ_MODULE)(target.gram_tensor)
     )
     found: list[str] = []
     if not _preserves_forms(

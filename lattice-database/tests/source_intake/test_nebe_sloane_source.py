@@ -7,6 +7,8 @@ They are provenance/importer checks, not mathematical certification.
 import shutil
 from pathlib import Path
 
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from latticedb import corpus, nebe_sloane, records
 from latticedb.model import Lattice, Yaml
 
@@ -115,9 +117,11 @@ def test_nebe_sloane_reads_the_full_matrix_of_shimada_86() -> None:
         entry.kissing_number,
     ) == (86, 196608, 8, 109421928)
     rings = session_ring_objects()
-    formed = rings["ZZ"].free_module(entry.dimension).equip_bilinear_form(
-        rings["QQ"], entry.gram_tensor
-    )
+    integers = rings["ZZ"]
+    rationals = rings["QQ"]
+    module = integers.free_module(entry.dimension)
+    values = Modules(rationals).restriction_of_scalars(integers.fraction_field_map())(rationals)
+    formed = FormModules(integers)(module.bilinear_hom_space(values)(entry.gram_tensor))
     signature = formed.signature_pair()
     assert (int(signature.first()), int(signature.second()), 0) == (86, 0, 0)
     assert int(formed.determinant()) == entry.determinant

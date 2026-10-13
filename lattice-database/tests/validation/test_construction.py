@@ -10,6 +10,8 @@ from pathlib import Path
 import pytest
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import corpus
@@ -19,6 +21,7 @@ REPOSITORY = Path(__file__).resolve().parent.parent.parent
 _RINGS = session_ring_objects()
 ZZ = _RINGS["ZZ"]
 QQ = _RINGS["QQ"]
+_QQ_AS_ZZ_MODULE = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
 
 
 @pytest.fixture(scope="module")
@@ -31,7 +34,8 @@ def _owned(lattice: Lattice):
     assert lattice.rank is not None and lattice.gram_tensor is not None
     if lattice.integral is not None:
         return Lattices(ZZ)(lattice.gram_tensor)
-    return ZZ.free_module(lattice.rank).equip_bilinear_form(QQ, lattice.gram_tensor)
+    module = ZZ.free_module(lattice.rank)
+    return FormModules(ZZ)(module.bilinear_hom_space(_QQ_AS_ZZ_MODULE)(lattice.gram_tensor))
 
 
 def test_stored_lattice_morphisms_construct_in_the_preamble(loaded: corpus.Corpus) -> None:

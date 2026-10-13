@@ -305,7 +305,10 @@ class VinbergInvariantMatrices(OwnedCategory):
                 return False
             if any(gram[i, j] > 0 for i, j in combinations(positions, 2)):
                 return False
-            normals = ring.free_module(self.index_set()).equip_bilinear_form(ring, gram)
+            module = ring.free_module(self.index_set())
+            normals = module.equip_bilinear_form(
+                module.bilinear_hom_space(ring)(gram)
+            )
             signature = normals.signature_pair()
             return (
                 signature.second() == cardinal(1)

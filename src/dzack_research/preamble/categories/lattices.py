@@ -3789,11 +3789,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                         module_generators=self.module_generating_set(),
                     )
                 case False:
-                    rational = self.dual_module().equip_bilinear_form(
-                        fraction_field, dual_gram
-                    )
+                    # The metric dual is still an R-module.  Its values
+                    # lie in Res_{R -> K}(K), an R-module selected by the
+                    # fraction-field map, not in a second, untyped
+                    # callable-form space over the bare ring K.
+                    value_module = Modules(fraction_field).restriction_of_scalars(
+                        ring.fraction_field_map()
+                    )(fraction_field)
+                    dual_module = self.dual_module()
+                    rational = dual_module.bilinear_hom_space(value_module)(dual_gram)
                     return FormModules(ring)(
-                        rational.form(),
+                        rational,
                         _extra_categories=(FormModules(ring).Nondegenerate(),),
                     )
 

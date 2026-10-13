@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.rings import session_ring_objects
 
 from latticedb import corpus, hashimoto
@@ -33,6 +34,7 @@ from latticedb.model import Lattice, Tag, rational
 _SESSION_RINGS = session_ring_objects()
 ZZ = _SESSION_RINGS["ZZ"]
 QQ = _SESSION_RINGS["QQ"]
+_QQ_AS_ZZ_MODULE = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
 LEECH_RANK = 24
 
 
@@ -75,7 +77,8 @@ def stored(directory: Path) -> tuple[Leech, tuple[Entry, ...]]:
 
 def _formed(gram):
     """The free module ``Z^n`` with the rational bilinear form of Gram tensor ``gram``."""
-    return ZZ.free_module(len(gram)).equip_bilinear_form(QQ, gram)
+    module = ZZ.free_module(len(gram))
+    return FormModules(ZZ)(module.bilinear_hom_space(_QQ_AS_ZZ_MODULE)(gram))
 
 
 def _rows(target, rows: Matrix):

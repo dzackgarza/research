@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -1291,10 +1292,13 @@ def _toric_middle_cohomology_form(scheme):
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
     integers = _own_ring(SageZZ)
-    return cohomology.equip_bilinear_form(integers, lambda left, right: intersection(
+    form = cohomology.bilinear_hom_space(integers)(
+        lambda left, right: intersection(
             cohomology_to_picard(left),
             cohomology_to_picard(right),
-        ))
+        )
+    )
+    return FormModules(integers)(form)
 
 
 def _toric_fundamental_group(scheme, base_point_cone=None):
