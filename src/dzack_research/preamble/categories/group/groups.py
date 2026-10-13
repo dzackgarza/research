@@ -2553,8 +2553,10 @@ class GroupMorphism:
                 )
             case _ if codomain in GroupsWithChosenFinitePresentation():
                 source = self.domain()
-                if source.has_selected_finite_group_generating_set():
+                if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                     generators = source.group_generators()
+                elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                    generators = source.selected_subgroup_generators()
                 elif source in OwnedFiniteGroups():
                     generators = source
                 else:
