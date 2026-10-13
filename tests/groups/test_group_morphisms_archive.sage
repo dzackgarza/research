@@ -108,6 +108,16 @@ def test_infinite_group_cannot_inject_into_finite_group() -> None:
     assert reduction.is_injective() is False
 
 
+def test_finite_group_morphism_cardinality_obstructions() -> None:
+    r"""No homomorphism ``C4 -> C2`` injects, and none ``C2 -> C4`` surjects."""
+    four, two = Groups.C(4), Groups.C(2)
+    to_two = four.Mor(two).elementwise(lambda _element: two.one())
+    to_four = two.Mor(four).elementwise(lambda _element: four.one())
+
+    assert to_two.is_injective() is False
+    assert to_four.is_surjective() is False
+
+
 def test_elementwise_finite_group_isomorphism_reuses_group_preimages() -> None:
     r"""An elementwise automorphism of ``C4`` has a group inverse."""
     cyclic = Groups.C(4)

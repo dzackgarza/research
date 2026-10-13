@@ -2618,6 +2618,9 @@ class GroupMorphism:
     def is_injective(self):
         if self._injectivity_premise is not None:
             return self._injectivity_premise
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            if self.domain().cardinality() > self.codomain().cardinality():
+                return False
         # An infinite group cannot inject into a finite group. This follows
         # from the represented endpoint cardinalities, before selecting any
         # homomorphism algorithm or enumerating the infinite source.
@@ -2637,6 +2640,9 @@ class GroupMorphism:
     def is_surjective(self):
         if self._subgroup_premise and self.domain() is self.codomain():
             return True
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            if self.domain().cardinality() < self.codomain().cardinality():
+                return False
         # A finite group cannot surject onto an infinite group. This is a
         # categorical cardinality obstruction independent of the selected
         # realization or the availability of a GAP homomorphism.
