@@ -1480,6 +1480,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 raise TypeError(
                     f"a coequalizer in the category of sets needs maps between sets, but {source} or {target} is not a set"
                 )
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError(
+                    "a set coequalizer requires both parallel arrows to belong to its selected Mor category"
+                )
             enumerated_finite_relation = (
                 Sets().is_provably_finite(source)
                 and Sets().is_provably_finite(target)

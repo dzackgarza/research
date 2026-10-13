@@ -15,6 +15,21 @@ $\mathbf{Set}$.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_set_coequalizer_uses_selected_parallel_morphisms() -> None:
+    r"""The ordinary set Mor of a finite parallel pair retains its projection."""
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    left = Sets().Mor(source, target)(lambda point: target(point))
+    right = Sets().Mor(source, target)(lambda point: target(point + 1))
+    construction = Sets().coequalizer_construction(left, right)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert construction.object().cardinality() == cardinal(1)
+    assert projection(target(0)) == projection(target(2))
+    assert projection * left == projection * right
+
+
 def _cospan_shape():
     return PosetCategory(Sets()(("a", "b", "c")), le=lambda left, right: left == right or right == "c")
 
