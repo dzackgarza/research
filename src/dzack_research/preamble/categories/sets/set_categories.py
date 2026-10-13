@@ -4392,12 +4392,17 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
             # finite/empty summands are skipped; no index family is materialized.
             index_at = self.index_set().ranking_map().inverse()
             diagonal = 0
+            remaining = self._known_finite_size()
             while True:
                 for index_position in range(diagonal + 1):
                     factor_position = diagonal - index_position
                     factor = self.cofactor(index_at(index_position))
                     if self._factor_has_position(factor, factor_position):
                         yield index_position, factor_position
+                        if remaining is not None:
+                            remaining -= 1
+                            if remaining == 0:
+                                return
                 diagonal += 1
 
         @cached_method
