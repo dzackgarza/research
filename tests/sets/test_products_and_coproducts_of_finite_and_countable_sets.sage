@@ -42,6 +42,14 @@ def test_indexed_family_cache_does_not_decide_undecidable_index_equality() -> No
     assert family._value_at_normalized_index(second) is b
     assert len(values) == 2
 
+    # An undecidable comparison with an earlier presentation must not
+    # prevent reuse of a later, exactly identified cached presentation.
+    third = SymbolicIndex()
+    c = family._value_at_normalized_index(third)
+    assert c is not a and c is not b
+    assert family._value_at_normalized_index(third) is c
+    assert len(values) == 3
+
 
 def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
