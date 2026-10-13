@@ -4309,7 +4309,7 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
         def _finite_index_count(self):
             r"""The number of summands as an ``int`` when the index set is finite, else ``None``."""
             size = cardinal(self.index_set().cardinality())
-            return int(size.finite_value()) if size.is_finite() else None
+            return int(size.finite_value()) if size.is_finite() is True else None
 
         @staticmethod
         def _factor_point_at(factor, position):
