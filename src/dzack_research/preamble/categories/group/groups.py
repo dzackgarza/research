@@ -2620,6 +2620,13 @@ class GroupMorphism:
             return self._injectivity_premise
         if self._gap_homomorphism is not None or self._generator_images is not None:
             return bool(self._gap_morphism_crossing().IsInjective())
+        source = self.domain()
+        if (
+            source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set()
+        ) or (
+            hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup())
+        ) or source in OwnedFiniteGroups():
+            return bool(self._gap_morphism_crossing().IsInjective())
         return Sets().Mor(self.domain(), self.codomain())(self.__call__).is_injective()
 
     def is_surjective(self):

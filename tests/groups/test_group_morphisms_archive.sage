@@ -71,6 +71,19 @@ def test_elementwise_free_group_map_to_finite_group_has_decided_surjectivity() -
     assert elementwise(free.free_generator(label)) == h
 
 
+def test_elementwise_free_group_reduction_has_decided_noninjectivity() -> None:
+    r"""Reduction ``F1 -> C2`` has kernel containing the square of its generator."""
+    free = Groups.Free(1)
+    cyclic = Groups.C(2)
+    label = next(iter(free.free_basis()))
+    h = next(iter(cyclic.group_generators()))
+    reduction = free.Mor(cyclic)({label: h})
+    elementwise = free.Mor(cyclic).elementwise(lambda word: reduction(word))
+
+    assert elementwise.is_injective() is False
+    assert elementwise(free.free_generator(label)**2) == cyclic.one()
+
+
 def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
 
