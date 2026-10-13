@@ -817,6 +817,28 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         def stabilizer_action(self):
             return self._stabilizer_action
 
+        def restricted_stabilizer_action(self):
+            r"""The action of this stabilizer, restricted along its inclusion.
+
+            For ``i: H -> G`` and the retained action ``rho: BG -> C``,
+            this is the actual composite ``B(i) ; rho: BH -> C``.
+            It retains the original stabilized object and does not replace
+            the action by the predicate defining membership in ``H``.
+
+            Unexecuted distinguishing specimen: take ``G = S3`` acting on
+            itself by conjugation, and ``H = Stab_G((1,2))``. The restricted
+            action has domain ``BH``, not ``BG``; on the unique object it
+            agrees with the original action, while the morphism associated
+            to ``h in H`` acts as conjugation by its image under ``i``.
+            In particular, merely returning ``rho`` would have the wrong
+            domain, even though every ``h`` fixes the selected point.
+            """
+            from dzack_research.preamble.categories.group.classifying_categories import (
+                ClassifyingFunctor,
+            )
+
+            return ClassifyingFunctor(self.inclusion()).then(self.stabilizer_action())
+
 
 class CentralizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
