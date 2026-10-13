@@ -345,6 +345,11 @@ class _DiscreteFunctor(Functor):
         codomain: DiscreteCategory,
         object_map: Morphism | Callable[[SourcePointT], TargetPointT],
     ) -> None:
+        if domain not in DiscreteCategories() or codomain not in DiscreteCategories():
+            raise TypeError(
+                f"an object-set map determines a functor between discrete categories, "
+                f"not an arbitrary functor {domain} -> {codomain}"
+            )
         match object_map:
             case Morphism() if (
                 object_map.domain() is not domain.object_set()

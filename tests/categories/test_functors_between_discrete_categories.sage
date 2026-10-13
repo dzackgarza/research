@@ -63,6 +63,18 @@ def test_a_function_of_object_sets_is_a_functor_of_discrete_categories() -> None
     assert on_objects(source.object_set()("p")) == target.object_set()("b")
 
 
+def test_object_map_does_not_define_a_functor_on_nondiscrete_categories() -> None:
+    # In Sets, a functor must additionally act on all set morphisms;
+    # an object assignment alone does not define that arrow action.
+    for domain, codomain in ((Sets(), Sets()), (_two_letters(), Sets())):
+        try:
+            Cat().Mor(domain, codomain).from_object_map(lambda value: value)
+        except TypeError:
+            pass
+        else:
+            raise AssertionError("a nondiscrete functor was admitted from object-map data alone")
+
+
 def test_taking_object_sets_preserves_composition() -> None:
     source = _two_letters()
     middle = _three_letters()
