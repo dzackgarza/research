@@ -554,6 +554,7 @@ def test_mixed_finite_infinite_coproduct_rank_uses_summand_layers() -> None:
     assert ranking(coproduct.injection(1)(NN(0))) == 1
     assert ranking(coproduct.injection(2)(Sets.Δ[0](0))) == 2
     assert ranking(coproduct.injection(1)(NN(1000))) == 1003
+    assert ranking.inverse()(1003) == coproduct.injection(1)(NN(1000))
 
 
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:

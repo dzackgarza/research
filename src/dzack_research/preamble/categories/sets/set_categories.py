@@ -4411,6 +4411,35 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                                 return self(index, self._factor_point_at(self.cofactor(index), layer))
                             previous += 1
                     raise IndexError(f"position {position} is out of range for {self}")
+                finite_indices = self._finite_index_count()
+                if finite_indices is not None:
+                    from bisect import bisect_right
+
+                    lengths = tuple(
+                        cardinal(self.cofactor(index_at(j)).cardinality())
+                        for j in range(finite_indices)
+                    )
+                    def preceding(layer):
+                        return sum(
+                            min(layer, int(length.finite_value())) if length.is_finite() else layer
+                            for length in lengths
+                        )
+
+                    # With an infinite summand these cumulative layer counts
+                    # are unbounded. Bound the desired layer by doubling,
+                    # rather than enumerating every earlier point.
+                    upper = 1
+                    while preceding(upper) <= position:
+                        upper *= 2
+                    layer = bisect_right(range(upper), position, key=preceding) - 1
+                    remaining = position - preceding(layer)
+                    for j, length in enumerate(lengths):
+                        if not length.is_finite() or int(length.finite_value()) > layer:
+                            if remaining == 0:
+                                index = index_at(j)
+                                return self(index, self._factor_point_at(self.cofactor(index), layer))
+                            remaining -= 1
+                    raise IndexError(f"position {position} is out of range for {self}")
                 for reached, (index_position, factor_position) in enumerate(self._enumeration_pairs()):
                     if reached != position:
                         continue
