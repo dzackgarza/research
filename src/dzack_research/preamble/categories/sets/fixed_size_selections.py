@@ -93,17 +93,15 @@ class FixedSizeSelectionElement(Element):
     def allows_repetition(self) -> bool:
         return self.parent().allows_repetition()
 
+    @cached_method
     def _source_positions(self):
-        strict = _strict_positions_from_combinadic(
-            self.combinatorial_rank(),
-            self.degree(),
-        )
+        r"""Selected source ranks, decoded once from the combinadic datum."""
+        strict = tuple(_strict_positions_from_combinadic(
+            self.combinatorial_rank(), self.degree()
+        ))
         if not self.allows_repetition():
             return strict
-        return (
-            strict_position - offset
-            for offset, strict_position in enumerate(strict)
-        )
+        return tuple(position - offset for offset, position in enumerate(strict))
 
     def word(self) -> IndexedFamily:
         r"""The selection as the family of its points in increasing order."""
