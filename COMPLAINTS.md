@@ -135,6 +135,18 @@ The general, kernel and inverse-image Schreier methods return tuples
 subgroup, but the output supplies neither a represented generating family
 nor its free-group augmentation for that subgroup.
 
+**Source repair, 2026-10-14:** all three Schreier generator paths now
+return indexed mathematical families. The general finite-index predicate
+route has a selected `finite_index_schreier_generating_morphism`, kernel
+subgroups have `schreier_generating_morphism`, and preimage subgroups
+retain their already selected word-map epimorphism. The general and
+kernel covers share the same predicate-subgroup free-group
+augmentation owner, preserving the computed family as the basis of the
+source free group and the literal predicate subgroup as codomain.
+No runtime acceptance claim is made; an arbitrary supplied
+`generators` tuple is not itself evidence that it generates the ambient
+group, and the contract of that optional input still needs verification.
+
 **Dependency path:** selected generating data and evaluable morphism ->
 image subgroup with inclusion and factorization -> chosen preimages ->
 subgroup images and inverse images; represented action -> stabilizer
