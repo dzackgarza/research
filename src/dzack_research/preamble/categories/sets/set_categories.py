@@ -4526,9 +4526,11 @@ def _cartesian_product_morphism[IndexT](
             lambda section: target(lambda index: component(index)(section.component(index)))
         )
     components = tuple((index, component_morphisms(index)) for index in index_set)
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
     for index, arrow in components:
-        if arrow.parent() is not Sets().Mor(source.factor(index), target.factor(index)):
-            raise TypeError(f"component at {index} is not in its exact set Mor category")
+        if not _category_accepts_morphism(Sets(), source.factor(index), target.factor(index), arrow):
+            raise TypeError(f"component at {index} is not a set morphism between its selected factors")
     # The finite enumeration gives the unique coordinate of each label.
     # Do not search component labels with potentially symbolic equality.
     ranking = index_set.ranking_map()
@@ -4612,9 +4614,11 @@ def _coproduct_morphism[IndexT](
 
         return Sets().Mor(source, target)(induced)
     components = tuple((index, component_morphisms(index)) for index in index_set)
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
     for index, arrow in components:
-        if arrow.parent() is not Sets().Mor(source.cofactor(index), target.cofactor(index)):
-            raise TypeError(f"component at {index} is not in its exact set Mor category")
+        if not _category_accepts_morphism(Sets(), source.cofactor(index), target.cofactor(index), arrow):
+            raise TypeError(f"component at {index} is not a set morphism between its selected summands")
     ranking = index_set.ranking_map()
     arrows = tuple(arrow for _, arrow in components)
     return Sets().Mor(source, target)(
