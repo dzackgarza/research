@@ -2863,11 +2863,18 @@ class FixedCardinalitySubsetSets(OwnedCategory):
                 )
             return subset
 
-        def __contains__(self, candidate) -> bool:
+        def __contains__(self, candidate) -> bool | Predicate:
             ambient_power_set = self.source().power_set()
-            if candidate not in ambient_power_set:
+            membership = ambient_power_set.is_parent_of(candidate)
+            if membership is False:
                 return False
+            if membership is not True:
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("is_member", candidate, self)
             return ambient_power_set(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
+
+        is_parent_of = __contains__
 
         def _repr_(self) -> str:
             return f"Subsets of {self.source()} of cardinality {self.subset_cardinality()}"
