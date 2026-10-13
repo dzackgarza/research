@@ -23,3 +23,21 @@ def test_infinite_constant_additive_monoid_does_not_gain_inverses() -> None:
     product = Sets().product(indexed_family(NN, NN))
     assert product in AdditiveMonoids()
     assert product not in AdditiveGroups()
+
+
+def test_infinite_group_cone_factors_as_an_additive_group_morphism() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+    groups = AdditiveGroups()
+    index = DiscreteCategory(NN)
+    constant = Cat().Mor(index, groups).constant_functor(ZZ)
+    identity = groups.Mor(ZZ, ZZ).identity()
+    legs = NaturalTransformation(constant, constant, lambda _index: identity)
+    product = Sets().product(indexed_family(NN, ZZ))
+    diagonal = product.from_maps(ZZ, legs)
+    assert diagonal.parent() is groups.Mor(ZZ, product)
+    for position in (0, 3, 9):
+        projection = product.projection(NN(position))
+        assert projection(diagonal(ZZ(-5))) == ZZ(-5)
+        assert projection(diagonal(-ZZ(5))) == -projection(diagonal(ZZ(5)))

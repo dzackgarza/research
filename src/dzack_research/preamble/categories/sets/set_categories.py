@@ -4039,6 +4039,23 @@ class CartesianProductsOfAdditiveGroups(OwnedCategory):
                 lambda section: section.component(normalized)
             )
 
+        def from_maps(self, source, maps):
+            r"""The group map induced by an admitted additive-monoid cone.
+
+            A monoid homomorphism between additive groups automatically
+            preserves inverses: f(x)+f(-x)=f(0)=0, and similarly on the
+            other side. Retain the existing cone admission and universal
+            construction rather than reimplementing its index handling.
+            """
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            if source not in AdditiveGroups():
+                raise TypeError(f"an additive-group product map requires a group source, not {source}")
+            underlying = CartesianProductsOfAdditiveMonoids.ParentMethods.from_maps(
+                self, source, maps
+            )
+            return AdditiveGroups().Mor(source, self)(lambda point: underlying(point))
+
 
 class CartesianProductsOfAdditiveMonoids(OwnedCategory):
     r"""Cartesian products with the componentwise additive-monoid structure."""
