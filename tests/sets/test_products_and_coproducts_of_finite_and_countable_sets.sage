@@ -81,6 +81,13 @@ def test_finite_family_hash_does_not_require_hashable_index_labels() -> None:
     assert first == second
     assert hash(first) == hash(second)
 
+    # The values need not support hashing either: equality is their own
+    # extensional relation, not the hashability of their representatives.
+    unhashable_first = indexed_family(labels, lambda label: [label[0]])
+    unhashable_second = indexed_family(labels, lambda label: [label[0]])
+    assert unhashable_first == unhashable_second
+    assert hash(unhashable_first) == hash(unhashable_second)
+
 
 def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
