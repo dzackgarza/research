@@ -14,6 +14,37 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Implementation code retains mathematical construction authority
+
+**Because the intended route is enforced inside a callable constructor, but use of that constructor is optional.** The preamble still gives ordinary implementation code the power to define and construct mathematical objects. The rules prohibit this; the runtime permits it.
+
+`Mor` checks the endpoints of requests that reach it. It cannot reject a form created elsewhere as an element of a different parent. Checking a gate does not help when construction can avoid the gate.
+
+| Inspected surface | Current evidence |
+|---|---|
+| Quadratic forms | [`_quadratic_forms`](/home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py:961) selects a callable-form space when its classifier predicate fails. That predicate includes both codomain membership and available module presentations. |
+| Object construction | [`_object_of`](/home/dzack/research/src/dzack_research/preamble/owned_category.py:1447) accepts caller-supplied implementation classes. It validates a construction contract, but implementation code participates in defining that contract and its realization. |
+
+These are different failures: endpoint admission, representation-dependent semantics, and alternate allocation. **The evidence establishes a structural problem across forms, modules, schemes, and shared construction machinery. It does not establish a repository-wide defect total.** These findings come from source inspection, not runtime reproduction.
+
+**Making this impossible requires removing construction authority from implementation code.** This is already the separation required by [INTENT.md](/home/dzack/research/INTENT.md:1692):
+
+- **`lean-categories` defines the mathematics.** Categories, constructors, operations, and their types enter through its formal declarations.
+- **The kernel alone constructs semantic values.** It derives the result type from the declared operation and its arguments before invoking an implementation.
+- **Implementations receive computational inputs and return computational answers.** Their interface cannot declare categories, change endpoints, install methods, supply semantic classes, or choose the result’s mathematical type.
+- **Every public construction uses this boundary.** Notation, convenience methods, deserialization, and returned constituents must all enter through it.
+- **Missing computation remains an explicit failure.** It cannot select a different mathematical object model. Computational correctness remains the independent acceptance suite’s judgment.
+
+For the form example, a callable may implement evaluation **behind the already established form object**. It must not create another definition of what a form is.
+
+There is also a hard limit: **arbitrary Python running in the kernel’s process cannot be securely constrained by underscore names, constructor tokens, or class conventions.** Python permits access to internals and modification of classes. Its [documentation explicitly describes these limits](https://docs.python.org/3/tutorial/classes.html#private-variables).
+
+For an enforceable boundary against arbitrary implementation code, use isolated workers with a data-only interface and no access to kernel memory or writable semantic artifacts. Likewise, an agent allowed to edit both an implementation and its enforcing kernel can remove the restriction; its write permissions must respect that boundary.
+
+The enforceable promise is precise: **an implementation can return a wrong answer, but it cannot create an alternate mathematical construction that the language accepts.**
+
+Related existing finding: [Arrows of one Mor are built on handwritten hosts beside its element class](#arrows-of-one-mor-are-built-on-handwritten-hosts-beside-its-element-class), with remediation tracked by `every-arrow-is-an-element-of-its-mor` in [TODO.md](TODO.md). Source observations above were made on 2026-10-13.
+
 ### String labels replace mathematical defining data
 
 This is a foundational semantic defect. An action, morphism, functor or
