@@ -72,6 +72,7 @@ def test_opaque_infinite_callback_does_not_claim_additive_group_structure() -> N
 
 def test_nonconstant_infinite_group_diagram_retains_group_structure() -> None:
     from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
     labels = Sets.Δ[1]
     finite_index = DiscreteCategory(labels)
@@ -92,3 +93,18 @@ def test_nonconstant_infinite_group_diagram_retains_group_structure() -> None:
         assert projection.parent() is groups.Mor(product, family(NN(position)))
         assert projection(-section) == -projection(section)
         assert projection(section + (-section)) == family(NN(position)).zero()
+
+    constant_source = Cat().Mor(infinite_index, groups).constant_functor(ZZ)
+    legs = NaturalTransformation(
+        constant_source, family.selected_diagram(),
+        lambda obj: groups.Mor(ZZ, family(obj.value()))(
+            lambda integer: family(obj.value())(int(integer))
+        ),
+    )
+    diagonal = product.from_maps(ZZ, legs)
+    assert diagonal.parent() is groups.Mor(ZZ, product)
+    for position in (0, 1, 4, 5):
+        label = NN(position)
+        projection = product.projection(label)
+        assert projection(diagonal(ZZ(-3))) == family(label)(-3)
+        assert projection(diagonal(ZZ(3) + ZZ(-3))) == family(label).zero()
