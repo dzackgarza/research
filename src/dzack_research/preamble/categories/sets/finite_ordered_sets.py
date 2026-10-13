@@ -619,14 +619,20 @@ def _filtered_ordered_set(
     def contains(element):
         # The selected tuple supplies an enumeration, not the definition of
         # the subset. Membership remains P(x) for x in the given universe.
-        from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.logic import AtomicProposition, Predicate
 
         admission = universe.is_parent_of(element)
         if admission is False:
             return False
         if admission is not True:
             return AtomicProposition("is_member", element, universe)
-        return predicate(universe(element))
+        decision = predicate(universe(element))
+        if decision is True or decision is False or isinstance(decision, Predicate):
+            return decision
+        raise TypeError(
+            f"a subset predicate on {universe} must return True, False or a proposition, "
+            f"but returned {decision!r} at {element!r}"
+        )
 
     return _object_of(
         FiniteOrderedSets(),
