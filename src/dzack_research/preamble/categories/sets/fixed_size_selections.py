@@ -184,7 +184,11 @@ class FixedSizeSelectionElement(Element):
             for left_position in left_positions
             for right_position in right_positions
         )
-        merged = self.merged_with(other)
+        # Disjointness is established above. Reuse the selected positions
+        # instead of unranking both selections again in merged_with.
+        merged = self.parent().with_size(self.degree() + other.degree()).from_source_rank_positions(
+            merge(left_positions, right_positions)
+        )
         return merged, (-1 if inversions % 2 else 1)
 
     def __eq__(self, other) -> bool:
