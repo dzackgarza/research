@@ -479,6 +479,30 @@ def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
         raise AssertionError("product admitted a component with incorrect target factor")
 
 
+def test_componentwise_set_maps_accept_additive_diagrams() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import (
+        _cartesian_product_morphism, _coproduct_morphism,
+    )
+
+    additive = AdditiveMonoids()
+    factor = additive.an_object()
+    diagram = Cat().Mor(DiscreteCategory(NN), additive).constant_functor(factor)
+    legs = NaturalTransformation(diagram, diagram, lambda _obj: additive.Mor(factor, factor).identity())
+    family = indexed_family(NN, diagram)
+    product = Sets().product(family)
+    coproduct = Sets().coproduct(family)
+    product_map = _cartesian_product_morphism(product, product, legs)
+    coproduct_map = _coproduct_morphism(coproduct, coproduct, legs)
+    for index in (NN(0), NN(3)):
+        assert product_map(product.zero()).component(index) == factor.zero()
+        point = coproduct.injection(index)(factor.zero())
+        assert coproduct_map(point) == point
+
+
 def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation() -> None:
     from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
     from dzack_research.preamble.categories.functors.core import NaturalTransformation

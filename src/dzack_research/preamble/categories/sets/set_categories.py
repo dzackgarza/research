@@ -4438,7 +4438,7 @@ def _cartesian_product_morphism[IndexT](
         shape = DiscreteCategory(index_set)
         if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
             raise ValueError("the product component transformation must have the exact discrete index category")
-        if transformation.source().codomain() is not Sets() or transformation.target().codomain() is not Sets():
+        if not transformation.source().codomain().is_subcategory(Sets()) or not transformation.target().codomain().is_subcategory(Sets()):
             raise TypeError("componentwise product transformations must be set-valued")
 
         def component(index):
@@ -4515,7 +4515,7 @@ def _coproduct_morphism[IndexT](
         shape = DiscreteCategory(index_set)
         if transformation.source().domain() is not shape or transformation.target().domain() is not shape:
             raise ValueError("the coproduct component transformation must have the exact discrete index category")
-        if transformation.source().codomain() is not Sets() or transformation.target().codomain() is not Sets():
+        if not transformation.source().codomain().is_subcategory(Sets()) or not transformation.target().codomain().is_subcategory(Sets()):
             raise TypeError("componentwise coproduct transformations must be set-valued")
 
         def induced(element):
