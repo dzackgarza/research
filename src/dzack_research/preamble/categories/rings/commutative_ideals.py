@@ -694,14 +694,29 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return False
             return self.contains_ambient_element(candidate)
 
-        def sum(self, other):
-            return self._binary_engine_ideal_result(other, "sum")
+        def _subobject_binary_realization(self, other, operation):
+            r"""Supply the ideal-preserving module-subobject join or meet.
+
+            Both operands are ideals of the same commutative ring and hence
+            submodules of its regular module. Their sum and intersection are
+            ideals with the same ambient inclusion. The previously selected
+            localization, quotient-source and maintained ideal algorithms
+            remain private here; the public operation belongs exclusively to
+            ModuleSubobjects.
+            """
+            if other not in CommutativeIdeals(self.ring()):
+                return None
+            if operation not in ("sum", "intersection"):
+                raise ValueError(f"{operation!r} is not a module-subobject join or meet")
+            result = self._binary_engine_ideal_result(other, operation)
+            assert result is not None and result in CommutativeIdeals(self.ring()), (
+                f"the {operation} of the ideals {self} and {other} has no "
+                "structure-preserving ideal computation"
+            )
+            return result
 
         def product(self, other):
             return self._binary_engine_ideal_result(other, "product")
-
-        def intersection(self, other):
-            return self._binary_engine_ideal_result(other, "intersection")
 
         def _binary_engine_ideal_result(self, other, operation):
             r"""Lower a binary ideal operation and return its owned ideal."""

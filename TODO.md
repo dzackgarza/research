@@ -338,8 +338,11 @@ Repair the existing public construction routes and inherited methods before prov
     and its restriction along subgroup inclusions remain acceptance
     obligations even after the source-level replacement of descriptive
     labels by actual action functors. The
-    [lost ideal structure](COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
-    is another required repair of this family.
+    ideal-subobject join/meet structure is now source-implemented through
+    the common module-subobject owner: the commutative-ideal computation
+    specialization retains its inclusion and ideal data without overriding
+    the public join or meet operations. The associated ring and module
+    source specimens remain subject to terminal-T execution.
   - Computed group generating data as mathematical families and generating
     epimorphisms, and chosen preimages as actual sections in sets. These
     outputs must compose with the existing subgroup inclusions and group

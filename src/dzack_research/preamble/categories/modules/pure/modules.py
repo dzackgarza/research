@@ -3172,6 +3172,20 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             r"""Return the orthogonal complement by deferring to the inclusion."""
             return self.inclusion().orthogonal_complement()
 
+        @RealizationHook
+        def _subobject_binary_realization(self, other, operation):
+            r"""Return a structure-preserving realization of a subobject join or meet.
+
+            Protected construction contract (OWN-05): only `sum` and
+            `intersection` call this hook, after confirming the same ambient
+            module. An already represented structural subcategory may supply
+            the join/meet at its own computation owner with the correct
+            inclusion, generators and preserved structure. Inputs and output
+            are owned module subobjects; `None` means no such specialization
+            was selected and the ordinary module construction is used.
+            """
+            return None
+
         def sum(self, other):
             r"""Return the join of two subobjects of the same codomain."""
             if self.inclusion().codomain() is not other.inclusion().codomain():
@@ -3179,6 +3193,14 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
                     f"the sum of {self} and {other} is not defined: they are submodules of "
                     f"{self.inclusion().codomain()} and {other.inclusion().codomain()}, not of one module"
                 )
+            specialized = self._subobject_binary_realization(other, "sum")
+            if specialized is not None:
+                if specialized not in ModuleSubobjects(self.base_ring()) or specialized.inclusion().codomain() is not self.inclusion().codomain():
+                    raise TypeError(
+                        f"the selected sum of {self} and {other} must remain a module "
+                        f"subobject of {self.inclusion().codomain()}, but returned {specialized}"
+                    )
+                return specialized
             codomain = self.inclusion().codomain()
             summands = Sets().coproduct(
                 indexed_family(
@@ -3208,6 +3230,14 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
                     f"the intersection of {self} and {other} is not defined: they are submodules of "
                     f"{self.inclusion().codomain()} and {other.inclusion().codomain()}, not of one module"
                 )
+            specialized = self._subobject_binary_realization(other, "intersection")
+            if specialized is not None:
+                if specialized not in ModuleSubobjects(self.base_ring()) or specialized.inclusion().codomain() is not self.inclusion().codomain():
+                    raise TypeError(
+                        f"the selected intersection of {self} and {other} must remain a module "
+                        f"subobject of {self.inclusion().codomain()}, but returned {specialized}"
+                    )
+                return specialized
 
             direct_sum = Modules(self.base_ring()).biproduct((self, other))
             difference = direct_sum.from_summands(self.inclusion(), -other.inclusion())

@@ -113,3 +113,57 @@ def test_the_residue_ring_of_twelve_has_twelve_elements() -> None:
 
 def test_four_and_six_intersect_in_twelve() -> None:
     assert ZZ.ideal(ZZ(4)).intersection(ZZ.ideal(ZZ(6))) == ZZ.ideal(ZZ(12))
+
+
+def test_subobject_join_and_meet_retain_the_commutative_ideal_structure() -> None:
+    r"""For (4),(6) in Z, their join is (2) and meet is (12).
+
+    Their defining module-subobject inclusions retain the actual regular
+    module Z as codomain; both computed results remain ideals and hence
+    support subsequent ideal multiplication and containment.
+    """
+    four, six = ZZ.ideal(ZZ(4)), ZZ.ideal(ZZ(6))
+    join, meet = four.sum(six), four.intersection(six)
+
+    for result in (join, meet):
+        assert result in CommutativeIdeals(ZZ)
+        assert result in ModuleSubobjects(ZZ)
+        assert result.inclusion().codomain() is ZZ.regular_module()
+        assert result.inclusion().is_injective()
+        assert all(result.contains_ambient_element(generator) for generator in result.ideal_generators())
+    assert join == ZZ.ideal(ZZ(2))
+    assert meet == ZZ.ideal(ZZ(12))
+    assert join.product(ZZ.ideal(ZZ(3))) == ZZ.ideal(ZZ(6))
+    assert meet.sum(join) == join
+
+
+def test_polynomial_ideal_subobject_operations_preserve_maps_and_ideal_arithmetic() -> None:
+    r"""The join of (x),(y) in Q[x,y] is (x,y); their intersection is (xy)."""
+    ring = QQ["x,y"]
+    x, y = ring.algebra_generators()
+    left, right = ring.ideal(x), ring.ideal(y)
+    join = left.sum(right)
+    meet = left.intersection(right)
+
+    assert join == ring.ideal(x, y)
+    assert meet == ring.ideal(x * y)
+    for ideal in (join, meet):
+        assert ideal in CommutativeIdeals(ring)
+        assert ideal.inclusion().codomain() is ring.regular_module()
+        assert all(ideal.contains_ambient_element(generator) for generator in ideal.ideal_generators())
+    assert meet.product(join) == ring.ideal(x * x * y, x * y * y)
+
+
+def test_localized_ideal_subobject_join_and_meet_retain_local_source_data() -> None:
+    r"""The ideals (9), (6) of Z_(3) have sum (3) and intersection (9)."""
+    ring = ZZ.localize_at_prime(3)
+    left, right = ring.ideal(ring(9)), ring.ideal(ring(6))
+    join, meet = left.sum(right), left.intersection(right)
+
+    assert join == ring.ideal(ring(3))
+    assert meet == ring.ideal(ring(9))
+    assert join in CommutativeIdeals(ring) and meet in CommutativeIdeals(ring)
+    assert join.inclusion().codomain() is ring.regular_module()
+    assert meet.inclusion().codomain() is ring.regular_module()
+    assert meet.contains_ambient_element(ring(18))
+    assert not meet.contains_ambient_element(ring(3))

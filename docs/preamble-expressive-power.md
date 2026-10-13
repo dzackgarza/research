@@ -378,9 +378,14 @@ These are the general sum and intersection of submodules of the regular
 module, and their results are again ideals. The general module-subobject
 constructions return only module subobjects; the ideal owners preserve ideal
 structure by maintaining separate computations. The existing
-[complaint](../COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
-records this failure to transport the preserved category structure. This is
-an established example, not a count of all misplaced constructions.
+[source-audit finding](#preservation-of-mathematical-categories)
+records this failure to transport the preserved category structure. A later
+source repair (2026-10-14) installs the structure-preserving realization at
+`ModuleSubobjects` and routes the ideal specialization through its protected
+construction contract, preserving the selected localization, quotient-source
+and exact engine ideal computations. The source specimens are banked; no
+execution claim is made before terminal T. This does not establish closure
+of other arbitrary structural subobject categories.
 
 ### Arithmetic maps
 
