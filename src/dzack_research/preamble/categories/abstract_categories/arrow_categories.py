@@ -1782,6 +1782,19 @@ class SetSubobjectCategory(SliceCategory):
 
         def __le__(self, other):
             r"""\(A\subseteq B\): the inclusion of \(A\) factors through the inclusion of \(B\)."""
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
+            from dzack_research.preamble.logic import conjunction, negation
+
+            if other.codomain() is not self.codomain():
+                return False
+            base = self.codomain()
+            if base in FiniteSets() and base in EnumeratedSets():
+                return conjunction(
+                    negation(conjunction((
+                        self.is_parent_of(member), negation(other.is_parent_of(member)),
+                    )))
+                    for member in base
+                )
             return self.factor_through_or_none(other) is not None
 
         def union(self, other):
@@ -1853,7 +1866,7 @@ class SetSubobjectCategory(SliceCategory):
                 )
             left, right = self.domain(), other.domain()
             if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
-                return left.cardinality() == right.cardinality() and self <= other
+                return conjunction((left.cardinality() == right.cardinality(), self <= other))
             return AtomicProposition("equal", self, other)
 
         def __ne__(self, other):
