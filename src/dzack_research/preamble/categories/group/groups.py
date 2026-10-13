@@ -4351,11 +4351,18 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             bound would silently change the contract of the finite search.
             """
             if generators is None:
-                assert self.has_selected_group_resolution() and self.has_selected_finite_group_generating_set(), (
-                    f"the image of {self} under {image} cannot be enumerated: {self} has no selected finite "
-                    "generating set; pass a finite generating family explicitly"
-                )
-                generators = tuple(self.group_generators())
+                if self.has_selected_group_resolution() and self.has_selected_finite_group_generating_set():
+                    generators = tuple(self.group_generators())
+                elif self in OwnedFiniteGroups():
+                    # The complete finite source is itself a generating
+                    # family. No chosen presentation or GAP map is needed
+                    # to produce exact image witnesses from its action.
+                    generators = tuple(self)
+                else:
+                    assert False, (
+                        f"the image of {self} under {image} cannot be enumerated: {self} has no selected finite "
+                        "generating set and is not a represented finite group; pass a finite generating family"
+                    )
             else:
                 generators = tuple(generators)
                 assert all(generator in self for generator in generators), (
