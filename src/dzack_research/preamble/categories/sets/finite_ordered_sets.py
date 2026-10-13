@@ -484,9 +484,6 @@ class FiniteOrderedSets(OwnedCategory):
 
             if other not in Sets():
                 raise TypeError(f"intersection requires a set, not {other!r}")
-            selected = _filtered_ordered_set(self, lambda point: other.is_parent_of(point))
-            if selected is not None:
-                return selected
             return Sets().condition_set(self, lambda point: other.is_parent_of(point))
 
         def difference(self, other):
@@ -497,9 +494,6 @@ class FiniteOrderedSets(OwnedCategory):
             if other not in Sets():
                 raise TypeError(f"difference requires a set, not {other!r}")
             predicate = lambda point: negation(other.is_parent_of(point))
-            selected = _filtered_ordered_set(self, predicate)
-            if selected is not None:
-                return selected
             return Sets().condition_set(self, predicate)
 
         def __or__(self, other):
