@@ -404,27 +404,13 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
                 f"an element of {self} is a subset, so its multiplicities are 0 or 1, but they are "
                 f"{dict(multiplicities)}"
             )
-        rank = 0
-        for label, raw_multiplicity in multiplicities.items():
-            multiplicity = _selection_integer(raw_multiplicity)
-            if multiplicity == 0:
-                continue
-            source_position = int(self.source().ranking_map()(label))
-            preceding = sum(
-                _selection_integer(other_multiplicity)
-                for other_label, other_multiplicity in multiplicities.items()
-                if _selection_integer(other_multiplicity) > 0
-                and int(self.source().ranking_map()(other_label)) < source_position
-            )
-            for occurrence in range(multiplicity):
-                offset = preceding + occurrence
-                strict_position = (
-                    source_position + offset
-                    if self.allows_repetition()
-                    else source_position
-                )
-                rank += int(binomial(strict_position, offset + 1))
-        return self[rank]
+        positions = sorted(
+            position
+            for label, multiplicity in multiplicities.items()
+            for position in [int(self.source().ranking_map()(label))]
+            for _ in range(_selection_integer(multiplicity))
+        )
+        return self.from_source_rank_positions(positions)
 
     def singleton_power(self, label: PointT) -> FixedSizeSelectionElement:
         if self.selection_size() == 0:
