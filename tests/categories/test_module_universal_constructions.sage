@@ -137,6 +137,26 @@ def test_module_equalizer_cone_factors_a_nonzero_torsion_map() -> None:
     assert inclusion(factor(a)) == 2 * a
 
 
+def test_wide_module_constructions_use_the_selected_nonordinal_family_labels() -> None:
+    r"""The three maps ``0,2,4`` on ``Z`` have equalizer zero and coequalizer ``Z/2``."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    labels = finite_ordered_set(("zero", "twice", "fourfold"))
+    arrows = {
+        "zero": line.Mor(line)({e: line.zero()}),
+        "twice": line.Mor(line)({e: 2 * e}),
+        "fourfold": line.Mor(line)({e: 4 * e}),
+    }
+    family = indexed_family(labels, lambda label: arrows[label])
+
+    equalizer = modules.equalizer_of_family(family)
+    coequalizer = modules.coequalizer_of_family(family)
+    assert equalizer in modules and coequalizer in modules
+    assert equalizer.cardinality() == 1
+    assert coequalizer.cardinality() == 2
+
+
 def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:
     r"""The terminal set is the empty product; the initial set is the empty coproduct."""
     product = Sets().product(())
