@@ -2281,6 +2281,14 @@ class GroupMorphism:
                     self(generator) == other(generator)
                     for generator in source.group_generators()
                 )
+            case _ if hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                # The source is defined by this generating family; equality
+                # of homomorphisms on the generators determines equality on
+                # every group word, without a second free resolution.
+                equal = conjunction(
+                    self(generator) == other(generator)
+                    for generator in source.selected_subgroup_generators()
+                )
             case _:
                 return super()._richcmp_(other, op)
         return equal if op == op_EQ else negation(equal)

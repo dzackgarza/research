@@ -129,6 +129,19 @@ def test_generated_subgroup_map_image_uses_its_retained_generator_family() -> No
     assert inclusion * epic == square
 
 
+def test_generated_subgroup_homomorphisms_are_determined_by_generators() -> None:
+    r"""Maps from ``<g²> <= C4`` agree precisely on their selected generator."""
+    cyclic = Groups.C(4)
+    g = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((g**2,))
+    inclusion = subgroup.inclusion()
+    same = subgroup.Mor(cyclic).elementwise(lambda element: cyclic(element))
+    trivial = subgroup.Mor(cyclic).elementwise(lambda _element: cyclic.one())
+
+    assert inclusion == same
+    assert inclusion != trivial
+
+
 def test_generated_subgroup_inclusion_has_presented_group_cokernel() -> None:
     r"""The cokernel of ``<a²> -> F(a)`` is the presented cyclic group C2."""
     free = Groups.Free(1)
