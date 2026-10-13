@@ -1892,6 +1892,10 @@ class SetSubobjectCategory(SliceCategory):
             left, right = self.domain(), other.domain()
             if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
                 return conjunction((left.cardinality() == right.cardinality(), self <= other, other <= self))
+            if left in FiniteSets() and left in EnumeratedSets():
+                return conjunction((self <= other, other <= self))
+            if right in FiniteSets() and right in EnumeratedSets():
+                return conjunction((self <= other, other <= self))
             return AtomicProposition("equal", self, other)
 
         def __ne__(self, other):
