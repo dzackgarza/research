@@ -154,14 +154,14 @@ class FixedSizeSelectionElement(Element):
             "they must come from one source set with one repetition rule"
         )
         target = self.parent().with_size(self.degree() + other.degree())
+        left_positions = tuple(self._source_positions())
+        right_positions = tuple(other._source_positions())
         if not self.allows_repetition():
-            for label in self.support():
-                if other.multiplicity(label):
-                    raise ValueError(
-                        f"cannot merge the subsets {self} and {other}: they are not disjoint, both contain {label}"
-                    )
+            common = set(left_positions).intersection(right_positions)
+            if common:
+                raise ValueError(f"cannot merge the subsets {self} and {other}: they share source positions {common}")
         return target.from_source_rank_positions(
-            merge(self._source_positions(), other._source_positions())
+            merge(left_positions, right_positions)
         )
 
     def wedge_with(
@@ -175,13 +175,14 @@ class FixedSizeSelectionElement(Element):
             raise TypeError(
                 f"the wedge of {self} and {other} is defined here for subsets, not multisets"
             )
-        for label in self.support():
-            if other.multiplicity(label):
-                return None
+        left_positions = tuple(self._source_positions())
+        right_positions = tuple(other._source_positions())
+        if set(left_positions).intersection(right_positions):
+            return None
         inversions = sum(
             left_position > right_position
-            for left_position in self._source_positions()
-            for right_position in other._source_positions()
+            for left_position in left_positions
+            for right_position in right_positions
         )
         merged = self.merged_with(other)
         return merged, (-1 if inversions % 2 else 1)
