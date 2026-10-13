@@ -3773,7 +3773,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 if not labels:
                     return coproduct.Mor(apex)(lambda _element: apex.one())
                 generator_models = []
-                image_models = []
+                images = []
                 for position, label in enumerate(labels):
                     factor = family[label]
                     leg = cocone.costructure_morphism(diagram.domain()(label))
@@ -3788,16 +3788,26 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         factor_generator = isomorphism.PreImagesRepresentative(
                             presented_generator
                         )
-                        image_models.append(
-                            _element_to_engine(
-                                apex,
-                                leg(_element_from_engine(factor, factor_generator)),
-                            )
-                        )
-                return coproduct.Mor(apex)._from_engine_generator_images(
-                    generator_models,
-                    image_models,
+                        images.append(leg(_element_from_engine(factor, factor_generator)))
+                augmentation = _engine_generator_epimorphism(
+                    coproduct,
+                    tuple(_element_from_engine(coproduct, generator) for generator in generator_models),
                 )
+
+                def induced(element):
+                    word = augmentation.PreImagesRepresentative(
+                        _element_to_engine(coproduct, element)
+                    )
+                    return reduce(
+                        mul,
+                        (
+                            images[position] if sign > 0 else ~images[position]
+                            for position, sign in _engine_word_letters(coproduct, word)
+                        ),
+                        apex.one(),
+                    )
+
+                return coproduct.Mor(apex).elementwise(induced)
 
             return SelectedColimitConstruction(
                 diagram,
