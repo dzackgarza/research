@@ -1744,7 +1744,7 @@ class SetSubobjectCategory(SliceCategory):
 
         def __contains__(self, member):
             r"""Whether ``member`` names a point of \(X\) in the image of \(A\hookrightarrow X\)."""
-            from dzack_research.preamble.logic import AtomicProposition
+            from dzack_research.preamble.logic import conjunction
 
             base = self.codomain()
             match base.is_parent_of(member):
@@ -1752,8 +1752,11 @@ class SetSubobjectCategory(SliceCategory):
                     return False
                 case True:
                     return self.inclusion().image().is_parent_of(base(member))
-                case _:
-                    return AtomicProposition("is_parent_of", self, member)
+                case membership:
+                    # The inclusion image is a subset of the ambient set.
+                    # Retain both defining membership conditions, and allow
+                    # a proved exclusion from the image to decide the result.
+                    return conjunction((membership, self.inclusion().image().is_parent_of(member)))
 
         is_parent_of = __contains__
 
