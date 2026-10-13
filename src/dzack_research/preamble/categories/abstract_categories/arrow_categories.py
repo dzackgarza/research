@@ -1889,12 +1889,11 @@ class SetSubobjectCategory(SliceCategory):
                     for member in base
                     for left, right in ((self.is_parent_of(member), other.is_parent_of(member)),)
                 )
-            left, right = self.domain(), other.domain()
-            if (left in FiniteSets() and left in EnumeratedSets()) or (
-                right in FiniteSets() and right in EnumeratedSets()
-            ):
-                return conjunction((self <= other, other <= self))
-            return AtomicProposition("equal", self, other)
+            # Equality is still the conjunction of both inclusions when
+            # neither subobject has a finite enumeration. Their inclusion
+            # owners retain undecided containment as propositions rather
+            # than converting the absence of a factor into noncontainment.
+            return conjunction((self <= other, other <= self))
 
         def __ne__(self, other):
             from dzack_research.preamble.logic import negation
