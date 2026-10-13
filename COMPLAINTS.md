@@ -104,6 +104,25 @@ at `group/g_sets.py:1054` returns an actual set morphism.
 The stabilizer defining-action source repair now retains the actual action
 functor and embedded subobject data, with execution still owed at terminal T.
 
+**Subsequent source delivery, 2026-10-14:** group morphism images are
+constructed from selected finite generating families without requiring a
+GAP homomorphism, and a noninjective map now factors through the inclusion
+of its represented image subgroup. That image is selected once per
+morphism, so the literal endpoints agree. For a finite image the public
+`image_section()` is the set morphism `U(im f) -> U(G)`, using the
+existing Cayley preimage table as private computation data. Kernel and
+preimage Schreier outputs now retain indexed families; kernel subgroups
+also supply the free generating morphism. The group cokernel now uses
+the codomain's selected finite presentation, when available, to quotient
+by the normal closure of the images of a finite generating family.
+
+**Unresolved scope:** the older `finite_image_lifts()` operation itself
+still exposes its dictionary, and clients of its arbitrary finite
+character-image mode have not all migrated to a mathematical section;
+infinite non-finitely generated image computations and effective
+preimages still need appropriate selected data. The later source
+operations do not certify runtime equations; they remain under terminal T.
+
 Computed finite-index generating data have a separate public-output defect.
 The general, kernel and inverse-image Schreier methods return tuples
 (`group/predicate_subgroups.py:162,517,646`). Their elements belong to the

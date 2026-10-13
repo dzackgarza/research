@@ -26,6 +26,38 @@ def test_finite_group_mor_cardinality_uses_the_represented_gap_mor() -> None:
     assert Groups.C(12).Mor(Groups.C(18)).cardinality() == 6
 
 
+def test_the_image_epimorphism_has_a_set_section_but_no_group_section() -> None:
+    r"""Squaring C4 -> C4 factors onto C2, but C4 ->> C2 does not split in Grp."""
+    cyclic = Groups.C(4)
+    generator = next(iter(cyclic.group_generators()))
+    square = cyclic.Mor(cyclic)({generator: generator**2})
+    image = square.image()
+    epic = square.factor_through(image.inclusion())
+    section = square.image_section()
+
+    assert square.image() is image
+    assert section.domain() is image and section.codomain() is cyclic
+    assert epic.domain() is cyclic and epic.codomain() is image
+    assert all(epic(section(value)) == value for value in image)
+    assert all(image.inclusion()(epic(value)) == square(value) for value in cyclic)
+    lift = section(image(generator**2))
+    assert lift * lift != section(image.one())
+
+
+def test_free_group_reduction_has_a_section_of_its_finite_image_as_sets() -> None:
+    free, cyclic = Groups.Free(1), Groups.C(2)
+    label = next(iter(free.free_basis()))
+    generator = next(iter(cyclic.group_generators()))
+    reduction = free.Mor(cyclic)({label: generator})
+    image = reduction.image()
+    section = reduction.image_section()
+    epic = reduction.factor_through(image.inclusion())
+
+    assert section.domain() is image and section.codomain() is free
+    assert all(epic(section(value)) == value for value in image)
+    assert image.inclusion()(epic(free.free_generator(label))) == generator
+
+
 def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
 
@@ -117,6 +149,30 @@ def test_group_cokernels_quotient_by_the_normal_closure_of_the_image() -> None:
     assert trivial_projection.domain() is target
     assert trivial_projection.codomain() is trivial
     assert trivial_projection.is_surjective()
+
+
+def test_cokernel_of_squaring_on_an_infinite_presented_group() -> None:
+    r"""The cokernel of 2:Z -> Z is Z/2, with its chosen quotient map.
+
+    The map Z -> C2 kills the image, so it descends through this actual
+    quotient, retaining the original free-group source and projection.
+    """
+    free, two = Groups.Free(1), Groups.C(2)
+    label = next(iter(free.free_basis()))
+    generator = free.free_generator(label)
+    involution = next(iter(two.group_generators()))
+    squaring = free.Mor(free)({label: generator**2})
+    quotient = squaring.cokernel()
+    projection = squaring.cokernel_projection()
+    reduction = free.Mor(two)({label: involution})
+    descent = quotient.descend_homomorphism(reduction, through=projection)
+
+    assert quotient in GroupsWithChosenFinitePresentation()
+    assert projection.domain() is free and projection.codomain() is quotient
+    assert projection(generator**2) == quotient.one()
+    assert descent.domain() is quotient and descent.codomain() is two
+    assert descent(projection(generator)) == involution
+    assert descent * projection == reduction
 
 
 def test_reduction_then_inclusion_c4_to_c2_to_c4_is_the_squaring_endomorphism() -> None:
