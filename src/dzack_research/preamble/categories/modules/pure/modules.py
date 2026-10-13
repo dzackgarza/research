@@ -896,6 +896,11 @@ class Modules(OwnedCategoryOverBaseRing):
                         f"the equalizer of {left_morphism} and {right_morphism} is not defined: "
                         f"both maps must be {left_morphism.domain().base_ring()}-linear maps in {ambient_mor}"
                     )
+            if not all(
+                _category_accepts_morphism(self, left_morphism.domain(), left_morphism.codomain(), arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("the module equalizer requires arrows in the selected Mor category")
             match (
                 _represented_finite_presentation(left_morphism.domain()),
                 _represented_finite_presentation(left_morphism.codomain()),
@@ -978,6 +983,11 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the coequalizer of {left_morphism} and {right_morphism} needs "
                     f"two {self.base_ring()}-linear morphisms in {ambient_mor}"
                 )
+            if not all(
+                _category_accepts_morphism(self, left_morphism.domain(), left_morphism.codomain(), arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("the module coequalizer requires arrows in the selected Mor category")
             difference = left_morphism - right_morphism
             raw_coequalizer = difference.cokernel()
             raw_projection = difference.cokernel_projection()
