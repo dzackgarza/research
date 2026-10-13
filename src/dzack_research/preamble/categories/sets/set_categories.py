@@ -2024,16 +2024,35 @@ class _FiniteLiteralSet(Sets().ObjectType):
         self._points = SageSet(tuple(points))
         super().__init__(category=FiniteSets(), facade=True)
 
-    def __contains__(self, point) -> bool:
-        return point in self._points
+    def __contains__(self, point) -> bool | Predicate:
+        r"""Decide membership with Sage's set engine where equality permits it.
+
+        A symbolic equality query may be undecided even though the finite
+        literal set was constructed from hashable points. In that case its
+        membership is the finite existential, not a failed hash lookup.
+        """
+        try:
+            return point in self._points
+        except (TypeError, ValueError):
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return negation(conjunction(
+                negation(True if point is member else point == member)
+                for member in self._points
+            ))
+
+    is_parent_of = __contains__
 
     def _cardinality_decision(self):
         r"""The retained finite set of literal points supplies its exact size."""
         return cardinal(len(self._points))
 
     def _element_constructor_(self, point):
-        if point not in self:
+        member = self.is_parent_of(point)
+        if member is False:
             raise ValueError(f"{point!r} is not in {self}")
+        if member is not True:
+            raise ValueError(f"membership of {point!r} in {self} is undecided")
         return point
 
     def __iter__(self):
