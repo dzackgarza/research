@@ -4383,7 +4383,7 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         if length.is_finite() is False or layer < int(length.finite_value()):
                             emitted = True
                             yield index_position, layer
-                    if not emitted and self._known_finite_size() is not None:
+                    if not emitted:
                         return
                     layer += 1
                 return
