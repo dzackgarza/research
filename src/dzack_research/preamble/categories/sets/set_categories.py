@@ -2604,10 +2604,15 @@ class PowerSets(OwnedCategory):
             characteristic_morphism: SetMorphism,
         ):
             r"""The subset classified by \(\chi\colon X\to\Delta[1]\): where \(\chi=1\)."""
-            if characteristic_morphism.parent() is not self.characteristic_mor():
+            if not (
+                isinstance(characteristic_morphism, Morphism)
+                and _category_accepts_morphism(
+                    Sets(), self.base_set(), self.truth_values(), characteristic_morphism
+                )
+            ):
                 raise ValueError(
                     f"{characteristic_morphism} is not a characteristic map X -> Delta[1] of a subset of "
-                    f"{self.base_set()}: it lies in {characteristic_morphism.parent()}"
+                    f"{self.base_set()}"
                 )
             truth = self.truth_values()(1)
             return self.from_predicate(lambda member: characteristic_morphism(member) == truth)
