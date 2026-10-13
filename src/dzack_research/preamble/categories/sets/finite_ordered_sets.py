@@ -320,7 +320,7 @@ class FiniteOrderedSets(OwnedCategory):
         supplied = tuple(points)
         try:
             distinct = tuple(dict.fromkeys(supplied))
-        except TypeError:
+        except (TypeError, ValueError):
             distinct_list = []
             for point in supplied:
                 comparisons = tuple(
@@ -376,10 +376,7 @@ class FiniteOrderedSets(OwnedCategory):
             # inverse would no longer be inverse to the chosen enumeration.
             try:
                 lookup = dict(zip(points, indices, strict=True))
-                if len(lookup) != len(points):
-                    raise ValueError("an enumeration must select distinct points at distinct indices")
-                index_of = lookup.get
-            except TypeError:
+            except (TypeError, ValueError):
                 for offset, present in enumerate(points):
                     for earlier in points[:offset]:
                         equal = True if present is earlier else present == earlier
@@ -405,6 +402,10 @@ class FiniteOrderedSets(OwnedCategory):
                             negation(True if point is present else point == present)
                             for present in points
                         ))
+            else:
+                if len(lookup) != len(points):
+                    raise ValueError("an enumeration must select distinct points at distinct indices")
+                index_of = lookup.get
         if contains is None:
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
