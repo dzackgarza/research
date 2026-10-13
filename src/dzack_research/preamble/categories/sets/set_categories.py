@@ -2776,6 +2776,21 @@ def _finite_subset_ranking_map(subset_set, source) -> CategoricalIsomorphism:
 
     def position_of(subset):
         subset = subset_set(subset)
+        if source_size.is_finite() is False:
+            # Every finite subset of a countably enumerated set is coded by
+            # its finite set of source ranks. This is the inverse of the
+            # binary-support enumeration above; scanning the infinite source
+            # to discover a finite subset's members cannot terminate.
+            members = subset.domain()
+            if members not in EnumeratedSets():
+                raise ValueError(
+                    "ranking a finite subset of an infinite set requires its selected "
+                    "finite member enumeration"
+                )
+            position = 0
+            for member in members:
+                position |= 1 << int(source.ranking_map()(member))
+            return position
         position = 0
         for source_position in range(int(source_size.finite_value())):
             point = point_at_source_rank(source_position)
