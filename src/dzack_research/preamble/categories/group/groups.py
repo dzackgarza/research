@@ -2375,6 +2375,22 @@ class GroupMorphism:
         )
 
     @cached_method
+    def image_factorization(self):
+        r"""Return ``G ->> im(f) -> H`` with the literal image inclusion.
+
+        The first arrow is induced by ``f`` and the existing inclusion's
+        inverse on its image; it is not an inclusion and need not be
+        injective. Its codomain is the actual represented subgroup, not a
+        fresh group with an isomorphic underlying presentation.
+
+        For the quotient ``C4 -> C2``, the first arrow is noninjective,
+        whereas the second is a subgroup inclusion of ``C2`` into itself.
+        """
+        image = self.image()
+        inclusion = image.inclusion()
+        return self.factor_through(inclusion), inclusion
+
+    @cached_method
     def image_section(self):
         r"""A selected set section of G ->> im(f), when the image is finite.
 
@@ -2383,13 +2399,13 @@ class GroupMorphism:
         """
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
-        image = self.image()
+        epic, inclusion = self.image_factorization()
+        image = inclusion.domain()
         if image not in OwnedFiniteGroups():
             raise TypeError(
                 f"a finite-image section of {self} needs its image {image} "
                 "to have a selected finite group realization"
             )
-        epic = self.factor_through(image.inclusion())
         section = self.domain().finite_image_section(epic)
         return Sets().Mor(image, self.domain())(
             lambda value: section(section.domain()(image(value)))
