@@ -2289,6 +2289,10 @@ class GroupMorphism:
                     self(generator) == other(generator)
                     for generator in source.selected_subgroup_generators()
                 )
+            case _ if source in OwnedFiniteGroups():
+                # A finite source is itself a determining family. This is
+                # effective even when it has no selected presentation.
+                equal = conjunction(self(element) == other(element) for element in source)
             case _:
                 return super()._richcmp_(other, op)
         return equal if op == op_EQ else negation(equal)

@@ -142,6 +142,20 @@ def test_generated_subgroup_homomorphisms_are_determined_by_generators() -> None
     assert inclusion != trivial
 
 
+def test_finite_group_homomorphism_equality_uses_all_source_elements() -> None:
+    r"""Maps ``C4 -> C2`` are distinguished by their actual pointwise action."""
+    source = Groups.C(4)
+    target = Groups.C(2)
+    g = next(iter(source.group_generators()))
+    h = next(iter(target.group_generators()))
+    reduction = source.Mor(target)({g: h})
+    same = source.Mor(target).elementwise(lambda element: reduction(element))
+    trivial = source.Mor(target).elementwise(lambda _element: target.one())
+
+    assert reduction == same
+    assert reduction != trivial
+
+
 def test_generated_subgroup_inclusion_has_presented_group_cokernel() -> None:
     r"""The cokernel of ``<a²> -> F(a)`` is the presented cyclic group C2."""
     free = Groups.Free(1)
