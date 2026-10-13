@@ -41,3 +41,14 @@ def test_infinite_group_cone_factors_as_an_additive_group_morphism() -> None:
         projection = product.projection(NN(position))
         assert projection(diagonal(ZZ(-5))) == ZZ(-5)
         assert projection(diagonal(-ZZ(5))) == -projection(diagonal(ZZ(5)))
+
+
+def test_group_product_retains_monoid_universal_property() -> None:
+    product = Sets().product((ZZ, ZZ))
+    source = NN
+    additive = AdditiveMonoids()
+    inclusion = additive.Mor(source, ZZ)(lambda n: ZZ(int(n)))
+    induced = product.from_maps(source, lambda _index: inclusion)
+    assert induced.parent() is additive.Mor(source, product)
+    for label in product.index_set():
+        assert product.projection(label)(induced(source(3))) == ZZ(3)

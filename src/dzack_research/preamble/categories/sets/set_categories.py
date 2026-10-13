@@ -4049,11 +4049,14 @@ class CartesianProductsOfAdditiveGroups(OwnedCategory):
             """
             from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 
-            if source not in AdditiveGroups():
-                raise TypeError(f"an additive-group product map requires a group source, not {source}")
             underlying = CartesianProductsOfAdditiveMonoids.ParentMethods.from_maps(
                 self, source, maps
             )
+            # The same product remains a product in additive monoids. An
+            # additive-monoid source need not itself possess inverses, so its
+            # universal arrow must keep the weaker Mor parent.
+            if source not in AdditiveGroups():
+                return underlying
             return AdditiveGroups().Mor(source, self)(lambda point: underlying(point))
 
 
