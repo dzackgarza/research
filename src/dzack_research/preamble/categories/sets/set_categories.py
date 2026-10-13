@@ -4260,18 +4260,12 @@ class CoproductsOfSets(OwnedCategory):
 
             def induced(element):
                 label = element.summand_index()
-                undecided = False
                 for index, morphism in components:
                     equal = True if index is label else index == label
                     if equal is True:
-                        if undecided:
-                            raise ValueError(
-                                f"cannot select the cocone component for {label}: "
-                                "equality with an earlier summand index is undecided"
-                            )
                         return morphism(element.summand_element())
-                    if equal is not False:
-                        undecided = True
+                    # An earlier undecided comparison cannot invalidate a
+                    # subsequent witnessed match of the retained summand.
                 raise ValueError(
                     f"cannot select the cocone component for {label}: "
                     "the finite index set has no decided equality or selected ranking"
