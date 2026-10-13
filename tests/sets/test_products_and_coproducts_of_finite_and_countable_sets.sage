@@ -569,6 +569,28 @@ def test_constant_countable_coproduct_has_diagonal_enumeration() -> None:
     assert tuple(empty) == ()
 
 
+def test_selected_nonconstant_countable_coproduct_is_enumerated() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    labels = Sets.Δ[1]
+    finite_shape = DiscreteCategory(labels)
+    infinite_shape = DiscreteCategory(NN)
+    factor_diagram = Cat().Mor(finite_shape, EnumeratedSets()).discrete_diagram(
+        indexed_family(labels, lambda i: Sets.Δ[0] if i == labels(0) else Sets.Δ[1])
+    )
+    parity = Cat().Mor(infinite_shape, finite_shape).from_object_map(
+        lambda n: labels(int(n) % 2)
+    )
+    family = indexed_family(NN, factor_diagram.restrict(parity))
+    coproduct = Sets().coproduct(family)
+    assert coproduct in EnumeratedSets()
+    ranking = coproduct.ranking_map()
+    for index in (0, 1, 3):
+        point = coproduct.injection(NN(index))(family(NN(index))(0))
+        assert ranking.inverse()(ranking(point)) == point
+
+
 def test_mixed_finite_infinite_coproduct_rank_uses_summand_layers() -> None:
     coproduct = Sets().coproduct((Sets.Δ[1], NN, Sets.Δ[0]))
     ranking = coproduct.ranking_map()

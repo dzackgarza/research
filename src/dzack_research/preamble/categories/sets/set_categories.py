@@ -4680,12 +4680,17 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
     elif (
         index_set in EnumeratedSets()
         and index_set in Sets().Infinite()
-        and family.constant_value() is not None
-        and family.constant_value() in EnumeratedSets()
+        and (
+            (family.constant_value() is not None and family.constant_value() in EnumeratedSets())
+            or (
+                family.selected_diagram() is not None
+                and family.selected_diagram().codomain().is_subcategory(EnumeratedSets())
+            )
+        )
     ):
-        # The diagonal enumeration of I x N uses the two selected ranking
-        # maps. A constant family certifies every summand without inspecting
-        # infinitely many indices or trusting a callback's codomain claim.
+        # The diagonal enumeration uses the index ranking and each factor's
+        # ranking. A constant value or an established category-valued diagram
+        # certifies the entire infinite family without sampling callbacks.
         placements.append(EnumeratedCoproductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
 
