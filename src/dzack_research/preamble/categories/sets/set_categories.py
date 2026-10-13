@@ -1141,14 +1141,21 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             return _cartesian_product_of_finite_family(family)
 
         def _categorical_product_construction(self, factors):
+            r"""The product cone for a represented discrete set-valued diagram.
+
+            A nonfinite diagram must retain its selected functor (or a
+            constant factor). Its natural-transformation cone supplies the
+            mediating map; no finite enumeration or sampled component map
+            replaces that datum.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 SelectedLimitConstruction,
                 _discrete_diagram,
-                _finite_factor_family,
+                _factor_family,
             )
 
-            family = _finite_factor_family(factors, name="Product factors")
-            product = self._finite_product(family)
+            family = _factor_family(factors, name="Product factors")
+            product = self.product(family)
             diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
@@ -1156,9 +1163,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             def factorizer(cone):
+                finite = family.cardinality().is_finite() and family.index_set() in EnumeratedSets()
+                components = (
+                    (lambda label: cone.structure_morphism(diagram.domain()(label)))
+                    if finite else cone.transformation()
+                )
                 return product.from_maps(
-                    cone.apex(),
-                    lambda label: cone.structure_morphism(diagram.domain()(label)),
+                    cone.apex(), components,
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
