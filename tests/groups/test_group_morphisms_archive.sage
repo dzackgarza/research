@@ -129,6 +129,24 @@ def test_generated_subgroup_map_image_uses_its_retained_generator_family() -> No
     assert inclusion * epic == square
 
 
+def test_generated_subgroup_inclusion_has_presented_group_cokernel() -> None:
+    r"""The cokernel of ``<a²> -> F(a)`` is the presented cyclic group C2."""
+    free = Groups.Free(1)
+    label = next(iter(free.free_basis()))
+    generator = free.free_generator(label)
+    subgroup = free.subgroup((generator**2,))
+    inclusion = subgroup.inclusion()
+    quotient = inclusion.cokernel()
+    projection = inclusion.cokernel_projection()
+
+    assert quotient in Groups().FinitelyPresentedAsGroup()
+    assert projection.domain() is free and projection.codomain() is quotient
+    assert projection(generator**2) == quotient.one()
+    assert projection * inclusion == subgroup.Mor(quotient).elementwise(
+        lambda _element: quotient.one()
+    )
+
+
 def test_infinite_free_source_factors_through_a_proper_cyclic_image() -> None:
     r"""The map Z -> C4 sending its free generator to g^2 factors via C2.
 
