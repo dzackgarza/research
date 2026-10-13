@@ -355,6 +355,10 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 f"cannot compute the annihilator of {self}: this algorithm needs a finite underlying set, "
                 f"and {self.underlying_set()} is not known to be finite"
             )
+            assert self.underlying_set() in EnumeratedSets(), (
+                f"cannot compute the annihilator of {self}: finite cardinality alone does not "
+                "supply an enumeration of the module elements"
+            )
             scalars = _enumerated_ring_elements(self.base_ring())
             assert scalars is not None, (
                 f"cannot compute the annihilator of {self}: this algorithm needs a finite scalar ring "
@@ -362,10 +366,10 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             )
             zero = self.zero()
             annihilating = []
+            from dzack_research.preamble.logic import conjunction
+
             for scalar in scalars:
                 equations = (self.scalar_multiple(scalar, element) == zero for element in self)
-                from dzack_research.preamble.logic import conjunction
-
                 decision = conjunction(equations)
                 if decision is True:
                     annihilating.append(scalar)
