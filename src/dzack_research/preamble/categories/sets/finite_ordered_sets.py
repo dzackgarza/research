@@ -405,7 +405,28 @@ class FiniteOrderedSets(OwnedCategory):
             else:
                 if len(lookup) != len(points):
                     raise ValueError("an enumeration must select distinct points at distinct indices")
-                index_of = lookup.get
+                def index_of(point):
+                    try:
+                        return lookup.get(point)
+                    except (TypeError, ValueError):
+                        # A query can have undecidable symbolic equality even
+                        # when the selected points formed a valid hash table.
+                        for index, present in zip(indices, points, strict=True):
+                            if point is present or (point == present) is True:
+                                return index
+                        return None
+                if contains is None:
+                    def contains(point):
+                        from dzack_research.preamble.logic import conjunction, negation
+
+                        try:
+                            position = lookup.get(point)
+                        except (TypeError, ValueError):
+                            return negation(conjunction(
+                                negation(True if point is present else point == present)
+                                for present in points
+                            ))
+                        return position is not None
         if contains is None:
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
