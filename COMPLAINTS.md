@@ -304,31 +304,6 @@ each admitted case, retaining its defining maps. Inspect existing formal
 image constructions before requesting further mathematics from
 `lean-categories`.
 
-### Empty module diagrams fail in categories that contain the zero object
-
-The zero module is both the product and coproduct of the empty family in
-`R-Mod`. It also belongs to the categories of finitely generated and
-finitely presented modules. Its universal maps must therefore be supplied
-for these empty diagrams.
-
-**Observed source boundary, 2026-10-11:** the module coproduct at
-`categories/modules/pure/modules.py:798` delegates to the biproduct
-constructor, which rejects an empty family (`:4928`). The product route
-(`:744`) uses the general module-of-tuples construction for the empty family,
-because `_finite_biproduct_realizes_product` (`:4470`) excludes that case.
-It then requires the requested category to be all modules, rejecting stricter
-module categories despite their containing the zero object.
-
-**Dependency path:** zero module and its unique maps -> empty product and
-coproduct cones -> finite products and coproducts -> finite diagram limits
-and colimits. **Partial capability:** nonempty finite biproducts from chosen
-bases or finite presentations, and general products in all modules.
-**Consumers:** module diagrams and their finitely generated or finitely
-presented subcategories. **Owner:** the general module product, coproduct
-and biproduct constructors. **Coverage:** the named source routes; execution
-remains unverified. This is a construction and category-placement defect;
-the zero-module mathematics is already part of the module category.
-
 ### Formed-module Mono has a first-component-only definition
 
 In the formed-pair category, an arrow retains both f on modules and h on

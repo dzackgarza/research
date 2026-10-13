@@ -633,10 +633,11 @@ class Modules(OwnedCategoryOverBaseRing):
             if extra_categories or extra_construction_data:
                 return _module_biproduct_with_data(
                     family,
+                    base_ring=self.base_ring(),
                     extra_categories=extra_categories,
                     extra_construction_data=extra_construction_data,
                 )
-            return _module_biproduct(family)
+            return _module_biproduct(family, self.base_ring())
 
         def _categorical_biproduct(self, left, right):
             return self.biproduct((left, right))
@@ -804,11 +805,14 @@ class Modules(OwnedCategoryOverBaseRing):
                     lambda label: cone.structure_morphism(diagram.domain()(label)),
                     name="Product cone legs",
                 )
-                match product:
-                    case _ if product in BiproductModules(self.base_ring()):
-                        apex_map = product.from_product_cone(legs)
-                    case _:
-                        apex_map = _module_product_factor(product, family, cone.apex(), legs)
+                if family.cardinality() == cardinal(0):
+                    apex_map = cone.apex().module_category().Mor(cone.apex(), product).zero()
+                else:
+                    match product:
+                        case _ if product in BiproductModules(self.base_ring()):
+                            apex_map = product.from_product_cone(legs)
+                        case _:
+                            apex_map = _module_product_factor(product, family, cone.apex(), legs)
                 return diagram.Cones().Mor(cone, universal_cone)._from_commuting_apex_map(
                     apex_map,
                 )
@@ -835,6 +839,8 @@ class Modules(OwnedCategoryOverBaseRing):
                     lambda label: cocone.costructure_morphism(diagram.domain()(label)),
                     name="Coproduct cocone legs",
                 )
+                if family.cardinality() == cardinal(0):
+                    return coproduct.module_category().Mor(coproduct, cocone.apex()).zero()
                 return coproduct.from_coproduct_cocone(legs)
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
@@ -4651,10 +4657,10 @@ def _represented_framed_free(module) -> bool:
 def _finite_biproduct_realizes_product(factors) -> bool:
     r"""Whether the existing finite biproduct backend realizes this product.
 
-    The empty product is terminal, not a nonempty direct sum.  Otherwise the
-    existing biproduct realization is retained exactly when all factors share
-    one of its represented construction routes: framed free or chosen finite
-    presentation.
+    The empty biproduct is the zero module, hence also the terminal product.
+    Otherwise the existing biproduct realization is retained exactly when all
+    factors share one of its represented construction routes: framed free or
+    chosen finite presentation.
     """
     size = factors.cardinality()
     match size.is_finite():
@@ -4663,7 +4669,7 @@ def _finite_biproduct_realizes_product(factors) -> bool:
         case True:
             match int(size.finite_value()):
                 case 0:
-                    return False
+                    return True
                 case _:
                     values = tuple(factors)
                     return all(_represented_framed_free(factor) for factor in values) or all(
@@ -5204,26 +5210,37 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             return self.from_product_cone(legs)
 
 
-@cached_function(key=lambda factors: (factors.index_set(), tuple(factors)))
-def _module_biproduct(factors):
+@cached_function(key=lambda factors, base_ring: (base_ring, factors.index_set(), tuple(factors)))
+def _module_biproduct(factors, base_ring):
     r"""Return $\bigoplus_{i \in I} M_i$ over the family's own index set."""
-    return _module_biproduct_with_data(factors)
+    return _module_biproduct_with_data(factors, base_ring=base_ring)
 
 
 def _module_biproduct_with_data(
     factors,
     *,
+    base_ring,
     extra_categories=(),
     extra_construction_data=None,
 ):
     r"""Construct a represented biproduct with additional owned structure."""
     values = tuple(factors)
-    assert values, "the direct sum of an empty family of modules is not constructed here: give at least one summand"
-    ring = _owned_ring(values[0].base_ring())
+    ring = _owned_ring(base_ring)
     assert all(_owned_ring(factor.base_ring()) == ring for factor in values), (
         f"the direct sum of {values} is not defined: the summands must all be modules over {ring}, "
-        f"the base ring of the first summand"
+        "the base ring of the selected module category"
     )
+
+    if not values:
+        # The zero module is both the initial and terminal object of R-Mod.
+        # Its free rank-zero presentation retains the empty family as actual
+        # biproduct data; no first factor exists from which to infer R.
+        return ring._fresh_free_module_on(
+            Sets.Δ[-1],
+            _biproduct_factors=factors,
+            _extra_categories=extra_categories,
+            _extra_construction_data=extra_construction_data,
+        )
 
     labels = _biproduct_label_set(factors)
     result = values[0]._free_biproduct_over(

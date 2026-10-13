@@ -28,6 +28,37 @@ def test_the_order_of_a_product_is_the_product_of_the_orders() -> None:
     assert modules.product(()).cardinality() == 1
 
 
+def test_empty_module_biproducts_retain_their_base_and_universal_maps() -> None:
+    r"""The empty product and coproduct of finitely presented modules over R are the zero module.
+
+    Their cones and cocones admit the unique zero morphisms for every apex,
+    and the scalar ring is part of the constructed zero module's data.
+    These assertions are banked for the terminal verification phase.
+    """
+    for ring in (ZZ, QQ):
+        category = Modules(ring).FinitelyPresented()
+        source = ring.free_module(1)
+        product = category.product_construction(())
+        coproduct = category.coproduct_construction(())
+        terminal = product.object()
+        initial = coproduct.object()
+
+        assert terminal in category and initial in category
+        assert terminal.base_ring() is ring and initial.base_ring() is ring
+        assert terminal.is_zero() is True and initial.is_zero() is True
+
+        cone = product.diagram().Cones().cone(source, lambda _index: None)
+        to_terminal = product.factor(cone).apex_map()
+        assert to_terminal.domain() is source and to_terminal.codomain() is terminal
+        generator = source.module_generator(next(iter(source.module_generating_set())))
+        assert to_terminal(generator) == terminal.zero()
+
+        cocone = coproduct.diagram().CoproductCocones().cocone(source, lambda _index: None)
+        from_initial = coproduct.factor(cocone).apex_map()
+        assert from_initial.domain() is initial and from_initial.codomain() is source
+        assert from_initial(initial.zero()) == source.zero()
+
+
 def test_the_cone_of_the_identity_and_zero_factors_as_x_to_x_comma_0() -> None:
     r"""The cone $(\mathrm{id}: \mathbb Z/6 \to \mathbb Z/6, 0: \mathbb Z/6 \to \mathbb Z/4)$ factors
     through $\mathbb Z/6 \times \mathbb Z/4$ by $u(x) = (x, 0)$, and $p_0 u = \mathrm{id}$, $p_1 u = 0$."""
