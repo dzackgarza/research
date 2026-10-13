@@ -341,12 +341,12 @@ class IndexedFamily[IndexT, ValueT]:
 
         if self.cardinality().is_finite() is not True or self.index_set() not in EnumeratedSets():
             return object.__hash__(self)
-        return hash(
-            (
-                self.index_set(),
-                frozenset((index, self.value(index)) for index in self.index_set()),
-            )
-        )
+        # Equality is pointwise at labels, but labels need not be hashable.
+        # A hash need only be equal for equal families; the unordered image
+        # of the values has that property without requiring hashable labels
+        # or choosing a canonical order on the index set. Collisions between
+        # distinct families are permitted by Python's hash contract.
+        return hash((self.index_set(), frozenset(self.value(index) for index in self.index_set())))
 
     def _repr_(self):
         from dzack_research.preamble.categories.sets.set_categories import (

@@ -71,6 +71,17 @@ def test_finite_indexed_family_rank_cache_supplies_product_factors() -> None:
     assert product.projection([1])(point) == factor(1)
 
 
+def test_finite_family_hash_does_not_require_hashable_index_labels() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    labels = finite_ordered_set(([0], [1]))
+    first = indexed_family(labels, lambda label: Sets.Δ[1] if label[0] == 0 else Sets.Δ[2])
+    second = indexed_family(labels, lambda label: Sets.Δ[1] if label[0] == 0 else Sets.Δ[2])
+    assert first == second
+    assert hash(first) == hash(second)
+
+
 def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.indexed_families import indexed_family
