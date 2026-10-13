@@ -1056,9 +1056,18 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"it needs at least one map to fix the domain"
                 )
             reference = morphisms[0]
+            ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
+            if reference.domain() not in self or reference.codomain() not in self:
+                raise ValueError(f"the wide equalizer of {morphisms} is not a diagram in {self}")
+            for position in range(count):
+                arrow = morphisms[position]
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
+                    raise ValueError(f"the wide equalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             equalizer = self._categorical_equalizer(reference, reference)
             for position in range(1, count):
                 equalizer = equalizer.intersection(self._categorical_equalizer(morphisms[position], reference))
+            if equalizer not in self:
+                raise TypeError(f"the wide equalizer {equalizer} is not an object of {self}")
             return equalizer
 
         def _categorical_coequalizer_family(self, morphisms):
@@ -1075,10 +1084,20 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"it needs at least one map to fix the codomain"
                 )
             reference = morphisms[0]
+            ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
+            if reference.domain() not in self or reference.codomain() not in self:
+                raise ValueError(f"the wide coequalizer of {morphisms} is not a diagram in {self}")
+            for position in range(count):
+                arrow = morphisms[position]
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
+                    raise ValueError(f"the wide coequalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             relations = (reference - reference).image()
             for position in range(1, count):
                 relations = relations.sum((morphisms[position] - reference).image())
-            return relations.inclusion().cokernel()
+            quotient = relations.inclusion().cokernel()
+            if quotient not in self:
+                raise TypeError(f"the wide coequalizer {quotient} is not an object of {self}")
+            return quotient
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
             return left_morphism.biproduct_map(right_morphism, source=source, target=target)
