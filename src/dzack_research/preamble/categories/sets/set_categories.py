@@ -4349,7 +4349,10 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
             if count is None or self._known_finite_size() is None:
                 return None
             index_at = self.index_set().ranking_map().inverse()
-            return tuple(int(self.cofactor(index_at(j)).cardinality()) for j in range(count))
+            sizes = tuple(cardinal(self.cofactor(index_at(j)).cardinality()) for j in range(count))
+            if not all(size.is_finite() is True for size in sizes):
+                raise ValueError("finite coproduct ranking requires certified finite summand cardinalities")
+            return tuple(int(size.finite_value()) for size in sizes)
 
         def _enumeration_pairs(self):
             r"""Yield ``(index_position, factor_position)`` in a total rank order."""
