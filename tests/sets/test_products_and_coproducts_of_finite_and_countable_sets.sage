@@ -536,6 +536,17 @@ def test_componentwise_coproduct_morphism_checks_its_source_and_target_summands(
         raise AssertionError("a component with wrong coproduct endpoints was admitted")
 
 
+def test_finite_coproduct_rank_layer_has_direct_inverse() -> None:
+    factors = (Sets.Δ[1], Sets.Δ[3], Sets.Δ[0])
+    coproduct = Sets().coproduct(factors)
+    listing = tuple(coproduct)
+    ranking = coproduct.ranking_map()
+    assert len(listing) == 7
+    for position, element in enumerate(listing):
+        assert ranking(element) == position
+        assert ranking.inverse()(position) == element
+
+
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
     listing = iter(square)

@@ -4384,6 +4384,29 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         f"position {position} is out of range for {self}, which has {finite_size} elements"
                     )
                 index_at = self.index_set().ranking_map().inverse()
+                finite_indices = self._finite_index_count()
+                if finite_size is not None and finite_indices is not None:
+                    from bisect import bisect_right
+
+                    sizes = tuple(
+                        int(self.cofactor(index_at(j)).cardinality())
+                        for j in range(finite_indices)
+                    )
+                    # The cumulative number of points up to layer k is
+                    # sum(min(k + 1, n_j)). Search those monotone cumulative
+                    # counts without enumerating earlier coproduct elements.
+                    layer = bisect_right(
+                        range(max(sizes, default=0)), position,
+                        key=lambda k: sum(min(k + 1, n) for n in sizes),
+                    )
+                    previous = sum(min(layer, n) for n in sizes)
+                    for j, size in enumerate(sizes):
+                        if size > layer:
+                            if previous == position:
+                                index = index_at(j)
+                                return self(index, self._factor_point_at(self.cofactor(index), layer))
+                            previous += 1
+                    raise IndexError(f"position {position} is out of range for {self}")
                 for reached, (index_position, factor_position) in enumerate(self._enumeration_pairs()):
                     if reached != position:
                         continue
