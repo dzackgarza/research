@@ -269,6 +269,27 @@ class equality are not yet computed. Finite samples of an infinite source
 cannot establish the relation closure. A certified classifier or relation
 computation remains required.
 
+**Selected classifier repair, 2026-10-14:** the Set-morphism owner now
+constructs `Sets().integer_translation(d): ZZ -> ZZ`, retaining the
+integer displacement as actual defining data. The general coequalizer
+owner identifies its relation with congruence modulo the ideal `(d)`
+and uses the existing owned quotient `ZZ/(d)` together with its exact
+projection and representatives. A finite family of selected
+translations `n -> n+d_i` similarly gives `ZZ/(d_i-d_0)_i`;
+the ring's maintained ideal computation determines the resulting gcd.
+The proof is that every generating relation changes an integer by a
+displacement difference and every integral linear combination can be
+traversed using finitely many forward or reverse generating steps.
+For `d=0`, or any two literally identical arrows, the coequalizer is
+the identity of `ZZ` (or the common target set).
+
+An opaque callback whose source happens to implement `n -> n+2`
+still has no certified displacement. This source route cannot and does
+not infer congruence from finitely many evaluations, and other arbitrary
+infinite generated relations remain symbolic. The selected translation
+regime supplies the exact finite parity construction demanded by the
+closure specimen, subject to terminal-T execution of its equations.
+
 **Class-set source composition, 2026-10-14:** the category object owner now
 constructs the connected-component quotient from the actual set of objects
 and the two maps from its complete selected arrow set. For a groupoid this

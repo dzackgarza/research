@@ -68,7 +68,7 @@ def test_the_coequalizer_of_x_and_x_plus_one_glues_zero_one_two_and_leaves_three
     assert all(factor(projection(y)) == separating(y) for y in target)
 
 
-def test_finite_coequalizer_keeps_an_unenumerated_relation_source_symbolic() -> None:
+def test_identical_pair_has_identity_coequalizer_even_with_unenumerated_source() -> None:
     from dzack_research.preamble.logic import AtomicProposition
 
     ambient = Sets.Δ[2]
@@ -82,13 +82,103 @@ def test_finite_coequalizer_keeps_an_unenumerated_relation_source_symbolic() -> 
     quotient = construction.object()
     shape = construction.diagram().domain()
     projection = construction.costructure_morphism(shape.target())
-    assert quotient in FiniteSets()
-    assert quotient not in EnumeratedSets()
+    assert quotient is ambient
+    assert quotient in EnumeratedSets()
     assert projection.domain() is ambient and projection.codomain() is quotient
     # The identical arrows generate no identifications beyond equality,
     # independently of the undecidable membership of their source.
     assert projection(ambient(0)) != projection(ambient(1))
     assert projection(ambient(0)) == projection(ambient(0))
+
+
+def test_selected_integer_translation_has_the_exact_parity_coequalizer() -> None:
+    r"""The selected relation n~n+2 has classes ZZ/(2), not a symbolic quotient."""
+    integers = ZZ
+    identity = Sets().Mor(integers, integers).identity()
+    translation = Sets().integer_translation(integers(2))
+    construction = Sets().coequalizer_construction(identity, translation)
+    quotient = construction.object()
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert translation.domain() is integers and translation.codomain() is integers
+    assert translation.selected_integer_translation_step() == integers(2)
+    assert translation(integers(-3)) == integers(-1)
+    assert quotient is integers.quotient_ring(integers.ideal(integers(2)))
+    assert quotient.cardinality() == cardinal(2)
+    assert projection.domain() is integers and projection.codomain() is quotient
+    assert projection(integers(0)) == projection(integers(2))
+    assert projection(integers(-1)) == projection(integers(1))
+    assert projection(integers(0)) != projection(integers(1))
+
+    parity_values = Sets.Δ[1]
+    parity = Sets().Mor(integers, parity_values)(
+        lambda n: parity_values(int(n) % 2)
+    )
+    cocone = construction.diagram().Cocones().cocone(
+        parity_values,
+        lambda vertex: parity * identity if vertex is shape.source() else parity,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor.domain() is quotient and factor.codomain() is parity_values
+    assert factor(projection(integers(-3))) == parity_values(1)
+    assert factor(projection(integers(0))) == parity_values(0)
+    assert factor(projection(integers(1))) == parity_values(1)
+    assert factor(projection(integers(2))) == parity_values(0)
+
+
+def test_selected_integer_translations_handle_reversal_and_zero() -> None:
+    integers = ZZ
+    identity = Sets().Mor(integers, integers).identity()
+    negative = Sets().integer_translation(integers(-3))
+    coequalizer = Sets().coequalizer_construction(negative, identity)
+    quotient = coequalizer.object()
+    shape = coequalizer.diagram().domain()
+    projection = coequalizer.costructure_morphism(shape.target())
+
+    assert negative.selected_integer_translation_step() == integers(-3)
+    assert quotient is integers.quotient_ring(integers.ideal(integers(3)))
+    assert quotient.cardinality() == cardinal(3)
+    assert projection(integers(-3)) == projection(integers(0))
+    assert projection(integers(1)) != projection(integers(2))
+
+    zero_translation = Sets().integer_translation(integers.zero())
+    assert zero_translation is identity
+    trivial_relation = Sets().coequalizer_construction(identity, zero_translation)
+    assert trivial_relation.object() is integers
+    assert trivial_relation.costructure_morphism(
+        trivial_relation.diagram().domain().target()
+    )(integers(7)) == integers(7)
+
+
+def test_selected_wide_integer_translations_generate_the_gcd_relation() -> None:
+    r"""The maps n+1, n+3, n+5 generate the congruence modulo gcd(2,4)."""
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    integers = ZZ
+    maps = tuple(Sets().integer_translation(integers(d)) for d in (1, 3, 5))
+    family = indexed_family(Sets.Δ[2], lambda index: maps[int(index)])
+    construction = Sets().coequalizer_of_family_construction(family)
+    quotient = construction.object()
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+    assert quotient is integers.quotient_ring(integers.ideal(integers(2)))
+    assert quotient.cardinality() == cardinal(2)
+    assert construction.diagram().morphisms() is family
+    assert projection(integers(1)) == projection(integers(5))
+    assert projection(integers(0)) != projection(integers(1))
+
+    parity_values = Sets.Δ[1]
+    parity = Sets().Mor(integers, parity_values)(
+        lambda n: parity_values(int(n) % 2)
+    )
+    cocone = construction.diagram().Cocones().cocone(
+        parity_values,
+        lambda vertex: parity * maps[0] if vertex is shape.source() else parity,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor(projection(integers(0))) == parity_values(0)
+    assert factor(projection(integers(1))) == parity_values(1)
 
 
 def test_coequalizer_uses_the_targets_selected_ranking() -> None:
@@ -118,6 +208,7 @@ def test_infinite_relation_source_has_an_actual_quotient_and_factor_map() -> Non
     translate = Sets().Mor(integers, integers)(
         lambda n: integers(n + integers(2))
     )
+    assert translate.selected_integer_translation_step() is None
     construction = Sets().coequalizer_construction(identity, translate)
     quotient = construction.object()
     shape = construction.diagram().domain()

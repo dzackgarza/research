@@ -320,6 +320,15 @@ the finite parity quotient from black-box maps on an infinite source,
 remain outstanding. The construction does not assert a finite class
 count without a certified classification.
 
+For the source-defined integer translations `t_d(n)=n+d`, selected
+displacement data now provide that classification without sampling:
+`coeq(id_ZZ,t_d)=ZZ/(d)` as sets, and a wide family of selected
+translations is `ZZ/(d_i-d_0)_i`. The ordinary ring quotient computes
+the ideal, congruence classes, cardinality and chosen representative
+for universal factorization. The unresolved statement above concerns
+only arbitrary black-box set callbacks and unrelated infinite generated
+equivalence relations, for which no translation law is certified.
+
 For a represented small groupoid `C`, its class set is the coequalizer
 of source and target on its arrows:
 
