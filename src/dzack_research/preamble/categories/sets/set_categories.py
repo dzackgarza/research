@@ -2084,36 +2084,25 @@ class _FiniteLiteralSet(Sets().ObjectType):
         return Sets().image_set(lambda summand: summand.summand_element(), sum_set)
 
     def intersection(self, other):
-        r"""The points of this set that lie in ``other``."""
+        r"""The pullback subset cut out by membership in ``other``."""
         if other not in Sets():
             raise TypeError(f"intersection requires a set, not {other!r}")
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.intersection(other._points))
-        selected = []
-        for point in self:
-            decision = other.is_parent_of(point)
-            if decision is True:
-                selected.append(point)
-            elif decision is not False:
-                return Sets().condition_set(self, lambda member: other.is_parent_of(member))
-        return _FiniteLiteralSet(selected)
+        # Finiteness of the ambient does not supply a chosen enumeration.
+        # The subset constructor retains the inclusion and predicate without
+        # searching through the ambient points to decide membership.
+        return Sets().condition_set(self, lambda member: other.is_parent_of(member))
 
     def difference(self, other):
-        r"""The points of this set that do not lie in ``other``."""
+        r"""The subset cut out by negated membership in ``other``."""
         if other not in Sets():
             raise TypeError(f"difference requires a set, not {other!r}")
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.difference(other._points))
-        selected = []
-        for point in self:
-            decision = other.is_parent_of(point)
-            if decision is False:
-                selected.append(point)
-            elif decision is not True:
-                from dzack_research.preamble.logic import negation
+        from dzack_research.preamble.logic import negation
 
-                return Sets().condition_set(self, lambda member: negation(other.is_parent_of(member)))
-        return _FiniteLiteralSet(selected)
+        return Sets().condition_set(self, lambda member: negation(other.is_parent_of(member)))
 
     def __or__(self, other):
         return self.union(other)
