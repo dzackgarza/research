@@ -1282,6 +1282,24 @@ class ModuleMorphismMethods:
             ))
         return codomain.subobject_on(generators)
 
+    @cached_method
+    def image_factorization(self):
+        r"""The effective image factorization in the ambient module category.
+
+        For ``f:M -> N`` this retains its actual image submodule ``I``,
+        the canonical inclusion ``i:I -> N``, and the induced epimorphism
+        ``e:M -> I`` with ``i * e = f``. In particular an image ideal in
+        the regular module of a commutative ring stays the selected ideal,
+        not an independently constructed isomorphic submodule.
+
+        A multiplication-by-two map on ``ZZ`` factors through ``2 ZZ``;
+        its inclusion is not the identity of ``ZZ``. The zero map instead
+        factors through the zero submodule, with its zero inclusion.
+        """
+        image = self.image()
+        inclusion = image.inclusion()
+        return self.factor_through(inclusion), inclusion
+
     def solution_fibre(self, right_hand_side):
         r"""Return the full affine fibre, its inclusion and its kernel torsor.
 
