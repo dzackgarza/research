@@ -50,6 +50,25 @@ def test_empty_relation_on_infinite_target_has_identity_coequalizer() -> None:
     assert factor(projection(target(3))) == target(6)
 
 
+def test_identical_parallel_maps_on_infinite_sets_have_identity_coequalizer() -> None:
+    r"""The coequalizer of f=f retains the target even for infinite relation data."""
+    source = Sets()(ZZ)
+    target = Sets()(ZZ)
+    arrow = Sets().Mor(source, target)(lambda value: target(value + 2))
+    construction = Sets().coequalizer_construction(arrow, arrow)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+    target_leg = Sets().Mor(target, target)(lambda value: target(3 * value))
+    cocone = construction.diagram().Cocones().cocone(
+        target, lambda index: target_leg * arrow if index is shape.source() else target_leg
+    )
+    factor = construction.factor(cocone).apex_map()
+
+    assert construction.object() is target
+    assert projection(target(7)) == target(7)
+    assert factor(projection(target(7))) == target(21)
+
+
 def test_generated_relation_on_infinite_set_knows_its_defining_edge() -> None:
     r"""An enumerated relation source proves its generating identifications."""
     source = Sets.Δ[0]

@@ -1536,9 +1536,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if Sets().is_provably_finite(source) and source.cardinality() == cardinal(0):
+            if left_morphism is right_morphism or (
+                Sets().is_provably_finite(source) and source.cardinality() == cardinal(0)
+            ):
                 # An empty relation generates equality, even when the
-                # target is infinite and has no selected enumeration.
+                # target is infinite and has no selected enumeration. The
+                # same holds for an identical parallel pair f = g.
                 quotient = target
                 projection = Sets().Mor(target, target).identity()
                 representative_point = target
@@ -1642,7 +1645,9 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if Sets().is_provably_finite(source) and source.cardinality() == cardinal(0):
+            if all(morphisms.value(label) is reference for label in labels) or (
+                Sets().is_provably_finite(source) and source.cardinality() == cardinal(0)
+            ):
                 quotient = target
                 projection = Sets().Mor(target, target).identity()
                 representative_point = target
