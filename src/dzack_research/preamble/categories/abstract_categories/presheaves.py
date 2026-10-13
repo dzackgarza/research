@@ -847,7 +847,8 @@ class CoveringFamilies(OwnedCategory):
             # A covering family's labels have a selected finite ranking.
             # Čech incidence is containment of their positions, not Python
             # tuple membership on potentially symbolic or unhashable labels.
-            # This also keeps the empty covered-object label initial.
+            # The empty covered-object label is terminal in the incidence
+            # order: every member and pair maps to the covered object.
             rank = self.index_set().ranking_map()
             return PosetCategory(
                 finite_ordered_set(tuple(labels)),
