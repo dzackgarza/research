@@ -65,14 +65,16 @@ def _largest_combinadic_entry(rank: int, size: int) -> int:
 def _strict_positions_from_combinadic(rank: int, size: int):
     if size == 0:
         return iter(())
-    largest = _largest_combinadic_entry(rank, size)
-    remainder = rank - int(binomial(largest, size))
-
-    def values():
-        yield from _strict_positions_from_combinadic(remainder, size - 1)
-        yield largest
-
-    return values()
+    # Recover the same colex combinadic digits iteratively. Recursive
+    # recovery otherwise reaches Python's recursion limit for legitimate
+    # high-degree finite selections, even at rank zero.
+    largest_first = []
+    remainder = rank
+    for degree in range(size, 0, -1):
+        largest = _largest_combinadic_entry(remainder, degree)
+        largest_first.append(largest)
+        remainder -= int(binomial(largest, degree))
+    return iter(reversed(largest_first))
 
 
 class FixedSizeSelectionElement(Element):
