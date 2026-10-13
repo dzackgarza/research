@@ -616,13 +616,17 @@ def _filtered_ordered_set(
     def index_of(element):
         return position_of(element)
 
-    from dzack_research.preamble.logic import conjunction, negation
-
     def contains(element):
-        return negation(conjunction(
-            negation(True if element is point else element == point)
-            for point in points
-        ))
+        # The selected tuple supplies an enumeration, not the definition of
+        # the subset. Membership remains P(x) for x in the given universe.
+        from dzack_research.preamble.logic import AtomicProposition
+
+        admission = universe.is_parent_of(element)
+        if admission is False:
+            return False
+        if admission is not True:
+            return AtomicProposition("is_member", element, universe)
+        return predicate(universe(element))
 
     return _object_of(
         FiniteOrderedSets(),
