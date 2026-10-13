@@ -4364,20 +4364,23 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                     return
                 sizes = self._finite_summand_sizes()
                 if sizes is not None:
-                    index_at = self.index_set().ranking_map().inverse()
                     for layer in range(max(sizes, default=0)):
                         for index_position, size in enumerate(sizes):
                             if layer < size:
                                 yield index_position, layer
                     return
+                index_at = self.index_set().ranking_map().inverse()
+                lengths = tuple(
+                    cardinal(self.cofactor(index_at(j)).cardinality())
+                    for j in range(finite_index_count)
+                )
+                if not all(length.is_finite() is True or length.is_finite() is False for length in lengths):
+                    raise ValueError("coproduct rank-layer enumeration needs decided summand finiteness")
                 layer = 0
                 while True:
                     emitted = False
-                    index_at = self.index_set().ranking_map().inverse()
-                    for index_position in range(finite_index_count):
-                        index = index_at(index_position)
-                        factor = self.cofactor(index)
-                        if self._factor_has_position(factor, layer):
+                    for index_position, length in enumerate(lengths):
+                        if length.is_finite() is False or layer < int(length.finite_value()):
                             emitted = True
                             yield index_position, layer
                     if not emitted and self._known_finite_size() is not None:
