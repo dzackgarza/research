@@ -3854,6 +3854,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             source, target = left_morphism.domain(), left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError(f"the group equalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("a group equalizer requires two morphisms in its selected group category")
 
             equalizer = source.predicate_subgroup(
                 lambda element: left_morphism(element) == right_morphism(element),
@@ -3912,6 +3919,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             source, target = left_morphism.domain(), left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError(f"the group coequalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("a group coequalizer requires two morphisms in its selected group category")
             if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 generators = source.group_generators()
             elif source in OwnedFiniteGroups():
