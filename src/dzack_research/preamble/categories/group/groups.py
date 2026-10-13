@@ -1871,7 +1871,13 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     gap_quotient = gap_projection.Image()
     permutation_isomorphism = gap_quotient.IsomorphismPermGroup()
     permutation_model = permutation_isomorphism.Image()
-    quotient = _own_group(PermutationGroup(gap_group=permutation_model))
+    # Quotients of abelian groups are abelian, independently of whether the
+    # permutation realization exposes its commutativity to the placement
+    # adapter. This is construction-derived, not an engine heuristic.
+    quotient = _own_group(
+        PermutationGroup(gap_group=permutation_model),
+        refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+    )
     projection = group.Mor(quotient)(
         gap_projection * permutation_isomorphism
     )
