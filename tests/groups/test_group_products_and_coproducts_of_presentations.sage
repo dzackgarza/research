@@ -51,6 +51,41 @@ def test_abelian_coproduct_of_two_cyclic_groups_is_product_not_free_product() ->
     assert fold(left(generator) * right(generator)) == cyclic.one()
 
 
+def test_mixed_abelian_coproduct_injections_are_sections_of_selected_projections() -> None:
+    r"""The coproduct ``Z ⊕ C2`` reuses the product's canonical coordinates."""
+    abelian = AbelianGroups()
+    integers = Groups.Free(1)
+    label = next(iter(integers.free_basis()))
+    generator = integers.free_generator(label)
+    cyclic = Groups.C(2)
+    involution = next(iter(cyclic.group_generators()))
+    factors = (integers, cyclic)
+    coproduct = abelian.coproduct_construction(factors)
+    diagram = coproduct.diagram()
+    first, second = diagram.domain()(0), diagram.domain()(1)
+    injection_z = coproduct.costructure_morphism(first)
+    injection_c2 = coproduct.costructure_morphism(second)
+    to_z = coproduct.factor(diagram.Cocones().cocone(
+        integers,
+        lambda index: integers.Mor(integers).identity()
+        if index is first else cyclic.Mor(integers).elementwise(
+            lambda _element: integers.one()
+        ),
+    )).apex_map()
+    to_c2 = coproduct.factor(diagram.Cocones().cocone(
+        cyclic,
+        lambda index: integers.Mor(cyclic).elementwise(
+            lambda _element: cyclic.one()
+        ) if index is first else cyclic.Mor(cyclic).identity(),
+    )).apex_map()
+
+    assert coproduct.object() in abelian
+    assert to_z(injection_z(generator)) == generator
+    assert to_c2(injection_z(generator)) == cyclic.one()
+    assert to_z(injection_c2(involution)) == integers.one()
+    assert to_c2(injection_c2(involution)) == involution
+
+
 def test_product_of_two_infinite_free_groups_retains_projections_and_universal_factor() -> None:
     r"""For F1 = Z, the product F1 x F1 has the two selected projections.
 
