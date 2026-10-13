@@ -3514,6 +3514,8 @@ class CartesianProductsOfSets(OwnedCategory):
             # A point of a product has fixed components; each is read into its
             # factor once and kept, not re-validated on every hash or comparison.
             self._resolved_components = []
+            self._resolved_component_hash_buckets = {}
+            self._resolved_component_unhashable = []
             self._resolved_component_identity = {}
             self._resolved_component_positions = {}
 
@@ -3535,8 +3537,14 @@ class CartesianProductsOfSets(OwnedCategory):
             cached = self._resolved_component_identity.get(id(normalized))
             if cached is not None and cached[0] is normalized:
                 return cached[1]
+            try:
+                bucket = self._resolved_component_hash_buckets.setdefault(hash(normalized), [])
+                candidates = (*bucket, *self._resolved_component_unhashable)
+            except TypeError:
+                bucket = self._resolved_component_unhashable
+                candidates = self._resolved_components
             undecided = False
-            for prior_index, resolved in self._resolved_components:
+            for prior_index, resolved in candidates:
                 equal = True if normalized is prior_index else normalized == prior_index
                 if equal is True:
                     if undecided:
@@ -3557,6 +3565,7 @@ class CartesianProductsOfSets(OwnedCategory):
             else:
                 resolved = self.parent().factor(normalized)(self._components(normalized))
             self._resolved_components.append((normalized, resolved))
+            bucket.append((normalized, resolved))
             self._resolved_component_identity[id(normalized)] = (normalized, resolved)
             return resolved
 
