@@ -103,6 +103,10 @@ at `group/g_sets.py:1054` returns an actual set morphism.
 
 The stabilizer defining-action source repair now retains the actual action
 functor and embedded subobject data, with execution still owed at terminal T.
+Its canonical `restricted_action_functor()` composes the selected subgroup
+inclusion `H -> G` with the original action `BG -> C`. The restricted
+conjugation and orthogonal lattice actions are source-level separating
+specimens, not a second stabilizer or action computation.
 
 **Subsequent source delivery, 2026-10-14:** group morphism images are
 constructed from selected finite generating families without requiring a

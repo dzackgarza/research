@@ -817,6 +817,20 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         def stabilizer_action(self):
             return self._stabilizer_action
 
+        @cached_method
+        def restricted_action_functor(self):
+            r"""The original action precomposed with the stabilizer inclusion.
+
+            For ``H=Stab_G(x)``, the canonical functor ``BH -> BG``
+            induced by ``H -> G`` restricts the actual action
+            ``BG -> C``. This preserves the exact acted-on object and
+            all structural maps; the stabilized embedded subobject remains
+            the separate ``stabilized_object`` datum.
+            """
+            from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
+
+            return ClassifyingFunctor(self.inclusion()).then(self.stabilizer_action())
+
 
 class CentralizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):

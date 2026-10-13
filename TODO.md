@@ -335,9 +335,10 @@ Repair the existing public construction routes and inherited methods before prov
   - Correct category placement and transport of preserved structure through
     the same construction. Retain actual actions, morphisms, functors and
     embedded subobjects as defining data. The `StabilizerSubgroups` action
-    and its restriction along subgroup inclusions remain acceptance
-    obligations even after the source-level replacement of descriptive
-    labels by actual action functors. The
+    and the restriction of its actual action functor along the subgroup
+    inclusion are now represented by composition `BH -> BG -> C`; the
+    corresponding independent equations remain acceptance obligations
+    for terminal T. The
     ideal-subobject join/meet structure is now source-implemented through
     the common module-subobject owner: the commutative-ideal computation
     specialization retains its inclusion and ideal data without overriding
