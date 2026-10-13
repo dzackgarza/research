@@ -93,15 +93,11 @@ class FixedSizeSelectionElement(Element):
     def word(self) -> IndexedFamily:
         r"""The selection as the family of its points in increasing order."""
         indices = Sets.Δ[self.degree() - 1]
+        positions = tuple(self._source_positions())
 
         def value(index):
             requested = int(index)
-            for position, source_position in enumerate(self._source_positions()):
-                if position == requested:
-                    return self.parent().source()[source_position]
-            raise IndexError(
-                f"position {requested} is out of range for the selection {self} of size {self.degree()}"
-            )
+            return self.parent().source()[positions[requested]]
 
         return indexed_family(indices, value, name="Selection word")
 
