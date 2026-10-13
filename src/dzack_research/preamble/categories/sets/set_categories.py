@@ -4440,6 +4440,16 @@ def _cartesian_product_morphism[IndexT](
             raise ValueError("the product component transformation must have the exact discrete index category")
         if not transformation.source().codomain().is_subcategory(Sets()) or not transformation.target().codomain().is_subcategory(Sets()):
             raise TypeError("componentwise product transformations must be set-valued")
+        from dzack_research.preamble.categories.abstract_categories.functors import _ConstantDiagram
+
+        for product, diagram in ((source, transformation.source()), (target, transformation.target())):
+            selected = product.family().selected_diagram()
+            constant = product.family().constant_value()
+            if selected is not None:
+                if diagram is not selected:
+                    raise ValueError("the component transformation must use the product's selected factor diagram")
+            elif constant is None or not isinstance(diagram, _ConstantDiagram) or diagram.constant_value() is not constant:
+                raise ValueError("the component transformation must use the product's constant factor diagram")
 
         def component(index):
             selected = shape.object(index)
@@ -4517,6 +4527,16 @@ def _coproduct_morphism[IndexT](
             raise ValueError("the coproduct component transformation must have the exact discrete index category")
         if not transformation.source().codomain().is_subcategory(Sets()) or not transformation.target().codomain().is_subcategory(Sets()):
             raise TypeError("componentwise coproduct transformations must be set-valued")
+        from dzack_research.preamble.categories.abstract_categories.functors import _ConstantDiagram
+
+        for coproduct, diagram in ((source, transformation.source()), (target, transformation.target())):
+            selected = coproduct.family().selected_diagram()
+            constant = coproduct.family().constant_value()
+            if selected is not None:
+                if diagram is not selected:
+                    raise ValueError("the component transformation must use the coproduct's selected summand diagram")
+            elif constant is None or not isinstance(diagram, _ConstantDiagram) or diagram.constant_value() is not constant:
+                raise ValueError("the component transformation must use the coproduct's constant summand diagram")
 
         def induced(element):
             index = element.summand_index()

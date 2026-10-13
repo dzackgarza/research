@@ -535,14 +535,12 @@ def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation()
         wrong_diagram, wrong_diagram,
         lambda _index: Sets().Mor(other, other).identity(),
     )
-    wrong_product = _cartesian_product_morphism(product, product, wrong)
-    wrong_coproduct = _coproduct_morphism(coproduct, coproduct, wrong)
-    for evaluate in (
-        lambda: wrong_product(section).component(NN(2)),
-        lambda: wrong_coproduct(coproduct.injection(NN(2))(point(0))),
+    for construct in (
+        lambda: _cartesian_product_morphism(product, product, wrong),
+        lambda: _coproduct_morphism(coproduct, coproduct, wrong),
     ):
         try:
-            evaluate()
+            construct()
         except ValueError:
             pass
         else:
