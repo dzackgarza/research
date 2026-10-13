@@ -361,11 +361,19 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 f"whose elements can be listed, and {self.base_ring()} is not one"
             )
             zero = self.zero()
-            annihilating = tuple(
-                scalar
-                for scalar in scalars
-                if all(self.scalar_multiple(scalar, element) == zero for element in self)
-            )
+            annihilating = []
+            for scalar in scalars:
+                equations = (self.scalar_multiple(scalar, element) == zero for element in self)
+                from dzack_research.preamble.logic import conjunction
+
+                decision = conjunction(equations)
+                if decision is True:
+                    annihilating.append(scalar)
+                elif decision is not False:
+                    raise ValueError(
+                        f"annihilator membership for {scalar} in {self.base_ring()} is undecided; "
+                        "finite enumeration does not establish symbolic scalar-action equality"
+                    )
             return self.base_ring().ideal(*(annihilating or (self.base_ring().zero(),)))
 
         def _verify_module_laws_when_decidable(self):
