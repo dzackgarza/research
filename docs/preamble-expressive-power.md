@@ -250,6 +250,15 @@ finite-presentation quotients. For parallel group maps `a,b: G -> H`,
 their coequalizer is the quotient of `H` by the normal closure of
 `a(g)b(g)^-1`. A generating family of `G` suffices for these relations.
 
+The later 2026-10-14 source delivery supplies group equalizers,
+coequalizers, empty diagrams, finite (co)products involving chosen
+finite presentations, and selected pullback/pushout cones. The product
+and free-product *universal factor maps* now use owned legs and the
+chosen factor embeddings or presentation generators rather than
+requiring a GAP model of their arbitrary cone/cocone apex. Their
+object computation retains the explicitly admitted presentation
+hypotheses. Independent runtime acceptance awaits terminal T.
+
 The group cokernel route at `groups.py:2383-2415` supplies a quotient group
 and projection for finite codomains and for subgroup inclusions into abelian
 groups. It rejects other cases, including the general chosen-presentation

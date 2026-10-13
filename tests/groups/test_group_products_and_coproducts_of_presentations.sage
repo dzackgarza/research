@@ -78,6 +78,41 @@ def test_free_product_of_infinite_free_and_finite_cyclic_groups() -> None:
     assert factor * construction.costructure_morphism(second) == identity
 
 
+def test_free_product_factors_a_cocone_into_a_non_gap_predicate_group() -> None:
+    r"""The free product F1*C2 maps into a represented infinite predicate subgroup.
+
+    The source keeps its GAP finitely presented free-product model, but the
+    cocone apex has only its subgroup inclusion and exact membership law.
+    This distinguishes the universal map from a GAP-to-GAP homomorphism.
+    """
+    free, cyclic = Groups.Free(1), Groups.C(2)
+    label = next(iter(free.free_basis()))
+    generator = free.free_generator(label)
+    involution = next(iter(cyclic.group_generators()))
+    reduction = free.Mor(cyclic)({label: involution})
+    subgroup = free.predicate_subgroup(
+        lambda element: reduction(element) == cyclic.one(),
+        "even exponent subgroup of the free cyclic group",
+    )
+    from_free = free.Mor(subgroup)({label: subgroup(generator**2)})
+    from_cyclic = cyclic.Mor(subgroup)(lambda _element: subgroup.one())
+
+    construction = Groups().coproduct_construction((free, cyclic))
+    shape = construction.diagram().domain()
+    first, second = shape(0), shape(1)
+    cocone = construction.diagram().Cocones().cocone(
+        subgroup,
+        lambda index: from_free if index is first else from_cyclic,
+    )
+    factor = construction.factor(cocone).apex_map()
+
+    assert factor.domain() is construction.object()
+    assert factor.codomain() is subgroup
+    assert factor(construction.costructure_morphism(first)(generator)) == subgroup(generator**2)
+    assert factor(construction.costructure_morphism(second)(involution)) == subgroup.one()
+    assert (factor * construction.costructure_morphism(first))(generator) == from_free(generator)
+
+
 def test_product_of_free_and_finite_cyclic_groups_transports_factor_maps() -> None:
     free = Groups.Free(1)
     label = next(iter(free.free_basis()))
@@ -98,6 +133,39 @@ def test_product_of_free_and_finite_cyclic_groups_transports_factor_maps() -> No
     assert construction.structure_morphism(left)(factor(generator)) == generator
     assert construction.structure_morphism(right)(factor(generator)) == involution
     assert construction.structure_morphism(right) * factor == reduction
+
+
+def test_group_product_factors_a_cone_with_no_apex_gap_realization() -> None:
+    r"""A predicate kernel of Z is an infinite group with no selected GAP model.
+
+    The universal product map into Z x C2 is determined by its literal
+    legs, not by seeking GAP generators of the cone apex.
+    """
+    free, cyclic = Groups.Free(1), Groups.C(2)
+    basis = next(iter(free.free_basis()))
+    generator = free.free_generator(basis)
+    involution = next(iter(cyclic.group_generators()))
+    reduction = free.Mor(cyclic)({basis: involution})
+    subgroup = free.predicate_subgroup(
+        lambda element: reduction(element) == cyclic.one(),
+        "kernel of reduction modulo two",
+    )
+    inclusion = subgroup.inclusion()
+    construction = Groups().product_construction((free, cyclic))
+    shape = construction.diagram().domain()
+    first, second = shape(0), shape(1)
+    cone = construction.diagram().Cones().cone(
+        subgroup,
+        lambda index: inclusion if index is first else reduction * inclusion,
+    )
+    factor = construction.factor(cone).apex_map()
+    even_word = subgroup(generator**2)
+
+    assert factor.domain() is subgroup
+    assert factor.codomain() is construction.object()
+    assert construction.structure_morphism(first)(factor(even_word)) == generator**2
+    assert construction.structure_morphism(second)(factor(even_word)) == cyclic.one()
+    assert (construction.structure_morphism(first) * factor)(even_word) == inclusion(even_word)
 
 
 def test_free_product_with_a_trivial_factor_preserves_finiteness() -> None:

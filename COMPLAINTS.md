@@ -196,6 +196,18 @@ computability boundary. Request additional mathematics from
 The [expressive-power assessment](docs/preamble-expressive-power.md) records
 the general interfaces and their composition boundaries.
 
+**Source refinement, 2026-10-14:** selected group direct products now
+factor cones by evaluating their actual legs and applying GAP's maintained
+factor embeddings. Their universal map no longer asks for a GAP engine
+or generating family of the arbitrary cone apex. Likewise, the selected
+free-product cocone factor uses owned images of the chosen coproduct
+generators and the existing presentation-relation validator, so its
+target apex need not have a GAP realization. Both preserve the original
+projections/injections and the same selected universal construction;
+infinite predicate-subgroup apexes distinguish this source boundary.
+Computing the *product/free product object* still needs the explicitly
+admitted factor presentations, and source equations await terminal T.
+
 ### Group colimits do not compose chosen finite presentations
 
 Finite coproducts of groups are free products. For groups with chosen finite

@@ -3561,25 +3561,28 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 apex = cone.apex()
                 if not labels:
                     return apex.Mor(product)(lambda _element: product.one())
-                source_engine = _gap_model(apex)
-                source_generators = tuple(source_engine.GeneratorsOfGroup())
-                images = []
-                for source_generator in source_generators:
-                    owned_generator = _element_from_engine(apex, source_generator)
+
+                # The universal map is determined pointwise by its selected
+                # legs, including when the apex group has no GAP realization.
+                # GAP computes the product and its injections, never a model
+                # of the apex or of the incoming cocone maps.
+                def image_of(element):
                     image = product_engine.One()
                     for position, label in enumerate(labels, start=1):
                         leg = cone.structure_morphism(diagram.domain()(label))
                         factor = family[label]
-                        factor_image = leg(owned_generator)
+                        factor_image = leg(element)
                         model = _element_to_engine(factor, factor_image)
                         if presentation_isomorphisms:
                             model = presentation_isomorphisms[position - 1].Image(model)
                         image *= libgap.Embedding(product_engine, position).Image(model)
-                    images.append(image)
-                return apex.Mor(product)._from_engine_generator_images(
-                    source_generators,
-                    images,
-                )
+                    return _element_from_engine(product, image)
+
+                # Each component of image_of is a homomorphism, and the
+                # direct-product embeddings commute. Hence the rule
+                # preserves multiplication and is the unique map with
+                # the stated projections; no generator search is needed.
+                return apex.Mor(product)._from_elementwise_rule(image_of)
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -3677,8 +3680,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 apex = cocone.apex()
                 if not labels:
                     return coproduct.Mor(apex)(lambda _element: apex.one())
-                generator_models = []
-                image_models = []
+                generator_images = {}
                 for position, label in enumerate(labels):
                     factor = family[label]
                     leg = cocone.costructure_morphism(diagram.domain()(label))
@@ -3687,21 +3689,32 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     for presented_generator in presented_factors[
                         position
                     ].GeneratorsOfGroup():
-                        generator_models.append(
-                            embedding.Image(presented_generator)
+                        # The factor embedding supplies the corresponding
+                        # *owned source generator*. No GAP realization of
+                        # the arbitrary cocone apex is needed.
+                        product_generator = _element_from_engine(
+                            coproduct, embedding.Image(presented_generator)
                         )
                         factor_generator = isomorphism.PreImagesRepresentative(
                             presented_generator
                         )
-                        image_models.append(
-                            _element_to_engine(
-                                apex,
-                                leg(_element_from_engine(factor, factor_generator)),
-                            )
+                        generator_images[product_generator] = leg(
+                            _element_from_engine(factor, factor_generator)
                         )
-                return coproduct.Mor(apex)._from_engine_generator_images(
-                    generator_models,
-                    image_models,
+                selected_generators = tuple(coproduct.group_generators())
+                if not all(generator in generator_images for generator in selected_generators):
+                    raise ValueError(
+                        f"the maintained free-product presentation of {coproduct} "
+                        "does not identify its selected generators with the "
+                        "literal factor embeddings"
+                    )
+                # The selected relation validator verifies that the source
+                # relators vanish at these images. They do: each relation
+                # belongs to a factor and the corresponding cocone leg is
+                # already a group morphism. Thus this is the unique map
+                # from the free product into any represented group apex.
+                return coproduct.Mor(apex)(
+                    {generator: generator_images[generator] for generator in selected_generators}
                 )
 
             return SelectedColimitConstruction(
