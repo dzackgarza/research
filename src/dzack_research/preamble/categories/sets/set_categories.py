@@ -4358,6 +4358,8 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
             r"""Yield ``(index_position, factor_position)`` in a total rank order."""
             finite_index_count = self._finite_index_count()
             if finite_index_count is not None:
+                if finite_index_count == 0:
+                    return
                 layer = 0
                 while True:
                     emitted = False
