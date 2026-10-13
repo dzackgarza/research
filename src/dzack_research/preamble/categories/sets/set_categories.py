@@ -1214,9 +1214,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             labels, reference, source, _target = self._finite_parallel_morphism_family(
                 morphisms
             )
+            from dzack_research.preamble.logic import conjunction
+
             equalizer = self.condition_set(
                 source,
-                lambda element: all(
+                lambda element: conjunction(
                     morphisms.value(label)(element) == reference(element)
                     for label in labels
                 ),
