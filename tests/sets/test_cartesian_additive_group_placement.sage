@@ -68,3 +68,27 @@ def test_opaque_infinite_callback_does_not_claim_additive_group_structure() -> N
     opaque = Sets().product(indexed_family(NN, lambda _index: ZZ))
     assert opaque not in AdditiveGroups()
     assert opaque not in AdditiveMonoids()
+
+
+def test_nonconstant_infinite_group_diagram_retains_group_structure() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+
+    labels = Sets.Δ[1]
+    finite_index = DiscreteCategory(labels)
+    infinite_index = DiscreteCategory(NN)
+    groups = AdditiveGroups()
+    diagram = Cat().Mor(finite_index, groups).discrete_diagram(
+        indexed_family(labels, lambda label: ZZ if label == labels(0) else QQ)
+    )
+    parity = Cat().Mor(infinite_index, finite_index).from_object_map(
+        lambda n: labels(int(n) % 2)
+    )
+    family = indexed_family(NN, diagram.restrict(parity))
+    product = Sets().product(family)
+    assert product in AdditiveGroups()
+    section = product(lambda label: family(label)(int(label) + 1))
+    for position in (0, 1, 4, 5):
+        projection = product.projection(NN(position))
+        assert projection.parent() is groups.Mor(product, family(NN(position)))
+        assert projection(-section) == -projection(section)
+        assert projection(section + (-section)) == family(NN(position)).zero()
