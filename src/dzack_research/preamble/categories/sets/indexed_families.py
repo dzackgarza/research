@@ -119,7 +119,7 @@ class IndexedFamily[IndexT, ValueT]:
             return self._rank_value_cache[rank]
         try:
             index_hash = hash(normalized)
-        except TypeError:
+        except (TypeError, ValueError):
             # Hashability is representation data, not a hypothesis on an
             # indexing set. Only unhashable labels actually requested are
             # retained on this exact fallback path.

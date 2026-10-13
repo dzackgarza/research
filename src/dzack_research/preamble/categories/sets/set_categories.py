@@ -3595,7 +3595,7 @@ class CartesianProductsOfSets(OwnedCategory):
             try:
                 bucket = self._resolved_component_hash_buckets.setdefault(hash(normalized), [])
                 candidates = (*bucket, *self._resolved_component_unhashable)
-            except TypeError:
+            except (TypeError, ValueError):
                 bucket = self._resolved_component_unhashable
                 candidates = self._resolved_components
             for prior_index, resolved in candidates:
