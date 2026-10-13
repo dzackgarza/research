@@ -1911,15 +1911,16 @@ class _AbelianSubgroupQuotientElement(MultiplicativeGroupElement):
     def __invert__(self):
         return self._invert_()
 
-    def is_one(self) -> bool:
-        return self.representative() in self.parent().subgroup()
+    def is_one(self):
+        return self.parent().subgroup().is_parent_of(self.representative())
 
     def __eq__(self, other):
-        return (
-            isinstance(other, _AbelianSubgroupQuotientElement)
-            and other.parent() is self.parent()
-            and self.representative() * ~other.representative()
-            in self.parent().subgroup()
+        if not isinstance(other, _AbelianSubgroupQuotientElement) or other.parent() is not self.parent():
+            return False
+        # The defining coset equation is a proposition if membership in
+        # the subgroup is undecided. Do not coerce it to a Python boolean.
+        return self.parent().subgroup().is_parent_of(
+            self.representative() * ~other.representative()
         )
 
     def __ne__(self, other):
