@@ -2970,12 +2970,15 @@ class _EnumeratedFixedCardinalitySubsetSetEngine:
 
             def source_positions():
                 found = 0
-                source_position = 0
-                while found < needed:
-                    if point_at_source_rank(source_position) in subset:
+                for source_position in range(int(cardinal(self.source().cardinality()).finite_value())):
+                    decision = subset.is_parent_of(point_at_source_rank(source_position))
+                    if decision is True:
                         yield source_position
                         found += 1
-                    source_position += 1
+                    elif decision is not False:
+                        raise ValueError("fixed-size subset ranking requires decided membership")
+                if found != needed:
+                    raise ValueError("the represented subset does not have its stated cardinality")
 
             selection = selections.from_source_rank_positions(source_positions())
             return selections.ranking_map()(selection)
