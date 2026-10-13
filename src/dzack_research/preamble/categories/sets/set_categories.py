@@ -3145,7 +3145,7 @@ class _ConditionSetEngine:
 
     def __contains__(self, element) -> bool | Predicate:
         r"""Whether ``element`` is a point of \(X\) satisfying \(P\)."""
-        from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.logic import AtomicProposition, Predicate
 
         universe = self.universe()
         match universe.is_parent_of(element):
@@ -3156,6 +3156,11 @@ class _ConditionSetEngine:
                 if id(point) in self._admitted_member_ids:
                     return True
                 member = self.predicate()(point)
+                if member is not True and member is not False and not isinstance(member, Predicate):
+                    raise TypeError(
+                        f"a subset predicate on {universe} must return True, False or a proposition, "
+                        f"but returned {member!r} at {point!r}"
+                    )
                 if member is True:
                     self._retain_admitted_member(point)
                 return member
