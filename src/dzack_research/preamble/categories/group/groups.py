@@ -2455,7 +2455,7 @@ class GroupMorphism:
         match source:
             case _ if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 witnesses = source.group_generators()
-            case _ if source in GeneratedSubgroups(self.codomain()):
+            case _ if source in GeneratedSubgroups(source.supergroup()):
                 witnesses = source.selected_subgroup_generators()
             case _ if source in OwnedFiniteGroups():
                 witnesses = source
