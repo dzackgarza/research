@@ -551,9 +551,15 @@ class _ArithmeticCuspEngine:
         )
 
         parabolic = self.representative().parabolic_subgroup()
+        from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
+
+        subgroup = self.subgroup()
+        action = ClassifyingFunctor(subgroup.inclusion()).then(
+            subgroup.supergroup().natural_module_action_functor()
+        )
         return StabilizerSubgroups(self.subgroup())(
-            self.representative(),
-            "setwise on the represented isotropic sublattice",
+            self.representative().inclusion(),
+            action,
             lambda element: element in parabolic,
         )
 
@@ -751,9 +757,15 @@ class ArithmeticCuspIncidence(SageObject):
 
         line_stabilizer = self.line().parabolic_subgroup()
         plane_stabilizer = self.plane().parabolic_subgroup()
+        from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
+
+        subgroup = self.subgroup()
+        action = ClassifyingFunctor(subgroup.inclusion()).then(
+            subgroup.supergroup().natural_module_action_functor()
+        )
         return StabilizerSubgroups(self.subgroup())(
             self.flag(),
-            "setwise on both terms of the isotropic flag",
+            action,
             lambda element: element in line_stabilizer and element in plane_stabilizer,
         )
 

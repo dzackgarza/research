@@ -4439,7 +4439,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return StabilizerSubgroups(self)(
                 subgroup,
-                "conjugation",
+                self.subgroup_conjugation_g_set().action_functor(),
                 normalizes,
                 description=f"normalizer of {subgroup} in {self}",
             )
@@ -4515,8 +4515,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Return ``g H g^-1``, the image of ``H`` under conjugation by ``g``."""
             assert group_element in self, f"{group_element} is not an element of {self}"
             assert subgroup is self or subgroup in self.subgroups(), f"{subgroup} is not a subgroup of {self}"
-            if subgroup is self:
-                return self
+            if subgroup is self or group_element == self.one():
+                # Conjugation by 1 is literally the identity action on the
+                # represented subgroup, including its selected data and maps.
+                return subgroup
             selected = self._conjugate_subgroup_construction(group_element, subgroup)
             if selected is not None:
                 return selected

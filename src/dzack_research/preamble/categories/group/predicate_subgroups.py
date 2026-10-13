@@ -182,10 +182,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                             representatives.append(candidate)
                             if len(representatives) > bound:
                                 raise ValueError("the subgroup index exceeds the supplied bound")
-            return tuple(
-                self((~representative_of(generator * representative)) * generator * representative)
-                for representative in representatives
-                for generator in generators
+            from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+            return finite_family(
+                (
+                    self((~representative_of(generator * representative)) * generator * representative)
+                    for representative in representatives
+                    for generator in generators
+                ),
+                name="Schreier generators of a finite-index subgroup",
             )
 
         def _character_data_snapshot(self):
@@ -513,12 +518,35 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 generators = tuple(ambient.group_generators())
             else:
                 generators = tuple(generators)
+            from dzack_research.preamble.categories.sets.finite_families import finite_family
+
             lifts = ambient.finite_image_lifts(morphism, generators=generators)
-            return tuple(
-                self((~lifts[morphism(s) * image]) * s * representative)
-                for image, representative in lifts.items()
-                for s in generators
+            return finite_family(
+                (
+                    self((~lifts[morphism(s) * image]) * s * representative)
+                    for image, representative in lifts.items()
+                    for s in generators
+                ),
+                name="Schreier generators of a kernel",
             )
+
+        def schreier_generating_morphism(self, *, generators=None):
+            r"""The selected epimorphism from a free group on Schreier generators.
+
+            The images come from the existing Schreier family. The free basis
+            and its image map are retained by the free-group Mor constructor,
+            rather than exposing an unparented list of group elements.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            words = self.schreier_generators(generators=generators)
+            free = OwnedGroups.Free(index_set=words.index_set())
+            ambient_map = free.Mor(self.supergroup())(
+                Sets().Mor(words.index_set(), self.supergroup())(
+                    lambda index: words.value(index)
+                )
+            )
+            return free.Mor(self)._from_elementwise_rule(ambient_map)
 
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
@@ -706,7 +734,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             """
             augmentation = self.schreier_generating_morphism(generators=generators)
             source = augmentation.domain()
-            return tuple(augmentation(generator) for generator in source.group_generators())
+            return source.group_generators().map(
+                augmentation,
+                name="Schreier generators of a subgroup preimage",
+            )
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
@@ -715,7 +746,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         identity = group.one()
         return self(
             identity,
-            "conjugation",
+            group.conjugation_g_set().action_functor(),
             lambda element: element * identity * element.inverse() == identity,
         )
 
@@ -728,7 +759,14 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         description=None,
     ):
         r"""Construct the stabilizer retaining the stabilized object and action."""
+        from dzack_research.preamble.categories.functors.core import Functor
+
         group = self.base()
+        if not isinstance(action, Functor) or action.domain() is not group.classifying_category():
+            raise TypeError(
+                f"the stabilizer of {stabilized_object} in {group} requires the actual "
+                f"action functor B({group}) -> C, but received {action!r}"
+            )
         if description is None:
             description = f"g stabilizes {stabilized_object} {action}"
         return _object_of(

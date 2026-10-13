@@ -27,6 +27,12 @@ def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_on
     assert negation in orthogonal_group.setwise_stabilizer(embedding)
     assert negation not in orthogonal_group.pointwise_stabilizer(embedding)
     assert negation not in orthogonal_group.stabilizer(isotropic)
+    setwise = orthogonal_group.setwise_stabilizer(embedding)
+    pointwise = orthogonal_group.pointwise_stabilizer(embedding)
+    assert setwise.stabilized_object() is embedding
+    assert pointwise.stabilized_object() is embedding
+    assert setwise.stabilizer_action() is orthogonal_group.natural_module_action_functor()
+    assert pointwise.stabilizer_action() is orthogonal_group.natural_module_action_functor()
 
 
 def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:

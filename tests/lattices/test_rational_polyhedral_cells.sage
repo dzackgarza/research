@@ -31,7 +31,13 @@ def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:
         stabilizer = lattice.O().stabilizer(normal)
         assert stabilizer.supergroup() is lattice.O()
         assert stabilizer.stabilized_object() is normal
-        assert stabilizer.stabilizer_action() == "pointwise"
+        # The action is BG -> Modules(R), not a descriptive string.
+        action = stabilizer.stabilizer_action()
+        assert action.domain() is lattice.O().classifying_category()
+        assert action.codomain() is Modules(lattice.base_ring())
+        point = action.domain().an_object()
+        identity = action.domain().Mor(point, point)(lattice.O().one())
+        assert action(identity)(normal) == normal
 
 
 def test_a2_voronoi_facets_are_indexed_by_the_six_relevant_vectors() -> None:

@@ -22,6 +22,12 @@ def test_two_is_inert_in_the_field_of_root_five() -> None:
     assert group.inertia_group_class(2).image(quotient, prime).order() == 1
     assert quotient.decomposition_group(prime).order() == 2
     assert quotient.inertia_group(prime).order() == 1
+    stabilizer = quotient.decomposition_group(prime)
+    action = stabilizer.stabilizer_action()
+    assert stabilizer.stabilized_object() is prime
+    assert action.domain() is quotient.classifying_category()
+    assert action.codomain() is Sets()
+    assert prime in action(action.domain().an_object())
 
 
 def test_the_frobenius_at_two_is_the_nontrivial_automorphism_of_q_root_five() -> None:

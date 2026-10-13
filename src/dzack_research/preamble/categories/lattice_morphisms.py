@@ -2029,6 +2029,21 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         )
         return self.domain()
 
+    @cached_method
+    def natural_module_action_functor(self):
+        r"""The action functor `BO(L) -> Mod_R` on the module of L."""
+        from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        lattice = self.lattice()
+        modules = Modules(lattice.base_ring())
+        return GroupActionFunctor(
+            self,
+            modules,
+            lattice,
+            lambda automorphism: modules.Mor(lattice, lattice)(automorphism),
+        )
+
     def stabilizer(self, target, action="setwise"):
         r"""Return a vector or sublattice stabilizer in ``O(L)``.
 
@@ -2057,7 +2072,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         )
         return StabilizerSubgroups(self)(
             target,
-            "pointwise",
+            self.natural_module_action_functor(),
             lambda automorphism: automorphism(target) == target,
             description=f"g fixes {target}",
         )
@@ -2075,10 +2090,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         source = embedding.domain()
         embedded = tuple(embedding(generator) for generator in source.module_generators())
         return StabilizerSubgroups(self)(
-            source,
-            "pointwise",
+            embedding,
+            self.natural_module_action_functor(),
             lambda automorphism: all(automorphism(vector) == vector for vector in embedded),
-            description=f"g fixes {source} pointwise",
+            description=f"g fixes {embedding} pointwise",
         )
 
     def setwise_stabilizer(self, embedding):
@@ -2106,10 +2121,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             return all(embedding.is_in_image(automorphism(vector)) and embedding.is_in_image(inverse(vector)) for vector in embedded)
 
         return StabilizerSubgroups(self)(
-            source,
-            "setwise",
+            embedding,
+            self.natural_module_action_functor(),
             preserves_image,
-            description=f"g(I)=I for I={source}",
+            description=f"g(im({embedding}))=im({embedding})",
         )
 
     @cached_method

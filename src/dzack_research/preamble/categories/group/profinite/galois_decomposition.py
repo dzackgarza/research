@@ -126,9 +126,25 @@ def FiniteElementConjugacyClass(supergroup, representative):
 
 def _finite_decomposition_group(quotient, prime_above):
     r"""``D_P = {sigma in Gal(L/K) : sigma(P) = P}``, the stabilizer of ``P``."""
+    from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    # The finite Galois group acts on the finite orbit of the selected prime.
+    # Retain the actual action whose point stabilizer is the decomposition group.
+    orbit = finite_ordered_set(
+        _image_prime(prime_above, automorphism) for automorphism in quotient
+    )
+    action = GroupActionFunctor(
+        quotient,
+        Sets(),
+        orbit,
+        lambda automorphism: Sets().Mor(orbit, orbit)(
+            lambda ideal: orbit(_image_prime(ideal, automorphism))
+        ),
+    )
     return StabilizerSubgroups(quotient)(
         prime_above,
-        "prime ideal",
+        action,
         lambda automorphism: _image_prime(prime_above, automorphism) == prime_above,
         description=f"Decomposition group at {prime_above}",
     )

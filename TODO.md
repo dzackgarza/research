@@ -334,10 +334,12 @@ Repair the existing public construction routes and inherited methods before prov
     these general quotient maps.
   - Correct category placement and transport of preserved structure through
     the same construction. Retain actual actions, morphisms, functors and
-    embedded subobjects as defining data. The
-    [label substitution defect](COMPLAINTS.md#string-labels-replace-mathematical-defining-data)
-    and [lost ideal structure](COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
-    are required repairs of this family.
+    embedded subobjects as defining data. The `StabilizerSubgroups` action
+    and its restriction along subgroup inclusions remain acceptance
+    obligations even after the source-level replacement of descriptive
+    labels by actual action functors. The
+    [lost ideal structure](COMPLAINTS.md#module-subobject-joins-and-meets-do-not-transport-canonical-ideal-structure)
+    is another required repair of this family.
   - Computed group generating data as mathematical families and generating
     epimorphisms, and chosen preimages as actual sections in sets. These
     outputs must compose with the existing subgroup inclusions and group

@@ -53,3 +53,18 @@ def test_the_centralizer_of_a_double_transposition_in_s4_has_order_eight() -> No
     group = Groups.S(4)
 
     assert group.centralizer(group([(1, 2), (3, 4)])).order() == 8
+
+
+def test_normalizer_retains_its_conjugation_action_functor() -> None:
+    group = Groups.S(3)
+    subgroup = group.subgroup((group((1, 2)),))
+    normalizer = group.normalizer(subgroup)
+    action = normalizer.stabilizer_action()
+    point = action.domain().an_object()
+    identity = action.domain().Mor(point, point)(group.one())
+
+    assert normalizer.stabilized_object() is subgroup
+    assert action.domain() is group.classifying_category()
+    assert action.codomain() is Sets()
+    assert action(identity)(subgroup) is subgroup
+    assert normalizer.inclusion().codomain() is group

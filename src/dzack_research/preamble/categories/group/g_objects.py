@@ -1394,7 +1394,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             group = self.acting_group()
             return StabilizerSubgroups(group)(
                 point,
-                "pointwise",
+                self.action_functor(),
                 lambda group_element: self.act(group_element, point) == point,
                 description=f"stabilizer of {point} in {self}",
             )

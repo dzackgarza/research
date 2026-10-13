@@ -205,7 +205,8 @@ This trace establishes the subgroup result and its inclusion.
 `StabilizerSubgroups.stabilizer_action` returns that argument
 (`predicate_subgroups.py:653-698`). The actual action remains inside the
 membership closure. This is a foundational loss of defining data, recorded
-in [COMPLAINTS.md](../COMPLAINTS.md#string-labels-replace-mathematical-defining-data).
+in the original source audit; the later stabilizer-owner repair replaces these
+labels with represented actions, while terminal execution remains outstanding.
 
 The defect recurs in normalizers (`groups.py:3603`), lattice stabilizers
 (`lattice_morphisms.py:2029,2048,2079`) and finite decomposition groups
