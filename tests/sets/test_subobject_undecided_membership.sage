@@ -19,6 +19,7 @@ def test_finite_subobject_boolean_operations_retain_propositions() -> None:
     assert unknown.complement().is_parent_of(ambient(0)) is not False
     assert unknown.symmetric_difference(empty).is_parent_of(ambient(0)) is not False
     assert (unknown <= full) is True
+    assert (unknown <= unknown) is True
     assert (empty <= unknown) is True
     assert (unknown <= empty) is not True
     assert (unknown == full) is not True

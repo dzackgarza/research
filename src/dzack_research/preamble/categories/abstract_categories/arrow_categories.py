@@ -1785,6 +1785,10 @@ class SetSubobjectCategory(SliceCategory):
             from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
             from dzack_research.preamble.logic import conjunction, negation
 
+            if self is other:
+                return True
+            if other not in self._set_subobject_category():
+                return False
             if other.codomain() is not self.codomain():
                 return False
             base = self.codomain()
