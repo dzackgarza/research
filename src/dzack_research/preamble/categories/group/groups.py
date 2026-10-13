@@ -3858,8 +3858,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def factorizer(cone):
                 source_leg = cone.structure_morphism(shape.source())
-                return cone.apex().Mor(equalizer)(
-                    lambda element: equalizer(source_leg(element))
+                # The equalizer is supplied with its actual inclusion.
+                # Factor through that monomorphism, rather than invoking
+                # the predicate subgroup's fresh element constructor as a
+                # second, unrelated description of the same subobject.
+                return cone.apex().Mor(equalizer).elementwise(
+                    lambda element: inclusion.lift(source_leg(element))
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
