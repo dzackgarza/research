@@ -2268,7 +2268,7 @@ class SetInjection(OwnedSetMorphism):
                     lookup = dict(pairs)
                     if len(lookup) != len(pairs):
                         raise ValueError("a set injection cannot identify distinct source points")
-                except TypeError:
+                except (TypeError, ValueError):
                     for position, (key, _) in enumerate(pairs):
                         for previous, _ in pairs[:position]:
                             same = True if key is previous else key == previous
