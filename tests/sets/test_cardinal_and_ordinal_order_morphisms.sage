@@ -203,6 +203,17 @@ def test_literal_union_preserves_unenumerated_finite_image() -> None:
     assert union.is_parent_of(universe(2)) is not False
 
 
+def test_literal_union_with_infinite_set_keeps_its_coproduct_image() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    finite = Set((0, 1))
+    union = finite.union(NN)
+    assert union in Sets()
+    assert union not in Sets().Finite()
+    assert union.source_set().index_set().cardinality() == cardinal(2)
+    assert union.source_set().cofactor(union.source_set().index_set()(1)) is NN
+
+
 def test_literal_intersection_and_difference_preserve_undecided_membership() -> None:
     from dzack_research.preamble.categories.sets.set_categories import Set
     from dzack_research.preamble.logic import AtomicProposition

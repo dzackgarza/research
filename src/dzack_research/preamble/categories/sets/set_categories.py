@@ -2039,9 +2039,8 @@ class _FiniteLiteralSet(Sets().ObjectType):
         points for the literal-set engine; do not silently enumerate an
         undecided predicate subset.
         """
-        assert other in Sets() and Sets().is_provably_finite(other), (
-            f"the union with {self} requires another finite set, but {other} is not known to be one"
-        )
+        if other not in Sets():
+            raise TypeError(f"union requires a set, not {other!r}")
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.union(other._points))
         # The chosen ambient of a predicate subset supplies its inclusion,
@@ -2049,12 +2048,11 @@ class _FiniteLiteralSet(Sets().ObjectType):
         # Hence A union B = A whenever B is constructed as a subset of A.
         if isinstance(other, _ConditionSetEngine) and other.universe() is self:
             return self
-        if other in EnumeratedSets():
+        if Sets().is_provably_finite(other) and other in EnumeratedSets():
             return _FiniteLiteralSet((*self, *other))
-        # The image of the fold A ⊔ B -> A ∪ B defines the union even
-        # when B has no chosen enumeration or decidable membership.  Use
-        # the existing coproduct and image constructions; their finite
-        # placement is inherited from the two finite sources.
+        # The image of the fold A ⊔ B -> A ∪ B defines the union for any
+        # set B, including infinite and non-enumerated sets. Its finiteness
+        # is inherited only when both factors are finite.
         sum_set = self.coproduct_with(other)
         return Sets().image_set(lambda summand: summand.summand_element(), sum_set)
 
