@@ -1069,6 +1069,11 @@ class Modules(OwnedCategoryOverBaseRing):
                 arrow = morphisms.value(label)
                 if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
                     raise ValueError(f"the wide equalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
+            if len(labels) == 1:
+                # A singleton parallel family imposes no equality relation.
+                # The limit is its literal source, not a newly computed
+                # kernel of the zero morphism.
+                return reference.domain()
             equalizer = self._categorical_equalizer(reference, reference)
             for label in labels[1:]:
                 equalizer = equalizer.intersection(self._categorical_equalizer(morphisms.value(label), reference))
@@ -1082,7 +1087,11 @@ class Modules(OwnedCategoryOverBaseRing):
 
             equalizer = self._categorical_equalizer_family(morphisms)
             reference = morphisms.value(next(iter(morphisms.index_set())))
-            inclusion = equalizer.inclusion()
+            inclusion = (
+                equalizer.Mor(equalizer).identity()
+                if equalizer is reference.domain()
+                else equalizer.inclusion()
+            )
             diagram = _parallel_family_diagram(morphisms, self)
             shape = diagram.domain()
             universal_cone = diagram.Cones().cone(
@@ -1093,6 +1102,8 @@ class Modules(OwnedCategoryOverBaseRing):
             def factorizer(cone):
                 source = cone.apex()
                 source_leg = cone.structure_morphism(shape.source())
+                if equalizer is reference.domain():
+                    return source_leg
                 return source.module_category().Mor(source, equalizer)._equalizer_factor(
                     source_leg, inclusion=inclusion
                 )
@@ -1125,6 +1136,8 @@ class Modules(OwnedCategoryOverBaseRing):
                 arrow = morphisms.value(label)
                 if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
                     raise ValueError(f"the wide coequalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
+            if len(labels) == 1:
+                return reference.codomain()
             relations = (reference - reference).image()
             for label in labels[1:]:
                 relations = relations.sum((morphisms.value(label) - reference).image())
@@ -1144,7 +1157,11 @@ class Modules(OwnedCategoryOverBaseRing):
             # of the generated relation submodule. Retain that cokernel's
             # selected projection, rather than independently making another
             # arrow from generator labels.
-            projection = quotient.cokernel_projection()
+            projection = (
+                target.Mor(target).identity()
+                if quotient is target
+                else quotient.cokernel_projection()
+            )
             if projection.domain() is not target or projection.codomain() is not quotient:
                 raise ValueError("the wide module quotient's retained projection has incorrect endpoints")
             diagram = _parallel_family_diagram(morphisms, self)
@@ -1156,6 +1173,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
             def factorizer(cocone):
                 target_leg = cocone.costructure_morphism(shape.target())
+                if quotient is target:
+                    return target_leg
                 return quotient.module_category().Mor(quotient, cocone.apex())(
                     lambda label: target_leg(target.module_generator(label))
                 )

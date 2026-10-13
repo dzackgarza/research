@@ -172,6 +172,24 @@ def test_wide_module_constructions_use_the_selected_nonordinal_family_labels() -
     assert wide_coequalizer.factor(cocone).apex_map() * projection == reduction
 
 
+def test_singleton_wide_module_diagrams_retain_identity_constructions() -> None:
+    r"""A single module arrow imposes no parallel equality or quotient relation."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    twice = line.Mor(line)({e: 2 * e})
+    family = indexed_family(finite_ordered_set(("only",)), lambda _label: twice)
+    equalizer = modules.equalizer_of_family_construction(family)
+    coequalizer = modules.coequalizer_of_family_construction(family)
+    equalizer_shape = equalizer.diagram().domain()
+    coequalizer_shape = coequalizer.diagram().domain()
+
+    assert equalizer.object() is line
+    assert coequalizer.object() is line
+    assert equalizer.structure_morphism(equalizer_shape.source()) == line.Mor(line).identity()
+    assert coequalizer.costructure_morphism(coequalizer_shape.target()) == line.Mor(line).identity()
+
+
 def test_wide_module_equalizer_retains_nonzero_universal_factor() -> None:
     r"""The common equalizer of ``0, 2, 4`` on ``Z/4`` is ``2Z/4``."""
     modules = Modules(ZZ)
