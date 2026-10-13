@@ -33,6 +33,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -81,9 +82,60 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         generators = tuple(realization.lift(realization, permutation) for permutation in group.gens())
         if all(generator is not None for generator in generators):
             return finite_ordered_set(generators)
+        # Indefinite.jl@374a5ebb/indef/lib/AutomorphismPolytope.g:366-412,
+        # KernelLinPolytopeIntegral_Automorphism_Subspaces: represent the
+        # rational configuration group on the generated row lattice K, and
+        # take the stabilizer of the ambient integral overlattice L.  The
+        # generic IntegralStructureAction is the finite-residue realization
+        # of the source's LinearSpace_Stabilizer (GroupAction.g:350-543).
+        # Enumerating all graph permutations is NOT that source algorithm.
+        fraction_map = lattice.base_ring().fraction_field_map()
+        rational = lattice.base_change(fraction_map)
+        rational_ring = rational.base_ring()
+        labels = tuple(lattice.module_generating_set())
+        rational_generators = []
+        for permutation in group.gens():
+            image_rows = realization.rows.matrix_from_rows(
+                [int(permutation(position)) for position in range(len(realization.vectors))]
+            )
+            transformation = realization.inverse_basis * image_rows.matrix_from_rows(
+                realization.basis_positions
+            )
+            if realization.rows * transformation != image_rows:
+                raise ArithmeticError("a graph automorphism fails to preserve the configuration's linear relations")
+            images = {
+                label: rational.linear_combination({
+                    image_label: rational_ring(int(entry.numerator())) / rational_ring(int(entry.denominator()))
+                    for image_label, entry in zip(labels, row, strict=True) if entry
+                })
+                for label, row in zip(labels, transformation.rows(), strict=True)
+            }
+            rational_generators.append(rational.O()(images))
+
+        generated = lattice.vector_configuration(realization.vectors)
+        exponent = generated.inclusion().cokernel().exponent()
+        if exponent <= lattice.base_ring().zero():
+            raise ArithmeticError("a spanning vector configuration must generate a finite-index integral sublattice")
+        ambient_inclusion = ModulesOverIntegralDomains(lattice.base_ring())(lattice).generic_fibre_map()
+        ambient_space = ambient_inclusion.codomain()
+        scale = rational_ring.one() / rational_ring(exponent)
+        containing = Modules(lattice.base_ring()).Mono(generated, ambient_space)(
+            lambda label: ambient_space.wrap(rational.scalar_multiple(
+                scale,
+                ambient_inclusion(generated.inclusion()(generated.module_generator(label))).underlying_element(),
+            ))
+        )
+        # The group/action module also consumes lattices; delay this import
+        # until the lattice-category graph has completed construction.
+        from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
+
+        rational_group = rational.O().subgroup(tuple(rational_generators))
+        stabilizer = IntegralStructureAction(rational_group, ambient_inclusion).with_stable_containing_bound(
+            containing
+        ).stabilizer()
         return finite_ordered_set(tuple(
-            lifted for permutation in group
-            if (lifted := realization.lift(realization, permutation)) is not None
+            lattice.integral_isometry(generator)
+            for generator in stabilizer.group_generators()
         ))
 
     def spanning_isometry(self, source, source_vectors, source_colours, target, target_vectors, target_colours):

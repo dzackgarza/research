@@ -1760,49 +1760,24 @@ class FormModules(OwnedCategoryOverBaseRing):
             return self.vector_of_sign(-1)
 
         def signature_pair(self):
-            r"""Return the positive and negative indices of the selected norm.
-
-            At finite rank this uses the symmetric Hessian of the selected
-            norm: ``b+b^T`` for a bilinear datum and the polar form for a
-            quadratic datum.  At infinite rank an existing Gram rule may
-            supply exact inertia directly; otherwise the computation remains
-            explicitly unavailable.
-            """
-            if self.value_module() is not self.base_ring():
-                raise TypeError(
-                    f"the signature of {self} needs scalar values in {self.base_ring()}, "
-                    f"but its values lie in {self.value_module()}"
-                )
+            r"""Return cardinal inertia of the selected norm in its chosen ordering."""
+            assert self.value_module() in OwnedRings(), (
+                f"the signature of {self} needs ordered scalar values, not {self.value_module()}"
+            )
             from dzack_research.preamble.categories._lattice import (
                 _signature_pair_of_gram,
             )
 
-            if _has_finite_framing(self):
-                labels = tuple(self.module_generating_set())
-                quadratic = _is_quadratic_form(self.form())
-
-                def value(left_label, right_label):
-                    left = self.module_generator(left_label)
-                    right = self.module_generator(right_label)
-                    forward = self.b(left, right)
-                    return forward if quadratic else forward + self.b(right, left)
-
-                size = len(labels)
-                hessian = tensor(
-                    self.base_ring(),
-                    (),
-                    (size, size),
-                    tuple(
-                        tuple(value(left, right) for right in labels)
-                        for left in labels
-                    ),
+            form = self.form()
+            if _is_quadratic_form(form) and not form.has_selected_bilinear_lift():
+                assert _has_finite_framing(self), (
+                    f"the polar Gram computation of {self} needs finite selected spanning data; "
+                    "no infinite quadratic Gram inertia is supplied"
                 )
-                signature = _signature_pair_of_gram(hessian)
+                gram = form.polar_form().gram_tensor()
             else:
-                if not _is_bilinear_form(self.form()):
-                    signature = None
-                else:
-                    signature = _signature_pair_of_gram(self.gram_tensor())
+                gram = self.gram_tensor()
+            signature = _signature_pair_of_gram(gram)
             assert signature is not None, (
                 f"cannot compute the inertia of {self}: its selected norm supplies no exact inertia computation"
             )

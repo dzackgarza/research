@@ -653,9 +653,10 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 def _degree(degree) -> int:
     r"""Read an exact nonnegative integer at the existing numeral boundary.
 
-    The power constructions share this normalization, including products
-    and induced maps. Fractional input is not a degree and must not be
-    truncated into a different power by Python's ``int`` conversion.
+    The power constructions share this normalization, including products,
+    induced maps, and the exterior-power degrees used by Poincaré duality
+    and Hodge constructions. Fractional input is not a degree and must not
+    be truncated into a different power by Python's ``int`` conversion.
     """
     if element_parent(degree) is NN:
         degree = int(degree)
