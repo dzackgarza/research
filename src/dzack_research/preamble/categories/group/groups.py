@@ -2618,6 +2618,11 @@ class GroupMorphism:
     def is_injective(self):
         if self._injectivity_premise is not None:
             return self._injectivity_premise
+        # An infinite group cannot inject into a finite group. This follows
+        # from the represented endpoint cardinalities, before selecting any
+        # homomorphism algorithm or enumerating the infinite source.
+        if self.domain() in OwnedInfiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            return False
         if self._gap_homomorphism is not None or self._generator_images is not None:
             return bool(self._gap_morphism_crossing().IsInjective())
         source = self.domain()

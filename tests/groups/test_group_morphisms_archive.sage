@@ -95,6 +95,19 @@ def test_finite_group_cannot_surject_onto_infinite_group() -> None:
     assert trivial.is_surjective() is False
 
 
+def test_infinite_group_cannot_inject_into_finite_group() -> None:
+    r"""Reduction ``F1 -> C2`` is noninjective by endpoint cardinality."""
+    infinite = Groups.Free(1)
+    finite = Groups.C(2)
+    label = next(iter(infinite.free_basis()))
+    h = next(iter(finite.group_generators()))
+    reduction = infinite.Mor(finite)({label: h})
+
+    assert infinite in Groups().Infinite()
+    assert finite in Groups().Finite()
+    assert reduction.is_injective() is False
+
+
 def test_elementwise_finite_group_isomorphism_reuses_group_preimages() -> None:
     r"""An elementwise automorphism of ``C4`` has a group inverse."""
     cyclic = Groups.C(4)
