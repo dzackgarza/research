@@ -111,6 +111,24 @@ def test_generated_subgroup_finite_image_lifts_use_its_selected_generators() -> 
     assert all(inclusion(lift) == value for value, lift in witnesses.items())
 
 
+def test_generated_subgroup_map_image_uses_its_retained_generator_family() -> None:
+    r"""The image of ``<g²> <= C4`` under squaring is trivial."""
+    cyclic = Groups.C(4)
+    generator = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((generator**2,))
+    square = subgroup.Mor(cyclic).elementwise(
+        lambda element: subgroup.inclusion()(element)**2
+    )
+    image = square.image()
+    epic, inclusion = square.image_factorization()
+
+    assert image in Subgroups(cyclic)
+    assert image.cardinality() == cardinal(1)
+    assert epic.domain() is subgroup and epic.codomain() is image
+    assert inclusion.domain() is image and inclusion.codomain() is cyclic
+    assert inclusion * epic == square
+
+
 def test_infinite_free_source_factors_through_a_proper_cyclic_image() -> None:
     r"""The map Z -> C4 sending its free generator to g^2 factors via C2.
 
