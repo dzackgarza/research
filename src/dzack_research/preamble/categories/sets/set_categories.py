@@ -3380,9 +3380,12 @@ class _ImageSetEngine:
                 if admitted is False:
                     return False
                 if admitted is not True:
+                    # The inverse is meaningful only on the image. Until
+                    # its purported preimage is admitted, evaluating the
+                    # forward map would apply it outside its domain.
                     from dzack_research.preamble.logic import AtomicProposition
 
-                    return AtomicProposition("is_member", element, self)
+                    return conjunction((admitted, AtomicProposition("is_member", element, self)))
                 image_value = self.image_map()(source(preimage))
                 return True if image_value is element else image_value == element
             case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
