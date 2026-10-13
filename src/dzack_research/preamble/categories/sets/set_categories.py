@@ -4172,7 +4172,28 @@ class CoproductsOfSets(OwnedCategory):
                     return component(element.summand_element())
 
                 return Sets().Mor(self, target)(induced)
-            components = tuple((index, maps(index)) for index in index_set)
+            if isinstance(maps, NaturalTransformation):
+                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
+
+                shape = DiscreteCategory(index_set)
+                selected = self.family().selected_diagram()
+                constant = self.family().constant_value()
+                if selected is None and constant is not None:
+                    if isinstance(maps.source(), _ConstantDiagram) and maps.source().constant_value() is constant:
+                        selected = maps.source()
+                if selected is None and maps.source().domain() is shape and maps.source().codomain().is_subcategory(Sets()):
+                    # At finite enumerated indices, validate the complete
+                    # supplied diagram against the actual summand family.
+                    if all(maps.source()(shape.object(index)) is self.cofactor(index) for index in index_set):
+                        selected = maps.source()
+                if (selected is None or maps.source() is not selected
+                    or maps.source().domain() is not shape
+                    or not isinstance(maps.target(), _ConstantDiagram)
+                    or maps.target().constant_value() is not target):
+                    raise ValueError("the finite coproduct cocone must use its actual summand diagram and constant target")
+                components = tuple((index, maps.component(shape.object(index))) for index in index_set)
+            else:
+                components = tuple((index, maps(index)) for index in index_set)
             for index, morphism in components:
                 if morphism.parent() is not Sets().Mor(self.cofactor(index), target):
                     raise TypeError(

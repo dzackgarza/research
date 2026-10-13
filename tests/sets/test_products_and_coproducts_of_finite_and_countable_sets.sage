@@ -324,10 +324,22 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     )
     induced = source.from_maps(target, components)
     assert induced.parent() is Sets().Mor(source, target)
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    shape = DiscreteCategory(source.index_set())
+    summands = source.family().selected_diagram()
+    if summands is None:
+        summands = Cat().Mor(shape, Sets()).discrete_diagram(source.family())
+    constant_target = Cat().Mor(shape, Sets()).constant_functor(target)
+    typed = NaturalTransformation(summands, constant_target,
+                                  lambda obj: components(obj.value()))
+    induced_typed = source.from_maps(target, typed)
+    assert induced_typed.parent() is Sets().Mor(source, target)
     for index in source.index_set():
         component = components(index)
         for point in source.cofactor(index):
             assert induced(source.injection(index)(point)) == component(point)
+            assert induced_typed(source.injection(index)(point)) == component(point)
 
     wrong = Sets().Mor(target, target).identity()
     try:
