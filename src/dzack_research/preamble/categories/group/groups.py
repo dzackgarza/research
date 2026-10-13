@@ -1512,6 +1512,7 @@ def _transported_subgroup(group, engine_subgroup):
                 _owned_group_category(engine_subgroup),
                 Subgroups(group),
                 *_finite_if_bounded_by(group),
+                *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
@@ -1531,6 +1532,7 @@ def _generated_subgroup(group, engine_subgroup, generators):
                 _owned_group_category(engine_subgroup),
                 GeneratedSubgroups(group),
                 *_finite_if_bounded_by(group),
+                *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
