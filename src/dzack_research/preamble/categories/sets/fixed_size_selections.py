@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bisect import bisect_left
 from collections.abc import Iterable, Mapping
 from heapq import merge
 from itertools import groupby
@@ -192,11 +193,10 @@ class FixedSizeSelectionElement(Element):
         right_positions = tuple(other._source_positions())
         if set(left_positions).intersection(right_positions):
             return None
-        inversions = sum(
-            left_position > right_position
-            for left_position in left_positions
-            for right_position in right_positions
-        )
+        # Both retained position tuples are increasing. The standard-library
+        # binary-search primitive counts preceding right ranks without
+        # forming the quadratic Cartesian family of comparisons.
+        inversions = sum(bisect_left(right_positions, position) for position in left_positions)
         # Disjointness is established above. Reuse the selected positions
         # instead of unranking both selections again in merged_with.
         merged = self.parent().with_size(self.degree() + other.degree()).from_source_rank_positions(
