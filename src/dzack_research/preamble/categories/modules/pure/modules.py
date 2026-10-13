@@ -995,9 +995,15 @@ class Modules(OwnedCategoryOverBaseRing):
                         coequalizer = candidate_transport.codomain()
                         projection = candidate_transport.forward() * raw_projection
 
-            ambient_modules = Modules(left_morphism.domain().base_ring())
+            if coequalizer not in self:
+                raise TypeError(
+                    f"the coequalizer of {left_morphism} and {right_morphism} is {raw_coequalizer}, "
+                    f"which has no selected representative in {self}; an ambient module "
+                    "quotient is not automatically a colimit in this subcategory"
+                )
+
             diagram = _parallel_pair_diagram(
-                left_morphism, right_morphism, ambient_modules
+                left_morphism, right_morphism, self
             )
             shape = diagram.domain()
             universal_cocone = (diagram).Cocones().cocone(
