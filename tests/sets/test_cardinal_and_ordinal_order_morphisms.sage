@@ -179,7 +179,7 @@ def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
         raise AssertionError("unordered finite points were treated as an ordered union")
 
 
-def test_literal_union_requires_actual_enumeration_not_finiteness() -> None:
+def test_literal_union_preserves_unenumerated_finite_image() -> None:
     from dzack_research.preamble.categories.sets.set_categories import Set
     from dzack_research.preamble.logic import AtomicProposition
 
@@ -195,12 +195,12 @@ def test_literal_union_requires_actual_enumeration_not_finiteness() -> None:
         universe, lambda point: AtomicProposition("unspecified_member", point)
     )
     assert undecided in Sets().Finite()
-    try:
-        left.union(undecided)
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError("a finite predicate set was enumerated without a selected ranking")
+    union = left.union(undecided)
+    assert union in Sets().Finite()
+    assert union not in EnumeratedSets()
+    for point in left:
+        assert union.is_parent_of(point) is not False
+    assert union.is_parent_of(universe(2)) is not False
 
 
 def test_literal_intersection_and_difference_preserve_undecided_membership() -> None:

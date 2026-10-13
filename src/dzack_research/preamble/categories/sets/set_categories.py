@@ -2049,11 +2049,14 @@ class _FiniteLiteralSet(Sets().ObjectType):
         # Hence A union B = A whenever B is constructed as a subset of A.
         if isinstance(other, _ConditionSetEngine) and other.universe() is self:
             return self
-        assert other in EnumeratedSets(), (
-            f"the literal-set union with {other} requires its selected finite enumeration; "
-            "the general union has no represented literal-set algorithm for this input"
-        )
-        return _FiniteLiteralSet((*self, *other))
+        if other in EnumeratedSets():
+            return _FiniteLiteralSet((*self, *other))
+        # The image of the fold A ⊔ B -> A ∪ B defines the union even
+        # when B has no chosen enumeration or decidable membership.  Use
+        # the existing coproduct and image constructions; their finite
+        # placement is inherited from the two finite sources.
+        sum_set = self.coproduct_with(other)
+        return Sets().image_set(lambda summand: summand.summand_element(), sum_set)
 
     def intersection(self, other):
         r"""The points of this set that lie in ``other``."""
