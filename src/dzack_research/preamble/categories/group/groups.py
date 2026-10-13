@@ -2671,6 +2671,16 @@ class GroupMorphism:
             or self._generator_images is not None
         ):
             rule = self.lift
+        elif (
+            (self.domain().has_selected_group_resolution() and self.domain().has_selected_finite_group_generating_set())
+            or (hasattr(self.domain(), "supergroup") and self.domain() in GeneratedSubgroups(self.domain().supergroup()))
+            or self.domain() in OwnedFiniteGroups()
+        ):
+            # Both bijectivity decisions can be made by the selected GAP
+            # realization of this elementwise arrow. Reuse its preimage
+            # computation instead of requiring a second set-map inverse.
+            self._gap_morphism_crossing()
+            rule = self.lift
         else:
             rule = Sets().Mor(self.domain(), self.codomain())(self.__call__).inverse()
         return OwnedGroups().Mor(self.codomain(), self.domain())._from_elementwise_rule(rule)

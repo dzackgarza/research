@@ -95,6 +95,20 @@ def test_finite_group_cannot_surject_onto_infinite_group() -> None:
     assert trivial.is_surjective() is False
 
 
+def test_elementwise_finite_group_isomorphism_reuses_group_preimages() -> None:
+    r"""An elementwise automorphism of ``C4`` has a group inverse."""
+    cyclic = Groups.C(4)
+    g = next(iter(cyclic.group_generators()))
+    inversion = cyclic.Mor(cyclic).elementwise(lambda element: ~element)
+    inverse = inversion.inverse()
+
+    assert inversion.is_injective() is True
+    assert inversion.is_surjective() is True
+    assert inverse.domain() is cyclic and inverse.codomain() is cyclic
+    assert inverse(inversion(g)) == g
+    assert inversion(inverse(g)) == g
+
+
 def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
 
