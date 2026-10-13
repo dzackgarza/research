@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import RealizationHook
 
@@ -182,17 +182,11 @@ class CyclicGroups(OwnedCategory):
             element = ambient(element)
             if (element == ambient.one()) is True or (element == self.group_generator()) is True:
                 return True
-            # Prefer the supplied engine's subgroup decision. A finite cyclic
-            # group without such an engine nevertheless has a complete finite
-            # power presentation: preserve its decided equality cases rather
-            # than replacing their answers by an atomic proposition.
+            # Membership is a subgroup decision, not a search through a chosen
+            # enumeration. Finiteness alone supplies no membership algorithm.
             engine_subgroup = self._cyclic_engine_subgroup()
             if engine_subgroup is not None:
                 return ambient._engine_subgroup_contains(element, engine_subgroup)
-            if self.is_finite() is True:
-                return negation(conjunction(
-                    negation(element == candidate) for candidate in self._finite_elements()
-                ))
             return AtomicProposition("is_member", element, self)
 
         __contains__ = is_parent_of
