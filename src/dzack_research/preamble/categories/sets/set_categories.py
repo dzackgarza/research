@@ -3919,8 +3919,10 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 components = tuple(maps.component(shape.object(label)) for label in labels)
             else:
                 components = tuple(maps(label) for label in labels)
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
             for label, morphism in zip(labels, components, strict=True):
-                if morphism.parent() is not AdditiveMonoids().Mor(source, self.factor(label)):
+                if not _category_accepts_morphism(AdditiveMonoids(), source, self.factor(label), morphism):
                     raise TypeError(f"the component at {label} is not an additive morphism into {self.factor(label)}")
             if index in EnumeratedSets():
                 ranking = index.ranking_map()
