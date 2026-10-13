@@ -979,7 +979,10 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
             # This quotient is not isomorphic to G in general. The
             # presentation_source_group slot certifies an isomorphic model
             # (presentation_isomorphism), not a quotient ancestor.
-            return _own_group(free.quotient(relations))
+            return _own_group(
+                free.quotient(relations),
+                refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+            )
         case CoxeterMatrixGroup():
             # A Coxeter group has a canonical free presentation on its
             # simple reflections. Lift each additional normal relator by
@@ -996,7 +999,10 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
                 # Sage's multiplication. Reverse the word when transporting
                 # it between these representations.
                 lifted.append(free([positions[label] for label in reversed(word)]))
-            return _own_group(free.quotient(tuple(defining_relations) + tuple(lifted)))
+            return _own_group(
+                free.quotient(tuple(defining_relations) + tuple(lifted)),
+                refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+            )
         case _:
             assert False, f"the quotient of {group} by the normal closure of {relators} cannot be computed: this is available only for free groups and finitely presented groups"
 
