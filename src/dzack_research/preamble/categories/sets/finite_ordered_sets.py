@@ -483,10 +483,6 @@ class FiniteOrderedSets(OwnedCategory):
                         True if left is right else left == right
                         for left, right in zip(self, other, strict=True)
                     )
-                case _ if other in Sets() and Sets().is_provably_finite(other):
-                    if self.cardinality() != cardinal(other.cardinality()):
-                        return False
-                    return conjunction(other.is_parent_of(point) for point in self)
                 case _:
                     return False
 

@@ -179,6 +179,19 @@ def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
         raise AssertionError("unordered finite points were treated as an ordered union")
 
 
+def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    ascending = finite_ordered_set(("a", "b"))
+    descending = finite_ordered_set(("b", "a"))
+    underlying = Set(("a", "b"))
+    assert ascending != descending
+    assert ascending != underlying and underlying != ascending
+    assert descending != underlying and underlying != descending
+    assert tuple(ascending) == ("a", "b")
+    assert tuple(descending) == ("b", "a")
+
+
 def test_finite_indexed_enumeration_evaluates_selected_points_once() -> None:
     r"""The finite presentation retains its chosen values across all operations."""
     from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
