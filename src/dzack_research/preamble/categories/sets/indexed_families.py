@@ -331,8 +331,15 @@ class IndexedFamily[IndexT, ValueT]:
         return negation(self == other)
 
     def __hash__(self):
-        r"""Hash finite extensional data and infinite families by identity."""
-        if self.cardinality().is_finite() is not True:
+        r"""Hash selected finite extensional data; otherwise retain identity.
+
+        Finiteness alone supplies no enumeration of the index set. The
+        extensional-equality owner also requires a selected enumeration;
+        hashing must not attempt to iterate an unenumerated finite index.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        if self.cardinality().is_finite() is not True or self.index_set() not in EnumeratedSets():
             return object.__hash__(self)
         return hash(
             (
