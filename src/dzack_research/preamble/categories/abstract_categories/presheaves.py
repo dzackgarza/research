@@ -844,9 +844,17 @@ class CoveringFamilies(OwnedCategory):
             labels = [()]
             labels.extend((index,) for index in self.index_set())
             labels.extend(tuple(pair) for pair in self.pair_index_set())
+            # A covering family's labels have a selected finite ranking.
+            # Čech incidence is containment of their positions, not Python
+            # tuple membership on potentially symbolic or unhashable labels.
+            # This also keeps the empty covered-object label initial.
+            rank = self.index_set().ranking_map()
             return PosetCategory(
                 finite_ordered_set(tuple(labels)),
-                le=lambda finer, coarser: all(index in finer for index in coarser),
+                le=lambda finer, coarser: all(
+                    any(rank(point) == rank(index) for point in finer)
+                    for index in coarser
+                ),
             )
 
         @cached_method
