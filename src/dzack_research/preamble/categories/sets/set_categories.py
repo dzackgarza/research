@@ -3660,17 +3660,22 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
     from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
+    commutative_groups = AdditiveGroups().AdditiveCommutative()
 
     constant = family.constant_value()
     if constant is not None and constant in AdditiveMonoids():
         placements.append(CartesianProductsOfAdditiveMonoids())
     if constant is not None and constant in AdditiveGroups():
         placements.append(CartesianProductsOfAdditiveGroups())
+    if constant is not None and constant in commutative_groups:
+        placements.append(commutative_groups)
     diagram = family.selected_diagram()
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveGroups()):
         placements.append(CartesianProductsOfAdditiveGroups())
+    if diagram is not None and diagram.codomain().is_subcategory(commutative_groups):
+        placements.append(commutative_groups)
     if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
         # Select the finite factor family once. Both categorical placement
         # and its enumeration must read the same retained values; independent
@@ -3680,6 +3685,8 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
             placements.append(CartesianProductsOfAdditiveMonoids())
         if all(factor in AdditiveGroups() for factor in factors):
             placements.append(CartesianProductsOfAdditiveGroups())
+        if all(factor in commutative_groups for factor in factors):
+            placements.append(commutative_groups)
         if all(factor in EnumeratedSets() for factor in factors):
             placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
