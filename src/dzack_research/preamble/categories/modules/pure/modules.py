@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
     IsoCategoryConstruction,
     MonoCategoryConstruction,
+    _category_accepts_morphism,
     _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -1067,7 +1068,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 raise ValueError(f"the wide equalizer of {morphisms} is not a diagram in {self}")
             for label in labels:
                 arrow = morphisms.value(label)
-                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor or not _category_accepts_morphism(self, reference.domain(), reference.codomain(), arrow):
                     raise ValueError(f"the wide equalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             if len(labels) == 1:
                 # A singleton parallel family imposes no equality relation.
@@ -1134,7 +1135,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 raise ValueError(f"the wide coequalizer of {morphisms} is not a diagram in {self}")
             for label in labels:
                 arrow = morphisms.value(label)
-                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor or not _category_accepts_morphism(self, reference.domain(), reference.codomain(), arrow):
                     raise ValueError(f"the wide coequalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             if len(labels) == 1:
                 return reference.codomain()
