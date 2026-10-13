@@ -4328,9 +4328,14 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
         def _factor_has_position(self, factor, position) -> bool:
             r"""Whether the summand ``factor`` has a point at rank ``position``."""
             size = cardinal(factor.cardinality())
-            if size.is_finite():
+            if size.is_finite() is True:
                 return position < int(size.finite_value())
-            return True
+            if size.is_finite() is False:
+                return True
+            raise ValueError(
+                f"the rank layer {position} in {factor} needs decided finiteness; "
+                "an unknown cardinality cannot certify that this position exists"
+            )
 
         def _known_finite_size(self):
             r"""This coproduct's size as an ``int`` when finite, else ``None``."""
@@ -4419,6 +4424,8 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         cardinal(self.cofactor(index_at(j)).cardinality())
                         for j in range(finite_indices)
                     )
+                    if any(length.is_finite() is not False and length.is_finite() is not True for length in lengths):
+                        raise ValueError("coproduct inverse ranking needs decided finiteness of each summand")
                     def preceding(layer):
                         return sum(
                             min(layer, int(length.finite_value())) if length.is_finite() else layer
@@ -4477,6 +4484,8 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         cardinal(self.cofactor(index_at(j)).cardinality())
                         for j in range(finite_indices)
                     )
+                    if any(length.is_finite() is not False and length.is_finite() is not True for length in lengths):
+                        raise ValueError("coproduct ranking needs decided finiteness of each summand")
                     summand_rank, layer = target
                     return sum(
                         min(layer, int(length.finite_value())) if length.is_finite() else layer
