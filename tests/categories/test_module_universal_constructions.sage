@@ -61,6 +61,30 @@ def test_zero_and_times_two_on_Z_have_zero_equalizer_and_coequalizer_Z_mod_2() -
     assert Modules(ZZ).coequalizer(zero, twice).cardinality() == 2
 
 
+def test_module_parallel_pair_constructions_retain_ambient_category_and_maps() -> None:
+    r"""Both the equalizer and coequalizer remain diagrams in ``ZZ-Mod``."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    zero = line.Mor(line)({e: line.zero()})
+    twice = line.Mor(line)({e: 2 * e})
+
+    equalizer = modules.equalizer_construction(zero, twice)
+    eq_shape = equalizer.diagram().domain()
+    eq_inclusion = equalizer.structure_morphism(eq_shape.source())
+    assert equalizer.diagram().codomain() is modules
+    assert equalizer.object() in modules
+    assert zero * eq_inclusion == twice * eq_inclusion
+
+    coequalizer = modules.coequalizer_construction(zero, twice)
+    coeq_shape = coequalizer.diagram().domain()
+    projection = coequalizer.costructure_morphism(coeq_shape.target())
+    assert coequalizer.diagram().codomain() is modules
+    assert coequalizer.object() in modules
+    assert projection(zero(e)) == projection(twice(e))
+    assert coequalizer.object().cardinality() == 2
+
+
 def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> None:
     r"""On ``Z/4``: ``eq(2, 0) = ker 2 = 2Z/4``, the submodule of order 2."""
     line = Modules(ZZ)(ZZ**1)
