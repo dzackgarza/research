@@ -45,6 +45,32 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
         raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
 
 
+def test_finite_indexed_family_rank_cache_supplies_product_factors() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    labels = finite_ordered_set(([0], [1]))
+    factor = Sets.Δ[1]
+    evaluations = []
+
+    def selected(label):
+        evaluations.append(label[0])
+        return factor
+
+    family = indexed_family(labels, selected)
+    product = Sets().product(family)
+    assert product.factor([0]) is factor
+    assert product.factor([0]) is family(labels.ranking_map().inverse()(0))
+    assert product.factor([1]) is factor
+    assert tuple(value for value in family) == (factor, factor)
+    assert tuple(family.items()) == ((labels.ranking_map().inverse()(0), factor),
+                                    (labels.ranking_map().inverse()(1), factor))
+    assert evaluations == [0, 1]
+    point = product((factor(0), factor(1)))
+    assert product.projection([0])(point) == factor(0)
+    assert product.projection([1])(point) == factor(1)
+
+
 def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.indexed_families import indexed_family

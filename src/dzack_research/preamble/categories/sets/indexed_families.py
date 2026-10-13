@@ -105,7 +105,7 @@ class IndexedFamily[IndexT, ValueT]:
         for an identical or decided-equal label. An undecided comparison keeps
         the labels separate without asserting that they are unequal.
         """
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 
         indices = self.index_set()
         if Sets().is_provably_finite(indices) and indices in EnumeratedSets():
