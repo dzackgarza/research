@@ -2261,15 +2261,10 @@ class SetInjection(OwnedSetMorphism):
                     # Retain its represented pairs without assuming that
                     # undecidable point equality is Boolean.
                     def preimage(value):
-                        undecided = False
                         for key, point in pairs:
                             same = True if key is value else key == value
                             if same is True:
-                                if undecided:
-                                    raise ValueError("image preimage is undecided")
                                 return point
-                            if same is not False:
-                                undecided = True
                         raise ValueError("image preimage is absent or undecided")
                 else:
                     def preimage(value):
