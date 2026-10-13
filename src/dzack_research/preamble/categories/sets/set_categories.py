@@ -3659,14 +3659,18 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
 
     constant = family.constant_value()
     if constant is not None and constant in AdditiveMonoids():
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if constant is not None and constant in AdditiveGroups():
+        placements.append(CartesianProductsOfAdditiveGroups())
     diagram = family.selected_diagram()
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if diagram is not None and diagram.codomain().is_subcategory(AdditiveGroups()):
+        placements.append(CartesianProductsOfAdditiveGroups())
     if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
         # Select the finite factor family once. Both categorical placement
         # and its enumeration must read the same retained values; independent
@@ -3674,6 +3678,8 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         factors = tuple(family(index) for index in index_set)
         if all(factor in AdditiveMonoids() for factor in factors):
             placements.append(CartesianProductsOfAdditiveMonoids())
+        if all(factor in AdditiveGroups() for factor in factors):
+            placements.append(CartesianProductsOfAdditiveGroups())
         if all(factor in EnumeratedSets() for factor in factors):
             placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
@@ -4002,6 +4008,19 @@ class CartesianProductsOfSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+
+class CartesianProductsOfAdditiveGroups(OwnedCategory):
+    r"""Products of additive groups, with pointwise additive inverses."""
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return [CartesianProductsOfAdditiveMonoids(), AdditiveGroups()]
+
+    class ElementMethods:
+        def _neg_(self):
+            return self.parent()(lambda index: -self.component(index))
 
 
 class CartesianProductsOfAdditiveMonoids(OwnedCategory):
