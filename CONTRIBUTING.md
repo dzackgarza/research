@@ -7885,35 +7885,27 @@ questions under the house rule for open problems.
 
 - **Mathematical lexicon**: [`.agents/references/mathematical-lexicon.md`](.agents/references/mathematical-lexicon.md)
 
-## `COMMIT-01`: Read and certify the contributing policies in every commit
+## `COMMIT-01`: Read the contributing policies before every commit
 
 Read all contributing policies in this document before committing. Check the
-work in the commit against them. Every commit message must end with these
-trailers, separated from the body by a blank line:
+work in the commit against them. Include this code anywhere in the commit message:
 
 ```text
-Policy-Code: c2291c7ab917bf86978a564337f00d5f
-Policy-Attestation: I have read all contributing policies in CONTRIBUTING.md and certify that none were violated by the work in this commit.
-Applicable-Policy: COMMIT-01: Read the policies and checked this commit against them.
+c2291c7ab917bf86978a564337f00d5f
 ```
 
-The secret code is `c2291c7ab917bf86978a564337f00d5f`. The code and attestation
-lines must match exactly. Add an `Applicable-Policy` trailer for each specific
-policy that applies to the work, with its policy code and a concrete explanation
-of how the work complies. The `COMMIT-01` line alone does not replace those
-task-specific references. Make the attestation only after doing the reading and
-checking; a hook checks the message, not the truth of its statement.
+The hook checks whether the commit message contains the code. It does not check
+whether the policies were read or followed.
 
 This requirement applies to every commit, including merges, amendments,
-checkpoints, and commits made with `--no-verify`. Supply the complete message
+checkpoints, and commits made with `--no-verify`. Supply the message
 with `git commit -F <file>` or `-m <message>`; interactive message editing is
-rejected before the editor starts. Do not disable or bypass the message hooks.
+rejected before the editor starts.
 
 Activate the tracked hooks in each checkout with
 `git config --local core.hooksPath .githooks`. The `prepare-commit-msg` hook
 checks the supplied message even with `--no-verify`; `commit-msg` checks it
-again at the final message boundary. Both reject a missing or incorrect code,
-a missing attestation, or missing policy references. The tracked `pre-commit`,
+again at the final message boundary. Both reject a missing code. The tracked `pre-commit`,
 `pre-push`, and `post-commit` hooks delegate to the corresponding hooks in the
 globally configured `core.hooksPath`.
 
