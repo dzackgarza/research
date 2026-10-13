@@ -411,22 +411,22 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
             zero = self.zero()
             for element in elements:
-                assert element + zero == element and zero + element == element, (
+                assert (element + zero == element) is True and (zero + element == element) is True, (
                     f"{self} is not a module: the given zero {zero} is not an additive identity, "
                     f"since {element} + {zero} != {element}"
                 )
-                assert element + (-element) == zero, (
+                assert (element + (-element) == zero) is True, (
                     f"{self} is not a module: the given negation does not give additive inverses, "
                     f"since {element} + ({-element}) != {zero}"
                 )
             for left in elements:
                 for right in elements:
-                    assert left + right == right + left, (
+                    assert (left + right == right + left) is True, (
                         f"{self} is not a module: its addition is not commutative, "
                         f"since {left} + {right} != {right} + {left}"
                     )
                     for third in elements:
-                        assert (left + right) + third == left + (right + third), (
+                        assert ((left + right) + third == left + (right + third)) is True, (
                             f"{self} is not a module: its addition is not associative on "
                             f"{left}, {right}, {third}"
                         )
@@ -444,36 +444,36 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             one = self.base_ring().one()
             zero_scalar = self.base_ring().zero()
             for element in elements:
-                assert self.scalar_multiple(one, element) == element, (
+                assert (self.scalar_multiple(one, element) == element) is True, (
                     f"{self} is not a module: 1 in {self.base_ring()} does not act as the identity, "
                     f"since 1 * {element} != {element}"
                 )
-                assert self.scalar_multiple(zero_scalar, element) == zero, (
+                assert (self.scalar_multiple(zero_scalar, element) == zero) is True, (
                     f"{self} is not a module: 0 in {self.base_ring()} does not act as zero, "
                     f"since 0 * {element} != {zero}"
                 )
                 for scalar in scalars:
                     for other in elements:
-                        assert self.scalar_multiple(scalar, element + other) == (
+                        assert (self.scalar_multiple(scalar, element + other) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(scalar, other)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: scalar multiplication by {scalar} is not additive, "
                             f"since {scalar} * ({element} + {other}) != {scalar} * {element} + {scalar} * {other}"
                         )
                     for second_scalar in scalars:
-                        assert self.scalar_multiple(scalar + second_scalar, element) == (
+                        assert (self.scalar_multiple(scalar + second_scalar, element) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(second_scalar, element)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: ({scalar} + {second_scalar}) * {element} != "
                             f"{scalar} * {element} + {second_scalar} * {element}"
                         )
-                        assert self.scalar_multiple(
+                        assert (self.scalar_multiple(
                             scalar * second_scalar, element
                         ) == self.scalar_multiple(
                             scalar, self.scalar_multiple(second_scalar, element)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: ({scalar} * {second_scalar}) * {element} != "
                             f"{scalar} * ({second_scalar} * {element})"
                         )
