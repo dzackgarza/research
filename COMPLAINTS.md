@@ -1239,16 +1239,18 @@ whole preamble for engine behaviour re-implemented locally is the TODO node
 
 ### Chosen generators are encoded as a global axiom instead of a resolution
 
-A chosen generating epimorphism, a chosen presentation and a chosen syzygy
-tower are truncations of one datum, a resolution of the object by free (or
-`P`-projective) objects, and they belong to a category of resolutions over
-`C` (`CAT-29`). The tree encodes the first of them as a global `Framed`
-axiom on `Objects`, with `FramedModules(R)` and `FramedAlgebras(R)` as its
-specializations, and decides membership by whether a framing was stored on
-the object. Every object is resolvable -- the counit `F(UX) ->> X` starts the
-canonical comonadic resolution -- so the axiom names no property, and Sage's
-joins, which close under axioms, propagate it across branches as if it were
-one.
+A chosen generating epimorphism is a **free cover**, a chosen presentation
+adds selected relation maps, and a chosen syzygy tower adds further terms.
+They are specializations/truncations of a general *augmented object*, with
+exactness an independent condition (`CAT-29`). A **categorical framing** is
+instead a chosen isomorphism from a free object. The historical tree encoded
+chosen generators as a global `Framed` axiom on `Objects`, with
+`FramedModules(R)` and `FramedAlgebras(R)` as specializations. That
+conflated an epimorphic augmentation with an invertible framing and
+mistook chosen structure for an intrinsic property. The free--forgetful
+counit may give a canonical comonadic augmentation and free cover, but
+**existence of such a cover does not prove existence of a framing**. Sage
+category joins then propagated the false `Framed` property across branches.
 
 Observed on 2026-09-25: the meet of `ZZ.category()` and `RR.category()`
 contains `Algebras(ZZ).Associative().Unital().Framed()`, `ZZ` is not placed
@@ -1258,19 +1260,96 @@ fails. Placing `ZZ` with its empty algebra framing moves the failure to
 Rack's separation of algebra framing from module framing (`09215fd7e`) made
 framings relative to their category, which the global axiom cannot express.
 
-**Dependency path:** resolutions over `C` (`lean-categories` `FOUNDATIONS.md`
-§76-77 for the additive case, extension filed as dzackgarza/lean-categories#62;
-simplicial objects over a projective class in
-general) -> truncations and finiteness properties -> chosen generators and
-presentations -> coercion and every consumer of chosen generators.
+**Dependency path:** general selected augmented objects and their cofiber
+conditions (`lean-categories` `FOUNDATIONS.md` §§13, 76--77; formalization
+request [#62](https://github.com/dzackgarza/lean-categories/issues/62)) ->
+independent free-cover/framing and termwise/truncation refinements -> chosen
+generators and presentations -> coercion and every consumer of such choices.
 **Consumers:** coercion of session integers into `QQ` and `RR`; algebra
 generators, presentation display, module generators, the matrix-unit algebra
 structure of `End_R(F)`; the `tests/functions` Lebesgue tests and the D4
 Gaussian heuristic.
 **Coverage boundary:** the `Framed` population was counted by the `rg` in the
 `framed-axiom-retired` node; the coercion was observed for `ZZ` into `QQ` and
-`RR` only. Repair: `categories-of-resolutions`, `framed-axiom-retired`,
-`integers-coerce-into-rationals-and-reals` in [TODO.md](TODO.md).
+`RR` only. This is historical source evidence; the remaining general
+framework gap and its current owners are recorded immediately below,
+not under the already retired old axiom-repair node names.
+
+### Augmented objects are replaced by unrelated resolution specializations
+
+**Missing mathematical owner:** for a specified higher-categorical or stable
+enhancement, an augmentation \(\varepsilon:R^\bullet\to j(X)\) is an object
+of the appropriate slice over \(j(X)\), independently of any exactness claim.
+When the enhancement is stable, its **canonical cofiber**
+\(Q_\varepsilon=\operatorname{cofib}(\varepsilon)\) completes the sequence
+\(R^\bullet\to j(X)\to Q_\varepsilon\). The condition
+\(Q_\varepsilon\simeq0\) is **optional** and selects equivalent augmentations;
+it is not the definition of every augmented object or partial resolution.
+In an original category admitting a free--forgetful adjunction
+\(F:\mathcal D\rightleftarrows\mathcal C:U\), \(F(S)\twoheadrightarrow X\)
+is a free cover while \(F(S)\xrightarrow{\sim}X\) is a **categorical framing**.
+The epimorphism condition in \(\mathcal C\) is not cofiber vanishing in the
+stable enhancement. For smooth manifolds, the latter framing specializes to
+\(\mathcal O_X^{\oplus n}\xrightarrow{\sim}\mathcal T_X\) as an
+isomorphism of sheaves, equivalently a tangent-bundle trivialization.
+
+**Observed divergence, 2026-10-13:**
+
+- `lean-categories/LeanCategories/Modules/TruncatedResolutions.lean`
+  directly defines `FreeAugmentation`, `FreeCover`, `BasedModule`, and `Coord`
+  by individual conditions on a structured arrow. Its truncation is not
+  parameterized by \(n\in\mathbb N\); the index `I` is the generator set.
+  Their catalogue expressions/registrations are separate, not derived from
+  one category of arbitrary augmented objects with termwise and cofiber
+  predicates. Specializations in `Homological/FiniteFreeResolution.lean`,
+  `KSplitComplex.lean`, and `GodementResolution.lean` do not replace that
+  general classifier.
+- Research's `abstract_categories/resolutions.py::Resolutions` already accepts
+  a truncation, projective class, level category, and augmentation family,
+  but its construction makes covering-arrow and resolution conditions part
+  of the base category. It is **not** the unrestricted slice of augmented
+  objects with independently imposed predicates and canonical cofiber.
+- The existing `lean-categories` request
+  [#62](https://github.com/dzackgarza/lean-categories/issues/62) itself
+  proposes acyclicity "through degree n" as part of the classifier and
+  incorrectly presents a categorical framing merely as a naming convention
+  for bases. The request needs the same mathematical correction, not another
+  independently named special-case category.
+
+**Required common construction:** introduce a category of selected augmented
+objects and its full morphism theory, with its comparison to an available
+stable/derived enhancement and *cofiber functor*. Retain the selected
+simplicial/filtered/graded model when operations mention its degrees; a bare
+derived object does not remember its individual terms. Pull back **free,
+projective, flat, flasque, and \(\mathcal F\)-acyclic** conditions along
+degree evaluation, and impose **truncation level, amplitude/length,
+augmentation epi/iso, and cofiber connectivity/vanishing** separately.
+Right/coaugmented models use their correct variance. `FreeCover`,
+`BasedModule`, finite presentations, categorical framings, and homological
+resolution varieties must be *specializations* of this structure, including
+their appropriate morphism theories (basis-preserving versus arbitrary
+coordinate morphisms). Do not claim \(\mathrm{Ch}(\mathcal C)\) or
+\(D(\mathcal C)\) exists in an arbitrary category or that stabilization
+preserves epimorphisms without proof.
+
+**Separating specimens:** \(\mathbb Z\twoheadrightarrow\mathbb Z/2\) is a
+free cover with nonzero cofiber, not a framing; the identity augmentation
+\(\mathbb Z\xrightarrow{\sim}\mathbb Z\) is a categorical framing with
+zero cofiber. The sheaf isomorphism
+\(\mathcal O_X^{\oplus n}\cong\mathcal T_X\) is the corresponding
+geometric framing; its global sections are a functorial output,
+not a replacement of the sheaf data. The same chosen partial complex can be
+tested independently for finite support, truncation, levelwise projectivity
+and vanishing versus nonvanishing cofiber.
+
+**Ownership and disposition:** `lean-categories` owns the missing formalized
+general construction and comparison theorems; research consumes those
+declarations through `CAT-29`, its existing `Resolutions` owner, and the
+`resolution-truncations-in-the-session`/architecture nodes in [TODO.md](TODO.md).
+Tracked at [research #409](https://github.com/dzackgarza/research/issues/409)
+and [lean-categories #62](https://github.com/dzackgarza/lean-categories/issues/62).
+The source inspection establishes a **representation gap**, not a runtime
+failure or a claim that the general mathematical theory is unavailable.
 
 ### Indefinite integral lattices of rank at least three have no exact represented-value witness backend
 
