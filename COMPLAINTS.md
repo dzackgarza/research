@@ -263,7 +263,18 @@ and `n+2` carry no explicit affine/integer-module structure. Their
 represented quotient is defined, but its two-element cardinality and
 class equality are not yet computed. Finite samples of an infinite source
 cannot establish the relation closure. A certified classifier or relation
-computation remains required. Groupoid class-set composition also remains.
+computation remains required.
+
+**Class-set source composition, 2026-10-14:** the category object owner now
+constructs the connected-component quotient from the actual set of objects
+and the two maps from its complete selected arrow set. For a groupoid this
+is the isomorphism-class set. The classifying groupoid `BG` exposes its
+actual Hom object as the complete arrow set even when `G` is infinite;
+the set coequalizer reuses the singleton-target theorem without enumerating
+those arrows. Discrete categories and finite poset categories retain their
+own object and arrow presentations. A general category with no selected
+complete small arrow set cannot yet supply a class set, and runtime
+acceptance of the composed maps remains owed at terminal T.
 
 **Dependency path:** represented relation diagram -> quotient and universal
 projection -> class set of a represented small groupoid -> class projections

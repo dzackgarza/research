@@ -328,6 +328,15 @@ of source and target on its arrows:
 \longrightarrow\pi_0(C).
 \]
 
+The 2026-10-14 source composition exposes this coequalizer at
+`Cat.ParentMethods.class_set_construction` for categories with a selected
+finite object set and complete owned arrow set. For the one-object
+groupoid `BG`, its original `Mor_BG(*,*)` supplies the arrow set even
+if `G` is infinite, and the quotient of the singleton object set is
+the singleton itself. The construction retains source, target,
+projection and universal factorization; no enumeration is inferred
+from an abstract groupoid without selected objects and arrows.
+
 This is a composition of category data and the set quotient primitive.
 The core constructor at `abstract_categories/arrow_categories.py:2035`
 supplies invertible arrows, not this quotient. In the genus facade,

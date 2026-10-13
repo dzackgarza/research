@@ -144,6 +144,30 @@ def test_infinite_relation_source_has_an_actual_quotient_and_factor_map() -> Non
     assert factor(projection(integers(2))) == parity_values(0)
 
 
+def test_singleton_target_coequalizes_an_unenumerated_infinite_relation_exactly() -> None:
+    integers, point = ZZ, Sets.Δ[0]
+    left = Sets().Mor(integers, point)(lambda _n: point(0))
+    right = Sets().Mor(integers, point)(lambda _n: point(0))
+    construction = Sets().coequalizer_construction(left, right)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert construction.object() is point
+    assert construction.object().cardinality() == cardinal(1)
+    assert projection.domain() is point and projection.codomain() is point
+    assert projection(point(0)) == point(0)
+
+    target = Sets.Δ[1]
+    target_map = Sets().Mor(point, target)(lambda _p: target(1))
+    cocone = construction.diagram().Cocones().cocone(
+        target,
+        lambda vertex: target_map * left if vertex is shape.source() else target_map,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor.domain() is point and factor.codomain() is target
+    assert factor(point(0)) == target(1)
+
+
 def test_wide_infinite_source_coequalizer_retains_every_relation_map() -> None:
     r"""The family n, n+2, n+4 on ZZ induces one coequalizer with a parity factor."""
     from dzack_research.preamble.categories.sets.indexed_families import indexed_family
