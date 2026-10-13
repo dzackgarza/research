@@ -1921,7 +1921,10 @@ class _AbelianSubgroupQuotientElement(MultiplicativeGroupElement):
         )
 
     def __ne__(self, other):
-        return not self == other
+        # Coset equality can be an undecided subgroup-membership
+        # proposition. Negation preserves that proposition rather than
+        # demanding a Python truth value for it.
+        return negation(self == other)
 
     def __hash__(self):
         r"""A quotient class has no canonical representative in the general predicate case."""
