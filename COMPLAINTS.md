@@ -117,8 +117,14 @@ the codomain's selected finite presentation, when available, to quotient
 by the normal closure of the images of a finite generating family.
 
 **Unresolved scope:** the older `finite_image_lifts()` operation itself
-still exposes its dictionary, and clients of its arbitrary finite
-character-image mode have not all migrated to a mathematical section;
+still exposes its dictionary. A new public `finite_image_section()`
+constructs the actual set morphism from the finite owned image keys to
+the source group, including when the keys carry an explicitly supplied
+finite character multiplication. `GroupMorphism.image_section()` now
+uses that owner; `OrthogonalCharacterQuotient.section()` likewise uses
+its retained arithmetic-character witness table with the literal
+image-key set. The remaining dictionary-returning legacy ingress and
+consumers have not all migrated to these mathematical arrows;
 infinite non-finitely generated image computations and effective
 preimages still need appropriate selected data. The later source
 operations do not certify runtime equations; they remain under terminal T.

@@ -1,5 +1,6 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
 from sage.libs.gap.libgap import libgap
+from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
@@ -148,8 +149,23 @@ class OrthogonalCharacterQuotient:
             return False
         return True
 
+    @cached_method
     def image_keys(self):
         return Set(tuple(self._witnesses))
+
+    @cached_method
+    def section(self):
+        r"""A selected set-theoretic section of the finite character image.
+
+        The retained Cayley witnesses supply the owned map
+        `image_keys -> U(O(L))`, whose composition with the character map
+        is the identity. Its values are live lattice isometries. No
+        group-homomorphism law is claimed for the section.
+        """
+        keys = self.image_keys()
+        return Sets().Mor(keys, self.supergroup)(
+            lambda key: self._witnesses[keys(key)]
+        )
 
     def subgroup_image_keys(self):
         return Set(

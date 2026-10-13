@@ -50,6 +50,40 @@ def test_finite_image_bound_is_not_truncated():
         raise AssertionError("a nonintegral image-size bound was truncated")
 
 
+def test_selected_finite_image_is_a_set_section_of_a_group_surjection():
+    source, target = Groups.C(4), Groups.C(2)
+    s, t = source.group_generators()[0], target.group_generators()[0]
+    reduction = source.Mor(target)({s: t})
+    section = source.finite_image_section(reduction)
+
+    assert section.domain() in FiniteSets()
+    assert section.domain().cardinality() == cardinal(2)
+    assert section.codomain() is source
+    assert all(reduction(section(image)) == image for image in section.domain())
+    assert reduction(section(t)) == t
+
+
+def test_selected_character_image_section_retains_the_exact_product_key_set():
+    r"""A C4 character with two correlated C2 coordinates has a two-point image."""
+    source, two = Groups.C(4), Groups.C(2)
+    s, t = source.group_generators()[0], two.group_generators()[0]
+    reduction = source.Mor(two)({s: t})
+    product = Sets().product((two, two))
+
+    def image(group_element):
+        value = reduction(group_element)
+        return product((value, value))
+
+    def multiply(left, right):
+        return product((left[0] * right[0], left[1] * right[1]))
+
+    section = source.finite_image_section(image, multiply=multiply, image_bound=2)
+    assert section.domain().cardinality() == cardinal(2)
+    assert section.codomain() is source
+    assert all(image(section(value)) == value for value in section.domain())
+    assert product((two.one(), t)) not in section.domain()
+
+
 def test_indefinite_stable_orthogonal_kernel_with_supplied_generators():
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     group = lattice.Aut()
@@ -69,6 +103,24 @@ def test_a2_discriminant_image_from_orthogonal_generators():
     group = lattice.Aut().select_group_resolution()
     image = group.subgroup(tuple(group.group_generators())).image_under(rho)
     assert image.cardinality() == rho.codomain().cardinality() == 2
+
+
+def test_a2_finite_character_image_has_a_live_set_section():
+    r"""Every selected discriminant character of O(A2) has an isometry lift.
+
+    The complete character-image table represents a section in Sets, not
+    a mere dictionary or a spurious group homomorphism.
+    """
+    lattice = Lattices(ZZ)("A2")
+    subgroup = lattice.stable_orthogonal_group()
+    quotient = subgroup.finite_character_quotient()
+    section = quotient.section()
+
+    assert section.domain() is quotient.image_keys()
+    assert section.codomain() is quotient.supergroup
+    assert section.domain().cardinality() == cardinal(2)
+    assert all(quotient.image(section(key)) == key for key in section.domain())
+    assert all(section(key).parent() is lattice.Aut() for key in section.domain())
 
 
 def test_unresolved_predicate_image_names_missing_inverse_algorithm():
