@@ -1813,7 +1813,7 @@ class SetSubobjectCategory(SliceCategory):
             # factorization witness does not prove noncontainment.
             from dzack_research.preamble.logic import AtomicProposition
 
-            return AtomicProposition("subset", self, other)
+            return AtomicProposition("is_subset", self, other)
 
         def union(self, other):
             from dzack_research.preamble.logic import conjunction, negation
