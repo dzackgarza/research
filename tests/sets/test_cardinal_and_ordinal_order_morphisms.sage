@@ -197,6 +197,24 @@ def test_literal_union_requires_actual_enumeration_not_finiteness() -> None:
         raise AssertionError("a finite predicate set was enumerated without a selected ranking")
 
 
+def test_literal_intersection_and_difference_preserve_undecided_membership() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+    from dzack_research.preamble.logic import AtomicProposition
+
+    ambient = Sets.Δ[2]
+    left = Set(tuple(ambient))
+    undecided = Sets().condition_set(
+        ambient, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    meet = left.intersection(undecided)
+    complement = left.difference(undecided)
+    assert meet in Sets().Finite() and complement in Sets().Finite()
+    for point in ambient:
+        assert isinstance(meet.is_parent_of(point), AtomicProposition)
+        assert complement.is_parent_of(point) is not True
+        assert complement.is_parent_of(point) is not False
+
+
 def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
     from dzack_research.preamble.categories.sets.set_categories import Set
 

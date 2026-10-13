@@ -2052,6 +2052,8 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def intersection(self, other):
         r"""The points of this set that lie in ``other``."""
+        if other not in Sets():
+            raise TypeError(f"intersection requires a set, not {other!r}")
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.intersection(other._points))
         selected = []
@@ -2060,11 +2062,13 @@ class _FiniteLiteralSet(Sets().ObjectType):
             if decision is True:
                 selected.append(point)
             elif decision is not False:
-                raise ValueError("intersection membership is undecided; no finite literal result is selected")
+                return Sets().condition_set(self, lambda member: other.is_parent_of(member))
         return _FiniteLiteralSet(selected)
 
     def difference(self, other):
         r"""The points of this set that do not lie in ``other``."""
+        if other not in Sets():
+            raise TypeError(f"difference requires a set, not {other!r}")
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.difference(other._points))
         selected = []
@@ -2073,7 +2077,9 @@ class _FiniteLiteralSet(Sets().ObjectType):
             if decision is False:
                 selected.append(point)
             elif decision is not True:
-                raise ValueError("difference membership is undecided; no finite literal result is selected")
+                from dzack_research.preamble.logic import negation
+
+                return Sets().condition_set(self, lambda member: negation(other.is_parent_of(member)))
         return _FiniteLiteralSet(selected)
 
     def __or__(self, other):
