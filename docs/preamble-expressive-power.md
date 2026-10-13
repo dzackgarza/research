@@ -311,6 +311,15 @@ Enumeration is restricted separately to finite acted-on sets. The general
 set quotient construction must admit general relation diagrams and retain
 its universal maps.
 
+The 2026-10-14 source delivery now introduces a generated-equivalence
+quotient retaining the actual parallel maps, projection and universal
+factorization for arbitrary relation source sets; finite enumerated cases
+retain the selected disjoint-set algorithm. Effective equality and class
+cardinality for nonenumerated generated relations, including computing
+the finite parity quotient from black-box maps on an infinite source,
+remain outstanding. The construction does not assert a finite class
+count without a certified classification.
+
 For a represented small groupoid `C`, its class set is the coequalizer
 of source and target on its arrows:
 

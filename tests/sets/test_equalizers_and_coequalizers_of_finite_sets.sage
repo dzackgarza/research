@@ -68,7 +68,7 @@ def test_the_coequalizer_of_x_and_x_plus_one_glues_zero_one_two_and_leaves_three
     assert all(factor(projection(y)) == separating(y) for y in target)
 
 
-def test_finite_coequalizer_does_not_infer_enumeration_from_finiteness() -> None:
+def test_finite_coequalizer_keeps_an_unenumerated_relation_source_symbolic() -> None:
     from dzack_research.preamble.logic import AtomicProposition
 
     ambient = Sets.Δ[2]
@@ -78,12 +78,17 @@ def test_finite_coequalizer_does_not_infer_enumeration_from_finiteness() -> None
     assert source in Sets().Finite()
     assert source not in EnumeratedSets()
     arrow = Sets().Mor(source, ambient)(lambda point: ambient(point))
-    try:
-        Sets().coequalizer_construction(arrow, arrow)
-    except AssertionError as error:
-        assert "finite enumerat" in str(error)
-    else:
-        raise AssertionError("the coequalizer algorithm enumerated an unenumerated finite source")
+    construction = Sets().coequalizer_construction(arrow, arrow)
+    quotient = construction.object()
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+    assert quotient in FiniteSets()
+    assert quotient not in EnumeratedSets()
+    assert projection.domain() is ambient and projection.codomain() is quotient
+    # The identical arrows generate no identifications beyond equality,
+    # independently of the undecidable membership of their source.
+    assert projection(ambient(0)) != projection(ambient(1))
+    assert projection(ambient(0)) == projection(ambient(0))
 
 
 def test_coequalizer_uses_the_targets_selected_ranking() -> None:
@@ -99,3 +104,72 @@ def test_coequalizer_uses_the_targets_selected_ranking() -> None:
     # independently of lexicographic order or a reconstructed set.
     assert target.ranking_map()(target("c")) == 0
     assert target.ranking_map()(target("b")) == 2
+
+
+def test_infinite_relation_source_has_an_actual_quotient_and_factor_map() -> None:
+    r"""The relation n ~ n+2 on ZZ gives a quotient through which parity factors.
+
+    The two supplied set functions do not carry an additive or affine
+    presentation: this specimen verifies the represented quotient and
+    universal map, not a computed claim that its cardinality equals two.
+    """
+    integers = ZZ
+    identity = Sets().Mor(integers, integers).identity()
+    translate = Sets().Mor(integers, integers)(
+        lambda n: integers(n + integers(2))
+    )
+    construction = Sets().coequalizer_construction(identity, translate)
+    quotient = construction.object()
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert quotient in Sets()
+    assert quotient.left_morphism() is identity
+    assert quotient.right_morphism() is translate
+    assert projection.domain() is integers and projection.codomain() is quotient
+    assert projection(integers(0)).representative() == integers(0)
+
+    parity_values = Sets.Δ[1]
+    parity = Sets().Mor(integers, parity_values)(
+        lambda n: parity_values(int(n) % 2)
+    )
+    cocone = construction.diagram().Cocones().cocone(
+        parity_values,
+        lambda index: parity * identity if index is shape.source() else parity,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor.domain() is quotient and factor.codomain() is parity_values
+    assert factor(projection(integers(0))) == parity_values(0)
+    assert factor(projection(integers(1))) == parity_values(1)
+    assert factor(projection(integers(2))) == parity_values(0)
+
+
+def test_wide_infinite_source_coequalizer_retains_every_relation_map() -> None:
+    r"""The family n, n+2, n+4 on ZZ induces one coequalizer with a parity factor."""
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    integers = ZZ
+    maps = (
+        Sets().Mor(integers, integers).identity(),
+        Sets().Mor(integers, integers)(lambda n: integers(n + integers(2))),
+        Sets().Mor(integers, integers)(lambda n: integers(n + integers(4))),
+    )
+    family = indexed_family(Sets.Δ[2], lambda index: maps[int(index)])
+    construction = Sets().coequalizer_of_family_construction(family)
+    shape = construction.diagram().domain()
+    quotient = construction.object()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert construction.diagram().morphisms() is family
+    assert projection.domain() is integers and projection.codomain() is quotient
+    assert quotient.left_morphism().domain().cardinality().is_finite() is False
+
+    parity_values = Sets.Δ[1]
+    parity = Sets().Mor(integers, parity_values)(lambda n: parity_values(int(n) % 2))
+    cocone = construction.diagram().Cocones().cocone(
+        parity_values,
+        lambda index: parity * maps[0] if index is shape.source() else parity,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor(projection(integers(0))) == parity_values(0)
+    assert factor(projection(integers(3))) == parity_values(1)

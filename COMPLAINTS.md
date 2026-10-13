@@ -193,7 +193,7 @@ diagram source routes; runtime behavior and other computational cases remain
 unverified. Inspect existing formal group colimits before requesting further
 mathematics from `lean-categories`.
 
-### Represented set quotients require finite relation diagrams
+### Nonenumerated relation quotients still need exact class computations
 
 For parallel set maps `a,b: R -> X`, the coequalizer supplies a set `Q`,
 a projection `q: X -> Q` with `q a = q b`, and the universal factorization
@@ -208,6 +208,25 @@ their quotient is finite. The action-specific `_OrbitSet` and `_orbit_set`
 (`categories/group/g_sets.py:567,632`) already retain a represented action
 and supply a quotient with a set-morphism projection; their representation
 is distinct from finite orbit enumeration.
+
+**Source repair, 2026-10-14:** the set coequalizer now constructs the
+represented generated-equivalence quotient from its literal pair of maps
+without enumerating the relation source, retaining projection and universal
+factorization. A finite family of parallel maps composes through the same
+constructor by coproducting their common source. Finite enumerated cases
+still use their existing exact disjoint-set computation. An identical
+parallel pair with an unenumerated source retains the diagonal relation
+without deciding that source's membership predicate. Execution remains
+owed at terminal T.
+
+**Remaining effective gap:** equality of nontrivial classes of an arbitrary
+nonenumerated generated equivalence relation has no selected decision
+procedure. The two arbitrary set-map callbacks on `ZZ` returning `n`
+and `n+2` carry no explicit affine/integer-module structure. Their
+represented quotient is defined, but its two-element cardinality and
+class equality are not yet computed. Finite samples of an infinite source
+cannot establish the relation closure. A certified classifier or relation
+computation remains required. Groupoid class-set composition also remains.
 
 **Dependency path:** represented relation diagram -> quotient and universal
 projection -> class set of a represented small groupoid -> class projections
