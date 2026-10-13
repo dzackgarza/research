@@ -65,6 +65,21 @@ def test_generated_relation_on_infinite_set_knows_its_defining_edge() -> None:
     assert projection * left == projection * right
 
 
+def test_finite_generated_relation_on_infinite_set_closes_paths() -> None:
+    r"""Edges 2~5 and 5~9 yield 2~9 without enumerating the target ZZ."""
+    source = Sets.Δ[1]
+    target = Sets()(ZZ)
+    left = Sets().Mor(source, target)(lambda point: target((2, 5)[int(point)]))
+    right = Sets().Mor(source, target)(lambda point: target((5, 9)[int(point)]))
+    construction = Sets().coequalizer_construction(left, right)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert projection(target(2)) == projection(target(9))
+    assert projection(target(9)) == projection(target(2))
+    assert projection * left == projection * right
+
+
 def test_set_equalizer_uses_selected_parallel_morphisms_and_inclusion() -> None:
     r"""The equalizer of the identity and a transposition fixes one point."""
     source = Sets.Δ[2]

@@ -209,16 +209,27 @@ class _GeneratedRelationQuotient:
             return left == right
         source = self.left_morphism().domain()
         if Sets().is_provably_finite(source) and source in EnumeratedSets():
-            # Every generating pair is equal in the quotient, including its
-            # reverse. This is a sound positive decision without pretending
-            # that one-edge inspection decides transitive connectivity.
-            for point in source:
-                first = self.left_morphism()(point)
-                second = self.right_morphism()(point)
-                if ((left == first) is True and (right == second) is True) or (
-                    (left == second) is True and (right == first) is True
-                ):
-                    return True
+            # The finite list of relation edges generates its connected
+            # components, even when the ambient target is infinite. Traverse
+            # only certified endpoint equalities: an undecidable comparison
+            # cannot be used either to join or to separate components.
+            edges = tuple(
+                (self.left_morphism()(point), self.right_morphism()(point))
+                for point in source
+            )
+            reached = [left]
+            for _ in range(2 * len(edges)):
+                added = False
+                for first, second in edges:
+                    for start, end in ((first, second), (second, first)):
+                        if any((start == seen) is True for seen in reached):
+                            if (end == right) is True:
+                                return True
+                            if not any((end == seen) is True for seen in reached):
+                                reached.append(end)
+                                added = True
+                if not added:
+                    break
         return AtomicProposition("generated_equivalence", self, left, right)
 
     def class_of(self, representative):
