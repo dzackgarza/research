@@ -179,6 +179,24 @@ def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
         raise AssertionError("unordered finite points were treated as an ordered union")
 
 
+def test_literal_union_requires_actual_enumeration_not_finiteness() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+    from dzack_research.preamble.logic import AtomicProposition
+
+    left = Set((0, 1))
+    universe = Sets.Δ[2]
+    undecided = Sets().condition_set(
+        universe, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    assert undecided in Sets().Finite()
+    try:
+        left.union(undecided)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("a finite predicate set was enumerated without a selected ranking")
+
+
 def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
     from dzack_research.preamble.categories.sets.set_categories import Set
 

@@ -2032,12 +2032,22 @@ class _FiniteLiteralSet(Sets().ObjectType):
         return iter(self._points)
 
     def union(self, other):
-        r"""The finite set of the points of this set and of the finite set ``other``."""
+        r"""The union of two finitely presented sets, using Sage set union.
+
+        The general union is still a set when the second input is finite
+        without a chosen enumeration. That fact alone does not provide its
+        points for the literal-set engine; do not silently enumerate an
+        undecided predicate subset.
+        """
         assert other in Sets() and Sets().is_provably_finite(other), (
             f"the union with {self} requires another finite set, but {other} is not known to be one"
         )
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.union(other._points))
+        assert other in EnumeratedSets(), (
+            f"the literal-set union with {other} requires its selected finite enumeration; "
+            "the general union has no represented literal-set algorithm for this input"
+        )
         return _FiniteLiteralSet((*self, *other))
 
     def intersection(self, other):
