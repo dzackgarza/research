@@ -84,6 +84,17 @@ def test_elementwise_free_group_reduction_has_decided_noninjectivity() -> None:
     assert elementwise(free.free_generator(label)**2) == cyclic.one()
 
 
+def test_finite_group_cannot_surject_onto_infinite_group() -> None:
+    r"""The trivial map ``C2 -> F1`` has a cardinality obstruction to surjectivity."""
+    finite = Groups.C(2)
+    infinite = Groups.Free(1)
+    trivial = finite.Mor(infinite).elementwise(lambda _element: infinite.one())
+
+    assert finite in Groups().Finite()
+    assert infinite in Groups().Infinite()
+    assert trivial.is_surjective() is False
+
+
 def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
 

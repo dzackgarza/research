@@ -2632,6 +2632,11 @@ class GroupMorphism:
     def is_surjective(self):
         if self._subgroup_premise and self.domain() is self.codomain():
             return True
+        # A finite group cannot surject onto an infinite group. This is a
+        # categorical cardinality obstruction independent of the selected
+        # realization or the availability of a GAP homomorphism.
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedInfiniteGroups():
+            return False
         if self._gap_homomorphism is not None or self._generator_images is not None:
             return bool(self._gap_morphism_crossing().IsSurjective())
         source, target = self.domain(), self.codomain()
