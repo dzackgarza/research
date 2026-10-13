@@ -4643,7 +4643,10 @@ def _cartesian_product_morphism[IndexT](
             selected = shape.object(index)
             if transformation.source()(selected) is not source.factor(index) or transformation.target()(selected) is not target.factor(index):
                 raise ValueError("the component transformation does not have the product's factor objects")
-            return transformation.component(selected)
+            arrow = transformation.component(selected)
+            if not _category_accepts_morphism(Sets(), source.factor(index), target.factor(index), arrow):
+                raise TypeError(f"component at {index} is not a set morphism between its selected factors")
+            return arrow
 
         return Sets().Mor(source, target)(
             lambda section: target(lambda index: component(index)(section.component(index)))
@@ -4748,7 +4751,10 @@ def _coproduct_morphism[IndexT](
             selected = shape.object(index)
             if transformation.source()(selected) is not source.cofactor(index) or transformation.target()(selected) is not target.cofactor(index):
                 raise ValueError("the component transformation does not have the coproduct's summand objects")
-            return target(index, transformation.component(selected)(element.summand_element()))
+            arrow = transformation.component(selected)
+            if not _category_accepts_morphism(Sets(), source.cofactor(index), target.cofactor(index), arrow):
+                raise TypeError(f"component at {index} is not a set morphism between its selected summands")
+            return target(index, arrow(element.summand_element()))
 
         return Sets().Mor(source, target)(induced)
     components = tuple((index, component_morphisms(index)) for index in index_set)
