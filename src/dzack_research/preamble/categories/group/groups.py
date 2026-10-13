@@ -3927,6 +3927,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 coequalizer, projection = target.quotient_by_relators(
                     relators, return_projection=True
                 )
+            elif target in OwnedAbelianGroups():
+                # In an abelian group the normal closure of the difference
+                # family is its ordinary generated subgroup. The existing
+                # represented quotient retains the literal subgroup and
+                # projection even without a finite presentation of target.
+                subgroup = target.subgroup(relators)
+                coequalizer = _abelian_subgroup_quotient(subgroup)
+                projection = coequalizer.quotient_projection()
             else:
                 assert False, (
                     f"the coequalizer of {left_morphism} and {right_morphism} is defined, "
@@ -3953,6 +3961,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 if coequalizer in GroupsWithChosenFinitePresentation():
                     return coequalizer.descend_homomorphism(
                         target_leg, through=projection
+                    )
+                if isinstance(coequalizer, _AbelianSubgroupQuotientGroup):
+                    return coequalizer.Mor(cocone.apex()).elementwise(
+                        lambda coset: target_leg(coset.representative())
                     )
                 return coequalizer.Mor(cocone.apex())(
                     lambda point: target_leg(projection.lift(point))
