@@ -2240,11 +2240,18 @@ class GroupMorphism:
             images = self._generator_images
             if images is None:
                 source = self.domain()
-                assert source.has_selected_group_resolution() and source.group_generating_set() in FiniteSets(), (
-                    f"cannot compute with {self} through GAP: this elementwise group morphism "
-                    "has no selected finite source generating set from which to compute generator images"
-                )
-                images = {generator: self(generator) for generator in source.group_generators()}
+                if source.has_selected_group_resolution() and source.group_generating_set() in FiniteSets():
+                    generators = source.group_generators()
+                elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                    generators = source.selected_subgroup_generators()
+                elif source in OwnedFiniteGroups():
+                    generators = source
+                else:
+                    raise TypeError(
+                        f"cannot compute with {self} through GAP: this elementwise group morphism "
+                        "has neither a selected finite source generating family nor a finite source"
+                    )
+                images = {generator: self(generator) for generator in generators}
             codomain = self.codomain()
             self._gap_homomorphism = self.parent()._engine_homomorphism(
                 [_element_to_engine(self.domain(), generator) for generator in images],
