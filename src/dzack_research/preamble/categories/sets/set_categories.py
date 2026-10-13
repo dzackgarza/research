@@ -3482,9 +3482,12 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
     if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
-        if all(family(index) in AdditiveMonoids() for index in index_set):
-            placements.append(CartesianProductsOfAdditiveMonoids())
+        # Select the finite factor family once. Both categorical placement
+        # and its enumeration must read the same retained values; independent
+        # calls can otherwise repeat an expensive value-selection engine.
         factors = tuple(family(index) for index in index_set)
+        if all(factor in AdditiveMonoids() for factor in factors):
+            placements.append(CartesianProductsOfAdditiveMonoids())
         if all(factor in EnumeratedSets() for factor in factors):
             placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
