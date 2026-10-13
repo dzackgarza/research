@@ -1860,14 +1860,15 @@ class SetSubobjectCategory(SliceCategory):
         def __eq__(self, other):
             r"""Two subsets of \(X\) are equal when they have the same members.
 
-            Decided when \(X\) is finite enumerated, or when both subsets are;
-            otherwise the proposition that they are equal.
+            Finite enumerated ambient sets admit pointwise characteristic
+            comparison. Otherwise equality is mutual containment, retaining
+            undecided inclusion propositions when necessary.
             """
             from dzack_research.preamble.categories.sets.set_categories import (
                 EnumeratedSets,
                 FiniteSets,
             )
-            from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+            from dzack_research.preamble.logic import conjunction, negation
 
             if self is other:
                 return True
