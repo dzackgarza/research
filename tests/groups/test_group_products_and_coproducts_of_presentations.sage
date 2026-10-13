@@ -26,6 +26,31 @@ def test_empty_group_diagrams_have_the_trivial_group_and_unique_maps() -> None:
     assert initial(coproduct.object().one()) == cyclic.one()
 
 
+def test_abelian_coproduct_of_two_cyclic_groups_is_product_not_free_product() -> None:
+    r"""``C2 ⊕ C2`` has commuting injections and their universal sum map."""
+    abelian = AbelianGroups()
+    cyclic = Groups.C(2)
+    generator = next(iter(cyclic.group_generators()))
+    construction = abelian.coproduct_construction((cyclic, cyclic))
+    coproduct = construction.object()
+    shape = construction.diagram().domain()
+    first, second = shape(0), shape(1)
+    left = construction.costructure_morphism(first)
+    right = construction.costructure_morphism(second)
+    identity = cyclic.Mor(cyclic).identity()
+    cocone = construction.diagram().Cocones().cocone(
+        cyclic, lambda _index: identity
+    )
+    fold = construction.factor(cocone).apex_map()
+
+    assert coproduct in abelian
+    assert coproduct.cardinality() == cardinal(4)
+    assert left(generator) * right(generator) == right(generator) * left(generator)
+    assert fold * left == identity
+    assert fold * right == identity
+    assert fold(left(generator) * right(generator)) == cyclic.one()
+
+
 def test_product_of_two_infinite_free_groups_retains_projections_and_universal_factor() -> None:
     r"""For F1 = Z, the product F1 x F1 has the two selected projections.
 
