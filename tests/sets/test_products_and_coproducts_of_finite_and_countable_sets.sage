@@ -13,6 +13,36 @@ arithmetic and of the product functor.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_indexed_family_cache_does_not_decide_undecidable_index_equality() -> None:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.logic import AtomicProposition
+
+    class SymbolicIndex:
+        def __hash__(self):
+            return 1
+
+        def __eq__(self, other):
+            return AtomicProposition("equal_symbolic_indices", self, other)
+
+    first, second = SymbolicIndex(), SymbolicIndex()
+    values = []
+
+    def construct(label):
+        value = object()
+        values.append((label, value))
+        return value
+
+    family = IndexedFamily(NN, construct)
+    # Directly enter the cache boundary, whose contract assumes normalized
+    # indices: no membership assertion about these synthetic labels is made.
+    a = family._value_at_normalized_index(first)
+    b = family._value_at_normalized_index(second)
+    assert a is not b
+    assert family._value_at_normalized_index(first) is a
+    assert family._value_at_normalized_index(second) is b
+    assert len(values) == 2
+
+
 def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.set_categories import (
