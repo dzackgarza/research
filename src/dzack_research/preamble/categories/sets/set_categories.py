@@ -4356,6 +4356,8 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
 
         def _enumeration_pairs(self):
             r"""Yield ``(index_position, factor_position)`` in a total rank order."""
+            if self._known_finite_size() == 0:
+                return
             finite_index_count = self._finite_index_count()
             if finite_index_count is not None:
                 if finite_index_count == 0:
@@ -4674,6 +4676,16 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
         and index_set in EnumeratedSets()
         and all(family(index) in EnumeratedSets() for index in index_set)
     ):
+        placements.append(EnumeratedCoproductsOfSets())
+    elif (
+        index_set in EnumeratedSets()
+        and index_set in Sets().Infinite()
+        and family.constant_value() is not None
+        and family.constant_value() in EnumeratedSets()
+    ):
+        # The diagonal enumeration of I x N uses the two selected ranking
+        # maps. A constant family certifies every summand without inspecting
+        # infinitely many indices or trusting a callback's codomain claim.
         placements.append(EnumeratedCoproductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
 
