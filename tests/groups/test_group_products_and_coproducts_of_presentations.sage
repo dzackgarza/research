@@ -217,6 +217,22 @@ def test_group_coequalizer_has_quotient_projection_and_universal_map() -> None:
     assert projection.domain() is cyclic and projection.codomain() is coequalizer
     assert projection(g**2) == coequalizer.one()
     assert factor * projection == reduction
+
+
+def test_group_coequalizer_from_generated_subgroup_uses_its_selected_relator() -> None:
+    r"""Maps from ``<g²> <= C4`` impose ``g² = 1`` on ``C4``."""
+    cyclic = Groups.C(4)
+    g = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((g**2,))
+    inclusion = subgroup.inclusion()
+    trivial = subgroup.Mor(cyclic).elementwise(lambda _element: cyclic.one())
+    construction = Groups().coequalizer_construction(inclusion, trivial)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert construction.object().cardinality() == cardinal(2)
+    assert projection(g**2) == construction.object().one()
+    assert projection * inclusion == projection * trivial
     assert factor(projection(g)) == h
 
 

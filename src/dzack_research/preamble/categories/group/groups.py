@@ -3931,6 +3931,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 raise TypeError("a group coequalizer requires two morphisms in its selected group category")
             if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 generators = source.group_generators()
+            elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                # The generating family defining this subgroup also
+                # determines the normal closure of the parallel-map
+                # differences. No separate group resolution is needed.
+                generators = source.selected_subgroup_generators()
             elif source in OwnedFiniteGroups():
                 generators = source
             else:
