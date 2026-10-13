@@ -601,7 +601,14 @@ def _filtered_ordered_set(
     else:
         if len(inverse_lookup) != len(points):
             raise ValueError("a filtered enumeration cannot contain duplicate points")
-        position_of = inverse_lookup.get
+        def position_of(value):
+            try:
+                return inverse_lookup.get(value)
+            except (TypeError, ValueError):
+                for i, point in enumerate(points):
+                    if value is point or (value == point) is True:
+                        return i
+                return None
 
     def element_at(index):
         return points[int(index)]
