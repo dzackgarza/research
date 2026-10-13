@@ -407,6 +407,7 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         positions = sorted(
             position
             for label, multiplicity in multiplicities.items()
+            if _selection_integer(multiplicity) > 0
             for position in [int(self.source().ranking_map()(label))]
             for _ in range(_selection_integer(multiplicity))
         )
