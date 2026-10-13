@@ -3631,6 +3631,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 presentation_isomorphisms = ()
             else:
                 all_finite = all(factor in OwnedFiniteGroups() for factor in family)
+                # Abelianity is inherited from the actual direct-product
+                # factors even when the caller selected Grp rather than Ab.
+                all_abelian = all(family[label] in OwnedAbelianGroups() for label in labels)
                 # GAP's FP direct product is an FP group for FP inputs (49.1-1).
                 # Convert mixed finite factors through their FP isomorphisms,
                 # preserving the comparison maps used below.
@@ -3654,7 +3657,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     product = _own_group(
                         PermutationGroup(gap_group=product_engine),
                         refinements=(OwnedAbelianGroups(),)
-                        if self.is_subcategory(OwnedAbelianGroups()) else (),
+                        if all_abelian else (),
                     )
                 else:
                     known_infinite = any(factor in OwnedInfiniteGroups() for factor in family)
@@ -3662,7 +3665,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         product_engine.sage(),
                         refinements=(
                             *((OwnedInfiniteGroups(),) if known_infinite else ()),
-                            *((OwnedAbelianGroups(),) if self.is_subcategory(OwnedAbelianGroups()) else ()),
+                            *((OwnedAbelianGroups(),) if all_abelian else ()),
                         ),
                     )
             if product not in self:

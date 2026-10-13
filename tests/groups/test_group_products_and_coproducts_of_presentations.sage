@@ -6,6 +6,21 @@ These are source-level mathematical specimens; execution follows terminal T.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_group_product_retains_abelianity_from_factors_not_selected_category() -> None:
+    r"""The product of abelian groups remains abelian when selected in Grp."""
+    cyclic = Groups.C(2)
+    product = Groups().product_construction((cyclic, cyclic))
+    result = product.object()
+    diagram = product.diagram()
+    first, second = diagram.domain()(0), diagram.domain()(1)
+    left = product.structure_morphism(first)
+    right = product.structure_morphism(second)
+
+    assert result in AbelianGroups()
+    assert result.cardinality() == cardinal(4)
+    assert left.codomain() is cyclic and right.codomain() is cyclic
+
+
 def test_empty_group_diagrams_have_the_trivial_group_and_unique_maps() -> None:
     category = Groups().FinitelyPresentedAsGroup()
     cyclic = Groups.C(2)
