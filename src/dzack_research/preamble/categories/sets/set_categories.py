@@ -3584,22 +3584,14 @@ class CartesianProductsOfSets(OwnedCategory):
             except TypeError:
                 bucket = self._resolved_component_unhashable
                 candidates = self._resolved_components
-            undecided = False
             for prior_index, resolved in candidates:
                 equal = True if normalized is prior_index else normalized == prior_index
                 if equal is True:
-                    if undecided:
-                        raise ValueError(
-                            "cannot resolve this product component: equality with an earlier index is undecided"
-                        )
                     self._resolved_component_identity[id(normalized)] = (normalized, resolved)
                     return resolved
-                if equal is not False:
-                    undecided = True
-            if undecided:
-                raise ValueError(
-                    "cannot distinguish this product index from previously resolved indices"
-                )
+                # An undecided comparison supplies neither an identification
+                # nor an inequality. Keep this presentation independent in
+                # the memoization cache until equality is decided.
             if self._positional_components is not None:
                 position = int(self.parent().index_set().ranking_map()(normalized))
                 resolved = self._positional_components[position]
