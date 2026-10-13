@@ -26,6 +26,50 @@ def test_finite_group_mor_cardinality_uses_the_represented_gap_mor() -> None:
     assert Groups.C(12).Mor(Groups.C(18)).cardinality() == 6
 
 
+def test_noninjective_group_map_factors_through_its_proper_image() -> None:
+    r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
+
+    The canonical factor C4 -> <g^2> is surjective, not injective;
+    composing it with the subgroup inclusion recovers f.
+    """
+    cyclic = Groups.C(4)
+    generator = next(iter(cyclic.group_generators()))
+    square = cyclic.Mor(cyclic)({generator: generator**2})
+    image = square.image()
+    inclusion = image.inclusion()
+    factor = square.factor_through(inclusion)
+
+    assert image in Subgroups(cyclic)
+    assert image.cardinality() == cardinal(2)
+    assert generator not in image
+    assert factor.domain() is cyclic and factor.codomain() is image
+    assert inclusion.domain() is image and inclusion.codomain() is cyclic
+    assert (inclusion * factor)(generator) == square(generator) == generator**2
+    assert factor(generator**2) == image.one()
+    assert factor.is_surjective() is True
+    assert square.factor_through_or_none(cyclic.subgroup(()).inclusion()) is None
+
+
+def test_infinite_free_source_factors_through_a_proper_cyclic_image() -> None:
+    r"""The map Z -> C4 sending its free generator to g^2 factors via C2.
+
+    This must use selected generators rather than enumerating its source.
+    """
+    free = Groups.Free(1)
+    target = Groups.C(4)
+    label = next(iter(free.free_basis()))
+    generator = next(iter(target.group_generators()))
+    morphism = free.Mor(target)({label: generator**2})
+    image = morphism.image()
+    inclusion = image.inclusion()
+    factor = morphism.factor_through(inclusion)
+
+    assert image.cardinality() == cardinal(2)
+    assert factor.domain() is free and factor.codomain() is image
+    assert (inclusion * factor)(free.free_generator(label)) == generator**2
+    assert factor(free.free_generator(label)**2) == image.one()
+
+
 def test_finite_kernel_uses_the_exact_gap_structure_predicates() -> None:
     symmetric = Groups.S(3)
     target = Groups.C(2)

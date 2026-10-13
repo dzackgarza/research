@@ -269,6 +269,57 @@ class PosetCategory(OwnedCategory):
         )
 
 
+class _TwoLegDiagram(Functor):
+    r"""A cospan ``X -> Z <- Y`` or span ``X <- Z -> Y`` in one category.
+
+    The diagram is a functor on the existing finite-poset category with three
+    objects; the selected arrows and their actual endpoints are retained.
+    """
+
+    def __init__(self, left, right, target_category, *, cospan):
+        if cospan:
+            if left.codomain() is not right.codomain():
+                raise ValueError("a cospan needs two morphisms with one codomain")
+        elif left.domain() is not right.domain():
+            raise ValueError("a span needs two morphisms with one domain")
+        if any(
+            endpoint not in target_category
+            for endpoint in (left.domain(), right.domain(), left.codomain(), right.codomain())
+        ):
+            raise TypeError(
+                f"the two-leg diagram of {left} and {right} is not a diagram in {target_category}"
+            )
+        self._left, self._right = left, right
+        self._cospan = cospan
+        shape = PosetCategory(
+            finite_ordered_set((0, 1, 2)),
+            le=lambda source, target: (
+                source == target
+                or (target == 2 if cospan else source == 2)
+            ),
+        )
+        super().__init__(shape, target_category)
+
+    def _apply_object(self, obj):
+        position = int(obj.value())
+        if position == 0:
+            return self._left.domain() if self._cospan else self._left.codomain()
+        if position == 1:
+            return self._right.domain() if self._cospan else self._right.codomain()
+        return self._left.codomain() if self._cospan else self._left.domain()
+
+    def _apply_morphism(self, arrow):
+        if arrow.domain() is arrow.codomain():
+            obj = self(arrow.domain())
+            return _category_mor_parent(self.codomain(), obj, obj).identity()
+        branch = int((arrow.domain() if self._cospan else arrow.codomain()).value())
+        if branch == 0:
+            return self._left
+        if branch == 1:
+            return self._right
+        raise ValueError("a two-leg diagram has exactly two nonidentity morphisms")
+
+
 class FiniteOrdinalMorphism(Morphism):
     r"""The unique arrow ``i -> j`` in a finite ordinal category when ``i <= j``."""
 

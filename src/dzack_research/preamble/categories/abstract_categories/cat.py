@@ -868,16 +868,21 @@ class Cat(CategoryPacketMethods, Category):
             here once, from those; a category with a better construction of its
             own supplies it instead.
             """
-            assert left_leg.codomain() is right_leg.codomain(), (
-                f"a fiber product needs a cospan X -> Z <- Y, but {left_leg} ends at {left_leg.codomain()} "
-                f"and {right_leg} ends at {right_leg.codomain()}"
+            return self.pullback_construction(left_leg, right_leg).object()
+
+        def pullback_construction(self, left_leg: Morphism, right_leg: Morphism):
+            r"""Return the selected pullback cone of ``X -> Z <- Y``.
+
+            A pullback is a limit of the literal cospan diagram. The existing
+            finite-diagram limit constructor supplies its universal cone,
+            projections to X and Y, compatibility map to Z and factorization.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _TwoLegDiagram,
             )
-            product = self.product_construction((left_leg.domain(), right_leg.domain()))
-            shape = product.diagram().domain()
-            return self.equalizer(
-                left_leg * product.structure_morphism(shape(0)),
-                right_leg * product.structure_morphism(shape(1)),
-            )
+
+            diagram = _TwoLegDiagram(left_leg, right_leg, self, cospan=True)
+            return self.Limits(diagram.domain()).construction(diagram)
 
         def span(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
             r"""Return the span these two legs form, as an object of this category.
@@ -936,14 +941,20 @@ class Cat(CategoryPacketMethods, Category):
             construction = self._categorical_pushout
             if construction is not NotImplemented:
                 return construction(left_leg, right_leg)
-            coproduct = self.coproduct_construction(
-                (left_leg.codomain(), right_leg.codomain())
+            return self.pushout_construction(left_leg, right_leg).object()
+
+        def pushout_construction(self, left_leg: Morphism, right_leg: Morphism):
+            r"""Return the selected pushout cocone of ``X <- Z -> Y``.
+
+            The existing finite-diagram colimit constructor retains the
+            literal span, its two coprojections and the universal factor.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _TwoLegDiagram,
             )
-            shape = coproduct.diagram().domain()
-            return self.coequalizer(
-                coproduct.costructure_morphism(shape(0)) * left_leg,
-                coproduct.costructure_morphism(shape(1)) * right_leg,
-            )
+
+            diagram = _TwoLegDiagram(left_leg, right_leg, self, cospan=False)
+            return self.Colimits(diagram.domain()).construction(diagram)
 
         def opposite(self) -> Category:
             r"""Return \(C^{op}\)."""

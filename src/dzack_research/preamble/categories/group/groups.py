@@ -2353,9 +2353,17 @@ class GroupMorphism:
         return KernelSubgroups(self.domain())(self)
 
     def image(self):
-        r"""``f(G)``; the image of the inclusion of a subgroup ``H`` is ``H``."""
+        r"""``f(G) <= H`` as a subgroup of the codomain.
+
+        A selected finite source generating set determines the image by its
+        mapped generators.  The GAP image computation remains available for
+        other represented source maps.
+        """
         if self._subgroup_premise:
             return self.domain()
+        source = self.domain()
+        if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
+            return self.codomain().subgroup(self(generator) for generator in source.group_generators())
         return _subgroup_from_gap(
             self.codomain(),
             self._gap_morphism_crossing().Image(),
@@ -2405,22 +2413,26 @@ class GroupMorphism:
                 )
 
     def factor_through_or_none(self, target_inclusion):
-        r"""The factor ``m = n . k`` of this monomorphism ``m`` through ``n``, or None.
+        r"""The factor ``f = i . e`` through a subgroup inclusion ``i``, or None.
 
-        ``k(a) = n^{-1}(m(a))`` exists exactly when ``m(A)`` lies in
-        ``n(B)``; containment is decided on the chosen generators of a
-        generated subgroup ``A``, or on the elements of a finite ``A``.
+        ``e(a) = i^{-1}(f(a))`` exists exactly when the image of ``f`` is
+        contained in the image of ``i``.  Injectivity is required of ``i``,
+        not of ``f``; in particular the canonical map onto an image need
+        not be injective.  Containment is decided on selected finite
+        source generators, or by enumeration of a finite source.
         """
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError(f"{self} cannot factor through {target_inclusion}: their codomains {self.codomain()} and {target_inclusion.codomain()} differ")
-        assert self.is_injective() is True and target_inclusion.is_injective() is True, (
-            f"factoring {self} through {target_inclusion} is defined here for monomorphisms, and one of them is not known to be injective"
+        assert target_inclusion.is_injective() is True, (
+            f"factoring {self} through {target_inclusion} requires the latter to be injective"
         )
         source = self.domain()
         target = target_inclusion.domain()
         if source is target and self is target_inclusion:
             return source.Mor(target).identity()
         match source:
+            case _ if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
+                witnesses = source.group_generators()
             case _ if source in GeneratedSubgroups(self.codomain()):
                 witnesses = source.selected_subgroup_generators()
             case _ if source in OwnedFiniteGroups():
@@ -3424,13 +3436,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         # domain category, and named by the construction it performs.
 
         def _categorical_product_construction(self, factors):
-            r"""Return the selected finite product of represented finite groups.
+            r"""Return the selected finite product of represented groups.
 
-            GAP's ``DirectProduct`` supplies the product group and its canonical
-            projections.  The owned object is raised through the ordinary group
-            constructor, so finiteness, commutativity, permutation realization,
-            and presentation structure are recovered from that one product rather
-            than attached after construction.
+            GAP's ``DirectProduct`` supplies embeddings and projections for
+            finite and finitely presented factors (GAP Reference Manual,
+            49.1-1, 49.6). The empty product is the trivial group. A finite
+            product is realized as a permutation group; a product involving
+            infinite finitely presented factors keeps its group presentation.
             """
             from sage.groups.perm_gps.permgroup import PermutationGroup
 
@@ -3441,18 +3453,49 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
 
             family = _finite_factor_family(factors, name="Group product factors")
-            assert family.cardinality() != cardinal(0), (
-                "the product of an empty family of groups (the trivial group) is not computed here; give at least one factor"
-            )
             if any(factor not in self for factor in family):
                 raise TypeError(f"the product of {family} cannot be formed in {self}: some factor is not an object of {self}")
-            assert all(factor in OwnedFiniteGroups() for factor in family), (
-                f"the product of {family} is computed here only for finite groups, and some factor is not known to be finite"
+            assert all(
+                factor in OwnedFiniteGroups() or factor in GroupsWithChosenFinitePresentation()
+                for factor in family
+            ), (
+                f"the product of {family} is computed here for finite or finitely presented groups; "
+                "some factor has neither a finite realization nor a chosen finite presentation"
             )
             labels = tuple(family.index_set())
-            engines = tuple(_gap_model(family[label]) for label in labels)
-            product_engine = libgap.DirectProduct(*engines)
-            product = _own_group(PermutationGroup(gap_group=product_engine))
+            if not labels:
+                product = OwnedGroups().C(1)
+                product_engine = None
+                presentation_isomorphisms = ()
+            else:
+                all_finite = all(factor in OwnedFiniteGroups() for factor in family)
+                # GAP's FP direct product is an FP group for FP inputs (49.1-1).
+                # Convert mixed finite factors through their FP isomorphisms,
+                # preserving the comparison maps used below.
+                presentation_isomorphisms = (
+                    ()
+                    if all_finite
+                    else tuple(
+                        _gap_model(family[label]).IsomorphismFpGroup()
+                        if family[label] in OwnedFiniteGroups()
+                        else libgap.IdentityMapping(_gap_model(family[label]))
+                        for label in labels
+                    )
+                )
+                engines = (
+                    tuple(_gap_model(family[label]) for label in labels)
+                    if all_finite
+                    else tuple(isomorphism.Image() for isomorphism in presentation_isomorphisms)
+                )
+                product_engine = libgap.DirectProduct(*engines)
+                if all_finite:
+                    product = _own_group(PermutationGroup(gap_group=product_engine))
+                else:
+                    known_infinite = any(factor in OwnedInfiniteGroups() for factor in family)
+                    product = _own_group(
+                        product_engine.sage(),
+                        refinements=(OwnedInfiniteGroups(),) if known_infinite else (),
+                    )
             if product not in self:
                 raise ArithmeticError(
                     f"the direct product {product} of {family} is not an object of {self}, although every factor is"
@@ -3462,9 +3505,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def projection(label):
                 position = labels.index(label) + 1
-                return product.Mor(family[label])(
-                    libgap.Projection(product_engine, position)
-                )
+                result = libgap.Projection(product_engine, position)
+                if presentation_isomorphisms:
+                    result = result * presentation_isomorphisms[position - 1].InverseGeneralMapping()
+                return product.Mor(family[label])(result)
 
             universal_cone = (diagram).ProductCones().cone(
                 product,
@@ -3473,6 +3517,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def factorizer(cone):
                 apex = cone.apex()
+                if not labels:
+                    return apex.Mor(product)(lambda _element: product.one())
                 source_engine = _gap_model(apex)
                 source_generators = tuple(source_engine.GeneratorsOfGroup())
                 images = []
@@ -3483,9 +3529,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         leg = cone.structure_morphism(diagram.domain()(label))
                         factor = family[label]
                         factor_image = leg(owned_generator)
-                        image *= libgap.Embedding(product_engine, position).Image(
-                            _element_to_engine(factor, factor_image)
-                        )
+                        model = _element_to_engine(factor, factor_image)
+                        if presentation_isomorphisms:
+                            model = presentation_isomorphisms[position - 1].Image(model)
+                        image *= libgap.Embedding(product_engine, position).Image(model)
                     images.append(image)
                 return apex.Mor(product)._from_engine_generator_images(
                     source_generators,
@@ -3495,13 +3542,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def _categorical_coproduct_construction(self, factors):
-            r"""Return the selected finite coproduct of represented finite groups.
+            r"""Return the selected finite coproduct of represented groups.
 
             In ``Grp`` the coproduct is the free product.  GAP supplies finite
-            presentation isomorphisms for the represented finite factors, the
-            maintained ``FreeProduct`` construction, and its canonical factor
-            embeddings.  The result is raised as one owned finitely presented
-            group; no GAP group or mapping crosses the public boundary.
+            presentation isomorphisms for finite groups, and consumes the
+            selected presentations of infinite finitely presented groups.
+            ``FreeProduct`` and ``Embedding`` are the maintained operations
+            (GAP Reference Manual 49.5-1, 49.6). The empty free product is
+            the trivial group.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 SelectedColimitConstruction,
@@ -3510,42 +3558,66 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
 
             family = _finite_factor_family(factors, name="Group coproduct factors")
-            assert family.cardinality() != cardinal(0), (
-                "the coproduct of an empty family of groups (the trivial group) is not computed here; give at least one factor"
-            )
             if any(factor not in self for factor in family):
                 raise TypeError(f"the coproduct of {family} cannot be formed in {self}: some factor is not an object of {self}")
-            assert all(factor in OwnedFiniteGroups() for factor in family), (
-                f"the free product of {family} is computed here only for finite factors, and some factor is not known to be finite"
+            assert all(
+                factor in OwnedFiniteGroups() or factor in GroupsWithChosenFinitePresentation()
+                for factor in family
+            ), (
+                f"the free product of {family} is computed here for finite or finitely presented groups; "
+                "some factor has neither a finite realization nor a chosen finite presentation"
             )
 
             labels = tuple(family.index_set())
-            presentation_isomorphisms = tuple(
-                _gap_model(family[label]).IsomorphismFpGroup() for label in labels
-            )
-            presented_factors = tuple(
-                isomorphism.Image() for isomorphism in presentation_isomorphisms
-            )
-            coproduct_engine = libgap.FreeProduct(*presented_factors)
-            # A free product with two nontrivial factors contains an element of
-            # infinite order (a product of nontrivial elements of two factors),
-            # so it is infinite; with at most one it is that factor.  This is
-            # proved here and enters as construction data of the coproduct.
-            nontrivial_factors = sum(
-                1 for label in labels if int(family[label].order()) > 1
-            )
-            size = OwnedInfiniteGroups() if nontrivial_factors >= 2 else OwnedFiniteGroups()
-            coproduct = _own_group(coproduct_engine.sage(), refinements=(size,))
+            if not labels:
+                coproduct = OwnedGroups().C(1)
+                presentation_isomorphisms = ()
+                presented_factors = ()
+                embeddings = ()
+            else:
+                presentation_isomorphisms = tuple(
+                    _gap_model(family[label]).IsomorphismFpGroup()
+                    if family[label] in OwnedFiniteGroups()
+                    else libgap.IdentityMapping(_gap_model(family[label]))
+                    for label in labels
+                )
+                presented_factors = tuple(
+                    isomorphism.Image() for isomorphism in presentation_isomorphisms
+                )
+                coproduct_engine = libgap.FreeProduct(*presented_factors)
+                # Two nontrivial factors yield an infinite free product.
+                # For an undecided finite presentation, never infer either
+                # finiteness or infiniteness merely from its generators.
+                nontrivial_finite = sum(
+                    factor.order() > 1 for factor in family if factor in OwnedFiniteGroups()
+                )
+                known_finite = (
+                    all(factor in OwnedFiniteGroups() for factor in family)
+                    and nontrivial_finite <= 1
+                )
+                known_infinite = (
+                    any(factor in OwnedInfiniteGroups() for factor in family)
+                    or nontrivial_finite >= 2
+                )
+                size = (
+                    (OwnedFiniteGroups(),) if known_finite
+                    else (OwnedInfiniteGroups(),) if known_infinite
+                    else ()
+                )
+                coproduct = _own_group(
+                    coproduct_engine.sage(),
+                    refinements=size,
+                )
+                embeddings = tuple(
+                    libgap.Embedding(coproduct_engine, position)
+                    for position in range(1, len(labels) + 1)
+                )
             assert coproduct in self, (
                 f"the group free product {coproduct} of {family} is not an object of {self}; "
                 "this inherited construction supplies a coproduct only when that free product "
                 "lies in the requested category"
             )
 
-            embeddings = tuple(
-                libgap.Embedding(coproduct_engine, position)
-                for position in range(1, len(labels) + 1)
-            )
             diagram = _discrete_diagram(family, self)
 
             def injection(label):
@@ -3561,6 +3633,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def factorizer(cocone):
                 apex = cocone.apex()
+                if not labels:
+                    return coproduct.Mor(apex)(lambda _element: apex.one())
                 generator_models = []
                 image_models = []
                 for position, label in enumerate(labels):
@@ -3593,6 +3667,144 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 universal_cocone,
                 factorizer,
             )
+
+        def _categorical_equalizer_construction(self, left_morphism, right_morphism):
+            r"""The equalizer subgroup of parallel group homomorphisms.
+
+            The represented predicate is f(g)=h(g); the inclusion and its
+            universal cone are the subgroup construction's actual maps.
+            Finiteness of the subgroup follows from finiteness of its source,
+            not from an algorithm enumerating it.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _parallel_pair_diagram,
+            )
+
+            if (
+                left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("an equalizer needs parallel group homomorphisms with identical endpoints")
+            source, target = left_morphism.domain(), left_morphism.codomain()
+            if source not in self or target not in self:
+                raise TypeError(f"the group equalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
+
+            equalizer = source.predicate_subgroup(
+                lambda element: left_morphism(element) == right_morphism(element),
+                f"{left_morphism}(g) = {right_morphism}(g)",
+            )
+            if equalizer not in self:
+                raise TypeError(
+                    f"the equalizer of {left_morphism} and {right_morphism} is a subgroup of {source}, "
+                    f"but it is not an object of the selected subcategory {self}"
+                )
+            diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            inclusion = equalizer.inclusion()
+            universal_cone = diagram.Cones().cone(
+                equalizer,
+                lambda index: (
+                    inclusion if index is shape.source() else left_morphism * inclusion
+                ),
+            )
+
+            def factorizer(cone):
+                source_leg = cone.structure_morphism(shape.source())
+                return cone.apex().Mor(equalizer)(
+                    lambda element: equalizer(source_leg(element))
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def _categorical_equalizer(self, left_morphism, right_morphism):
+            return self._categorical_equalizer_construction(left_morphism, right_morphism).object()
+
+        def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+            r"""Coequalize a parallel pair by the normal closure of its differences.
+
+            The target group is quotiented by the normal subgroup generated
+            by `f(g) h(g)^-1` for source generators. The existing finite-group
+            quotient and chosen-presentation quotient retain the actual
+            projection. Descent through the quotient supplies the universal
+            cocone factor, without presenting an abstract quotient as a list
+            of representatives.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedColimitConstruction,
+                _parallel_pair_diagram,
+            )
+
+            if (
+                left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("a coequalizer needs parallel group homomorphisms with identical endpoints")
+            source, target = left_morphism.domain(), left_morphism.codomain()
+            if source not in self or target not in self:
+                raise TypeError(f"the group coequalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
+            if source.has_selected_finite_group_generating_set():
+                generators = source.group_generators()
+            elif source in OwnedFiniteGroups():
+                generators = source
+            else:
+                assert False, (
+                    f"the coequalizer of {left_morphism} and {right_morphism} is defined, "
+                    f"but computing its normal closure requires a finite generating family of {source}"
+                )
+            relators = tuple(
+                left_morphism(generator) * ~right_morphism(generator)
+                for generator in generators
+            )
+            if target in OwnedFiniteGroups():
+                target_engine = _gap_model(target)
+                subgroup_engine = libgap.Subgroup(
+                    target_engine,
+                    libgap([_element_to_engine(target, relator) for relator in relators]),
+                )
+                normal_closure = libgap.NormalClosure(target_engine, subgroup_engine)
+                coequalizer, projection = _finite_group_quotient_by_gap_normal_subgroup(
+                    target, normal_closure
+                )
+            elif target in GroupsWithChosenFinitePresentation():
+                coequalizer, projection = target.quotient_by_relators(
+                    relators, return_projection=True
+                )
+            else:
+                assert False, (
+                    f"the coequalizer of {left_morphism} and {right_morphism} is defined, "
+                    f"but the quotient of {target} has no selected finite-presentation or finite-group computation"
+                )
+            if coequalizer not in self:
+                raise TypeError(
+                    f"the coequalizer {coequalizer} of {left_morphism} and {right_morphism} "
+                    f"is not an object of the selected subcategory {self}"
+                )
+            diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            universal_cocone = diagram.Cocones().cocone(
+                coequalizer,
+                lambda index: (
+                    projection * left_morphism
+                    if index is shape.source()
+                    else projection
+                ),
+            )
+
+            def factorizer(cocone):
+                target_leg = cocone.costructure_morphism(shape.target())
+                if coequalizer in GroupsWithChosenFinitePresentation():
+                    return coequalizer.descend_homomorphism(
+                        target_leg, through=projection
+                    )
+                return coequalizer.Mor(cocone.apex())(
+                    lambda point: target_leg(projection.lift(point))
+                )
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+        def _categorical_coequalizer(self, left_morphism, right_morphism):
+            return self._categorical_coequalizer_construction(left_morphism, right_morphism).object()
 
         def abelianization(self):
             r"""``(-)^ab : Grp -> Ab``, the abelianization functor.
