@@ -4337,6 +4337,15 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
             size = cardinal(self.cardinality())
             return int(size.finite_value()) if size.is_finite() else None
 
+        @cached_method
+        def _finite_summand_sizes(self):
+            r"""Exact finite summand cardinalities in the chosen index order."""
+            count = self._finite_index_count()
+            if count is None or self._known_finite_size() is None:
+                return None
+            index_at = self.index_set().ranking_map().inverse()
+            return tuple(int(self.cofactor(index_at(j)).cardinality()) for j in range(count))
+
         def _enumeration_pairs(self):
             r"""Yield ``(index_position, factor_position)`` in a total rank order."""
             finite_index_count = self._finite_index_count()
@@ -4384,14 +4393,9 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         f"position {position} is out of range for {self}, which has {finite_size} elements"
                     )
                 index_at = self.index_set().ranking_map().inverse()
-                finite_indices = self._finite_index_count()
-                if finite_size is not None and finite_indices is not None:
+                sizes = self._finite_summand_sizes()
+                if sizes is not None:
                     from bisect import bisect_right
-
-                    sizes = tuple(
-                        int(self.cofactor(index_at(j)).cardinality())
-                        for j in range(finite_indices)
-                    )
                     # The cumulative number of points up to layer k is
                     # sum(min(k + 1, n_j)). Search those monotone cumulative
                     # counts without enumerating earlier coproduct elements.
@@ -4424,16 +4428,11 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                     int(self.index_set().ranking_map()(summand)),
                     self._factor_position_of(self.cofactor(summand), element.summand_element()),
                 )
-                finite_indices = self._finite_index_count()
-                if finite_indices is not None and self._known_finite_size() is not None:
+                sizes = self._finite_summand_sizes()
+                if sizes is not None:
                     # Rank-layer order counts one point from every summand
                     # whose size exceeds the layer. Sum those contributions
                     # directly rather than replaying the entire enumeration.
-                    index_at = self.index_set().ranking_map().inverse()
-                    sizes = tuple(
-                        int(self.cofactor(index_at(j)).cardinality())
-                        for j in range(finite_indices)
-                    )
                     summand_rank, layer = target
                     return sum(min(layer, size) for size in sizes) + sum(
                         size > layer for size in sizes[:summand_rank]
