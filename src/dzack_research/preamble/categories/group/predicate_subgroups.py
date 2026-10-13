@@ -28,10 +28,18 @@ from dzack_research.preamble.owned_category import _object_of
 def _predicate_subgroup_category(category):
     r"""The category a predicate subgroup of ``category.base()`` is constructed in.
 
-    A subgroup of a finite group is finite (Lagrange), so the subgroup is
-    placed in finite groups at construction whenever its group is.
+    A subgroup of a finite group is finite (Lagrange), and every subgroup
+    of an abelian group is abelian. Both refinements follow from the
+    ambient group, independently of whether the predicate is decidable.
+    For example, the equalizer of two maps of abelian groups must remain
+    in Ab, whereas the equalizer of arbitrary group maps need not.
     """
-    return Cat().meet((category, *_finite_if_bounded_by(category.base())))
+    group = category.base()
+    return Cat().meet((
+        category,
+        *_finite_if_bounded_by(group),
+        *((OwnedGroups().Commutative(),) if group in OwnedGroups().Commutative() else ()),
+    ))
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):
