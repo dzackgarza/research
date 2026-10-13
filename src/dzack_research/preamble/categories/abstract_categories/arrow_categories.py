@@ -1799,6 +1799,16 @@ class SetSubobjectCategory(SliceCategory):
                     )))
                     for member in base
                 )
+            domain = self.domain()
+            if domain in FiniteSets() and domain in EnumeratedSets():
+                # A finite subobject can be checked at its own represented
+                # points even when the ambient set is infinite.  Retain an
+                # undecided target-membership proposition instead of asking
+                # factor_through_or_none to construct an uncertified factor.
+                inclusion = self.inclusion()
+                return conjunction(
+                    other.is_parent_of(inclusion(point)) for point in domain
+                )
             return self.factor_through_or_none(other) is not None
 
         def union(self, other):
