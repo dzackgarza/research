@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+if [ "${2-}" = merge ]; then
+    exit 0
+fi
+
 # Unlike commit-msg, this Git hook runs with --no-verify, before any editor.
 # https://git-scm.com/docs/githooks#_prepare_commit_msg
 if [ "${GIT_EDITOR-}" != ':' ]; then

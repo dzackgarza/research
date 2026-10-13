@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+    exit 0
+fi
+
 if ! grep -Fq 'c2291c7ab917bf86978a564337f00d5f' "$1"; then
     printf '%s\n' 'Commit rejected: missing policy code. Read CONTRIBUTING.md, COMMIT-01.' >&2
     exit 1

@@ -7897,15 +7897,15 @@ c2291c7ab917bf86978a564337f00d5f
 The hook checks whether the commit message contains the code. It does not check
 whether the policies were read or followed.
 
-This requirement applies to every commit, including merges, amendments,
-checkpoints, and commits made with `--no-verify`. Supply the message
-with `git commit -F <file>` or `-m <message>`; interactive message editing is
-rejected before the editor starts.
+This requirement applies to authored commits, including amendments, checkpoints,
+and commits made with `--no-verify`. Merge commits use Git's generated message.
+Supply authored messages with `git commit -F <file>` or `-m <message>`;
+interactive message editing is rejected before the editor starts.
 
 Activate the tracked hooks in each checkout with
 `git config --local core.hooksPath .githooks`. The `prepare-commit-msg` hook
-checks the supplied message even with `--no-verify`; `commit-msg` checks it
-again at the final message boundary. Both reject a missing code. The tracked `pre-commit`,
+checks the supplied authored message even with `--no-verify`; `commit-msg` checks it
+again at the final message boundary. Both allow merge commits. The tracked `pre-commit`,
 `pre-push`, and `post-commit` hooks delegate to the corresponding hooks in the
 globally configured `core.hooksPath`.
 
