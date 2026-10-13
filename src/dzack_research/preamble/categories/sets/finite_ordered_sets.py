@@ -574,23 +574,25 @@ def _filtered_ordered_set(
         position_of = inverse_lookup.get
     except TypeError:
         def position_of(value):
-            undecided = False
-            matched = None
             for i, point in enumerate(points):
                 same = True if point is value else point == value
                 if same is True:
-                    matched = i
-                elif same is not False:
-                    undecided = True
-            if undecided:
-                raise ValueError("filtered-set membership equality is undecided")
-            return matched
+                    return i
+            return None
 
     def element_at(index):
         return points[int(index)]
 
     def index_of(element):
         return position_of(element)
+
+    from dzack_research.preamble.logic import conjunction, negation
+
+    def contains(element):
+        return negation(conjunction(
+            negation(True if element is point else element == point)
+            for point in points
+        ))
 
     return _object_of(
         FiniteOrderedSets(),
@@ -600,7 +602,7 @@ def _filtered_ordered_set(
         index_set=finite_ordinal_set(len(points)),
         element_at=element_at,
         index_of=index_of,
-        contains=lambda element: True if position_of(element) is not None else False,
+        contains=contains,
         name=name,
     )
 
