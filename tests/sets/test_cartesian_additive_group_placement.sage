@@ -3,6 +3,17 @@ r"""Additive-group placement requires componentwise inverses, not only zero and 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_additive_group_product_category_supplies_a_group_object() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveGroups
+
+    product = CartesianProductsOfAdditiveGroups().an_object()
+    assert product in CartesianProductsOfAdditiveGroups()
+    assert product in AdditiveGroups()
+    assert product.zero() + (-product.zero()) == product.zero()
+    for label in product.index_set():
+        assert product.factor(label) in AdditiveGroups()
+
+
 def test_infinite_constant_additive_group_product_has_pointwise_inverses() -> None:
     product = Sets().product(indexed_family(NN, ZZ))
     assert product in AdditiveGroups()

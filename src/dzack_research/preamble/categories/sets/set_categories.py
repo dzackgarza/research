@@ -4027,6 +4027,13 @@ class CartesianProductsOfSets(OwnedCategory):
 class CartesianProductsOfAdditiveGroups(OwnedCategory):
     r"""Products of additive groups, with pointwise additive inverses."""
 
+    def an_object(self):
+        r"""A genuine group-valued product, not a monoid-only specimen."""
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        factor = AdditiveGroups().an_object()
+        return Sets().product((factor, factor))
+
     def super_categories(self):
         from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 
