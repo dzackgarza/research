@@ -1076,6 +1076,29 @@ class Modules(OwnedCategoryOverBaseRing):
                 raise TypeError(f"the wide equalizer {equalizer} is not an object of {self}")
             return equalizer
 
+        def _categorical_equalizer_family_construction(self, morphisms):
+            r"""Retain the selected wide equalizer's diagram and inclusion."""
+            from dzack_research.preamble.categories.abstract_categories.products import _parallel_family_diagram
+
+            equalizer = self._categorical_equalizer_family(morphisms)
+            reference = morphisms.value(next(iter(morphisms.index_set())))
+            inclusion = equalizer.inclusion()
+            diagram = _parallel_family_diagram(morphisms, self)
+            shape = diagram.domain()
+            universal_cone = diagram.Cones().cone(
+                equalizer,
+                lambda index: inclusion if index is shape.source() else reference * inclusion,
+            )
+
+            def factorizer(cone):
+                source = cone.apex()
+                source_leg = cone.structure_morphism(shape.source())
+                return source.module_category().Mor(source, equalizer)._equalizer_factor(
+                    source_leg, inclusion=inclusion
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
         def _categorical_coequalizer_family(self, morphisms):
             r"""Realize a finite wide coequalizer through images/sums/cokernels."""
             size = morphisms.cardinality()
@@ -1109,6 +1132,33 @@ class Modules(OwnedCategoryOverBaseRing):
             if quotient not in self:
                 raise TypeError(f"the wide coequalizer {quotient} is not an object of {self}")
             return quotient
+
+        def _categorical_coequalizer_family_construction(self, morphisms):
+            r"""Retain the relation quotient and its universal wide cocone."""
+            from dzack_research.preamble.categories.abstract_categories.products import _parallel_family_diagram
+
+            quotient = self._categorical_coequalizer_family(morphisms)
+            reference = morphisms.value(next(iter(morphisms.index_set())))
+            target = reference.codomain()
+            # The wide relation quotient uses the original target's selected
+            # generator labels, exactly as the binary cokernel owner does.
+            projection = target.module_category().Mor(target, quotient)(
+                lambda label: quotient.module_generator(label)
+            )
+            diagram = _parallel_family_diagram(morphisms, self)
+            shape = diagram.domain()
+            universal_cocone = diagram.Cocones().cocone(
+                quotient,
+                lambda index: projection * reference if index is shape.source() else projection,
+            )
+
+            def factorizer(cocone):
+                target_leg = cocone.costructure_morphism(shape.target())
+                return quotient.module_category().Mor(quotient, cocone.apex())(
+                    lambda label: target_leg(target.module_generator(label))
+                )
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
             return left_morphism.biproduct_map(right_morphism, source=source, target=target)

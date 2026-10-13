@@ -156,6 +156,21 @@ def test_wide_module_constructions_use_the_selected_nonordinal_family_labels() -
     assert equalizer.cardinality() == 1
     assert coequalizer.cardinality() == 2
 
+    wide_equalizer = modules.equalizer_of_family_construction(family)
+    wide_coequalizer = modules.coequalizer_of_family_construction(family)
+    assert wide_equalizer.diagram().morphisms() is family
+    assert wide_coequalizer.diagram().morphisms() is family
+    shape = wide_coequalizer.diagram().domain()
+    projection = wide_coequalizer.costructure_morphism(shape.target())
+    assert all(projection(arrow(e)) == projection(arrows["zero"](e)) for arrow in arrows.values())
+    target = line / line.span((2 * e,))
+    reduction = line.Mor(target)({e: target.projection()(e)})
+    cocone = wide_coequalizer.diagram().Cocones().cocone(
+        target,
+        lambda index: reduction * arrows["zero"] if index is shape.source() else reduction,
+    )
+    assert wide_coequalizer.factor(cocone).apex_map() * projection == reduction
+
 
 def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:
     r"""The terminal set is the empty product; the initial set is the empty coproduct."""
