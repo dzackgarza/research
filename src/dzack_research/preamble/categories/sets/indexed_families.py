@@ -128,9 +128,21 @@ class IndexedFamily[IndexT, ValueT]:
         else:
             bucket = self._value_cache.setdefault(index_hash, [])
             candidates = (*bucket, *self._unhashable_value_cache)
+        undecided = False
         for known, value in candidates:
-            if normalized is known or (normalized == known) is True:
+            equal = True if normalized is known else normalized == known
+            if equal is True:
+                if undecided:
+                    raise ValueError(
+                        "cannot select a family value: equality with an earlier index is undecided"
+                    )
                 return value
+            if equal is not False:
+                undecided = True
+        if undecided:
+            raise ValueError(
+                "cannot distinguish this family index from previously evaluated indices"
+            )
         value = self._value_function(normalized)
         bucket.append((normalized, value))
         if bucket is not self._unhashable_value_cache:
