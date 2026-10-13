@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.functions.real_functions import (
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     _DirectSumOfModules,
-    _DirectSumProjectionMorphism,
     _direct_sum_of_modules,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
@@ -97,12 +96,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
 
         def degree_projection(self, degree):
             r"""The projection \(\pi_s\colon N\to L^{1/s}\) onto a homogeneous piece."""
-            degree = self.grading_index_set()(degree)
-            piece = self.graded_piece(degree)
-            return _DirectSumProjectionMorphism(
-                Modules(self.base_ring()).Mor(self, piece),
-                degree,
-            )
+            return self.projection(degree)
 
         def integration_of_degree_one(self):
             r"""Integration \(\iota\colon L^1\to\mathbb R\) of the degree-\(1\) piece."""
