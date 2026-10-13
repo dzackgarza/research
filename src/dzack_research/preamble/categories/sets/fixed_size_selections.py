@@ -108,10 +108,11 @@ class FixedSizeSelectionElement(Element):
         r"""The selection as the family of its points in increasing order."""
         indices = Sets.Δ[self.degree() - 1]
         positions = tuple(self._source_positions())
+        point_at_rank = self.parent().source().ranking_map().inverse()
 
         def value(index):
             requested = int(index)
-            return self.parent().source()[positions[requested]]
+            return point_at_rank(positions[requested])
 
         return indexed_family(indices, value, name="Selection word")
 
@@ -138,10 +139,11 @@ class FixedSizeSelectionElement(Element):
 
         positions = tuple(distinct_positions())
         indices = Sets.Δ[len(positions) - 1]
+        point_at_rank = self.parent().source().ranking_map().inverse()
 
         def source_label(index):
             requested = int(index)
-            return self.parent().source()[positions[requested]]
+            return point_at_rank(positions[requested])
 
         return FiniteOrderedSets().from_indexed(
             indices,
@@ -222,8 +224,9 @@ class FixedSizeSelectionElement(Element):
         if not self.allows_repetition():
             return "{" + ", ".join(map(repr, self)) + "}"
         terms = []
+        point_at_rank = self.parent().source().ranking_map().inverse()
         for position, occurrences in groupby(self._source_positions()):
-            label = self.parent().source()[position]
+            label = point_at_rank(position)
             multiplicity = sum(1 for _ in occurrences)
             terms.append(
                 repr(label)
