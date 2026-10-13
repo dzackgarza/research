@@ -1785,19 +1785,38 @@ class SetSubobjectCategory(SliceCategory):
             return self.factor_through_or_none(other) is not None
 
         def union(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self or member in other)
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return self._subset_from_predicate(other, lambda member: negation(conjunction((
+                negation(self.is_parent_of(member)), negation(other.is_parent_of(member)),
+            ))))
 
         def intersection(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self and member in other)
+            from dzack_research.preamble.logic import conjunction
+
+            return self._subset_from_predicate(other, lambda member: conjunction((
+                self.is_parent_of(member), other.is_parent_of(member),
+            )))
 
         def difference(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self and member not in other)
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return self._subset_from_predicate(other, lambda member: conjunction((
+                self.is_parent_of(member), negation(other.is_parent_of(member)),
+            )))
 
         def symmetric_difference(self, other):
-            return self._subset_from_predicate(other, lambda member: (member in self) != (member in other))
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return self._subset_from_predicate(other, lambda member: negation(conjunction((
+                negation(conjunction((self.is_parent_of(member), negation(other.is_parent_of(member))))),
+                negation(conjunction((other.is_parent_of(member), negation(self.is_parent_of(member))))),
+            ))))
 
         def complement(self):
-            return self.codomain().power_set().from_predicate(lambda member: member not in self)
+            from dzack_research.preamble.logic import negation
+
+            return self.codomain().power_set().from_predicate(lambda member: negation(self.is_parent_of(member)))
 
         def __or__(self, other):
             return self.union(other)
