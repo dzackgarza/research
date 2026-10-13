@@ -19,6 +19,18 @@ def test_infinite_constant_additive_group_product_has_pointwise_inverses() -> No
         assert projection(section + opposite) == ZZ.zero()
 
 
+def test_empty_additive_product_has_trivial_group_structure() -> None:
+    # The empty product is terminal in additive monoids and additive groups;
+    # the vacuous all-factor hypotheses must give a genuine group, not merely
+    # a set with one element.
+    empty = Sets().product(indexed_family(Sets.Δ[-1], ZZ))
+    assert empty in AdditiveGroups()
+    assert empty in AdditiveGroups().AdditiveCommutative()
+    unit = empty.zero()
+    assert -unit == unit
+    assert unit + unit == unit
+
+
 def test_infinite_constant_additive_monoid_does_not_gain_inverses() -> None:
     product = Sets().product(indexed_family(NN, NN))
     assert product in AdditiveMonoids()
