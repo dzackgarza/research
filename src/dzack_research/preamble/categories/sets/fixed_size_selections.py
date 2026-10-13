@@ -138,12 +138,13 @@ class FixedSizeSelectionElement(Element):
     def add_label(self, label: PointT) -> FixedSizeSelectionElement:
         target = self.parent().with_size(self.degree() + 1)
         position = int(self.parent().source().ranking_map()(label))
-        if not self.allows_repetition() and self.multiplicity(label):
+        positions = tuple(self._source_positions())
+        if not self.allows_repetition() and position in positions:
             raise ValueError(
                 f"cannot add {label} to the subset {self}: it already contains {label}"
             )
         return target.from_source_rank_positions(
-            merge(self._source_positions(), (position,))
+            merge(positions, (position,))
         )
 
     def merged_with(self, other: FixedSizeSelectionElement) -> FixedSizeSelectionElement:
