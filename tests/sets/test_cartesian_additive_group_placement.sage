@@ -22,7 +22,13 @@ def test_infinite_constant_additive_group_product_has_pointwise_inverses() -> No
 def test_infinite_constant_additive_monoid_does_not_gain_inverses() -> None:
     product = Sets().product(indexed_family(NN, NN))
     assert product in AdditiveMonoids()
+    assert product in AdditiveMonoids().AdditiveCommutative()
     assert product not in AdditiveGroups()
+    left = product(lambda n: NN(int(n)))
+    right = product(lambda n: NN(2 * int(n) + 1))
+    for position in (0, 2, 5):
+        projection = product.projection(NN(position))
+        assert projection(left + right) == projection(right + left)
 
 
 def test_infinite_group_cone_factors_as_an_additive_group_morphism() -> None:
@@ -76,6 +82,7 @@ def test_infinite_group_product_retains_monoid_cones() -> None:
 def test_mixed_finite_monoid_product_is_not_an_additive_group() -> None:
     mixed = Sets().product((ZZ, NN))
     assert mixed in AdditiveMonoids()
+    assert mixed in AdditiveMonoids().AdditiveCommutative()
     assert mixed not in AdditiveGroups()
     assert mixed not in AdditiveGroups().AdditiveCommutative()
     section = mixed((ZZ(-2), NN(3)))

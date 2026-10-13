@@ -3661,10 +3661,13 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     ]
     from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
     commutative_groups = AdditiveGroups().AdditiveCommutative()
+    commutative_monoids = AdditiveMonoids().AdditiveCommutative()
 
     constant = family.constant_value()
     if constant is not None and constant in AdditiveMonoids():
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if constant is not None and constant in commutative_monoids:
+        placements.append(commutative_monoids)
     if constant is not None and constant in AdditiveGroups():
         placements.append(CartesianProductsOfAdditiveGroups())
     if constant is not None and constant in commutative_groups:
@@ -3672,6 +3675,8 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
     diagram = family.selected_diagram()
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if diagram is not None and diagram.codomain().is_subcategory(commutative_monoids):
+        placements.append(commutative_monoids)
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveGroups()):
         placements.append(CartesianProductsOfAdditiveGroups())
     if diagram is not None and diagram.codomain().is_subcategory(commutative_groups):
@@ -3683,6 +3688,8 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         factors = tuple(family(index) for index in index_set)
         if all(factor in AdditiveMonoids() for factor in factors):
             placements.append(CartesianProductsOfAdditiveMonoids())
+        if all(factor in commutative_monoids for factor in factors):
+            placements.append(commutative_monoids)
         if all(factor in AdditiveGroups() for factor in factors):
             placements.append(CartesianProductsOfAdditiveGroups())
         if all(factor in commutative_groups for factor in factors):
