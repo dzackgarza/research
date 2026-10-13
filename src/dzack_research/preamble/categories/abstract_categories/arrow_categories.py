@@ -1825,12 +1825,15 @@ class SetSubobjectCategory(SliceCategory):
         def symmetric_difference(self, other):
             from dzack_research.preamble.logic import conjunction, negation
 
-            return self._subset_from_predicate(other, lambda member: (lambda left, right: negation(conjunction((
+            def predicate(member):
+                left = self.is_parent_of(member)
+                right = other.is_parent_of(member)
+                return negation(conjunction((
                     negation(conjunction((left, negation(right)))),
                     negation(conjunction((right, negation(left)))),
-                ))))(
-                    self.is_parent_of(member), other.is_parent_of(member)
-                ))
+                )))
+
+            return self._subset_from_predicate(other, predicate)
 
         def complement(self):
             from dzack_research.preamble.logic import negation
