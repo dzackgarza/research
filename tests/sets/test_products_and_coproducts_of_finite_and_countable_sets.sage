@@ -624,6 +624,25 @@ def test_componentwise_set_maps_accept_additive_diagrams() -> None:
         assert coproduct_map(point) == point
 
 
+def test_finite_componentwise_set_maps_inherit_additive_morphisms() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.sets.set_categories import (
+        _cartesian_product_morphism, _coproduct_morphism,
+    )
+
+    additive = AdditiveMonoids()
+    factor = additive.an_object()
+    identity = additive.Mor(factor, factor).identity()
+    product = Sets().product((factor, factor))
+    coproduct = Sets().coproduct((factor, factor))
+    product_map = _cartesian_product_morphism(product, product, lambda _i: identity)
+    coproduct_map = _coproduct_morphism(coproduct, coproduct, lambda _i: identity)
+    for index in product.index_set():
+        assert product_map(product.zero()).component(index) == factor.zero()
+        selected = coproduct.injection(index)(factor.zero())
+        assert coproduct_map(selected) == selected
+
+
 def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation() -> None:
     from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
     from dzack_research.preamble.categories.functors.core import NaturalTransformation
