@@ -776,6 +776,12 @@ class Modules(OwnedCategoryOverBaseRing):
                         self.base_ring(),
                         family,
                     )
+            if product not in self:
+                raise TypeError(
+                    f"the module product {product} of {family} does not belong to {self}; "
+                    "a realization of the product in the ambient module category does not "
+                    "establish closure in this subcategory"
+                )
             # Reuse an established module-valued diagram rather than
             # reclassifying its values through a new unchecked callback.
             # This retains the original functor's actual object and arrow
@@ -827,6 +833,11 @@ class Modules(OwnedCategoryOverBaseRing):
                 f"but not every factor of {family} is one"
             )
             coproduct = self.biproduct(family)
+            if coproduct not in self:
+                raise TypeError(
+                    f"the module coproduct {coproduct} of {family} does not belong to {self}; "
+                    "its biproduct realization does not establish closure in this subcategory"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
