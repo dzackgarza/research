@@ -2287,7 +2287,17 @@ class SetInjection(OwnedSetMorphism):
                         raise ValueError("image preimage is absent or undecided")
                 else:
                     def preimage(value):
-                        return lookup[value]
+                        try:
+                            return lookup[value]
+                        except (TypeError, ValueError):
+                            # A query may have undecidable hash equality even
+                            # when the image values established an injective
+                            # hash table. A witnessed pair still has an
+                            # inverse; an unresolved comparison is not one.
+                            for key, point in pairs:
+                                if key is value or (key == value) is True:
+                                    return point
+                            raise ValueError("image preimage is absent or undecided")
                 return Sets().Mor(image, domain)(preimage)
 
     @cached_method
