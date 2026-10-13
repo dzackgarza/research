@@ -215,6 +215,23 @@ def test_literal_intersection_and_difference_preserve_undecided_membership() -> 
         assert complement.is_parent_of(point) is not False
 
 
+def test_ordered_intersection_retains_finite_predicate_when_membership_is_undecided() -> None:
+    from dzack_research.preamble.logic import AtomicProposition
+
+    ordered = finite_ordered_set(("a", "b", "c"))
+    unknown = Sets().condition_set(
+        ordered, lambda value: AtomicProposition("unspecified_member", value)
+    )
+    meet = ordered.intersection(unknown)
+    complement = ordered.difference(unknown)
+    for result in (meet, complement):
+        assert result in Sets().Finite()
+        assert result not in EnumeratedSets()
+        for value in ordered:
+            assert result.is_parent_of(value) is not True
+            assert result.is_parent_of(value) is not False
+
+
 def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
     from dzack_research.preamble.categories.sets.set_categories import Set
 
