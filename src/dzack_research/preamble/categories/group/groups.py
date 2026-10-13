@@ -3606,7 +3606,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def _categorical_coproduct_construction(self, factors):
             r"""Return the selected finite coproduct of represented groups.
 
-            In ``Grp`` the coproduct is the free product.  GAP supplies finite
+            In ``Grp`` the coproduct is the free product, but in ``Ab`` it
+            is the finite direct product with its canonical injections.
+            In particular the coproduct of two copies of C2 in Ab is
+            C2 x C2, not the nonabelian group C2 * C2. The universal
+            mediating arrow in Ab multiplies the component images; this
+            uses commutativity in its target and is not a group-coproduct
+            factorizer for a nonabelian target.
+
+            GAP supplies finite
             presentation isomorphisms for finite groups, and consumes the
             selected presentations of infinite finitely presented groups.
             ``FreeProduct`` and ``Embedding`` are the maintained operations
@@ -3622,6 +3630,66 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             family = _finite_factor_family(factors, name="Group coproduct factors")
             if any(factor not in self for factor in family):
                 raise TypeError(f"the coproduct of {family} cannot be formed in {self}: some factor is not an object of {self}")
+            if self.is_subcategory(OwnedAbelianGroups()):
+                # In Ab, the finite coproduct is the direct product, not
+                # the free product in Grp. Reuse the product's maintained
+                # GAP realization and its selected factor embeddings.
+                product_construction = self._categorical_product_construction(family)
+                coproduct = product_construction.object()
+                labels = tuple(family.index_set())
+                product_engine = _gap_model(coproduct) if labels else None
+                mixed_presentations = bool(labels) and not all(
+                    factor in OwnedFiniteGroups() for factor in family
+                )
+                presentation_isomorphisms = tuple(
+                    _gap_model(family[label]).IsomorphismFpGroup()
+                    if family[label] in OwnedFiniteGroups()
+                    else libgap.IdentityMapping(_gap_model(family[label]))
+                    for label in labels
+                ) if mixed_presentations else ()
+                projections = tuple(
+                    product_construction.structure_morphism(
+                        product_construction.diagram().domain()(label)
+                    ) for label in labels
+                )
+                diagram = _discrete_diagram(family, self)
+
+                def injection(label):
+                    position = labels.index(label) + 1
+                    factor = family[label]
+                    return factor.Mor(coproduct).elementwise(
+                        lambda element: _element_from_engine(
+                            coproduct,
+                            libgap.Embedding(product_engine, position).Image(
+                                presentation_isomorphisms[position - 1].Image(
+                                    _element_to_engine(factor, element)
+                                ) if mixed_presentations else _element_to_engine(factor, element)
+                            ),
+                        )
+                    )
+
+                universal_cocone = diagram.CoproductCocones().cocone(
+                    coproduct, lambda index: injection(index.value())
+                )
+
+                def factorizer(cocone):
+                    apex = cocone.apex()
+                    if not labels:
+                        return coproduct.Mor(apex).elementwise(lambda _element: apex.one())
+                    legs = tuple(
+                        cocone.costructure_morphism(diagram.domain()(label))
+                        for label in labels
+                    )
+
+                    def mediating_map(element):
+                        result = apex.one()
+                        for position, projection in enumerate(projections):
+                            result *= legs[position](projection(element))
+                        return result
+
+                    return coproduct.Mor(apex).elementwise(mediating_map)
+
+                return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
             assert all(
                 factor in OwnedFiniteGroups() or factor in GroupsWithChosenFinitePresentation()
                 for factor in family
