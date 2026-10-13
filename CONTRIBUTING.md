@@ -1256,7 +1256,7 @@ of this specification.
   a construction record does not repair the duplication.
 
   This rule does not remove actual mathematical arrows: kernel inclusions,
-  quotient projections, framing epimorphisms, localization maps, scalar-change
+  quotient projections, free-cover epimorphisms, localization maps, scalar-change
   units/counits and a genuinely selected isomorphism remain preamble morphisms with
   their exact endpoints. A forgetful functor is supplied by its category; the
   retained-input accessor is not a second implementation of that functor.
@@ -1525,11 +1525,14 @@ of this specification.
   datum later, with its codomain already fixed. Access order cannot select a
   new framing, a new presentation, a different source, or different placement.
 
-  A selected framing is the epimorphism `Free_R(S) -> M`, including its
-  specified source and generator images and its spanning obligation. A stored
-  callable without those contracts is not a framing. A delayed realization
-  of those fixed data is allowed when constructing its enriched morphism
-  eagerly would recursively demand another framed morphism space. Admission
+  A selected **free cover** (historically called `framing_morphism` in the
+  preamble) is an epimorphism `Free_R(S) -> M`, including its specified source,
+  generator images, and spanning obligation. A categorical **framing** has an
+  *invertible* augmentation `Free_C(S) -> X` for a specified free--forgetful
+  adjunction (`CAT-29`); a surjection is not a framing. A stored callable
+  without the relevant source and morphism contracts is neither. A delayed
+  realization of those fixed data is allowed when constructing its enriched
+  morphism eagerly would recursively demand another resolution-dependent Mor. Admission
   of the module's datum and realization of that morphism must be stratified at
   their common owner; `_install_*` helpers and post-allocation refinement are
   not alternative public constructors.
@@ -4430,17 +4433,17 @@ as object identity/one owned construction with the relevant category placements.
 
 Do not hard-code integer-specific sign/absolute-value formatting into a generic `R`-module printer; an arbitrary coefficient ring need not have those notions.
 
-#### `STY-152`: “Framing” stored as a finite generator list -> selected epimorphism from a free module
+#### `STY-152`: Free cover stored as a finite generator list -> selected epimorphism from a free module
 
-**Bad:** define a framed module as `M` plus `tuple(generators)` and then infer that the tuple is finite, ordered, injectively labelled, or a basis.
+**Bad:** define a module with selected generators as `M` plus `tuple(generators)` and then infer that the tuple is finite, ordered, injectively labelled, or a basis.
 
-**Preferred:** a framing is the selected epimorphism
+**Preferred:** a free cover is the selected epimorphism
 
 \[
 \operatorname{Free}_R(S) \twoheadrightarrow M
 \]
 
-for an owned set `S`.  The distinguished-generator map is the underlying-set image of this morphism.  `S` may be infinite, nonenumerable, unordered, and different labels may map to the same module element.  A basis/free framing is a stronger refinement, not the generic meaning of “framed.”
+for an owned set `S`. The distinguished-generator map is the underlying-set image of this morphism. `S` may be infinite, nonenumerable, unordered, and different labels may map to the same module element. A **categorical framing** is instead an isomorphism `Free_C(S) -> X` relative to the specified adjunction (`CAT-29`). It is a length-zero free resolution; its invertibility is not implied by an epimorphic cover.
 
 #### `STY-153`: Backend-category graph used as mathematical taxonomy -> capability correspondence
 
@@ -5112,7 +5115,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Present a framed module only for a finite ordered basis because the first implementation uses matrices; present a free module only from an integer rank; present formal divisors only over a finite list of possible prime divisors; place an operation on lattices when its definition only uses module structure and a form morphism.
 
-- **Correct Example**: A framing is a selected epimorphism `Free_R(S) -> M` for an arbitrary set `S`; `[n]` is the canonical finite ordered specialization.  Individual elements have finite support even when `S` is infinite or nonenumerable.  Finite matrix realizations and rank-based algorithms live in the finite/framed subcategories while callers retain the same semantic construction.
+- **Correct Example**: A free cover is a selected epimorphism `Free_R(S) -> M` for an arbitrary set `S`; `[n]` is the canonical finite ordered specialization. A categorical framing replaces the epimorphism by an isomorphism, relative to the same adjunction. Individual elements have finite support even when `S` is infinite or nonenumerable. Finite matrix realizations and rank-based algorithms are computational specializations; they do not restrict the category of augmented objects.
 
 - **Sweep Question**: “If I drop one hypothesis from the current examples, does the formalized definition still apply?”  If yes, that hypothesis belongs to an implementation/subcategory, not the presentation.
 
@@ -5461,13 +5464,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `CON-11`: A Chosen Generating Set Is a Selected Epimorphism `Free_R(S) -> M`
 
-- **Rule**: Model a module with chosen module generators by an actual set `S` and a selected epimorphism `Free_R(S) -> M`, the truncation-0 resolution of `CAT-29`.  The set `S` is the domain of the generating epimorphism; generator evaluation is the image of its free generators.  Do not identify the chosen generators with a Python sequence, an ordered basis, or a reversible label-to-element correspondence unless stronger chosen structure supplies those properties.  A *framing* is the length-0 case, in which the epimorphism is an isomorphism, i.e. a basis (`CAT-29`).
+- **Rule**: Model a module with chosen module generators by an actual set `S` and a selected epimorphism `Free_R(S) -> M`, the one-term free-cover case of `CAT-29`. The set `S` is the domain of the generating epimorphism; generator evaluation is the image of its free generators. Do not identify the chosen generators with a Python sequence, an ordered basis, or a reversible label-to-element correspondence unless stronger chosen structure supplies those properties. A categorical *framing* is the stronger, length-zero resolution in which the augmentation is an isomorphism, i.e. a chosen basis in this module case (`CAT-29`).
 
 - **Rationale**: Finite generation, freeness, a basis, order, and enumerability are independent hypotheses.  A generating epimorphism may have an infinite/nonenumerable domain, and it may identify distinct free generators.  Treating it as a tuple/basis silently adds all of those hypotheses and creates exactly the finite-coordinate blast radius `ARC-16` forbids.
 
 - **Violation Example**: `self._module_generators = tuple(generators)` as the definition of the chosen generators; recover a label from every generator image; require a rank integer when the natural input is an arbitrary set `S`.
 
-- **Correct Example**: retain `S`, `Free_R(S)`, and the selected epimorphism.  The canonical rank-`n` free module is the specialization `S=[n]`; a framed (based) module is the refinement in which the epimorphism is an isomorphism and the additional ordering/indexing data is actually present.
+- **Correct Example**: retain `S`, `Free_R(S)`, and the selected epimorphism. The canonical rank-`n` free module is the specialization `S=[n]`; its categorical framing is the selected isomorphism `Free_R(S) -> M`. An ordering or indexing of that basis is separate additional structure when not already given by `S`.
 
 
 
@@ -5766,15 +5769,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: 2026-09-17, converting hand-assembled parents: `ConditionSets`, `ImageSets`, `BlackBoxGroups` (a model of computation), `FiniteExtensionAutomorphismGroups`, `GeneratedSubmonoids`, `PredicateSubmonoids`, `GluedSchemes`, `GlobalSectionModules`, `QuasiCoherentSheavesWithChosenDescentDatum`, `LebesgueSpaces`, `SequenceSpacesOfExponent`, `DifferentiabilityClassesOfOrder`, `FixedSizeSelections`, `CurvesWithChosenNormalization` (a normalization is canonical, never chosen); and, in the other direction, ruling that the engine ring class must go.
 - **Correct Example**: categories defined by mathematical data whose morphisms come from morphisms of that data, such as symmetric groups \(\mathrm{Sym}(\Omega)\) on sets, general linear groups \(\mathrm{GL}_n(R)\), and quotients \(F/\langle\!\langle R\rangle\!\rangle\) of free groups, are categories `lean-categories` may formalize, presented with levels that build their engines privately from the datum; a black-box group, whose datum is an encoding with oracles, is not.  Also: a glued scheme constructed as `_object_of(Schemes(R), scheme_base_ring=R, scheme_engine=_GluedScheme(datum))`; \(\Gamma(X, F)\) a `GeneralModules(A)` module on the set equalizer of the overlap readings; `class _ConditionSet(Sets().ObjectType)` constructed by `X.condition_set(P)`, which computes its placement from the universe.
 
-#### `CAT-29`: Framings, Presentations and Resolutions Are Objects of a Category of Resolutions; Frameability Is a Relative Property
+#### `CAT-29`: Categorical Framings and Resolution Conditions Are Specializations of Augmented Objects
 
-- **Rule**: The mathematics in this rule is `lean-categories`' to formalize, and the preamble presents it only as formalized there; what is not yet formalized is a request there, stated with the sources below.  A chosen generating epimorphism, a chosen presentation and a chosen syzygy tower are truncations of one datum, a *resolution*, and they live in a category of resolutions over `C`, never in an axiom subcategory of `C`.  Fix a projective class \(\mathcal P\) in `C` -- usually the retracts of free objects \(G(X)\) for the free/forgetful comonad \(G = FU\).  The category \(\operatorname{Res}_{\mathcal P,n}(C)\to C\) has as fibre over \(X\) the augmented simplicial objects \(P_\bullet\to X\), truncated at degree \(n\), levelwise in \(\mathcal P\), acyclic through degree \(n\) (for modules, Dold--Kan returns the augmented chain complexes of `lean-categories` `FOUNDATIONS.md` §76--77).  \(n = \infty\) is a cofibrant replacement.  Levelwise conditions (free, finitely generated, finite rank) are the pullbacks of property classifiers along degree evaluation; global conditions (acyclicity, length) are conditions on the whole diagram.  Two indices are kept apart: the *truncation* \(n\) says how far the resolution is chosen, and the *length* says above which degree it vanishes.  A generating epimorphism \(F(S)\twoheadrightarrow X\) is truncation 0; a presentation is truncation 1; `FP_n` is the existence of a resolution finite through truncation \(n\).  A length-0 resolution by free objects, \(0\to F(S)\xrightarrow{\cong}X\to0\), is a basis: that, and only that, is a *framing*.  Frameability conditions -- free, stably free, finitely generated, finitely presented, `FP_n`, finite length -- are relative properties of `C` and are axioms with qualified names (`CAT-19`).  Every object is resolvable: the counit \(F(UX)\twoheadrightarrow X\) begins the canonical comonadic (bar) resolution \(G^{\bullet+1}X\to X\), so "has a resolution" is never an axiom.  *Framed* in the geometric sense is the manifold notion: a framed manifold is a manifold with a length-0 resolution of its tangent bundle by trivial bundles, i.e. a trivialization of \(TX\) (the \(G=\{e\}\) G-structure); a stable framing trivializes \(TX\oplus\mathbb R^k\), a framing in the stabilized category.
+- **Rule**: `lean-categories` is the mathematical authority. Begin with a *chosen augmented object*, not an object already certified as an exact resolution. In a suitable stable \(\infty\)-category \(\mathcal E\), an augmentation is an object \(\varepsilon:R^\bullet\to j(X)\) of the slice \(\mathcal E_{/j(X)}\), where \(j:\mathcal C\to\mathcal E\) is the specified comparison from the original category. It canonically determines the cofiber sequence
 
-- **Rationale**: the property "some framing exists" is true of every object once the counit is admitted, so an axiom named for it separates nothing; and a chosen framing is data whose forgetful functor to `C` is not injective on objects (many resolutions sit over one \(X\)), so it is not a subcategory (`CON-16`, chosen enrichment).  Sage's joins close under axioms, so a global `Framed` axiom was propagated across branches as though it were a property of every branch: the meet of the categories of `ZZ` and `QQ` came out with `Framed` on `Modules(ZZ)` and `QQ` was refused, while `Framed` membership was decided by a stored datum.  The resolution picture also recovers the geometric notion: through Serre--Swan a trivialization of \(TM\) is a basis of \(\operatorname{Der}(C^\infty(M))\), the length-0 case above, and for an algebra the resolution computes the cotangent complex whose trivialization is the algebraic framing.  Sources: nLab *framed manifold*, *G-structure*; Quillen, *Homotopical Algebra*, II.4 (simplicial objects over a category with enough projectives); Barr--Beck, *Homology and standard constructions* (comonadic resolutions); Christensen--Hovey, *Quillen model structures for relative homological algebra* (projective classes); Lurie, *Higher Topos Theory* §5.5.8 (the nonabelian derived category \(\mathcal P_\Sigma\)).  Section numbers are to be checked against the texts before a docstring cites them.
+  \[
+  R^\bullet\xrightarrow{\varepsilon}j(X)\longrightarrow Q_\varepsilon
+  \longrightarrow \Sigma R^\bullet,\qquad Q_\varepsilon=\operatorname{cofib}(\varepsilon).
+  \]
+
+  The augmentation and cofiber always exist when the indicated stable constructions do; **\(Q_\varepsilon\simeq0\) is an optional condition**, not admission to the category of augmented objects. It characterizes an equivalence in \(\mathcal E\), hence a *full derived resolution* under the appropriate comparison hypotheses. An **epimorphic** augmentation in \(\mathcal C\) is a different condition; it need not have vanishing cofiber. In a derived category with a suitable t-structure, an epimorphism of degree-zero objects kills \(H^0(Q_\varepsilon)\), but need not kill the lower cofiber homology. Do not identify a general stabilization \(\operatorname{Sp}(\mathcal C)\) with a derived category \(D(\mathcal C)\), or use stable equivalence to assert epimorphy in \(\mathcal C\).
+
+  A **selected graded, filtered, chain, or simplicial presentation** of \(R^\bullet\) must remain part of the defining augmented datum whenever algorithms or predicates refer to its terms. A bare object of \(D(\mathcal C)\) does not remember chosen generators, differential maps, degreewise projectivity, or exact truncation data. In an additive/abelian setting these can be presented as augmented chain complexes and compared with a suitable derived enhancement; in general use augmented simplicial or other appropriate higher-categorical objects. Neither `Ch(C)` nor `D(C)` is available for an arbitrary category without hypotheses.
+
+  The **truncation level** \(n\), **amplitude/length**, **termwise categories** (free relative to a specified adjunction, projective, flat, flasque, \(\mathcal F\)-acyclic), **arrow conditions**, and **exactness/connectivity conditions** on \(Q_\varepsilon\) are independent refinements of this underlying construction. Termwise conditions pull back along degree-evaluation functors; they are not hard-coded into a distinct resolution constructor. A truncation does **not** force exactness at its last retained degree. `FP_n` is a property asserting existence of an appropriate finite partial projective resolution, not a selected resolution itself; state exactly which degrees count when translating between indexing conventions. Dual/coaugmented models, such as injective and flasque resolutions, use the corresponding arrow orientation and admissible category.
+
+  For a free--forgetful adjunction \(F:\mathcal D\rightleftarrows\mathcal C:U\), a **categorical framing** of \(X\) is *precisely* a selected pair \((S,\phi)\) with \(S\in\mathcal D\) and an **isomorphism** \(\phi:F(S)\xrightarrow{\sim}X\) in \(\mathcal C\). This is the length-zero free-resolution specialization. Replacing the isomorphism by an epimorphism gives a free cover, not a framing. For a smooth \(n\)-manifold, take \(\mathcal C=\operatorname{Mod}(\mathcal O_X)\), the sheaf free-module construction, and \(\phi:\mathcal O_X^{\oplus n}\xrightarrow{\sim}\mathcal T_X\); the equivalent bundle trivialization is \(X\times\mathbb R^n\cong TX\). Applying global sections afterward is a functor, not the definition of the framing. A stable framing is a chosen trivialization after adjoining the specified trivial summand; it is not implied by passage to a derived or stable category.
+
+- **Rationale**: An object can admit an epimorphic free cover without being free, so **"every object has a free cover" never implies "every object has a framing"**. The free--forgetful counit can supply a canonical first cover (where it is epimorphic) and a comonadic simplicial augmentation, but not a chosen invertible framing or an automatic quasi-isomorphism in an unspecified enhancement. A chosen augmentation is additional mathematical data; an existence property is a separate classifier. Sage's former global `Framed` axiom propagated a spurious property across ring/module/algebra category joins and broke `ZZ -> QQ`/`RR` coercions. The replacement must not introduce new competing categories for a free cover, a basis, a projective truncation, or a flasque resolution when they are all specializations of the same augmented-object construction. Preserve the exact selected terms and maps while retaining their universal forgetful functors. Sources for comparison: `lean-categories/FOUNDATIONS.md` §§13, 76--77; nLab *framed manifold*, *G-structure*; Quillen, *Homotopical Algebra*, II.4; Weibel, *Introduction to Homological Algebra*, §§2, 8; Barr--Beck, *Homology and standard constructions*. Verify precise source sections before citing them in mathematical code.
 
 - **Violation Example**: a global `Framed` axiom registered in `all_axioms` and declared on objects, groups, modules and algebras (`objects.py`, `FramedModules(R)`, `FramedAlgebras(R)`); membership in `C.Framed()` decided by a framing stored on the object; `is_framed_algebra()` reading an attribute; a chosen-presentation class declaring `Framed` as its supercategory.
 
-- **Correct Example**: \(\operatorname{Res}_{\mathcal P,1}(\mathrm{Mod}_R)\) holding the chosen presentation of \(M\), its image in `Modules(R).FinitelyPresented()` the property; `FramedFreeModules(R)`, a free module with a chosen basis, as the length-0 resolutions; `QQ` a `ZZ`-module whose canonical resolution begins with \(F(U\mathbb Q)\twoheadrightarrow\mathbb Q\) and which is not finitely generated; a framed smooth manifold as a manifold with a trivialization of its tangent bundle.
+- **Correct Example**: In `Mod_R`, the augmentation \(R\twoheadrightarrow R/(2)\) is a free cover but **not** a framing or an equivalence of degree-zero derived objects; its cofiber has a nontrivial kernel class. The augmentation \(R^{(S)}\xrightarrow{\sim}M\) is a categorical framing with \(Q_\varepsilon\simeq0\). A selected two-term presentation \(F_1\to F_0\to M\) keeps its relation morphism and need not be exact at the leftmost term. Over \(\mathcal O_X\), \(\mathcal O_X^{\oplus n}\cong\mathcal T_X\) is a framing of the tangent sheaf. The module `QQ` over `ZZ` can have a nonfinite free cover without being finitely generated or framed. `FreeCover`, `BasedModule`, `Coord`, and selected injective/flasque resolutions are **named specializations/arrow variants of the shared augmented model**, not alternative foundations for it.
 
 #### `CAT-02`: Property Categories Do Not Manufacture Chosen Data
 
@@ -5787,7 +5803,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `FinitelyPresentedGroups().ObjectType.presenting_free_group()` computing a presentation merely because the group is known finitely presented; asking every finitely generated module for a preferred generating set.
 
-- **Correct Example**: `FinitelyPresentedGroups()` records the property; `GroupsWithChosenFinitePresentation()` carries and exposes the selected presentation.  A truncation-0 resolution of `M` carries the chosen epimorphism from a free module, while `Modules(R).FinitelyGenerated()` only states that some finite one exists.
+- **Correct Example**: `FinitelyPresentedGroups()` records the property; `GroupsWithChosenFinitePresentation()` carries and exposes the selected presentation. A one-term augmented free-module object with epimorphic augmentation carries a chosen cover of `M`, while `Modules(R).FinitelyGenerated()` only states that some finite one exists. Such a cover does not automatically satisfy the full-resolution (vanishing-cofiber) condition.
 
 #### `CAT-03`: Constructibility Does Not Require Enumeration or Generators
 
@@ -6904,7 +6920,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: `ARC-00` governs the proof surface.  Do not apply `tuple`, `list`, `sorted`, `len` or a comprehension to an owned object in order to make an assertion.  Ask the object: `cardinality()` rather than `len`; equality of owned objects rather than equality of materialised sequences; `Set(...)`, `finite_ordered_set(...)` or the relevant family on the right-hand side.  `len` remains correct on a Python container the test itself constructed as syntactic ingress, and on nothing else.
 
-- **Rationale**: `tuple(X)` yields a value with no parent, no category, no cardinality and no homs -- an object of no category in this repository.  The assertion that follows is a statement about Python data structures, and because the test *is* the proof surface, that is what has been proved.  `len` carries the same exit one level down, and additionally asserts finiteness at a site that never stated it: a length is an `int`, a cardinality is a cardinal, and the roots of an indefinite lattice are infinite.  The order underlying a materialisation being genuine -- a framing is ordered, invariant factors are ordered by divisibility -- does not license the exit; order is not what is at issue.
+- **Rationale**: `tuple(X)` yields a value with no parent, no category, no cardinality and no homs -- an object of no category in this repository.  The assertion that follows is a statement about Python data structures, and because the test *is* the proof surface, that is what has been proved.  `len` carries the same exit one level down, and additionally asserts finiteness at a site that never stated it: a length is an `int`, a cardinality is a cardinal, and the roots of an indefinite lattice are infinite.  The order underlying a materialisation being genuine -- a selected ordered basis is ordered, invariant factors are ordered by divisibility -- does not license the exit; order is not what is at issue.
 
   Comparing after extraction is not merely differently spelled, it is **strictly weaker**.  `tuple(a) == tuple(b)` passes whether or not `a == b` is implemented, and whether or not it is implemented correctly, so the assertion silently declines to exercise the equality the preamble presents -- the very operation a mathematical test of two objects exists to check.  Extraction thus removes proof burden unilaterally: it can only admit more implementations than the direct comparison, never fewer.
 

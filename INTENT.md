@@ -230,6 +230,67 @@ This matters enormously because a categorical computational language cannot be o
 
 The final system must retain the functor itself.
 
+---
+
+## Governing correction (2026-10-13): categorical framing and augmented resolutions
+
+The historical `Framed` discussion above describes an earlier error; it must
+not be read as a definition equating a *framing* with a generating epimorphism.
+For any specified free--forgetful adjunction
+\(F:\mathcal D\rightleftarrows\mathcal C:U\), a **categorical framing** of
+\(X\) is a *chosen isomorphism* \(F(S)\xrightarrow{\sim}X\) for an object
+\(S\in\mathcal D\), i.e. the **length-zero free-resolution case**.
+A generating epimorphism \(F(S)\twoheadrightarrow X\) is a **free cover**, not
+a framing. The associated property "there exists a cover" is not the
+property "there exists a framing".
+
+The geometric instance is intrinsically sheaf-theoretic: a framing of a
+smooth \(n\)-manifold is a selected \(\mathcal O_X\)-linear isomorphism
+\(\mathcal O_X^{\oplus n}\xrightarrow{\sim}\mathcal T_X\), where
+\(\mathcal T_X\) is the sheaf of derivations/vector fields. It corresponds
+to \(X\times\mathbb R^n\xrightarrow{\sim}TX\) under the bundle/sheaf
+equivalence. Global sections of the tangent sheaf are **not** the
+defining sheaf or bundle datum. Stable framing adds a selected trivial
+summand before taking the isomorphism.
+
+The semantic construction that precedes *all* these named specializations
+is an **augmented object**, not a complex that is already asserted exact:
+\(\varepsilon:R^\bullet\to X[0]\). In a specified stable enhancement
+\(j:\mathcal C\to\mathcal E\), its realization is an arrow of
+\(\mathcal E_{/j(X)}\), with a canonical cofiber sequence
+
+\[
+R^\bullet\xrightarrow{\varepsilon}j(X)
+\longrightarrow\operatorname{cofib}(\varepsilon)
+\longrightarrow\Sigma R^\bullet.
+\]
+
+The cofiber is part of the universal construction. Its vanishing is an
+**additional** condition characterizing an equivalence in \(\mathcal E\);
+neither the existence of an augmentation nor the existence of an epimorphic
+free cover forces it. An epimorphism must be interpreted in the original
+category (or under an explicitly proven compatible t-structure), not inferred
+from stabilization. Termwise conditions (free, projective, flasque,
+\(\mathcal F\)-acyclic), amplitude, truncation levels, and conditions on
+the augmentation or cofiber remain independent classifiers. The chosen
+graded/filtered/simplicial presentation and its structural arrows are
+retained when those conditions refer to individual degrees: passage to a
+derived equivalence class alone loses that information. General categories
+have augmented simplicial objects; neither \(\operatorname{Ch}(\mathcal C)\)
+nor \(D(\mathcal C)\) is automatically defined, and stabilization and
+derived localization must not be identified without hypotheses.
+
+The formal declarations must introduce this general augmented-object,
+cofiber, and classifier framework **before** registering `FreeCover`,
+`BasedModule`, `Coord`, selected finite presentations, projective resolutions,
+and sheaf resolutions. Their underlying datum is shared; differences in
+allowed morphisms (e.g. basis-preserving versus arbitrary linear maps)
+must be modeled by actual morphism-category constructions, not by duplicating
+the objects or choosing a new foundation for each case. Existing Lean
+module specializations do not yet implement this unifying construction.
+See `CONTRIBUTING.md` `CAT-29` and the open formalization complaint
+`dzackgarza/lean-categories#62` for the exact remaining obligation.
+
 10. **Diamonds made Python MRO precedence masquerade as coherence.** Two structural paths can reach the same target. Controlled C3 can ensure a class occurs once, but it cannot prove the two composites are the same mathematical functor. `sage-categories/specs/resolution.md` therefore moved to inspecting actual natural transformations
 $$
 \eta:F\Rightarrow G
