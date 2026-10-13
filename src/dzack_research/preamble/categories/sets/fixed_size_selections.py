@@ -44,10 +44,22 @@ def _selection_integer(value: SupportsIndex) -> int:
 
 
 def _largest_combinadic_entry(rank: int, size: int) -> int:
-    entry = size - 1
-    while binomial(entry + 1, size) <= rank:
-        entry += 1
-    return entry
+    # The largest a with binomial(a, size) <= rank. The usual finite-n
+    # combination engine uses an ambient bound; here the source can be NN,
+    # so discover one by doubling and locate a by integer bisection rather
+    # than performing rank many increments when size is one.
+    lower = size - 1
+    upper = size
+    while binomial(upper, size) <= rank:
+        lower = upper
+        upper *= 2
+    while upper - lower > 1:
+        middle = (lower + upper) // 2
+        if binomial(middle, size) <= rank:
+            lower = middle
+        else:
+            upper = middle
+    return lower
 
 
 def _strict_positions_from_combinadic(rank: int, size: int):
