@@ -126,6 +126,17 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
 
         return finite_ordered_set((self.object(),))
 
+    def arrows(self):
+        r"""The complete set of arrows of ``BG``, namely ``Mor_BG(*,*)``.
+
+        For infinite ``G``, this is still a represented Hom set; it is
+        not replaced by a finite sample of group elements. Each element
+        retains its source and target object and the selected group element
+        that defines its composition.
+        """
+        point = self.object()
+        return self.Mor(point, point).arrow_set()
+
     def an_object(self):
         return self.object()
 

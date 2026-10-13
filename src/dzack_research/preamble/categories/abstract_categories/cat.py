@@ -467,6 +467,58 @@ class Cat(CategoryPacketMethods, Category):
 
             return _codomain_functor(self)
 
+        @cached_method
+        def class_set_construction(self):
+            r"""Coequalize source and target on a complete selected arrow set.
+
+            The result is objects modulo zigzags of morphisms, and hence
+            isomorphism classes when the category is a groupoid. This
+            implementation requires a finite selected set of objects and
+            a represented complete set of arrows, retaining the actual
+            source/target maps and their universal quotient.
+            """
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
+
+            indices = self.object_set()
+            if indices not in FiniteSets() or indices not in EnumeratedSets():
+                raise TypeError(
+                    f"the class set of {self} requires its complete object and "
+                    "arrow sets, not an unenumerated possible-object collection"
+                )
+            objects = (
+                finite_ordered_set(tuple(self.objects()))
+                if hasattr(self, "objects") else indices
+            )
+            if not all(obj in self for obj in objects):
+                raise TypeError(f"the selected object set of {self} is not admitted in that category")
+            presented = self.arrows()
+            arrows = (
+                finite_ordered_set(tuple(presented))
+                if isinstance(presented, IndexedFamily)
+                and presented.index_set() in FiniteSets()
+                and presented.index_set() in EnumeratedSets()
+                else presented
+            )
+            if arrows not in Sets():
+                raise TypeError(
+                    f"the category {self} needs a complete owned arrow set, "
+                    f"but its arrow presentation is {arrows}"
+                )
+            source = Sets().Mor(arrows, objects)(
+                lambda arrow: objects(arrow.domain())
+            )
+            target = Sets().Mor(arrows, objects)(
+                lambda arrow: objects(arrow.codomain())
+            )
+            return Sets().coequalizer_construction(source, target)
+
+        @cached_method
+        def class_set(self):
+            r"""Return connected components, or iso-classes of a groupoid."""
+            return self.class_set_construction().object()
+
         def diagonal_functor(self):
             r"""Return the diagonal functor ``self -> self x self``."""
             from dzack_research.preamble.categories.abstract_categories.functors import (

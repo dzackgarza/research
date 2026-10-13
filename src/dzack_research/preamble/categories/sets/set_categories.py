@@ -1454,7 +1454,16 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if enumerated_finite_relation:
+            if target in EnumeratedSets() and target.cardinality() == cardinal(1):
+                # Every equivalence relation on a singleton is equality,
+                # even if the relation source is infinite and unenumerated.
+                # Retain the literal target as quotient without asking to
+                # enumerate or decide that relation. This also handles BG
+                # for an arbitrary group G and its single categorical object.
+                quotient = target
+                projection = Sets().Mor(target, target).identity()
+                representative_point = target
+            elif enumerated_finite_relation:
                 # DisjointSet computes the closure over a selected finite
                 # enumeration; this is a computation of the same quotient.
                 quotient, projection, representative_point = _finite_set_quotient_by_generated_relation(
@@ -1545,7 +1554,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 and source in EnumeratedSets()
                 and target in EnumeratedSets()
             )
-            if enumerated_finite_relation:
+            if target in EnumeratedSets() and target.cardinality() == cardinal(1):
+                quotient = target
+                projection = Sets().Mor(target, target).identity()
+                representative_point = target
+            elif enumerated_finite_relation:
                 quotient, projection, representative_point = _finite_set_quotient_by_generated_relation(
                     target,
                     (
