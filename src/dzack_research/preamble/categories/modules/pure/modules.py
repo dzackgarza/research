@@ -911,8 +911,14 @@ class Modules(OwnedCategoryOverBaseRing):
                         left_morphism,
                         right_morphism,
                     )
+            if equalizer not in self:
+                raise TypeError(
+                    f"the equalizer {equalizer} of {left_morphism} and {right_morphism} "
+                    f"is not an object of {self}; an ambient module kernel does not "
+                    "establish closure in the selected subcategory"
+                )
             diagram = _parallel_pair_diagram(
-                left_morphism, right_morphism, ambient_modules
+                left_morphism, right_morphism, self
             )
             shape = diagram.domain()
             universal_cone = (diagram).Cones().cone(
