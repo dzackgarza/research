@@ -5743,7 +5743,13 @@ class FreeGroupQuotients(OwnedCategory):
         return self._relators
 
     def super_categories(self):
-        return [GroupsWithChosenFinitePresentation()]
+        # Every quotient of an abelian group remains abelian. In particular
+        # quotients of free groups of rank zero or one retain this property
+        # from the chosen source, independently of engine classification.
+        return [
+            GroupsWithChosenFinitePresentation(),
+            *((OwnedAbelianGroups(),) if self.free_group() in OwnedAbelianGroups() else ()),
+        ]
 
     def an_object(self):
         return self()
