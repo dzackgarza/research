@@ -235,6 +235,17 @@ def test_group_coequalizer_from_generated_subgroup_uses_its_selected_relator() -
     assert projection(g**2) == construction.object().one()
     assert projection * inclusion == projection * trivial
 
+    two = Groups.C(2)
+    h = next(iter(two.group_generators()))
+    reduction = cyclic.Mor(two)({g: h})
+    cocone = construction.diagram().Cocones().cocone(
+        two,
+        lambda index: reduction * inclusion if index is shape.source() else reduction,
+    )
+    factor = construction.factor(cocone).apex_map()
+    assert factor * projection == reduction
+    assert factor(projection(g)) == h
+
 
 def test_infinite_presented_group_coequalizer_descends_homomorphism() -> None:
     r"""The quotient of Z by the relation a^3=a is C2, with its descent."""
