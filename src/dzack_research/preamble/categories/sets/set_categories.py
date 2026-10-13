@@ -2036,10 +2036,14 @@ class _FiniteLiteralSet(Sets().ObjectType):
         assert other in Sets() and Sets().is_provably_finite(other), (
             f"the union with {self} requires another finite set, but {other} is not known to be one"
         )
+        if isinstance(other, _FiniteLiteralSet):
+            return _FiniteLiteralSet(self._points.union(other._points))
         return _FiniteLiteralSet((*self, *other))
 
     def intersection(self, other):
         r"""The points of this set that lie in ``other``."""
+        if isinstance(other, _FiniteLiteralSet):
+            return _FiniteLiteralSet(self._points.intersection(other._points))
         selected = []
         for point in self:
             decision = other.is_parent_of(point)
@@ -2051,6 +2055,8 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def difference(self, other):
         r"""The points of this set that do not lie in ``other``."""
+        if isinstance(other, _FiniteLiteralSet):
+            return _FiniteLiteralSet(self._points.difference(other._points))
         selected = []
         for point in self:
             decision = other.is_parent_of(point)
