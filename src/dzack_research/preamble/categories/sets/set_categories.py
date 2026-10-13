@@ -3750,6 +3750,11 @@ class CartesianProductsOfSets(OwnedCategory):
                 if diagram is None and constant is not None:
                     if isinstance(maps.target(), _ConstantDiagram) and maps.target().constant_value() is constant:
                         diagram = maps.target()
+                if diagram is None and maps.target().domain() is index_category and maps.target().codomain().is_subcategory(Sets()):
+                    # Every factor can be inspected at finite enumerated
+                    # indices; the diagram must agree at every actual object.
+                    if all(maps.target()(index_category.object(label)) is self.factor(label) for label in labels):
+                        diagram = maps.target()
                 if diagram is None or maps.target() is not diagram or maps.source().domain() is not index_category:
                     raise ValueError("the component transformation must target the product's exact indexed diagram")
                 if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(Sets()):

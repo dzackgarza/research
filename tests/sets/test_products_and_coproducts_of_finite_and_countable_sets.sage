@@ -45,6 +45,31 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
         raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
 
 
+def test_finite_product_accepts_validated_nonconstant_diagram_cone() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    factors = (Sets.Δ[0], Sets.Δ[1])
+    product = Sets().product(factors)
+    index = product.index_set()
+    shape = DiscreteCategory(index)
+    diagram = Cat().Mor(shape, Sets()).discrete_diagram(
+        indexed_family(index, lambda label: product.factor(label))
+    )
+    source = Sets.Δ[0]
+    constant = Cat().Mor(shape, Sets()).constant_functor(source)
+    legs = NaturalTransformation(
+        constant, diagram,
+        lambda obj: Sets().Mor(source, product.factor(obj.value()))(
+            lambda _point: product.factor(obj.value())(0)
+        ),
+    )
+    induced = product.from_maps(source, legs)
+    for label in index:
+        assert product.projection(label)(induced(source(0))) == product.factor(label)(0)
+
+
 def test_finite_indexed_family_rank_cache_supplies_product_factors() -> None:
     from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
     from dzack_research.preamble.categories.sets.indexed_families import indexed_family
