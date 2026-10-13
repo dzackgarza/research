@@ -58,6 +58,19 @@ def test_free_group_reduction_has_a_section_of_its_finite_image_as_sets() -> Non
     assert image.inclusion()(epic(free.free_generator(label))) == generator
 
 
+def test_elementwise_free_group_map_to_finite_group_has_decided_surjectivity() -> None:
+    r"""The selected generator of ``F1`` maps onto ``C2`` without an enumerated source."""
+    free = Groups.Free(1)
+    cyclic = Groups.C(2)
+    label = next(iter(free.free_basis()))
+    h = next(iter(cyclic.group_generators()))
+    generator_map = free.Mor(cyclic)({label: h})
+    elementwise = free.Mor(cyclic).elementwise(lambda word: generator_map(word))
+
+    assert elementwise.is_surjective() is True
+    assert elementwise(free.free_generator(label)) == h
+
+
 def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     r"""For f:C4 -> C4, g -> g^2, the image is the proper subgroup <g^2>.
 

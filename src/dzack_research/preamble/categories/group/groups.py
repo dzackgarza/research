@@ -2627,6 +2627,16 @@ class GroupMorphism:
             return True
         if self._gap_homomorphism is not None or self._generator_images is not None:
             return bool(self._gap_morphism_crossing().IsSurjective())
+        source, target = self.domain(), self.codomain()
+        if target in OwnedFiniteGroups() and (
+            (source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set())
+            or (hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()))
+            or source in OwnedFiniteGroups()
+        ):
+            # The established GAP homomorphism owner can decide surjectivity
+            # from finite determining data. Do not replace it with a set-map
+            # search or an unselected presentation of an infinite source.
+            return bool(self._gap_morphism_crossing().IsSurjective())
         return Sets().Mor(self.domain(), self.codomain())(self.__call__).is_surjective()
 
     def inverse(self):
