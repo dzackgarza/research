@@ -4160,7 +4160,7 @@ class CoproductsOfSets(OwnedCategory):
                         selected = maps.source()
                 if selected is None or maps.source() is not selected:
                     raise ValueError("the component transformation must start at the coproduct's exact indexed diagram")
-                if maps.target().constant_value() is not target:
+                if not isinstance(maps.target(), _ConstantDiagram) or maps.target().constant_value() is not target:
                     raise ValueError("the component transformation must target the selected constant target set")
 
                 def induced(element):
