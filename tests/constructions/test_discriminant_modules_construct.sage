@@ -63,6 +63,23 @@ def test_unimodular_discriminant_module_is_the_zero_quotient_not_a_subobject() -
     assert discriminant.cardinality() == cardinal(1)
 
 
+def test_rank_28_unimodular_discriminant_retains_the_full_selected_cokernel() -> None:
+    lattices = Lattices(ZZ)
+    hyperbolic = lattices("U")
+    negative_e8 = lattices("E8").twist(-1)
+    lattice = hyperbolic + hyperbolic + negative_e8 + negative_e8 + negative_e8
+    discriminant = lattice.discriminant_module()
+
+    assert lattice.module_rank() == cardinal(28)
+    assert discriminant.source_lattice() is lattice
+    assert discriminant.module_generating_set().cardinality() == cardinal(28)
+    assert discriminant.is_zero()
+    assert tuple(discriminant.invariant_factors()) == ()
+    assert discriminant.form().domain().module_generating_set().cardinality() == cardinal(0)
+    assert discriminant.q(discriminant.module_generator(0)) == discriminant.value_module().zero()
+    assert lattice.is_p_elementary(2)
+
+
 def test_discriminant_module_morphisms_have_identity() -> None:
     _lattice, discriminant = _a2_discriminant_module()
     identity = discriminant.Mor(discriminant).identity()

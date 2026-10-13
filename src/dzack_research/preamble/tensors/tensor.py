@@ -306,6 +306,27 @@ class Tensor:
         r"""Return the cardinal number of tensor indices."""
         return cardinal(len(self._index_ranks()))
 
+    def curry_bilinear(self, left_module, right_dual):
+        r"""Curry a finite bilinear tensor into ``left_module -> right_dual``.
+
+        The selected generators of ``right_dual`` are the coordinate
+        covectors dual to the second tensor slot.  Thus ``b`` sends a left
+        generator ``e_i`` to the covector whose ``j`` coordinate is
+        ``b(e_i,e_j)``.  Taking the transpose of the bilinear coordinate
+        array is confined to this tensor boundary, not its consumers.
+        """
+        right_rank = right_dual.module_generating_set().cardinality()
+        left_rank = left_module.module_generating_set().cardinality()
+        bilinear_rows = _covariant_bilinear_coordinate_rows(
+            self, left_rank, right_rank
+        )
+        return left_module.module_category().Mor(left_module, right_dual).from_rows(
+            tuple(
+                tuple(bilinear_rows[i][j] for i in range(int(left_rank)))
+                for j in range(int(right_rank))
+            )
+        )
+
     def gram_graph(self):
         r"""Return the weighted graph presented by this type-``(0,2)`` Gram tensor."""
         from dzack_research.preamble.categories.forms.gram_matrices import (

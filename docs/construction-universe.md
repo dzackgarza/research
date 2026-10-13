@@ -48,7 +48,11 @@ The underlying structure is a typed directed hypergraph:
 
 - Constructing an object with multiple declared placements yields one join
   object whose membership projects to all of those categories, not multiple
-  alternative objects.
+  alternative objects. The source analyzer also follows local category
+  lists built with `append` or `extend`, retaining branch predicates.
+  In particular, a discriminant module of an even lattice can have a
+  quadratic-form placement unavailable to the odd case: those are *two
+  conditional join outcomes*, not one unconditional placement.
 
 The closure starts with declared category families and category constructors
 (`an_object`, the category's object ingress), adding conditionally constructible

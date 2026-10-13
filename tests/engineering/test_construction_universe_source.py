@@ -42,6 +42,12 @@ class Lattices(OwnedCategory):
         def no_result(self):
             pass
 
+        def add_structure(self, choice):
+            categories = [Modules()]
+            if choice:
+                categories.append(Lattices())
+            return Sets()(self, _extra_categories=tuple(categories))
+
 class MapsMor(OwnedCategory):
     def super_categories(self):
         return [Sets()]
@@ -112,6 +118,20 @@ def test_mor_implementations_and_catalogue_delegation(tmp_path):
     assert {r["name"] for r in aliases} == {"U", "H"}
     assert all(any(x["type"] == "object:Lattices" for x in r["results"])
                for r in aliases)
+
+
+def test_conditional_placements_are_distinct_joins_not_unconditional_axioms(tmp_path):
+    report = build_manifest(_fixture(tmp_path))
+    rule = next(r for r in report["rules"]
+                if r["owner"] == "Lattices" and r["name"] == "add_structure")
+    by_guard = {tuple(r["guards"]): r for r in rule["results"]}
+    assert {"Modules", "Sets"} == set(by_guard[("not (choice)",)]["placements"])
+    assert {"Modules", "Sets", "Lattices"} == set(by_guard[("choice",)]["placements"])
+    assert by_guard[("choice",)]["kind"] == "object"
+    assert by_guard[("not (choice)",)]["kind"] == "object"
+    assert ("Join(Lattices, Modules, Sets)", "Lattices") in {
+        tuple(edge) for edge in report["inclusions"]
+    }
 
 
 def test_uninterpreted_return_is_not_a_missing_method_or_hidden_success(tmp_path):

@@ -480,6 +480,80 @@ class Inference:
         visit(method.node.body)
         return gathered
 
+    def _category_list_states(
+        self, method: Method, variable: str,
+    ) -> list[tuple[tuple[str, ...], tuple[str, ...], bool]]:
+        r"""Follow locally built category lists without erasing guarded joins.
+
+        Conditional appends make separate possible *object joins*: a
+        quadratic discriminant group lies in three stated categories while
+        its bilinear version lies in two, not both simultaneously.
+        """
+        locals_ = self._assignments(method)
+
+        def entries(expr: ast.expr) -> tuple[tuple[str, ...], bool]:
+            nodes = expr.elts if isinstance(expr, (ast.List, ast.Tuple, ast.Set)) else [expr]
+            output = []
+            uncertain = False
+            for node in nodes:
+                category = self.category(node, method, locals_)
+                if category:
+                    output.append(category)
+                else:
+                    uncertain = True
+            return tuple(output), uncertain
+
+        def walk(statements, states):
+            for statement in statements:
+                if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    continue
+                if isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                    targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+                    if any(isinstance(t, ast.Name) and t.id == variable for t in targets):
+                        found, missing = entries(statement.value) if statement.value else ((), True)
+                        states = [(tuple(found), guards, unknown or missing)
+                                  for _prior, guards, unknown in states]
+                        continue
+                if isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Call):
+                    call = statement.value
+                    if (isinstance(call.func, ast.Attribute)
+                            and isinstance(call.func.value, ast.Name)
+                            and call.func.value.id == variable
+                            and call.func.attr in {"append", "extend"}
+                            and call.args):
+                        found, missing = entries(call.args[0])
+                        states = [(tuple(sorted(set((*prior, *found)))), guards,
+                                   unknown or missing)
+                                  for prior, guards, unknown in states]
+                        continue
+                if isinstance(statement, ast.If):
+                    touched = any(
+                        isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                        and n.value.id == variable and n.attr in {"append", "extend"}
+                        for n in ast.walk(statement)
+                    )
+                    if touched:
+                        new = []
+                        for prior, guards, unknown in states:
+                            condition = _show(statement.test)
+                            new.extend(walk(statement.body, [(prior, (*guards, condition), unknown)]))
+                            new.extend(walk(statement.orelse, [
+                                (prior, (*guards, f"not ({condition})"), unknown)
+                            ]))
+                        states = new
+                if isinstance(statement, (ast.For, ast.While, ast.Match, ast.Try)):
+                    if any(
+                        isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                        and n.value.id == variable and n.attr in {"append", "extend"}
+                        for n in ast.walk(statement)
+                    ):
+                        states = [(prior, guards, True) for prior, guards, _ in states]
+                if len(states) > 64:
+                    return [((), ("placement branch limit reached",), True)]
+            return states
+
+        return sorted(set(walk(method.node.body, [((), (), False)])))
+
     def annotation(self, annotation: str | None) -> Result | None:
         if annotation is None:
             return None
@@ -622,29 +696,37 @@ class Inference:
                         constructed.append(_result("morphism", item.category[4:-1],
                                                    "typed-constructor-application", node))
                         continue
-                    placements = [item.category]
-                    dynamic_extra = False
+                    states = [((), (), False)]
                     for keyword in node.keywords:
                         if keyword.arg not in {"_extra_categories", "categories"}:
                             continue
                         if isinstance(keyword.value, (ast.Tuple, ast.List)):
+                            placements, dynamic_extra = [], False
                             for extra in keyword.value.elts:
                                 found = self.category(extra, method, assignments)
                                 if found:
                                     placements.append(found)
                                 else:
                                     dynamic_extra = True
+                            states = [(tuple(placements), (), dynamic_extra)]
+                        elif (isinstance(keyword.value, ast.Call)
+                              and isinstance(keyword.value.func, ast.Name)
+                              and keyword.value.func.id == "tuple"
+                              and len(keyword.value.args) == 1
+                              and isinstance(keyword.value.args[0], ast.Name)):
+                            states = self._category_list_states(method, keyword.value.args[0].id)
                         else:
-                            dynamic_extra = True
-                    alternatives = tuple(sorted(set(placements)))
-                    target = (f"Join({', '.join(alternatives)})"
-                              if len(alternatives) > 1 else item.category)
-                    constructed.append(Result(
-                        "object", target,
-                        ("category-application-with-dynamic-placements"
-                         if dynamic_extra else "typed-constructor-application"),
-                        _show(node), (), (), alternatives,
-                    ))
+                            states = [((), (), True)]
+                    for extra, guards, dynamic_extra in states:
+                        alternatives = tuple(sorted(set((item.category, *extra))))
+                        target = (f"Join({', '.join(alternatives)})"
+                                  if len(alternatives) > 1 else item.category)
+                        constructed.append(Result(
+                            "object", target,
+                            ("category-application-with-dynamic-placements"
+                             if dynamic_extra else "typed-constructor-application"),
+                            _show(node), guards, (), alternatives,
+                        ))
                 return constructed or [_result("unknown", None, "unresolved-callable", node)]
 
             if isinstance(function, ast.Attribute):

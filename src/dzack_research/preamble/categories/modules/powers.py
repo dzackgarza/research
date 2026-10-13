@@ -560,6 +560,10 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 
         def quadratic(self, element):
             r"""Return the universal quadratic value ``gamma_2(element)``."""
+            # Gamma^2(0) = 0, even when the zero source was presented on
+            # redundant generators.  Its selected framing is empty.
+            if self.module_generating_set().cardinality() == 0:
+                return self.zero()
             source = self.divided_square_source()
 
             coordinates = source.framing_morphism().lift(element)
@@ -733,6 +737,16 @@ def _presented_degree_power(
             f"the degree-{degree} {flavor} power of {module} exists in Modules({ring}), "
             "but its current presentation realization requires a selected free framing "
             "or finite module presentation"
+        )
+    # Every positive-degree power of the zero module is zero.  A selected
+    # finite presentation can have arbitrarily many redundant generators;
+    # expanding their monomials and relations would construct a large
+    # presentation of the same zero object.
+    if module in ModulesWithChosenFinitePresentation(ring) and module.is_zero() is True:
+        return ring._fresh_free_module_on(
+            Sets.Δ[-1],
+            _extra_categories=extra_categories,
+            _extra_construction_data=extra_construction_data,
         )
     source_labels = module.module_generating_set()
     labels = _free_degree_labels(source_labels, degree, flavor)

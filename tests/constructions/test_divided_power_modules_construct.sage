@@ -26,3 +26,15 @@ def test_divided_power_module_morphisms_have_identity() -> None:
 
     assert identity(divided.zero()) == divided.zero()
     assert identity * identity == identity
+
+
+def test_redundantly_presented_zero_module_has_zero_divided_square() -> None:
+    lattice = Lattices(ZZ)("U")
+    quotient = lattice.correlation_morphism().cokernel()
+    square = quotient.divided_square()
+
+    assert quotient.is_zero()
+    assert quotient.module_generating_set().cardinality() == cardinal(2)
+    assert square.is_zero()
+    assert square.module_generating_set().cardinality() == cardinal(0)
+    assert square.quadratic(quotient.module_generator(0)) == square.zero()

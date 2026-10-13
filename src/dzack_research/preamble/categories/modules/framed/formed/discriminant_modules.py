@@ -1089,6 +1089,7 @@ def _discriminant_module(lattice):
     quotient = lattice.correlation_morphism().cokernel()
     dual_lattice = lattice.dual_lattice()
     labels = quotient.module_generating_set()
+    trivial_quotient = quotient.is_zero() is True
     ring = lattice.base_ring()
     categories = [DiscriminantModules(ring)]
     construction_data = {
@@ -1107,14 +1108,24 @@ def _discriminant_module(lattice):
         quadratic_values = FractionFieldQuotients(ring)(2)
         construction_data["quadratic_value_module"] = quadratic_values
         categories.append(DiscriminantQuadraticModules(ring))
-        form = quotient.quadratic_forms(quadratic_values)(
-            _descended_quadratic_gram(
-                dual_lattice, labels, bilinear_values, quadratic_values
+        quadratic_forms = quotient.quadratic_forms(quadratic_values)
+        form = (
+            quadratic_forms.zero()
+            if trivial_quotient
+            else quadratic_forms(
+                _descended_quadratic_gram(
+                    dual_lattice, labels, bilinear_values, quadratic_values
+                )
             )
         )
     else:
-        form = quotient.bilinear_forms(bilinear_values)(
-            _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
+        bilinear_forms = quotient.bilinear_forms(bilinear_values)
+        form = (
+            bilinear_forms.zero()
+            if trivial_quotient
+            else bilinear_forms(
+                _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
+            )
         )
     return FormModules(ring)(
         form,

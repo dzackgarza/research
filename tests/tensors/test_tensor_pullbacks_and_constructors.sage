@@ -63,6 +63,31 @@ def test_reading_a_bilinear_form_as_a_matrix_keeps_its_components() -> None:
     assert tensor.matrix(ZZ, 2, 2, [1, 2, 3, 4]) == tensor.matrix(ZZ, [[1, 2], [3, 4]])
 
 
+def test_currying_a_rectangular_bilinear_tensor_selects_the_correct_dual_coordinates() -> None:
+    source, target = ZZ.free_module(2), ZZ.free_module(3)
+    pairing = tensor(ZZ, (), (2, 3), [[1, 2, 3], [4, 5, 6]])
+    correlation = pairing.curry_bilinear(source, target)
+
+    assert correlation.domain() is source
+    assert correlation.codomain() is target
+    assert correlation(source.module_generator(0)) == (
+        target.module_generator(0) + 2 * target.module_generator(1) + 3 * target.module_generator(2)
+    )
+    assert correlation(source.module_generator(1)) == (
+        4 * target.module_generator(0) + 5 * target.module_generator(1) + 6 * target.module_generator(2)
+    )
+
+
+def test_currying_a_bilinear_tensor_from_a_zero_module_retains_the_target_rank() -> None:
+    source, target = ZZ.free_module(0), ZZ.free_module(3)
+    pairing = tensor(ZZ, (), (0, 3), [])
+    correlation = pairing.curry_bilinear(source, target)
+
+    assert correlation.domain() is source
+    assert correlation.codomain() is target
+    assert correlation(source.zero()) == target.zero()
+
+
 def test_vectors_from_a_rank_and_from_their_nonzero_components() -> None:
     r"""The zero vector of rank $3$ and the vector with only second component $5$."""
     assert tensor.vector(ZZ, 3) == tensor.vector(ZZ, [0, 0, 0])

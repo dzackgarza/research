@@ -45,3 +45,18 @@ def test_tensor_product_module_morphisms_have_identity() -> None:
 
     assert identity(product.zero()) == product.zero()
     assert identity * identity == identity
+
+
+def test_redundantly_presented_zero_factor_has_zero_tensor_products() -> None:
+    hyperbolic = Lattices(ZZ)("U")
+    zero = hyperbolic.correlation_morphism().cokernel()
+    line = ZZ.free_module(1)
+    assert zero.is_zero()
+    assert zero.module_generating_set().cardinality() == cardinal(2)
+
+    for product in (zero.tensor_product(line), line.tensor_product(zero), zero.tensor_product(zero)):
+        assert product in TensorProductModules(ZZ)
+        assert product.module_generating_set().cardinality() == cardinal(0)
+        assert product.is_zero()
+        assert product.pure_tensor(product.tensor_factor(0).zero(), product.tensor_factor(1).zero()) == product.zero()
+        assert product.universal_bilinear_map() == product.Mor(product).identity()

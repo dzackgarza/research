@@ -4415,6 +4415,11 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             r"""Return the universal pure tensor of two elements."""
             left, right = self._two_factors()
 
+            # A zero factor makes every pure tensor zero, even when the
+            # factor's selected finite presentation has redundant generators.
+            if self.module_generating_set().cardinality() == 0:
+                return self.zero()
+
             left_coordinates = left.framing_morphism().lift(left_element)
             right_coordinates = right.framing_morphism().lift(right_element)
             right_support = right_coordinates.support().domain()
@@ -4684,6 +4689,20 @@ def _module_tensor_product_with_data(
             construction_data.update(extra_construction_data)
         return ring._fresh_free_module_on(
             tensor_labels,
+            _extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
+            _extra_construction_data=construction_data,
+        )
+
+    # R-module tensoring preserves the zero object.  A presented zero module
+    # may have arbitrarily many chosen generators and relations; the tensor
+    # of its presentation with another one need not be constructed to obtain
+    # the zero tensor product with its universal maps.
+    if represented_presented and any(factor.is_zero() is True for factor in values):
+        construction_data = {"tensor_factors": factors}
+        if extra_construction_data is not None:
+            construction_data.update(extra_construction_data)
+        return ring._fresh_free_module_on(
+            Sets.Δ[-1],
             _extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
             _extra_construction_data=construction_data,
         )
