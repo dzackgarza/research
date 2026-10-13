@@ -3551,12 +3551,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
                 product_engine = libgap.DirectProduct(*engines)
                 if all_finite:
-                    product = _own_group(PermutationGroup(gap_group=product_engine))
+                    product = _own_group(
+                        PermutationGroup(gap_group=product_engine),
+                        refinements=(OwnedAbelianGroups(),)
+                        if self.is_subcategory(OwnedAbelianGroups()) else (),
+                    )
                 else:
                     known_infinite = any(factor in OwnedInfiniteGroups() for factor in family)
                     product = _own_group(
                         product_engine.sage(),
-                        refinements=(OwnedInfiniteGroups(),) if known_infinite else (),
+                        refinements=(
+                            *((OwnedInfiniteGroups(),) if known_infinite else ()),
+                            *((OwnedAbelianGroups(),) if self.is_subcategory(OwnedAbelianGroups()) else ()),
+                        ),
                     )
             if product not in self:
                 raise ArithmeticError(
