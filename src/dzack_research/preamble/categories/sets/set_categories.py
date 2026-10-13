@@ -4360,6 +4360,14 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
             if finite_index_count is not None:
                 if finite_index_count == 0:
                     return
+                sizes = self._finite_summand_sizes()
+                if sizes is not None:
+                    index_at = self.index_set().ranking_map().inverse()
+                    for layer in range(max(sizes, default=0)):
+                        for index_position, size in enumerate(sizes):
+                            if layer < size:
+                                yield index_position, layer
+                    return
                 layer = 0
                 while True:
                     emitted = False
