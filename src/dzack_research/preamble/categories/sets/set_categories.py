@@ -113,6 +113,10 @@ def _finite_set_quotient_by_generated_relation(target, relation_pairs):
         finite_ordered_set,
     )
 
+    assert Sets().is_provably_finite(target) and target in EnumeratedSets(), (
+        f"the finite quotient algorithm requires a selected enumeration of {target}; "
+        "finiteness alone gives no ranking of quotient relation vertices"
+    )
     enumerated_target = finite_ordered_set(tuple(target))
     target_points = tuple(enumerated_target)
     target_ranking = enumerated_target.ranking_map()
@@ -1340,11 +1344,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                     f"a coequalizer in the category of sets needs maps between sets, but {source} or {target} is not a set"
                 )
             assert (
-                cardinal(source.cardinality()).is_finite()
-                and cardinal(target.cardinality()).is_finite()
+                Sets().is_provably_finite(source)
+                and Sets().is_provably_finite(target)
+                and source in EnumeratedSets()
+                and target in EnumeratedSets()
             ), (
                 f"the coequalizer of {left_morphism} and {right_morphism} is computed here only between "
-                f"finite sets, but {source} or {target} is not known to be finite"
+                f"finite enumerated sets, but {source} or {target} has no selected finite enumeration"
             )
 
             # The coequalizer of finite sets is the quotient of the target by
@@ -1430,11 +1436,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 morphisms
             )
             assert (
-                cardinal(source.cardinality()).is_finite()
-                and cardinal(target.cardinality()).is_finite()
+                Sets().is_provably_finite(source)
+                and Sets().is_provably_finite(target)
+                and source in EnumeratedSets()
+                and target in EnumeratedSets()
             ), (
-                f"the wide coequalizer of {morphisms} is computed here only between finite sets, but {source} "
-                f"or {target} is not known to be finite"
+                f"the wide coequalizer of {morphisms} is computed here only between finite enumerated sets, "
+                f"but {source} or {target} has no selected finite enumeration"
             )
             quotient, projection, representative_point = (
                 _finite_set_quotient_by_generated_relation(
