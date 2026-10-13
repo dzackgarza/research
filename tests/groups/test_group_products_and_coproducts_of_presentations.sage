@@ -217,6 +217,7 @@ def test_group_coequalizer_has_quotient_projection_and_universal_map() -> None:
     assert projection.domain() is cyclic and projection.codomain() is coequalizer
     assert projection(g**2) == coequalizer.one()
     assert factor * projection == reduction
+    assert factor(projection(g)) == h
 
 
 def test_group_coequalizer_from_generated_subgroup_uses_its_selected_relator() -> None:
@@ -233,7 +234,6 @@ def test_group_coequalizer_from_generated_subgroup_uses_its_selected_relator() -
     assert construction.object().cardinality() == cardinal(2)
     assert projection(g**2) == construction.object().one()
     assert projection * inclusion == projection * trivial
-    assert factor(projection(g)) == h
 
 
 def test_infinite_presented_group_coequalizer_descends_homomorphism() -> None:
