@@ -388,17 +388,23 @@ class FiniteOrderedSets(OwnedCategory):
                         if equal is not False:
                             raise ValueError("distinctness of the enumerated points is undecided")
                 def index_of(point):
-                    undecided = False
-                    matched = None
                     for index, present in zip(indices, points, strict=True):
                         equal = True if point is present else point == present
                         if equal is True:
-                            matched = index
-                        elif equal is not False:
-                            undecided = True
-                    if undecided:
-                        raise ValueError("membership in this finite enumerated set is undecided")
-                    return matched
+                            return index
+                    return None
+
+                # The inverse is a partial *decision* procedure. A missing
+                # decided match does not refute membership when an equality
+                # is unresolved. Retain the finite existential separately.
+                if contains is None:
+                    def contains(point):
+                        from dzack_research.preamble.logic import conjunction, negation
+
+                        return negation(conjunction(
+                            negation(True if point is present else point == present)
+                            for present in points
+                        ))
         if contains is None:
             # Membership is the domain of the selected enumeration inverse,
             # not a second independent set reconstructed from its values.
