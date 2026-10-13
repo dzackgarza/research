@@ -3662,16 +3662,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 product_construction = self._categorical_product_construction(family)
                 coproduct = product_construction.object()
                 labels = tuple(family.index_set())
-                product_engine = _gap_model(coproduct) if labels else None
-                mixed_presentations = bool(labels) and not all(
-                    factor in OwnedFiniteGroups() for factor in family
-                )
-                presentation_isomorphisms = tuple(
-                    _gap_model(family[label]).IsomorphismFpGroup()
-                    if family[label] in OwnedFiniteGroups()
-                    else libgap.IdentityMapping(_gap_model(family[label]))
-                    for label in labels
-                ) if mixed_presentations else ()
                 projections = tuple(
                     product_construction.structure_morphism(
                         product_construction.diagram().domain()(label)
@@ -3680,18 +3670,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 diagram = _discrete_diagram(family, self)
 
                 def injection(label):
-                    position = labels.index(label) + 1
                     factor = family[label]
-                    return factor.Mor(coproduct).elementwise(
-                        lambda element: _element_from_engine(
-                            coproduct,
-                            libgap.Embedding(product_engine, position).Image(
-                                presentation_isomorphisms[position - 1].Image(
-                                    _element_to_engine(factor, element)
-                                ) if mixed_presentations else _element_to_engine(factor, element)
-                            ),
-                        )
+                    # The injection is the product universal arrow with
+                    # identity in this coordinate and the trivial group
+                    # morphism in all others. This uses the actual product
+                    # construction, not a second GAP model of its apex.
+                    cone = product_construction.diagram().Cones().cone(
+                        factor,
+                        lambda index: (
+                            factor.Mor(factor).identity()
+                            if index.value() == label
+                            else factor.Mor(family[index.value()]).elementwise(
+                                lambda _element, target=family[index.value()]: target.one()
+                            )
+                        ),
                     )
+                    return product_construction.factor(cone).apex_map()
 
                 universal_cocone = diagram.CoproductCocones().cocone(
                     coproduct, lambda index: injection(index.value())
