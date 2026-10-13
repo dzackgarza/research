@@ -304,6 +304,19 @@ other specific defining data. `modules/pure/modules.py:3105` composes a
 kernel and an image to construct a submodule intersection, so the image
 boundary also limits that composition.
 
+**Source repair, 2026-10-14:** a finite-generator map into the actual
+canonical regular module of a commutative ring now constructs the image
+through that ring's ideal owner. The equality
+`im_R(f) = (f(m_1),...,f(m_n))` is a consequence of (R)-linearity,
+so the resulting ideal carries its syzygies and inclusion into
+`R.regular_module()`; the existing module `factor_through` constructs
+the induced map onto it. This is not a new image-membership algorithm.
+The source specimen for (QQ[x,y]^2 \to QQ[x,y]) retains the ideal
+((x,y)), the kernel ((-y,x)), and the quotient (R/(x,y)) with their
+defining arrows. Only terminal-T execution can establish the computational
+acceptance of that specimen. Infinite-generating-family image computation
+remains outside this repaired regime.
+
 **Dependency path:** module morphism -> image submodule and factorization ->
 submodule compositions. **Partial capability:** images of finite generating
 families with inclusions and induced surjections, kernels from selected

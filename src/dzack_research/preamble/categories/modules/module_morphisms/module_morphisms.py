@@ -1244,8 +1244,16 @@ class ModuleMorphismMethods:
 
         return _SubobjectImageAdjunction(self)
 
+    @cached_method
     def image(self):
-        r"""Return ``im(self)`` as a subobject of the codomain."""
+        r"""Return ``im(self)`` as a subobject of the codomain.
+
+        The image of an R-linear map into the canonical left regular module
+        of a *commutative* ring R is an ideal. The ideal constructor retains
+        an exact finite presentation and the inclusion into R; merely
+        spanning these elements as a generic module loses that structure.
+        In other codomains, use the ordinary subobject-span constructor.
+        """
         self._require_established_linearity("image construction")
         labels = self.domain().module_generating_set()
         assert labels.cardinality().is_finite(), (
@@ -1253,13 +1261,26 @@ class ModuleMorphismMethods:
             f"the images of generators of {self.domain()}, which must be finitely generated, but its generating set "
             f"{labels} is infinite"
         )
-        return self.codomain().subobject_on(
-            finite_indexed_family(
-                labels,
-                lambda label: self(self.domain().module_generator(label)),
-                name="Image spanning family",
-            )
+        codomain = self.codomain()
+        generators = finite_indexed_family(
+            labels,
+            lambda label: self(self.domain().module_generator(label)),
+            name="Image spanning family",
         )
+        from dzack_research.preamble.categories.rings.ring_foundation import CommutativeRings
+
+        ring = codomain.base_ring()
+        if ring in CommutativeRings() and codomain is ring.regular_module():
+            # R-linear submodules of {}_R R are exactly ideals, with their
+            # unique scalar coefficients read from the selected rank-one
+            # framing. Use the existing ideal computation for relations and
+            # its structural inclusion; no independent image algorithm.
+            (unit_label,) = tuple(codomain.module_generating_set())
+            return ring.ideal(*(
+                generators.value(label).to_vector()(unit_label)
+                for label in labels
+            ))
+        return codomain.subobject_on(generators)
 
     def solution_fibre(self, right_hand_side):
         r"""Return the full affine fibre, its inclusion and its kernel torsor.
