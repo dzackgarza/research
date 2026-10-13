@@ -1173,7 +1173,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                     (lambda label: cone.structure_morphism(diagram.domain()(label)))
                     if finite else cone.transformation()
                 )
-                return product.from_maps(
+                # This is a limit in Sets. Its apex need not carry the
+                # additive structure that the product's factors happen to
+                # possess, so the additive-monoid/group specialization of
+                # from_maps is not the universal set-map constructor.
+                return CartesianProductsOfSets.ParentMethods.from_maps(
+                    product,
                     cone.apex(), components,
                 )
 
