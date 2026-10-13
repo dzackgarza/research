@@ -1140,11 +1140,13 @@ class Modules(OwnedCategoryOverBaseRing):
             quotient = self._categorical_coequalizer_family(morphisms)
             reference = morphisms.value(next(iter(morphisms.index_set())))
             target = reference.codomain()
-            # The wide relation quotient uses the original target's selected
-            # generator labels, exactly as the binary cokernel owner does.
-            projection = target.module_category().Mor(target, quotient)(
-                lambda label: quotient.module_generator(label)
-            )
+            # This quotient was constructed as the cokernel of the inclusion
+            # of the generated relation submodule. Retain that cokernel's
+            # selected projection, rather than independently making another
+            # arrow from generator labels.
+            projection = quotient.cokernel_projection()
+            if projection.domain() is not target or projection.codomain() is not quotient:
+                raise ValueError("the wide module quotient's retained projection has incorrect endpoints")
             diagram = _parallel_family_diagram(morphisms, self)
             shape = diagram.domain()
             universal_cocone = diagram.Cocones().cocone(
