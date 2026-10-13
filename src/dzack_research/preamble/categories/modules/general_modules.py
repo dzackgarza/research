@@ -177,9 +177,9 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             self._underlying_set = Set(underlying_set)
             self._addition = addition
             self._negation = negation
-            assert zero in self._underlying_set, (
-                f"cannot construct an {ring}-module on {underlying_set}: the zero {zero!r} is not an "
-                f"element of {underlying_set}"
+            assert self._underlying_set.is_parent_of(zero) is True, (
+                f"cannot construct an {ring}-module on {underlying_set}: membership of the zero "
+                f"{zero!r} in {underlying_set} is not established"
             )
             self._zero_value = zero
             self._rho = rho
