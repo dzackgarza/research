@@ -45,6 +45,25 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
         raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
 
 
+def test_finite_set_product_and_coproduct_accept_stronger_mor_legs() -> None:
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+    factor = AdditiveMonoids().an_object()
+    identity = AdditiveMonoids().Mor(factor, factor).identity()
+    # Read the product explicitly through its Sets construction, even though
+    # its factors also endow it with an additive-monoid structure.
+    set_product = Sets().product((factor, Sets.Δ[0]))
+    point = Sets.Δ[0]
+    constant = Sets().Mor(point, factor)(lambda _p: factor.zero())
+    induced = set_product.from_maps(point, lambda i: constant if int(i) == 0 else Sets().Mor(point, point).identity())
+    assert set_product.projection(0)(induced(point(0))) == factor.zero()
+
+    coproduct = Sets().coproduct((factor, factor))
+    folded = coproduct.from_maps(factor, lambda _i: identity)
+    for label in coproduct.index_set():
+        assert folded(coproduct.injection(label)(factor.zero())) == factor.zero()
+
+
 def test_finite_additive_product_factors_a_verified_nonconstant_diagram() -> None:
     from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
     from dzack_research.preamble.categories.functors.core import NaturalTransformation

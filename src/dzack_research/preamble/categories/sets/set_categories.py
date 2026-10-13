@@ -3765,7 +3765,9 @@ class CartesianProductsOfSets(OwnedCategory):
             else:
                 components = tuple(maps(label) for label in labels)
             for label, morphism in zip(labels, components, strict=True):
-                if morphism.parent() is not Sets().Mor(source, self.factor(label)):
+                from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+                if not _category_accepts_morphism(Sets(), source, self.factor(label), morphism):
                     raise TypeError(f"the component at {label} is not a set morphism into {self.factor(label)}")
             ranking = index.ranking_map()
             return Sets().Mor(source, self)(
@@ -4203,7 +4205,9 @@ class CoproductsOfSets(OwnedCategory):
             else:
                 components = tuple((index, maps(index)) for index in index_set)
             for index, morphism in components:
-                if morphism.parent() is not Sets().Mor(self.cofactor(index), target):
+                from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+                if not _category_accepts_morphism(Sets(), self.cofactor(index), target, morphism):
                     raise TypeError(
                         f"the component at {index} must lie in the exact Mor category "
                         f"from {self.cofactor(index)} to {target}"
