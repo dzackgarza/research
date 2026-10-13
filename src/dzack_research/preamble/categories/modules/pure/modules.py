@@ -83,6 +83,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
     NN,
     Sets,
 )
@@ -1055,17 +1056,22 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the wide equalizer in {self} is not defined for the empty family {morphisms}: "
                     f"it needs at least one map to fix the domain"
                 )
-            reference = morphisms[0]
+            index_set = morphisms.index_set()
+            assert index_set in EnumeratedSets(), (
+                f"computing the wide module equalizer requires an enumeration of {index_set}"
+            )
+            labels = tuple(index_set)
+            reference = morphisms.value(labels[0])
             ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
             if reference.domain() not in self or reference.codomain() not in self:
                 raise ValueError(f"the wide equalizer of {morphisms} is not a diagram in {self}")
-            for position in range(count):
-                arrow = morphisms[position]
+            for label in labels:
+                arrow = morphisms.value(label)
                 if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
                     raise ValueError(f"the wide equalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             equalizer = self._categorical_equalizer(reference, reference)
-            for position in range(1, count):
-                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms[position], reference))
+            for label in labels[1:]:
+                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms.value(label), reference))
             if equalizer not in self:
                 raise TypeError(f"the wide equalizer {equalizer} is not an object of {self}")
             return equalizer
@@ -1083,17 +1089,22 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the wide coequalizer in {self} is not defined for the empty family {morphisms}: "
                     f"it needs at least one map to fix the codomain"
                 )
-            reference = morphisms[0]
+            index_set = morphisms.index_set()
+            assert index_set in EnumeratedSets(), (
+                f"computing the wide module coequalizer requires an enumeration of {index_set}"
+            )
+            labels = tuple(index_set)
+            reference = morphisms.value(labels[0])
             ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
             if reference.domain() not in self or reference.codomain() not in self:
                 raise ValueError(f"the wide coequalizer of {morphisms} is not a diagram in {self}")
-            for position in range(count):
-                arrow = morphisms[position]
+            for label in labels:
+                arrow = morphisms.value(label)
                 if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor:
                     raise ValueError(f"the wide coequalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
             relations = (reference - reference).image()
-            for position in range(1, count):
-                relations = relations.sum((morphisms[position] - reference).image())
+            for label in labels[1:]:
+                relations = relations.sum((morphisms.value(label) - reference).image())
             quotient = relations.inclusion().cokernel()
             if quotient not in self:
                 raise TypeError(f"the wide coequalizer {quotient} is not an object of {self}")
