@@ -3687,8 +3687,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     )
                     return product_construction.factor(cone).apex_map()
 
+                injections = {label: injection(label) for label in labels}
+
                 universal_cocone = diagram.CoproductCocones().cocone(
-                    coproduct, lambda index: injection(index.value())
+                    coproduct, lambda index: injections[index.value()]
                 )
 
                 def factorizer(cocone):
