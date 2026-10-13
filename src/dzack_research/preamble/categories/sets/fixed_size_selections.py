@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from heapq import merge
+from itertools import groupby
 from operator import index
 from typing import SupportsIndex, TypeVar
 
@@ -209,8 +210,9 @@ class FixedSizeSelectionElement(Element):
         if not self.allows_repetition():
             return "{" + ", ".join(map(repr, self)) + "}"
         terms = []
-        for label in self.support():
-            multiplicity = self.multiplicity(label)
+        for position, occurrences in groupby(self._source_positions()):
+            label = self.parent().source()[position]
+            multiplicity = sum(1 for _ in occurrences)
             terms.append(
                 repr(label)
                 if multiplicity == 1
