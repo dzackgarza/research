@@ -207,6 +207,18 @@ class _GeneratedRelationQuotient:
         if self.left_morphism() is self.right_morphism():
             # The identical pair generates only the diagonal relation.
             return left == right
+        source = self.left_morphism().domain()
+        if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            # Every generating pair is equal in the quotient, including its
+            # reverse. This is a sound positive decision without pretending
+            # that one-edge inspection decides transitive connectivity.
+            for point in source:
+                first = self.left_morphism()(point)
+                second = self.right_morphism()(point)
+                if ((left == first) is True and (right == second) is True) or (
+                    (left == second) is True and (right == first) is True
+                ):
+                    return True
         return AtomicProposition("generated_equivalence", self, left, right)
 
     def class_of(self, representative):

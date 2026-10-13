@@ -50,6 +50,21 @@ def test_empty_relation_on_infinite_target_has_identity_coequalizer() -> None:
     assert factor(projection(target(3))) == target(6)
 
 
+def test_generated_relation_on_infinite_set_knows_its_defining_edge() -> None:
+    r"""An enumerated relation source proves its generating identifications."""
+    source = Sets.Δ[0]
+    target = Sets()(ZZ)
+    left = Sets().Mor(source, target)(lambda _point: target(2))
+    right = Sets().Mor(source, target)(lambda _point: target(5))
+    construction = Sets().coequalizer_construction(left, right)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert projection(target(2)) == projection(target(5))
+    assert projection(target(5)) == projection(target(2))
+    assert projection * left == projection * right
+
+
 def test_set_equalizer_uses_selected_parallel_morphisms_and_inclusion() -> None:
     r"""The equalizer of the identity and a transposition fixes one point."""
     source = Sets.Δ[2]
