@@ -1419,14 +1419,23 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             return _coproduct_of_finite_family(family)
 
         def _categorical_coproduct_construction(self, factors):
+            r"""The selected cocone of a represented, possibly infinite, sum of sets.
+
+            For an infinite index its universal arrow is obtained from the
+            actual cocone natural transformation, not an unchecked callback.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 SelectedColimitConstruction,
                 _discrete_diagram,
-                _finite_factor_family,
+                _factor_family,
             )
 
-            family = _finite_factor_family(factors, name="Coproduct factors")
-            coproduct = self._finite_coproduct(family)
+            family = _factor_family(factors, name="Coproduct factors")
+            coproduct = self.coproduct(family)
+            if coproduct not in self:
+                raise TypeError(
+                    f"the disjoint union {coproduct} is not an object of {self}"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
@@ -1434,9 +1443,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             def factorizer(cocone):
+                finite = family.cardinality().is_finite() and family.index_set() in EnumeratedSets()
                 return coproduct.from_maps(
                     cocone.apex(),
-                    lambda label: cocone.costructure_morphism(diagram.domain()(label)),
+                    (lambda label: cocone.costructure_morphism(diagram.domain()(label)))
+                    if finite else cocone.transformation(),
                 )
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
