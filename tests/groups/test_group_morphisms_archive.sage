@@ -98,6 +98,19 @@ def test_image_factorization_retains_the_image_and_surjective_first_arrow() -> N
     assert inclusion * epic == square
 
 
+def test_generated_subgroup_finite_image_lifts_use_its_selected_generators() -> None:
+    r"""The subgroup ``<g²> <= C4`` supplies witnesses for its inclusion image."""
+    cyclic = Groups.C(4)
+    generator = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((generator**2,))
+    inclusion = subgroup.inclusion()
+    witnesses = subgroup.finite_image_lifts(inclusion)
+
+    assert subgroup in GeneratedSubgroups(cyclic)
+    assert set(witnesses) == {cyclic.one(), generator**2}
+    assert all(inclusion(lift) == value for value, lift in witnesses.items())
+
+
 def test_infinite_free_source_factors_through_a_proper_cyclic_image() -> None:
     r"""The map Z -> C4 sending its free generator to g^2 factors via C2.
 
