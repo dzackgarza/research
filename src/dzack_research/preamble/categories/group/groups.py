@@ -2365,6 +2365,10 @@ class GroupMorphism:
         source = self.domain()
         if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
             return self.codomain().subgroup(self(generator) for generator in source.group_generators())
+        if source in OwnedFiniteGroups():
+            return self.codomain().subgroup(
+                self(element) for element in source
+            )
         return _subgroup_from_gap(
             self.codomain(),
             self._gap_morphism_crossing().Image(),
