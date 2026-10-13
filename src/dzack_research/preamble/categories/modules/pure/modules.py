@@ -968,6 +968,14 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the coequalizer of {left_morphism} and {right_morphism} is not defined in {self}: "
                     f"the two maps must be parallel morphisms between objects of {self}"
                 )
+            ambient_mor = Modules(self.base_ring()).Mor(
+                left_morphism.domain(), left_morphism.codomain()
+            )
+            if left_morphism not in ambient_mor or right_morphism not in ambient_mor:
+                raise ValueError(
+                    f"the coequalizer of {left_morphism} and {right_morphism} needs "
+                    f"two {self.base_ring()}-linear morphisms in {ambient_mor}"
+                )
             difference = left_morphism - right_morphism
             raw_coequalizer = difference.cokernel()
             raw_projection = difference.cokernel_projection()
