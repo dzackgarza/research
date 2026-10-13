@@ -82,6 +82,22 @@ def test_noninjective_group_map_factors_through_its_proper_image() -> None:
     assert square.factor_through_or_none(cyclic.subgroup(()).inclusion()) is None
 
 
+def test_image_factorization_retains_the_image_and_surjective_first_arrow() -> None:
+    r"""The selected factorization is ``C4 ->> <g²> -> C4``, not a new image model."""
+    cyclic = Groups.C(4)
+    generator = next(iter(cyclic.group_generators()))
+    square = cyclic.Mor(cyclic)({generator: generator**2})
+    epic, inclusion = square.image_factorization()
+    image = square.image()
+
+    assert epic.domain() is cyclic and epic.codomain() is image
+    assert inclusion.domain() is image and inclusion.codomain() is cyclic
+    assert inclusion is image.inclusion()
+    assert epic.is_surjective() is True
+    assert epic.is_injective() is False
+    assert inclusion * epic == square
+
+
 def test_infinite_free_source_factors_through_a_proper_cyclic_image() -> None:
     r"""The map Z -> C4 sending its free generator to g^2 factors via C2.
 
