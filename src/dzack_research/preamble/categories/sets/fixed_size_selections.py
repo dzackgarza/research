@@ -380,9 +380,8 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         return self[rank]
 
     def from_labels(self, labels: Iterable[PointT]) -> FixedSizeSelectionElement:
-        return self.from_source_rank_positions(
-            self.source().ranking_map()(label) for label in labels
-        )
+        positions = sorted(int(self.source().ranking_map()(label)) for label in labels)
+        return self.from_source_rank_positions(positions)
 
     def from_multiplicities(
         self,
