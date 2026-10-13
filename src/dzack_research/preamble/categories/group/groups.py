@@ -3561,25 +3561,25 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 apex = cone.apex()
                 if not labels:
                     return apex.Mor(product)(lambda _element: product.one())
-                source_engine = _gap_model(apex)
-                source_generators = tuple(source_engine.GeneratorsOfGroup())
-                images = []
-                for source_generator in source_generators:
-                    owned_generator = _element_from_engine(apex, source_generator)
+                legs = tuple(
+                    cone.structure_morphism(diagram.domain()(label))
+                    for label in labels
+                )
+
+                def mediating_map(element):
+                    # Cone legs, not a GAP presentation of the apex, determine
+                    # the universal group homomorphism pointwise.
                     image = product_engine.One()
                     for position, label in enumerate(labels, start=1):
-                        leg = cone.structure_morphism(diagram.domain()(label))
                         factor = family[label]
-                        factor_image = leg(owned_generator)
+                        factor_image = legs[position - 1](element)
                         model = _element_to_engine(factor, factor_image)
                         if presentation_isomorphisms:
                             model = presentation_isomorphisms[position - 1].Image(model)
                         image *= libgap.Embedding(product_engine, position).Image(model)
-                    images.append(image)
-                return apex.Mor(product)._from_engine_generator_images(
-                    source_generators,
-                    images,
-                )
+                    return _element_from_engine(product, image)
+
+                return apex.Mor(product).elementwise(mediating_map)
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
