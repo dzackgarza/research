@@ -50,6 +50,7 @@ class IndexedFamily[IndexT, ValueT]:
         self._value_cache: dict[int, list[tuple[IndexT, ValueT]]] = {}
         self._rank_value_cache: dict[int, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
+        self._cached_hashable_values: list[tuple[IndexT, ValueT]] = []
         self._name = name
         self._diagram = None
         self._value_category = value_category
@@ -123,13 +124,17 @@ class IndexedFamily[IndexT, ValueT]:
             # indexing set. Only unhashable labels actually requested are
             # retained on this exact fallback path.
             bucket = self._unhashable_value_cache
+            candidates = (*bucket, *self._cached_hashable_values)
         else:
             bucket = self._value_cache.setdefault(index_hash, [])
-        for known, value in bucket:
+            candidates = (*bucket, *self._unhashable_value_cache)
+        for known, value in candidates:
             if normalized is known or (normalized == known) is True:
                 return value
         value = self._value_function(normalized)
         bucket.append((normalized, value))
+        if bucket is not self._unhashable_value_cache:
+            self._cached_hashable_values.append((normalized, value))
         return value
 
     __call__ = value
