@@ -13,8 +13,10 @@ def test_infinite_constant_additive_group_product_has_pointwise_inverses() -> No
     assert product.projection(NN(3))(section + other) == product.projection(NN(3))(other + section)
     for position in (0, 1, 5):
         label = NN(position)
-        assert product.projection(label)(opposite) == -product.projection(label)(section)
-        assert product.projection(label)(section + opposite) == ZZ.zero()
+        projection = product.projection(label)
+        assert projection.parent() is AdditiveGroups().Mor(product, ZZ)
+        assert projection(opposite) == -projection(section)
+        assert projection(section + opposite) == ZZ.zero()
 
 
 def test_infinite_constant_additive_monoid_does_not_gain_inverses() -> None:

@@ -4029,6 +4029,16 @@ class CartesianProductsOfAdditiveGroups(OwnedCategory):
         def _neg_(self):
             return self.parent()(lambda index: -self.component(index))
 
+    class ParentMethods:
+        def projection(self, index):
+            r"""Projection in additive groups, preserving pointwise inverses."""
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            normalized = self.index_set()(index)
+            return AdditiveGroups().Mor(self, self.factor(normalized))(
+                lambda section: section.component(normalized)
+            )
+
 
 class CartesianProductsOfAdditiveMonoids(OwnedCategory):
     r"""Cartesian products with the componentwise additive-monoid structure."""
