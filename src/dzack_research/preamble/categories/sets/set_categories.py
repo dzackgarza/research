@@ -4081,7 +4081,21 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 lambda index: self.component(index) + other.component(index)
             )
 
-        __radd__ = __add__
+        def __radd__(self, other):
+            r"""Right-hand addition respects the order of a noncommutative monoid.
+
+            For product sections x and y, (y+x)_i = y_i+x_i;
+            reversing the two inputs is not justified without the
+            independent commutativity axiom on every factor. In the free
+            monoid on a,b, with its operation written additively, the
+            singleton-index sections (a) and (b) have (a)+(b)=(ab)
+            but (b)+(a)=(ba), with ab != ba. Hence __radd__ cannot
+            simply alias __add__ on this category.
+            """
+            other = self.parent()(other)
+            return self.parent()(
+                lambda index: other.component(index) + self.component(index)
+            )
 
     class ParentMethods:
         def zero(self):
