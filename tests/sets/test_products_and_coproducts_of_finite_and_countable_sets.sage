@@ -45,6 +45,33 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
         raise AssertionError("untyped set maps incorrectly certified an additive product arrow")
 
 
+def test_finite_additive_product_factors_a_verified_nonconstant_diagram() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    additive = AdditiveMonoids()
+    first, second = additive.an_object(), AdditiveGroups().an_object()
+    product = Sets().product((first, second))
+    labels = product.index_set()
+    shape = DiscreteCategory(labels)
+    diagram = Cat().Mor(shape, additive).discrete_diagram(
+        indexed_family(labels, lambda label: product.factor(label))
+    )
+    constant = Cat().Mor(shape, additive).constant_functor(first)
+    legs = NaturalTransformation(
+        constant, diagram,
+        lambda obj: additive.Mor(first, product.factor(obj.value()))(
+            lambda _point: product.factor(obj.value()).zero()
+        ),
+    )
+    induced = product.from_maps(first, legs)
+    assert induced.parent() is additive.Mor(first, product)
+    for label in labels:
+        assert product.projection(label)(induced(first.zero())) == product.factor(label).zero()
+
+
 def test_finite_product_accepts_validated_nonconstant_diagram_cone() -> None:
     from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
     from dzack_research.preamble.categories.functors.core import NaturalTransformation

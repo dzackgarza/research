@@ -3875,6 +3875,9 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 if diagram is None and constant is not None:
                     if isinstance(maps.target(), _ConstantDiagram) and maps.target().constant_value() is constant:
                         diagram = maps.target()
+                if diagram is None and maps.target().domain() is shape and maps.target().codomain().is_subcategory(AdditiveMonoids()):
+                    if all(maps.target()(shape.object(label)) is self.factor(label) for label in labels):
+                        diagram = maps.target()
                 if diagram is None or maps.target() is not diagram or maps.source().domain() is not shape:
                     raise ValueError("the component transformation must target the additive product's exact diagram")
                 if maps.source().codomain() is not diagram.codomain() or not diagram.codomain().is_subcategory(AdditiveMonoids()):
