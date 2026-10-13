@@ -84,6 +84,17 @@ def test_module_parallel_pair_constructions_retain_ambient_category_and_maps() -
     assert projection(zero(e)) == projection(twice(e))
     assert coequalizer.object().cardinality() == 2
 
+    # The quotient's universal arrow must be the actual descent of a
+    # compatible linear map, not just a correctly typed projection.
+    target = line / line.span((2 * e,))
+    reduction = line.Mor(target)({e: target.projection()(e)})
+    cocone = coequalizer.diagram().Cocones().cocone(
+        target,
+        lambda index: reduction * zero if index is coeq_shape.source() else reduction,
+    )
+    factor = coequalizer.factor(cocone).apex_map()
+    assert factor * projection == reduction
+
 
 def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> None:
     r"""On ``Z/4``: ``eq(2, 0) = ker 2 = 2Z/4``, the submodule of order 2."""
