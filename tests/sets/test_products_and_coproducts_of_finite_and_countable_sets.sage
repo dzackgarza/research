@@ -361,6 +361,19 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     )
     induced = infinite.from_maps(Sets.Δ[0], components)
     assert induced.parent() is Sets().Mor(infinite, Sets.Δ[0])
+    wrong_source = Cat().Mor(shape, Sets()).constant_functor(Sets.Δ[1])
+    unrelated = NaturalTransformation(
+        wrong_source, constant,
+        lambda _object: Sets().Mor(Sets.Δ[1], Sets.Δ[0])(
+            lambda _value: Sets.Δ[0](0)
+        ),
+    )
+    try:
+        infinite.from_maps(Sets.Δ[0], unrelated)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("a cocone over a different source diagram was admitted")
     for index in (NN(0), NN(1), NN(5)):
         inclusion = infinite.injection(index)
         assert induced(inclusion(Sets.Δ[0](0))) == components.component(shape.object(index))(Sets.Δ[0](0))

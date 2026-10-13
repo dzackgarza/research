@@ -4146,13 +4146,20 @@ class CoproductsOfSets(OwnedCategory):
                         "a map from a coproduct without finite enumerated indices needs a selected family of set morphisms, "
                         "not an unchecked component callback"
                     )
-                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+                from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, _ConstantDiagram
 
                 index_category = DiscreteCategory(index_set)
                 if maps.source().domain() is not index_category or maps.target().domain() is not index_category:
                     raise ValueError("the component transformation must use the coproduct's exact discrete index category")
                 if maps.source().codomain() is not Sets() or maps.target().codomain() is not Sets():
                     raise TypeError("the component transformation must be set-valued")
+                selected = self.family().selected_diagram()
+                constant = self.family().constant_value()
+                if selected is None and constant is not None:
+                    if isinstance(maps.source(), _ConstantDiagram) and maps.source().constant_value() is constant:
+                        selected = maps.source()
+                if selected is None or maps.source() is not selected:
+                    raise ValueError("the component transformation must start at the coproduct's exact indexed diagram")
                 if maps.target().constant_value() is not target:
                     raise ValueError("the component transformation must target the selected constant target set")
 
