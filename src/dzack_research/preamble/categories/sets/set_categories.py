@@ -2966,8 +2966,13 @@ class FinitePowerSets(OwnedCategory):
 
         def __contains__(self, candidate) -> bool | Predicate:
             ambient_power_set = self.source().power_set()
-            if candidate not in ambient_power_set:
+            membership = ambient_power_set.is_parent_of(candidate)
+            if membership is False:
                 return False
+            if membership is not True:
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("is_member", candidate, self)
             return ambient_power_set(candidate).domain().is_finite()
 
         is_parent_of = __contains__
