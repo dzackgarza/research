@@ -547,6 +547,15 @@ def test_finite_coproduct_rank_layer_has_direct_inverse() -> None:
         assert ranking.inverse()(position) == element
 
 
+def test_mixed_finite_infinite_coproduct_rank_uses_summand_layers() -> None:
+    coproduct = Sets().coproduct((Sets.Δ[1], NN, Sets.Δ[0]))
+    ranking = coproduct.ranking_map()
+    assert ranking(coproduct.injection(0)(Sets.Δ[1](0))) == 0
+    assert ranking(coproduct.injection(1)(NN(0))) == 1
+    assert ranking(coproduct.injection(2)(Sets.Δ[0](0))) == 2
+    assert ranking(coproduct.injection(1)(NN(1000))) == 1003
+
+
 def test_the_square_of_the_natural_numbers_is_countable_and_listed_by_diagonals() -> None:
     square = Sets().product((NN, NN))
     listing = iter(square)

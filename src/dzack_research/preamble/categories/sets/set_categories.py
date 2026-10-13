@@ -4437,6 +4437,25 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                     return sum(min(layer, size) for size in sizes) + sum(
                         size > layer for size in sizes[:summand_rank]
                     )
+                finite_indices = self._finite_index_count()
+                if finite_indices is not None:
+                    # The same rank-layer formula applies when some of the
+                    # finitely many summands are infinite. An infinite
+                    # summand contributes one point at every preceding layer;
+                    # do not replay those layers to rank a large element.
+                    index_at = self.index_set().ranking_map().inverse()
+                    lengths = tuple(
+                        cardinal(self.cofactor(index_at(j)).cardinality())
+                        for j in range(finite_indices)
+                    )
+                    summand_rank, layer = target
+                    return sum(
+                        min(layer, int(length.finite_value())) if length.is_finite() else layer
+                        for length in lengths
+                    ) + sum(
+                        not length.is_finite() or int(length.finite_value()) > layer
+                        for length in lengths[:summand_rank]
+                    )
                 for position, pair in enumerate(self._enumeration_pairs()):
                     if pair == target:
                         return position
