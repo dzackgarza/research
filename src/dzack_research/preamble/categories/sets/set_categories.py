@@ -4340,7 +4340,7 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
         def _known_finite_size(self):
             r"""This coproduct's size as an ``int`` when finite, else ``None``."""
             size = cardinal(self.cardinality())
-            return int(size.finite_value()) if size.is_finite() else None
+            return int(size.finite_value()) if size.is_finite() is True else None
 
         @cached_method
         def _finite_summand_sizes(self):
@@ -4424,6 +4424,8 @@ class EnumeratedCoproductsOfSets(OwnedCategory):
                         cardinal(self.cofactor(index_at(j)).cardinality())
                         for j in range(finite_indices)
                     )
+                    if not any(length.is_finite() is False for length in lengths):
+                        raise ValueError("infinite coproduct ranking requires a certified infinite summand")
                     if any(length.is_finite() is not False and length.is_finite() is not True for length in lengths):
                         raise ValueError("coproduct inverse ranking needs decided finiteness of each summand")
                     def preceding(layer):
