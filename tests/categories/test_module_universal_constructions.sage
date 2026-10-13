@@ -172,6 +172,34 @@ def test_wide_module_constructions_use_the_selected_nonordinal_family_labels() -
     assert wide_coequalizer.factor(cocone).apex_map() * projection == reduction
 
 
+def test_wide_module_equalizer_retains_nonzero_universal_factor() -> None:
+    r"""The common equalizer of ``0, 2, 4`` on ``Z/4`` is ``2Z/4``."""
+    modules = Modules(ZZ)
+    free = modules(ZZ**1)
+    (e,) = free.basis()
+    cyclic_four = free / free.span((4 * e,))
+    a = cyclic_four.projection()(e)
+    zero = cyclic_four.Mor(cyclic_four)({a: cyclic_four.zero()})
+    twice = cyclic_four.Mor(cyclic_four)({a: 2 * a})
+    fourfold = cyclic_four.Mor(cyclic_four)({a: 4 * a})
+    labels = finite_ordered_set(("zero", "twice", "fourfold"))
+    arrows = {"zero": zero, "twice": twice, "fourfold": fourfold}
+    family = indexed_family(labels, lambda label: arrows[label])
+    construction = modules.equalizer_of_family_construction(family)
+    shape = construction.diagram().domain()
+    inclusion = construction.structure_morphism(shape.source())
+    cone = construction.diagram().Cones().cone(
+        cyclic_four,
+        lambda index: twice if index is shape.source() else zero,
+    )
+    factor = construction.factor(cone).apex_map()
+
+    assert construction.diagram().morphisms() is family
+    assert construction.object().cardinality() == 2
+    assert inclusion * factor == twice
+    assert inclusion(factor(a)) == 2 * a
+
+
 def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:
     r"""The terminal set is the empty product; the initial set is the empty coproduct."""
     product = Sets().product(())
