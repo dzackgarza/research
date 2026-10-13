@@ -40,7 +40,12 @@ class ClassGroups(Category):
 
     def _call_(self, scheme, principal_divisors):
         r"""\(\operatorname{Div}/\operatorname{im}(\rho)\) for the principal-divisor morphism ``principal_divisors`` \(\rho\)."""
-        return _cokernel_in_category(principal_divisors, self, class_group_scheme=scheme)
+        return _cokernel_in_category(
+            principal_divisors,
+            self,
+            class_group_scheme=scheme,
+            principal_to_weil=principal_divisors,
+        )
 
     def free(self, scheme, generators):
         r"""The free abelian group on the set ``generators`` of divisor classes of ``scheme``, presented by \(0 \to \mathbb{Z}^{(S)}\).
@@ -49,7 +54,12 @@ class ClassGroups(Category):
         already known to be free on these classes; it does not assert or
         decide that theorem.
         """
-        return self(scheme, _free_presentation(generators))
+        return _cokernel_in_category(
+            _free_presentation(generators),
+            self,
+            class_group_scheme=scheme,
+            principal_to_weil=None,
+        )
 
     def trivial(self, scheme):
         r"""The zero class group of ``scheme``, the free group on no classes."""
@@ -77,12 +87,16 @@ class ClassGroups(Category):
         return Modules(integers).biproduct(
             (base_class_group, hyperplane),
             extra_categories=(self,),
-            extra_construction_data={"class_group_scheme": projective_space},
+            extra_construction_data={
+                "class_group_scheme": projective_space,
+                "principal_to_weil": None,
+            },
         )
 
     class ParentMethods:
-        def __init__(self, class_group_scheme, **rest) -> None:
+        def __init__(self, class_group_scheme, principal_to_weil=None, **rest) -> None:
             self._class_group_scheme = class_group_scheme
+            self._principal_to_weil = principal_to_weil
             super().__init__(**rest)
 
         def class_group_scheme(self):
@@ -96,7 +110,12 @@ class ClassGroups(Category):
             for this cokernel; a class group built by the projective bundle
             formula is a biproduct and has none.
             """
-            return self.cokernel_morphism()
+            if self._principal_to_weil is None:
+                raise ValueError(
+                    f"{self} has no selected principal-divisor morphism: this class group was constructed "
+                    "from a known abstract presentation rather than as the cokernel of P -> Div(X)"
+                )
+            return self._principal_to_weil
 
 
 __all__ = ["ClassGroups"]

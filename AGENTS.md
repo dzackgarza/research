@@ -137,10 +137,39 @@ agent-memory maintain move <key> --to global/advice
 
 Everything here is general mathematics. An operation is accepted by true assertions about pure mathematics at its owner. There are no integration tests: no consumer (`sage-indefinite-port` or any other), migration contract or port run gates a research node, and research never waits on a consumer. A node whose acceptance names a consumer is a defect in the node; rewrite it as mathematical assertions.
 
+## Concrete boundary with `sage-indefinite-port`
+
+A research computation must meet both conditions: its implementation requires no knowledge of the specialized upstream algorithms being ported, and it is a reasonably primitive mathematical construction composable and useful independently. Specify its given data, hypotheses, result and independent computational route. A standard name, public preamble method or categorical definition does not assign the algorithm answering it to research.
+
+Research implements these independent primitives, including their computations:
+
+- Lattice and marked-lattice objects, Isom/Aut homsets, subobjects, forms, perpendiculars, quotients and discriminant/gluing objects.
+- Finite group-action stabilizers, orbits, kernels, images, preimages, intersections, word lifts and cosets from supplied generators and effective actions (#396). `rational_integral_stabilizers.py:IntegralStructureAction` owns invariant-module closure under a justified stable bound and the resulting residue action. Remove its deleted port callback; no port-specific group class is required (#396/#401/#403).
+- Restriction and quotient-action maps; independent partial-isometry extension and specified equation fibres. Rank-one Witt/transvection lift torsors `R.rational_lifts(target,isometry)` and their complete `integral_members()` locus stay here (#401). So does the independently derived `R.pointwise_perpendicular_kernel()` (#398). Image discovery from an unresolved arithmetic parabolic does not follow from these maps; finite-image word sections require supplied generators.
+- Centralizer objects, polynomial-kernel invariant decomposition, finite gluing compatibility and extension from supplied component groups/actions (#397). Independent backend centralizer computations belong here under established hypotheses. Decomposition is not a non-scalar component-centralizer algorithm; research has no blanket obligation to invent one.
+- GL of free modules, module-flag stabilizers, radical extensions from supplied factors, exact module solving, finite configurations, polyhedra, standard binary quadratic arithmetic and fixed-target `close_vectors(target,bound)` (#398–#401).
+
+The port implements these specialized algorithms; public research methods may dispatch to them:
+
+- `indefinite.eichler.EichlerEnvelope` and `OrbitCoverModel`: envelope search, approximate generating families, covering-vector selection and full-group assembly (#18). Move those algorithm bodies out of `eichler_criterion.py` (#404); a new primitive name does not justify retaining the same covering search here.
+- `indefinite.recursive.EichlerRecursion`: recursive indefinite O(L), Isom and pointed Aut/Isom (#18).
+- `indefinite.isotropic_induction.IsotropicInduction`: isotropic classification and stabilizer assembly, including arithmetic compatibility-action construction and liftable-image discovery (#18). Its generators cannot be delegated to this repository's same unanswered parabolic `.group_generators()`.
+- `indefinite.lorentzian_cells` and `indefinite.edgewalk`: perfect-cell search, flips, side pairings and traversal (#15). Move the scaled first-success loop from `definite_lattices._pari_first_affine_cvp_shell` to the port; research retains fixed-multiplier enumeration. Move the copied oriented-cycle body from `lattice_engines._binary_reduction_cycle` to the port, including its companion, stepping, starting and stopping rules.
+- The generated rational groups, lattice inclusions and stable-bound arguments needed by integral-structure primitives (#18), and indefinite component O(L) computations. Port #18 retains complete centralizer consumer acceptance and must identify a route for missing non-scalar component centralizers; ordinary component O(L) does not suffice.
+
+Research #403 owns the calls into these algorithms. Use `marked_lattices.isometry(category,source,target)`, `automorphism_group_generators(category,marked)` and `primitive_marking_classes(category,source,lattice)`, plus `perfect_domain_traversal(lattice,mode)` and `edgewalk_fundamental_domain(lattice)`. These take preamble objects. Replace obsolete imports and Gram-row/dictionary calling conventions. Existing frozen preamble names, including cycle and first-close-vector names, may dispatch to the port; changed signatures require port #33's amendment procedure.
+
+The [function-level assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) govern computational routing. Earlier migration labels do not override this split or prove a replacement implemented. Mathematical acceptance stays with each implementation's owner; the port retains its complete consumer acceptance. No listed capability is certified finished by this documentation.
+
 ## Owner resume — 2026-10-08
 
-The repository owner resumed this workstream on 2026-10-08 after the October stop. Work from
-`HANDOFF.md` first, in the priority order it states, then from the `TODO.md` dependency graph.
+The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
+priority steps in `HANDOFF.md` are complete; select current work from the `TODO.md` dependency graph.
+Record completed source-audit reasoning, including the required inventory and ancestor review,
+in the corresponding commit. Keep unexecuted mathematical assertions and unresolved computation
+frontiers with their live TODO owners so later execution can find them. Do not expand HANDOFF.md
+with retrospective pass narratives or repeat completed history in the live worklist. Preserve its
+existing mathematical specimens until their outstanding obligations have a durable owner.
 Only a later explicit owner instruction stops the repository again.
 
 ## Owner resume — 2026-09-17

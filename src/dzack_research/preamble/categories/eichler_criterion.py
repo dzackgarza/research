@@ -28,7 +28,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
-from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _owned_engine_element
 from sage.matrix.constructor import matrix
 
@@ -297,27 +296,61 @@ class TwoUEichlerModel(SageObject):
         plane = category("U")
         self._orthogonal_complement = orthogonal_complement
         self._lattice = category.biproduct((plane, plane, orthogonal_complement))
+        self._hyperbolic_inclusions = (self._lattice.injection(0), self._lattice.injection(1))
+        self._selected_complement_inclusion = self._lattice.injection(2)
 
     @classmethod
     def from_represented_biproduct(cls, lattice):
-        r"""Wrap an existing represented ``U + U + K`` biproduct without rebuilding it."""
+        r"""Select two represented U factors and retain every other summand."""
         from dzack_research.preamble.categories.lattices import Lattices
 
-        factors = tuple(lattice.biproduct_factors())
-        if len(factors) < 2:
-            raise ValueError("a represented 2U model needs at least two biproduct factors")
-        first, second = factors[0], factors[1]
-        if first.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor() or second.gram_tensor() != Lattices(lattice.base_ring())("U").gram_tensor():
-            raise ValueError("the first two factors of a represented 2U model must be hyperbolic planes")
-        if len(factors) == 2:
-            complement = Lattices(lattice.base_ring())(lattice.base_ring().free_module(0))
-            normalized = lattice
+        category = Lattices(lattice.base_ring())
+        if not lattice.is_even():
+            raise ValueError("the Eichler determinant model requires an even lattice")
+        plane = category("U")
+        inclusions = []
+
+        def descend(factor, inclusion):
+            if factor.decomposition() is None:
+                inclusions.append(inclusion)
+            else:
+                for index in factor.biproduct_factors().index_set():
+                    child = factor.biproduct_factors().value(index)
+                    descend(child, inclusion * factor.injection(index))
+
+        descend(lattice, lattice.identity_morphism())
+        positions = tuple(
+            index for index, inclusion in enumerate(inclusions)
+            if int(inclusion.domain().rank()) == 2
+            and inclusion.domain().is_unimodular()
+            and tuple(int(value) for value in inclusion.domain().signature_pair()) == (1, 1)
+        )
+        if len(positions) < 2:
+            raise ValueError("a represented 2U model needs two hyperbolic-plane factors")
+        selected = positions[:2]
+        remaining = tuple(inclusion for index, inclusion in enumerate(inclusions) if index not in selected)
+        if not remaining:
+            complement = category(lattice.base_ring().free_module(0))
+        elif len(remaining) == 1:
+            complement = remaining[0].domain()
         else:
-            complement = factors[-1]
-            normalized = lattice
+            complement = category.biproduct(tuple(inclusion.domain() for inclusion in remaining))
+        images = tuple(inclusion(point) for inclusion in remaining for point in inclusion.domain().module_generators())
         result = cls.__new__(cls)
         result._orthogonal_complement = complement
-        result._lattice = normalized
+        result._lattice = lattice
+        plane_inclusions = []
+        for index in selected:
+            inclusion = inclusions[index]
+            factor = inclusion.domain()
+            if factor.gram_tensor() == plane.gram_tensor():
+                first, second = tuple(factor.module_generators())
+            else:
+                first = factor.isotropic_vector().primitive_part()
+                second = first.hyperbolic_partner()
+            plane_inclusions.append(plane.Emb(lattice)((inclusion(first), inclusion(second))))
+        result._hyperbolic_inclusions = tuple(plane_inclusions)
+        result._selected_complement_inclusion = complement.Emb(lattice)(images)
         return result
 
     def lattice(self):
@@ -326,24 +359,20 @@ class TwoUEichlerModel(SageObject):
     def orthogonal_complement(self):
         return self._orthogonal_complement
 
-    def _complement_inclusion(self):
-        complement = self.orthogonal_complement()
-        if int(complement.module_rank()) == 0:
-            return None
-        return self.lattice().injection(2)
+    def complement_inclusion(self):
+        r"""The selected isometric inclusion K -> L, including K=0."""
+        return self._selected_complement_inclusion
 
     def first_hyperbolic_plane(self):
-        return self.lattice().biproduct_factor(0)
+        return self._hyperbolic_inclusions[0].domain()
 
     def second_hyperbolic_plane(self):
-        return self.lattice().biproduct_factor(1)
+        return self._hyperbolic_inclusions[1].domain()
 
     def _embedded_hyperbolic_basis(self):
-        lattice = self.lattice()
         first = self.first_hyperbolic_plane()
         second = self.second_hyperbolic_plane()
-        first_inclusion = lattice.injection(0)
-        second_inclusion = lattice.injection(1)
+        first_inclusion, second_inclusion = self._hyperbolic_inclusions
         first_basis = tuple(first.module_generators())
         second_basis = tuple(second.module_generators())
         return (
@@ -358,12 +387,10 @@ class TwoUEichlerModel(SageObject):
         return self._embedded_hyperbolic_basis()
 
     def _embedded_complement_basis(self):
-        lattice = self.lattice()
         complement = self.orthogonal_complement()
         if int(complement.module_rank()) == 0:
             return ()
-        inclusion = self._complement_inclusion()
-        assert inclusion is not None
+        inclusion = self.complement_inclusion()
         return tuple(inclusion(generator) for generator in complement.module_generators())
 
     def _sl2_entries(self, element):
@@ -376,6 +403,14 @@ class TwoUEichlerModel(SageObject):
             for column in range(2)
         )
 
+    def _isometry_on_model_basis(self, images):
+        r"""Extend images of the selected 2U+K basis in the ambient presentation."""
+        lattice = self.lattice()
+        basis = self.hyperbolic_basis() + self._embedded_complement_basis()
+        change = _column_matrix_from_images(lattice, basis)
+        transformation = _column_matrix_from_images(lattice, images) * change.inverse()
+        return lattice.O()._isometry_from_column_matrix(transformation)
+
     def _left_isometry(self, element):
         r"""Return the isometry induced by ``X |-> A X`` on the determinant model."""
         p, q, r, s = self._sl2_entries(element)
@@ -387,7 +422,7 @@ class TwoUEichlerModel(SageObject):
             lattice.scalar_multiple(p, e_prime) + lattice.scalar_multiple(r, f),
             lattice.scalar_multiple(s, f_prime) - lattice.scalar_multiple(q, e),
         ) + self._embedded_complement_basis()
-        return lattice.O()._isometry_from_column_matrix(_column_matrix_from_images(lattice, images))
+        return self._isometry_on_model_basis(images)
 
     def _right_isometry(self, element):
         r"""Return the isometry induced by ``X |-> X B^-1`` on the determinant model."""
@@ -400,7 +435,7 @@ class TwoUEichlerModel(SageObject):
             lattice.scalar_multiple(p, e_prime) - lattice.scalar_multiple(r, e),
             lattice.scalar_multiple(s, f_prime) + lattice.scalar_multiple(q, f),
         ) + self._embedded_complement_basis()
-        return lattice.O()._isometry_from_column_matrix(_column_matrix_from_images(lattice, images))
+        return self._isometry_on_model_basis(images)
 
     def left_action(self, element):
         r"""Return the left ``SL_2(ZZ)`` action isometry attached to ``element``."""
@@ -422,12 +457,11 @@ class TwoUEichlerModel(SageObject):
         """
         complement = self.orthogonal_complement()
         isometry = complement.O()(isometry)
-        lattice = self.lattice()
-        inclusion = self._complement_inclusion()
+        inclusion = self.complement_inclusion()
         images = self.hyperbolic_basis() + tuple(
             inclusion(isometry(generator)) for generator in complement.module_generators()
-        ) if inclusion is not None else self.hyperbolic_basis()
-        return lattice.O()(images)
+        )
+        return self._isometry_on_model_basis(images)
 
     @cached_method
     def special_linear_group(self):
@@ -499,242 +533,41 @@ class TwoUEichlerModel(SageObject):
 
         lattice = self.lattice()
         complement = self.orthogonal_complement()
-        complement_inclusion = self._complement_inclusion()
+        complement_inclusion = self.complement_inclusion()
         isotropic = self.hyperbolic_basis()[0]
         return finite_indexed_family(
             complement.module_generating_set(),
             lambda label: self.eichler_transvection(
                 isotropic,
-                complement_inclusion(complement.module_generator(label)) if complement_inclusion is not None else lattice.zero(),
+                complement_inclusion(complement.module_generator(label)),
             ),
             name=f"K-direction Eichler transvections in {lattice}",
         )
 
     def approximate_generating_family(self):
-        r"""Return the finite Eichler approximate-model generating family.
+        r"""Dispatch the specialized split-2U generating search to its port owner."""
+        from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
 
-        For each of the four canonical primitive isotropic vectors of ``2U``
-        take the transvections ``E_{e_i,v}`` on a selected basis of
-        ``e_i^perp``.  Together with the two standard generators in each of the
-        left and right copies of ``SL_2(ZZ)``, these are the finite generators
-        in the sourced ``2U`` approximate-model theorem.  Additivity
-        ``E_{e,x}E_{e,y}=E_{e,x+y}`` supplies all transvections for a fixed
-        ``e``.
-        """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        special_linear_generators = self.special_linear_group().group_generators()
-        isotropic_vectors = self.hyperbolic_basis()
-        complement_basis = self._embedded_complement_basis()
-        e, f, e_prime, f_prime = isotropic_vectors
-        perpendicular_bases = (
-            (e, e_prime, f_prime) + complement_basis,
-            (f, e_prime, f_prime) + complement_basis,
-            (e, f, e_prime) + complement_basis,
-            (e, f, f_prime) + complement_basis,
-        )
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(
-                ("Eichler", position, vector_position)
-                for position, basis in enumerate(perpendicular_bases)
-                for vector_position in range(len(basis))
-            )
-        )
-
-        def generator(label):
-            kind = label[0]
-            match kind:
-                case "left-SL2":
-                    return self.left_action(label[1])
-                case "right-SL2":
-                    return self.right_action(label[1])
-                case "Eichler":
-                    position, vector_position = label[1], label[2]
-                    orthogonal = perpendicular_bases[position][vector_position]
-                    return self.eichler_transvection(isotropic_vectors[position], orthogonal)
-                case _:
-                    raise ValueError(
-                        f"{label!r} does not name a generator of the Eichler approximate family of "
-                        f"{self}: its kind {kind!r} is not a known kind of generator"
-                    )
-
-        return finite_indexed_family(
-            labels,
-            generator,
-            name=f"Eichler approximate generators in O({self.lattice()})",
-        )
-
-    def _approximate_generator_column_matrices_after_base_change(self, ring_map):
-        r"""Return the private exact generator matrices after scalar extension."""
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        lattice = self.lattice()
-        if ring_map.domain() is not lattice.base_ring():
-            raise ValueError(
-                f"the Eichler model on {lattice} can only be base changed along a map out of "
-                f"{lattice.base_ring()}, not {ring_map}"
-            )
-        target = lattice.base_change(ring_map)
-        target_engine = _engine_ring(target.base_ring())
-        special_linear_generators = self.special_linear_group().group_generators()
-        isotropic_vectors = self.hyperbolic_basis()
-        complement_basis = self._embedded_complement_basis()
-        e, f, e_prime, f_prime = isotropic_vectors
-        perpendicular_bases = (
-            (e, e_prime, f_prime) + complement_basis,
-            (f, e_prime, f_prime) + complement_basis,
-            (e, f, e_prime) + complement_basis,
-            (e, f, f_prime) + complement_basis,
-        )
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(
-                ("Eichler", position, vector_position)
-                for position, basis in enumerate(perpendicular_bases)
-                for vector_position in range(len(basis))
-            )
-        )
-
-        module_maps = lattice.module_category().Mor(lattice, lattice)
-
-        def generator_matrix(label):
-            kind = label[0]
-            match kind:
-                case "left-SL2":
-                    transformation = _engine_matrix(module_maps(self.left_action(label[1])))
-                case "right-SL2":
-                    transformation = _engine_matrix(module_maps(self.right_action(label[1])))
-                case "Eichler":
-                    position, vector_position = label[1], label[2]
-                    orthogonal = perpendicular_bases[position][vector_position]
-                    transformation = lattice._eichler_transvection_column_matrix(
-                        isotropic_vectors[position],
-                        orthogonal,
-                    )
-                case _:
-                    raise ValueError(
-                        f"{label!r} does not name a generator of the Eichler approximate family of "
-                        f"{self}: its kind {kind!r} is not a known kind of generator"
-                    )
-            return transformation.change_ring(target_engine)
-
-        return target, finite_indexed_family(
-            labels,
-            generator_matrix,
-            name=f"Eichler approximate generator matrices on {target}",
-        )
+        return OrbitCoverModel.split_generating_family(self)
 
     def approximate_generating_family_after_base_change(self, ring_map):
-        r"""Return the same Eichler generator family after scalar extension.
+        r"""Extend the supplied approximate family along the stated scalar map."""
+        from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
-        The source formulas already determine exact column matrices over the
-        original ring. Reuse those matrices in the scalar extension instead
-        of first constructing integral isometries and then rebuilding the same
-        maps over the target ring.
-        """
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        target, matrix_family = self._approximate_generator_column_matrices_after_base_change(
-            ring_map
-        )
-        target_automorphisms = target.O()
+        if ring_map.domain() is not self.lattice().base_ring():
+            raise ValueError("the scalar map must start at the model's coefficient ring")
+        family = self.approximate_generating_family()
         return finite_indexed_family(
-            matrix_family.index_set(),
-            lambda label: target_automorphisms._isometry_from_column_matrix(
-                matrix_family[label]
-            ),
-            name=f"Eichler approximate generators in O({target})",
+            family.index_set(),
+            lambda label: family.value(label).base_change(ring_map),
+            name=f"Eichler approximate generators over {ring_map.codomain()}",
         )
 
     def covering_vector_representatives(self, square):
-        r"""Return one explicit primitive vector for every covering class in ``A_K``.
+        r"""Dispatch the prescribed-invariant covering search to its port owner."""
+        from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
 
-        Since ``2U`` is unimodular, ``A_{2U+K} = A_K``.  For a covering
-        class ``x`` of order ``d``, choose its selected lift ``y in K^#`` and
-        put ``k=d*y in K``.  The defining discriminant-form equality says
-
-        ``square-k^2 = 2 d^2 m``
-
-        for an integer ``m``.  Then ``v=d e+d m f+k`` has square ``square``,
-        divisibility exactly ``d``, is primitive, and has divided class ``x``
-        under the canonical discriminant identification.
-        """
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        lattice = self.lattice()
-        ring = lattice.base_ring()
-        square = ring(square)
-        complement = self.orthogonal_complement()
-        discriminant = complement.discriminant_group()
-        covering = complement.covering_discriminant_classes(square)
-        correlation = complement.correlation_morphism()
-        complement_inclusion = self._complement_inclusion()
-        e, f, _e_prime, _f_prime = self.hyperbolic_basis()
-
-        def representative(discriminant_class):
-            discriminant_class = discriminant(discriminant_class)
-            order = ring(int(discriminant_class.additive_order()))
-            dual_lift = discriminant.dual_lattice_lift(discriminant_class)
-            scaled_dual = dual_lift.parent().scalar_multiple(order, dual_lift)
-            complement_vector = correlation.lift(scaled_dual)
-            denominator = ring(2) * order * order
-            numerator = square - complement.q(complement_vector)
-            coefficient = numerator // denominator
-            if denominator * coefficient != numerator:
-                raise ArithmeticError(
-                    f"cannot build a covering vector of square {square} for the discriminant class "
-                    f"{discriminant_class}: the coefficient ({square} - q(x))/(2 * {order}^2) = "
-                    f"{numerator}/{denominator} is not an integer"
-                )
-            vector = (
-                lattice.scalar_multiple(order, e)
-                + lattice.scalar_multiple(order * coefficient, f)
-                + (complement_inclusion(complement_vector) if complement_inclusion is not None else lattice.zero())
-            )
-            if vector.q() != square:
-                raise ArithmeticError(
-                    f"the covering vector {vector} built for the discriminant class "
-                    f"{discriminant_class} has square {vector.q()}, not {square}"
-                )
-            if vector.div() != order:
-                raise ArithmeticError(
-                    f"the covering vector {vector} built for the discriminant class "
-                    f"{discriminant_class} has divisibility {vector.div()}, not the class order {order}"
-                )
-            if not vector.is_primitive():
-                raise ArithmeticError(
-                    f"the covering vector {vector} built for the discriminant class "
-                    f"{discriminant_class} is not primitive"
-                )
-            if complement.discriminant_class(dual_lift) != discriminant_class:
-                raise ArithmeticError(
-                    f"{dual_lift} does not lift the discriminant class {discriminant_class}: it "
-                    f"represents {complement.discriminant_class(dual_lift)}"
-                )
-            return vector
-
-        return finite_indexed_family(
-            covering,
-            representative,
-            name=f"Eichler covering representatives of square {square} in {lattice}",
-        )
+        return OrbitCoverModel.split_covering_vectors(self, square)
 
     def discriminant_generator_lifts(self):
         r"""Return live lifts in ``O(2U+K)`` of generators of ``O(A_K)``.
@@ -883,8 +716,16 @@ class TwoUEichlerModel(SageObject):
 
         lattice = self.lattice()
         orthogonal_group = lattice.O()
+        square = lattice.base_ring()(square)
         representatives = self.covering_vector_representatives(square)
-        full_orbits = tuple(orthogonal_group.vector_orbit_representatives(square))
+        if square == lattice.base_ring().zero():
+            full_orbits = tuple(
+                orthogonal_group.orbit_decomposition(
+                    lattice.primitive_isotropic_vectors()
+                ).representatives()
+            )
+        else:
+            full_orbits = tuple(orthogonal_group.vector_orbit_representatives(square))
 
         def datum(discriminant_class):
             vector = representatives[discriminant_class]
@@ -974,92 +815,10 @@ class TwoUEichlerModel(SageObject):
         )
 
     def full_generating_data(self, square):
-        r"""Return the finite theorem-backed generators of ``O(2U+K)``.
+        r"""Dispatch the specialized approximate-model generation theorem to the port."""
+        from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
 
-        The finite approximate family and its covering vectors are the sourced
-        ``2U`` approximate model.  Restrict that covering list to one full
-        orthogonal orbit, retain one transporter from the selected base vector
-        to every listed representative, and adjoin exact generators of the
-        base stabilizer.  The approximate-oracle property then proves the
-        returned finite family generates the whole orthogonal group.
-        """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        lattice = self.lattice()
-        orthogonal_group = lattice.O()
-        representatives = self.covering_vector_representatives(square)
-        if int(representatives.cardinality()) == 0:
-            raise ValueError(
-                f"cannot generate O(L) for L = {lattice} from vectors of square {square}: L has no "
-                f"primitive covering vector of that square"
-            )
-        base_label = next(iter(representatives.index_set()))
-        base_vector = representatives[base_label]
-        selected_labels = []
-        transporters = {}
-        for label in representatives.index_set():
-            transporter = orthogonal_group.vector_equivalence_witness(
-                base_vector,
-                representatives[label],
-            )
-            if transporter is None:
-                continue
-            selected_labels.append(label)
-            transporters[label] = transporter
-        orbit_labels = finite_ordered_set(tuple(selected_labels))
-        orbit_representatives = finite_indexed_family(
-            orbit_labels,
-            lambda label: representatives[label],
-            name=f"Approximate representatives in the selected full orbit of square {square}",
-        )
-        orbit_transporters = finite_indexed_family(
-            orbit_labels,
-            lambda label: transporters[label],
-            name=f"Full-orthogonal transporters from {base_vector}",
-        )
-        approximate = self.approximate_generating_family()
-        stabilizer = orthogonal_group.vector_stabilizer_generators(base_vector)
-        generation_labels = finite_ordered_set(
-            tuple(("approximate", label) for label in approximate.index_set())
-            + tuple(("stabilizer", generator) for generator in stabilizer)
-            + tuple(("transporter", label) for label in orbit_labels)
-        )
-
-        def generator(label):
-            kind, datum = label
-            match kind:
-                case "approximate":
-                    return approximate[datum]
-                case "stabilizer":
-                    return datum
-                case "transporter":
-                    return orbit_transporters[datum]
-                case _:
-                    raise ValueError(
-                        f"{label!r} does not name a generator of O(L) for {self}: its kind "
-                        f"{kind!r} is not a known kind of generator"
-                    )
-
-        generating_family = finite_indexed_family(
-            generation_labels,
-            generator,
-            name=f"Theorem-backed generators of O({lattice})",
-        )
-        return TwoUFullGeneratingDatum(
-            self,
-            lattice.base_ring()(square),
-            base_vector,
-            approximate,
-            stabilizer,
-            orbit_representatives,
-            orbit_transporters,
-            generating_family,
-        )
+        return OrbitCoverModel.split_full_generating_data(self, square)
 
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
@@ -1087,9 +846,8 @@ class TwoUEichlerModel(SageObject):
             return None
         target_first = other.first_hyperbolic_plane()
         target_second = other.second_hyperbolic_plane()
-        first_inclusion = target.injection(0)
-        second_inclusion = target.injection(1)
-        complement_inclusion = other._complement_inclusion()
+        first_inclusion, second_inclusion = other._hyperbolic_inclusions
+        complement_inclusion = other.complement_inclusion()
         first_labels = target_first.module_generating_set()
         second_labels = target_second.module_generating_set()
         images = (
@@ -1100,7 +858,7 @@ class TwoUEichlerModel(SageObject):
                     complement_isometry(
                         self.orthogonal_complement().module_generator(label)
                     )
-                ) if complement_inclusion is not None else target.zero()
+                )
                 for label in self.orthogonal_complement().module_generating_set()
             )
         )
@@ -1109,7 +867,9 @@ class TwoUEichlerModel(SageObject):
                 f"the map {source} -> {target} built from 2U + K gives {len(images)} images for "
                 f"the {source.module_rank()} basis vectors of {source}"
             )
-        result = source.Isom(target)(images)
+        source_basis = self.hyperbolic_basis() + self._embedded_complement_basis()
+        transformation = _column_matrix_from_images(target, images) * _column_matrix_from_images(source, source_basis).inverse()
+        result = source.Isom(target)._isometry_from_column_matrix(transformation)
         if any(
             result(left) != right
             for left, right in zip(
@@ -1120,7 +880,7 @@ class TwoUEichlerModel(SageObject):
                 f"the isometry {result} of 2U + K does not send the hyperbolic basis "
                 f"{self.hyperbolic_basis()} of {source} to {other.hyperbolic_basis()}"
             )
-        source_complement_inclusion = self._complement_inclusion()
+        source_complement_inclusion = self.complement_inclusion()
         if any(
             result(source_complement_inclusion(generator))
             != complement_inclusion(complement_isometry(generator))

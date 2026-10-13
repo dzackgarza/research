@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from bisect import bisect_left
 from collections.abc import Iterable, Mapping
 from heapq import merge
+from itertools import groupby
 from operator import index
 from typing import SupportsIndex, TypeVar
 
@@ -43,23 +45,37 @@ def _selection_integer(value: SupportsIndex) -> int:
 
 
 def _largest_combinadic_entry(rank: int, size: int) -> int:
-    entry = size - 1
-    while binomial(entry + 1, size) <= rank:
-        entry += 1
-    return entry
+    # The largest a with binomial(a, size) <= rank. The usual finite-n
+    # combination engine uses an ambient bound; here the source can be NN,
+    # so discover one by doubling and locate a by integer bisection rather
+    # than performing rank many increments when size is one.
+    lower = size - 1
+    upper = size
+    while binomial(upper, size) <= rank:
+        lower = upper
+        upper *= 2
+    while upper - lower > 1:
+        middle = (lower + upper) // 2
+        if binomial(middle, size) <= rank:
+            lower = middle
+        else:
+            upper = middle
+    return lower
 
 
 def _strict_positions_from_combinadic(rank: int, size: int):
     if size == 0:
         return iter(())
-    largest = _largest_combinadic_entry(rank, size)
-    remainder = rank - int(binomial(largest, size))
-
-    def values():
-        yield from _strict_positions_from_combinadic(remainder, size - 1)
-        yield largest
-
-    return values()
+    # Recover the same colex combinadic digits iteratively. Recursive
+    # recovery otherwise reaches Python's recursion limit for legitimate
+    # high-degree finite selections, even at rank zero.
+    largest_first = []
+    remainder = rank
+    for degree in range(size, 0, -1):
+        largest = _largest_combinadic_entry(remainder, degree)
+        largest_first.append(largest)
+        remainder -= int(binomial(largest, degree))
+    return iter(reversed(largest_first))
 
 
 class FixedSizeSelectionElement(Element):
@@ -78,30 +94,25 @@ class FixedSizeSelectionElement(Element):
     def allows_repetition(self) -> bool:
         return self.parent().allows_repetition()
 
+    @cached_method
     def _source_positions(self):
-        strict = _strict_positions_from_combinadic(
-            self.combinatorial_rank(),
-            self.degree(),
-        )
+        r"""Selected source ranks, decoded once from the combinadic datum."""
+        strict = tuple(_strict_positions_from_combinadic(
+            self.combinatorial_rank(), self.degree()
+        ))
         if not self.allows_repetition():
             return strict
-        return (
-            strict_position - offset
-            for offset, strict_position in enumerate(strict)
-        )
+        return tuple(position - offset for offset, position in enumerate(strict))
 
     def word(self) -> IndexedFamily:
         r"""The selection as the family of its points in increasing order."""
         indices = Sets.Δ[self.degree() - 1]
+        positions = tuple(self._source_positions())
+        point_at_rank = self.parent().source().ranking_map().inverse()
 
         def value(index):
             requested = int(index)
-            for position, source_position in enumerate(self._source_positions()):
-                if position == requested:
-                    return self.parent().source()[source_position]
-            raise IndexError(
-                f"position {requested} is out of range for the selection {self} of size {self.degree()}"
-            )
+            return point_at_rank(positions[requested])
 
         return indexed_family(indices, value, name="Selection word")
 
@@ -126,17 +137,13 @@ class FixedSizeSelectionElement(Element):
                 first = False
                 previous = position
 
-        count_distinct = sum(1 for _position in distinct_positions())
-        indices = Sets.Δ[count_distinct - 1]
+        positions = tuple(distinct_positions())
+        indices = Sets.Δ[len(positions) - 1]
+        point_at_rank = self.parent().source().ranking_map().inverse()
 
         def source_label(index):
             requested = int(index)
-            for offset, position in enumerate(distinct_positions()):
-                if offset == requested:
-                    return self.parent().source()[position]
-            raise IndexError(
-                f"position {requested} is out of range for the distinct labels of the selection {self}"
-            )
+            return point_at_rank(positions[requested])
 
         return FiniteOrderedSets().from_indexed(
             indices,
@@ -147,12 +154,13 @@ class FixedSizeSelectionElement(Element):
     def add_label(self, label: PointT) -> FixedSizeSelectionElement:
         target = self.parent().with_size(self.degree() + 1)
         position = int(self.parent().source().ranking_map()(label))
-        if not self.allows_repetition() and self.multiplicity(label):
+        positions = tuple(self._source_positions())
+        if not self.allows_repetition() and position in positions:
             raise ValueError(
                 f"cannot add {label} to the subset {self}: it already contains {label}"
             )
         return target.from_source_rank_positions(
-            merge(self._source_positions(), (position,))
+            merge(positions, (position,))
         )
 
     def merged_with(self, other: FixedSizeSelectionElement) -> FixedSizeSelectionElement:
@@ -162,14 +170,14 @@ class FixedSizeSelectionElement(Element):
             "they must come from one source set with one repetition rule"
         )
         target = self.parent().with_size(self.degree() + other.degree())
+        left_positions = tuple(self._source_positions())
+        right_positions = tuple(other._source_positions())
         if not self.allows_repetition():
-            for label in self.support():
-                if other.multiplicity(label):
-                    raise ValueError(
-                        f"cannot merge the subsets {self} and {other}: they are not disjoint, both contain {label}"
-                    )
+            common = set(left_positions).intersection(right_positions)
+            if common:
+                raise ValueError(f"cannot merge the subsets {self} and {other}: they share source positions {common}")
         return target.from_source_rank_positions(
-            merge(self._source_positions(), other._source_positions())
+            merge(left_positions, right_positions)
         )
 
     def wedge_with(
@@ -183,15 +191,19 @@ class FixedSizeSelectionElement(Element):
             raise TypeError(
                 f"the wedge of {self} and {other} is defined here for subsets, not multisets"
             )
-        for label in self.support():
-            if other.multiplicity(label):
-                return None
-        inversions = sum(
-            left_position > right_position
-            for left_position in self._source_positions()
-            for right_position in other._source_positions()
+        left_positions = tuple(self._source_positions())
+        right_positions = tuple(other._source_positions())
+        if set(left_positions).intersection(right_positions):
+            return None
+        # Both retained position tuples are increasing. The standard-library
+        # binary-search primitive counts preceding right ranks without
+        # forming the quadratic Cartesian family of comparisons.
+        inversions = sum(bisect_left(right_positions, position) for position in left_positions)
+        # Disjointness is established above. Reuse the selected positions
+        # instead of unranking both selections again in merged_with.
+        merged = self.parent().with_size(self.degree() + other.degree()).from_source_rank_positions(
+            merge(left_positions, right_positions)
         )
-        merged = self.merged_with(other)
         return merged, (-1 if inversions % 2 else 1)
 
     def __eq__(self, other) -> bool:
@@ -212,8 +224,10 @@ class FixedSizeSelectionElement(Element):
         if not self.allows_repetition():
             return "{" + ", ".join(map(repr, self)) + "}"
         terms = []
-        for label in self.support():
-            multiplicity = self.multiplicity(label)
+        point_at_rank = self.parent().source().ranking_map().inverse()
+        for position, occurrences in groupby(self._source_positions()):
+            label = point_at_rank(position)
+            multiplicity = sum(1 for _ in occurrences)
             terms.append(
                 repr(label)
                 if multiplicity == 1
@@ -380,9 +394,8 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         return self[rank]
 
     def from_labels(self, labels: Iterable[PointT]) -> FixedSizeSelectionElement:
-        return self.from_source_rank_positions(
-            self.source().ranking_map()(label) for label in labels
-        )
+        positions = sorted(int(self.source().ranking_map()(label)) for label in labels)
+        return self.from_source_rank_positions(positions)
 
     def from_multiplicities(
         self,
@@ -405,27 +418,12 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
                 f"an element of {self} is a subset, so its multiplicities are 0 or 1, but they are "
                 f"{dict(multiplicities)}"
             )
-        rank = 0
-        for label, raw_multiplicity in multiplicities.items():
-            multiplicity = _selection_integer(raw_multiplicity)
-            if multiplicity == 0:
-                continue
-            source_position = int(self.source().ranking_map()(label))
-            preceding = sum(
-                _selection_integer(other_multiplicity)
-                for other_label, other_multiplicity in multiplicities.items()
-                if _selection_integer(other_multiplicity) > 0
-                and int(self.source().ranking_map()(other_label)) < source_position
-            )
-            for occurrence in range(multiplicity):
-                offset = preceding + occurrence
-                strict_position = (
-                    source_position + offset
-                    if self.allows_repetition()
-                    else source_position
-                )
-                rank += int(binomial(strict_position, offset + 1))
-        return self[rank]
+        positions = sorted(
+            int(self.source().ranking_map()(label))
+            for label, multiplicity in multiplicities.items()
+            for _ in range(_selection_integer(multiplicity))
+        )
+        return self.from_source_rank_positions(positions)
 
     def singleton_power(self, label: PointT) -> FixedSizeSelectionElement:
         if self.selection_size() == 0:

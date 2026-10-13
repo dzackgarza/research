@@ -1,12 +1,13 @@
 """Owned ordered enumerated sets, with the finite ones as a refinement."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from itertools import chain, islice
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
-from sage.sets.set import Set as SageSet
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -22,6 +23,9 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.logic import Predicate
 
 IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
@@ -163,17 +167,38 @@ class OrderedEnumeratedSets(OwnedCategory):
                 return self._element_at_function(index_ranking.inverse()(int(position)))
 
             def position_of(element):
-                index = self._index_of_function(element)
+                # Admission verifies the inverse's domain and its forward
+                # equation; a raw supplied inverse need not do either.
+                admitted = self._element_constructor_(element)
+                index = self._index_of_function(admitted)
                 if index is None:
                     raise ValueError(f"{element!r} is not in {self}")
                 return int(index_ranking(index))
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __contains__(self, element) -> bool:
+        def __contains__(self, element):
             if self._contains_function is not None:
-                return bool(self._contains_function(element))
-            return self._index_of_function(element) is not None
+                decision = self._contains_function(element)
+                if decision is True or decision is False:
+                    return decision
+                from dzack_research.preamble.logic import Predicate
+
+                if isinstance(decision, Predicate):
+                    return decision
+                raise TypeError("finite-set membership must be a truth value or proposition")
+            index = self._index_of_function(element)
+            if index is None:
+                return False
+            admitted = self.index_set().is_parent_of(index)
+            if admitted is not True:
+                return admitted
+            value = self._element_at_function(self.index_set()(index))
+            return True if value is element else value == element
+
+        # Keep an unresolved membership proposition in the owned set API.
+        # Python's `in` protocol would otherwise demand a Boolean result.
+        is_parent_of = __contains__
 
         def __call__(self, element):
             return self._element_constructor_(element)
@@ -186,12 +211,22 @@ class OrderedEnumeratedSets(OwnedCategory):
             ask the ranking map: applying an arrow coerces its argument into
             the domain, and the domain is this parent.
             """
-            if self._contains_function is not None and not self._contains_function(element):
+            decision = self.is_parent_of(element)
+            if decision is False:
                 raise ValueError(f"{element!r} is not in {self}")
+            if decision is not True:
+                raise ValueError(f"membership of {element!r} in {self} is undecided")
             index = self._index_of_function(element)
             if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
-            return self._element_at_function(index)
+            admissible_index = self.index_set().is_parent_of(index)
+            if admissible_index is not True:
+                raise ValueError(f"the proposed index {index!r} of {element!r} is not established in {self.index_set()}")
+            image = self._element_at_function(self.index_set()(index))
+            equal = True if image is element else image == element
+            if equal is not True:
+                raise ValueError(f"the proposed index of {element!r} does not establish the forward equation")
+            return image
 
         def _an_element_(self):
             r"""Return the first point of a nonempty enumeration."""
@@ -233,12 +268,11 @@ class FiniteOrderedSets(OwnedCategory):
         return [OrderedEnumeratedSets(), FiniteSets()]
 
     def _call_(self, elements: Parent | Iterable[PointT]) -> ObjectOfCategory:
-        r"""Construct the finite ordered set a finite set or finitely many points present.
+        r"""Construct the finite ordered set from an enumerated set or ordered points.
 
         The category call returns ``elements`` itself when it already is one.
-        A finite set is read through its own enumeration when it states one,
-        and in iteration order otherwise; finitely many points are taken in
-        order, with equal points identified.
+        A finite set must state its own enumeration; finitely many literal
+        points are taken in order, with equal points identified.
         """
         match elements:
             case _ if elements in Sets():
@@ -262,17 +296,16 @@ class FiniteOrderedSets(OwnedCategory):
                     self,
                     index_set=index_set,
                     element_at=lambda position: ranking.inverse()(int(position)),
-                    index_of=lambda element: ranking(element) if element in source else None,
-                    contains=lambda element: element in source,
+                    index_of=lambda element: ranking(element) if source.is_parent_of(element) is True else None,
+                    contains=source.is_parent_of,
                 )
             case _:
-                # Choose the order once; separately iterating an unordered
-                # source for each position does not retain one enumeration.
-                points = tuple(source)
-                return self.from_indexed(
-                    index_set,
-                    lambda position: points[int(position)],
-                    contains=lambda element: element in source,
+                # Cardinality is not an enumeration.  An arbitrary finite
+                # set cannot be indexed merely because its size is known;
+                # the caller must supply an actual order of its points.
+                raise TypeError(
+                    f"the finite set {source} has no selected enumeration; "
+                    "supply its ordered points explicitly"
                 )
 
     def _on_points(self, points: Iterable[PointT]) -> ObjectOfCategory:
@@ -280,14 +313,29 @@ class FiniteOrderedSets(OwnedCategory):
 
         Literal ingress: the points are read once, in order.
         """
-        # Owned mathematical objects need not be hashable.  Equality, not a
-        # Python hash implementation, is the set-theoretic identification here.
-        distinct_list = []
-        for point in points:
-            if any(point is present or point == present for present in distinct_list):
-                continue
-            distinct_list.append(point)
-        distinct = tuple(distinct_list)
+        # Dictionary insertion preserves the first occurrence and delegates
+        # hashable-point identification to the maintained hash-table engine.
+        # A genuinely unhashable point still requires the equality fallback;
+        # do not impose hashability on the mathematical points of a finite set.
+        supplied = tuple(points)
+        try:
+            distinct = tuple(dict.fromkeys(supplied))
+        except (TypeError, ValueError):
+            distinct_list = []
+            for point in supplied:
+                comparisons = tuple(
+                    True if point is present else point == present
+                    for present in distinct_list
+                )
+                if any(equal is True for equal in comparisons):
+                    continue
+                if any(equal is not False for equal in comparisons):
+                    raise ValueError(
+                        "cannot form a finite set of distinct points: equality of supplied "
+                        "unhashable elements is undecided"
+                    )
+                distinct_list.append(point)
+            distinct = tuple(distinct_list)
         return self.from_indexed(
             finite_ordinal_set(len(distinct)),
             lambda position: distinct[int(position)],
@@ -314,30 +362,91 @@ class FiniteOrderedSets(OwnedCategory):
         assert index_set in EnumeratedSets(), (
             f"a finite ordered set needs an enumerated index set, but {index_set} is not enumerated"
         )
-        if index_of is None or contains is None:
+        if index_of is None:
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
-        if index_of is None:
+            # The finite presentation has already selected its points. Keep
+            # these exact objects as the forward enumeration instead of
+            # re-running an arbitrary defining callback during membership,
+            # ranking, and iteration. The index ranking supplies positions.
+            index_ranking = index_set.ranking_map()
+            element_at = lambda index: points[int(index_ranking(index))]
+            # The declared enumeration must be injective. A dictionary
+            # silently drops duplicate hashable points otherwise, and its
+            # inverse would no longer be inverse to the chosen enumeration.
             try:
                 lookup = dict(zip(points, indices, strict=True))
-                index_of = lookup.get
-            except TypeError:
-                index_of = lambda point: next(
-                    (
-                        index
-                        for index, present in zip(indices, points, strict=True)
-                        if point is present or point == present
-                    ),
-                    None,
-                )
+            except (TypeError, ValueError):
+                for offset, present in enumerate(points):
+                    for earlier in points[:offset]:
+                        equal = True if present is earlier else present == earlier
+                        if equal is True:
+                            raise ValueError("an enumeration must select distinct points at distinct indices")
+                        if equal is not False:
+                            raise ValueError("distinctness of the enumerated points is undecided")
+                def index_of(point):
+                    for index, present in zip(indices, points, strict=True):
+                        equal = True if point is present else point == present
+                        if equal is True:
+                            return index
+                    return None
+
+                # The inverse is a partial *decision* procedure. A missing
+                # decided match does not refute membership when an equality
+                # is unresolved. Retain the finite existential separately.
+                if contains is None:
+                    def contains(point):
+                        from dzack_research.preamble.logic import conjunction, negation
+
+                        return negation(conjunction(
+                            negation(True if point is present else point == present)
+                            for present in points
+                        ))
+            else:
+                if len(lookup) != len(points):
+                    raise ValueError("an enumeration must select distinct points at distinct indices")
+                def index_of(point):
+                    try:
+                        return lookup.get(point)
+                    except (TypeError, ValueError):
+                        # A query can have undecidable symbolic equality even
+                        # when the selected points formed a valid hash table.
+                        for index, present in zip(indices, points, strict=True):
+                            if point is present or (point == present) is True:
+                                return index
+                        return None
+                if contains is None:
+                    def contains(point):
+                        from dzack_research.preamble.logic import conjunction, negation
+
+                        try:
+                            position = lookup.get(point)
+                        except (TypeError, ValueError):
+                            return negation(conjunction(
+                                negation(True if point is present else point == present)
+                                for present in points
+                            ))
+                        return position is not None
         if contains is None:
-            try:
-                hashed_points = SageSet(points)
-                contains = hashed_points.__contains__
-            except TypeError:
-                contains = lambda point: any(
-                    point is present or point == present for present in points
-                )
+            # Membership is the domain of the selected enumeration inverse,
+            # not a second independent set reconstructed from its values.
+            # The inverse already uses a hash table when points are hashable,
+            # and retains the necessary equality fallback otherwise. A
+            # supplied inverse can be extended arbitrarily off the image;
+            # only the forward equation certifies such a candidate.
+            def contains(point):
+                from dzack_research.preamble.logic import AtomicProposition
+
+                position = index_of(point)
+                if position is None:
+                    return False
+                admitted = index_set.is_parent_of(position)
+                if admitted is False:
+                    return False
+                if admitted is not True:
+                    return AtomicProposition("is_member", point, index_set)
+                image = element_at(index_set(position))
+                return True if image is point else image == point
         return _object_of(
             self,
             index_set=index_set,
@@ -350,7 +459,12 @@ class FiniteOrderedSets(OwnedCategory):
     class ParentMethods:
         def filtered(self, predicate, *, name=None):
             r"""Return the ordered subset of this set cut out by ``predicate``."""
-            return _filtered_ordered_set(self, predicate, name=name)
+            subset = _filtered_ordered_set(self, predicate, name=name)
+            assert subset is not None, (
+                f"cannot enumerate the subset of {self} cut out by {predicate}: some memberships "
+                "are undecided; condition_set retains this finite subset without an enumeration"
+            )
+            return subset
 
         def union(self, other):
             r"""The finite set of the points of this set and of the finite set ``other``.
@@ -358,18 +472,29 @@ class FiniteOrderedSets(OwnedCategory):
             Ordered as this set, followed by the points of ``other`` not
             already present, in the order of ``other``.
             """
-            assert other in Sets() and Sets().is_provably_finite(other), (
-                f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
+            assert other in Sets() and Sets().is_provably_finite(other) and other in EnumeratedSets(), (
+                f"the ordered union with {self} requires a finite enumerated second set, but {other} "
+                "does not supply a selected finite enumeration"
             )
             return FiniteOrderedSets()(chain(self, other))
 
         def intersection(self, other):
             r"""The points of this set that lie in ``other``, in this set's order."""
-            return self.filtered(lambda point: point in other)
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            if other not in Sets():
+                raise TypeError(f"intersection requires a set, not {other!r}")
+            return Sets().condition_set(self, lambda point: other.is_parent_of(point))
 
         def difference(self, other):
             r"""The points of this set that do not lie in ``other``, in this set's order."""
-            return self.filtered(lambda point: point not in other)
+            from dzack_research.preamble.logic import negation
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            if other not in Sets():
+                raise TypeError(f"difference requires a set, not {other!r}")
+            predicate = lambda point: negation(other.is_parent_of(point))
+            return Sets().condition_set(self, predicate)
 
         def __or__(self, other):
             return self.union(other)
@@ -380,24 +505,27 @@ class FiniteOrderedSets(OwnedCategory):
         def __sub__(self, other):
             return self.difference(other)
 
-        def __eq__(self, other) -> bool:
+        def __eq__(self, other) -> bool | Predicate:
             r"""Equal to a finite set with the same points; two finite ordered sets also agree in order."""
+            from dzack_research.preamble.logic import conjunction
+
             match other:
                 case _ if other is self:
                     return True
                 case _ if other in FiniteOrderedSets():
-                    return self.cardinality() == other.cardinality() and all(
-                        left == right for left, right in zip(self, other, strict=True)
-                    )
-                case _ if other in Sets() and Sets().is_provably_finite(other):
-                    return self.cardinality() == cardinal(other.cardinality()) and all(
-                        point in other for point in self
+                    if self.cardinality() != other.cardinality():
+                        return False
+                    return conjunction(
+                        True if left is right else left == right
+                        for left, right in zip(self, other, strict=True)
                     )
                 case _:
                     return False
 
-        def __ne__(self, other) -> bool:
-            return not self == other
+        def __ne__(self, other) -> bool | Predicate:
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
 
         def __hash__(self) -> int:
             # Do not hash members: group/lattice elements may normalize expensively.
@@ -409,35 +537,95 @@ class FiniteOrderedSets(OwnedCategory):
 
 def _filtered_ordered_set(
     universe: Parent,
-    predicate: Callable[[PointT], bool],
+    predicate: Callable[[PointT], bool | Predicate],
     *,
     name: str | None = None,
-) -> FiniteOrderedSets().ObjectType:
-    r"""The subset \(\{x\in S : P(x)\}\) of a finite enumerated set \(S\), in the order of \(S\).
+) -> FiniteOrderedSets().ObjectType | None:
+    r"""Compute the ordered subset \(\{x\in S : P(x)\}\), or decline an undecided enumeration.
 
-    A finite ordered set, enumerated over the ordinal counting the points
-    satisfying \(P\), the \(k\)-th point being the \(k\)-th such point of
-    \(S\).  The enumeration is computed from \((S, P)\) here, and the finite
-    ordered sets owner constructs the set on it.
+    Protected construction contract (``OWN-05``), owned by
+    ``FiniteOrderedSets`` and called only by its ``filtered`` operation and
+    ``Sets.condition_set``.  The input is an owned finite enumerated set
+    with an immutable predicate on its points.  When every value is decided,
+    the result is the owned finite ordered subset, with the original
+    universe, predicate and canonical inclusion retained.  ``None`` means
+    only that this optional enumeration computation is unavailable; it
+    makes no claim about the subset or its cardinality.
+
+    ``Sets.condition_set`` needs this optional construction choice because
+    the public ``filtered`` operation requires a represented enumeration.
+    A successful computation selects the \(k\)-th satisfying point of
+    \(S\), indexed by the ordinal counting those points. Its finite selected
+    enumeration is materialized once, not recomputed on every rank query;
+    a declined computation constructs no order.
     """
+    from dzack_research.preamble.logic import Predicate
+
     assert Sets().is_provably_finite(universe) and universe in EnumeratedSets(), (
         f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
         "finite and enumerated"
     )
 
-    def survivors():
-        return (point for point in universe if predicate(point))
+    selected = []
+    for point in universe:
+        match predicate(point):
+            case True:
+                selected.append(point)
+            case False:
+                pass
+            case Predicate():
+                return None
+            case value:
+                raise TypeError(
+                    f"a subset predicate on {universe} must return True, False or a proposition, "
+                    f"but returned {value!r} at {point!r}"
+                )
+
+    points = tuple(selected)
+    positions = tuple(range(len(points)))
+    try:
+        inverse_lookup = dict(zip(points, positions, strict=True))
+    except (TypeError, ValueError):
+        def position_of(value):
+            for i, point in enumerate(points):
+                same = True if point is value else point == value
+                if same is True:
+                    return i
+            return None
+    else:
+        if len(inverse_lookup) != len(points):
+            raise ValueError("a filtered enumeration cannot contain duplicate points")
+        def position_of(value):
+            try:
+                return inverse_lookup.get(value)
+            except (TypeError, ValueError):
+                for i, point in enumerate(points):
+                    if value is point or (value == point) is True:
+                        return i
+                return None
 
     def element_at(index):
-        return next(islice(survivors(), int(index), None))
+        return points[int(index)]
 
     def index_of(element):
-        if element not in universe or not predicate(universe(element)):
-            return None
-        return next(
-            position
-            for position, point in enumerate(survivors())
-            if point == element
+        return position_of(element)
+
+    def contains(element):
+        # The selected tuple supplies an enumeration, not the definition of
+        # the subset. Membership remains P(x) for x in the given universe.
+        from dzack_research.preamble.logic import AtomicProposition, Predicate
+
+        admission = universe.is_parent_of(element)
+        if admission is False:
+            return False
+        if admission is not True:
+            return AtomicProposition("is_member", element, universe)
+        decision = predicate(universe(element))
+        if decision is True or decision is False or isinstance(decision, Predicate):
+            return decision
+        raise TypeError(
+            f"a subset predicate on {universe} must return True, False or a proposition, "
+            f"but returned {decision!r} at {element!r}"
         )
 
     return _object_of(
@@ -445,10 +633,10 @@ def _filtered_ordered_set(
         _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
         universe=universe,
         predicate=predicate,
-        index_set=finite_ordinal_set(sum(1 for _point in survivors())),
+        index_set=finite_ordinal_set(len(points)),
         element_at=element_at,
         index_of=index_of,
-        contains=lambda element: element in universe and bool(predicate(universe(element))),
+        contains=contains,
         name=name,
     )
 
@@ -479,7 +667,7 @@ class _FilteredOrderedSetEngine:
         return Sets().Mono(self, self.universe())._from_subset_inclusion()
 
     def __iter__(self):
-        return (point for point in self.universe() if self.predicate()(point))
+        return (self.enumeration()(index) for index in self.index_set())
 
     def _repr_(self):
         return self._name or f"Ordered subset of {self.universe()}"
@@ -498,13 +686,17 @@ def _enumerated_image_set(
     ``None`` on candidates for which no preimage is represented.  Membership
     also checks the forward equation, so a total extension of an inverse
     cannot admit values outside the image.
+
+    Unexecuted separating specimen: for a finite source with an inverse
+    returning the correct preimage or ``None``, querying an absent value
+    invokes that inverse and never compares the candidate with every image
+    value. A total inverse extension selecting a source point for an absent
+    value is rejected by the forward equation. Both conditions apply equally
+    to finite and infinite index sets.
     """
     match source:
         case _ if Sets().is_provably_finite(source):
             placement = FiniteOrderedSets()
-
-            def contains(value):
-                return any(map_(point) == value for point in source)
         case _:
             # The image of an infinite set under an injection is infinite.
             placement = (
@@ -513,9 +705,19 @@ def _enumerated_image_set(
                 else OrderedEnumeratedSets()
             )
 
-            def contains(value):
-                preimage = inverse(value)
-                return preimage in source and map_(source(preimage)) == value
+
+    def contains(value):
+        # A supplied inverse determines image membership for finite as well
+        # as infinite sources. Scanning the finite source would discard that
+        # map and incorrectly turn membership into an enumeration algorithm.
+        preimage = inverse(value)
+        if preimage is None:
+            return False
+        admitted = source.is_parent_of(preimage)
+        if admitted is not True:
+            return admitted
+        image = map_(source(preimage))
+        return True if image is value else image == value
 
     return _object_of(
         placement,

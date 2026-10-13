@@ -10,6 +10,9 @@ def test_the_generators_s_and_t_of_sl2z_satisfy_the_modular_relations() -> None:
     Source: Serre, *A Course in Arithmetic*, VII.1, Theorem 2.
     """
     group = Groups.SL(2, ZZ)
+    assert group in OwnedGroups().Arithmetic()
+    assert group.is_arithmetic_group() is True
+    assert group in OwnedGroups().FinitelyGeneratedAsMagma()
     S = group([[0, -1], [1, 0]])
     T = group([[1, 1], [0, 1]])
     minus_one = group([[-1, 0], [0, -1]])

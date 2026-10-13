@@ -101,7 +101,8 @@ def test_the_type_of_a_tensor_product_adds_the_types() -> None:
 def test_the_hyperbolic_form_lowers_and_raises_by_swapping() -> None:
     r"""On $U = (\mathbb Z^2, [[0, 1], [1, 0]])$: $b((4, 5), -) = (5, 4)$, and $U$ is unimodular with
     $U^{-1} = U$, so raising $(3, 7)$ gives $(7, 3)$; raising undoes lowering."""
-    hyperbolic_plane = (ZZ ^ 2).equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
+    module = ZZ ^ 2
+    hyperbolic_plane = FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[0, 1], [1, 0]]))
     v = tensor.vector(ZZ, [4, 5])
     c = tensor.covector(ZZ, [3, 7])
 

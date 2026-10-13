@@ -261,21 +261,6 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
 
             return CoxeterDiagrams().from_roots(tuple(self._wall_roots))
 
-        def _transport_covector(self, covector, isometry):
-            self.ambient_lattice()
-            target = isometry.codomain()
-            inverse = ~isometry
-            target_dual = target.dual_module()
-            return target_dual.linear_combination(
-                {
-                    label: self.evaluate_covector(
-                        covector,
-                        inverse(target.module_generator(label)),
-                    )
-                    for label in target.module_generating_set()
-                }
-            )
-
         def transport(self, isometry):
             r"""Transport this cone and all retained defining covectors along an isometry."""
             source = self.ambient_lattice()
@@ -285,17 +270,28 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                     f"but the isometry has domain {isometry.domain()}"
                 )
             target = isometry.codomain()
+            inverse = isometry.inverse()
+            labels = tuple(target.module_generating_set())
+            inverse_basis = tuple(inverse(target.module_generator(label)) for label in labels)
+            dual = target.dual_module()
+
+            def transport_covector(covector):
+                return dual.linear_combination({
+                    label: self.evaluate_covector(covector, point)
+                    for label, point in zip(labels, inverse_basis, strict=True)
+                })
+
             roots = None
             if self._wall_roots is not None:
                 roots = tuple(isometry(root) for root in self._wall_roots)
             return _rational_polyhedral_cone(
                 target,
                 tuple(
-                    self._transport_covector(covector, isometry)
+                    transport_covector(covector)
                     for covector in self._halfspace_covectors
                 ),
                 equation_covectors=tuple(
-                    self._transport_covector(covector, isometry)
+                    transport_covector(covector)
                     for covector in self._equation_covectors
                 ),
                 wall_roots=roots,
@@ -429,6 +425,13 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 tuple(self._halfspace_covectors) + tuple(other.halfspace_covectors()),
                 equation_covectors=tuple(self._equation_covectors) + tuple(other.equation_covectors()),
             )
+
+        def __eq__(self, other):
+            if self is other:
+                return True
+            if other in RationalPolyhedralCones(self.ambient_lattice()):
+                return self.is_equal_to(other)
+            return super().__eq__(other)
 
         def is_equal_to(self, other) -> bool:
             r"""Return whether the two cones are the same subset of ``L tensor QQ``.

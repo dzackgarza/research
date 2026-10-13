@@ -10,7 +10,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
+from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     _DirectSumOfModules,
@@ -19,11 +21,13 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
+    _combined_linearity_decision,
     _initialize_module_mor_parent,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     LinearEndCategoryConstruction,
+    ModuleMorCategoryConstruction,
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -36,6 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.owned_category import owned_category_join
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -229,7 +234,8 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
                 cycle = current(cycle)
             outgoing = complex_.differential_component(degree)
             target = outgoing.codomain()
-            if outgoing(cycle) != target.zero():
+            closed = outgoing(cycle) == target.zero()
+            if closed is False:
                 raise ValueError(
                     f"{cycle} has no class in {self}: only a cocycle has a cohomology class, "
                     f"but d^{degree}({cycle}) = {outgoing(cycle)} is nonzero"
@@ -291,7 +297,6 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
         self._differential_family = cochain_differential_family
         self._cochain_name = cochain_name
         super().__init__(**rest)
-        self._validate_differentials()
 
     def selected_degrees(self):
         if not self._finite_support:
@@ -331,45 +336,44 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
                 f"the differential d^{degree} of {self} must be a map C^{degree} -> C^{degree + 1}, "
                 f"i.e. {source} -> {target}, but it is {selected.domain()} -> {selected.codomain()}"
             )
-        if not self._finite_support:
-            following = self._raw_differential_component(degree + 1)
-            following_source = self.graded_piece(degree + 1)
-            following_target = self.graded_piece(degree + 2)
-            if (
-                following.domain() is not following_source
-                or following.codomain() is not following_target
-            ):
-                raise ValueError(
-                    f"the differential d^{degree + 1} of {self} must be a map "
-                    f"{following_source} -> {following_target}, but it is "
-                    f"{following.domain()} -> {following.codomain()}"
-                )
-            labels = source.module_generating_set()
-            if labels.cardinality().is_finite():
-                for label in labels:
-                    generator = source.module_generator(label)
-                    if following(selected(generator)) != following.codomain().zero():
-                        raise ValueError(
-                            f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
-                            f"but it sends the generator {generator} of C^{degree} to "
-                            f"{following(selected(generator))}"
-                        )
         return selected
 
-    def _validate_differentials(self) -> None:
+    def differential_square_zero_decision(self, degree):
+        r"""Decide ``d^(p+1)d^p=0`` when the selected source generators determine it."""
+        degree = int(degree)
+        first = self.differential_component(degree)
+        second = self.differential_component(degree + 1)
+        source = first.domain()
+        if (
+            not source.has_selected_module_resolution()
+            or source.module_generating_set().cardinality().is_finite() is not True
+        ):
+            return AtomicProposition("differential_squares_zero", self, degree)
+        zero = second.codomain().zero()
+        return conjunction(
+            second(first(source.module_generator(label))) == zero
+            for label in source.module_generating_set()
+        )
+
+    def square_zero_decision(self):
+        r"""Return the represented decision that the selected differential squares to zero."""
         if not self._finite_support:
-            return
-        for degree in self.selected_degrees():
-            first = self.differential_component(degree)
-            second = self.differential_component(degree + 1)
-            for label in first.domain().module_generating_set():
-                generator = first.domain().module_generator(label)
-                if second(first(generator)) != second.codomain().zero():
-                    raise ValueError(
-                        f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
-                        f"but it sends the generator {generator} of C^{degree} to "
-                        f"{second(first(generator))}"
-                    )
+            return AtomicProposition("differential_squares_zero", self)
+        return conjunction(
+            self.differential_square_zero_decision(degree)
+            for degree in self.selected_degrees()
+        )
+
+    def validate_differentials(self):
+        r"""Diagnose a proved violation of ``d^2=0`` without forcing undecided equations."""
+        decision = self.square_zero_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a cochain complex: the selected differential does not square to zero"
+            )
+        return decision
+
+    _validate_differentials = validate_differentials
 
     def _repr_(self):
         return self._cochain_name or "Cochain complex"
@@ -488,12 +492,24 @@ class CochainMorphismMethods:
     r"""A degree-zero morphism commuting with the selected differentials."""
 
     def _elementwise_linearity_derivation(self):
-        return True
+        r"""Retain the linearity decisions of the supplied component maps.
+
+        Component data specify a degree-preserving map, but a declared
+        component may still carry an undecided linearity hypothesis. A
+        finite source support reduces this question to those components;
+        no infinite family is enumerated to assert its linearity.
+        """
+        if not self.domain().has_finite_support():
+            return AtomicProposition("is_linear", self)
+        return _combined_linearity_decision(
+            self._selected_degree_component(degree)
+            for degree in self.domain().selected_degrees()
+        )
 
     def _degree_preservation_derivation(self):
         return True
 
-    def __init__(self, parent, components) -> None:
+    def __init__(self, parent, components, *, cochain_premises=None) -> None:
         if isinstance(components, Morphism):
             if (
                 components.domain() is not parent.domain()
@@ -509,62 +525,81 @@ class CochainMorphismMethods:
                 components,
             )
         self._components = components
-        super().__init__(parent, self._evaluate_components, elementwise=True)
-        self._validate_components()
+        self._cochain_premises = cochain_premises
+        super().__init__(
+            parent,
+            self._evaluate_components,
+            elementwise=True,
+            linearity_premises=cochain_premises,
+        )
 
     def _raw_component(self, degree):
         degree = int(degree)
         return self._components(self.domain().degree_index_set()(degree))
 
+    @cached_method
     def _selected_degree_component(self, degree):
-        return self._raw_component(degree)
+        r"""Read the retained component as an ordinary linear map over ``S``.
+
+        The cochain datum admits this linearity hypothesis. Forgetting a
+        stronger component theory preserves its map and decision; an
+        arbitrary declared map retains an unresolved linearity decision.
+        The ordinary fixed Mor also retains the full ``Z(S)`` action,
+        even when the piece has a richer coefficient-module realization.
+        """
+        source = self.domain().graded_piece(degree)
+        target = self.codomain().graded_piece(degree)
+        mor = ModuleMorCategoryConstruction(
+            GeneralModules(self.domain().base_ring())
+        ).Of(source, target)
+        return mor(self._raw_component(degree))
 
     def _validate_degree_component(self, degree, selected):
-        degree = int(degree)
-        if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
-            following = self._raw_component(degree + 1)
-            following_source = self.domain().graded_piece(degree + 1)
-            following_target = self.codomain().graded_piece(degree + 1)
-            if (
-                following.domain() is not following_source
-                or following.codomain() is not following_target
-            ):
-                raise ValueError(
-                    f"the degree-{degree + 1} component of the cochain map {self} must be a map "
-                    f"{following_source} -> {following_target}, but it is "
-                    f"{following.domain()} -> {following.codomain()}"
-                )
-            left = self.codomain().differential_component(degree)
-            right = self.domain().differential_component(degree)
-            labels = source.module_generating_set()
-            if labels.cardinality().is_finite():
-                for label in labels:
-                    generator = source.module_generator(label)
-                    if left(selected(generator)) != following(right(generator)):
-                        raise ValueError(
-                            f"{self} is not a cochain map: it must commute with the differentials, "
-                            f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
-                            f"of degree {degree}"
-                        )
+        r"""Return the selected component; cochain commutation is checked separately."""
         return selected
 
-    def _validate_components(self) -> None:
-        if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
-            return
-        degrees = set(self.domain().selected_degrees()) | set(self.codomain().selected_degrees())
-        for degree in degrees:
-            left = self.codomain().differential_component(degree)
-            component = self.component(degree)
-            right_component = self.component(degree + 1)
-            right = self.domain().differential_component(degree)
-            for label in component.domain().module_generating_set():
-                generator = component.domain().module_generator(label)
-                if left(component(generator)) != right_component(right(generator)):
-                    raise ValueError(
-                        f"{self} is not a cochain map: it must commute with the differentials, "
-                        f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
-                        f"of degree {degree}"
-                    )
+    def cochain_degree_decision(self, degree):
+        r"""Decide ``d f^p = f^(p+1) d`` when degree ``p`` is finitely determined."""
+        if self._cochain_premises is not None:
+            return True
+        degree = int(degree)
+        source = self.domain().graded_piece(degree)
+        if (
+            not source.has_selected_module_resolution()
+            or source.module_generating_set().cardinality().is_finite() is not True
+        ):
+            return AtomicProposition("commutes_with_differential", self, degree)
+        component = self.component(degree)
+        following = self.component(degree + 1)
+        left = self.codomain().differential_component(degree)
+        right = self.domain().differential_component(degree)
+        return conjunction(
+            left(component(source.module_generator(label)))
+            == following(right(source.module_generator(label)))
+            for label in source.module_generating_set()
+        )
+
+    def cochain_map_decision(self):
+        r"""Return the represented decision that all component squares commute."""
+        if self._cochain_premises is not None:
+            return True
+        if not self.domain().has_finite_support():
+            return AtomicProposition("commutes_with_differentials", self)
+        return conjunction(
+            self.cochain_degree_decision(degree)
+            for degree in self.domain().selected_degrees()
+        )
+
+    def validate_cochain_map(self):
+        r"""Diagnose a proved failure of the cochain-map equations without forcing unknown ones."""
+        decision = self.cochain_map_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self} is not a cochain map: its selected components do not commute with the differentials"
+            )
+        return decision
+
+    _validate_components = validate_cochain_map
 
     def _evaluate_components(self, element):
         element = self.domain()(element)
@@ -576,29 +611,62 @@ class CochainMorphismMethods:
         )
 
     def __add__(self, other):
-        other = self.parent()(other)
-        return self.parent().elementwise(lambda element: self(element) + other(element))
+        parent = self.parent()
+        if other in parent:
+            other = parent(other)
+        elif parent.domain() is parent.codomain() and other in parent.base_ring():
+            other = parent._scalar_identity(parent.base_ring()(other))
+        else:
+            return NotImplemented
+        return parent._from_constructed_components(
+            indexed_family(
+                self.domain().degree_index_set(),
+                lambda degree: self._selected_degree_component(degree)
+                + other._selected_degree_component(degree),
+                name="Sum cochain-morphism components",
+            ),
+            premises=(self, other),
+        )
 
     def __neg__(self):
-        return self.parent().elementwise(lambda element: -self(element))
+        return self.parent()._from_constructed_components(
+            indexed_family(
+                self.domain().degree_index_set(),
+                lambda degree: -self._selected_degree_component(degree),
+                name="Negative cochain-morphism components",
+            ),
+            premises=(self,),
+        )
 
     def __sub__(self, other):
-        return self + (-self.parent()(other))
+        parent = self.parent()
+        if other in parent:
+            return self + (-parent(other))
+        if parent.domain() is parent.codomain() and other in parent.base_ring():
+            return self + parent._scalar_identity(-parent.base_ring()(other))
+        return NotImplemented
 
     def __rmul__(self, scalar):
+        if isinstance(scalar, Morphism) and _precomposable(scalar, self):
+            return scalar.__mul__(self)
         return self.parent().scalar_multiple(scalar, self)
 
     def __mul__(self, other):
-        if not isinstance(other, CochainMorphismMethods) or other.codomain() is not self.domain():
+        if not isinstance(other, CochainMorphismMethods) or not _precomposable(self, other):
             return NotImplemented
-        return CochainComplexes(self.domain().base_ring()).Mor(
+        if other.parent() is self.parent() and self.domain() is self.codomain():
+            return self.parent()._compose_endomorphisms(self, other)
+        mor = CochainComplexes(self.domain().base_ring()).Mor(
             other.domain(), self.codomain()
-        )(
+        )
+        return mor._from_constructed_components(
             indexed_family(
                 other.domain().degree_index_set(),
-                lambda degree: self.component(degree) * other.component(degree),
+                lambda degree: self._selected_degree_component(degree)
+                * other._selected_degree_component(degree),
                 name="Composite cochain-morphism components",
-            )
+            ),
+            premises=(self, other),
         )
 
 
@@ -621,7 +689,9 @@ class CochainMor(CategoricalMor):
                 f"set of degrees, but they are graded by {domain.degree_index_set()} and "
                 f"{codomain.degree_index_set()}"
             )
-        _initialize_module_mor_parent(self, mor_family, domain, codomain)
+        _initialize_module_mor_parent(
+            self, mor_family, domain, codomain, full_linear_mor=False
+        )
 
     def _degrees(self):
         if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
@@ -645,10 +715,13 @@ class CochainMor(CategoricalMor):
                 )
             if components.parent() is self:
                 return components
-            components = indexed_family(
-                self.domain().degree_index_set(),
-                components.component,
-                name="Reparented cochain-morphism components",
+            return self._from_constructed_components(
+                indexed_family(
+                    self.domain().degree_index_set(),
+                    components._selected_degree_component,
+                    name="Reparented cochain-morphism components",
+                ),
+                premises=(components,),
             )
         elif isinstance(components, Morphism):
             if components.domain() is not self.domain() or components.codomain() is not self.codomain():
@@ -667,9 +740,7 @@ class CochainMor(CategoricalMor):
                 chosen = selected.get(degree)
                 if chosen is not None:
                     return chosen
-                return source.module_category().Mor(source, target)(
-                    {label: target.zero() for label in source.module_generating_set()}
-                )
+                return source.module_category().Mor(source, target).zero()
 
             components = indexed_family(
                 self.domain().degree_index_set(),
@@ -694,6 +765,68 @@ class CochainMor(CategoricalMor):
             )
         return self.element_class(self, components)
 
+    def _from_constructed_components(self, components, *, premises=()):
+        r"""Retain component formulas and the cochain maps that justify them.
+
+        The additive, scalar and composition operations call this supplier
+        with their actual input arrows. The empty family is used only for
+        zero and identity, whose laws follow from the module axioms.
+        Arbitrary declared families use the ordinary constructor instead.
+        """
+        if (
+            not isinstance(components, IndexedFamily)
+            or components.index_set() is not self.domain().degree_index_set()
+        ):
+            raise TypeError(
+                f"constructed components in {self} must be a family indexed by "
+                f"{self.domain().degree_index_set()}"
+            )
+        return self.element_class(
+            self,
+            components,
+            cochain_premises=tuple(premises),
+        )
+
+    def _compose_endomorphisms(self, left, right):
+        r"""Compose the retained degreewise maps under their cochain laws."""
+        if left not in self or right not in self or self.domain() is not self.codomain():
+            raise TypeError(f"composition in {self} needs two admitted endomorphisms")
+        return self._from_constructed_components(
+            indexed_family(
+                self.domain().degree_index_set(),
+                lambda degree: left._selected_degree_component(degree)
+                * right._selected_degree_component(degree),
+                name="Composite cochain-endomorphism components",
+            ),
+            premises=(left, right),
+        )
+
+    def _module_scalar_multiple(self, scalar, morphism):
+        r"""Scale each component by the retained central scalar action."""
+        if morphism not in self:
+            raise TypeError(f"scalar multiplication in {self} needs an admitted cochain map")
+        morphism = self(morphism)
+        scalar = self.base_ring()(scalar)
+
+        def scaled_component(degree):
+            component = morphism._selected_degree_component(degree)
+            return component.parent().scalar_multiple(scalar, component)
+
+        return self._from_constructed_components(
+            indexed_family(
+                self.domain().degree_index_set(),
+                scaled_component,
+                name="Scalar-multiple cochain-morphism components",
+            ),
+            premises=(morphism,),
+        )
+
+    def _owned_scalar_multiple(self, scalar, morphism):
+        return self._module_scalar_multiple(scalar, morphism)
+
+    def _scalar_identity(self, scalar):
+        return self._module_scalar_multiple(scalar, self.identity())
+
     def elementwise(self, function):
         if not callable(function):
             raise TypeError(
@@ -710,15 +843,26 @@ class CochainMor(CategoricalMor):
         )
 
     def zero(self):
-        return self.elementwise(lambda _element: self.codomain().zero())
+        def zero_component(degree):
+            source = self.domain().graded_piece(degree)
+            target = self.codomain().graded_piece(degree)
+            return source.module_category().Mor(source, target).zero()
+
+        return self._from_constructed_components(
+            indexed_family(
+                self.domain().degree_index_set(),
+                zero_component,
+                name="Zero cochain-morphism components",
+            )
+        )
 
     def linear_combination(self, coefficients):
         result = self.zero()
         for morphism, coefficient in coefficients.items():
-            if coefficient:
-                result += self.scalar_multiple(coefficient, morphism)
+            result += self.scalar_multiple(coefficient, morphism)
         return result
 
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -731,7 +875,7 @@ class CochainMor(CategoricalMor):
             piece = domain.graded_piece(degree)
             return piece.module_category().Mor(piece, piece).identity()
 
-        return self(
+        return self._from_constructed_components(
             indexed_family(
                 domain.degree_index_set(),
                 identity_component,

@@ -88,6 +88,13 @@ class _SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     _name = "Symmetric algebra"
 
 
+def _lift_algebra_morphism(functor, morphism):
+    """Apply the free-algebra construction to both endpoints and lift the arrow."""
+    source = functor(morphism.domain())
+    target = functor(morphism.codomain())
+    return source.Mor(target)(morphism)
+
+
 class _AlternatingAlgebraFunctor(Functor):
     r"""Exterior-algebra functor on represented modules.
 
@@ -108,9 +115,7 @@ class _AlternatingAlgebraFunctor(Functor):
         return _alternating_algebra_of(module)
 
     def _apply_morphism(self, morphism):
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
-        return source.Mor(target)(morphism)
+        return _lift_algebra_morphism(self, morphism)
 
     def _repr_(self):
         return f"Alternating algebra functor on {self.base_ring()}-modules"
@@ -133,9 +138,7 @@ class _DividedPowerAlgebraFunctor(Functor):
         return _divided_power_algebra_of(module)
 
     def _apply_morphism(self, morphism):
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
-        return source.Mor(target)(morphism)
+        return _lift_algebra_morphism(self, morphism)
 
     def _repr_(self):
         return f"Divided-power algebra functor on {self.base_ring()}-modules"

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from itertools import islice
 from typing import TYPE_CHECKING, Any
 
@@ -47,8 +47,10 @@ class IndexedFamily[IndexT, ValueT]:
             )
         self._index_set = index_set
         self._value_function = value
-        self._value_cache: dict[IndexT, ValueT] = {}
+        self._value_cache: dict[int, list[tuple[IndexT, ValueT]]] = {}
+        self._rank_value_cache: dict[int, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
+        self._cached_hashable_values: list[tuple[IndexT, ValueT]] = []
         self._name = name
         self._diagram = None
         self._value_category = value_category
@@ -80,6 +82,10 @@ class IndexedFamily[IndexT, ValueT]:
             sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0],)))
             sage: family.value([0]) is family.value([0])
             True
+            sage: labels = finite_ordered_set((([0],),))
+            sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0][0],)))
+            sage: family.value(([0],)) is family.value(([0],))
+            True
         """
         return self._value_at_normalized_index(self.index_set()(index))
 
@@ -91,36 +97,73 @@ class IndexedFamily[IndexT, ValueT]:
         mathematical operation and can be expensive for represented index
         sets, so the internal iteration path enters the value cache directly.
         Public ``value(index)`` still performs the canonical normalization.
+
+        This is the Python memoization boundary. A tuple may implement the
+        hash protocol while containing an unhashable label. Only that hash
+        computation is caught; errors from the mathematical value constructor
+        propagate without selecting another cache or constructing twice.
+        A hash selects a bucket, not an equality decision: reuse a value only
+        for an identical or decided-equal label. An undecided comparison keeps
+        the labels separate without asserting that they are unequal.
         """
-        match normalized:
-            case Hashable():
-                missing = object()
-                cached = self._value_cache.get(normalized, missing)
-                if cached is not missing:
-                    return cached
-                value = self._value_function(normalized)
-                self._value_cache[normalized] = value
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+        indices = self.index_set()
+        if Sets().is_provably_finite(indices) and indices in EnumeratedSets():
+            # The selected enumeration is a bijection: equal labels have
+            # precisely the same ordinal rank. Use that mathematical datum
+            # rather than a hash or an undecidable equality comparison.
+            rank = int(indices.ranking_map()(normalized))
+            if rank not in self._rank_value_cache:
+                self._rank_value_cache[rank] = self._value_function(normalized)
+            return self._rank_value_cache[rank]
+        try:
+            index_hash = hash(normalized)
+        except (TypeError, ValueError):
+            # Hashability is representation data, not a hypothesis on an
+            # indexing set. Only unhashable labels actually requested are
+            # retained on this exact fallback path.
+            bucket = self._unhashable_value_cache
+            candidates = (*bucket, *self._cached_hashable_values)
+        else:
+            bucket = self._value_cache.setdefault(index_hash, [])
+            candidates = (*bucket, *self._unhashable_value_cache)
+        for known, value in candidates:
+            equal = True if normalized is known else normalized == known
+            if equal is True:
                 return value
-            case _:
-                # Hashability is representation data, not a hypothesis on an
-                # indexing set. Only unhashable labels actually requested are
-                # retained on this exact fallback path.
-                for known, value in self._unhashable_value_cache:
-                    if (normalized == known) is True:
-                        return value
-                value = self._value_function(normalized)
-                self._unhashable_value_cache.append((normalized, value))
-                return value
+            # Undecidable equality is not a reason to reuse a previous
+            # value, nor evidence that the two labels are distinct.  Keep
+            # both presentations in the memoization cache until an exact
+            # identity or decided equality justifies reuse.
+        value = self._value_function(normalized)
+        bucket.append((normalized, value))
+        if bucket is not self._unhashable_value_cache:
+            self._cached_hashable_values.append((normalized, value))
+        return value
 
     __call__ = value
 
     def __getitem__(self, index: IndexT) -> ValueT:
         r"""The value at a label, otherwise at a position in the index set's enumeration."""
-        match index in self.index_set():
+        match self.index_set().is_parent_of(index):
             case True:
                 return self.value(index)
             case False:
+                from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+                if self.index_set() not in EnumeratedSets():
+                    raise ValueError(
+                        f"{index!r} is not an index of {self}, and its index set "
+                        "has no selected enumeration for positional lookup"
+                    )
                 return self.value(self.index_set().ranking_map().inverse()(index))
+            case _:
+                raise ValueError(
+                    f"cannot select the value of {self} at {index!r}: "
+                    "membership in its index set is undecided, so this datum "
+                    "cannot be interpreted as either a label or a rank"
+                )
 
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return (
@@ -136,8 +179,21 @@ class IndexedFamily[IndexT, ValueT]:
         return iter(self)
 
     def get(self, index: IndexT, default=None):
-        r"""Return the value at ``index`` when indexed here, otherwise ``default``."""
-        return self.value(index) if index in self.index_set() else default
+        r"""Return a value only for decided index membership.
+
+        An undecided membership proposition cannot select the default: that
+        would assert absence of an index that may actually belong to the set.
+        """
+        match self.index_set().is_parent_of(index):
+            case True:
+                return self.value(index)
+            case False:
+                return default
+            case _:
+                raise ValueError(
+                    f"cannot select a value or default for {index!r}: "
+                    f"membership in {self.index_set()} is undecided"
+                )
 
     def __iter__(self) -> Iterator[ValueT]:
         return (
@@ -145,22 +201,39 @@ class IndexedFamily[IndexT, ValueT]:
             for index in self.index_set()
         )
 
-    def __contains__(self, candidate: object) -> bool:
-        r"""Return whether candidate occurs among the values of a finite family.
+    def __contains__(self, candidate: object) -> bool | Predicate:
+        r"""Return the image-membership proposition for a represented family.
 
         The family retains its indexing data and is not identified with its
-        image set.  For a finite family, however, occurrence among the selected
-        values is decidable and is the membership operation used by finite
-        invariant and generator families.
+        image set. For a constant family with a nonempty index set, membership
+        is equality with its selected value. For a finite family, occurrence
+        among the selected values is the finite existential. An
+        undecided equality is not nonmembership; one decided match establishes
+        membership even when other comparisons remain undecided.
         """
-        if self.cardinality().is_finite() is not True:
-            raise TypeError(
-                "value membership is represented only for a finite indexed family"
-            )
-        return any(
-            (self._value_at_normalized_index(index) == candidate) is True
+        # The image of a constant family on a provably nonempty index set is
+        # a singleton, independently of the cardinality of that index set.
+        # On the empty set its image is empty. Neither case enumerates I.
+        constant = self.constant_value()
+        if constant is not None:
+            size = self.cardinality()
+            if size == 0:
+                return False
+            if size.is_finite() is False or (size.is_finite() is True and size.finite_value() > 0):
+                return True if candidate is constant else constant == candidate
+        from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        # Finiteness does not select an enumeration, and an infinite image
+        # remains a set with a definite mathematical membership proposition
+        # even when the given representation cannot decide that proposition.
+        if self.cardinality().is_finite() is not True or self.index_set() not in EnumeratedSets():
+            return AtomicProposition("is_member", candidate, self)
+
+        return negation(conjunction(
+            negation(True if (value := self._value_at_normalized_index(index)) is candidate else value == candidate)
             for index in self.index_set()
-        )
+        ))
 
     def __len__(self) -> int:
         r"""Return the Python length when the mathematical index set is finite."""
@@ -179,6 +252,33 @@ class IndexedFamily[IndexT, ValueT]:
     ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
             raise TypeError(f"cannot map {function!r} over the family {self}: it is not callable")
+        from dzack_research.preamble.categories.functors.core import Functor
+
+        diagram = self.selected_diagram()
+        if isinstance(function, Functor) and diagram is not None:
+            # A functor acts on the entire selected diagram, not merely on
+            # its object callback. This retains morphism transport and the
+            # codomain witness for nonconstant infinite factor families.
+            # When the diagram lands in a stronger category, its canonical
+            # inclusion is part of the composite; dropping the diagram or
+            # rejecting a legitimate restriction would lose its arrow data.
+            if diagram.codomain() is not function.domain() and diagram.codomain().is_subcategory(function.domain()):
+                diagram = diagram.then(diagram.codomain().inclusion_into(function.domain()))
+            return indexed_family(self.index_set(), diagram.then(function), name=name)
+        constant = self.constant_value()
+        if constant is not None:
+            mapped = function(constant)
+            if isinstance(mapped, Parent):
+                # Mapping an actually constant family produces a constant
+                # family. Preserve this defining datum even for an infinite
+                # index set: replacing it by a callback would erase the
+                # constant-family evidence used by categorical products.
+                return indexed_family(self.index_set(), mapped, name=name)
+            # The map is already evaluated on the unique value of this
+            # family. Retain that same result even when it is not a parent;
+            # an opaque per-index callback would rerun the computation and
+            # could assign different objects to identical input values.
+            return indexed_family(self.index_set(), lambda _index: mapped, name=name)
         return indexed_family(
             self.index_set(),
             lambda index: function(self.value(index)),
@@ -198,10 +298,23 @@ class IndexedFamily[IndexT, ValueT]:
         if not isinstance(other, IndexedFamily):
             return False
 
-        same_indices = self.index_set() == other.index_set()
+        # Families on the identical retained index object have the same
+        # domain without asking an equality algorithm for that set. This
+        # matters when its representation has undecidable extensional
+        # equality, but its chosen finite enumeration is available.
+        same_indices = (
+            True if self.index_set() is other.index_set()
+            else self.index_set() == other.index_set()
+        )
         if same_indices is False:
             return False
-        if same_indices is not True or self.cardinality().is_finite() is not True:
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        if (
+            same_indices is not True
+            or self.cardinality().is_finite() is not True
+            or self.index_set() not in EnumeratedSets()
+        ):
             return AtomicProposition("equal", self, other)
         return conjunction(self.value(index) == other.value(index) for index in self.index_set())
 
@@ -211,15 +324,23 @@ class IndexedFamily[IndexT, ValueT]:
         return negation(self == other)
 
     def __hash__(self):
-        r"""Hash finite extensional data and infinite families by identity."""
-        if self.cardinality().is_finite() is not True:
+        r"""Hash selected finite extensional data; otherwise retain identity.
+
+        Finiteness alone supplies no enumeration of the index set. The
+        extensional-equality owner also requires a selected enumeration;
+        hashing must not attempt to iterate an unenumerated finite index.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        if self.cardinality().is_finite() is not True or self.index_set() not in EnumeratedSets():
             return object.__hash__(self)
-        return hash(
-            (
-                self.index_set(),
-                frozenset((index, self.value(index)) for index in self.index_set()),
-            )
-        )
+        # Neither indices nor values are required to be hashable.  In
+        # particular, distinct representations of equal points may differ in
+        # hashability, so branching on the ability to hash a value would
+        # violate the implication f == g => hash(f) == hash(g).  The index
+        # set is a necessary equality invariant; collisions between different
+        # value assignments are permitted by the hash contract.
+        return hash(self.index_set())
 
     def _repr_(self):
         from dzack_research.preamble.categories.sets.set_categories import (
@@ -264,7 +385,7 @@ def indexed_family[IndexT, ValueT](
 
     selected_functor = value if isinstance(value, Functor) else None
     if selected_functor is not None:
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
         from dzack_research.preamble.categories.abstract_categories.products import RestrictedDiagram
 
         provenance = selected_functor
@@ -296,7 +417,7 @@ def indexed_family[IndexT, ValueT](
     if value_category is not None:
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
         from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 
         constant = family.constant_value()
         if constant is not None and constant not in value_category:
@@ -308,14 +429,28 @@ def indexed_family[IndexT, ValueT](
                 "an infinite nonconstant family cannot establish its value category by declaring one: "
                 "supply a mathematically justified category-valued diagram"
             )
-        if Sets().is_provably_finite(index_set):
+        if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
             for index in index_set:
                 if family(index) not in value_category:
                     raise ValueError(
                         f"the selected family has value {family(index)} at {index}, outside {value_category}"
                     )
 
-        family._diagram = selected_functor or Cat().Mor(DiscreteCategory(index_set), value_category).discrete_diagram(family)
+        if (
+            family.constant_value() is None
+            and selected_functor is None
+            and index_set not in EnumeratedSets()
+        ):
+            raise TypeError(
+                "a nonconstant family without selected index enumeration cannot certify its value category"
+            )
+
+        diagram_parent = Cat().Mor(DiscreteCategory(index_set), value_category)
+        family._diagram = (
+            selected_functor
+            or (diagram_parent.constant_functor(constant) if constant is not None
+                else diagram_parent.discrete_diagram(family))
+        )
     return family
 
 
@@ -343,30 +478,69 @@ def finite_indexed_family_from_values(
 
     match values:
         case IndexedFamily():
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+            supplied_cardinality = values.cardinality()
+            if supplied_cardinality.is_finite() is not True:
+                raise TypeError(
+                    f"cannot read {values} as a finite family: its index set has cardinality {supplied_cardinality}"
+                )
             match index_set:
                 case None:
-                    labels = finite_ordered_set(tuple(values.index_set()))
+                    if values.index_set() not in EnumeratedSets():
+                        raise TypeError(
+                            "cannot select finite ordered labels from an indexed family "
+                            "whose index set has no enumeration"
+                        )
+                    # Preserve the actual domain, not a different ordered
+                    # presentation of the same points. A copied enumeration
+                    # is not an identity map between the two set objects.
+                    labels = values.index_set()
                 case _:
+                    # A family is a function on its exact index set. Equal
+                    # cardinalities do not provide a reindexing map; a
+                    # different set requires an explicit transport of labels.
+                    same_labels = (
+                        True if index_set is values.index_set()
+                        else index_set == values.index_set()
+                    )
+                    if same_labels is not True:
+                        raise ValueError(
+                            f"cannot reinterpret the family on {values.index_set()} "
+                            f"as a family on {index_set} without an index map"
+                        )
                     labels = index_set
             family = indexed_family(labels, values.value, name=name)
-            supplied_cardinality = values.cardinality()
-            match supplied_cardinality.is_finite():
-                case True:
-                    pass
-                case _:
-                    raise TypeError(
-                        f"cannot read {values} as a finite family: its index set has cardinality {supplied_cardinality}"
-                    )
             supplied_size = int(supplied_cardinality.finite_value())
         case Mapping():
             match index_set:
                 case None:
                     labels = finite_ordered_set(tuple(values))
                 case _:
+                    from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+                    if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
+                        raise TypeError(
+                            f"mapping-valued finite family requires finite enumerated labels, not {index_set}"
+                        )
+                    if len(values) != int(index_set.cardinality().finite_value()) or any(
+                        label not in values for label in index_set
+                    ):
+                        raise ValueError(
+                            "the mapping keys must be precisely the selected index labels; "
+                            "equal cardinalities alone do not define a family on that index set"
+                        )
                     labels = index_set
             family = indexed_family(labels, values.__getitem__, name=name)
             supplied_size = len(values)
         case _:
+            if index_set is not None:
+                from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+
+                if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
+                    raise TypeError(
+                        f"positional finite-family data require a finite enumerated index set, not {index_set}"
+                    )
             entries = tuple(values)
             match index_set:
                 case None:

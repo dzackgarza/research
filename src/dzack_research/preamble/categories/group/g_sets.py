@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObje
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
+    _GroupMorRealizationMixin,
     _engine_cosets,
     _engine_group,
     _engine_point,
@@ -102,6 +103,24 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
+    def from_finite_orbits(self, seeds, action):
+        r"""The union of the finite orbits of supplied points under a given action.
+
+        The caller supplies an effective action and the hypothesis that these
+        orbits are finite. Enumerating generator images then terminates at
+        exactly their union; no search bound is a finiteness certificate.
+        """
+        points = list(finite_ordered_set(tuple(seeds)))
+        generators = tuple(self.group().group_generators())
+        position = 0
+        while position < len(points):
+            for generator in generators:
+                image = action(generator, points[position])
+                if image not in points:
+                    points.append(image)
+            position += 1
+        return self(finite_ordered_set(tuple(points)), action)
+
     def underlying_category(self):
         r"""``FinSet``, the codomain of the forgetful functor."""
         return FiniteSets()
@@ -166,18 +185,9 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             group = permutation_representation.domain()
             self._point_set = point_set
             self._permutation_representation = permutation_representation
-            permutations = permutation_representation.codomain()
-
-            def permute(group_element, point):
-                permutation = permutations(permutation_representation(group_element))
-                return _owned_point(permutation(_integer_engine_point(point)))
-
-            def point_map(group_element):
-                return lambda point: self(permute(group_element, point))
-
             super().__init__(
                 acting_group=group,
-                action=point_map,
+                action=self.action_of,
                 underlying_category=Sets(),
                 facade=point_set,
                 **rest,
@@ -221,6 +231,19 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         def permutation_representation(self):
             r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
             return self._permutation_representation
+
+        def action_of(self, group_element):
+            r"""Evaluate the retained group map to obtain the permutation of ``X``.
+
+            The group arrow owns admission of its source point. In particular,
+            a supplied word in a generated subgroup retains that premise when
+            its element is represented in the containing group; evaluating the
+            action does not ask the subgroup's membership problem again.
+            """
+            permutation = self.permutation_representation()(group_element)
+            return Sets().Mor(self, self)(
+                lambda point: _owned_point(permutation(_integer_engine_point(point)))
+            )
 
         def point_set(self):
             r"""Return the finite set used to present the points of this ``G``-set."""
@@ -329,6 +352,19 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return free
             return self.is_transitive_action()
 
+        @cached_method
+        def _transporter_generator_actions(self):
+            r"""Evaluate each supplied generator's finite permutation once."""
+            return tuple(
+                (generator, self.action_of(generator))
+                for generator in self.acting_group().group_generators()
+            )
+
+        @cached_method
+        def _transporter_word_tables(self):
+            r"""Per-source Schreier trees, retaining points by semantic equality."""
+            return []
+
         def transporter_witness(self, source, target):
             r"""Return one ``g`` with ``g.source = target`` when one exists."""
             if source not in self or target not in self:
@@ -337,13 +373,28 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                     f"points of {self.point_set()}"
                 )
             group = self.acting_group()
-            assert group.is_finite() is True, (
-                f"cannot search for an element of {group} carrying {source} to {target}: "
-                f"{group} is not known to be finite"
-            )
-            for group_element in group:
-                if self.act(group_element, source) == target:
-                    return group_element
+            actions = self._transporter_generator_actions()
+            tables = self._transporter_word_tables()
+            table = next((table for table in tables if table[0][0] == source), None)
+            if table is None:
+                points = [source]
+                words = [()]
+                position = 0
+                while position < len(points):
+                    for index, (_generator, action) in enumerate(actions):
+                        image = action(points[position])
+                        if image not in points:
+                            points.append(image)
+                            words.append((*words[position], index))
+                    position += 1
+                table = (points, words)
+                tables.append(table)
+            points, words = table
+            if target in points:
+                witness = group.one()
+                for index in words[points.index(target)]:
+                    witness = actions[index][0] * witness
+                return witness
             raise ValueError(
                 f"{source} and {target} lie in different orbits of {self}: no element of "
                 f"{group} carries {source} to {target}"
@@ -398,9 +449,44 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         subgroup = self.subgroup()
         return _left_coset_g_set(subgroup.supergroup(), subgroup)
 
+    def from_transitive_action(self, action, base_point, representative_map):
+        r"""Realize ``G/H`` by a finite pointed transitive ``G``-set.
+
+        The construction data are an actual finite action ``X``, a point
+        ``x_0`` with stabilizer the specified ``H``, and an owned map
+        ``s: X -> G`` satisfying ``s(x).x_0 = x``. These defining hypotheses
+        identify ``gH`` with ``g.x_0``; a finite list alone is not such an
+        identification. The action, point and map are retained literally.
+
+        This realization does not require ``G`` to be finite or compute a
+        presentation of it. Its representative map may be the composite of
+        an actual free-word section with the selected augmentation to ``G``.
+        """
+        subgroup = self.subgroup()
+        group = subgroup.supergroup()
+        if action not in FiniteGSets(group):
+            raise TypeError("a finite coset realization needs a finite action of the specified ambient group")
+        if representative_map not in Sets().Mor(action, group):
+            raise TypeError("the representative map must have the exact action as source and ambient group as target")
+        return _object_of(
+            owned_category_join((self, FiniteGSets(group))),
+            point_set=action.point_set(),
+            permutation_representation=action.permutation_representation(),
+            coset_subgroup=subgroup,
+            coset_action=action,
+            coset_base_point=action(base_point),
+            coset_representative_map=representative_map,
+        )
+
     class ParentMethods:
-        def __init__(self, coset_subgroup, **rest) -> None:
+        def __init__(
+            self, coset_subgroup, coset_action=None, coset_base_point=None,
+            coset_representative_map=None, **rest,
+        ) -> None:
             self._coset_subgroup = coset_subgroup
+            self._coset_action = coset_action
+            self._coset_base_point = coset_base_point
+            self._coset_representative_map = coset_representative_map
             super().__init__(**rest)
 
         def subgroup(self):
@@ -409,6 +495,8 @@ class LeftCosetGSets(OwnedParameterizedCategory):
 
         def coset_of(self, element):
             r"""Return the unique left coset containing ``element``."""
+            if self._coset_action is not None:
+                return self.action_of(element)(self._coset_base_point)
             group = self.acting_group()
             element = group(element)
             if group.is_finite() is not True:
@@ -422,7 +510,30 @@ class LeftCosetGSets(OwnedParameterizedCategory):
 
         def base_point(self):
             r"""Return the distinguished point ``H`` of ``G/H``."""
+            if self._coset_action is not None:
+                return self(self._coset_base_point)
             return self.coset_of(self.acting_group().one())
+
+        @cached_method
+        def representative_map(self):
+            r"""Return the chosen set map ``G/H -> G`` representing each coset.
+
+            This is a section of ``g |-> gH`` as sets, with no equivariance
+            claim. A pointed-action realization transports its actual supplied
+            map through the identity on points, preserving that map's admitted
+            range in a possibly infinite generated group. The older symbolic
+            and finite subset realizations retain their chosen representatives.
+            """
+            if self._coset_action is not None:
+                identify = Sets().Mor(self, self._coset_action)(lambda point: point)
+                return self._coset_representative_map * identify
+            return Sets().Mor(self, self.acting_group())(
+                lambda coset: (
+                    coset.representative()
+                    if isinstance(coset, _LeftCosetPoint)
+                    else next(iter(coset))
+                )
+            )
 
         @cached_method
         def regular_g_set(self):
@@ -452,11 +563,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             )
             quotient = inclusion.cokernel()
             quotient_projection = inclusion.cokernel_projection()
-            forward = Sets().Mor(self, quotient)(
-                lambda coset: quotient_projection(
-                    coset.representative() if isinstance(coset, _LeftCosetPoint) else next(iter(coset))
-                )
-            )
+            forward = quotient_projection * self.representative_map()
             inverse = Sets().Mor(quotient, self)(
                 lambda quotient_element: self.coset_of(
                     quotient_projection.lift(quotient_element)
@@ -671,6 +778,13 @@ class _GSetOnPoints:
         assert point in self.point_set(), f"{point!r} is not a point of {self}"
         return self.point_set()(point)
 
+    def _normalize_admitted_element(self, point):
+        r"""Preserve an actual group carrier's admitted word during arrow evaluation."""
+        points = self.point_set()
+        if points in OwnedGroups():
+            return _GroupMorRealizationMixin._normalize_admitted_element(points, point)
+        return None
+
     def __iter__(self):
         return iter(self.point_set())
 
@@ -712,16 +826,16 @@ def _g_set_on_points(group, point_set, action, orbit_relation, stabilizer):
 
 
 def _permutation_from_point_map(permutation_group, point_set, mapping):
-    images = [mapping(point) for point in point_set]
-    for point in point_set:
-        assert sum(image == point for image in images) == 1, (
-            f"the map {mapping} on {point_set} is not a permutation: {point} has "
-            f"{sum(image == point for image in images)} preimages, not exactly one"
-        )
-
-    return permutation_group(
-        [_integer_engine_point(image) for image in images]
-    )
+    # A permutation is a bijection of the backend point domain. Let the
+    # permutation engine check that property instead of searching all pairs
+    # of points for preimage counts at this owned/engine boundary.
+    images = [_integer_engine_point(mapping(point)) for point in point_set]
+    try:
+        return permutation_group(images)
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            f"the map {mapping} on {point_set} is not represented by a permutation"
+        ) from error
 
 
 def _owned_point_set(point_set):
@@ -755,10 +869,12 @@ def _finite_g_set_from_action(
 ):
     r"""Construct a represented finite ``G``-set from a binary action.
 
-    ``action(g, x)`` is read into the defining group morphism
-    ``G -> Sym(X)``.  Chosen generators are used when present; otherwise a
-    finite acting group is verified exhaustively.  The returned object stores
-    that morphism rather than the temporary binary callback.
+    ``action(g, x)`` is retained in the defining elementwise group morphism
+    ``G -> Sym(X)``. Its value uses only the finite point set, never a source
+    word-preimage solver. The action laws are the admitted defining laws;
+    generator or finite-group computations belong to the explicit validators
+    and orbit operations. Additional construction placement is joined with
+    the actual finite-action owner rather than replacing it.
     """
     point_set = _owned_point_set(point_set)
     assert point_set in FiniteSets(), (
@@ -772,35 +888,15 @@ def _finite_g_set_from_action(
     backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
     mor = group.Mor(permutations)
-    match group:
-        case _ if group.has_selected_group_resolution():
-            permutation_representation = mor(
-                {
-                    group_generator: _permutation_from_point_map(
-                        permutations,
-                        point_set,
-                        lambda point, group_generator=group_generator: action(group_generator, point),
-                    )
-                    for group_generator in group.group_generators()
-                }
-            )
-        case _ if group.is_finite() is True:
-            permutation_representation = mor._from_elementwise_rule(
-                lambda group_element: _permutation_from_point_map(
-                    permutations,
-                    point_set,
-                    lambda point: action(group_element, point),
-                )
-            )
-        case _:
-            assert False, (
-                f"cannot form the action of {group} on {point_set}: {group} has no chosen "
-                f"group generators and is not known to be finite"
-            )
+    permutation_representation = mor._from_elementwise_rule(
+        lambda group_element: _permutation_from_point_map(
+            permutations, point_set, lambda point: action(group_element, point),
+        )
+    )
     selected_category = (
         FiniteGSets(permutation_representation.domain())
         if category is None
-        else category
+        else owned_category_join((category, FiniteGSets(group)))
     )
     return _object_of(
         selected_category,

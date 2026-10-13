@@ -246,11 +246,14 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
         )
         from dzack_research.preamble.categories.abstract_categories.products import (
             FiniteOrdinalCategory,
+            _FiniteSequenceFunctorCategory,
         )
 
         match domain.represented_category():
             case shape if shape is FiniteOrdinalCategory(2):
                 return _WalkingArrowFunctorCategory
+            case FiniteOrdinalCategory():
+                return _FiniteSequenceFunctorCategory
             case _:
                 return self.fixed_category_class()
 
@@ -635,6 +638,25 @@ class Cat(CategoryPacketMethods, Category):
             )
             return construction(factors)
 
+        def coproduct(self, factors):
+            r"""Return this category's selected binary coproduct.
+
+            The universal operation is common to categories.  Its selected
+            supplier determines the object and its structure maps: a module
+            sum and a commutative-algebra tensor product are different
+            constructions, even when their inputs share module placement.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _two_factors_of,
+            )
+
+            left, right = _two_factors_of(factors, name="Coproduct factors")
+            construction = self._categorical_coproduct
+            assert construction is not NotImplemented, (
+                f"no construction of binary coproducts is available in {self}"
+            )
+            return construction(left, right)
+
         def equalizer_construction(
             self,
             left_morphism: Morphism,
@@ -901,6 +923,8 @@ class Cat(CategoryPacketMethods, Category):
         def pushout(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
             r"""Return the pushout of the span these two legs form.
 
+            A selected span supplier retains its existing construction.
+            Otherwise use the common coproduct/coequalizer construction:
             Dual to the fiber product: the coequalizer of \(\iota_A f\) and
             \(\iota_B g\) on \(A\sqcup B\), which identifies \(f(c)\) with
             \(g(c)\).  A category with coproducts and coequalizers has this.
@@ -909,6 +933,9 @@ class Cat(CategoryPacketMethods, Category):
                 f"a pushout needs a span X <- Z -> Y, but {left_leg} starts at {left_leg.domain()} "
                 f"and {right_leg} starts at {right_leg.domain()}"
             )
+            construction = self._categorical_pushout
+            if construction is not NotImplemented:
+                return construction(left_leg, right_leg)
             coproduct = self.coproduct_construction(
                 (left_leg.codomain(), right_leg.codomain())
             )

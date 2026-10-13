@@ -66,3 +66,36 @@ def test_the_coequalizer_of_x_and_x_plus_one_glues_zero_one_two_and_leaves_three
     assert projection(target(0)) == projection(target(2))
     assert projection(target(0)) != projection(target(3))
     assert all(factor(projection(y)) == separating(y) for y in target)
+
+
+def test_finite_coequalizer_does_not_infer_enumeration_from_finiteness() -> None:
+    from dzack_research.preamble.logic import AtomicProposition
+
+    ambient = Sets.Δ[2]
+    source = Sets().condition_set(
+        ambient, lambda x: AtomicProposition("undecided_subset_membership", x)
+    )
+    assert source in Sets().Finite()
+    assert source not in EnumeratedSets()
+    arrow = Sets().Mor(source, ambient)(lambda point: ambient(point))
+    try:
+        Sets().coequalizer_construction(arrow, arrow)
+    except AssertionError as error:
+        assert "finite enumerat" in str(error)
+    else:
+        raise AssertionError("the coequalizer algorithm enumerated an unenumerated finite source")
+
+
+def test_coequalizer_uses_the_targets_selected_ranking() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    source = Sets.Δ[0]
+    target = finite_ordered_set(("c", "a", "b"))
+    first = Sets().Mor(source, target)(lambda _point: target("c"))
+    second = Sets().Mor(source, target)(lambda _point: target("b"))
+    quotient = Sets().coequalizer(first, second)
+    assert quotient.cardinality() == cardinal(2)
+    # The target order identifies the positions of c and b (0 and 2),
+    # independently of lexicographic order or a reconstructed set.
+    assert target.ranking_map()(target("c")) == 0
+    assert target.ranking_map()(target("b")) == 2

@@ -10,6 +10,7 @@ from sage.all import (
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
+from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -22,6 +23,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -29,6 +31,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
+    MultiplicativeAlgebraMorphism,
+    UnitalMultiplicativeAlgebraMor,
+    UnitalMultiplicativeAlgebraMorphism,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _algebra_with_structure,
@@ -36,6 +41,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphismMethods,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -43,6 +51,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedRings,
+    PredicateSubrings,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -61,6 +71,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.refine import RealizationHook
 
 
 def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
@@ -183,18 +194,35 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 module_placement = FinitelyGeneratedFreeModules(base)
             case False:
                 pass
-        match labels.cardinality().is_finite():
+        algebra_placements = ()
+        match labels.is_finite():
             case True:
+                # A finite free tensor algebra has no defining relations;
+                # its symmetric quotient has finitely many commutators.
+                # This property chooses no presentation data and implies
+                # the previous finite algebra generation placement.
                 algebra_placements = (
                     (
                         Algebras(base)
                         .Associative()
                         .Unital()
-                        .FinitelyGeneratedAsAlgebra()
+                        .FinitelyPresentedAsAlgebra()
                     ),
                 )
-            case False:
-                algebra_placements = ()
+            case _:
+                pass
+        # The selected generating module is free. Its tensor algebra has
+        # the associative algebra lifting property. A symmetric realization
+        # has that same property when at most one generator is known; no
+        # tensor realization or projectivity is inferred for larger or
+        # undecided symmetric families.
+        if flavor == "tensor" or (
+            labels.is_finite() is True
+            and (labels.cardinality() <= cardinal(1)) is True
+        ):
+            algebra_placements += (
+                Algebras(base).Associative().Unital().ProjectiveAsAlgebra(),
+            )
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -313,7 +341,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
     engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
-        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+        and algebra_generating_set.is_finite() is not True
     ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
@@ -335,7 +363,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
     engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
-        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+        and algebra_generating_set.is_finite() is not True
     ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_tensor_algebra_of,
@@ -352,14 +380,21 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
 
 
 def _relations_to_ideal(presentation_ring, relations):
-    r"""Return the backend ideal and the owned finite relation family."""
+    r"""Return the backend ideal and the owned finite relation family.
+
+    A bare iterable supplies an explicitly finite list, normalized by the
+    existing positional-family ingress. Owned families and sets must instead
+    supply decided finiteness before their values are traversed.
+    """
+    if not isinstance(relations, (IndexedFamily, tuple, list)) and relations not in Sets():
+        relations = tuple(relations)
     engine = _engine_ring(presentation_ring)
     if isinstance(relations, IndexedFamily):
         size = cardinal(relations.cardinality())
-        if not size.is_finite():
-            raise TypeError(
-                f"an algebra given by generators and relations needs finitely many relations, but got {size}"
-            )
+        assert size.is_finite() is True, (
+            f"the selected finite algebra presentation needs a known finite relation family, "
+            f"but the supplied family has cardinality {size}"
+        )
         selected_relations = indexed_family(
             relations.index_set(),
             lambda index: presentation_ring(relations.value(index)),
@@ -373,7 +408,11 @@ def _relations_to_ideal(presentation_ring, relations):
             lambda index: presentation_ring(by_position[int(index)]),
             name="Defining relation family",
         )
-    elif relations in FiniteSets():
+    elif relations in Sets():
+        assert cardinal(relations.cardinality()).is_finite() is True, (
+            f"the selected finite algebra presentation needs a known finite relation set, "
+            f"but the supplied set is {relations}"
+        )
         selected_relations = indexed_family(
             relations,
             lambda relation: presentation_ring(relation),
@@ -393,9 +432,23 @@ def _relations_to_ideal(presentation_ring, relations):
 
 
 def _base_change_commutative_presentation(algebra, ring_map):
+    r"""Change coefficients in the selected polynomial relation family."""
     source_base = algebra.base_ring()
+    if ring_map.domain() is not source_base:
+        raise ValueError(
+            f"scalar change of {algebra} along {ring_map} needs a ring map "
+            f"starting at its exact coefficient ring {source_base}"
+        )
     target_base = _owned_ring(ring_map.codomain())
-    ring_map = source_base.Mor(target_base)(ring_map)
+    ring_map = OwnedRings().Mor(source_base, target_base)(ring_map)
+    source_presentation = algebra.presentation_ring()
+    assert source_presentation in SymmetricAlgebras(source_base) and isinstance(
+        _engine_ring(source_presentation), (PolynomialRing_generic, MPolynomialRing_base)
+    ), (
+        f"scalar change of {algebra} needs a selected polynomial presentation; "
+        f"its retained presentation {source_presentation} needs a different "
+        "coefficient-change computation"
+    )
     target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_engine = _engine_ring(source_base)
     target_base_engine = _engine_ring(target_base)
@@ -409,19 +462,20 @@ def _base_change_commutative_presentation(algebra, ring_map):
         source_engine.Hom(target_base_engine),
         map_backend_scalar,
     )
-    source_presentation = algebra.presentation_ring()
-    mapped_relations = tuple(
-        _owned_engine_element(target_presentation_ring,
+    source_relations = algebra.relations()
+    mapped_relations = indexed_family(
+        source_relations.index_set(),
+        lambda index: _owned_engine_element(target_presentation_ring,
             target_engine(
-                _engine_element(source_presentation, relation).map_coefficients(
+                _engine_element(source_presentation, source_relations.value(index)).map_coefficients(
                     backend_base_map,
                     new_base_ring=target_base_engine,
                 )
             )
-        )
-        for relation in algebra.relations()
+        ),
+        name=f"Scalar-changed defining relations of {algebra}",
     )
-    return (target_presentation_ring).quotient_by_relations(mapped_relations)
+    return target_presentation_ring.quotient_by_relations(mapped_relations)
 
 
 class _PresentedAlgebraParent(_OwnedAlgebraParent):
@@ -447,9 +501,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         finite_free_generator=None,
         finite_free_coordinates=None,
     ) -> None:
+        # An auxiliary native polynomial cover retains its actual map from
+        # the chosen presentation.  Other realizations have no such cover.
+        self._presentation_cover_map = None
         if extra_construction_data is not None:
             for name, value in extra_construction_data:
                 setattr(self, name, value)
+        if presentation_flattening is not None:
+            self._presentation_cover_map = presentation_flattening
         unflatten = (
             None if presentation_flattening is None else presentation_flattening.section()
         )
@@ -536,6 +595,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             selected_relations,
             presentation_ideal,
             lift_to_presentation,
+            presentation_cover_map=self._presentation_cover_map,
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
@@ -830,17 +890,53 @@ def _finitely_presented_algebra_from_data(
     _extra_construction_data=None,
     _generating_module=None,
 ):
-    r"""Return the selected quotient ``R[S] / (relations)``."""
+    r"""Return the selected polynomial or associative quotient by relations.
+
+    The literal free presentation and relation indices are retained.  Tensor
+    presentations use the selected two-sided normal-form supplier; polynomial
+    presentations keep their existing polynomial computations.  A private
+    auxiliary polynomial cover, when needed, carries its exact presentation
+    map and inverse lift instead of replacing the owned presentation.
+    """
     base = presentation_ring.base_ring()
     assert (
         presentation_ring in AlgebrasWithChosenFinitePresentation(base)
         or presentation_ring in SymmetricAlgebras(base)
+        or presentation_ring in TensorAlgebras(base)
     ), (
-        f"an algebra given by generators and relations must be a quotient of a polynomial algebra or of "
-        f"an algebra given by generators and relations, but {presentation_ring} is neither"
+        f"a selected finite algebra presentation needs a tensor or polynomial "
+        f"presentation, or a quotient of one, but {presentation_ring} has none selected"
+    )
+    assert presentation_ring.is_framed_algebra(), (
+        f"a finite presentation of {presentation_ring} needs chosen algebra generators"
+    )
+    labels = presentation_ring.algebra_generating_set()
+    assert labels.cardinality().is_finite() is True, (
+        f"a finite presentation of {presentation_ring} needs a known finite chosen "
+        "algebra-generator family before the presentation computation"
+    )
+    match relations:
+        case IndexedFamily():
+            assert relations.cardinality().is_finite() is True, (
+                f"a finite presentation of {presentation_ring} needs a known finite "
+                "relation family before any traversal"
+            )
+        case tuple() | list():
+            pass
+        case _ if relations in Sets():
+            assert cardinal(relations.cardinality()).is_finite() is True, (
+                f"a finite presentation of {presentation_ring} needs a known finite "
+                "owned relation set before any traversal"
+            )
+        case _:
+            # Retain the existing bare finite-iterable ingress also for
+            # quotients of quotients, before their relations are lifted.
+            relations = tuple(relations)
+    presentation_ideal, selected_relations = _relations_to_ideal(
+        presentation_ring, relations
     )
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
-        # A quotient of a quotient is one quotient of the same polynomial
+        # A quotient of a quotient is one quotient of the same free
         # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
         # lifts the new relations to P.  Consolidating here keeps one chosen
         # presentation and one scalar ring, so a second closed embedding into
@@ -848,30 +944,93 @@ def _finitely_presented_algebra_from_data(
         # first rather than needing a tower of quotient objects.
         source = presentation_ring.presentation_ring()
         existing = presentation_ring.relations()
+        lifted_relations = selected_relations.map(
+            lambda relation: presentation_ring.lift_to_presentation(relation),
+            name="Lifted additional algebra relations",
+        )
+        relation_families = indexed_family(
+            Sets.Δ[1],
+            lambda index: existing if int(index) == 0 else lifted_relations,
+            name="Original and additional relation families",
+        )
+        relation_indices = Sets().coproduct(
+            relation_families.map(lambda family: family.index_set())
+        )
+        combined_relations = indexed_family(
+            relation_indices,
+            lambda index: relation_families.value(index.summand_index()).value(
+                index.summand_element()
+            ),
+            name="Original and lifted additional algebra relations",
+        )
         return _finitely_presented_algebra_from_data(
             source,
-            (
-                *(existing.value(index) for index in existing.index_set()),
-                *(
-                    presentation_ring.lift_to_presentation(presentation_ring(relation))
-                    for relation in relations
-                ),
-            ),
+            combined_relations,
             _extra_categories=_extra_categories,
             _extra_construction_data=_extra_construction_data,
             _generating_module=_generating_module,
         )
-    presentation_ideal, selected_relations = _relations_to_ideal(
-        presentation_ring, relations
-    )
     presentation_engine = _engine_ring(presentation_ring)
+    commutative_backend = presentation_ring in SymmetricAlgebras(base)
+    if presentation_ring in TensorAlgebras(base):
+        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+            _HomogeneousPresentationTensorIdeal,
+        )
+
+        presentation_ideal = _HomogeneousPresentationTensorIdeal(
+            presentation_ring, selected_relations
+        )
     presentation_flattening = None
     quotient_presentation_engine = presentation_engine
     quotient_ideal = presentation_ideal
     quotient_engine = None
     generator_values = None
     presentation_lift = None
-    if isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
+    extra_construction_data = (
+        () if _extra_construction_data is None else tuple(_extra_construction_data)
+    )
+    if isinstance(presentation_engine, PolynomialRing_generic) and (
+        len(presentation_ideal.gens()) > 1
+        or any(
+            relation and relation.leading_coefficient().is_unit() is not True
+            for relation in presentation_ideal.gens()
+        )
+    ):
+        # Reuse the one-variable multivariate polynomial computation already
+        # selected for Sym_R(M) with a relation such as 2*x over ZZ.  A
+        # nonmonic relation need not define a finite free coefficient module.
+        auxiliary = _SagePolynomialRing(
+            presentation_engine.base_ring(), 1,
+            names=presentation_engine.variable_names(),
+        )
+        to_auxiliary = presentation_engine.hom(auxiliary.gens(), auxiliary)
+        from_auxiliary = auxiliary.hom(
+            presentation_engine.gens(), presentation_engine
+        )
+        cover_map = to_auxiliary
+        cover_lift = from_auxiliary
+        quotient_presentation_engine = auxiliary
+        if isinstance(auxiliary.base_ring(), (PolynomialRing_generic, MPolynomialRing_base)):
+            # The same canonical flattening as the multivariate branch below
+            # also handles, for example, R=QQ[s] and the relation s*t+1.
+            flattening = auxiliary.flattening_morphism()
+            quotient_presentation_engine = flattening.codomain()
+            cover_map = flattening * to_auxiliary
+            cover_lift = from_auxiliary * flattening.section()
+        quotient_ideal = quotient_presentation_engine.ideal(
+            tuple(cover_map(relation) for relation in presentation_ideal.gens())
+        )
+        quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
+        generator_values = tuple(
+            quotient_engine(cover_map(generator))
+            for generator in presentation_engine.gens()
+        )
+
+        def presentation_lift(element):
+            return cover_lift(quotient_engine(element).lift())
+
+        extra_construction_data += (("_presentation_cover_map", cover_map),)
+    elif isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
         presentation_engine.base_ring(),
         (PolynomialRing_generic, MPolynomialRing_base),
     ):
@@ -911,11 +1070,10 @@ def _finitely_presented_algebra_from_data(
             def presentation_lift(element):
                 return element
 
-    labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
     if (
-        label_size.is_finite()
+        label_size.is_finite() is True
         and int(label_size.finite_value()) == 1
         and isinstance(quotient_engine, PolynomialQuotientRing_generic)
     ):
@@ -943,13 +1101,9 @@ def _finitely_presented_algebra_from_data(
         selected_relations,
         presentation_ideal,
         extra_categories=tuple(_extra_categories),
-        extra_construction_data=(
-            None
-            if _extra_construction_data is None
-            else tuple(_extra_construction_data)
-        ),
+        extra_construction_data=extra_construction_data,
         generating_module=_generating_module,
-        commutative_backend=True,
+        commutative_backend=commutative_backend,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
         generator_values=generator_values,
@@ -982,8 +1136,18 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
                 cardinal,
             )
 
-            scalars = cardinal(self.base_ring().cardinality())
-            generators = cardinal(self.algebra_generating_set().cardinality())
+            scalars = self.base_ring()._cardinality_decision()
+            generators = self.algebra_generating_set()._cardinality_decision()
+            if scalars is not None and (cardinal(scalars) == Cardinalities().one()) is True:
+                return Cardinalities().one()
+            if scalars is None or generators is None:
+                return None
+            scalars = cardinal(scalars)
+            generators = cardinal(generators)
+            if (generators == Cardinalities().zero()) is True:
+                return scalars
+            if not scalars.expression().is_normal_form() or not generators.expression().is_normal_form():
+                return None
             match generators == Cardinalities().zero(), scalars == Cardinalities().one():
                 case True, _:
                     return scalars
@@ -999,11 +1163,14 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
             return FramedFreeAlgebraMor
 
         def Mor(self, codomain, category=None):
-            r"""Use the free-algebra universal Mor before the inherited ring Mor."""
-            ordinary = Algebras(self.base_ring()).Associative().Unital()
-            if category is None:
-                return ordinary.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
+            r"""Select the algebra arrow theory before the inherited ring Mor.
+
+            The common algebra selector retains the requested theory and the
+            actual endpoint laws. In particular, a nonassociative unital
+            target uses its unital linear-map constructor rather than an
+            associative free-algebra word extension.
+            """
+            return Algebras.ParentMethods.Mor(self, codomain, category=category)
 
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
@@ -1295,24 +1462,42 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             r"""Return the exact center of the represented free tensor algebra.
 
             On zero or one generator the tensor algebra is commutative.  On at
-            least two generators, comparison of coefficients in the word basis
-            shows that an element commuting with two distinct generators has no
-            nonconstant word, so the center is exactly the scalar ring.
+            least two free module generators, comparison of coefficients in
+            the word basis shows that an element commuting with two distinct
+            generators has no nonconstant word, so the center is exactly the
+            scalar ring. A relationful generating module needs a computation
+            using its tensor relations; its generator count alone does not
+            establish this word-basis theorem.
             """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+
             size = self.algebra_generating_set().cardinality()
             if size.is_finite() and int(size.finite_value()) <= 1:
                 return self
+            assert self.generating_module() in FramedFreeModules(self.algebra_base_ring()), (
+                f"the centre of {self} needs a computation with its tensor relations; "
+                "the available scalar-centre theorem needs a chosen free module basis"
+            )
             return self.algebra_base_ring()
 
         @cached_method
-        def center_inclusion(self):
-            r"""Return the inclusion ``Z(T) -> T`` under the selected center identification."""
+        @RealizationHook
+        def _center_construction(self):
+            r"""Supply the inherited magma centre from the tensor word-basis theorem.
 
-
+            The retained centre and inclusion satisfy Magmas'
+            ``_center_construction`` contract. A scalar centre uses the exact
+            coefficient ring as endpoint, regardless of any other algebra
+            structures that ring itself carries.
+            """
             center = self.ring_center()
             if center is self:
-                return self.Mor(self)(lambda element: element)
-            return center.Mor(self)(lambda scalar: self(scalar))
+                return center, self.Mor(self).identity()
+            if center in PredicateSubrings():
+                return center, center.inclusion()
+            return center, OwnedRings().Mor(center, self)(lambda scalar: self(scalar))
 
 
     class ElementMethods:
@@ -1341,6 +1526,52 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
+        def _normality_decision(self):
+            r"""A finite symmetric algebra over a field is a normal domain.
+
+            Its generating module is a vector space, so choosing a basis
+            identifies its symmetric algebra with a polynomial algebra.
+            The assertion uses the actual coefficient field; it makes no
+            normality claim for Sym_R(M) over an arbitrary ring.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
+            if (
+                self.algebra_base_ring() in OwnedFields()
+                and self.algebra_generating_set() in FiniteSets()
+            ):
+                return True
+            return super()._normality_decision()
+
+        @cached_method
+        def _normalization_data(self):
+            r"""Supply identity normalization with the actual affine coefficient map."""
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                OwnedFields,
+                OwnedRings,
+            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _identity_affine_normalization_data,
+            )
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                finite_indexed_family,
+            )
+
+            if (
+                self.algebra_base_ring() not in OwnedFields()
+                or self.algebra_generating_set() not in FiniteSets()
+            ):
+                return None
+            identity = OwnedRings().Mor(self, self).identity()
+            components = finite_indexed_family(
+                finite_ordered_set((0,)),
+                lambda index: (self.ideal(self.zero()), self, identity),
+            )
+            coefficient_map = self.algebra_structure_morphism()
+            if coefficient_map.codomain() is not self:
+                coefficient_map = coefficient_map.codomain().inclusion() * coefficient_map
+            return _identity_affine_normalization_data(self, coefficient_map, components)
+
         def generating_module(self):
             r"""The exact input M of this chosen symmetric-algebra construction.
 
@@ -1440,7 +1671,28 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
-    r"""Exterior/alternating algebras."""
+    r"""Exterior algebras ``Lambda_R(M)`` of modules over a commutative ring.
+
+    The actual module ``M`` is retained, and its image is the degree-one
+    summand. The exterior algebra is the quotient of ``T_R(M)`` by all
+    ``m tensor m``; hence every odd homogeneous element squares to zero,
+    including over rings with 2-torsion. Sign-supercommutativity alone does
+    not impose that equation in characteristic two.
+
+    Its construction morphisms are the graded unital algebra maps induced
+    by actual linear maps of the retained modules. They act in degree
+    ``n`` by ``Lambda^n`` and in degree zero by the identity of ``R``.
+    An ordinary, possibly non-graded algebra map is requested in the
+    associative-unital algebra category. The construction also supplies
+    the canonical augmentation through ``AugmentedAlgebras``.
+
+    See Mathlib ``LinearAlgebra/ExteriorAlgebra/Basic``: the quotient,
+    ``ι_sq_zero``, ``lift``, ``map`` and ``algebraMapInv``.
+    """
+
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
 
     def an_object(self):
         r"""The exterior algebra on the free module of rank one."""
@@ -1460,7 +1712,12 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
+        assert module in Modules(self.base_ring()), (
+            f"the exterior algebra over {self.base_ring()} needs an actual "
+            f"module over that ring, but received {module}"
+        )
         assert module.base_ring() is self.base_ring(), (
             f"the power algebra over {self.base_ring()} needs a module over {self.base_ring()}, but "
             f"{module} is over {module.base_ring()}"
@@ -1469,6 +1726,10 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
+            if category is None:
+                selected = self._default_algebra_mor_category(codomain)
+                if selected is not None:
+                    return _category_mor_parent(selected, self, codomain)
             alternating = AlternatingAlgebras(self.base_ring())
             if category is None and codomain in alternating:
                 return alternating.Mor(self, codomain)
@@ -1482,7 +1743,12 @@ def _presentation_data(algebra):
     base = algebra.base_ring()
     match algebra:
         case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
-            return algebra.presentation_ring(), tuple(algebra.relations())
+            presentation = algebra.presentation_ring()
+            assert presentation in SymmetricAlgebras(base), (
+                f"the selected commutative coproduct of {algebra} needs a "
+                "polynomial presentation computation for its actual chosen source"
+            )
+            return presentation, tuple(algebra.relations())
         case _ if algebra in SymmetricAlgebras(base) and algebra.is_framed_algebra():
             return algebra, ()
         case _ if algebra in QuotientRings():
@@ -1523,12 +1789,21 @@ def _commutative_algebra_coproduct_backend(left, right):
         f"the coproduct {left} (x) {right} is computed only when both factors have finitely many "
         "chosen algebra generators"
     )
+    left_labels = left.algebra_generating_set()
+    right_labels = right.algebra_generating_set()
+    assert (
+        left_labels.cardinality().is_finite() is True
+        and right_labels.cardinality().is_finite() is True
+    ), (
+        f"the coproduct {left} (x) {right} needs a selected finite-presentation computation; "
+        "finiteness of both chosen algebra-generator families must be decided before enumeration"
+    )
 
     left_presentation, left_relations = _presentation_data(left)
     right_presentation, right_relations = _presentation_data(right)
     combined_labels = tuple(
-        ("left", label) for label in left.algebra_generating_set()
-    ) + tuple(("right", label) for label in right.algebra_generating_set())
+        ("left", label) for label in left_labels
+    ) + tuple(("right", label) for label in right_labels)
     presentation = base.free_module(combined_labels).symmetric_algebra()
     relations = _transport_relations(
         left_presentation, left_relations, presentation, "left"
@@ -1561,25 +1836,41 @@ def _quotient_by_algebra_elements_backend(
     extra_construction_data=None,
 ):
     base = algebra.base_ring()
-    selected = tuple(elements)
-    if not selected:
-        identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
+    match elements:
+        case IndexedFamily():
+            assert elements.cardinality().is_finite() is True, (
+                f"the selected quotient of {algebra} needs a known finite family of algebra elements"
+            )
+            empty = elements.cardinality() == cardinal(0)
+        case tuple() | list():
+            empty = not elements
+        case _ if elements in Sets():
+            assert cardinal(elements.cardinality()).is_finite() is True, (
+                f"the selected quotient of {algebra} needs a known finite owned relation set "
+                "before traversal"
+            )
+            empty = cardinal(elements.cardinality()) == cardinal(0)
+        case _:
+            # This is the established ingress for a supplied finite iterable,
+            # not a finiteness test on an owned mathematical set or family.
+            elements = tuple(elements)
+            empty = not elements
+    if empty is True and not extra_categories and not extra_construction_data:
+        identity = Algebras(base).Associative().Unital().Mor(algebra, algebra).identity()
         return algebra, identity
     match algebra:
-        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
-            presentation = algebra.presentation_ring()
-            relations = tuple(algebra.relations()) + tuple(
-                algebra.lift_to_presentation(element) for element in selected
-            )
-        case _ if algebra in SymmetricAlgebras(base):
-            presentation = algebra
-            relations = selected
+        case _ if (
+            algebra in AlgebrasWithChosenFinitePresentation(base)
+            or algebra in SymmetricAlgebras(base)
+            or algebra in TensorAlgebras(base)
+        ):
+            pass
         case _:
-            raise TypeError(
-                f"the quotient of {algebra} by {elements} is computed only for a polynomial algebra or a "
-                "quotient of one given by relations"
+            assert False, (
+                f"the quotient of {algebra} by {elements} needs a selected tensor "
+                "or polynomial presentation computation"
             )
-    quotient = (presentation).quotient_by_relations(relations,
+    quotient = _finitely_presented_algebra_from_data(algebra, elements,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )
@@ -1607,8 +1898,15 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         raise ValueError(
             f"the pushout of {left} <- {common} -> {right} needs all three over one base ring {base}"
         )
-    if left_map.parent() is not common.Mor(left) or right_map.parent() is not common.Mor(
-        right
+    category = Algebras(base).Associative().Unital().Commutative()
+    if common not in category or left not in category or right not in category:
+        raise TypeError(
+            f"the pushout of {left} <- {common} -> {right} requires commutative "
+            f"associative unital algebras over the retained base {base}"
+        )
+    if (
+        left_map not in category.Mor(common, left)
+        or right_map not in category.Mor(common, right)
     ):
         raise TypeError(
             f"the pushout maps {left_map} and {right_map} must be algebra morphisms {common} -> {left} and "
@@ -1618,13 +1916,18 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         f"the pushout of {left} <- {common} -> {right} is computed only when {common} has finitely many "
         "chosen algebra generators"
     )
+    common_labels = common.algebra_generating_set()
+    assert common_labels.cardinality().is_finite() is True, (
+        f"the pushout of {left} <- {common} -> {right} needs a finite chosen algebra-generator "
+        "family for its common source before forming the compatibility relations"
+    )
 
     tensor = _commutative_algebra_coproduct_backend(left, right)
     left_injection, right_injection = tensor.coproduct_injections()
     equalities = tuple(
         left_injection(left_map(common.algebra_generator(label)))
         - right_injection(right_map(common.algebra_generator(label)))
-        for label in common.algebra_generating_set()
+        for label in common_labels
     )
     pushout, _quotient_map = _quotient_by_algebra_elements_backend(
         tensor,
@@ -1639,6 +1942,10 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
 
 class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     r"""Divided-power algebras ``Gamma(M)`` with their canonical grading."""
+
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
 
     def an_object(self):
         r"""The divided-power algebra on the standard module witness."""
@@ -1665,7 +1972,52 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return _power_algebra_of(module, "divided")
 
     class ParentMethods(_PowerAlgebra):
+        def divided_power(self, value, exponent):
+            r"""Return the canonical divided power of a degree-one element.
+
+            For the retained module ``M``, this computes
+            ``gamma_n(iota(m))`` in ``Gamma^n(M)``. The equations
+            ``gamma_0(x) = 1`` and ``gamma_n(0) = 0`` for positive ``n``
+            hold independently of a chosen homogeneous degree for zero.
+            A divided power on another element of the augmentation ideal
+            needs a further computation; this degree-one supplier does not
+            assert that such a divided power is undefined.
+            """
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_numeral
+
+            # This existing numeral boundary admits exact integral input;
+            # Python int alone would truncate, for example, 3/2 to 1.
+            exponent = int(_engine_numeral(SageZZ, exponent))
+            if exponent < 0:
+                raise ValueError(f"the divided power x^[n] needs n >= 0, but n = {exponent}")
+            value = self(value)
+            if exponent == 0:
+                return self.one()
+            if (value == self.zero()) is True:
+                return value
+            assert value.is_homogeneous() is True and (value.degree() == 1) is True, (
+                f"cannot compute gamma_{exponent}({value}) in {self}: the selected "
+                "divided-power computation needs a represented degree-one element "
+                "or proved zero; no computation on a general augmentation-ideal "
+                "element is selected"
+            )
+            return self.from_component(
+                exponent,
+                self.generating_module().divided_power_element(
+                    exponent,
+                    value.homogeneous_component(1),
+                ),
+            )
+
+        gamma = divided_power
+
         def Mor(self, codomain, category=None):
+            if category is None:
+                selected = self._default_algebra_mor_category(codomain)
+                if selected is not None:
+                    return _category_mor_parent(selected, self, codomain)
             divided = DividedPowerAlgebras(self.base_ring())
             if category is None and codomain in divided:
                 return divided.Mor(self, codomain)
@@ -1673,19 +2025,108 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
 
 
+def _symmetric_generator_images_commute(codomain, images):
+    r"""Decide the commuting-image condition for a symmetric extension.
+
+    In an associative target, the tensor lift descends through the
+    symmetric relations exactly when the generator images commute. Actual
+    commutative placement proves this without inspecting any labels. A
+    known finite label family supplies the conjunction of its exact
+    commutator equations; otherwise ``None`` leaves the existing algebra
+    diagnostic in charge. Finiteness availability does not request an exact
+    cardinal, and an undecided coefficient equality remains a proposition.
+    """
+    if codomain in Algebras(codomain.algebra_base_ring()).Commutative():
+        return True
+    labels = images.index_set()
+    if labels.is_finite() is not True:
+        return None
+    values = tuple(images[label] for label in labels)
+    return conjunction(
+        left * right == right * left
+        for position, left in enumerate(values)
+        for right in values[position + 1:]
+    )
+
+
 class FramedFreeAlgebraMorphism:
-    r"""A generator-defined map from a framed free algebra to any algebra."""
+    r"""An exact map or a word extension from a framed free algebra.
+
+    An untagged function gives generator images. A map with the literal
+    algebra endpoints instead retains its whole elementwise function, with
+    its product and unit equations left to the ordinary diagnostics. For
+    generator data the free word basis gives a linear extension; tensor
+    multiplicativity uses the retained generating-module map, while a
+    symmetric source also requires pairwise commuting images.
+    """
+
+    # The common composition retains the whole underlying linear map. A
+    # generator-only reconstruction would change a supplied nonunital map.
+    __mul__ = MultiplicativeAlgebraMorphism.__mul__
 
     def _multiplicativity_derivation(self):
-        return True
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
+        if self._source_element_map is not None:
+            return None
+        linearity = self._generating_module_morphism.linearity_decision()
+        if self.domain() in TensorAlgebras(self.domain().algebra_base_ring()):
+            return linearity
+        commuting = _symmetric_generator_images_commute(self.codomain(), self._images)
+        return None if commuting is None else conjunction((linearity, commuting))
 
     def _unit_preservation_derivation(self):
-        return True
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
+        return None if self._source_element_map is not None else True
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         domain = cast(Any, parent.domain())
         codomain = parent.codomain()
+        generating = domain.generating_module()
         labels = domain.algebra_generating_set()
+        generator_mor = generating.module_category().Mor(generating, codomain)
+        self._source_element_map = None
+        self._generating_module_morphism = None
+        if isinstance(images, Map):
+            if images.codomain() is not codomain:
+                raise ValueError(
+                    f"a map into {codomain} must retain that exact codomain, but {images} "
+                    f"ends at {images.codomain()}"
+                )
+            if images.domain() is domain:
+                self._source_element_map = images
+                images = indexed_family(
+                    labels,
+                    lambda label: codomain(self._source_element_map(domain.algebra_generator(label))),
+                    name="Generator images",
+                )
+            elif images.domain() is generating:
+                self._generating_module_morphism = (
+                    images if images in generator_mor else generator_mor.elementwise(images)
+                )
+                images = indexed_family(
+                    labels,
+                    lambda label: self._generating_module_morphism(generating.module_generator(label)),
+                    name="Generator images",
+                )
+            elif images.domain() is not labels:
+                raise ValueError(
+                    f"a map out of {domain} must be stated on that algebra, its generating "
+                    f"module {generating}, or its generator labels {labels}, not on {images.domain()}"
+                )
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             self._images = indexed_family(
@@ -1737,28 +2178,33 @@ class FramedFreeAlgebraMorphism:
             raise TypeError(
                 f"a morphism out of {domain} is given by the images of its algebra generators, but got {images!r}"
             )
-        self._generator_images = self._images
         self._engine_morphism = None
-        self._element_function = None
         self._preamble_is_identity = False
-        generating = domain.generating_module()
-        generating.module_category().Mor(
-            generating, codomain.underlying_module()
-        )(self._images.value)
-        linear = domain.module_category().Mor(
-            domain, codomain
-        )._from_constructed_element_map(
-            lambda element: self._call_(element)
+        linear_mor = domain.module_category().Mor(domain, codomain)
+        if self._source_element_map is not None:
+            linear = linear_mor.elementwise(self._source_element_map)
+        else:
+            if self._generating_module_morphism is None:
+                self._generating_module_morphism = generator_mor(self._images.value)
+            # Ordered words give an R-linear map on this free module basis
+            # even when the generator images do not commute. Retain the
+            # actual generating-map premise independently of multiplicativity.
+            linear = linear_mor._from_constructed_element_map(
+                lambda element: self._call_(element),
+                premises=(self._generating_module_morphism,),
+            )
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
         )
-        super().__init__(parent, linear)
 
     def algebra_generator_images(self):
-        return self._generator_images
+        return self._images
 
     def algebra_generator_morphism(self):
         return SetMorphism(
             Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.value,
+            self._images.value,
         )
 
     def _tensor_terms(self, element):
@@ -1816,6 +2262,8 @@ class FramedFreeAlgebraMorphism:
     def _call_(self, element):
         domain = self.domain()
         element = domain(element)
+        if self._source_element_map is not None:
+            return self.codomain()(self._source_element_map(element))
         terms = (
             self._tensor_terms(element)
             if domain in TensorAlgebras(domain.base_ring())
@@ -1840,19 +2288,31 @@ class FramedFreeAlgebraMorphism:
         return self._preamble_is_identity
 
     def _richcmp_(self, other, op):
-        r"""Decide equality on the algebra generators of the free source.
+        r"""Compare selected word extensions on their defining generator images.
 
-        By the universal property of the free algebra, two algebra maps out
-        of it are equal exactly when they agree on its algebra generators.
-        The module-map comparison this overrides decides on the module
-        generators, which for a free algebra are all its words.
+        Two such extensions have the same values on every word precisely
+        when their generator images agree. An arbitrary retained whole map
+        has no such construction theorem: use the existing module comparison,
+        which may retain an undecided equality on an infinite word module.
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented
+        if other not in self.parent():
+            return op == op_NE
         if self is other:
             return op == op_EQ
+        if (
+            not isinstance(other, FramedFreeAlgebraMorphism)
+            or self._source_element_map is not None
+            or other._source_element_map is not None
+        ):
+            # Admission may preserve a stronger arrow's original parent.
+            # The faithful forgetful functor retains both functions and
+            # their linearity premises in the same actual module Mor.
+            forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
+            return ModuleMorphismMethods._richcmp_(forget(self), forget(other), op)
         labels = self.domain().algebra_generating_set()
-        if not labels.cardinality().is_finite():
+        if labels.is_finite() is not True:
             equal = AtomicProposition("equal", self, other)
         else:
             equal = conjunction(
@@ -1862,7 +2322,7 @@ class FramedFreeAlgebraMorphism:
         return equal if op == op_EQ else negation(equal)
 
 
-class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
+class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
     ElementMethods = FramedFreeAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
@@ -1874,20 +2334,13 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
         )
 
     def _element_constructor_(self, datum):
-        r"""An algebra map out of a free algebra, from the images of its algebra generators.
+        r"""Retain a whole map, or extend explicitly supplied generator data.
 
-        A linear map with these endpoints, stated to be an algebra map, is
-        read by its values on the algebra generators: by the universal
-        property of the free algebra those values determine the map.
+        A linear map with these endpoints is its actual elementwise datum.
+        Agreement on the algebra generators alone cannot replace it: the
+        zero linear map and the generator-zero augmentation differ at 1.
         """
-        domain = self.domain()
-        match datum:
-            case _ if element_parent(datum) is domain.module_category().Mor(domain, self.codomain()):
-                return self.element_class(
-                    self, lambda label: datum(domain.algebra_generator(label))
-                )
-            case _:
-                return self.element_class(self, datum)
+        return self.element_class(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():

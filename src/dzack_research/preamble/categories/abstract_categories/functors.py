@@ -345,6 +345,11 @@ class _DiscreteFunctor(Functor):
         codomain: DiscreteCategory,
         object_map: Morphism | Callable[[SourcePointT], TargetPointT],
     ) -> None:
+        if domain not in DiscreteCategories() or codomain not in DiscreteCategories():
+            raise TypeError(
+                f"an object-set map determines a functor between discrete categories, "
+                f"not an arbitrary functor {domain} -> {codomain}"
+            )
         match object_map:
             case Morphism() if (
                 object_map.domain() is not domain.object_set()
@@ -399,18 +404,22 @@ class _DiscreteDiagram(Functor):
             raise TypeError(
                 f"a discrete diagram needs a discrete index category, but {index_category} is not discrete"
             )
-        from dzack_research.preamble.categories.sets.set_categories import Sets
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 
         index_set = index_category.object_set()
         if isinstance(values, IndexedFamily) and values.index_set() is not index_set:
             raise ValueError("the diagram's indexed family must retain its discrete category's exact object set")
-        if Sets().is_provably_finite(index_set):
-            for index in index_set:
-                candidate = values(index)
-                if candidate not in codomain:
-                    raise ValueError(
-                        f"the discrete diagram's object at {index} is {candidate}, outside {codomain}"
-                    )
+        if not Sets().is_provably_finite(index_set) or index_set not in EnumeratedSets():
+            raise TypeError(
+                "an object callback without finite enumerated indices cannot establish "
+                "a category-valued discrete diagram; use a selected functor or constant diagram"
+            )
+        for index in index_set:
+            candidate = values(index)
+            if candidate not in codomain:
+                raise ValueError(
+                    f"the discrete diagram's object at {index} is {candidate}, outside {codomain}"
+                )
         self._values = values
         super().__init__(index_category, codomain)
 

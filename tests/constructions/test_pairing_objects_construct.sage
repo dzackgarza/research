@@ -16,10 +16,8 @@ def test_non_diagonal_pairing_uses_the_common_pairing_owner() -> None:
 
 
 def test_formed_module_is_the_diagonal_pairing_case() -> None:
-    formed = ZZ.free_module(2).equip_bilinear_form(
-        ZZ,
-        [[0, 1], [1, 0]],
-    )
+    module = ZZ.free_module(2)
+    formed = FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[0, 1], [1, 0]]))
     left, right = formed.module_generators()
 
     assert formed in PairingObjects(ZZ)

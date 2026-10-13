@@ -57,6 +57,8 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
@@ -78,7 +80,11 @@ def _finitely_generated_free_placement(ring, module_generating_set):
 
 
 class _SparseFreeModuleElement(ModuleElement):
-    """Finite-support coordinates in the owned free module ``R^(I)``."""
+    """Coordinates with a selected finite containing family in ``R^(I)``.
+
+    Stored labels contain the support; a stored coefficient need not be
+    proved nonzero. Only a coefficient proved zero is discarded.
+    """
 
     def __init__(self, parent, coefficients) -> None:
         ModuleElement.__init__(self, parent)
@@ -86,7 +92,7 @@ class _SparseFreeModuleElement(ModuleElement):
         self._coefficients = {
             label: ring(coefficient)
             for label, coefficient in coefficients.items()
-            if ring(coefficient) != ring.zero()
+            if (ring(coefficient) == ring.zero()) is not True
         }
 
     def __call__(self, label):
@@ -104,13 +110,26 @@ class _SparseFreeModuleElement(ModuleElement):
     def support(self):
         r"""The support ``{i in I : a(i) != 0}``, a finite subset of the basis with its inclusion.
 
-        This is the support of a divisor when the free module is a group of
-        cycles or divisors.
+        The retained finite coordinate family contains the support. Its
+        nonzero predicate defines the exact subset even when a coefficient's
+        equality to zero is undecided. When every retained coefficient is
+        proved nonzero, keep the usual enumerated finite subset.
         """
-        return self.parent().module_generating_set().finite_subsets()(tuple(self._coefficients))
+        labels = self.parent().module_generating_set()
+        possible = labels.finite_subsets()(tuple(self._coefficients))
+        zero = self.parent().base_ring().zero()
+        if all((coefficient == zero) is False for coefficient in self._coefficients.values()):
+            return possible
+        actual = possible.domain().condition_set(lambda label: negation(self(label) == zero))
+        return Sets().Subobjects(labels).object(possible.inclusion() * actual.inclusion())
 
     def _coefficient_data(self):
-        r"""Protected storage read of ``Modules._selected_module_coefficients``: label to nonzero coefficient."""
+        r"""Storage read for ``Modules._selected_module_coefficients``.
+
+        The finite mapping gives all coefficients outside of which the vector
+        is zero. Its keys contain the support; they do not certify nonzero
+        coefficients. The selected-coefficient owner declares its consumers.
+        """
         return self._coefficients
 
     def __iter__(self):
@@ -128,6 +147,9 @@ class _SparseFreeModuleElement(ModuleElement):
 
     def is_canonical_free_generator(self) -> bool:
         r"""Whether this is one of the chosen basis vectors, with coefficient one."""
+        zero = self.parent().base_ring().zero()
+        if any((coefficient == zero) is not False for coefficient in self._coefficients.values()):
+            return AtomicProposition("is_canonical_free_generator", self)
         return len(self._coefficients) == 1 and next(iter(self._coefficients.values())) == self.parent().base_ring().one()
 
     def underlying_set_element(self):
@@ -137,10 +159,9 @@ class _SparseFreeModuleElement(ModuleElement):
         general linear combination has no distinguished underlying element of
         ``S`` and therefore refuses rather than selecting one support label.
         """
-        if not self.is_canonical_free_generator():
+        if self.is_canonical_free_generator() is not True:
             raise ValueError(
-                f"{self} is not a basis vector of {self.parent()}, so it is not the image "
-                "of one basis label"
+                f"{self} has no established single basis label in {self.parent()}"
             )
         return next(iter(self._coefficients))
 
@@ -149,7 +170,7 @@ class _SparseFreeModuleElement(ModuleElement):
         coefficients = dict(self._coefficients)
         for label, coefficient in other._coefficients.items():
             value = coefficients.get(label, ring.zero()) + coefficient
-            if value == ring.zero():
+            if (value == ring.zero()) is True:
                 coefficients.pop(label, None)
             else:
                 coefficients[label] = value
@@ -185,13 +206,27 @@ class _SparseFreeModuleElement(ModuleElement):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = other._coefficients == self._coefficients
-        return equal if op == op_EQ else not equal
+        if element_parent(other) is not self.parent():
+            return NotImplemented
+        if self is other:
+            return op == op_EQ
+        zero = self.parent().base_ring().zero()
+        equal = conjunction(
+            self._coefficients.get(label, zero) == other._coefficients.get(label, zero)
+            for label in self._coefficients.keys() | other._coefficients.keys()
+        )
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self):
+        zero = self.parent().base_ring().zero()
+        if any((coefficient == zero) is not False for coefficient in self._coefficients.values()):
+            raise TypeError("a sparse vector with undecided zero coefficients has no selected canonical hash")
         return hash((id(self.parent()), frozenset(self._coefficients.items())))
 
     def _repr_(self):
+        zero = self.parent().base_ring().zero()
+        if any((coefficient == zero) is not False for coefficient in self._coefficients.values()):
+            return " + ".join(f"({coefficient})*[{label}]" for label, coefficient in self._coefficients.items()) or "0"
         return repr_lincomb(
             self._coefficients.items(),
             repr_monomial=lambda label: f"[{label}]",
@@ -199,6 +234,12 @@ class _SparseFreeModuleElement(ModuleElement):
         )
 
     def _latex_(self):
+        zero = self.parent().base_ring().zero()
+        if any((coefficient == zero) is not False for coefficient in self._coefficients.values()):
+            return " + ".join(
+                rf"\left({latex(coefficient)}\right)\left[{latex(label)}\right]"
+                for label, coefficient in self._coefficients.items()
+            ) or "0"
         return repr_lincomb(
             self._coefficients.items(),
             repr_monomial=lambda label: rf"\left[{latex(label)}\right]",
@@ -284,13 +325,12 @@ class _SparseFreeModuleParent:
                 coefficients = {
                     labels[position]: coefficient
                     for position, coefficient in enumerate(value)
-                    if coefficient != 0
                 }
                 return self.element_class(self, coefficients)
             # Sequence inputs are coordinate syntax, never candidate scalars.
             # Only after the structured ingress cases may a free module ask
             # whether the input is a scalar of its base ring.
-            case _ if value in ring and ring(value) == ring.zero():
+            case _ if value in ring and (ring(value) == ring.zero()) is True:
                 return self.zero()
             case _ if value in ring and labels.cardinality() == cardinal(1):
                 return self.element_class(self, {labels[0]: ring(value)})
@@ -390,9 +430,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             if ring not in OwnedRings().Commutative():
                 raise TypeError("the module order ideal requires a commutative scalar ring")
             coordinates = self.to_vector()
-            return ring.ideal(*(
-                coordinates(label) for label in coordinates.support().domain()
-            ))
+            return ring.ideal(*coordinates.parent()._selected_module_coefficients(coordinates).values())
 
         def primitive_part(self) -> "FramedFreeModules.ElementMethods":
             r"""Return ``v/content(v)`` for a nonzero vector over ``ZZ``.
@@ -521,24 +559,41 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             )
             return True
 
-        def cardinality(self):
-            r"""Return ``|R^(S)|``: ``|R|^|S|`` for finite ``S``, else ``max(|R|, |S|)`` by finite support."""
+        @RealizationHook
+        def _cardinality_decision(self):
+            r"""Supply ``|R^(S)|`` from the represented scalar and label cardinals.
+
+            The finite-support formula is ``|R|^|S|`` for finite ``S`` and
+            ``max(|R|, |S|)`` for infinite ``S`` over a nonzero ring. A
+            missing parameter cardinal supplies no exact value here.
+            """
 
             if self.base_ring() is self:
                 # A ring as the rank-one free module over itself: its
                 # underlying set is the ring's, which the ring level answers.
-                return super().cardinality()
-            scalars = self.base_ring().cardinality()
-            labels = self.module_generating_set().cardinality()
+                return super()._cardinality_decision()
+            scalars = self.base_ring()._cardinality_decision()
+            labels = self.module_generating_set()._cardinality_decision()
+            if labels is not None and (cardinal(labels) == Cardinalities().zero()) is True:
+                return Cardinalities().one()
+            if scalars is not None and (cardinal(scalars) == Cardinalities().one()) is True:
+                return Cardinalities().one()
+            if scalars is None or labels is None:
+                return None
+            scalars = cardinal(scalars)
+            labels = cardinal(labels)
+            if not scalars.expression().is_normal_form() or not labels.expression().is_normal_form():
+                return None
             if labels.is_finite():
                 return scalars**labels
-            if scalars == Cardinalities().one():
-                return Cardinalities().one()
             return Cardinalities().supremum(scalars, labels)
 
-        def _finiteness_decision(self) -> bool:
+        def _finiteness_decision(self):
             r"""Return whether the underlying free module is finite."""
-            return self.cardinality().is_finite()
+            size = self._cardinality_decision()
+            if size is None or not cardinal(size).expression().is_normal_form():
+                return AtomicProposition("is_finite", self)
+            return cardinal(size).is_finite()
 
         @cached_method
         def base_change(self, ring_map, *, _extra_construction_data=None):
@@ -618,7 +673,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 chosen basis is the additive identity; this also handles the zero
                 coefficient ring without replacing the basis by a rank heuristic.
                 """
-                return all(generator == self.zero() for generator in self.module_generators())
+                return conjunction(generator == self.zero() for generator in self.module_generators())
 
             @cached_method
             def _selected_relation_morphism(self):
@@ -645,6 +700,15 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 codomain_is_zero = morphism.codomain().is_zero()
                 if codomain_is_zero is True:
                     return self.whole_subobject()
+                if self.base_ring() not in PrincipalIdealDomains():
+                    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                        _selected_presentation_kernel,
+                    )
+
+                    # A kernel over a polynomial quotient need not be free.
+                    # Retain its finite presentation and inclusion through
+                    # the common presentation owner, not a PID span basis.
+                    return _selected_presentation_kernel(morphism)
                 coordinate_matrix = self.module_category().Mor(
                     self, morphism.codomain()
                 )(morphism)
@@ -776,7 +840,6 @@ def _element_from_row(module, row):
             for label, coefficient in zip(
                 module.module_generating_set(), row, strict=True
             )
-            if coefficient
         }
     )
 
@@ -817,7 +880,8 @@ def _finite_support_labels(module, elements):
     support = []
     for candidate in elements:
         element = candidate if candidate.parent() is module else module(candidate)
-        for label in element.to_vector().support().domain():
+        coordinates = element.to_vector()
+        for label in coordinates.parent()._selected_module_coefficients(coordinates):
             if not any(label == known for known in support):
                 support.append(label)
     return finite_ordered_set(support)

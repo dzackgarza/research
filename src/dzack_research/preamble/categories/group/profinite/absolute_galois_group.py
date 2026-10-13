@@ -40,15 +40,18 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
+    OwnedRings,
     RingMorphism,
     _engine_ring,
+    _is_finite_or_number_field,
     _own_ring,
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.validation import validator
 
 
 class AbsoluteGaloisGroupElement(Element):
@@ -78,12 +81,25 @@ class AbsoluteGaloisGroupElement(Element):
                 f"an element of {parent} must be given either as an automorphism of the "
                 f"algebraic closure or as a power of Frobenius, but neither was given"
             )
+        if self._exact_action is not None and element_parent(self._exact_action) is not parent.field_automorphism_mor():
+            raise TypeError(
+                f"the exact action of an element of {parent} must lie in "
+                f"{parent.field_automorphism_mor()}, but got {self._exact_action}"
+            )
+        if self._frobenius_exponent is not None and not parent._is_finite_field():
+            raise TypeError(
+                f"a q-Frobenius power requires a finite base field, but the base field "
+                f"of {parent} is {parent.base_field()}"
+            )
+        self.validate_base_fixing(check=False)
 
     @cached_method
     def as_morphism(self):
         field_endomorphisms = self.parent().field_automorphism_mor()
         if self._exact_action is not None:
             return field_endomorphisms(self._exact_action)
+        if self._frobenius_exponent == 0:
+            return field_endomorphisms.identity()
         return field_endomorphisms.elementwise(lambda element: self(element))
 
     def underlying_field_morphism(self, *args, **kwargs):
@@ -153,13 +169,34 @@ class AbsoluteGaloisGroupElement(Element):
             )
         return self._exact_action(element)
 
-    def fixes_base_field(self) -> bool:
+    def fixes_base_field(self) -> bool | Predicate:
+        r"""The equation ``sigma * e == e`` for the retained ``e: K -> Kbar``.
+
+        This is a diagnostic of the admitted base-fixing premise. It uses
+        the existing equality of field maps, whose selected finite
+        determining data may decide the equation; otherwise the equation
+        remains an owned proposition. No finite generator family is
+        required of an arbitrary base field.
+        """
         parent = cast("_AbsoluteGaloisGroupEngine", self.parent())
         embedding = parent.base_embedding()
-        return all(
-            self(embedding(generator)) == embedding(generator)
-            for generator in parent.base_field().field_generators()
-        )
+        return self.as_morphism() * embedding == embedding
+
+    @validator
+    def validate_base_fixing(self) -> None:
+        r"""Reject a proved failure of the admitted equation ``sigma e = e``.
+
+        OWN-22 separates admission from checking, and unknown equations are
+        retained. A ``K``-endomorphism of the algebraic extension ``Kbar/K``
+        is an automorphism (Stacks, Lemma 9.8.11), so the base-fixing
+        premise supplies the group law without an inverse computation at
+        construction.
+        """
+        if self.fixes_base_field() is False:
+            raise ValueError(
+                f"{self.as_morphism()} does not fix the retained base embedding "
+                f"{self.parent().base_embedding()} of {self.parent()}"
+            )
 
     def restrict(self, stage):
         return self.parent().restriction_map(stage)(self)
@@ -199,28 +236,25 @@ class AbsoluteGaloisGroupElement(Element):
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        return self._same_automorphism(other) == (op == op_EQ)
+        if element_parent(other) is not self.parent():
+            return op == op_NE
+        equal = self._same_automorphism(other)
+        return equal if op == op_EQ else negation(equal)
 
-    def _same_automorphism(self, other) -> bool:
+    def _same_automorphism(self, other) -> bool | Predicate:
         r"""Whether ``self`` and ``other`` of the same parent are the same automorphism."""
+        if self is other:
+            return True
         if (
             self._frobenius_exponent is not None
-            or other._frobenius_exponent is not None
+            and other._frobenius_exponent is not None
         ):
             return self._frobenius_exponent == other._frobenius_exponent
-        if self._exact_action is not None and other._exact_action is not None:
-            return self._exact_action == other._exact_action
-        return False
+        return self.as_morphism() == other.as_morphism()
 
     def __hash__(self) -> int:
-        datum: tuple[object, ...]
-        if self._frobenius_exponent is not None:
-            datum = ("frobenius", self._frobenius_exponent)
-        elif self._exact_action is not None:
-            datum = ("exact", self._exact_action)
-        else:
-            datum = ("unrealized",)
-        return hash((id(self.parent()), datum))
+        r"""Equal automorphisms can have different retained representations."""
+        return hash(id(self.parent()))
 
     def _repr_(self) -> str:
         if self._frobenius_exponent is not None:
@@ -384,8 +418,9 @@ class _AbsoluteGaloisGroupEngine:
         element = element if element in self else self(element)
         extension = self.extension_object()
         mor = self.slice_category().Mor(extension, extension)
-        forward = mor(element.as_morphism())
-        inverse = mor(element.inverse().as_morphism())
+        identity = self.base_field().Mor(self.base_field()).identity()
+        forward = mor._from_commuting_edges(identity, element.as_morphism())
+        inverse = mor._from_commuting_edges(identity, element.inverse().as_morphism())
         return self.slice_category().Core().Mor(
             extension, extension
         )._from_known_inverse_pair(
@@ -454,13 +489,7 @@ class _AbsoluteGaloisGroupEngine:
                 f"an element of {self} is an automorphism of the algebraic closure "
                 f"{self._closure}, an element of {self.field_automorphism_mor()}, but {datum} is not"
             )
-        element = AbsoluteGaloisGroupElement(self, exact_action=datum)
-        if not element.fixes_base_field():
-            raise ValueError(
-                f"{datum} is not an element of {self}: it does not fix the base field "
-                f"{self._field}"
-            )
-        return element
+        return AbsoluteGaloisGroupElement(self, exact_action=datum)
 
     def __contains__(self, element) -> bool:
         return element_parent(element) is self
@@ -520,23 +549,19 @@ class _AbsoluteGaloisGroupEngine:
             return FrobeniusElement(
                 self, left.frobenius_exponent() + right.frobenius_exponent()
             )
-        if left == self.one():
+        if (left == self.one()) is True:
             return right
-        if right == self.one():
+        if (right == self.one()) is True:
             return left
-        left_action = left.exact_action()
-        right_action = right.exact_action()
-        assert left_action is not None and right_action is not None, (
-            f"cannot compose {left} and {right} in {self}: a Frobenius power cannot be "
-            f"composed with an automorphism given as a field map of {self._closure}"
-        )
-        return self(left_action * right_action)
+        # Both admitted maps fix the same e: K -> Kbar, so their composite
+        # fixes e too, independently of whether that equation is decidable.
+        return self(left.as_morphism() * right.as_morphism())
 
     def _inverse_element(self, element):
         r"""``sigma^-1``: the negated Frobenius exponent, else the inverse of the exact action."""
         if element.frobenius_exponent() is not None:
             return FrobeniusElement(self, -element.frobenius_exponent())
-        if element == self.one():
+        if (element == self.one()) is True:
             return self.one()
         return self(element.exact_action().inverse())
 
@@ -826,7 +851,7 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         return super()._element_constructor_(datum, **options)
 
     def conjugacy_class(self):
-        return OpenGaloisSubgroupConjugacyClass(self.supergroup(), self.fixed_field())
+        return OpenGaloisSubgroupConjugacyClass(self.supergroup(), self.fixed_extension())
 
     def core(self):
         if self.is_normal():
@@ -932,19 +957,35 @@ def _same_k_extension(
     left_base_embedding,
     right_field,
     right_base_embedding,
-) -> bool:
-    r"""Whether two represented finite extensions are isomorphic over ``K``."""
+) -> bool | Predicate:
+    r"""Whether the retained extensions ``j_E: K -> E`` and ``j_F: K -> F`` are isomorphic.
+
+    For finite fields and number fields the selected finite embedding
+    family supplies the candidates. A candidate is a ``K``-isomorphism
+    exactly when ``s * j_E == j_F`` and the extension degrees agree.
+    Undecided map equations remain propositions, including when both
+    extensions use the same abstract field with different base maps.
+    Other fields retain the isomorphism proposition without selecting an
+    unavailable degree or embedding computation.
+    """
+    if left_field is right_field and left_base_embedding is right_base_embedding:
+        return True
+    if not all(
+        _is_finite_or_number_field(field)
+        for field in (supergroup.base_field(), left_field, right_field)
+    ):
+        return AtomicProposition(
+            "are_isomorphic_as_extensions", left_base_embedding, right_base_embedding
+        )
     if _relative_degree(supergroup.base_field(), left_field) != _relative_degree(
         supergroup.base_field(), right_field
     ):
         return False
-    return any(
-        all(
-            isomorphism(left_base_embedding(generator))
-            == right_base_embedding(generator)
-            for generator in supergroup.base_field().field_generators()
+    return negation(
+        conjunction(
+            negation(isomorphism * left_base_embedding == right_base_embedding)
+            for isomorphism in left_field.exact_embeddings(right_field)
         )
-        for isomorphism in left_field.exact_embeddings(right_field)
     )
 
 
@@ -956,7 +997,12 @@ def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
     ``E -> Kbar``.  ``extension_field`` is a stage ``K -> E -> Kbar``, or an
     owned field ``E`` with exactly one embedding of ``K``.
     """
-    if extension_field in OwnedRings():
+    # A stage itself also lies in Fields through its slice and coslice.
+    # Its retained K -> E therefore takes precedence over bare-field data.
+    if (
+        extension_field not in supergroup.stage_category()
+        and extension_field in OwnedRings()
+    ):
         base_embeddings = supergroup.base_field().exact_embeddings(extension_field)
         if len(base_embeddings) != 1:
             raise ValueError(

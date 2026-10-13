@@ -1281,6 +1281,8 @@ def _toric_picard_to_chow_isomorphism(scheme):
 
 def _toric_middle_cohomology_form(scheme):
     r"""Return ``H^2(X(CC),ZZ)`` with its cup-product intersection form."""
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import BilinearFormModules
+
     _require_smooth_complete_rational_toric_realization(scheme)
     assert int(scheme.dimension()) == 2, (
         f"the intersection form on H^2 is constructed here only for toric surfaces, but {scheme} "
@@ -1292,13 +1294,15 @@ def _toric_middle_cohomology_form(scheme):
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
     integers = _own_ring(SageZZ)
-    form = cohomology.bilinear_hom_space(integers)(
-        lambda left, right: intersection(
-            cohomology_to_picard(left),
-            cohomology_to_picard(right),
+    # Degree-two classes commute under cup product.
+    return BilinearFormModules(integers).Symmetric()(
+        cohomology.bilinear_forms(integers)(
+            lambda left, right: intersection(
+                cohomology_to_picard(left),
+                cohomology_to_picard(right),
+            )
         )
     )
-    return FormModules(integers)(form)
 
 
 def _toric_fundamental_group(scheme, base_point_cone=None):
@@ -1527,6 +1531,15 @@ def _complex_realization(scheme, scalar_embedding):
 
 
 @cached_function
+def _integral_singular_cohomology_over_rationals(scheme, degree):
+    """Integral cohomology after the canonical rational-to-complex base change."""
+    assert _engine_ring(scheme.scheme_base_ring()) is SageQQ, (
+        f"H^{degree}({scheme}(CC); ZZ) is computed along the unique embedding QQ -> CC, but "
+        f"{scheme} is over {scheme.scheme_base_ring()}"
+    )
+    return scheme.complex_realization(_rational_complex_embedding()).integral_singular_cohomology(degree)
+
+
 def _rational_complex_embedding():
     r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
     rationals = _own_ring(SageQQ)

@@ -281,7 +281,7 @@ class Connection(Element):
                 self.generator_image(label),
             )
             d_coefficient = universal(self.algebra()(coefficient))
-            if d_coefficient != self.one_forms().zero():
+            if (d_coefficient == self.one_forms().zero()) is not True:
                 result += target.pure_tensor(
                     self.module().module_generator(label),
                     d_coefficient,
@@ -305,7 +305,7 @@ class Connection(Element):
             value = self._from_coefficients(
                 {label: relation(label) for label in relation.support().domain()}
             )
-            if value != self.target_module().zero():
+            if (value == self.target_module().zero()) is False:
                 raise ValueError(
                     f"the proposed connection is not well defined on {module}: it must send every relation "
                     f"among the module generators to zero, but it sends the relation {relation} to {value}"
@@ -643,7 +643,7 @@ class ConnectionMorphism(Element):
             underlying, premises=(self, other)
         )
 
-    def _horizontal_on_generators(self) -> bool:
+    def _horizontal_on_generators(self):
         domain_connection = self.domain().connection()
         codomain_connection = self.codomain().connection()
         if domain_connection.algebra() is not codomain_connection.algebra():
@@ -679,7 +679,7 @@ class ConnectionMorphism(Element):
             f"so {domain_module} must have a chosen finite presentation over {ring}, but it is in "
             f"{domain_module.category()}"
         )
-        return all(
+        return conjunction(
             codomain_connection(underlying(generator)) == induced(domain_connection(generator))
             for generator in (
                 domain_module.module_generator(label) for label in domain_module.module_generating_set()
@@ -991,6 +991,7 @@ class ConnectionDeRhamModule:
                 "graded_algebra": dga,
                 "graded_algebra_action": right_action,
                 "dg_algebra": dga,
+                "dg_module_leibniz_decision": True,
             },
             _realization=(_ConnectionDeRhamDirectSum, GradedDirectSumElement),
         )

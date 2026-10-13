@@ -3230,32 +3230,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             labels = self.module_generating_set()
             return self.module_generator(labels[int(position)])
 
-        def signature_pair(self):
-            r"""Return $(p,q)$: the positive and negative indices of inertia.
-
-            This is the real signature of the quadratic space over
-            \(\mathbb{Q}\) obtained by extending scalars along
-            \(\operatorname{Frac}(R)\) when that field is \(\mathbb{Q}\).
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)("U").signature_pair()
-                (1, 1)
-                sage: Lattices(ZZ)(ZZ^NN).signature_pair()
-                (+Infinity, 0)
-            """
-
-            signature = _signature_pair_of_gram(self.gram_tensor())
-            assert signature is not None, (
-                f"cannot determine the signature of {self!r}: it has rank {self.module_rank()}, and its Gram rule does not determine the indices of inertia"
-            )
-            return signature
-
-        def signature(self):
-            r"""Return the inertia pair ``(p,q)`` of the lattice form."""
-            return self.signature_pair()
-
         def discriminant(self):
             r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$, the signed determinant.
 
@@ -3800,7 +3774,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     rational = dual_module.bilinear_hom_space(value_module)(dual_gram)
                     return FormModules(ring)(
                         rational,
-                        _extra_categories=(FormModules(ring).Nondegenerate(),),
+                        _extra_categories=(FormModules(ring).Nondegenerate(), BilinearFormModules(ring).Symmetric()),
                     )
 
         @cached_method
@@ -5032,17 +5006,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def possible_root_lengths(self):
-            r"""Return the possible absolute self-pairings of reflective roots."""
-            assert self.module_rank().is_finite(), (
-                f"the root-length bound of {self} requires finite rank"
-            )
-            assert self.determinant() != 0, (
-                f"the root-length bound of {self} requires a nondegenerate form"
-            )
-            exponent = abs(self.discriminant_group().exponent())
-            return finite_ordered_set(
-                tuple((self.base_ring()(2) * exponent).divisors())
-            )
+            r"""Return the possible absolute self-pairings of reflective roots.
+
+            Only the exponent of coker(L -> L dual) enters the bound.
+            Its discriminant pairing is not needed for this computation.
+            """
+            assert self.module_rank().is_finite(), f"the root-length bound of {self} requires finite rank"
+            assert self.determinant() != 0, f"the root-length bound of {self} requires a nondegenerate form"
+            exponent = abs(self.correlation_morphism().cokernel().exponent())
+            return finite_ordered_set(tuple((self.base_ring()(2) * exponent).divisors()))
 
         def reflective_root_locus(self):
             r"""Primitive nonisotropic vectors with integral reflections.
@@ -5638,21 +5610,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         def _has_close_vector(self, target, square_bound) -> bool:
             return self._exact_cvp_engine().has_close_vector(target, square_bound)
 
-        def _first_close_vector_scale(
-            self,
-            target,
-            square_bound,
-            max_multiplier,
-            *,
-            exact_distance=False,
-        ):
-            return self._exact_cvp_engine().first_close_vector_scale(
-                target,
-                square_bound,
-                max_multiplier,
-                exact_distance=exact_distance,
-            )
-
         def close_vectors(self, target, square_bound):
             r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
             return _close_vectors(self, target, square_bound)
@@ -5759,8 +5716,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: m == NN(2) and shell.domain() == Set((L.basis_vector(0),))
                 True
             """
-            return self._exact_cvp_engine().first_close_vectors(
-                target, square_bound, NN(max_multiplier)
+            from sage_indefinite_port.indefinite.scaled_shells import first_scaled_shell
+
+            return first_scaled_shell(
+                self, target, square_bound, max_multiplier
             )
 
         def scaled_close_vector_shells(self, target, square_bound, max_multiplier):
@@ -5821,8 +5780,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: m == NN(1) and sphere.domain() == Set((L.basis_vector(0), -L.basis_vector(0)))
                 True
             """
-            return self._exact_cvp_engine().first_close_vectors(
-                target, square_bound, NN(max_multiplier), exact_distance=True
+            from sage_indefinite_port.indefinite.scaled_shells import first_scaled_shell
+
+            return first_scaled_shell(
+                self, target, square_bound, max_multiplier, exact_distance=True
             )
 
         def babai(self, target):
@@ -6541,7 +6502,7 @@ class DefiniteLattices(OwnedCategoryOverBaseRing):
     r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
 
     def super_categories(self):
-        return [Lattices(self.base_ring())]
+        return [Lattices(self.base_ring()).FinitelyGenerated()]
 
     def an_object(self):
         return self(Lattices(self.base_ring()).an_object())
@@ -6549,12 +6510,9 @@ class DefiniteLattices(OwnedCategoryOverBaseRing):
     def _call_(self, lattice):
         from dzack_research.preamble.refine import refine
 
-        if lattice not in Lattices(self.base_ring()) or not (
-            lattice.is_positive_definite() or lattice.is_negative_definite()
-        ):
-            raise ValueError(
-                "finite reflective-root enumeration requires a definite lattice"
-            )
+        finite = Lattices(self.base_ring()).FinitelyGenerated()
+        if lattice not in finite or not (lattice.is_positive_definite() or lattice.is_negative_definite()):
+            raise ValueError("finite reflective-root enumeration requires a definite lattice")
         return refine(lattice, self)
 
     class ParentMethods:
@@ -6583,10 +6541,11 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         if _engine_ring(self.base_ring()) is not SageZZ:
-            raise TypeError(
-                "2-elementary integral lattices require the integer coefficient ring"
-            )
-        return [Lattices(self.base_ring()).Even().Nondegenerate()]
+            raise TypeError("2-elementary integral lattices require the integer coefficient ring")
+        return [
+            Lattices(self.base_ring()).Even().Nondegenerate(),
+            Lattices(self.base_ring()).FinitelyGenerated(),
+        ]
 
     class ParentMethods:
         def two_elementary_invariants(self):
@@ -6611,14 +6570,10 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.refine import refine
 
         lattice = Lattices(self.base_ring())(lattice)
-        if (
-            not lattice.is_even()
-            or not lattice.is_nondegenerate()
-            or not lattice.is_p_elementary(self.base_ring()(2))
-        ):
-            raise ValueError(
-                "a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant"
-            )
+        if lattice not in Lattices(self.base_ring()).FinitelyGenerated():
+            raise ValueError("a 2-elementary even lattice must have finite rank")
+        if not lattice.is_even() or not lattice.is_nondegenerate() or not lattice.is_p_elementary(self.base_ring()(2)):
+            raise ValueError("a 2-elementary even lattice must be nondegenerate, even and have 2-elementary discriminant")
         return refine(lattice, self)
 
 
@@ -7422,13 +7377,175 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return embedding.codomain().O().pointwise_stabilizer(embedding)
 
         @cached_method
-        def pointwise_perpendicular_kernel(self):
-            r"""Return the kernel of isometries acting identically on \(I^\perp\)."""
-            from sage_indefinite_port.indefinite.isotropic_lifts import (
-                pointwise_perpendicular_kernel,
-            )
+        def perpendicular_restriction(self):
+            r"""Return ``r:P_I -> O(I^perp)``, restriction to the full perpendicular.
 
-            return pointwise_perpendicular_kernel(self)
+            This is deliberately not the joint action on ``I`` and
+            ``I^perp/I``.  Its kernel consists of ambient isometries fixing
+            every vector of ``I^perp`` pointwise.
+            """
+            parabolic = self.parabolic_subgroup()
+            perpendicular = self.orthogonal_complement()
+            inclusion = perpendicular.inclusion()
+            target = perpendicular.Aut()
+
+            def restrict(isometry):
+                return target(
+                    lambda label: inclusion.lift(
+                        isometry(inclusion(perpendicular.module_generator(label)))
+                    )
+                )
+
+            return parabolic.Mor(target)(restrict)
+
+        @cached_method
+        def _pointwise_perpendicular_kernel_data(self):
+            r"""Retain the complete integral linear solution module for ``ker(r)``.
+
+            Put ``J=I^perp`` and ``R=rad(J)``.  The quotient ``L/J`` is
+            required to be free in the represented integral computation.  An
+            isometry fixing ``J`` pointwise is uniquely ``1+N`` with
+            ``N:L/J -> R``.  For chosen quotient lifts ``f_a`` the remaining
+            isometry equations are
+
+            ``b(N f_a, f_b) + b(f_a, N f_b) = 0``.
+
+            They are homogeneous integral linear equations.  Their kernel is
+            therefore the complete parameter module; no quotient-action or
+            arithmetic image computation enters this construction.
+            """
+            ambient = self.isotropic_embedding().codomain()
+            ring = ambient.base_ring()
+            if _engine_ring(ring) is not SageZZ:
+                raise TypeError(
+                    f"the pointwise-perpendicular kernel is presently solved integrally over ZZ, but {ambient} is over {ring}"
+                )
+            perpendicular = self.orthogonal_complement()
+            inclusion = perpendicular.inclusion()
+            quotient = inclusion.cokernel()
+            if quotient.is_torsion_free() is not True:
+                raise ValueError(
+                    f"the quotient {ambient}/{perpendicular} must be torsion-free for the pointwise-perpendicular kernel construction"
+                )
+            quotient_trivialization = quotient.finite_free_trivialization()
+            quotient_free = quotient_trivialization.codomain()
+            quotient_projection = inclusion.cokernel_projection()
+            quotient_map = quotient_trivialization.forward() * quotient_projection
+            quotient_labels = tuple(quotient_free.module_generating_set())
+            quotient_lifts = {
+                label: quotient_projection.preimage(
+                    quotient_trivialization.inverse()(
+                        quotient_free.module_generator(label)
+                    )
+                )
+                for label in quotient_labels
+            }
+
+            radical = perpendicular.radical()
+            radical_inclusion = radical.inclusion()
+            radical_labels = tuple(radical.module_generating_set())
+            radical_vectors = {
+                label: inclusion(radical_inclusion(radical.module_generator(label)))
+                for label in radical_labels
+            }
+
+            parameter_labels = finite_ordered_set(tuple(
+                (quotient_label, radical_label)
+                for quotient_label in quotient_labels
+                for radical_label in radical_labels
+            ))
+            parameters = ring.free_module(parameter_labels)
+            equation_labels = finite_ordered_set(tuple(
+                (left, right)
+                for left_position, left in enumerate(quotient_labels)
+                for right in quotient_labels[left_position:]
+            ))
+            equations = ring.free_module(equation_labels)
+
+            def equation_image(variable_label):
+                quotient_label, radical_label = variable_label
+                radical_vector = radical_vectors[radical_label]
+                coefficients = {}
+                for left, right in equation_labels:
+                    coefficient = ring.zero()
+                    if quotient_label == left:
+                        coefficient += ambient.b(radical_vector, quotient_lifts[right])
+                    if quotient_label == right:
+                        coefficient += ambient.b(quotient_lifts[left], radical_vector)
+                    if coefficient != ring.zero():
+                        coefficients[(left, right)] = coefficient
+                return equations.linear_combination(coefficients)
+
+            equation = parameters.module_category().Mor(parameters, equations)(equation_image)
+            solution = equation.kernel()
+
+            def correction(parameter, quotient_label):
+                coordinates = solution.inclusion()(parameter).to_vector()
+                result = ambient.zero()
+                for radical_label in radical_labels:
+                    coefficient = coordinates((quotient_label, radical_label))
+                    if coefficient != ring.zero():
+                        result += ambient.scalar_multiple(
+                            coefficient, radical_vectors[radical_label]
+                        )
+                return result
+
+            def shift(parameter, element):
+                quotient_coordinates = quotient_map(element).to_vector()
+                result = ambient.zero()
+                for quotient_label in quotient_labels:
+                    coefficient = quotient_coordinates(quotient_label)
+                    if coefficient != ring.zero():
+                        result += ambient.scalar_multiple(
+                            coefficient, correction(parameter, quotient_label)
+                        )
+                return result
+
+            def isometry(parameter):
+                forward = ambient.module_category().Mor(ambient, ambient)({
+                    label: ambient.module_generator(label)
+                    + shift(parameter, ambient.module_generator(label))
+                    for label in ambient.module_generating_set()
+                })
+                inverse = ambient.module_category().Mor(ambient, ambient)({
+                    label: ambient.module_generator(label)
+                    - shift(parameter, ambient.module_generator(label))
+                    for label in ambient.module_generating_set()
+                })
+                module_isomorphism = ambient.module_category().Core().Mor(
+                    ambient, ambient
+                )._from_known_inverse_pair(forward, inverse)
+                return ambient.Isom(ambient)(module_isomorphism)
+
+            return solution, isometry
+
+        def pointwise_perpendicular_parameter_module(self):
+            r"""Return the complete integral parameter module for ``ker(r)``."""
+            return self._pointwise_perpendicular_kernel_data()[0]
+
+        def pointwise_perpendicular_isometry(self, parameter):
+            r"""Evaluate one integral kernel parameter as an isometry of the ambient lattice."""
+            parameters, isometry = self._pointwise_perpendicular_kernel_data()
+            return isometry(parameters(parameter))
+
+        @cached_method
+        def pointwise_perpendicular_kernel(self):
+            r"""Return ``ker(P_I -> O(I^perp))`` with effective integral generators.
+
+            The selected generators are the images of a complete generating
+            family of the homogeneous integral parameter module.  This is the
+            pointwise kernel on the whole perpendicular, not the kernel of the
+            joint action on ``I`` and ``I^perp/I``.
+            """
+            parameters = self.pointwise_perpendicular_parameter_module()
+            ambient = self.isotropic_embedding().codomain()
+            generators = tuple(
+                self.pointwise_perpendicular_isometry(
+                    parameters.module_generator(label)
+                )
+                for label in parameters.module_generating_set()
+            )
+            return ambient.O().subgroup(generators)
 
         @cached_method
         def levi_action(self):

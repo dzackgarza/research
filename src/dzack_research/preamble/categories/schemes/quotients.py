@@ -1,11 +1,12 @@
 r"""The affine quotient of a group action and the sections it acts on, as functors.
 
-For an affine ``G``-scheme ``X = Spec(A)`` the quotient ``X/G = Spec(A^G)``
-comes with the quotient morphism ``q_X`` and its universal property: an
-invariant morphism out of ``X`` factors uniquely through ``q_X``.  Both are
-owned by the affine ``G``-scheme level already.  What this module adds is the
-action on morphisms, which the universal property determines and nothing else
-supplies.
+For a ``G``-scheme ``X`` the scheme ``Spec(Gamma(X, O_X)^G)`` is universal
+for invariant morphisms from ``X`` to affine schemes.  This is the affine
+quotient, without asserting a quotient universal among all schemes.  Its
+definition and the section action belong to ``GObjects(G, Schemes(R))``;
+the selected invariant computation is supplied by affine ``X = Spec(A)``.
+This module supplies the functorial arrows and the selected base-change
+comparison.
 
 Given an equivariant ``f: X -> Y``, the composite ``q_Y f`` is invariant
 because ``f`` intertwines the two actions and ``q_Y`` is invariant, so it
@@ -34,10 +35,14 @@ group-scheme geometry.
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.functors.group_actions import (
+    _underlying_equivariant_arrow,
+)
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
+    OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -115,7 +120,7 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
                 return False
             case True:
                 pass
-        group = self.source_acted_scheme().acting_group()
+        group = self.base_changed_acted_scheme().acting_group()
         match group.is_finite():
             case True:
                 return group.order_is_invertible_in(target)
@@ -124,10 +129,10 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
 
     @cached_method
     def reynolds_isomorphism(self):
-        assert self.reynolds_hypothesis_holds(), (
+        assert self.reynolds_hypothesis_holds() is True, (
             f"the comparison X_(k')/G -> (X/G)_(k') for {self.source_acted_scheme()} along "
             f"{self.ring_map()} is proved an isomorphism only when the acting group "
-            f"{self.source_acted_scheme().acting_group()} is finite and its order is invertible "
+            f"{self.base_changed_acted_scheme().acting_group()} is finite and its order is invertible "
             "in the target field (Reynolds operator)"
         )
 
@@ -196,39 +201,54 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
         return f"Invariant-quotient base-change morphism along {self.ring_map()} for {self.source_acted_scheme()}"
 
 
-def AffineInvariantQuotientBaseChangeComparison(acted_scheme, ring_map):
-    r"""Return the canonical morphism ``X_{k'}/G -> (X/G)_{k'}``."""
-    source = acted_scheme.scheme_base_ring()
+def AffineInvariantQuotientBaseChangeComparison(
+    acted_scheme, ring_map, *, _action_category=None
+):
+    r"""Return the canonical morphism ``X_{k'}/G -> (X/G)_{k'}``.
+
+    The category-level entry supplies the retained action category for a
+    generic functor presentation.  Evaluation gives its exact scheme carrier;
+    a functor-category object is never reinterpreted as a scheme.
+    """
+    category = _action_category
+    if category is None:
+        category = GObjects(
+            acted_scheme.acting_group(), Schemes(acted_scheme.scheme_base_ring())
+        )
+    action = category._scheme_action_functor(acted_scheme)
+    source = category.underlying_category().base_ring()
     target = _own_ring(ring_map.codomain())
     if ring_map.domain() is not source:
         raise ValueError(
             f"cannot base change the quotient of {acted_scheme} along {ring_map}: the map "
             f"starts at {ring_map.domain()}, but {acted_scheme} lies over {source}"
         )
+    if ring_map not in OwnedRings().Mor(source, target):
+        raise TypeError(
+            f"the invariant-quotient base change needs a retained ring morphism "
+            f"from {source} to {target}, not {ring_map}"
+        )
     assert source in OwnedFields() and target in OwnedFields(), (
         f"the invariant-quotient base-change comparison along {ring_map} needs a field "
         f"extension, but its domain is {source} and its codomain is {target}"
     )
-    if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
-        raise TypeError(
-            f"the invariant-quotient base-change comparison needs an affine scheme with an "
-            f"action of {acted_scheme.acting_group()}, but {acted_scheme} is in "
-            f"{acted_scheme.category()}"
-        )
-
-    group = acted_scheme.acting_group()
-    change = acted_scheme.scheme_category().base_change_functor(ring_map)
-    changed_carrier = change(acted_scheme)
-    changed_actions = {
-        group_element: change(acted_scheme.action_of(group_element))
-        for group_element in group
-    }
+    # Establish the selected invariant-computation regime before constructing
+    # a changed action.  An infinite or unrepresented action reaches its
+    # named frontier here, without an eager enumeration of the acting group.
+    old_quotient = category.affine_quotient(acted_scheme)
+    old_quotient_map = category.quotient_morphism(acted_scheme)
+    group = category.acting_group()
+    point = action.domain().an_object()
+    arrows = action.domain().Mor(point, point)
+    carrier = action(point)
+    change = Schemes(source).base_change_functor(ring_map)
+    changed_carrier = change(carrier)
     changed_acted = AffineGSchemes(group, target)(
         changed_carrier,
-        lambda group_element: changed_actions[group(group_element)],
+        lambda group_element: change(action(arrows(group(group_element)))),
     )
-    changed_old_quotient = change(acted_scheme.affine_quotient())
-    changed_old_quotient_map = change(acted_scheme.quotient_morphism())
+    changed_old_quotient = change(old_quotient)
+    changed_old_quotient_map = change(old_quotient_map)
     transported_quotient_map = _affine_morphism_from_pullback(
         changed_acted,
         changed_old_quotient,
@@ -253,7 +273,11 @@ def AffineInvariantQuotientBaseChangeComparison(acted_scheme, ring_map):
 
 
 class AffineQuotientFunctor(Functor):
-    r"""``(-)/G: GObjects(G, Sch_R) -> AffSch_R`` on the affine actions it is defined for."""
+    r"""The universal affine-target quotient on ``GObjects(G, Sch_R)``.
+
+    The represented affine invariant algorithm supplies computation; a
+    different carrier retains the same definition and its named frontier.
+    """
 
     def __init__(self, group, base_ring) -> None:
         base = _own_ring(base_ring)
@@ -268,13 +292,17 @@ class AffineQuotientFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, acted):
-        return acted.affine_quotient()
+        return self.domain().affine_quotient(acted)
 
     def _apply_morphism(self, arrow):
         source = arrow.domain()
         target = arrow.codomain()
-        return source.factor_through_affine_quotient(
-            target.quotient_morphism() * arrow.underlying_arrow()
+        category = self.domain()
+        underlying = _underlying_equivariant_arrow(
+            arrow, self.acting_group(), Schemes(self.base_ring())
+        )
+        return category.factor_through_affine_quotient(
+            source, category.quotient_morphism(target) * underlying
         )
 
     def _repr_(self):
@@ -282,7 +310,10 @@ class AffineQuotientFunctor(Functor):
 
 
 class _AffineSectionModuleFunctor(Functor):
-    r"""``Gamma: AffGSch_G^op -> Modules(R[G])`` on represented affine actions.
+    r"""``Gamma: GSch_R^op -> Modules(R[G])``, with affine computation.
+
+    The original affine category adapter retains its affine source category;
+    the common action category supplies the general source explicitly.
 
     The sections of an affine ``G``-scheme ``X = Spec(B)`` carry one
     ``G``-action, and contravariance fixes which one.  Pullback composes the
@@ -304,11 +335,16 @@ class _AffineSectionModuleFunctor(Functor):
     morphism of ``R[G]``-modules because ``f`` intertwines the two actions.
     """
 
-    def __init__(self, group, base_ring) -> None:
+    def __init__(self, group, base_ring, *, source_category=None) -> None:
         base = _own_ring(base_ring)
         self._group = group
         self._base_ring = base
-        schemes = AffineGSchemes(group, base)
+        self._acted_category = GObjects(group, Schemes(base))
+        schemes = (
+            AffineGSchemes(group, base)
+            if source_category is None
+            else source_category
+        )
         Functor.__init__(self, schemes.opposite(), Modules(base[group]))
 
     def acting_group(self):
@@ -319,12 +355,29 @@ class _AffineSectionModuleFunctor(Functor):
 
     def _apply_object(self, opposite_acted):
         acted = opposite_acted.underlying_object()
-        algebra = acted.coordinate_algebra()
+        action_functor = self._acted_category._scheme_action_functor(acted)
+        point = action_functor.domain().an_object()
+        arrows = action_functor.domain().Mor(point, point)
+        carrier = action_functor(point)
+        match carrier:
+            case _ if carrier in Schemes(self.base_ring()).Affine():
+                algebra = carrier.coordinate_algebra()
+                assert algebra.base_ring() is self.base_ring(), (
+                    f"Gamma({carrier}, O) is an {self.base_ring()}-module through its "
+                    f"structure map, but its retained coordinate-module realization "
+                    f"is over {algebra.base_ring()}; no coefficient-module realization "
+                    "along that exact structure map is selected for this section functor"
+                )
+            case _:
+                raise AssertionError(
+                    f"Gamma({carrier}, O) with its {self.acting_group()}-action is "
+                    "defined, but no selected global-section computation for this "
+                    "nonaffine scheme is available"
+                )
 
         def action(group_element, section):
-            pullback = acted.action_of(
-                ~group_element
-            ).coordinate_algebra_morphism()
+            element = self.acting_group()(group_element)
+            pullback = action_functor(arrows(~element)).coordinate_algebra_morphism()
             return pullback(algebra(section))
 
         return self.codomain()(algebra, action)
@@ -333,14 +386,22 @@ class _AffineSectionModuleFunctor(Functor):
         arrow = opposite_arrow.underlying_arrow()
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
-        pullback = arrow.underlying_arrow().coordinate_algebra_morphism()
-        sections = source.unformed_module()
-        return source.Mor(target)(
-            {
-                label: target(pullback(sections(source.module_generator(label))))
-                for label in source.module_generating_set()
-            }
+        underlying = _underlying_equivariant_arrow(
+            arrow, self.acting_group(), Schemes(self.base_ring())
         )
+        pullback = underlying.coordinate_algebra_morphism()
+        coefficient_mor = Modules(self.base_ring()).Mor(
+            source.unformed_module(), target.unformed_module()
+        )
+        coefficient_map = (
+            coefficient_mor(pullback)
+            if pullback in coefficient_mor
+            else coefficient_mor.elementwise(pullback)
+        )
+        # The actual coefficient pullback supplies the section map.  Its
+        # group-module ingress retains the equivariance equations; no finite
+        # module-generator table or unconditional diagnostic is inferred.
+        return self.codomain().Mor(source, target)(coefficient_map)
 
     def _repr_(self):
         return f"Sections with their {self.acting_group()}-action"

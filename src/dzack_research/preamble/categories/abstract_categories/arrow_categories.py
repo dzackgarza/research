@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _RestrictedMorCategoryOf,
     _category_accepts_morphism,
     _category_mor_parent,
+    _declared_construction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -54,6 +55,7 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -119,6 +121,9 @@ class CommutativeSquare(NaturalTransformationMorphism):
     the square ``g left = right f``.
     """
 
+    _commutativity_premises = None
+    _commutativity_identity_data = None
+
     def _walking_arrow(self) -> Category:
         return self.parent().source().domain()
 
@@ -136,6 +141,58 @@ class CommutativeSquare(NaturalTransformationMorphism):
 
         product = Sets().product((self.left().parent(), self.right().parent()))
         return product((self.left(), self.right()))
+
+    @cached_method
+    def commutativity_decision(self):
+        r"""The square's defining equations, without forcing an undecided equality.
+
+        Identity construction retains its actual source arrow and identity
+        edges.  A view or composite retains its actual input squares; their
+        decided laws are sufficient for commutativity, but failed or unknown
+        input laws do not refute the result's own equation.  Slice and related
+        Mor providers additionally state their fixed-component equations.
+        """
+        from dzack_research.preamble.logic import conjunction
+
+        mor = self.parent()
+        source, target = mor._domain_arrow(), mor._codomain_arrow()
+        left, right = self.left(), self.right()
+        identity_data = self._commutativity_identity_data
+        if identity_data is not None:
+            identity_source, left_identity, right_identity = identity_data
+            if (
+                source is identity_source
+                and target is identity_source
+                and left is left_identity
+                and right is right_identity
+            ):
+                # Every subcategory here retains these same identities.  Do
+                # not ask mor.identity(): strict validation can run while
+                # that cached identity is still being constructed.
+                return True
+        premises = self._commutativity_premises
+        if premises and all(
+            square.commutativity_decision() is True for square in premises
+        ):
+            commutes = True
+        else:
+            commutes = right * source == target * left
+        return conjunction((commutes, *mor._component_equations(self)))
+
+    @validator
+    def validate_commutativity(self) -> None:
+        r"""Check the retained square law when requested (``OWN-22``)."""
+        decision = self.commutativity_decision()
+        if decision is False:
+            raise ValueError(
+                f"the square from {self.domain()} to {self.codomain()} with "
+                f"left edge {self.left()} and right edge {self.right()} fails "
+                "its defining square or component equations"
+            )
+        assert decision is True, (
+            "no selected morphism-equality algorithm decides the commuting-square "
+            f"equations of {self}"
+        )
 
     def __eq__(self, other: Any) -> bool | Predicate:
         r"""Two squares between the same arrows agree when both of their edges do."""
@@ -159,12 +216,17 @@ class CommutativeSquare(NaturalTransformationMorphism):
     def __mul__(self, other):
         if not _precomposable(self, other):
             return NotImplemented
+        if self.domain() is self.codomain() and self is self.parent().identity():
+            return other
+        if other.domain() is other.codomain() and other is other.parent().identity():
+            return self
         category = self.parent().arrow_category()
         other = category.Mor(other.domain(), other.codomain())(other)
         # If r f = g l and s g = h m, then (s r) f = h (m l).
         return category.Mor(other.domain(), self.codomain())._from_commuting_edges(
             self.left() * other.left(),
             self.right() * other.right(),
+            commutativity_premises=(self, other),
         )
 
     def _repr_(self) -> str:
@@ -191,34 +253,65 @@ class ArrowMor(NaturalTransformationMor):
         r"""The arrow of ``C`` that the codomain of this Mor is."""
         return self.codomain().arrow()
 
-    def _element_constructor_(self, left, right=None):
+    def _component_equations(self, square):
+        r"""Additional defining component equations of a slice-style Mor.
+
+        An ordinary arrow square has only its naturality equation.  A
+        refined provider states its fixed-edge equations here, on the same
+        retained components; it does not replace supplied edges by identities.
+        """
+        return ()
+
+    def _element_constructor_(self, left, right=None, *, check=False):
         match left:
             case CommutativeSquare() if right is None:
                 if left.parent() is self:
+                    left.validate_commutativity(check=check)
                     return left
                 if left.domain() is not self.domain() or left.codomain() is not self.codomain():
                     raise ValueError(
                         f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the arrow category: "
                         f"it is a square {left.domain()} -> {left.codomain()}"
                     )
-                left, right = left.left(), left.right()
+                square = self._transformation(left, element_class=self.element_class)
+                square._commutativity_premises = (left,)
+                square.left()
+                square.right()
+                square.validate_commutativity(check=check)
+                return square
             case NaturalTransformation() if right is None:
-                walking_arrow = left.source().domain()
-                left, right = left.component(walking_arrow(0)), left.component(walking_arrow(1))
+                # The inherited supplier retains this literal transformation
+                # and checks its original functor endpoints.  Request both
+                # components to perform their existing category admission.
+                square = self._transformation(left, element_class=self.element_class)
+                square.left()
+                square.right()
+                square.validate_commutativity(check=check)
+                return square
         if right is None:
             left, right = left
-        return self._square(left, right, verify=True)
+        return self._square(left, right, verify=check)
 
     def _square(
         self,
         left: Morphism,
         right: Morphism,
         *,
-        verify: bool,
+        verify: bool = False,
         element_class=None,
         construction_data=None,
+        commutativity_premises=None,
+        identity_data=None,
     ) -> CommutativeSquare:
-        r"""The transformation with these two edges, after checking they bound a square here."""
+        r"""Retain these admitted edges and defer checking their square law.
+
+        ``verify`` is the standard diagnostic check flag, not a certificate.
+        A view or composite may retain its actual prior squares in
+        ``commutativity_premises``.  The sole supplier of ``identity_data`` is
+        :meth:`identity`: its tuple contains the actual source arrow and the
+        two identity edges obtained from the base category.  These data are
+        installed before validation, including for private square classes.
+        """
         source = self._domain_arrow()
         target = self._codomain_arrow()
         if left.domain() is not source.domain() or left.codomain() is not target.domain():
@@ -236,11 +329,6 @@ class ArrowMor(NaturalTransformationMor):
             raise ValueError(f"the left edge {left} of the square is not a morphism of {base}")
         if not _category_accepts_morphism(base, source.codomain(), target.codomain(), right):
             raise ValueError(f"the right edge {right} of the square is not a morphism of {base}")
-        if verify and (right * source == target * left) is not True:
-            raise ValueError(
-                f"the square with left edge {left} and right edge {right} does not commute: "
-                f"{right} o {source} != {target} o {left}"
-            )
         edges = {0: left, 1: right}
         transformation = NaturalTransformation(
             self.source(),
@@ -248,12 +336,23 @@ class ArrowMor(NaturalTransformationMor):
             lambda obj: edges[obj.position()],
         )
         selected = self.element_class if element_class is None else element_class
-        return selected(self, transformation, **dict(construction_data or {}))
+        square = selected(self, transformation, **dict(construction_data or {}))
+        square._commutativity_premises = (
+            None if commutativity_premises is None else tuple(commutativity_premises)
+        )
+        square._commutativity_identity_data = identity_data
+        square.validate_commutativity(check=verify)
+        return square
 
-    def _from_commuting_edges(self, left: Morphism, right: Morphism) -> CommutativeSquare:
-        r"""Construct edges whose commutativity follows from their construction."""
-        return self._square(left, right, verify=False)
+    def _from_commuting_edges(
+        self, left: Morphism, right: Morphism, *, commutativity_premises=None
+    ) -> CommutativeSquare:
+        r"""Retain constructed edges and any actual sufficient square premises."""
+        return self._square(
+            left, right, commutativity_premises=commutativity_premises
+        )
 
+    @cached_method
     def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -261,16 +360,29 @@ class ArrowMor(NaturalTransformationMor):
             )
         arrow = self._domain_arrow()
         category = self._edge_category()
-        return self._from_commuting_edges(
-            _category_mor_parent(category, arrow.domain(), arrow.domain()).identity(),
-            _category_mor_parent(category, arrow.codomain(), arrow.codomain()).identity(),
+        left = _category_mor_parent(category, arrow.domain(), arrow.domain()).identity()
+        right = _category_mor_parent(category, arrow.codomain(), arrow.codomain()).identity()
+        return self._square(
+            left, right, identity_data=(arrow, left, right)
         )
-
-    def identity_at(self, obj: Parent) -> CommutativeSquare:
-        return self.arrow_category().Mor(obj, obj).identity()
 
 
 class ArrowMorCategoryConstruction(MorCategoryConstruction):
+    r"""The family ``(f, g) |-> Hom_Ar(C)(f, g)`` of commuting-square categories.
+
+    The base is the chosen ``Ar(C) = [[1], C]``. Each ``Of(f, g)`` retains
+    its literal walking-arrow functors and selects :class:`ArrowMor`: its
+    objects are pairs ``(l, r)`` with ``r f = g l``. The common Mor family
+    owns endpoint normalization, literal reuse and the ``Of``/``Between``
+    entries; this specialization adds only that fixed-category selection.
+
+    An object of this family is a fixed category of squares. The family's
+    arrows are the functors inherited from ``Cat`` between those exact
+    categories, and the morphisms between those functors are the existing
+    natural transformations. They retain their separate construction from
+    the squares classified by ``Of(f, g)``.
+    """
+
     FixedCategoryClass = ArrowMor
 
 
@@ -449,9 +561,10 @@ class _EndofunctorAlgebraMor(ArrowMor):
     r"""Morphisms ``f`` with ``f a = b T(f)`` between ``T``-algebras.
 
     A morphism of the arrow category is a commuting square.  Here its left
-    edge is not another chosen datum: it is forced to be ``T(f)`` by the
-    endofunctor.  Thus one underlying arrow determines one structured
-    morphism, exactly as in ``Inserter(T, Id)``.
+    edge satisfies ``left = T(f)``.  Omitting it selects ``T(f)``; an explicit
+    edge is retained with this equation, including an undecided equation.
+    Thus one underlying arrow determines one structured morphism once the
+    defining laws hold, exactly as in ``Inserter(T, Id)``.
     """
 
     class Element(CommutativeSquare):
@@ -463,30 +576,21 @@ class _EndofunctorAlgebraMor(ArrowMor):
         def _call_(self, element):
             return self.underlying_morphism()(element)
 
-    def _element_constructor_(self, left, right=None):
+    def _element_constructor_(self, left, right=None, *, check=False):
         category = self.arrow_category()
         match left:
-            case CommutativeSquare() if right is None:
-                if left.parent() is self:
-                    return left
-                if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {left} as a morphism of algebras {self.domain()} -> {self.codomain()}: it is a "
-                        f"square {left.domain()} -> {left.codomain()}"
-                    )
-                left, right = left.left(), left.right()
+            case CommutativeSquare() | NaturalTransformation() if right is None:
+                return super()._element_constructor_(left, check=check)
         if right is None:
             right = left
             left = category.endofunctor()(right)
-        else:
-            expected = category.endofunctor()(right)
-            if (left == expected) is not True:
-                raise ValueError(
-                    f"a morphism of algebras for {category.endofunctor()} with underlying map {right} needs left "
-                    f"edge T({right}) = {expected}, but the left edge is {left}"
-                )
-            left = expected
-        return self._square(left, right, verify=True)
+        return self._square(left, right, verify=check)
+
+    def _component_equations(self, square):
+        r"""Supply the additional inserter equation to the square-law owner."""
+        return super()._component_equations(square) + (
+            square.left() == self.arrow_category().endofunctor()(square.right()),
+        )
 
 
 class _EndofunctorAlgebraForgetfulFunctor(Functor):
@@ -689,29 +793,25 @@ class SliceMor(ArrowMor):
         r"""The functor ``[1] -> C`` that the codomain's chosen arrow determines."""
         return _walking_arrow_functor(self._edge_category(), self._codomain_arrow())
 
-    def _element_constructor_(self, factor, right=None):
+    def _element_constructor_(self, factor, right=None, *, check=False):
         match factor:
-            case CommutativeSquare() if right is None:
-                if factor.parent() is self:
-                    return factor
-                if factor.domain() is not self.domain() or factor.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {factor} as a morphism {self.domain()} -> {self.codomain()} in the slice "
-                        f"category: it is a morphism {factor.domain()} -> {factor.codomain()}"
-                    )
-                factor, right = factor.left(), factor.right()
+            case CommutativeSquare() | NaturalTransformation() if right is None:
+                return super()._element_constructor_(factor, check=check)
         fixed = self._domain_arrow().codomain()
         if self._codomain_arrow().codomain() is not fixed:
             raise ValueError(
                 f"a morphism in a slice category C/X needs both objects over one X, but {self.domain()} lies "
                 f"over {fixed} and {self.codomain()} lies over {self._codomain_arrow().codomain()}"
             )
+        if right is None:
+            right = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
+        return self._square(factor, right, verify=check)
+
+    def _component_equations(self, square):
+        r"""Retain the fixed-target identity equation, without replacing its edge."""
+        fixed = self._domain_arrow().codomain()
         identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
-        if right is not None and (right == identity) is not True:
-            raise ValueError(
-                f"in a slice category C/X the edge on X must be the identity of {fixed}, but it is {right}"
-            )
-        return self._square(factor, identity, verify=True)
+        return super()._component_equations(square) + (square.right() == identity,)
 
     def canonical_morphism(self) -> CommutativeSquare:
         inclusion = self._domain_arrow()
@@ -721,6 +821,16 @@ class SliceMor(ArrowMor):
 
 class SliceMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = SliceMor
+
+    def fixed_category_class_for(self, domain, codomain):
+        r"""Use the slice's declared arrow implementation, if it supplies one.
+
+        The declaration implements this same fixed slice Mor. Its owner
+        supplies any lower-arrow initialization required by its represented
+        objects; other slices retain the existing square implementation.
+        """
+        declared = _declared_construction(self.base_category(), "_SliceMor")
+        return self.FixedCategoryClass if declared is None else declared
 
 
 class SliceCategory(_SubcategoryOfArrows):
@@ -758,8 +868,9 @@ class SliceCategory(_SubcategoryOfArrows):
         sage: one = finite_ordered_set(("*",))
         sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
         sage: slice_category = SliceCategory(Sets(), one)
-        sage: obj = slice_category(Sets().Mor(points, one)(lambda point: "*"))
-        sage: obj in Sets().ArrowCategory()
+        sage: retained_arrow = Sets().Mor(points, one)(lambda point: "*")
+        sage: obj = slice_category(retained_arrow)
+        sage: obj in Sets() and slice_category.arrow(obj) is retained_arrow
         True
         sage: Mor = slice_category.Mor(obj, obj)
         sage: Mor is slice_category.MorCategory().Of(obj, obj)
@@ -792,6 +903,15 @@ class SliceCategory(_SubcategoryOfArrows):
         match cls:
             case DynamicMetaclass():
                 return cls.__base__(base_category, base_object)
+        if cls is SliceCategory:
+            declared = _declared_construction(base_category, "_SliceCategory")
+            if declared is not None:
+                selected = declared._slice_category_class_for(base_category, base_object)
+                if selected is not None:
+                    # The cache belongs to this exact SliceCategory(C, X)
+                    # entry, including when its owner supplies a more specific
+                    # implementation. No second category is constructed.
+                    return typecall(selected, base_category, base_object)
         return typecall(cls, base_category, base_object)
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
@@ -942,45 +1062,26 @@ class CosliceMor(ArrowMor):
         r"""The functor ``[1] -> C`` that the codomain's chosen arrow determines."""
         return _walking_arrow_functor(self._edge_category(), self._codomain_arrow())
 
-    def _element_constructor_(self, left, right=None):
+    def _element_constructor_(self, left, right=None, *, check=False):
         match left:
-            case CommutativeSquare() if right is None:
-                if left.parent() is self:
-                    return left
-                if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the coslice "
-                        f"category: it is a morphism {left.domain()} -> {left.codomain()}"
-                    )
-                left, right = left.left(), left.right()
+            case CommutativeSquare() | NaturalTransformation() if right is None:
+                return super()._element_constructor_(left, check=check)
         fixed = self._domain_arrow().domain()
         if self._codomain_arrow().domain() is not fixed:
             raise ValueError(
                 f"a morphism in a coslice category X/C needs both objects under one X, but {self.domain()} lies "
                 f"under {fixed} and {self.codomain()} lies under {self._codomain_arrow().domain()}"
             )
-        identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
         if right is None:
             right = left
-        elif (left == identity) is not True:
-            raise ValueError(
-                f"in a coslice category X/C the edge on X must be the identity of {fixed}, but it is {left}"
-            )
-        return self._square(identity, right, verify=True)
+            left = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
+        return self._square(left, right, verify=check)
 
-    def identity(self) -> CommutativeSquare:
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        target = self._domain_arrow().codomain()
-        source = self._domain_arrow().domain()
-        category = self._edge_category()
-        return self._from_commuting_edges(
-            _category_mor_parent(category, source, source).identity(),
-            _category_mor_parent(category, target, target).identity(),
-        )
-
+    def _component_equations(self, square):
+        r"""Retain the fixed-source identity equation, without replacing its edge."""
+        fixed = self._domain_arrow().domain()
+        identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
+        return super()._component_equations(square) + (square.left() == identity,)
 
 class CosliceMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = CosliceMor
@@ -1268,14 +1369,20 @@ def _subobject_source(subobject):
 
 
 class SubobjectMorphism(Morphism):
-    r"""The unique commuting-triangle map between two represented subobjects."""
+    r"""A factor map with its retained commuting triangle of subobjects.
+
+    Monic cancellation proves uniqueness only under the two actual triangle
+    laws.  Undecided laws remain on their selected slice squares, rather than
+    turning every same-parent factor datum into an established unique map.
+    """
 
     def __init__(
         self,
         parent: SubobjectMor,
         factor_morphism: Morphism,
         *,
-        verify: bool = True,
+        verify: bool = False,
+        _slice_square=None,
     ) -> None:
         Morphism.__init__(self, parent)
         if factor_morphism.domain() is not _subobject_source(self.domain()):
@@ -1299,12 +1406,31 @@ class SubobjectMorphism(Morphism):
                 f"{factor_morphism} is not a morphism of the base category, so it is not a morphism of "
                 f"subobjects {self.domain()} -> {self.codomain()}"
             )
-        if verify:
-            parent._slice_mor()(factor_morphism)
         self._factor_morphism = factor_morphism
+        slice_mor = parent._slice_mor()
+        if _slice_square is None:
+            _slice_square = slice_mor(factor_morphism)
+        elif (
+            _slice_square.parent() is not slice_mor
+            or _slice_square.left() is not factor_morphism
+        ):
+            raise ValueError(
+                "a retained subobject triangle needs the exact selected slice "
+                "Mor and the same factor map"
+            )
+        self._slice_square = _slice_square
+        self.validate_commutativity(check=verify)
 
     def factor_morphism(self) -> Morphism:
         return self._factor_morphism
+
+    def commutativity_decision(self):
+        r"""Return the actual slice square's triangle law, preserving unknowns."""
+        return self._slice_square.commutativity_decision()
+
+    def validate_commutativity(self, *, check=True):
+        r"""Use the square owner's validator on the retained triangle datum."""
+        return self._slice_square.validate_commutativity(check=check)
 
     def __call__(self, element):
         return self.factor_morphism()(element)
@@ -1312,26 +1438,38 @@ class SubobjectMorphism(Morphism):
     def _call_(self, element):
         return self.factor_morphism()(element)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any):
+        if self is other:
+            return True
+        if parent(other) is not self.parent() or not isinstance(other, SubobjectMorphism):
+            return False
         # A monomorphism cancels on the left: there is at most one factor
-        # commuting with the two chosen inclusions.
-        return parent(other) is self.parent()
+        # whose actual triangle commutes with the two chosen inclusions.
+        if (
+            self.commutativity_decision() is True
+            and other.commutativity_decision() is True
+        ):
+            return True
+        return self.factor_morphism() == other.factor_morphism()
 
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
+    def __ne__(self, other: Any):
+        from dzack_research.preamble.logic import negation
+
+        return negation(self == other)
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not _precomposable(self, other):
+        if not isinstance(other, SubobjectMorphism) or not _precomposable(self, other):
             return NotImplemented
         parent_mor = self.parent().subobject_category().Mor(
             other.domain(), self.codomain()
         )
         # If j f = i and k g = j, then k (g f) = i.
+        square = self._slice_square * other._slice_square
         return SubobjectMorphism(
-            parent_mor, self.factor_morphism() * other.factor_morphism(), verify=False
+            parent_mor, square.left(), _slice_square=square
         )
 
 
@@ -1381,27 +1519,55 @@ class SubobjectMor(CategoricalMor):
     def canonical_morphism(self) -> SubobjectMorphism:
         return SubobjectMorphism(self, self._canonical_factor(), verify=False)
 
-    def _element_constructor_(self, factor_morphism=None):
+    def _element_constructor_(self, factor_morphism=None, *, check=False):
         match factor_morphism:
             case SubobjectMorphism():
                 if factor_morphism.parent() is self:
+                    factor_morphism.validate_commutativity(check=check)
                     return factor_morphism
                 if factor_morphism.domain() is not self.domain() or factor_morphism.codomain() is not self.codomain():
                     raise ValueError(
                         f"cannot view {factor_morphism} as a morphism of subobjects {self.domain()} -> {self.codomain()}: "
                         f"it is a morphism {factor_morphism.domain()} -> {factor_morphism.codomain()}"
                     )
-                factor_morphism = factor_morphism.factor_morphism()
+                old_square = factor_morphism._slice_square
+                slice_mor = self._slice_mor()
+                old_slice_mor = old_square.parent()
+                premises = (
+                    (old_square,)
+                    if (
+                        old_slice_mor._domain_arrow() is slice_mor._domain_arrow()
+                        and old_slice_mor._codomain_arrow() is slice_mor._codomain_arrow()
+                    )
+                    else None
+                )
+                fixed = slice_mor._domain_arrow().codomain()
+                identity = _category_mor_parent(
+                    slice_mor._edge_category(), fixed, fixed
+                ).identity()
+                # Changing the base category changes the slice functors, not
+                # the admitted factor. Reuse its old triangle proof only for
+                # literally the same two retained inclusion arrows.
+                square = slice_mor._square(
+                    factor_morphism.factor_morphism(), identity,
+                    commutativity_premises=premises,
+                )
+                return SubobjectMorphism(
+                    self, square.left(), verify=check, _slice_square=square
+                )
             case None:
-                return self.canonical_morphism()
-        return SubobjectMorphism(self, factor_morphism)
+                result = self.canonical_morphism()
+                result.validate_commutativity(check=check)
+                return result
+        return SubobjectMorphism(self, factor_morphism, verify=check)
 
     def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return SubobjectMorphism(self, self._slice_mor().identity().left(), verify=False)
+        square = self._slice_mor().identity()
+        return SubobjectMorphism(self, square.left(), _slice_square=square)
 
 
 class SubobjectMorCategoryConstruction(MorCategoryConstruction):
@@ -1578,8 +1744,21 @@ class SetSubobjectCategory(SliceCategory):
 
         def __contains__(self, member):
             r"""Whether ``member`` names a point of \(X\) in the image of \(A\hookrightarrow X\)."""
+            from dzack_research.preamble.logic import conjunction
+
             base = self.codomain()
-            return member in base and base(member) in self.inclusion().image()
+            match base.is_parent_of(member):
+                case False:
+                    return False
+                case True:
+                    return self.inclusion().image().is_parent_of(base(member))
+                case membership:
+                    # The inclusion image is a subset of the ambient set.
+                    # Retain both defining membership conditions, and allow
+                    # a proved exclusion from the image to decide the result.
+                    return conjunction((membership, self.inclusion().image().is_parent_of(member)))
+
+        is_parent_of = __contains__
 
         def characteristic_morphism(self):
             return self.inclusion().characteristic_morphism()
@@ -1606,22 +1785,77 @@ class SetSubobjectCategory(SliceCategory):
 
         def __le__(self, other):
             r"""\(A\subseteq B\): the inclusion of \(A\) factors through the inclusion of \(B\)."""
-            return self.factor_through_or_none(other) is not None
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
+            from dzack_research.preamble.logic import conjunction, negation
+
+            if self is other:
+                return True
+            if other not in self._set_subobject_category():
+                return False
+            if other.codomain() is not self.codomain():
+                return False
+            base = self.codomain()
+            if base in FiniteSets() and base in EnumeratedSets():
+                return conjunction(
+                    negation(conjunction((
+                        self.is_parent_of(member), negation(other.is_parent_of(member)),
+                    )))
+                    for member in base
+                )
+            domain = self.domain()
+            if domain in FiniteSets() and domain in EnumeratedSets():
+                # A finite subobject can be checked at its own represented
+                # points even when the ambient set is infinite.  Retain an
+                # undecided target-membership proposition instead of asking
+                # factor_through_or_none to construct an uncertified factor.
+                inclusion = self.inclusion()
+                return conjunction(
+                    other.is_parent_of(inclusion(point)) for point in domain
+                )
+            # Without a selected containment algorithm, absence of a
+            # factorization witness does not prove noncontainment.
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_subset", self, other)
 
         def union(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self or member in other)
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return self._subset_from_predicate(other, lambda member: negation(conjunction((
+                negation(self.is_parent_of(member)), negation(other.is_parent_of(member)),
+            ))))
 
         def intersection(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self and member in other)
+            from dzack_research.preamble.logic import conjunction
+
+            return self._subset_from_predicate(other, lambda member: conjunction((
+                self.is_parent_of(member), other.is_parent_of(member),
+            )))
 
         def difference(self, other):
-            return self._subset_from_predicate(other, lambda member: member in self and member not in other)
+            from dzack_research.preamble.logic import conjunction, negation
+
+            return self._subset_from_predicate(other, lambda member: conjunction((
+                self.is_parent_of(member), negation(other.is_parent_of(member)),
+            )))
 
         def symmetric_difference(self, other):
-            return self._subset_from_predicate(other, lambda member: (member in self) != (member in other))
+            from dzack_research.preamble.logic import conjunction, negation
+
+            def predicate(member):
+                left = self.is_parent_of(member)
+                right = other.is_parent_of(member)
+                return negation(conjunction((
+                    negation(conjunction((left, negation(right)))),
+                    negation(conjunction((right, negation(left)))),
+                )))
+
+            return self._subset_from_predicate(other, predicate)
 
         def complement(self):
-            return self.codomain().power_set().from_predicate(lambda member: member not in self)
+            from dzack_research.preamble.logic import negation
+
+            return self.codomain().power_set().from_predicate(lambda member: negation(self.is_parent_of(member)))
 
         def __or__(self, other):
             return self.union(other)
@@ -1629,14 +1863,15 @@ class SetSubobjectCategory(SliceCategory):
         def __eq__(self, other):
             r"""Two subsets of \(X\) are equal when they have the same members.
 
-            Decided when \(X\) is finite enumerated, or when both subsets are;
-            otherwise the proposition that they are equal.
+            Finite enumerated ambient sets admit pointwise characteristic
+            comparison. Otherwise equality is mutual containment, retaining
+            undecided inclusion propositions when necessary.
             """
             from dzack_research.preamble.categories.sets.set_categories import (
                 EnumeratedSets,
                 FiniteSets,
             )
-            from dzack_research.preamble.logic import AtomicProposition
+            from dzack_research.preamble.logic import conjunction, negation
 
             if self is other:
                 return True
@@ -1644,11 +1879,25 @@ class SetSubobjectCategory(SliceCategory):
                 return False
             base = self.codomain()
             if base in FiniteSets() and base in EnumeratedSets():
-                return all((member in self) == (member in other) for member in base)
-            left, right = self.domain(), other.domain()
-            if all(side in FiniteSets() and side in EnumeratedSets() for side in (left, right)):
-                return left.cardinality() == right.cardinality() and self <= other
-            return AtomicProposition("equal", self, other)
+                # Equality of subsets is equality of their characteristic
+                # predicates, not Python equality of their truth values.
+                # Either membership may remain undecided even over a finite
+                # enumerated ambient set.
+                # In particular, both implications for one point must be
+                # evaluated from the same two membership propositions.
+                return conjunction(
+                    conjunction((
+                        negation(conjunction((left, negation(right)))),
+                        negation(conjunction((right, negation(left)))),
+                    ))
+                    for member in base
+                    for left, right in ((self.is_parent_of(member), other.is_parent_of(member)),)
+                )
+            # Equality is still the conjunction of both inclusions when
+            # neither subobject has a finite enumeration. Their inclusion
+            # owners retain undecided containment as propositions rather
+            # than converting the absence of a factor into noncontainment.
+            return conjunction((self <= other, other <= self))
 
         def __ne__(self, other):
             from dzack_research.preamble.logic import negation

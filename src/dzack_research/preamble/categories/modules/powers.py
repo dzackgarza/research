@@ -15,6 +15,7 @@ from sage.categories.category import Category
 from sage.arith.misc import binomial
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.products import (
@@ -43,6 +44,7 @@ from dzack_research.preamble.categories.modules.tensor_products import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    _engine_numeral,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
@@ -68,23 +70,35 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.logic import conjunction
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.owned_category import owned_category_join
 
 
+def _exterior_word(label, degree):
+    r"""Canonical word encoding of a degree in an exterior-power basis."""
+    if degree == 0:
+        return ()
+    if degree == 1:
+        return (label,)
+    return tuple(label)
+
+
 class _PowerModuleParentMethods:
     def __init__(self, power_source, power_degree, **rest) -> None:
         self._power_source = power_source
-        self._power_degree = int(power_degree)
+        self._power_degree = _degree(power_degree)
         super().__init__(**rest)
 
     def power_source(self):
+        r"""The literal module whose selected power this object represents."""
         return self._power_source
 
     def power_degree(self):
-        return self._power_degree
+        r"""The natural number indexing this selected power."""
+        return NN(self._power_degree)
 
     def _lift_from_ambient_power_algebra(self, element):
         r"""Read an ambient homogeneous element back in this power module."""
@@ -95,24 +109,37 @@ class _PowerModuleParentMethods:
                 f"element of the graded algebra {algebra}"
             )
         degree = self.power_degree()
-        component = algebra.homogeneous_component(element, degree)
-        if algebra.from_graded_piece(degree, component) != element:
+        membership = self.is_parent_of(element)
+        if membership is False:
             raise ValueError(
                 f"{element} is not in the degree-{degree} piece {self} of {algebra}: it has nonzero "
                 f"components in other degrees"
             )
-        return self(component)
+        assert membership is True, (
+            f"reading {element} in the degree-{degree} piece {self} requires deciding "
+            "whether its other homogeneous components vanish; that membership is unresolved"
+        )
+        return self(element.homogeneous_component(degree))
 
-    def __contains__(self, element) -> bool:
+    def __contains__(self, element):
+        r"""Membership in the homogeneous summand, retaining undecided zero equations."""
         if element_parent(element) is self:
             return True
-        if element_parent(element) is self.ambient_power_algebra():
-            try:
-                self._lift_from_ambient_power_algebra(element)
-            except (TypeError, ValueError):
-                return False
-            return True
+        algebra = self.ambient_power_algebra()
+        if element_parent(element) is algebra:
+            grading = algebra.grading_monoid()
+            degree = grading(self.power_degree())
+            # The represented component family is finite. No equality test
+            # on the retained-degree component is needed, so an inclusion
+            # image belongs even when that component's zero is undecided.
+            return conjunction(
+                component == component.parent().zero()
+                for component_degree, component in element.homogeneous_components().items()
+                if grading(component_degree) != degree
+            )
         return super().__contains__(element)
+
+    is_parent_of = __contains__
 
     @cached_method
     def inclusion(self):
@@ -173,6 +200,30 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
 
 
 class AlternatingPowerModules(OwnedCategoryOverBaseRing):
+    r"""Chosen exterior powers ``Lambda^n_R(M)`` over a commutative ring.
+
+    The source module ``M`` and the natural number ``n`` are retained.
+    The canonical alternating multilinear map represents alternating maps
+    on ``n`` copies of ``M``. This module is the degree-``n`` direct summand
+    of ``Lambda_R(M)``, with its canonical linear inclusion and degree
+    projection as the inverse on that summand.
+
+    Arrows are all ``R``-linear maps between the represented powers,
+    including different degrees. The maps induced by a linear map of
+    source modules are supplied by the existing exterior-power operation.
+    The public construction keeps degree zero as the literal regular
+    scalar module and degree one as ``M``; the higher selected pieces carry
+    this additional power datum. Free framings or finite presentations
+    select computations and are not extra ancestors of this category.
+
+    See Mathlib ``LinearAlgebra/ExteriorPower/Basic``, especially
+    ``alternatingMapLinearEquiv``, ``map``, ``zeroEquiv`` and ``oneEquiv``.
+    """
+
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         return Modules(self.base_ring()).an_object().exterior_power(2)
 
@@ -191,6 +242,10 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
 
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         return Modules(self.base_ring()).an_object().divided_power_module(2)
 
@@ -538,6 +593,10 @@ class QuadraticModuleMor(ModuleMor):
 class DividedSquareModules(OwnedCategoryOverBaseRing):
     r"""Degree-two divided powers, classifying quadratic maps."""
 
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         r"""The divided square of the free module of rank one."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -567,22 +626,22 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
             source = self.divided_square_source()
 
             coordinates = source.framing_morphism().lift(element)
-            support = coordinates.support().domain()
+            coefficients = coordinates.parent()._selected_module_coefficients(coordinates)
             square_labels = self.module_generating_set()
             values = {}
-            for label in support:
+            for label, coefficient in coefficients.items():
                 target_label = square_labels.from_multiplicities({label: 2})
-                values[target_label] = coordinates(label) * coordinates(label)
+                values[target_label] = coefficient * coefficient
             source_labels = source.module_generating_set()
-            for left in support:
+            for left, left_coefficient in coefficients.items():
                 left_position = int(source_labels.ranking_map()(left))
-                for right in support:
+                for right, right_coefficient in coefficients.items():
                     if left_position >= int(source_labels.ranking_map()(right)):
                         continue
                     target_label = square_labels.from_multiplicities(
                         {left: 1, right: 1}
                     )
-                    values[target_label] = coordinates(left) * coordinates(right)
+                    values[target_label] = left_coefficient * right_coefficient
             return self.linear_combination(values)
 
         def polar(self, left, right):
@@ -591,31 +650,21 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 
         def from_quadratic(self, quadratic, codomain):
             r"""Factor a quadratic map uniquely through the divided square."""
-            source = self.divided_square_source()
-
-            def generator_image(selection):
-                support = selection.support()
-                if int(support.cardinality()) == 1:
-                    label = support[0]
-                    return quadratic(source.module_generator(label))
-                left = support[0]
-                right = support[1]
-                return (
-                    quadratic(
-                        source.module_generator(left)
-                        + source.module_generator(right)
-                    )
-                    - quadratic(source.module_generator(left))
-                    - quadratic(source.module_generator(right))
-                )
-
-
             mor = self.module_category().Mor(self, codomain)
             return mor.from_quadratic_map(quadratic)
 
 
 def _degree(degree) -> int:
-    value = int(degree)
+    r"""Read an exact nonnegative integer at the existing numeral boundary.
+
+    The power constructions share this normalization, including products,
+    induced maps, and the exterior-power degrees used by Poincaré duality
+    and Hodge constructions. Fractional input is not a degree and must not
+    be truncated into a different power by Python's ``int`` conversion.
+    """
+    if element_parent(degree) is NN:
+        degree = int(degree)
+    value = int(_engine_numeral(SageZZ, degree))
     if value < 0:
         raise ValueError(f"{degree} is not a degree: a degree must be a nonnegative integer")
     return value
@@ -648,17 +697,23 @@ def _symmetric_relations(relation_coordinates, source_labels, degree: int, gener
     lower_labels = _free_degree_labels(source_labels, degree - 1, "symmetric")
     relations = []
     for relation in relation_coordinates:
+        relation_coefficients = relation.parent()._selected_module_coefficients(relation)
         for monomial in lower_labels:
             coefficients = {}
-            for source_label in relation.support().domain():
+            for source_label, coefficient in relation_coefficients.items():
                 target = monomial.add_label(source_label)
-                coefficients[target] = coefficients.get(target, ring.zero()) + ring(relation(source_label))
+                coefficients[target] = coefficients.get(target, ring.zero()) + ring(coefficient)
             relations.append(generators.linear_combination(coefficients))
-    return tuple(relation for relation in relations if relation)
+    return tuple(relation for relation in relations if (relation == generators.zero()) is not True)
 
 
 def _alternating_relations(relation_coordinates, source_labels, degree: int, generators):
-    r"""Return the relations ``r(e_k) wedge m`` of ``Alt^d``, for ``m`` a wedge of degree ``d - 1``."""
+    r"""Return the relations ``r(e_k) wedge m`` of ``Alt^d``.
+
+    Here ``m`` ranges over the wedges of degree ``d - 1``. Transport the
+    finite containing coordinate family of each relation; deciding which
+    coefficients are nonzero is unnecessary for the alternating sum.
+    """
     if degree == 0:
         return ()
     ring = generators.base_ring()
@@ -666,17 +721,18 @@ def _alternating_relations(relation_coordinates, source_labels, degree: int, gen
     singleton_labels = _free_degree_labels(source_labels, 1, "alternating")
     relations = []
     for relation in relation_coordinates:
+        relation_coefficients = relation.parent()._selected_module_coefficients(relation)
         for monomial in lower_labels:
             coefficients = {}
-            for source_label in relation.support().domain():
+            for source_label, coefficient in relation_coefficients.items():
                 singleton = singleton_labels.from_multiplicities({source_label: 1})
                 wedge = monomial.wedge_with(singleton)
                 if wedge is None:
                     continue
                 target, sign = wedge
-                coefficients[target] = coefficients.get(target, ring.zero()) + sign * ring(relation(source_label))
+                coefficients[target] = coefficients.get(target, ring.zero()) + sign * ring(coefficient)
             relations.append(generators.linear_combination(coefficients))
-    return tuple(relation for relation in relations if relation)
+    return tuple(relation for relation in relations if (relation == generators.zero()) is not True)
 
 
 def _divided_product_coefficient(left, right):
@@ -705,12 +761,12 @@ def _divided_relations(relation_coordinates, source_labels, degree: int, generat
                     coefficient = ring.one()
                     for source_label in exponent.support():
                         coefficient *= ring(relation(source_label)) ** exponent.multiplicity(source_label)
-                    if not coefficient:
+                    if (coefficient == ring.zero()) is True:
                         continue
                     target = exponent.merged_with(monomial)
                     coefficients[target] = coefficients.get(target, ring.zero()) + coefficient * _divided_product_coefficient(exponent, monomial)
                 relations.append(generators.linear_combination(coefficients))
-    return tuple(relation for relation in relations if relation)
+    return tuple(relation for relation in relations if (relation == generators.zero()) is not True)
 
 
 def _presented_degree_power(
@@ -975,11 +1031,11 @@ def _power_morphism(morphism, degree: int, flavor: str):
                 image = morphism.codomain().framing_morphism().lift(morphism(
                         morphism.domain().module_generator(source_generator_label)
                     ))
+                image_coefficients = image.parent()._selected_module_coefficients(image)
                 next_polynomial = {}
                 singleton_indices = codomain_labels.ordered_subsets_of_size(1)
                 for wedge, coefficient in polynomial.items():
-                    for target_label in image.support().domain():
-                        scalar = image(target_label)
+                    for target_label, scalar in image_coefficients.items():
                         singleton = singleton_indices.from_multiplicities(
                             {target_label: 1}
                         )
@@ -1007,9 +1063,10 @@ def _power_morphism(morphism, degree: int, flavor: str):
             image = morphism.codomain().framing_morphism().lift(morphism(
                     morphism.domain().module_generator(source_generator_label)
                 ))
+            image_coefficients = image.parent()._selected_module_coefficients(image)
 
             if flavor == "divided":
-                if not image:
+                if (image == image.parent().zero()) is True:
                     return target.zero()
                 support = _ordered_coefficient_support(morphism.codomain(), image)
                 local_indices = support.multisets_of_size(power)
@@ -1022,7 +1079,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
                             image(target_label)
                             ** local_selection.multiplicity(target_label)
                         )
-                    if not coefficient:
+                    if (coefficient == morphism.codomain().base_ring().zero()) is True:
                         continue
                     target_selection = (
                         codomain_degree_indices.from_source_rank_positions(
@@ -1058,20 +1115,24 @@ def _power_morphism(morphism, degree: int, flavor: str):
             for _occurrence in range(power):
                 next_polynomial = {}
                 for old_selection, old_coefficient in polynomial.items():
-                    for target_label in image.support().domain():
+                    for target_label, coefficient in image_coefficients.items():
                         new_selection = old_selection.add_label(target_label)
                         next_polynomial[new_selection] = (
                             next_polynomial.get(
                                 new_selection,
                                 morphism.codomain().base_ring().zero(),
                             )
-                            + old_coefficient * image(target_label)
+                            + old_coefficient * coefficient
                         )
                 polynomial = next_polynomial
                 accumulated_degree += 1
         return target.linear_combination(polynomial)
 
-    return source.module_category().Mor(source, target)(image_of_source_label)
+    classified = source.module_category().Mor(source, target)(image_of_source_label)
+    return classified.parent()._from_constructed_element_map(
+        classified,
+        premises=(morphism,),
+    )
 
 
 def _symmetric_power_morphism(morphism, degree):
@@ -1097,17 +1158,20 @@ def _divided_power_product(module, left_degree, left, right_degree, right):
     source_left = module.divided_power_module(left_degree)
     source_right = module.divided_power_module(right_degree)
     target = module.divided_power_module(left_degree + right_degree)
-    left_coordinates = source_left.framing_morphism().lift(left)
-    right_coordinates = source_right.framing_morphism().lift(right)
-    right_support = right_coordinates.support().domain()
 
     if left_degree == 0:
+        left_coordinates = source_left.framing_morphism().lift(left)
         scalar = left_coordinates(source_left.module_generating_set()[0])
         return target.scalar_multiple(scalar, right)
     if right_degree == 0:
+        right_coordinates = source_right.framing_morphism().lift(right)
         scalar = right_coordinates(source_right.module_generating_set()[0])
         return target.scalar_multiple(scalar, left)
 
+    left_coordinates = source_left.framing_morphism().lift(left)
+    right_coordinates = source_right.framing_morphism().lift(right)
+    left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+    right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
     source_labels = module.module_generating_set()
 
     def selection_of(label, degree):
@@ -1119,14 +1183,14 @@ def _divided_power_product(module, left_degree, left, right_degree, right):
 
     result = {}
     total_degree = left_degree + right_degree
-    for left_label in left_coordinates.support().domain():
+    for left_label, left_coefficient in left_coefficients.items():
         left_selection = selection_of(left_label, left_degree)
-        for right_label in right_support:
+        for right_label, right_coefficient in right_coefficients.items():
             right_selection = selection_of(right_label, right_degree)
             selection = left_selection.merged_with(right_selection)
             coefficient = (
-                left_coordinates(left_label)
-                * right_coordinates(right_label)
+                left_coefficient
+                * right_coefficient
                 * _divided_product_coefficient(left_selection, right_selection)
             )
             label = (
@@ -1139,23 +1203,31 @@ def _divided_power_product(module, left_degree, left, right_degree, right):
 
 
 def _alternating_power_product(module, left_degree, left, right_degree, right):
-    r"""Multiply homogeneous exterior-power elements by the wedge product."""
+    r"""Multiply homogeneous exterior-power elements by the wedge product.
+
+    The existing module coefficient supplier gives finite containing
+    families even for an infinite framing or undecided coefficient equality.
+    Wedge transport uses those coefficients without enumerating exact support.
+    """
 
     left_degree = _degree(left_degree)
     right_degree = _degree(right_degree)
     source_left = module.exterior_power(left_degree)
     source_right = module.exterior_power(right_degree)
     target = module.exterior_power(left_degree + right_degree)
-    left_coordinates = source_left.framing_morphism().lift(left)
-    right_coordinates = source_right.framing_morphism().lift(right)
-    right_support = right_coordinates.support().domain()
     if left_degree == 0:
+        left_coordinates = source_left.framing_morphism().lift(left)
         scalar = left_coordinates(source_left.module_generating_set()[0])
         return target.scalar_multiple(scalar, right)
     if right_degree == 0:
+        right_coordinates = source_right.framing_morphism().lift(right)
         scalar = right_coordinates(source_right.module_generating_set()[0])
         return target.scalar_multiple(scalar, left)
 
+    left_coordinates = source_left.framing_morphism().lift(left)
+    right_coordinates = source_right.framing_morphism().lift(right)
+    left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+    right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
     source_labels = module.module_generating_set()
 
     def selection_of(label, degree):
@@ -1167,15 +1239,15 @@ def _alternating_power_product(module, left_degree, left, right_degree, right):
 
     result = {}
     total_degree = left_degree + right_degree
-    for left_label in left_coordinates.support().domain():
+    for left_label, left_coefficient in left_coefficients.items():
         left_selection = selection_of(left_label, left_degree)
-        for right_label in right_support:
+        for right_label, right_coefficient in right_coefficients.items():
             right_selection = selection_of(right_label, right_degree)
             wedge = left_selection.wedge_with(right_selection)
             if wedge is None:
                 continue
             selection, sign = wedge
-            coefficient = sign * left_coordinates(left_label) * right_coordinates(right_label)
+            coefficient = sign * left_coefficient * right_coefficient
             label = (
                 selection.support()[0]
                 if total_degree == 1
@@ -1186,10 +1258,16 @@ def _alternating_power_product(module, left_degree, left, right_degree, right):
 
 
 def _ordered_coefficient_support(module, coordinates):
+    r"""Order a finite containing family of coefficient labels for transport.
+
+    A divided-power expansion can retain zero coefficients. It requires the
+    chosen finite coordinate family, not a decision of its exact support.
+    """
 
     source_labels = module.module_generating_set()
-    coefficient_labels = coordinates.support().domain()
-    positions = Sets.Δ[int(coefficient_labels.cardinality()) - 1]
+    coefficients = coordinates.parent()._selected_module_coefficients(coordinates)
+    coefficient_labels = tuple(label for label, _coefficient in coefficients.items())
+    positions = Sets.Δ[len(coefficient_labels) - 1]
 
     def label_at(index):
         requested = int(index)
@@ -1203,13 +1281,13 @@ def _ordered_coefficient_support(module, coordinates):
             if preceding == requested:
                 return label
         raise IndexError(
-            f"no generator of {module} at position {requested} of the support {coefficient_labels}"
+            f"no generator of {module} at position {requested} of the containing coefficient family {coefficient_labels}"
         )
 
     return FiniteOrderedSets().from_indexed(
         positions,
         label_at,
-        name="Finite coefficient support",
+        name="Finite containing coefficient labels",
     )
 
 
@@ -1227,7 +1305,7 @@ def _divided_power_element(module, degree, element):
 
     target = module.divided_power_module(degree)
     coordinates = module.framing_morphism().lift(element)
-    if not coordinates:
+    if (coordinates == coordinates.parent().zero()) is True:
         return target.zero()
     support = _ordered_coefficient_support(module, coordinates)
     local_labels = support.multisets_of_size(degree)
@@ -1238,7 +1316,7 @@ def _divided_power_element(module, degree, element):
         coefficient = module.base_ring().one()
         for label in local_selection.support():
             coefficient *= coordinates(label) ** local_selection.multiplicity(label)
-        if not coefficient:
+        if (coefficient == module.base_ring().zero()) is True:
             continue
         target_selection = target_labels.from_source_rank_positions(
             int(source_labels.ranking_map()(label)) for label in local_selection

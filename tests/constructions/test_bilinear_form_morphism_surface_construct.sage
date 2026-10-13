@@ -4,7 +4,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _hyperbolic_bilinear_morphism():
-    form = ZZ.free_module(2).equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
+    module = ZZ.free_module(2)
+    form = FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[0, 1], [1, 0]]))
     return form, form.form()
 
 

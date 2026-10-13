@@ -20,8 +20,8 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     _subgroup_vector_orbit_representatives,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.set_categories import Set
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.categories.sets.set_categories import Set, _ConditionSetEngine
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -87,6 +87,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             **rest,
         ) -> None:
             self._predicate = predicate
+            self._admitted_members = []
             self._description = description
             self._character_data = dict(character_data or {})
             self._character_data_complete = (
@@ -98,6 +99,24 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
         def defining_predicate(self):
             return self._predicate
+
+        def universe(self):
+            r"""The literal ambient set for the inherited predicate-subset operations."""
+            return self.supergroup()
+
+        predicate = defining_predicate
+
+        # The subgroup is the same predicate subset of its ambient group.
+        # Reuse the set owner's membership, admission and enumeration rules;
+        # group closure is a premise of this subgroup construction.
+        __contains__ = _ConditionSetEngine.__contains__
+        is_parent_of = __contains__
+        __iter__ = _ConditionSetEngine.__iter__
+        _retain_admitted_member = _ConditionSetEngine._retain_admitted_member
+
+        def _element_constructor_(self, datum):
+            r"""Read ambient group literals, then use the set owner's predicate admission."""
+            return _ConditionSetEngine._element_constructor_(self, self.supergroup()(datum))
 
         def finite_index_schreier_generators(self, *, index_bound, generators=None):
             r"""Generate a finite-index predicate subgroup by coset traversal.
@@ -135,6 +154,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             """
             ambient = self.supergroup()
             if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
                 generators = tuple(ambient.group_generators())
             else:
                 generators = tuple(generators)
@@ -217,18 +240,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
             return cardinal(sum(1 for _element in self))
 
-        def __iter__(self):
-            r"""The elements of the finite supergroup satisfying the predicate."""
-            supergroup = self.supergroup()
-            assert supergroup.is_finite() is True, (
-                f"cannot list the elements of the subgroup {self}: its group {supergroup} "
-                f"is not known to be finite"
-            )
-            return (element for element in supergroup if self._predicate(element))
-
-        def __contains__(self, element):
-            return element in self.supergroup() and bool(self._predicate(element))
-
         @cached_method
         def _engine_group(self):
             r"""The engine subgroup on the elements of this subgroup of a finite group.
@@ -247,24 +258,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def _from_engine(self, engine_element):
             return self.supergroup()._from_subgroup_engine(engine_element)
 
-        def _element_constructor_(self, datum):
-            supergroup = self.supergroup()
-            element = datum if datum in supergroup else supergroup(datum)
-            if element not in self:
-                raise ValueError(
-                    f"{element} is not an element of the subgroup {self}: it does not "
-                    f"satisfy {self._description}"
-                )
-            return element
-
         def one(self):
-            identity = self.supergroup().one()
-            if identity not in self:
-                raise ValueError(
-                    f"{self} is not a subgroup of {self.supergroup()}: the identity {identity} "
-                    f"does not satisfy {self._description}"
-                )
-            return identity
+            r"""The ambient identity, which lies in the declared subgroup."""
+            return self.supergroup().one()
 
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
@@ -510,6 +506,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             morphism = self.kernel_morphism()
             ambient = self.supergroup()
             if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
                 generators = tuple(ambient.group_generators())
             else:
                 generators = tuple(generators)
@@ -572,7 +572,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             )
         if predicate is None:
             def predicate(element):
-                return morphism(element) in subgroup
+                return subgroup.is_parent_of(morphism(element))
         if description is None:
             description = f"{morphism}(g) lies in {subgroup}"
         return _object_of(
@@ -602,6 +602,83 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         def target_subgroup(self):
             return self._target_subgroup
 
+        def schreier_generating_morphism(self, *, generators=None):
+            r"""A finite free-group augmentation onto this finite-index preimage.
+
+            Write ``P = rho^-1(H)`` inside ``G``. The selected augmentation
+            ``pi: F -> G`` supplies formal source words without deciding
+            membership of their values in a generated subgroup of a larger
+            group. Schreier's formula is computed for ``rho*pi`` in ``F``.
+            The resulting word map ``w: E -> F`` satisfies
+            ``rho*pi(w(E)) <= H``, so ``pi*w`` defines the returned map
+            ``E -> P`` with this literal preimage as codomain.
+
+            Its finite basis indexes the complete Schreier family, retaining
+            repeated and identity words. The actual word map and ambient
+            augmentation are retained by the defining group-map composite.
+            No value is readmitted by the predicate-subgroup constructor.
+            Explicit generators may replace the selected augmentation; these
+            must be admitted elements generating the ambient group.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import (
+                Sets,
+                finite_ordinal_set,
+            )
+
+            morphism = self.preimage_morphism()
+            ambient = self.supergroup()
+            if generators is None:
+                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
+                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
+                    "selected finite generating set; pass a finite generating family"
+                )
+                resolution = ambient.selected_group_resolution()
+                free = resolution.level(0)
+                augmentation = resolution.augmentation()
+            else:
+                source_generators = tuple(generators)
+                for generator in source_generators:
+                    admitted = ambient.is_parent_of(generator)
+                    if admitted is False:
+                        raise ValueError(
+                            f"cannot compute Schreier generators of {self}: {generator} is not an element of {ambient}"
+                        )
+                    assert admitted is True, (
+                        f"cannot compute Schreier generators of {self}: membership of the supplied "
+                        f"generator {generator} in {ambient} is undecided"
+                    )
+                source_labels = finite_ordinal_set(len(source_generators))
+                free = OwnedGroups.Free(index_set=source_labels)
+                augmentation = free.Mor(ambient)(
+                    Sets().Mor(source_labels, ambient)(
+                        lambda label: source_generators[int(label)]
+                    )
+                )
+
+            target = self.target_subgroup()
+            free_generators = tuple(free.group_generators())
+            finite_map = morphism * augmentation
+            lifts = free.finite_image_lifts(finite_map, generators=free_generators)
+            representatives = []
+            for image in lifts:
+                if not any((~representative) * image in target for representative in representatives):
+                    representatives.append(image)
+
+            def representative_of(image):
+                return next(rep for rep in representatives if (~rep) * image in target)
+
+            words = tuple(
+                (~lifts[representative_of(finite_map(generator) * image)]) * generator * lifts[image]
+                for image in representatives
+                for generator in free_generators
+            )
+            labels = finite_ordinal_set(len(words))
+            source = OwnedGroups.Free(index_set=labels)
+            word_map = source.Mor(free)(
+                Sets().Mor(labels, free)(lambda label: words[int(label)])
+            )
+            return source.Mor(self)._from_elementwise_rule(augmentation * word_map)
+
         def schreier_generators(self, *, generators=None):
             r"""Generate a finite-index preimage using cosets ``t J`` of its image.
 
@@ -627,27 +704,9 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 sage: any(g == s*s or g == ~(s*s) for g in generators)
                 True
             """
-            morphism = self.preimage_morphism()
-            ambient = self.supergroup()
-            target = self.target_subgroup()
-            if generators is None:
-                source_generators = tuple(ambient.group_generators())
-            else:
-                source_generators = tuple(generators)
-            lifts = ambient.finite_image_lifts(morphism, generators=source_generators)
-            representatives = []
-            for image in lifts:
-                if not any((~representative) * image in target for representative in representatives):
-                    representatives.append(image)
-
-            def representative_of(image):
-                return next(rep for rep in representatives if (~rep) * image in target)
-
-            return tuple(
-                self((~lifts[representative_of(morphism(generator) * image)]) * generator * lifts[image])
-                for image in representatives
-                for generator in source_generators
-            )
+            augmentation = self.schreier_generating_morphism(generators=generators)
+            source = augmentation.domain()
+            return tuple(augmentation(generator) for generator in source.group_generators())
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
@@ -757,7 +816,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         return _object_of(
             _predicate_subgroup_category(self),
             supergroup=group,
-            predicate=lambda element: all(element in subgroup for subgroup in subgroups),
+            predicate=lambda element: conjunction(subgroup.is_parent_of(element) for subgroup in subgroups),
             description="g lies in every selected subgroup",
             character_data=character_data,
             character_data_complete=character_data_complete,

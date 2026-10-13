@@ -9,26 +9,31 @@ surface, and the boundary of the toric log pair \((Y,\Delta)\) splits into the
 *blue* divisor \(C\), summing the invariant divisors whose facet of \(Q\)
 contains \(p^*\), and its complement \(C'\).
 
-The low-level polygon constructor retains the archived table for compatibility.
-The source-admitted :class:`AT21ToricADEPair` separately checks the toric shape
-range against Alexeev--Thompson, *ADE surfaces and their moduli*, Theorems 4.8
-and 4.10 and Lemma 3.25, and checks Lemma 3.4's divisor identity
-``L=-2(K_Y+C)=2C'`` on the live toric surface.  Branch sections are elements of
-that actual polarizing linear system; Table 5 normal forms are admitted only
-where their affine-coordinate support has been checked against the retained
-polygon.
+Both constructors use the toric shapes of Alexeev--Thompson, *ADE surfaces and
+their moduli*, Tables 1 and 4.  The AT21 enhancement checks Lemma 3.4's linear
+equivalence ``L ~ -2(K_Y+C) ~ 2C'`` on the live toric surface.  Table 5 sections
+use its literal character coordinates.  A double-cover equation defines a
+hypersurface; its ADE interpretation additionally requires the stated
+log-canonicity hypothesis on the branch pair.  Projection is defined on the
+toric complement of the pyramid's apex fixed point, which the hypersurface
+avoids because its apex-square coefficient is a unit.
 """
 
 from dataclasses import dataclass
 
+from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
+    OwnedRings,
+    _engine_numeral,
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPairs
@@ -45,6 +50,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.static_types import ProductOfNaturalNumbers
 
@@ -105,18 +111,14 @@ def _ade_parameter(letter, rank, variant, affine):
 
 
 def _affine_polygon_data(letter, rank, parameter):
-    if letter == "A":
-        return (((0, 2), (0, 0), (2 * parameter, 0), (parameter, 2)), (SageQQ(parameter) / 2, 1))
     if letter == "D":
         return (((0, 2), (0, 0), (2 * parameter - 4, 0), (4, 2)), (2, 2))
     assert letter == "E", (
-        f"an affine ADE type has letter A, D or E, but the letter is {letter!r}"
+        f"the represented toric affine shapes have letter D or E, but the letter is {letter!r}"
     )
-    if rank == 6:
-        return (((0, 3), (0, 0), (3, 0)), (1, 1))
     if rank == 7:
         return (((0, 4), (0, 0), (4, 0)), (2, 2))
-    assert rank == 8, f"the affine type tilde E_n has n = 6, 7 or 8, but n = {rank}"
+    assert rank == 8, f"the toric affine E shapes have rank 7 or 8, but n = {rank}"
     return (((0, 3), (0, 0), (6, 0)), (2, 2))
 
 
@@ -125,35 +127,18 @@ def _a_family_polygon_data(rank, variant, parameter):
     right_short = _has(variant[1:2], "short")
     if _has(variant, "primed", "prime", "p"):
         return (
-            ((2, 2), (0, 1), (0, 0), (2 * parameter - 2, 0)),
+            ((2, 2), (0, 1), (0, 0), (rank - 1, 0)),
             (2, 2),
-            finite_family((), name="Side decorations"),
         )
     if left_short and right_short:
         vertices = ((0, 2), (1, 0), (2 * parameter - 1, 0))
-        decorations = (
-            SideDecoration(_side(0, 1), "short", "black"),
-            SideDecoration(_side(0, 2), "short", "black"),
-        )
     elif left_short:
-        vertices = ((0, 2), (1, 0), (2 * parameter - 1, 0))
-        decorations = (
-            SideDecoration(_side(0, 1), "short", "black"),
-            SideDecoration(_side(0, 2), "long", "white"),
-        )
+        vertices = ((0, 2), (1, 0), (2 * parameter, 0))
     elif right_short:
         vertices = ((0, 2), (0, 0), (2 * parameter - 1, 0))
-        decorations = (
-            SideDecoration(_side(0, 1), "long", "white"),
-            SideDecoration(_side(0, 2), "short", "black"),
-        )
     else:
         vertices = ((0, 2), (0, 0), (2 * parameter, 0))
-        decorations = (
-            SideDecoration(_side(0, 1), "long", "white"),
-            SideDecoration(_side(0, 2), "long", "white"),
-        )
-    return (vertices, (0, 2), finite_family(decorations, name="Side decorations"))
+    return (vertices, (0, 2))
 
 
 def _d_family_polygon_data(rank, variant, parameter):
@@ -172,21 +157,55 @@ def _e_family_polygon_data(rank):
     return (((2, 2), (0, 3), (0, 0), (last, 0)), (2, 2))
 
 
+def _polygon_side_decorations(vertices, point):
+    r"""The long/short data of every side through the selected point.
+
+    AT21 Definition 3.6 reads the intersection degree from the lattice length:
+    2 and 4 are long, 1 and 3 are short.  White/black records the corresponding
+    endpoint parity, with the single affine side using the same convention.
+    The separate Dynkin variant retains priming.  Boundary-order positions
+    refer to the actual sides, including when p* is interior to an affine side.
+    """
+    decorations = []
+    for first_index, first in enumerate(vertices):
+        second_index = (first_index + 1) % len(vertices)
+        second = vertices[second_index]
+        dx, dy = second[0] - first[0], second[1] - first[1]
+        px, py = point[0] - first[0], point[1] - first[1]
+        if dx * py != dy * px:
+            continue
+        if not (
+            min(first[0], second[0]) <= point[0] <= max(first[0], second[0])
+            and min(first[1], second[1]) <= point[1] <= max(first[1], second[1])
+        ):
+            continue
+        length = int(SageZZ(dx).gcd(SageZZ(dy)))
+        assert length in (1, 2, 3, 4), (
+            f"the AT21 side from {first} to {second} has unsupported lattice length {length}"
+        )
+        indices = (second_index, first_index) if second == point else (first_index, second_index)
+        long_side = length % 2 == 0
+        decorations.append(SideDecoration(
+            _side(*indices),
+            "long" if long_side else "short",
+            "white" if long_side else "black",
+        ))
+    return finite_family(tuple(decorations), name="Side decorations")
+
+
 def _ade_polygon_data(letter, rank, variant, affine):
-    r"""The polygon, distinguished point and side decorations of one ADE type."""
+    r"""The polygon, distinguished point and complete side data of one admitted shape."""
     parameter = _ade_parameter(letter, rank, variant, affine)
-    empty = finite_family((), name="Side decorations")
     if affine:
         vertices, point = _affine_polygon_data(letter, rank, parameter)
-        return (vertices, point, empty)
-    if letter == "A":
-        return _a_family_polygon_data(rank, variant, parameter)
-    if letter == "D":
+    elif letter == "A":
+        vertices, point = _a_family_polygon_data(rank, variant, parameter)
+    elif letter == "D":
         vertices, point = _d_family_polygon_data(rank, variant, parameter)
-        return (vertices, point, empty)
-    assert letter == "E", f"an ADE type has letter A, D or E, but the letter is {letter!r}"
-    vertices, point = _e_family_polygon_data(rank)
-    return (vertices, point, empty)
+    else:
+        assert letter == "E", f"an ADE type has letter A, D or E, but the letter is {letter!r}"
+        vertices, point = _e_family_polygon_data(rank)
+    return (vertices, point, _polygon_side_decorations(vertices, point))
 
 
 def _validated_at21_low_level_variant(letter, rank, variant, affine):
@@ -200,40 +219,43 @@ def _validated_at21_low_level_variant(letter, rank, variant, affine):
                 f"the affine type tilde {letter}_{rank} has only the pure toric polygon of "
                 f"Alexeev-Thompson (AT21), not the variant {variant!r}"
             )
-        if letter == "D" and rank >= 4 and rank % 2 == 0:
+        if letter == "D" and rank >= 6 and rank % 2 == 0:
             return ()
         if letter == "E" and rank in (7, 8):
             return ()
         raise ValueError(
             f"the affine type tilde {letter}_{rank} has no toric polygon in Alexeev-Thompson "
-            "(AT21): the toric affine types are tilde D_n for even n >= 4, tilde E_7 and "
-            "tilde E_8; tilde A_n is not toric"
+            "(AT21): a torus-invariant boundary exists for tilde D_n with even n >= 6, "
+            "tilde E_7 and tilde E_8; tilde D_4 has a diagonal/conic boundary, "
+            "and tilde A_n is not toric"
         )
     if letter == "A":
         if variant == "pure" and rank % 2 == 1:
             return ()
         if variant == "short" and rank % 2 == 0:
             return ("long", "short")
+        if variant == "left-short" and rank % 2 == 0:
+            return ("short", "long")
         if variant == "both-short" and rank % 2 == 1:
             return ("short", "short")
-        if variant == "prime":
+        if variant == "prime" and rank >= 2:
             return ("prime",)
         raise ValueError(
             f"type A_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
-            "(AT21): the toric A shapes are pure A_n for odd n, one-short A_n for even n, "
-            "both-short A_n for odd n, and the primed A_n"
+            "(AT21): the represented toric A shapes are pure A_n for odd n, one-short A_n for even n, "
+            "both-short A_n for odd n, and singly primed A_n for n >= 2"
         )
     if letter == "D":
         if variant == "pure" and rank >= 4 and rank % 2 == 0:
             return ()
         if variant == "short" and rank >= 5 and rank % 2 == 1:
             return ("short",)
-        if variant == "prime" and rank >= 4 and rank % 2 == 0:
+        if variant == "prime" and rank >= 6 and rank % 2 == 0:
             return ("prime",)
         raise ValueError(
             f"type D_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
-            "(AT21): the toric D shapes are pure D_n for even n >= 4, one-short D_n for odd n, "
-            "and primed D_n for even n >= 4 (AT21 Lemma 3.25)"
+            "(AT21): the represented toric D shapes are pure D_n for even n >= 4, one-short D_n for odd n, "
+            "and primed D_n for even n >= 6 (AT21 Lemma 3.25)"
         )
     if rank not in (6, 7, 8) or variant != "pure":
         raise ValueError(
@@ -256,9 +278,31 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         assert letter in ("A", "D", "E"), (
             f"an ADE type has letter A, D or E, but the letter is {letter!r}"
         )
-        rank = int(dynkin_rank)
+        rank = int(_engine_numeral(SageZZ, dynkin_rank))
         assert rank >= 1, f"an ADE type {letter}_n needs rank n >= 1, but n = {rank}"
-        variant = tuple(variant)
+        if isinstance(variant, str):
+            source_variant = variant.lower().replace("_", "-")
+        else:
+            variant = tuple(variant)
+            match variant:
+                case ():
+                    short = not affine and ((letter == "A" and rank % 2 == 0) or (letter == "D" and rank % 2 == 1))
+                    source_variant = "short" if short else "pure"
+                case ("prime" | "primed" | "p",):
+                    source_variant = "prime"
+                case ("long", "short"):
+                    source_variant = "short"
+                case ("short", "short"):
+                    source_variant = "both-short"
+                case ("short", "long"):
+                    source_variant = "left-short"
+                case ("short",):
+                    source_variant = "left-short" if letter == "A" else "short"
+                case ("long", "long"):
+                    source_variant = "pure"
+                case _:
+                    raise ValueError(f"{variant!r} is not a represented toric ADE side variant")
+        variant = _validated_at21_low_level_variant(letter, rank, source_variant, bool(affine))
 
         vertices, point, decorations = _ade_polygon_data(
             letter,
@@ -292,9 +336,20 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         )
 
     def at21(self, dynkin_letter, dynkin_rank, *, variant="pure", affine=False):
-        r"""Construct the source-admitted toric AT21 enhancement of one ADE pair."""
+        r"""Construct a toric AT21 base with its branch linear system.
+
+        The source's ADE and log-canonicity assertions are geometric
+        characteristic-zero statements. This enhancement is represented over
+        a characteristic-zero field; the polygon constructor still constructs
+        the toric scheme over any admitted base ring.
+        """
+        base = self.base_ring()
+        assert base in OwnedFields() and base.characteristic().is_zero() is True, (
+            f"the represented AT21 branch-pair construction requires a characteristic-zero field, "
+            f"but its base is {base}"
+        )
         letter = str(dynkin_letter).upper()
-        rank = int(dynkin_rank)
+        rank = int(_engine_numeral(SageZZ, dynkin_rank))
         source_variant = str(variant).lower().replace("_", "-")
         affine = bool(affine)
         low_variant = _validated_at21_low_level_variant(
@@ -367,10 +422,6 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def is_cover(self) -> bool:
             return False
 
-        def codimension_in_toric_scheme(self):
-            r"""Return zero: the base scheme is its own toric ambient scheme."""
-            return _own_ring(SageZZ).zero()
-
         def dynkin_letter(self) -> str:
             return self._dynkin_letter
 
@@ -398,10 +449,6 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def variant(self):
             r"""Return the selected ADE side-decoration variant."""
             return self.dynkin_variant()
-
-        def is_affine(self) -> bool:
-            r"""Return whether this is an affine ADE family member."""
-            return self.is_affine_type()
 
         @cached_method
         def coxeter_diagram(self):
@@ -536,39 +583,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         @cached_method
         def integral_invariants(self):
-            r"""Return the archived integral polygon invariants as an owned family.
-
-            The archive stored these values in a Python ``NamedTuple``.  Here
-            their labels are the index set and the values retain their actual
-            owned scalar/cardinal parents: the Euclidean volume is rational,
-            normalized volume and dimension are integral, and lattice-point
-            counts are cardinals.
-            """
-            polygon = self.polarizing_polytope()
-            integers = _own_ring(SageZZ)
-            labels = finite_ordered_set(
-                (
-                    "dimension",
-                    "volume",
-                    "normalized_volume",
-                    "n_integral_points",
-                    "n_interior_points",
-                    "n_boundary_points",
-                )
-            )
-            values = {
-                "dimension": integers(self.toric_scheme().relative_dimension()),
-                "volume": polygon.volume(),
-                "normalized_volume": polygon.normalized_volume(),
-                "n_integral_points": polygon.n_integral_points(),
-                "n_interior_points": polygon.n_interior_points(),
-                "n_boundary_points": polygon.n_boundary_points(),
-            }
-            return finite_indexed_family(
-                labels,
-                values.__getitem__,
-                name=f"Integral invariants of {polygon}",
-            )
+            r"""The invariant family of the retained polarizing polygon."""
+            return self.polarizing_polytope().integral_invariants()
 
         def _blue_rays(self):
             polygon = self.polygon()
@@ -628,10 +644,9 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def pyramid(self):
             r"""The 3-polytope ``P``: the cone over ``Q`` with apex ``(p*, 2)``.
 
-            ``P`` is a lattice polytope exactly when ``p*`` is a lattice point.
-            In the affine ``A`` family the archived formula ``p*=(n/2,1)``
-            can be integral or half-integral according to ``n``; in the latter
-            cases ``P`` is a rational polytope.
+            The admitted toric shapes have integral ``p*``, so this is a
+            lattice polytope. The nontoric affine A shapes do not enter this
+            construction.
             """
             polygon = self.polygon()
             rationals = _rationals()
@@ -677,7 +692,7 @@ class _AT21ToricADEPairEngine:
     remain toric.  In particular ``tilde A`` is not admitted here (AT21
     Remark 3.11) and there is no affine ``E6`` case.
 
-    ``variant`` is one of ``pure``, ``short``, ``both-short`` or ``prime``.
+    ``variant`` is ``pure``, ``short``, ``left-short``, ``both-short`` or ``prime``.
     The name records the source shape rather than asking the archive polygon
     parser to infer parity from a loose token sequence.
     """
@@ -739,7 +754,7 @@ class _AT21ToricADEPairEngine:
         return self.base_pair().cover_toric_threefold()
 
     def branch_divisor_class(self):
-        r"""Return ``L=-2(K_Y+C)=2C'`` from AT21 Lemma 3.4."""
+        r"""The chosen toric representative of ``L ~ -2(K_Y+C) ~ 2C'``."""
         return self._branch_divisor_class
 
     def branch_line_bundle(self):
@@ -749,23 +764,34 @@ class _AT21ToricADEPairEngine:
         return self.scheme().divisor_section_space(self.branch_divisor_class())
 
     def branch_section(self, character_coefficients):
-        r"""Construct a branch section from coefficients indexed by lattice points of ``Q``."""
+        r"""Construct a section from exact lattice coordinates and arbitrary coefficients.
+
+        Integer ingress refuses nonintegral exponents. Zero coefficients are
+        supplied to the linear-combination owner too: constructing a section
+        requires no decision about which of its coefficients vanish. Owned
+        coefficients use their actual ring ingress; raw Sage numerals cross
+        the existing constructor boundary and immediately return to that ring.
+        """
         sections = self.branch_section_space()
         characters = {
             tuple(int(coordinate) for coordinate in character): character
             for character in sections.module_generating_set()
         }
         coefficients = {}
+        base = self.scheme().scheme_base_ring()
         for coordinates, coefficient in dict(character_coefficients).items():
-            key = tuple(int(value) for value in coordinates)
+            key = tuple(int(_engine_numeral(SageZZ, value)) for value in coordinates)
             if key not in characters:
                 raise ValueError(
                     f"{key} is not a lattice point of the branch polytope of {self}, so it is "
                     "not the character of a branch section"
                 )
-            value = self.scheme().scheme_base_ring()(coefficient)
-            if value != self.scheme().scheme_base_ring().zero():
-                coefficients[characters[key]] = value
+            coefficient_parent = element_parent(coefficient)
+            if coefficient_parent not in OwnedRings() and coefficient_parent in SageRings():
+                value = _owned_engine_element(base, _engine_numeral(base, coefficient))
+            else:
+                value = base(coefficient)
+            coefficients[characters[key]] = value
         return sections.linear_combination(coefficients)
 
     @cached_method
@@ -779,47 +805,62 @@ class _AT21ToricADEPairEngine:
         )
 
     def branch_newton_polygon(self, section):
-        r"""Return the convex hull of the nonzero character terms of ``section``."""
+        r"""The Newton polygon when every coefficient's zero status is decided."""
         from dzack_research.preamble.categories.schemes.polytopes import LatticePolygons
 
         sections = self.branch_section_space()
-        support = tuple(
-            tuple(int(coordinate) for coordinate in character)
-            for character in sections(section).to_vector().support().domain()
-        )
+        coordinates = sections(section).to_vector()
+        zero = self.scheme().scheme_base_ring().zero()
+        support = []
+        for character in sections.module_generating_set():
+            vanished = coordinates(character) == zero
+            if vanished is True:
+                continue
+            if vanished is not False:
+                raise NotImplementedError(
+                    f"the Newton polygon of this section needs the zero status of its coefficient "
+                    f"at {character}, but that equality is undecided"
+                )
+            support.append(tuple(int(coordinate) for coordinate in character))
         if len(support) < 3:
             raise ValueError(
                 f"the Newton polygon of the branch section needs a two-dimensional support, but "
                 f"the section has only {len(support)} monomials"
             )
-        return LatticePolygons(self.scheme().character_lattice())(support)
+        polygon = LatticePolygons(self.scheme().character_lattice())(tuple(support))
+        if polygon.dimension() != _own_ring(SageZZ)(2):
+            raise ValueError("the nonzero branch characters are collinear, so their hull is not a polygon")
+        return polygon
 
     def source_normal_form_section(self, *, constant=1):
         r"""Return the AT21 Table 5 normal-form specimen in the D/E families.
 
         With all deformation parameters except ``c_0`` specialized to zero,
         Table 5 gives
-        ``-x^2y^2/4 + y^2 + x^(n-2) + c_0`` for ``D_n`` and
-        ``-x^2y^2/4 + y^3 + x^(n-3) + c_0`` for ``E_n``.
+        ``x^2y^2 + y^2 + x^(n-2) + c_0`` for ``D_n`` and
+        ``x^2y^2 + y^3 + x^(n-3) + c_0`` for ``E_n``.
         The four exponent vectors are literal character-lattice points of the
-        retained source polygon.  The A-table uses a different affine chart
-        normalization and is deliberately not guessed here.
+        retained source polygon. This specimen factory represents the D and
+        E rows; it does not construct the A normal-form families.
         """
         assert not self.is_affine_type(), (
             f"the normal forms of AT21 Table 5 are for finite types D and E, but {self} is of "
             "affine type"
         )
         rank = int(self.dynkin_rank())
+        assert self.source_variant() != "prime", (
+            f"AT21 Table 5 supplies pure-shape normal forms, but {self} is primed"
+        )
         if self.dynkin_letter() == "D":
             terms = {
-                (2, 2): -SageQQ(1) / 4,
+                (2, 2): 1,
                 (0, 2): 1,
                 (rank - 2, 0): 1,
                 (0, 0): constant,
             }
         elif self.dynkin_letter() == "E":
             terms = {
-                (2, 2): -SageQQ(1) / 4,
+                (2, 2): 1,
                 (0, 3): 1,
                 (rank - 3, 0): 1,
                 (0, 0): constant,
@@ -838,13 +879,55 @@ class _AT21ToricADEPairEngine:
             line_bundle=self.branch_line_bundle(),
         )
 
+    def branch_log_canonicity(self, section):
+        r"""The AT21 condition on ``(Y, C + (1+epsilon) B/2)``.
+
+        The zero section defines no effective branch divisor and is refused.
+        In characteristic zero the displayed pure-shape vertex specimens and
+        Table 5 D/E normal forms meet the blue sides transversally at smooth
+        points: on each side their endpoint coefficients are nonzero and the
+        edge polynomial is a square-free binomial. AT21 Theorem 5.9's proof
+        then gives log canonicity for sufficiently small positive epsilon.
+        Here pure means unprimed: the admitted short, left-short and
+        both-short variants are included. The constant D/E coefficient is
+        off the blue sides, so this assertion needs no genericity or global
+        smoothness of the branch divisor. Affine and primed shapes do not
+        enter these positive decisions.
+        A different section retains this mathematical condition as a
+        proposition; no general log-resolution algorithm is claimed.
+        """
+        sections = self.branch_section_space()
+        selected = sections(section)
+        if (selected == sections.zero()) is True:
+            return False
+        if not self.is_affine_type() and self.source_variant() != "prime":
+            if (selected == self.full_newton_branch_section()) is True:
+                return True
+            if self.dynkin_letter() in ("D", "E"):
+                constant = selected.to_vector()(self.scheme().character_lattice().zero())
+                if (selected == self.source_normal_form_section(constant=constant)) is True:
+                    return True
+        return AtomicProposition("AT21_log_canonical_branch_pair", self, selected)
+
     def double_cover(self, section=None):
+        r"""Construct the double-cover hypersurface, retaining its ADE condition.
+
+        Its interpretation as an AT21 ADE double cover requires the
+        log-canonicity condition of Definition 3.2. The returned
+        ``ade_pair_condition()`` is True for the source specimens above and
+        remains a proposition for an undecided section. A decided zero
+        section is rejected. The characteristic-zero base makes the sign
+        deck action nontrivial and permits the ramification interpretation.
+        """
         selected = (
             self.full_newton_branch_section()
             if section is None
             else self.branch_section_space()(section)
         )
-        return _at21_ade_double_cover(self, selected)
+        condition = self.branch_log_canonicity(selected)
+        if condition is False:
+            raise ValueError("the zero section is not an effective AT21 branch divisor")
+        return _at21_ade_double_cover(self, selected, condition)
 
     def _repr_(self):
         prefix = "affine " if self.is_affine_type() else ""
@@ -853,7 +936,11 @@ class _AT21ToricADEPairEngine:
 
 
 class _AT21ADEDoubleCoverEngine:
-    r"""Private realization of the AT21 hypersurface scheme with its cover data."""
+    r"""The actual hypersurface and maps, with the branch pair's ADE condition.
+
+    Being a double-cover hypersurface does not decide log canonicity. The
+    selected branch condition is retained separately and may be undecided.
+    """
 
     def __init__(
         self,
@@ -864,6 +951,8 @@ class _AT21ADEDoubleCoverEngine:
         ambient_polarizing_divisor,
         ambient_hypersurface_section,
         ambient_projection,
+        ambient_open_immersion,
+        branch_log_canonicity,
         **rest,
     ) -> None:
         self._base_pair = base_pair
@@ -872,12 +961,15 @@ class _AT21ADEDoubleCoverEngine:
         self._ambient_divisor = ambient_polarizing_divisor
         self._ambient_section = ambient_hypersurface_section
         self._ambient_projection = ambient_projection
+        self._ambient_open_immersion = ambient_open_immersion
+        self._branch_log_canonicity = branch_log_canonicity
         super().__init__(**rest)
 
     def base_pair(self):
         return self._base_pair
 
-    def base_scheme(self):
+    def cover_base_scheme(self):
+        r"""The surface Y receiving this cover; the inherited base_scheme is Spec(R)."""
         return self.base_pair().scheme()
 
     def branch_section(self):
@@ -899,7 +991,16 @@ class _AT21ADEDoubleCoverEngine:
         return self
 
     def ambient_projection(self):
+        r"""The projection from the ambient toric open to the base surface."""
         return self._ambient_projection
+
+    def ambient_open_immersion(self):
+        r"""The inclusion of the projection's domain in the complete pyramid variety."""
+        return self._ambient_open_immersion
+
+    def ade_pair_condition(self):
+        r"""The retained log-canonicity condition for this hypersurface to be an ADE pair."""
+        return self._branch_log_canonicity
 
     @cached_method
     def _cover_structure(self):
@@ -908,15 +1009,15 @@ class _AT21ADEDoubleCoverEngine:
         )
 
         cover = self
-        ambient = self.ambient_toric_threefold()
         base_pair = self.base_pair()
         ambient_projection = self.ambient_projection()
+        ambient = ambient_projection.domain()
         cover_atlas = cover.gluing_datum()
         local_cover_maps = {}
         local_global_cover_maps = {}
         local_deck = {}
         base = base_pair.scheme().scheme_base_ring()
-        for cone in ambient.gluing_datum().chart_indices():
+        for cone in cover_atlas.chart_indices():
             local_cover = cover_atlas.chart(cone)
             target_cone = ambient_projection.chart_target(cone)
             to_target_chart = (
@@ -963,25 +1064,43 @@ class _AT21ADEDoubleCoverEngine:
             lambda cone: local_deck[cone],
             name="Local deck involutions of the AT21 double cover",
         )
-        if any(
-            local_cover_maps[cone] * local_deck[cone] != local_cover_maps[cone]
-            for cone in cover.gluing_datum().chart_indices()
-        ):
-            raise ArithmeticError(
-                f"the deck involution of the double cover {cover} does not commute with the "
-                f"cover map to {base_pair.scheme()} on some chart"
-            )
-        if any(
-            local_deck[cone] * local_deck[cone]
-            != local_deck[cone].domain().categorical_identity_morphism()
-            for cone in cover.gluing_datum().chart_indices()
-        ):
-            raise ArithmeticError(
-                f"the deck map of the double cover {cover} does not square to the identity on "
-                "some chart"
-            )
+        # The character action chi^(m,h) |-> (-1)^h chi^(m,h) is
+        # multiplicative and squares to the identity over the actual base.
+        # Every retained chart trivializes the section at a height-zero base
+        # vertex. Its branch terms have height zero and its apex term height
+        # two, so the action preserves the defining section and restricts to
+        # the cover. Pulled-back base characters have height zero, proving
+        # pi*iota = pi. These are coefficient-independent identities of this
+        # construction; a general arrow-equality algorithm may remain
+        # undecided and is not an additional admission premise here.
 
-        ramification = cover.chartwise_fixed_subscheme(local_deck_family)
+        # AT21 Definition 2.1 permits isolated deck-fixed points away from R.
+        # The apex monomial has divisor twice the base-facet prime, so its
+        # restriction cuts out the ramification divisor itself, locally z=0.
+        lattice = ambient.cocharacter_lattice()
+        height_direction = lattice.module_generator(tuple(lattice.module_generating_set())[-1])
+        base_facet_rays = tuple(
+            ray for ray in ambient.fan().cones(1)
+            if next(iter(ray.rays())) == height_direction
+        )
+        assert len(base_facet_rays) == 1, "the pyramid open has one positive-height base-facet ray"
+        ambient_ramification = ambient.torus_invariant_divisor_support_subscheme(
+            ambient.torus_invariant_prime_divisor(base_facet_rays[0])
+        )
+        ramification_atlas = ambient_ramification.gluing_datum()
+        ramification_local = {}
+        for cone in cover_atlas.chart_indices():
+            local_cover = cover_atlas.chart(cone)
+            pullback = local_cover.inclusion().coordinate_algebra_morphism()
+            equations = tuple(
+                pullback(equation)
+                for equation in ramification_atlas.chart(cone).defining_equations()
+            )
+            ramification_local[cone] = local_cover.closed_subscheme(equations)
+        ramification = cover.chartwise_closed_subscheme(
+            ramification_local,
+            name="AT21 ramification divisor",
+        )
         base_boundary = base_pair.scheme().torus_invariant_divisor_support_subscheme(
             base_pair.boundary_divisor()
         )
@@ -1026,6 +1145,7 @@ class _AT21ADEDoubleCoverEngine:
         ]
 
     def ramification_subscheme(self):
+        r"""The divisorial ramification R, excluding isolated deck-fixed points."""
         return self._cover_structure()["ramification"]
 
     def boundary_subscheme(self):
@@ -1062,31 +1182,74 @@ class _AT21ADEDoubleCoverEngine:
         )
 
     def equipped_pair(self):
-        r"""Return the live equipped pair ``(X, D + epsilon R)``."""
+        r"""Return ``(X, D + epsilon R)``; its ADE status is ``ade_pair_condition()``."""
         return self, self.log_boundary_divisor()
 
     def dynkin_diagram(self):
         return self.base_pair().coxeter_diagram()
 
     def polarizing_polytope(self):
+        r"""The polygon polarizing the retained quotient base Y."""
         return self.base_pair().polygon()
 
+    def local_surface_equation(self):
+        r"""The actual E8 origin-chart equation ``z^2 + f(x,y)``.
+
+        For the pure finite E8 polygon the origin chart of the open pyramid
+        has coordinates x, y and z=xy*u. Its semigroup basis
+        (1,0,0), (0,1,0), (1,1,1) is unimodular. Thus every retained branch
+        character x^i*y^j pulls back literally and the apex term is z^2.
+        No completed-square change of coordinates is asserted here.
+        """
+        assert (
+            self.base_pair().dynkin_letter() == "E"
+            and int(self.base_pair().dynkin_rank()) == 8
+            and not self.base_pair().is_affine_type()
+            and self.base_pair().source_variant() == "pure"
+        ), (
+            f"the represented origin chart is the pure finite E_8 chart, "
+            f"but {self.base_pair()} has type {self.base_pair().dynkin_letter()}_"
+            f"{self.base_pair().dynkin_rank()}"
+        )
+        ring = self.cover_base_scheme().scheme_base_ring().polynomial_ring(("x", "y", "z"))
+        x, y, z = tuple(ring.algebra_generators())
+        scalar_map = ring.algebra_structure_morphism()
+        coordinates = self.branch_section().to_vector()
+        equation = z**2
+        for character in self.base_pair().branch_section_space().module_generating_set():
+            i, j = tuple(int(value) for value in character)
+            equation += scalar_map(coordinates(character)) * x**i * y**j
+        return equation
+
     def local_surface_singularity(self):
-        r"""Return the source normal-form surface singularity for the E8 orbit specimen."""
+        r"""The represented origin germ when its Jacobian needs no localization.
+
+        The existing isolated-hypersurface engine computes a global Jacobian
+        algebra. It applies here to the diagonal E8 equation, whose gradient
+        vanishes only at the origin. For the literal Table 5 equation the
+        extra x^2*y^2 term creates another critical point off the origin, so
+        the local Milnor algebra needs localization first. The actual
+        equation is always available from local_surface_equation().
+        """
         from dzack_research.preamble.categories.schemes.singularities import (
             IsolatedHypersurfaceSingularity,
         )
 
-        assert self.base_pair().dynkin_letter() == "E" and int(self.base_pair().dynkin_rank()) == 8, (
-            f"the local and global singularity comparison is implemented only for type E_8, "
-            f"but {self.base_pair()} has type {self.base_pair().dynkin_letter()}_"
-            f"{self.base_pair().dynkin_rank()}"
-        )
-        ring = self.base_scheme().scheme_base_ring().polynomial_ring(("x", "y", "z"))
+        equation = self.local_surface_equation()
+        ring = equation.parent()
         x, y, z = tuple(ring.algebra_generators())
-        return IsolatedHypersurfaceSingularity(
-            ring,
-            z**2 - x * y * z + y**3 + x**5,
+        constant = self.branch_section().to_vector()(self.cover_base_scheme().character_lattice().zero())
+        vanishes = constant == ring.base_ring().zero()
+        if vanishes is False:
+            raise ValueError(f"the origin does not lie on the selected hypersurface {equation} = 0")
+        if vanishes is not True:
+            raise NotImplementedError("membership of the origin in this hypersurface is undecided")
+        if (equation == z**2 + y**3 + x**5) is True:
+            return IsolatedHypersurfaceSingularity(ring, equation)
+        raise NotImplementedError(
+            f"the origin germ of {equation} = 0 requires the Jacobian algebra localized at "
+            "(x,y,z); the selected isolated-hypersurface engine computes the global Jacobian "
+            "algebra, which is not a local Milnor-number computation"
         )
 
     def local_global_singularity_comparison(self):
@@ -1102,11 +1265,22 @@ class _AT21ADEDoubleCoverEngine:
         )
 
     def _repr_(self):
-        return f"AT21 double cover of {self.base_pair()}"
+        return f"Double-cover hypersurface of {self.base_pair()}"
 
 
-def _at21_ade_double_cover(base_pair, branch_section):
-    r"""Construct the AT21 hypersurface through the toric zero-subscheme owner."""
+def _at21_ade_double_cover(base_pair, branch_section, branch_log_canonicity):
+    r"""The hypersurface over the toric complement of the pyramid's apex orbit.
+
+    The apex normal cone projects onto the entire base lattice, so projection
+    is not a map of the complete ambient variety. Delete that maximal cone,
+    retaining its proper faces. The hypersurface misses the removed fixed
+    point because its section has unit apex coefficient. Restrict its actual
+    Cartier-section coefficients to this open atlas and use the common
+    chartwise closed-subscheme constructor.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
+    from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
+
     selected_branch = base_pair.branch_section_space()(branch_section)
     ambient = base_pair.cover_toric_threefold()
     ambient_divisor = ambient.polarizing_divisor()
@@ -1117,7 +1291,7 @@ def _at21_ade_double_cover(base_pair, branch_section):
     }
     coefficients = {}
     branch_coordinates = selected_branch.to_vector()
-    for character in branch_coordinates.support().domain():
+    for character in base_pair.branch_section_space().module_generating_set():
         key = (*tuple(int(value) for value in character), 0)
         if key not in ambient_by_coordinates:
             raise ArithmeticError(
@@ -1154,13 +1328,52 @@ def _at21_ade_double_cover(base_pair, branch_section):
             source_labels[2]: target_lattice.zero(),
         }
     )
-    ambient_projection = ambient.toric_morphism(
+    identity_lattice_map = source_lattice.module_category().Mor(source_lattice, source_lattice).identity()
+    downward = -source_lattice.module_generator(source_labels[2])
+    apex_cones = tuple(
+        cone for cone in ambient.fan().maximal_cones()
+        if cone.relative_interior_contains(downward)
+    )
+    assert len(apex_cones) == 1, (
+        f"the pyramid has one apex normal cone, but {len(apex_cones)} cones contain the "
+        "negative height direction in their relative interior"
+    )
+    open_fan = RationalPolyhedralFans(source_lattice)(
+        tuple(
+            tuple(cone.rays()) for cone in ambient.fan().maximal_cones()
+            if cone != apex_cones[0]
+        )
+    )
+    opened = open_fan.toric_variety(
+        base_pair.scheme().scheme_base_ring(),
+        placements=(OpenImmersions(ambient),),
+        inclusion_codomain=ambient,
+        inclusion_datum=lambda mor: mor.domain().toric_morphism(identity_lattice_map, ambient),
+    )
+    ambient_open_immersion = opened.inclusion()
+    ambient_projection = opened.toric_morphism(
         projection_lattice_map,
         base_pair.scheme(),
     )
-    return ambient.zero_subscheme_of_divisor_section(
-        ambient_divisor,
-        ambient_section,
+
+    line_bundle = ambient.invertible_sheaf_of_divisor(ambient_divisor)
+    compatible = ambient.compatible_divisor_section(
+        ambient_divisor, ambient_section, line_bundle=line_bundle,
+    )
+    section_datum = line_bundle.module_sheaf().gluing_datum()
+    local_closed = {}
+    for cone in opened.gluing_datum().chart_indices():
+        ambient_cone = ambient_open_immersion.chart_target(cone)
+        local_module = line_bundle.module_sheaf().sections_on_chart(ambient_cone)
+        label = next(iter(local_module.module_generating_set()))
+        coefficient = local_module.framing_morphism().lift(
+            section_datum.compatible_section_component(compatible, ambient_cone)
+        )(label)
+        restriction = ambient_open_immersion.chart_pullback(cone)
+        local_closed[cone] = opened.affine_chart(cone).closed_subscheme(restriction(coefficient))
+    return opened.chartwise_closed_subscheme(
+        local_closed,
+        name="Double-cover hypersurface over an AT21 toric base",
         _engine=_AT21ADEDoubleCoverEngine,
         construction_data={
             "base_pair": base_pair,
@@ -1169,6 +1382,8 @@ def _at21_ade_double_cover(base_pair, branch_section):
             "ambient_polarizing_divisor": ambient_divisor,
             "ambient_hypersurface_section": ambient_section,
             "ambient_projection": ambient_projection,
+            "ambient_open_immersion": ambient_open_immersion,
+            "branch_log_canonicity": branch_log_canonicity,
         },
     )
 

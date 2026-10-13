@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import negation
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -75,14 +76,13 @@ class ChamberSystemMorphism:
             self.underlying_set_morphism() * other.underlying_set_morphism()
         )
 
-    def __eq__(self, other) -> bool:
-        return (
-            element_parent(other) is self.parent()
-            and other.underlying_set_morphism() == self.underlying_set_morphism()
-        )
+    def __eq__(self, other):
+        if element_parent(other) is not self.parent():
+            return False
+        return other.underlying_set_morphism() == self.underlying_set_morphism()
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __ne__(self, other):
+        return negation(self == other)
 
     __hash__ = None
 

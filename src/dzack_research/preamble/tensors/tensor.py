@@ -1170,6 +1170,25 @@ def _engine_row_family_gram(gram, row_family):
     return row_family * gram * row_family.transpose()
 
 
+def _engine_symmetrized_form_matrix(form):
+    r"""Private backend matrix of ``b(x,y) + b(y,x)`` for a bilinear tensor.
+
+    Symmetrization belongs to the two tensor slots; the returned Sage matrix
+    is used only as a coordinate realization for exact rational diagonalization.
+    """
+    gram = _engine_component_matrix(form)
+    return gram + gram.transpose()
+
+
+def _engine_row_basis_positions(row_family):
+    r"""Indices of a maximal independent subfamily of coordinate rows.
+
+    Sage's pivot columns of the dual (transposed) family are precisely the
+    positions of independent original rows, in the original ordering.
+    """
+    return row_family.transpose().pivots()
+
+
 def _engine_dual_row_family(row_family):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): the dual of a basis given by coordinate rows.
 

@@ -1,17 +1,21 @@
 """The owned operation spine below groups."""
 
 from sage.misc.abstract_method import abstract_method
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _compose_operation_preserving_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.validation import validator
 
 
 class MagmaMorphism:
@@ -27,17 +31,82 @@ class MagmaMorphism:
         super().__init__(parent, function)
 
     def _composition(self, right):
-        if right.codomain() is not self.domain():
-            return NotImplemented
-        category = self.parent().mor_family().base_category()
-        if (
-            right.domain() not in category
-            or not right.parent().mor_family().base_category().is_subcategory(category)
-        ):
-            return super()._composition(right)
-        return self.parent().mor_family().Of(
-            right.domain(), self.codomain()
-        )(lambda element: self(right(element)))
+        return _compose_operation_preserving_mor(self, right, super()._composition)
+
+    @RealizationHook
+    def _multiplicativity_decision(self):
+        r"""Supply the decision of the admitted multiplication-preservation law.
+
+        Protected predicate contract under OWN-05. The sole caller is
+        ``is_multiplicative``. A realization may derive the law from its
+        construction or decide its defining equations. The default checks
+        every pair in a finite enumerated source, and otherwise retains the
+        proposition; admission to this Mor alone is not a computation of
+        that proposition.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
+
+        domain = self.domain()
+        if domain in FiniteSets() and domain in EnumeratedSets():
+            return conjunction(
+                self(left * right) == self(left) * self(right)
+                for left in domain for right in domain
+            )
+        return AtomicProposition("is_multiplicative", self)
+
+    @cached_method
+    def is_multiplicative(self):
+        r"""Return the decision or proposition that ``f(x*y) == f(x)*f(y)``.
+
+        The map-on-elements datum states this law as its admission premise.
+        This diagnostic can establish it, refute it, or leave it undecided;
+        no addition, scalar action, associativity or unit is required.
+        """
+        return self._multiplicativity_decision()
+
+    @validator
+    def validate_multiplicativity(self) -> None:
+        r"""Raise ``ValueError`` only when multiplication preservation is false.
+
+        An undecided owned proposition remains the stated admission premise
+        under OWN-22; validation does not turn it into a Boolean proof.
+        """
+        if self.is_multiplicative() is False:
+            raise ValueError(
+                f"{self} does not preserve the multiplication from {self.domain()} "
+                f"to {self.codomain()}: f(x*y) != f(x)*f(y)"
+            )
+
+    @RealizationHook
+    def _center_corestriction(self):
+        r"""Supply the represented factor through the codomain's centre.
+
+        Protected construction contract under OWN-05. The sole caller is
+        ``corestrict_to_center``. A stronger arrow owner may compute a centre
+        inclusion and the unique multiplication-preserving factor through it,
+        or reject a decided noncentral image. When the selected centre is
+        already the codomain, the original arrow is exactly that factor.
+        """
+        codomain = self.codomain()
+        match codomain.center() is codomain:
+            case True:
+                return self
+            case False:
+                assert False, (
+                    f"corestricting {self} to the centre of {codomain} needs "
+                    "a selected central-image decision and a lift through "
+                    "the centre inclusion"
+                )
+
+    def corestrict_to_center(self):
+        r"""Factor this magma map through a represented centre of its codomain.
+
+        This factor exists exactly when the image is central, and is unique
+        because the centre inclusion is injective. Its defining triangle
+        preserves multiplication without needing addition or a unit.
+        """
+        return self._center_corestriction()
 
 
 class MagmaMor(CategoricalMor):
@@ -75,6 +144,27 @@ class MagmaMorCategoryConstruction(MorCategoryConstruction):
         return MagmaMor
 
 
+class UnitalMagmaMor(MagmaMor):
+    r"""Maps preserving the selected binary law and its two-sided unit.
+
+    The inherited map-on-elements constructor takes these two laws as its
+    defining premises: ``f(x * y) = f(x) * f(y)`` and ``f(1) = 1``.
+    It does not dynamically test them. Identity and composition preserve
+    both laws and reuse the existing magma-map implementation. An already
+    represented arrow is reused only through this stronger fixed-Mor graph.
+    Constructing a new arrow from callable or typed-map data declares the
+    target theory's laws as caller premises; it does not place the original
+    weaker arrow in this Mor or infer unit preservation from multiplication.
+    """
+
+
+class UnitalMagmaMorCategoryConstruction(MorCategoryConstruction):
+    r"""The fixed-endpoint Mor categories of owned unital magmas."""
+
+    def fixed_category_class(self):
+        return UnitalMagmaMor
+
+
 class Magmas(CategoryPacketMethods, OwnedCategory):
     _MorCategory = MagmaMorCategoryConstruction
 
@@ -92,6 +182,24 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
         return [Sets()]
 
     class ElementMethods:
+        @RealizationHook
+        def _squareness_decision(self):
+            r"""Return whether this element is a square in its exact parent.
+
+            Protected predicate contract under OWN-05. ``is_square`` is the
+            sole caller. An element realization may supply True, False, or
+            an owned proposition for the existence of a root ``y`` in the
+            same parent with ``y * y == self``. The default preserves that
+            proposition without selecting a root or requiring associativity.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_square", self)
+
+        def is_square(self):
+            r"""Return the proposition ``exists y in this magma: y * y == self``."""
+            return self._squareness_decision()
+
         @abstract_method
         def _mul_(self, other):
             r"""Return the value of the selected magma law on ``(self, other)``.
@@ -102,22 +210,118 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             overriding the operator.
             """
 
+        @RealizationHook
+        def _regularity_decision(self):
+            r"""Protected decision of two-sided cancellation by this element.
+
+            Only is_regular calls this hook. An owned element realization or
+            a more specific category may return a Boolean or the proposition
+            that both translations by this element are injective. Absence of
+            a decision leaves that proposition undecided.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_regular", self)
+
+        def is_regular(self):
+            r"""Return whether left and right multiplication are injective.
+
+            For this element x, regularity means that xy = xz implies y = z
+            and yx = zx implies y = z for all y and z in this magma. Only the
+            selected multiplication and equality are needed; associativity,
+            a unit, addition and commutativity are unnecessary.
+
+            Definition: Mathlib Algebra/Regular/Defs, IsRegular.
+            """
+            return self._regularity_decision()
+
     class ParentMethods:
+        def product(self, left, right):
+            r"""Evaluate this magma's selected binary law on two elements."""
+            return self(left) * self(right)
+
+        @cached_method
+        @RealizationHook
+        def _center_construction(self):
+            r"""Supply the centre and its exact inclusion as a retained pair.
+
+            Protected construction contract under OWN-05. The only callers
+            are ``center`` and ``center_inclusion``. A realization or stronger
+            category supplies ``(Z, i)`` with the induced magma law on Z and
+            a multiplication-preserving injection ``i: Z -> self``. Its image
+            consists exactly of the elements commuting with every element
+            and lying in the nucleus. The cached pair keeps both public
+            operations on the same selected centre and inclusion.
+            """
+            assert False, (
+                f"the centre of {self} needs a selected construction of the "
+                "elements satisfying commutation and the left and right "
+                "associator equations, together with their magma inclusion"
+            )
+
+        def center(self):
+            r"""Return this magma's centre with its induced multiplication.
+
+            An element z is central when, for every x and y,
+            ``z*x == x*z``, ``(z*x)*y == z*(x*y)``, and
+            ``(x*y)*z == x*(y*z)``. These equations also imply
+            ``(x*z)*y == x*(z*y)``. Thus the centre is the commutant
+            intersected with the nucleus; associativity and commutativity
+            hold on its induced multiplication. No unit or ambient
+            associativity is required (Mathlib ``Algebra.Group.Center``,
+            ``Set.IsMulCentral``).
+            """
+            return self._center_construction()[0]
+
+        def center_inclusion(self):
+            r"""Return the selected magma inclusion ``center() -> self``."""
+            return self._center_construction()[1]
+
+        @RealizationHook
         def _commutativity_decision(self):
-            r"""Protected decision procedure for the magma commutativity predicate."""
-            return NotImplemented
+            r"""Supply whether the selected binary law is commutative.
+
+            Protected predicate contract under OWN-05. The callers are
+            ``is_commutative`` and ``Modules.super_categories`` when the
+            latter reads a native owned ring before selecting its module
+            refinement. A parent realization may return True, False,
+            or the owned proposition that ``x * y == y * x`` for every pair
+            in this magma. The default retains the undecided proposition.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_commutative", self)
 
         def is_commutative(self):
             r"""Return whether the magma law satisfies ``xy = yx`` for all elements."""
-            match self in Magmas().Commutative():
-                case True:
-                    return True
-                case False:
-                    decision = self._commutativity_decision()
-                    assert decision is not NotImplemented, (
-                        f"commutativity is defined for every magma, but no decision procedure is available for {self}"
-                    )
-                    return decision
+            if self in Magmas().Commutative():
+                return True
+            return self._commutativity_decision()
+
+        @RealizationHook
+        def _finite_magma_generation_decision(self):
+            r"""Supply finite generation for this selected binary law.
+
+            Only ``is_finitely_generated_as_magma`` calls this hook. A
+            realization or stronger owner may decide whether some finite
+            subset generates under multiplication, or retain that
+            proposition. This does not select a generating family.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            return AtomicProposition("is_finitely_generated_as_magma", self)
+
+        def is_finitely_generated_as_magma(self):
+            r"""Whether some finite subset generates under the binary law.
+
+            Every finite magma is generated by its whole underlying set;
+            this existence assertion requires no selected enumeration or
+            equality decisions. The qualification distinguishes it from
+            generation as a module, algebra or other additional structure.
+            """
+            if self in Magmas().FinitelyGeneratedAsMagma() or self.is_finite() is True:
+                return True
+            return self._finite_magma_generation_decision()
 
     class SubcategoryMethods:
         def Subobjects(self, base_object):
@@ -152,6 +356,28 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             """
             return self._with_axiom("Unital")
 
+        def FinitelyGeneratedAsMagma(self):
+            r"""Return this category with the existence of a finite magma generating set."""
+            return self._with_axiom("FinitelyGeneratedAsMagma")
+
+    class FinitelyGeneratedAsMagma(CategoryWithAxiom):
+        r"""Magmas generated under their binary law by some finite subset.
+
+        This is an existence property, without a selected generating
+        family. Its arrows remain the inherited magma maps. Stronger
+        owners may retain their own finite-generation presentations.
+        """
+
+        def an_object(self):
+            r"""The two-element cyclic group, whose whole finite set generates its magma."""
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            return OwnedGroups().C(2)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "finitely generated magmas"
+
     class Commutative(CategoryWithAxiom):
         r"""Magmas whose law satisfies ``xy = yx``.
 
@@ -180,7 +406,13 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
         ``lean-categories``: ``UnitalMagma`` (``Algebra/Concrete/Magmas.lean``).
         The unit is introduced at this level, so its contract is stated here:
         monoids and unital algebras are unital magmas and supply it.
+
+        Its arrows preserve both the multiplication and the unit. Mere
+        multiplication preservation would also admit maps such as the
+        constant-zero endomap of the multiplicative integers.
         """
+
+        _MorCategory = UnitalMagmaMorCategoryConstruction
 
         @classmethod
         def _repr_object_names(cls):
@@ -190,6 +422,33 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             @abstract_method
             def one(self):
                 r"""Return the two-sided unit of this magma."""
+
+        class ElementMethods:
+            @RealizationHook
+            def _unit_decision(self):
+                r"""Supply the existence of a two-sided inverse in this magma.
+
+                Protected predicate contract under OWN-05. Only is_unit
+                calls this hook. A more specific category or realization
+                may return a Boolean or the owned proposition
+                ``exists y: self * y == 1 and y * self == 1`` in this exact
+                parent. This does not select an inverse or assert uniqueness.
+                An undecided proposition is not a negative answer.
+                """
+                from dzack_research.preamble.logic import AtomicProposition
+
+                return AtomicProposition("is_unit", self)
+
+            def is_unit(self):
+                r"""Return whether some ``y`` satisfies ``xy = 1 = yx``.
+
+                For monoids this is Mathlib's IsUnit by isUnit_iff_exists.
+                The same existential predicate needs no associativity, but
+                uniqueness of an inverse and the group of units do.
+                """
+                if (self == self.parent().one()) is True:
+                    return True
+                return self._unit_decision()
 
 
 class MonoidMorCategoryConstruction(MorCategoryConstruction):
@@ -217,18 +476,37 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
         r"""A monoid is a semigroup whose magma is unital (Mathlib ``Monoid.toMulOneClass``)."""
         return [Semigroups(), Magmas().Unital()]
 
-    class ElementMethods:
-        def _unit_decision(self):
-            r"""Protected decision procedure for invertibility in the ambient monoid."""
-            return NotImplemented
+    def unit_group(self):
+        r"""Return ``M |-> M^x : Mon -> Grp``."""
+        return UnitGroupFunctor()
 
-        def is_unit(self):
-            r"""Return whether this element has a two-sided inverse in its monoid."""
-            decision = self._unit_decision()
-            assert decision is not NotImplemented, (
-                f"invertibility is defined for every monoid element, but no decision procedure is available for {self}"
+    class ElementMethods:
+        @RealizationHook
+        def _unit_inverse_decision(self):
+            r"""Protected computation of the inverse in this exact monoid.
+
+            Only inverse_of_unit calls this hook. An owned element realization
+            or a more specific category returns the owned two-sided inverse in
+            the same parent, or None when it supplies no computation. It raises
+            ZeroDivisionError only for an established nonunit. Computing an
+            inverse need not require a separately decidable unit predicate.
+            An applied procedure may propagate its explicit unresolved-
+            computation error; that does not establish that the element is a
+            nonunit.
+            """
+            return None
+
+        def inverse_of_unit(self):
+            r"""Return the unique two-sided inverse of this monoid unit."""
+            inverse = self._unit_inverse_decision()
+            assert inverse is not None, (
+                f"no inverse computation is available for {self} in its ambient monoid {self.parent()}"
             )
-            return decision
+            return inverse
+
+        def divide_by_unit(self, other):
+            r"""Return the right quotient by a unit in the same ambient monoid."""
+            return self * self.parent()(other).inverse_of_unit()
 
         def _pow_int(self, exponent):
             r"""Integer powers by repeated squaring, from the monoid law."""
@@ -237,6 +515,11 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             return generic_power(self, exponent)
 
     class ParentMethods:
+        @cached_method
+        def unit_group(self):
+            r"""Return the group of two-sided units of this exact monoid."""
+            return _unit_group(self)
+
         def generated_submonoid(
             self, generators, *, description=None, structure_data=None
         ):
@@ -256,6 +539,13 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             self, predicate, description, *, placements=(), structure_data=None
         ):
             r"""Return the represented submonoid cut out by ``predicate``.
+
+            The caller supplies the mathematical premises that its truth set
+            contains the identity and is closed under multiplication. The
+            predicate is defined on this ambient monoid; its values may be
+            undecided owned propositions. The constructor retains this datum
+            and rejects a proved failure at the identity, without claiming
+            that a one-point check establishes the submonoid laws.
 
             A specialized construction may supply theorem-backed stronger
             ``placements``; they are part of the object's category at
@@ -283,6 +573,39 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             )
         return self.MorCategory().Of(domain, codomain)
 
+    class Commutative(CategoryWithAxiom):
+        r"""Commutative monoids, the existing associative, unital, commutative meet."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative monoids"
+
+        def an_object(self):
+            r"""The multiplicative group of the two units of the integers."""
+            return Monoids().an_object().unit_group()
+
+        @cached_method
+        def square_class_group(self):
+            r"""Return ``M |-> M^x/(M^x)^2 : CMon -> Grp``."""
+            from dzack_research.preamble.categories.rings.square_classes import (
+                SquareClassGroupFunctor,
+            )
+
+            return SquareClassGroupFunctor()
+
+        class ParentMethods:
+            @cached_method
+            def square_class_group(self):
+                r"""Return the cokernel of squaring on this monoid's unit group.
+
+                The units of a commutative monoid form an abelian group, so
+                their squares are a subgroup. No additive law is needed.
+                """
+                from dzack_research.preamble.categories.rings.square_classes import (
+                    _square_class_group,
+                )
+
+                return _square_class_group(self)
 
 
 class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
@@ -379,6 +702,30 @@ class AdditiveMonoids(CategoryPacketMethods, OwnedCategory):
         def monoidal_unit(self):
             return self.zero()
 
+        def additive_submonoid(self, generators, *, description=None):
+            r"""Return the additive submonoid generated by a chosen finite family.
+
+            The empty sum is zero. The family retains its index labels and
+            all chosen values; equal or undecidably equal values are not
+            deduplicated. Membership beyond the supplied generators is a
+            computation question, with a finite coefficient solver on NN.
+            """
+            from dzack_research.preamble.categories.group.submonoids import _additive_submonoid
+
+            return _additive_submonoid(self, generators=generators, description=description)
+
+        def predicate_additive_submonoid(self, predicate, description):
+            r"""Return the additive submonoid defined by a zero- and sum-closed predicate.
+
+            The caller supplies those two laws as construction premises.
+            A decided failure at zero is rejected; an undecided value remains
+            the defining proposition. The exact predicate and ambient are
+            retained, with their actual additive inclusion.
+            """
+            from dzack_research.preamble.categories.group.submonoids import _additive_submonoid
+
+            return _additive_submonoid(self, predicate=predicate, description=description)
+
 
 class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     class _MorCategory(MorCategoryConstruction):
@@ -400,21 +747,38 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [AdditiveMonoids()]
 
+    class ParentMethods:
+        def multiplicative_group_identification(self):
+            r"""Return the set isomorphism ``a |-> exp(a)`` with ``exp(a+b)=exp(a)exp(b)``.
+
+            Multiplicative notation exists for every additive group.  The
+            selected GroupExp realization requires commutative addition.
+            """
+            match self:
+                case _ if self in AdditiveGroups().AdditiveCommutative():
+                    from dzack_research.preamble.categories.group.groups import (
+                        _additive_group_exponential,
+                    )
+
+                    return _additive_group_exponential(self)
+                case _:
+                    assert False, (
+                        "multiplicative_group_identification cannot be computed: "
+                        "no realization is selected for this additive group; "
+                        "the available GroupExp realization requires commutative addition"
+                    )
+
+        def multiplicative_group(self):
+            r"""Return this additive group written multiplicatively."""
+            return self.multiplicative_group_identification().codomain()
+
+    class ElementMethods:
+        def _sub_(self, other):
+            r"""The right difference, from addition and the additive inverse."""
+            return self + (-other)
+
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
-
-        class ParentMethods:
-            def multiplicative_group_identification(self):
-                r"""Return the set isomorphism ``a |-> exp(a)`` with ``exp(a+b)=exp(a)exp(b)``."""
-                from dzack_research.preamble.categories.group.groups import (
-                    _additive_group_exponential,
-                )
-
-                return _additive_group_exponential(self)
-
-            def multiplicative_group(self):
-                r"""Return this abelian group written multiplicatively."""
-                return self.multiplicative_group_identification().codomain()
 
         class _MorCategory(MorCategoryConstruction):
             def fixed_category_class(self):
@@ -474,9 +838,15 @@ class MonoidMorphism:
         target = target_inclusion.domain()
         if target_inclusion is self:
             return Monoids().Mor(source, source).identity()
-        target_image = target_inclusion.image()
-        if not all(self(generator) in target_image for generator in source.monoid_generators()):
+        from dzack_research.preamble.categories.group.submonoids import _submonoid_generator_containment
+
+        contained = _submonoid_generator_containment(self, target_inclusion, source.monoid_generators())
+        if contained is False:
             return None
+        assert contained is True, (
+            f"cannot factor {self} through {target_inclusion}: containment of the chosen monoid "
+            "generators remains undecided"
+        )
         return Monoids().Mor(source, target)(lambda element: target(self(element)))
 
     def factor_through(self, target_inclusion):
@@ -530,3 +900,117 @@ class MonoidMor(CategoricalMor):
                 f"identity exists only when the domain and codomain are the same monoid"
             )
         return self(lambda element: element)
+
+
+@cached_function(key=lambda monoid: id(monoid))
+def _unit_group(monoid):
+    r"""Return the existing predicate submonoid of two-sided units of ``monoid``.
+
+    Protected constructor under OWN-05. ``Monoids.ParentMethods.unit_group``
+    supplies the owned monoid. Its units contain one, are closed under
+    products, and have inverses within the same monoid; these are the premises
+    of the group placement. A commutative ambient monoid supplies the abelian
+    placement too. The facade and its literal ambient inclusion are retained.
+
+    A facade element can belong to a larger monoid as well. Its element-level
+    unit decision is used only for its literal parent; otherwise an undecided
+    proposition refers to the selected monoid. This does not confuse a unit
+    in a larger ambient monoid with a unit of this submonoid.
+    """
+    from sage.structure.element import parent
+
+    from dzack_research.preamble.categories.group.groups import AbelianGroups, OwnedGroups
+    from dzack_research.preamble.logic import AtomicProposition
+
+    assert monoid in Monoids(), (
+        f"the unit group needs an owned monoid, but {monoid!r} is not one"
+    )
+
+    def unit_predicate(element):
+        if monoid in OwnedGroups() or (element == monoid.one()) is True:
+            return True
+        if parent(element) is monoid:
+            return element.is_unit()
+        return AtomicProposition("is_unit", monoid, element)
+
+    placement = (
+        AbelianGroups() if monoid in Monoids().Commutative() else OwnedGroups()
+    )
+    return Monoids.ParentMethods.predicate_submonoid(
+        monoid,
+        unit_predicate,
+        f"{monoid}^×",
+        placements=(placement,),
+    )
+
+
+class _UnitGroupMorphism:
+    r"""The restriction of one retained monoid arrow to its unit groups.
+
+    Private realization at the existing GroupMor owner. UnitGroupFunctor
+    supplies the actual monoid arrow and its literal unit-group endpoints.
+    For an admitted source unit, the image is a target unit by preservation
+    of multiplication and one. Its facade representative is therefore
+    already the output; re-admitting it through an undecided target unit
+    predicate would discard the premise of this restriction construction.
+    """
+
+    def __init__(self, parent, monoid_morphism):
+        assert parent.domain().ambient_monoid() is monoid_morphism.domain(), (
+            "the unit-map source must be the retained source monoid's unit group"
+        )
+        assert parent.codomain().ambient_monoid() is monoid_morphism.codomain(), (
+            "the unit-map target must be the retained target monoid's unit group"
+        )
+        self._monoid_morphism = monoid_morphism
+        super().__init__(parent, monoid_morphism)
+
+    def __call__(self, unit):
+        r"""Apply the restriction to a unit of its declared source group.
+
+        The fixed group-arrow input contract supplies source-unit membership.
+        The retained monoid arrow performs the ordinary ambient ingress. A
+        fresh source unit-group admission would discard this premise when
+        ``unit`` is the image of an earlier induced unit map and its ambient
+        unit predicate remains undecided.
+        """
+        return self._monoid_morphism(unit)
+
+    def _composition(self, right):
+        r"""Compose two restrictions through their retained monoid arrows."""
+        if isinstance(right, _UnitGroupMorphism):
+            return UnitGroupFunctor()(
+                self._monoid_morphism * right._monoid_morphism
+            )
+        return super()._composition(right)
+
+
+class UnitGroupFunctor(Functor):
+    r"""Send a monoid to its units and a monoid map to its restriction.
+
+    A map preserving products and one carries a two-sided inverse to a
+    two-sided inverse. The restriction therefore lands in the target unit
+    group without requiring another decision of the target unit predicate.
+    Ring morphisms enter through their inherited monoid Mor, with their
+    original endpoints and element map.
+    """
+
+    def __init__(self) -> None:
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        super().__init__(Monoids(), OwnedGroups())
+
+    def _apply_object(self, monoid):
+        return monoid.unit_group()
+
+    def _apply_morphism(self, morphism):
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        source = self.object_image(morphism.domain())
+        target = self.object_image(morphism.codomain())
+        return OwnedGroups().Mor(source, target)._from_realization_engine(
+            _UnitGroupMorphism, morphism
+        )
+
+    def _repr_(self):
+        return "Unit group functor"

@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.rings.commutative_ideals import (
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
     OwnedOrders,
     OwnedRings,
     _engine_element,
@@ -40,6 +41,10 @@ from dzack_research.preamble.tensors.tensor import (
 
 class FractionalIdeals(OwnedCategoryOverBaseRing):
     r"""Fractional ideals of an integral domain, as modules in its fraction field."""
+
+    def parameter_category(self):
+        r"""The coefficient ring is a nonzero commutative domain."""
+        return OwnedIntegralDomains()
 
     def an_object(self):
         r"""The fractional ideal (2) of the base ring."""
@@ -401,8 +406,8 @@ def _fraction_field_as_module(base_ring):
     r"""Return ``Frac(R)`` restricted to an ``R``-module along ``R -> Frac(R)``."""
 
     ring = _owned_ring(base_ring)
-    field = ring.fraction_field()
-    scalar_map = OwnedRings().Mor(ring, field)(lambda scalar: field(scalar))
+    scalar_map = ring.fraction_field_map()
+    field = scalar_map.codomain()
     return field.regular_module().restrict_scalars(scalar_map)
 
 

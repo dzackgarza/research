@@ -116,6 +116,7 @@ from dzack_research.preamble.lexicon.category_theory import (
     ObjectOfCategory,
 )
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -1955,6 +1956,10 @@ class Schemes(OwnedCategoryOverBaseRing):
     presented without one.
     """
 
+    def parameter_category(self):
+        r"""Classical ``Spec(R)`` requires a commutative unital base ring."""
+        return OwnedRings().Commutative()
+
     def an_object(self):
         r"""The affine line over the base ring."""
         return AffineSpaces(self.base_ring())(1)
@@ -2590,6 +2595,34 @@ class Schemes(OwnedCategoryOverBaseRing):
                         SageZZ,
                         SageZZ(_engine_scheme(self).dimension_relative()),
                     )
+
+        def is_affine(self):
+            r"""Whether the structure morphism to ``Spec R`` is affine.
+
+            Since the base is affine, this is equivalent to this scheme
+            being affine (Stacks, Definition 29.11.1). It is independent
+            of any additional Dynkin type or other chosen structure.
+            An affine placement decides it; a selected construction supplies
+            its decision otherwise. A scheme given without that computation
+            retains the exact proposition. Having a native scheme model
+            alone does not supply an affineness algorithm.
+            """
+            match self:
+                case _ if self in Schemes(self.scheme_base_ring()).Affine():
+                    return True
+                case _:
+                    return self._affineness_decision()
+
+        @RealizationHook
+        def _affineness_decision(self):
+            r"""Supply the affineness proposition from retained construction data.
+
+            Protected scheme computation contract. The public predicate
+            calls this supplier; a toric fan or a retained underlying scheme
+            can decide it without requiring a native engine. The default
+            retains the proposition when no algorithm has been selected.
+            """
+            return AtomicProposition("is_affine", self)
 
         def is_smooth(self) -> bool:
             r"""Whether ``X -> Spec R`` is smooth: by placement, else by the realization's Jacobian criterion."""
@@ -3292,9 +3325,6 @@ class Schemes(OwnedCategoryOverBaseRing):
                 r"""The prime spectrum ``Spec A`` underlying the affine scheme ``Spec A``."""
                 return self.coordinate_algebra().spectrum()
 
-            def is_affine(self):
-                return True
-
             def _prime_point(self, point):
                 r"""``point`` as an element of ``Spec A``: a prime point, or the prime it is given by."""
                 spectrum = self.underlying_space()
@@ -3784,7 +3814,12 @@ class AffineGSchemes(OwnedCategory):
     def __classcall__(cls, group, base_ring):
         from dzack_research.preamble.categories.group.groups import _owned_group
 
-        return Category.__classcall__(cls, _owned_group(group), _own_ring(base_ring))
+        base_ring = _own_ring(base_ring)
+        assert base_ring in OwnedRings().Commutative(), (
+            f"affine G-schemes here are actions on classical schemes over Spec(R), "
+            f"so their base ring must be commutative, but {base_ring} is in {base_ring.category()}"
+        )
+        return Category.__classcall__(cls, _owned_group(group), base_ring)
 
     def __init__(self, group, base_ring) -> None:
         self._group = group
@@ -3862,33 +3897,39 @@ class AffineGSchemes(OwnedCategory):
             super().__init__(**rest)
 
         def nontrivial_stabilizer_subscheme(self):
-            r"""Scheme-theoretic union of nonidentity fixed loci for a finite action."""
+            r"""Scheme-theoretic union of nonidentity fixed loci for a finite action.
+
+            The computation uses the group's selected finite iteration.  A
+            finite cardinal alone supplies no such data, and an undecided
+            comparison with the identity cannot select a union component.
+            """
             group = self.acting_group()
             assert group.is_finite() is True, (
                 f"a represented nontrivial stabilizer subscheme requires a finite group, not {group}"
             )
+            try:
+                elements = iter(group)
+            except (TypeError, NotImplementedError):
+                assert False, (
+                    f"the nontrivial stabilizer subscheme of {self} requires a selected "
+                    f"finite enumeration of {group}"
+                )
             ideal = None
-            for element in group:
-                if element == group.one():
+            identity = group.one()
+            for element in elements:
+                is_identity = element == identity
+                if is_identity is True:
                     continue
+                assert is_identity is False, (
+                    f"the nontrivial stabilizer subscheme of {self} requires deciding "
+                    f"whether {element} is the identity of {group}; that comparison is undecided"
+                )
                 fixed = self._cyclic_restriction(element).fixed_ideal()
                 ideal = fixed if ideal is None else ideal.intersection(fixed)
             if ideal is None:
                 algebra = self.coordinate_algebra()
                 ideal = algebra.ideal(algebra.one())
             return self.closed_subscheme(tuple(ideal.ideal_generators()))
-
-        def Mor(self, codomain, category=None):
-            from dzack_research.preamble.categories.group.g_objects import GObjects
-
-            acted_schemes = GObjects(self.acting_group(), self.underlying_category())
-            match category:
-                case None:
-                    return acted_schemes.Mor(self, codomain)
-                case _ if category.is_subcategory(acted_schemes):
-                    return acted_schemes.Mor(self, codomain)
-                case _:
-                    return _scheme_mor_category(self, codomain)
 
         def unacted_scheme(self):
             r"""Return the affine scheme the action was stated on."""
@@ -3906,7 +3947,10 @@ class AffineGSchemes(OwnedCategory):
             the identity; since the ``s`` generate ``G``, so is every element.
             """
             group = self.acting_group()
-            assert group.has_selected_finite_group_generating_set(), (
+            assert (
+                group.has_selected_group_resolution()
+                and group.group_generating_set().cardinality().is_finite() is True
+            ), (
                 f"cannot form the ideal of the fixed locus of {group} on {self}: the group must have a "
                 f"chosen finite set of group generators, but it is an object of {group.category()}"
             )
@@ -3917,7 +3961,7 @@ class AffineGSchemes(OwnedCategory):
                 f"{algebra.category()}"
             )
             labels = algebra.algebra_generating_set()
-            assert labels.cardinality().is_finite(), (
+            assert labels.cardinality().is_finite() is True, (
                 f"cannot form the ideal of the fixed locus of {group} on {self}: the coordinate algebra "
                 f"{algebra} must have finitely many chosen algebra generators, but it has "
                 f"{labels.cardinality()}"
@@ -3952,21 +3996,7 @@ class AffineGSchemes(OwnedCategory):
             r"""Return the selected ``(A^G, A^G -> A, engine invariants)``."""
             return _affine_linear_invariant_algebra_data(self)
 
-        def invariant_algebra(self) -> ObjectOfCategory:
-            r"""Return the represented invariant algebra ``A^G``.
-
-            The represented invariant computation supports finite linear actions on a polynomial
-            algebra over a field accepted by Sage's Singular invariant-ring
-            interface.  The result carries a chosen finite polynomial
-            presentation, not merely a membership predicate.
-            """
-            return self._invariant_algebra_data()[0]
-
-        def invariant_algebra_inclusion(self) -> AlgebraHomomorphism:
-            r"""Return the represented inclusion ``A^G -> A``."""
-            return self._invariant_algebra_data()[1]
-
-        def invariant_algebra_element(self, element) -> ElementOfCategoryObject:
+        def _invariant_algebra_element(self, element) -> ElementOfCategoryObject:
             r"""Express one invariant element of ``A`` in ``A^G``.
 
             The invariant-ring computation used by the affine quotient returns a
@@ -3975,14 +4005,17 @@ class AffineGSchemes(OwnedCategory):
             """
             source_algebra = self.coordinate_algebra()
             element = source_algebra(element)
-            assert all(
-                self.action_of(group_generator).coordinate_algebra_morphism()(element) == element
-                for group_generator in self.acting_group().group_generators()
-            ), (
-                f"cannot express {element} in the invariant algebra of {self}: it is not invariant under "
-                f"the action of {self.acting_group()}"
-            )
+            # Select the finite polynomial supplier before traversing its
+            # determining family.  Unknown invariance is not a refutation;
+            # an exact subalgebra certificate below can prove the lift.
             invariant_algebra, inclusion, engine_invariants = self._invariant_algebra_data()
+            for group_generator in self.acting_group().group_generators():
+                image = self.action_of(group_generator).coordinate_algebra_morphism()(element)
+                if (image == element) is False:
+                    raise ValueError(
+                        f"cannot express {element} in the invariant algebra of {self}: "
+                        f"the action of {group_generator} does not fix it"
+                    )
             if not engine_invariants:
                 return invariant_algebra(element)
             engine_source = _engine_ring(source_algebra)
@@ -3997,30 +4030,19 @@ class AffineGSchemes(OwnedCategory):
                 "test found no expression"
             )
             result = _evaluate_polynomial_in_algebra(certificate, invariant_algebra)
-            assert inclusion(result) == element, (
+            image = inclusion(result)
+            assert (image == element) is not False, (
                 f"the expression of {element} in the invariant algebra {invariant_algebra} is wrong: its "
-                f"image in {source_algebra} is {inclusion(result)}, not {element}"
+                f"image in {source_algebra} is {image}, not {element}"
             )
+            # The selected polynomial realization checks the certificate
+            # exactly even when the public equality diagnostic is undecided.
+            assert engine_source(_engine_element(source_algebra, image)) == engine_source(
+                _engine_element(source_algebra, element)
+            ), f"the polynomial certificate for {element} in {invariant_algebra} has the wrong image"
             return result
 
-        @cached_method
-        def affine_quotient(self) -> ObjectOfCategory:
-            r"""Return ``Spec(A^G)`` for the supported affine linear action."""
-            return self.invariant_algebra().affine_spectrum(base_ring=self.scheme_base_ring())
-
-        def quotient_base_change_comparison(self, ring_map):
-            from dzack_research.preamble.categories.schemes.quotients import (
-                AffineInvariantQuotientBaseChangeComparison,
-            )
-
-            return AffineInvariantQuotientBaseChangeComparison(self, ring_map)
-
-        @cached_method
-        def quotient_morphism(self):
-            r"""Return the represented affine quotient map ``Spec(A) -> Spec(A^G)``."""
-            return _affine_morphism_from_pullback(self, self.affine_quotient(), self.invariant_algebra_inclusion())
-
-        def factor_through_affine_quotient(self, morphism):
+        def _factor_through_affine_quotient(self, morphism):
             r"""Factor one invariant affine morphism uniquely through ``Spec(A^G)``.
 
             If ``f : Spec(A) -> Spec(C)`` is invariant, every selected
@@ -4049,7 +4071,7 @@ class AffineGSchemes(OwnedCategory):
                 f"object of {target_algebra.category()}"
             )
             labels = target_algebra.algebra_generating_set()
-            assert labels.cardinality().is_finite(), (
+            assert labels.cardinality().is_finite() is True, (
                 f"cannot factor {morphism} through the affine quotient of {self}: the coordinate algebra "
                 f"{target_algebra} of {target} must have finitely many chosen algebra generators, but it "
                 f"has {labels.cardinality()}"
@@ -4060,20 +4082,14 @@ class AffineGSchemes(OwnedCategory):
                 {label: self.invariant_algebra_element(pullback(target_algebra.algebra_generator(label))) for label in labels}
             )
             factor = _affine_morphism_from_pullback(self.affine_quotient(), target, factor_pullback)
-            assert factor * self.quotient_morphism() == morphism, (
+            # The exact lifts of the chosen algebra generators prove this
+            # triangle.  Preserve an undecided general map comparison while
+            # still refusing an explicitly refuted triangle.
+            assert (factor * self.quotient_morphism() == morphism) is not False, (
                 f"the factorization {factor} of {morphism} through the quotient of {self} is wrong: its "
                 f"composite with the quotient map {self} -> {self.affine_quotient()} is not {morphism}"
             )
             return factor
-
-        def descend_invariant_family(self, family_morphism):
-            r"""Descend an invariant affine family map through the quotient.
-
-            A family here is a morphism to an affine parameter scheme; if that
-            morphism is invariant, its unique quotient factor is the family
-            carried by ``X/G``.
-            """
-            return self.factor_through_affine_quotient(family_morphism)
 
 
 def _affine_linear_invariant_algebra_data(
@@ -4099,7 +4115,11 @@ def _affine_linear_invariant_algebra_data(
     )
 
     group = scheme.acting_group()
-    assert group.is_finite() is True and group.has_selected_finite_group_generating_set(), (
+    assert (
+        group.is_finite() is True
+        and group.has_selected_group_resolution()
+        and group.group_generating_set().cardinality().is_finite() is True
+    ), (
         f"cannot compute the invariant algebra of {group} acting on {scheme}: the group must be "
         f"finite with a chosen finite set of group generators, but it is an object of "
         f"{group.category()}"
@@ -4111,7 +4131,7 @@ def _affine_linear_invariant_algebra_data(
         f"algebra {algebra} must be a polynomial algebra with chosen variables, but it is an "
         f"object of {algebra.category()}"
     )
-    assert algebra.algebra_generating_set().cardinality().is_finite(), (
+    assert algebra.algebra_generating_set().cardinality().is_finite() is True, (
         f"cannot compute the invariant algebra of {group} acting on {scheme}: the coordinate "
         f"algebra {algebra} must be a polynomial algebra in finitely many variables"
     )
@@ -4165,10 +4185,16 @@ def _affine_linear_invariant_algebra_data(
         _copy_polynomial_by_exponents(invariant, engine_algebra, variables) for invariant in backend_invariants
     )
     invariant_elements = tuple(_owned_engine_element(algebra, invariant) for invariant in engine_invariants)
-    assert all(pullback(invariant) == invariant for pullback in pullbacks for invariant in invariant_elements), (
-        f"Sage's generators of the invariant ring of {group} acting on {scheme} are not all "
-        f"invariant under the action on {algebra}"
-    )
+    for pullback in pullbacks:
+        for invariant, engine_invariant in zip(invariant_elements, engine_invariants, strict=True):
+            image = pullback(invariant)
+            assert (image == invariant) is not False, (
+                f"Sage's generator {invariant} of the invariant ring of {group} acting on {scheme} "
+                f"is not fixed by {pullback}"
+            )
+            assert engine_algebra(_engine_element(algebra, image)) == engine_invariant, (
+                f"the polynomial realization of Sage's invariant {invariant} is not fixed by {pullback}"
+            )
 
     invariant_labels = tuple(f"invariant_{index}" for index in range(len(engine_invariants)))
     presentation = base.free_module(invariant_labels).symmetric_algebra()
@@ -5802,6 +5828,99 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         first = next(iter(base_object.coordinate_algebra().algebra_generators()))
         return base_object.closed_subscheme(first)
 
+
+
+class EffectiveCartierDivisors(_SchemeSubobjectsOf):
+    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
+
+    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
+    invertible.  This is structure on the closed subobject, not on one
+    particular divisor realization.  A represented construction may retain a
+    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
+    """
+
+    immersion_name = "effective Cartier divisors"
+
+    def super_categories(self):
+        ambient = self.base_object()
+        return [
+            ClosedEmbeddings(ambient),
+            ClosedSubschemes(ambient.scheme_base_ring()),
+        ]
+
+    def an_object(self):
+        r"""Return the empty effective Cartier divisor in the represented affine case."""
+        ambient = self.base_object()
+        base = ambient.scheme_base_ring()
+        match ambient:
+            case _ if ambient in Schemes(base).Affine():
+                return ambient.closed_subscheme(
+                    ambient.coordinate_algebra().one(),
+                    placements=(self,),
+                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
+                )
+            case _:
+                raise AssertionError(
+                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
+                    "category currently constructs that specimen only from an affine presentation"
+                )
+
+    class ParentMethods:
+        def __init__(
+            self,
+            effective_cartier_ideal_sheaf,
+            effective_cartier_picard_class=None,
+            **rest,
+        ) -> None:
+            self._effective_cartier_picard_class = effective_cartier_picard_class
+            super().__init__(
+                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
+                **rest,
+            )
+            ambient = self.inclusion().codomain()
+            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
+                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
+                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
+                f"{self.ideal_sheaf().category()}"
+            )
+
+        def is_effective_cartier_divisor(self) -> bool:
+            return True
+
+        def picard_class(self):
+            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
+            match self._effective_cartier_picard_class:
+                case None:
+                    raise AssertionError(
+                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
+                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
+                        "supply a represented class"
+                    )
+                case picard_class:
+                    return picard_class
+
+
+class ClosedSubschemes(OwnedCategoryOverBaseRing):
+    r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
+
+    ``ClosedEmbeddings(X)`` is the fibre of this category over one scheme
+    ``X``; this category collects those fibres over all ``R``-schemes so that
+    being a closed subscheme is a placement a session can ask without naming
+    the codomain of the immersion.  Its objects are constructed in both.
+    """
+
+    def an_object(self):
+        r"""The origin of the affine line."""
+        line = AffineSpaces(self.base_ring())(1)
+        return line.closed_subscheme(next(iter(line.coordinate_algebra().algebra_generators())))
+
+    def _repr_object_names(self):
+        return f"closed subschemes of schemes over {self.base_ring()}"
+
+    def super_categories(self):
+        return [Schemes(self.base_ring())]
+
+
     class ParentMethods:
         def __init__(
             self,
@@ -6115,97 +6234,6 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                         f"cannot form the open complement of {self}: this is computed here only in affine or "
                         f"projective schemes, but {codomain} is an object of {codomain.category()}"
                     )
-
-
-class EffectiveCartierDivisors(_SchemeSubobjectsOf):
-    r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
-
-    An effective Cartier divisor is a closed subscheme whose ideal sheaf is
-    invertible.  This is structure on the closed subobject, not on one
-    particular divisor realization.  A represented construction may retain a
-    Picard-class realization; the class itself is mathematically ``[O_X(D)]``.
-    """
-
-    immersion_name = "effective Cartier divisors"
-
-    def super_categories(self):
-        ambient = self.base_object()
-        return [
-            ClosedEmbeddings(ambient),
-            ClosedSubschemes(ambient.scheme_base_ring()),
-        ]
-
-    def an_object(self):
-        r"""Return the empty effective Cartier divisor in the represented affine case."""
-        ambient = self.base_object()
-        base = ambient.scheme_base_ring()
-        match ambient:
-            case _ if ambient in Schemes(base).Affine():
-                return ambient.closed_subscheme(
-                    ambient.coordinate_algebra().one(),
-                    placements=(self,),
-                    effective_cartier_ideal_sheaf=ambient.structure_sheaf(),
-                )
-            case _:
-                raise AssertionError(
-                    f"the empty closed subscheme is an effective Cartier divisor on {ambient}, but this "
-                    "category currently constructs that specimen only from an affine presentation"
-                )
-
-    class ParentMethods:
-        def __init__(
-            self,
-            effective_cartier_ideal_sheaf,
-            effective_cartier_picard_class=None,
-            **rest,
-        ) -> None:
-            self._effective_cartier_picard_class = effective_cartier_picard_class
-            super().__init__(
-                closed_embedding_ideal_sheaf=effective_cartier_ideal_sheaf,
-                **rest,
-            )
-            ambient = self.inclusion().codomain()
-            assert self.ideal_sheaf() in QuasiCoherentSheaves(ambient).Invertible(), (
-                f"the defining ideal sheaf of the effective Cartier divisor {self} on {ambient} must be "
-                f"an invertible O_X-module on {ambient}, but {self.ideal_sheaf()} is an object of "
-                f"{self.ideal_sheaf().category()}"
-            )
-
-        def is_effective_cartier_divisor(self) -> bool:
-            return True
-
-        def picard_class(self):
-            r"""Return the represented class ``[O_X(D)] = [I_D^vee]`` in ``Pic(X)``."""
-            match self._effective_cartier_picard_class:
-                case None:
-                    raise AssertionError(
-                        f"{self} is an effective Cartier divisor on {self.inclusion().codomain()}, so it "
-                        "defines the Picard class [O(D)], but this closed-subscheme realization does not "
-                        "supply a represented class"
-                    )
-                case picard_class:
-                    return picard_class
-
-
-class ClosedSubschemes(OwnedCategoryOverBaseRing):
-    r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
-
-    ``ClosedEmbeddings(X)`` is the fibre of this category over one scheme
-    ``X``; this category collects those fibres over all ``R``-schemes so that
-    being a closed subscheme is a placement a session can ask without naming
-    the codomain of the immersion.  Its objects are constructed in both.
-    """
-
-    def an_object(self):
-        r"""The origin of the affine line."""
-        line = AffineSpaces(self.base_ring())(1)
-        return line.closed_subscheme(next(iter(line.coordinate_algebra().algebra_generators())))
-
-    def _repr_object_names(self):
-        return f"closed subschemes of schemes over {self.base_ring()}"
-
-    def super_categories(self):
-        return [Schemes(self.base_ring())]
 
 
 class OpenImmersions(_SchemeSubobjectsOf):

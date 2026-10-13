@@ -329,6 +329,478 @@ and biproduct constructors. **Coverage:** the named source routes; execution
 remains unverified. This is a construction and category-placement defect;
 the zero-module mathematics is already part of the module category.
 
+### Formed-module Mono has a first-component-only definition
+
+In the formed-pair category, an arrow retains both f on modules and h on
+value modules. On a zero-form QQ-line, m=(id,0) has injective f but
+m*(id,0)=m*(id,id), so it is not categorically monic. The selected
+`FormEmbeddingMor` is exposed as `FormModules.Mono`, while its current
+definition and injectivity validator only state the first-component law.
+Its complete categorical-Mono repair must include the actual value-map
+requirement, different value-module endpoints and composition.
+
+The existing `placement-owner-formembeddingmor` retains this obligation.
+The bilinear-owner pass repairs the shared pair/form diagnostics and the
+actual consumers with identity value maps; it does not claim that checking
+first-component injectivity proves general categorical monicity. The exact
+zero-form separating equation remains under T. No new prerequisite is filed.
+
+### Protected formed-map expectations conflate two preservation laws
+
+For the A2 form with Gram [[2,1],[1,2]], the pair (id,3) from A2 to
+its form scaled by three satisfies h(b(x,y))=b'(f(x),f(y)). Its value map
+is multiplication by three, so it does not preserve that value map exactly.
+The protected `tests/modules/test_bilinear_form_modules_a2_and_u.sage`
+expects `preserves_form_exactly()` to be true for this pair. The same file
+expects default construction to reject the doubled first root, whose true
+failed norm equation is 2=8. Under OWN-22 that failure belongs to an explicit
+diagnostic check. A map with identity value component need not be injective:
+the zero map of a nonzero zero-form module is the separating example.
+
+The source pair, explicit-check and exact value-map decisions are repaired
+by `placement-owner-bilinearformmodules`. The existing `triage-long-tail`
+owns reconciliation of the protected expectations; T retains the true
+equations and distinct predicates. No protected file was edited or executed.
+
+### Protected bilinear constructors expect symmetry discovery
+
+The protected form construction specimens in
+`tests/constructions/test_forms_construct.sage` and
+`tests/constructions/test_bilinear_form_modules_construct.sage` expect a
+generic bilinear-form constructor to discover symmetry from its finite Gram
+table. OWN-22 requires the constructor to retain its defining form without
+computing the table or its laws. A requested Symmetric category supplies the
+law, and the actual polarization, dual, scalar-change, Vinberg and toric
+intersection constructions retain symmetry by their defining equations.
+The scalar value object may also be distinct from its actual regular module,
+as for QQ[t]; their conversion is an actual framing map, not object identity.
+
+The constructor and its finite source consumers are reconciled in
+`placement-owner-bilinearformmodules`. The protected mathematical symmetry
+and value-conversion assertions remain under T, with their constructor and
+representation reconciliation assigned to `triage-long-tail`.
+
+### Direct tensor symmetry still coerces undecided equality
+
+For G=[[0,a],[0,0]], symmetry is exactly the coefficient equation a=0.
+When that equality is an owned proposition, `Tensor.is_symmetric` in
+`tensors/tensor.py` Boolean-coerces it through Python all. The expected
+answer is the retained equation, with its exact negation; uncertainty does
+not refute symmetry. The generic formed constructor no longer requests this
+decision during placement, and its finite form-square diagnostic uses owned
+conjunction on the existing pullback tensor's public components. The direct
+Tensor predicate itself remains an observed source obligation at that owner
+under `TODO.md`'s existing `triage-long-tail`, not a new prerequisite.
+
+### Core inverse data and its actual base-arrow representation
+
+An isomorphism datum u:A->B, v:B->A asserts v*u=id_A and u*v=id_B.
+Its explicit law check must retain undecided equality separately from a
+false equation. The current generic `CoreMor._element_constructor_`
+calls `CategoricalIsomorphism(...,verify=True)`; that constructor computes
+both composites and rejects any inverse equation not literally True.
+The known-pair entry already passes `verify=False`. The actual generic
+parent also declares the legacy `Element=CategoricalIsomorphism`, bypassing
+the generated base-arrow route. Its future repair must initialize the
+selected base-arrow representation, not merely rename that declaration.
+
+**Searched / Found / Conclusion:** read the complete Core and categorical
+isomorphism definitions, the selected element-class branch, known-pair
+identity/composition routes and direct stronger consumers. Plane linear
+right equivalences and torsion-form isometries explicitly retain supplied
+inverse data with `verify=False`; the latter already has a separate
+validator. The bounded protected search found positive swap and identity
+pairs, but no explicit invalid inverse-pair rejection fixture.
+The existing `placement-owner-coremor` owns these law-check and actual
+representation obligations. Aut-family selection reuses fixed diagonal
+categories without invoking pair ingress, so the completed
+`placement-owner-autcategoryconstruction` does not require this repair.
+
+### Protected Aut specimens conflate a fixed category and a group realization
+
+The two-element set has four endomaps and two automorphisms; its
+automorphism group is C2. Those true theorems in
+`tests/objects/test_isomorphisms_of_a_two_element_set.sage` do not by
+themselves select an ordinary group-engine representation for the fixed
+categorical Aut object. Its `.order()`/`.is_isomorphic_to()` calls need
+that representation, and its no-argument `.identity()` must distinguish
+the identity automorphism from the identity two-arrow on an arrow object.
+The actual fixed entries `.one()`/`identity_automorphism()` and
+`.identity(arrow_object)` retain that distinction. The existing
+`triage-long-tail` owns protected spelling/representation reconciliation;
+the swap-square, identity-square and counting assertions remain under T.
+The protected file is unchanged and unexecuted.
+
+### Protected well-order reversal expects eager validation
+
+The three-point reversal r(k)=2-k is not monotone: 0<=1, but r(0)=2 is
+not <=r(1)=1. The protected
+`tests/sets/test_cardinal_and_ordinal_order_morphisms.sage` expects this
+failure during default construction. Under `OWN-22`, that true failed
+inequality is diagnosed by an explicit check, while construction retains
+the defining map. The existing `triage-long-tail` node owns reconciliation
+of that timing. T retains the failed reversal, positive monotone maps and
+the fact that the composite of two reversals is the identity. The protected
+file is unchanged and unexecuted; no source repair remains for this entry.
+
+
+
+### Slice and coslice arrows still need their actual base-arrow initialization
+
+An object of `C/X` or `X/C` is an object of the actual `C` with its chosen
+structure arrow (`CAT-16`, `CAT-20`, `OWN-16`). Its nonfixed triangle edge
+is therefore a `C`-arrow. The generic `SliceMor` and `CosliceMor` select
+the legacy `CommutativeSquare -> NaturalTransformationMorphism -> Morphism`
+implementation; it retains the square but does not initialize the selected
+module, group or other base-arrow representation promised by the declared
+`C.Mor`. In the module slice over zero, the identity triangle on a rank-one
+free module must carry its actual linear-map operations; the dual coslice
+has the same requirement.
+
+The exact associative-unital algebra slice over its canonical scalar
+algebra now has its declared `_AugmentedAlgebraMor` implementation.
+That route initializes the actual lower algebra map on the structured
+endpoints and retains the existing square. This completes the scalar
+augmentation route only; it does not settle generic module, group or
+coslice initialization.
+
+**Searched / Found / Conclusion:** read the slice/coslice carrier
+`_with_structure` construction, their genuine `C` declaration, the fixed
+Mor graph, generated-arrow selection and constructor transport. The
+existing `_mor_endpoints_in_supercategory` and
+`_transport_initialization_to_mor` protocols supply the correct repair
+boundary, exemplified by the actual equivariant-arrow constructor. Merely
+replacing `Element` with `ElementMethods` is insufficient: the retained
+edge has the original carrier endpoints, whereas the newly structured
+parents are distinct, and a module constructor can otherwise misread that
+edge as generator data.
+
+The existing `placement-owner-slicemor` and `placement-owner-coslicemor`
+own this independent lower-arrow initialization. Their exact source
+transformation, nonfixed edge, carrier transport and generated providers
+must be delivered together. Reusing the common `identity_at` or deferring
+the square's equation check neither depends on nor supplies that missing
+initialization. No new prerequisite or executed result is asserted.
+
+### Selected exterior computations and the protected augmentation spelling
+
+The existing exterior-power realization selects a framed free module or
+a chosen finite presentation for its higher pieces. The current
+arbitrary-target exterior extension also selects a finite module-generating
+family. Mathematical existence does not select those computational data;
+the corresponding construction assertions remain named under T. The
+inverse factorial comparison uses an actual rational coefficient
+structure (apart from the proved zero-module case), and an arbitrary
+whole divided-power algebra map still needs a procedure establishing
+compatibility with the divided powers. These are the bounded existing
+computation frontiers, not assertions that no other algorithm exists.
+
+`tests/algebras/test_power_algebras.sage` still uses
+`divided.augmentation(value)` for scalar evaluation, whereas the declared
+augmentation operation returns the structural map. The true equation
+`epsilon(1+x+gamma_2(y))=1` is retained under T; `triage-long-tail` owns
+reconciliation of the protected spelling. The file is unchanged and
+unexecuted. The source findings of `placement-owner-alternatingalgebras`
+are resolved; its complete audit belongs in that delivery commit.
+
+### Finite coefficient module kernels need exact coefficient presentations
+
+For `R=Zmod(4)`, the kernel of multiplication by `2` is the actual submodule
+`2R`. It is isomorphic to `R/2R`, not to a free rank-one `R`-module. The
+Lie algebra `L=R h direct_sum R e` with `[h,e]=2e` therefore has center
+`2L`, since centrality of `a h+b e` is exactly `2a=2b=0`.
+
+**Source evidence (2026-10-11):** read the direct modular-ring placement,
+the framed-free kernel hook, `_selected_presentation_kernel`, its PID/CAP
+dispatch, and the Singular coefficient-presentation and kernel adapters.
+The direct `Zmod(4)` object has no selected PID or exact polynomial cover
+for this computation. Its nonzero adjoint kernel reaches the existing
+assertion requiring an exact polynomial coefficient presentation. A
+possible abstract quotient presentation does not itself transport this
+literal coefficient ring, its modules or their maps.
+
+**Searched / Found / Conclusion:** the existing module equalizer and
+intersection constructions supply the Lie-center route, with the actual
+kernel inclusion when computed. Their selected coefficient adapter is the
+remaining boundary for the direct modular-ring case. The existing
+`placement-owner-selectedfinitepresentationmodules` owns that computation
+and transport review. Confidence is high for these read source paths;
+no runtime result, general solver-absence claim or new prerequisite is
+asserted. Retain the named computation boundary at the Lie consumer.
+
+### Generic commutative-algebra specimens impose stronger laws
+
+A commutative bilinear product need not be associative or unital. For the
+algebra over `QQ` with `x^2=y`, `xy=yx=x`, `y^2=0`, the commutant is the
+whole module. Its nucleus, hence its magma centre, is zero: for `z=ax+by`,
+the associators with `(x,y)` and `(x,x)` are `-ay` and `by`. Commutativity
+alone therefore does not justify the centre-rank-two expectation in
+`tests/algebras/test_algebra_preservation.sage`. The earlier algebra-owner
+source bank already records the correct centre; the protected expectation
+remains unreconciled. Its bare product-table input also predates the actual
+bilinear-map ingress used by the current algebra constructor.
+
+The same ingress mismatch remains in `tests/algebras/test_lie_cokernels.sage`:
+its raw tables enter root `Algebras(QQ)`, which neither interprets a table
+as the defining tensor-domain morphism nor infers Lie axioms. The asserted
+Cartan-ideal theorem in `sl_2(QQ)` is true: brackets with `h` give `2e,-2f`,
+so the generated Lie ideal is the whole algebra. Its protected spelling
+still needs the actual bilinear bracket and explicit Lie entry; the
+existing `triage-long-tail` reconciliation retains this valid theorem.
+
+Likewise, the standard polynomial tensor cocone is a coproduct in
+associative unital commutative algebras, with unit-preserving arrows. The
+root theory admits the maps `p -> (p(0),0)` and `q -> (0,q(0))` from
+`QQ[x]` and `QQ[y]` to `QQ x QQ`. Their images of `1` differ, so there is
+no factor through the tensor cocone's shared unit.
+`tests/algebras/test_native_free_algebra_module_factor.sage` nevertheless
+asks root `Algebras(QQ).Commutative()` for that coproduct.
+
+**Actual supplier boundary:** root `Algebras.Commutative` inherits
+`Modules.SubcategoryMethods.coproduct`, its module colimit supplier and
+the module biproduct construction. That route supplies no algebra
+multiplication or root-algebra coproduct universal property. The genuine
+tensor supplier is on the distinct associative-unital commutative owner;
+it is not selected from the two inputs' stronger object properties.
+
+**Searched / Found / Conclusion:** read both complete protected
+specimens, the common centre and tensor-classified product construction,
+the root and associative-unital commutative owners, and the inherited
+module coproduct/biproduct route. The equations above establish two false
+specification identifications, not runtime failures. Existing
+`triage-long-tail` owns reconciliation of the protected specifications;
+`placement-owner-modules` owns the remaining inherited module-supplier
+applicability. Preserve the valid centre, bilinear product and tensor
+constructions. No test was changed or run, and this independent remainder
+is not a prerequisite of the root commutative owner's three operations.
+
+### Free algebra constructions do not uniformly supply associative projective sources
+
+Projectivity of an associative `R`-algebra is relative to a specified class
+of algebra maps. For underlying surjections, `T_R(M)` is projective when
+`M` is projective. A commutative polynomial algebra need not be projective
+in the associative theory: `QQ[x,y]` has no section of abelianization from
+`QQ<x,y>`, since the degree-two commutator of any lifted generators is
+`xy-yx`. Likewise, `T_ZZ(ZZ/2)` cannot lift its degree-one generator through
+`ZZ<x> -> T_ZZ(ZZ/2)` while preserving its relation `2x=0`.
+
+**Source evidence (2026-10-11):** `free_algebras.py` places native symmetric
+and tensor constructions in the common `FreeAlgebras`; the relationful
+construction in `finitely_presented_algebras.py` can also inherit this
+placement through `GradedFreeAlgebras`. Neither placement alone proves
+associative projectivity. The finite-generation classifier now selects the
+existing intersection of `TensorAlgebras(R)` and `Modules(R).Projective()`,
+and the actual underlying-set surjection family. Other uses of the common
+free-algebra placement still require their own theory-specific review.
+
+**Retained computation frontier:** the sparse construction on an actual
+framed-free generating module supplies whole-module projectivity, and its
+tensor algebra supplies qualified associative algebra projectivity. Other
+represented projective generating modules still need the corresponding
+property placement or an actual comparison/transport. Their homogeneous
+pieces do not by themselves establish that the needed whole-object
+placement is present. Preserve all defining maps; absence of placement is
+not a theorem of nonprojectivity.
+
+**Searched / Found / Conclusion:** read `FreeAlgebras`, its native and
+relationful producers, the sparse producer, the tensor/module categories,
+the finite-generation selector and `Resolutions`. Found the distinctions
+above; the existing `placement-owner-freealgebras` owns the unresolved
+theory/placement review. Confidence is high for these source paths; no
+runtime failure or global absence theorem is claimed. This does not gate
+the repaired finite-generation selector on another repository.
+
+### Selected algebra presentations exceed the polynomial computations
+
+An associative finite presentation retains its actual tensor or polynomial
+source `P`, indexed relations, quotient `q:P -> A` and lift. A commutative
+quotient can retain a noncommutative source: for example
+`QQ[x,y] = QQ<x,y>/(xy-yx)`. Commutativity of `A` therefore does not
+justify a polynomial computation on its selected `P`.
+
+**Remaining computations:** general nonhomogeneous tensor relations and
+coefficient realizations outside the selected exact-field homogeneous
+reduction or existing linear-module construction still need a maintained
+two-sided normal-form supplier. The valid presentation
+`QQ<x,y>/(xy-1)` is a small nonhomogeneous boundary specimen. General
+scalar-kernel intersections, membership with undecided coefficients and
+torsion decisions outside the retained module/domain regimes remain
+named computation frontiers. These are not negative mathematical claims.
+Their defining assertions remain under terminal T's chosen-presentation
+obligations; the placement pass is source delivery, not executed acceptance.
+
+**Remaining transport:** the selected scalar-restriction computation uses
+actual polynomial presentations of both the coefficient extension and its
+algebra, their selected lifts, and the literal coefficient structure map.
+Other associative restrictions retain their actual module, multiplication,
+unit and scalar map. Their finite-presentation transport still needs an
+appropriate associative supplier at
+`placement-owner-restrictedscalarsalgebras`. No negative finite-presentation
+claim follows from the missing selected computation. Polynomial
+differentials/coproducts, commutative radical transport and lifted module
+relations likewise retain their explicit actual-presentation hypotheses.
+
+**Protected result-type finding (2026-10-11):** the last assertion of
+`tests/constructions/test_algebra_presentation_normal_form_terms_construct.sage`
+asks `terms.cardinality() == cardinal(2)`. Independently of that line,
+API-02 defines coordinates as a finitely supported function on the chosen
+basis, with support its condition subset; it says, “No coordinate readout
+has a dictionary interface.” SET-01 requires the owned mathematical
+collection. The former implementation returned a Python dictionary and
+the protected line asks the cardinality of the wrong type. For
+`QQ[x,y]/(xy)`, the true statement is that the coefficient function of
+`x+y` has support cardinality two, value one on the two supported basis
+labels, and reconstructs `x+y`. Retain this required mathematical
+correction for T; no protected expectation was edited to match code.
+
+**Searched / Found / Conclusion:** the complete selected-presentation
+owner, quotient/lift adapters, actual tensor-module supplier, existing
+coordinate function, scalar-restriction construction and changed
+coefficient consumers were read. API-02, SET-01, CAT-01/CAT-05 and
+DEV-67--69 supply no public-dictionary exception or permission to infer
+polynomial input from quotient commutativity. The current explicit
+frontiers and the protected type mismatch are source findings; no
+runtime failure or universal absence theorem is claimed.
+
+### A finite-generation reference confuses a property with a chosen family
+
+A group generated by a finite family `S` is generated as a monoid by the
+finite family `S union inverse(S)`. Thus the additive group `ZZ` is also
+finitely generated as a monoid, by `1,-1`. The singleton `1` failing to
+generate it as a monoid distinguishes a chosen family, not the existential
+finite-generation property.
+
+**Observed source (2026-10-11):** this project's vault reference
+`references/categorical-presentation-principles.md`, in “Declaration and
+pullback are factorization, not doctrine,” states the contrary `ZZ`
+counterexample as a placement rule. The statement and its immediate context
+were read directly after the required memory search. Correct that reference
+and decisions relying on it within the existing
+`placement-owner-ownedgroups-finitelygeneratedasmagma` work; no new
+dependency is created. The counterexample is mathematically false with high
+confidence by the explicit two-element generating family. Its downstream
+uses have not been globally inspected, and no execution is claimed.
+
+### General degree-zero algebras need represented homogeneous inclusions
+
+For a strictly commutative differential graded `R`-algebra `B`, its degree-zero
+algebra is the actual module `B^0` with the induced product and unit. For
+`B=k[z] tensor exterior_k(e)` with `|z|=0`, `|e|=1` and zero differential,
+`B^0=k[z]`; the coefficient algebra alone does not determine it. The de Rham
+adjunction uses that algebra and the inclusion `B^0 -> B`, extending
+`a |-> f(a)` by `da |-> d(f(a))`.
+
+**Source evidence (2026-10-11):** `functors/de_rham.py`'s
+`_DegreeZeroDGAFunctor._degree_zero_data` supplies exact de Rham data,
+justified standard scalar restrictions, represented graded direct sums,
+and finite framed homogeneous subobjects. A general represented homogeneous
+piece with its inclusion and lift remains unavailable through this selected
+route; it reaches a named assertion. The resulting algebra can also lack the
+selected presentation required by `_DeRhamAdjunction._counit_component`.
+
+**Searched / Found / Conclusion:** read the degree-zero functor, restricted
+graded algebra, graded direct sum and graded-module piece suppliers; found
+the constructions above, not a general inclusion/lift supplier. This is a
+source-level computation frontier, not an executed failure or a claim that
+every other representation lacks the mathematics. Confidence is high for
+these inspected paths; other suppliers and runtime behavior are uninspected.
+The existing `placement-owner-differentialgradedalgebras` owns the piece
+construction; `placement-owner-kahlerdifferentialmodules` owns the needed
+algebra-presentation remainder. No external repository gates either owner.
+Mathematics: [de Rham construction](https://stacks.math.columbia.edu/tag/0FKF)
+and [strict commutativity](https://stacks.math.columbia.edu/tag/061U).
+
+### General Kähler differentials exceed the selected finite conormal computation
+
+For every retained commutative ring map `R -> A`, `Omega^1_(A/R)` represents
+`R`-derivations from `A`. In particular, for any index set `I`,
+`Omega^1_(R[x_i : i in I]/R)` is the direct sum of copies of `R[x_i] dx_i`.
+Finiteness is not a hypothesis of that universal construction.
+
+**Source evidence (2026-10-11):** the path from the commutative algebra's
+`kahler_differentials` and `de_rham_algebra` to
+`derivations._commutative_presentation_data` uses selected polynomial or
+quotient data with literally known finite polynomial labels. Infinite or
+undecided label finiteness reaches the named conormal/differential assertion
+before traversal. Existing localization and relative-zero cases remain.
+An algebra constructed only on a degree-zero module can lack this selected
+presentation even when it is isomorphic to its coefficient ring.
+
+**Searched / Found / Conclusion:** read the Kähler, derivation, de Rham and
+degree-zero suppliers and their selected presentation branches. Found the
+finite conormal construction; the general infinite presentation computation
+and presentation of a newly constructed degree-zero algebra remain at the
+existing `placement-owner-kahlerdifferentialmodules` owner. Confidence is high
+for the inspected source boundary; no execution or global absence claim is
+made. Mathematics: [differentials and the conormal sequence](https://stacks.math.columbia.edu/tag/00RM).
+
+### Cohomology needs general represented cycle quotients
+
+For an arbitrary cochain complex of `R`-modules, `H^p` is the module of cycles
+modulo boundaries, with its actual kernel, image, factorization and quotient
+maps. It need not be finitely presented. For algebraic de Rham cohomology of
+`F2[x]`, `H^0=F2[x^2]` and `H^1=F2[x^2] x dx` have infinite `F2`-dimension.
+
+**Source evidence (2026-10-11):** `functors/cohomology.py` has the general
+codomain `Modules(R)`, while `modules/cochain_complexes.py:_cohomology`
+still selects a chosen finite cycle presentation after obtaining the actual
+kernel, image and boundary-in-cycle factorization. The unresolved computation
+is the general represented cycle quotient, not the functor's mathematical
+codomain. The existing `placement-owner-cohomologymodules` owns this remainder
+and its unavailable-computation assertions.
+
+**Searched / Found / Conclusion:** read the cohomology functor, cycles,
+boundaries, `_cohomology`, and the de Rham consumer; found the selected finite
+construction and the named frontier, not a general unbounded solver along
+this route. Confidence is high for this source trace; broader algorithms
+and runtime behavior are uninspected. No execution is claimed. The displayed
+`F2[x]` equations follow directly from the [de Rham differential](https://stacks.math.columbia.edu/tag/0FKF).
+
+### A coefficient presentation omits group-action relations
+
+**Observed during placement-owner-affinegschemes (2026-10-11):** asking
+the selected relation supplier of a linearized group action returned the
+coefficient module's R-linear relations as if they were all relations of
+the R[G]-framing. For the trivial C2-action on the coefficient carrier
+QQ[C2], that coefficient module is free, but the R[G]-framing has the
+additional nonzero relations (g-1)e_i. Empty coefficient relations cannot
+prove that its arbitrary generator images define an R[G]-linear map.
+
+**Correction and retained remainder:** _CoefficientModuleEngine now keeps
+the complete coefficient presentation on unformed_module() and returns
+the existing missing-relation value None outside canonical regular
+cases. ModuleMorphism consequently retains its linearity proposition;
+tensor and scalar-restriction presentation algorithms reach their
+existing named assertions. The genuine left regular action retains its
+rank-one group-algebra frame only through the actual cached action
+functor, while the trivial action on the same carrier receives no such
+frame. A complete nonregular R[G]-relation computation remains inside
+the existing placement-owner-modulesovergroupalgebra node.
+
+**Dependency and inspected boundary:** exact coefficient module and
+BG-action -> existing _equip_action scalar representation and spanning
+family -> actual R[G]-kernel supplier -> module-map, tensor and
+scalar-restriction consumers. The builder, _CoefficientModuleEngine,
+GroupAlgebras.regular_representation and these selected consumers were
+read as source. No runtime execution or test modification occurred.
+
+### A module annihilator uses the additive endomorphism representation
+
+For a left module M over a possibly noncommutative ring R, the defining
+scalar representation is rho:R->End_Ab(U(M)), and Ann_R(M)=ker(rho).
+Left multiplication by r need not be R-linear: on the regular left
+module of M_2(QQ), r=E12 and s=E21 give r*s=E11 but s*r=E22.
+Thus writing the scalar representation with target End_R(M) adds an
+unavailable commutativity hypothesis.
+
+`categories/modules/pure/modules.py:_ring_morphism_defining_module_action`
+already constructs the actual ring arrow into End_Ab(U(M)). The two
+`End_R(M)` mentions in its adjacent generic `annihilator` docstring still
+state the wrong target. This documentation remainder belongs to the
+existing `placement-owner-modules` in TODO.md; the AdditiveMor scalar
+repair does not alter the already correct defining map.
+
+
 ### An integral isotropic partner with minimal pairing can fail to exist
 
 [Research #401](https://github.com/dzackgarza/research/issues/401) requests,
@@ -401,6 +873,22 @@ the bound `L^sharp subset L/abs(det L)` makes the integral-overlattice
 decision terminate. Degenerate lattices use the finite-group realization.
 Formal comparison, port adoption, and independent acceptance remain in
 [`indefinite-port-primitives`](TODO.md#indefinite-port-primitives).
+
+The supplied-data route selected by
+[`bounded-rational-group-integral-structures`](TODO.md#immediate-priority-repairs)
+also needs the actual finite-action maps. The current finite stabilizer is
+a subgroup of the permutation image, whereas the preimage constructor
+requires a subgroup of the morphism's literal codomain. Replacing its
+preimage with another generated subgroup discards that defining morphism.
+Likewise, a caught factorization/type error cannot certify that two lattices
+have no transporter. On Gram `diag(4,1)`, the involution exchanging `e1/2`
+and `e2` gives a finite residue action with two lattice classes; `3L` is
+excluded by the decided failure of `2M subset 3L`. The existing left-coset
+owner and orbit quotient must retain the coset projection and section;
+raw representative tuples do not supply those constructions. Stability of
+a supplied bound is an explicit diagnostic under `OWN-22`, and absence of a
+finite bound remains a computation frontier. These are inspected source
+obligations, with execution deferred under `DEV-58`.
 
 ### Isotropic-reduction lifts need a kernel torsor with nonlinear evaluation
 
@@ -573,6 +1061,39 @@ are `constructor-discovery` and `optional-sage-categories-property-layer` in
 TODO. Later module factorization assertions remain unverified until quotient
 construction succeeds.
 
+### Multiplicative integer submonoids do not supply the fixed power specimens
+
+The AdditiveMonoids source pass on 2026-10-11 read the unchanged
+tests/constructions/test_group_actions_construct.sage and
+tests/groups/test_multiplicative_submonoids_of_the_integers.sage.
+Their multiplicative integer assertions require 8 in the submonoid
+generated by 2, 6 outside it, and the canonical factor of <4> into <2>
+fixing 4. These are true statements: <2> consists of 2^n for n>=0,
+and 4=2^2.
+
+The owned ZZ has no authored submonoid entry. Its existing
+generated_submonoid([2]) instead reaches _SubmonoidEngine, whose
+generator branch recognizes one and listed generators but supplies no
+general power-membership calculation. Consequently the existing
+MonoidMorphism generator-containment factor cannot discharge the
+displayed <4> into <2> specimen through that supplier. The predicate
+construction for odd integers is a different, multiplicative route.
+
+**Owning boundary:** the existing `placement-owner-monoids` and
+`placement-owner-monoidmor` rows in TODO.md retain these obligations.
+The current additive NN constructors require zero and addition, while
+these integer constructions require one and multiplication. Their
+different defining laws and protected assertions must both remain.
+The shared generator-containment conjunction preserves predicate-valued
+answers, but is not a missing multiplicative membership algorithm.
+
+**Coverage boundary:** the named protected sources, the authored
+submonoid entries in group/magmas.py, their engine in group/submonoids.py
+and the exact MonoidMorphism factor supplier were read. No test or
+runtime result is claimed, no assertion was changed, and no new
+prerequisite was filed.
+
+
 ### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
 
 For an ordinary represented fixed Mor category `Mor_C(A,B)` whose selected
@@ -607,6 +1128,31 @@ as a diagram target.
 **Coverage boundary:** the ordinary discrete fixed-Mor route and the singleton
 set specimen were inspected; no claim is made about non-discrete specializations.
 Repair: `discrete-fixed-mor-universal-constructions` in [TODO.md](TODO.md).
+
+### Direct MorCategories ingress retains inconsistent represented endpoints
+
+A fixed-Mor category H is an object of MorCategories. Its functor Mor to K
+must use the exact represented endpoints Cat.object(H) and Cat.object(K),
+and its classifying family's admission record must name those same objects.
+
+Source inspection on 2026-10-11 found that direct
+MorCategories().Mor(H,K) uses the default raw endpoint ingress. The inherited
+Cat construction returns the genuine functor category with represented
+endpoints, but the generic family records it under raw H,K; its own
+identity-sensitive lookup then cannot recover that record from the returned
+endpoints. Supplying Cat.object(H), Cat.object(K) already works. This is a
+construction/admission defect, not missing mathematics or evidence that the
+functor category is discrete.
+
+The shared _MorCategoryOf boundary now normalizes the objects of individual
+Mor/End/Aut families, as required by the completed commutative-additive
+Mor-family pass. Direct MorCategories itself is not such a family.
+Its remaining entry belongs to `placement-owner-morcategories` in TODO.md.
+The retained dependency is exact category representation -> inherited
+functor Mor -> coherent admission record; no other repository gates it.
+The remedy must reuse Cat.object and preserve the actual Functor and natural
+transformation constructions. M1 / DEV-58 leaves the corresponding execution
+under T. No new mathematical foundation or formalization request is indicated.
 
 ### Discrete categories do not realize universal constructions that exist
 
@@ -1670,6 +2216,48 @@ in this checkout. A chapter author cannot use the documented render recipe
 against the current project location. The owning repair is to reconcile the
 book recipes and checker with the source root; the inspected boundary is
 these recipes, the checker path, and `research/.book/_quarto.yml`.
+
+### Semantic lattice dispatch must retain the represented orbit, flag and sign data
+
+The source-only review of `lattice-algorithm-dispatch` on 2026-10-11 found
+three mathematical losses after the semantic port calls were installed.
+Asking `O(U).vector_orbit_representatives(0)` selected only primitive null
+classes, although zero and all positive contents are distinct integral-vector
+orbits. The finite materializing consumers are character-subgroup orbit
+splitting and the primitive Eichler covering. They need, respectively, all
+contents and only the finite primitive classes.
+
+Converting a returned primitive flag selected any plane basis vector outside
+the line. For the line ZZ(2e1+3e2) in the plane ZZ e1+ZZ e2 in 2U, either
+standard basis choice spans a proper sublattice. Earlier in the same route,
+the canonical Fun([2],Lattices) did not accept the adjacent-arrow tuple or
+expose the arrows required by both research and the frozen port. The existing
+finite-sequence functor and the line-in-plane cokernel's free trivialization
+supply the actual diagram and an integral basis completion.
+
+The hyperbolic owner admits both signatures (1,n) and (n,1), but its new
+literal-lattice edgewalk call passed the former convention to a specialization
+requiring the latter. Negating the form preserves the reflection geometry;
+returning its result requires transport to the original lattice, with reversed
+wall-root signs, rather than dropping the admitted sign convention.
+
+**Owning repair:** the existing `lattice-algorithm-dispatch` node, including
+the reached canonical diagram and finite/countable representative-set inputs.
+The public primitive-locus entry must also retain the binary finite subset:
+its inclusion gives the ambient lattice, while the former `universe()` check
+assumed only a condition-set representation. Both mathematical consumers now
+use the existing public orbit decomposition, with the definite square-zero
+singleton and finite nonzero-square covering route retained.
+The reviewed boundary is the public lattice, isotropic, character-subgroup,
+primitive-covering, perfect-domain and edgewalk callers and their selected
+semantic suppliers. The required mathematical assertions remain under T;
+no runtime test or specialized port algorithm was executed in this M1 review.
+**Source resolution:** the canonical ordinal functor realization now reuses
+the actual finite-sequence diagram and retains repeated adjacent arrows;
+flag ingress supplies its lattice embedding; and the public primitive-locus
+operation accepts both of its existing representations. Edgewalk uses the
+actual form twist, underlying-module identification and transported report
+on the original lattice. The twelve closure groups are retained under T.
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.

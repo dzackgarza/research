@@ -28,10 +28,15 @@ of order six, and ``E8`` gives the trivial group.
 
 from sage.graphs.graph import Graph
 from sage.misc.cachefunc import cached_method
+from sage.matrix.constructor import matrix
+from sage.rings.rational_field import QQ as SageQQ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -39,6 +44,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_basis_positions, _engine_row_family_gram
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -62,6 +68,93 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
+
+    def spanning_automorphism_generators(self, lattice, vectors, colours):
+        r"""Integral ambient isometries preserving a supplied coloured spanning family.
+
+        Positions and colours are retained even when the family is redundant.
+        The nondegenerate spanning hypothesis makes its pairing permutation
+        action faithful. A graph generator need not preserve the ambient
+        integral lattice; in that case take the subgroup of integral lifts.
+        """
+        realization = _SpanningConfiguration(lattice, vectors, colours)
+        group = realization.graph.automorphism_group(edge_labels=True)
+        generators = tuple(realization.lift(realization, permutation) for permutation in group.gens())
+        if all(generator is not None for generator in generators):
+            return finite_ordered_set(generators)
+        # Indefinite.jl@374a5ebb/indef/lib/AutomorphismPolytope.g:366-412,
+        # KernelLinPolytopeIntegral_Automorphism_Subspaces: represent the
+        # rational configuration group on the generated row lattice K, and
+        # take the stabilizer of the ambient integral overlattice L.  The
+        # generic IntegralStructureAction is the finite-residue realization
+        # of the source's LinearSpace_Stabilizer (GroupAction.g:350-543).
+        # Enumerating all graph permutations is NOT that source algorithm.
+        fraction_map = lattice.base_ring().fraction_field_map()
+        rational = lattice.base_change(fraction_map)
+        rational_ring = rational.base_ring()
+        labels = tuple(lattice.module_generating_set())
+        rational_generators = []
+        for permutation in group.gens():
+            image_rows = realization.rows.matrix_from_rows(
+                [int(permutation(position)) for position in range(len(realization.vectors))]
+            )
+            transformation = realization.inverse_basis * image_rows.matrix_from_rows(
+                realization.basis_positions
+            )
+            if realization.rows * transformation != image_rows:
+                raise ArithmeticError("a graph automorphism fails to preserve the configuration's linear relations")
+            images = {
+                label: rational.linear_combination({
+                    image_label: rational_ring(int(entry.numerator())) / rational_ring(int(entry.denominator()))
+                    for image_label, entry in zip(labels, row, strict=True) if entry
+                })
+                for label, row in zip(labels, transformation.rows(), strict=True)
+            }
+            rational_generators.append(rational.O()(images))
+
+        generated = lattice.vector_configuration(realization.vectors)
+        exponent = generated.inclusion().cokernel().exponent()
+        if exponent <= lattice.base_ring().zero():
+            raise ArithmeticError("a spanning vector configuration must generate a finite-index integral sublattice")
+        ambient_inclusion = ModulesOverIntegralDomains(lattice.base_ring())(lattice).generic_fibre_map()
+        ambient_space = ambient_inclusion.codomain()
+        scale = rational_ring.one() / rational_ring(exponent)
+        containing = Modules(lattice.base_ring()).Mono(generated, ambient_space)(
+            lambda label: ambient_space.wrap(rational.scalar_multiple(
+                scale,
+                ambient_inclusion(generated.inclusion()(generated.module_generator(label))).underlying_element(),
+            ))
+        )
+        # The group/action module also consumes lattices; delay this import
+        # until the lattice-category graph has completed construction.
+        from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
+
+        rational_group = rational.O().subgroup(tuple(rational_generators))
+        stabilizer = IntegralStructureAction(rational_group, ambient_inclusion).with_stable_containing_bound(
+            containing
+        ).stabilizer()
+        return finite_ordered_set(tuple(
+            lattice.integral_isometry(generator)
+            for generator in stabilizer.group_generators()
+        ))
+
+    def spanning_isometry(self, source, source_vectors, source_colours, target, target_vectors, target_colours):
+        r"""One integral ambient isometry of two coloured spanning families, or None."""
+        left = _SpanningConfiguration(source, source_vectors, source_colours)
+        right = _SpanningConfiguration(target, target_vectors, target_colours)
+        if len(left.vectors) != len(right.vectors) or left.rows.ncols() != right.rows.ncols():
+            return None
+        equivalent, certificate = left.graph.is_isomorphic(right.graph, edge_labels=True, certificate=True)
+        if not equivalent:
+            return None
+        lifted = left.lift(right, certificate.__getitem__)
+        if lifted is not None:
+            return lifted
+        for permutation in left.graph.automorphism_group(edge_labels=True):
+            lifted = left.lift(right, lambda position: certificate[permutation(position)])
+            if lifted is not None:
+                return lifted
+        return None
 
     class ParentMethods:
         def configuration_positions(self):
@@ -265,6 +358,51 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     for automorphism in automorphisms
                 )
             )
+
+
+class _SpanningConfiguration:
+    """Private graph realization of a supplied finite spanning family."""
+
+    def __init__(self, lattice, vectors, colours):
+        if lattice.base_ring() is not _own_ring(SageZZ):
+            raise TypeError("integral ambient configuration isometries require a lattice over ZZ")
+        self.lattice = lattice
+        self.vectors = tuple(lattice(point) for point in vectors)
+        colours = tuple(colours)
+        if len(colours) != len(self.vectors):
+            raise ValueError("each configuration position requires one colour")
+        if not lattice.is_nondegenerate():
+            raise ValueError("the finite pairing action requires a nondegenerate ambient lattice")
+        labels = tuple(lattice.module_generating_set())
+        self.rows = matrix(SageQQ, [
+            [int(point.to_vector()(label)) for label in labels]
+            for point in self.vectors
+        ])
+        if self.rows.rank() != int(lattice.rank()):
+            raise ValueError("the finite pairing action requires a spanning configuration")
+        self.basis_positions = _engine_row_basis_positions(self.rows)
+        self.inverse_basis = self.rows.matrix_from_rows(self.basis_positions).inverse()
+        self.graph = Graph(loops=True, multiedges=False)
+        self.graph.add_vertices(range(len(self.vectors)))
+        pairings = _engine_row_family_gram(_engine_component_matrix(lattice.gram_tensor()), self.rows)
+        for left, point in enumerate(self.vectors):
+            self.graph.add_edge(left, left, ("vertex", colours[left], int(pairings[left, left])))
+            for right in range(left):
+                self.graph.add_edge(left, right, ("pairing", int(pairings[left, right])))
+
+    def lift(self, target, permutation):
+        image_rows = target.rows.matrix_from_rows([int(permutation(position)) for position in range(len(self.vectors))])
+        transformation = self.inverse_basis * image_rows.matrix_from_rows(self.basis_positions)
+        if self.rows * transformation != image_rows:
+            return None
+        if any(entry.denominator() != 1 for entry in transformation.list()) or abs(transformation.det()) != 1:
+            return None
+        ring = target.lattice.base_ring()
+        labels = tuple(target.lattice.module_generating_set())
+        images = tuple(target.lattice.linear_combination({
+            label: ring(int(entry)) for label, entry in zip(labels, row, strict=True)
+        }) for row in transformation.rows())
+        return self.lattice.Isom(target.lattice)(images)
 
 
 __all__ = ["VectorConfigurations"]

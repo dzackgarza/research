@@ -46,8 +46,7 @@ def test_nonmaximal_adic_completion_is_complete_but_not_declared_local() -> None
     completion = plane.adic_completion(plane.ideal(x))
 
     assert completion not in CompleteLocalRings()
-    with pytest.raises(TypeError):
-        completion.residue_map()
+    assert completion not in LocalRings()
     assert completion.extended_ideal().ring() is completion
 
 

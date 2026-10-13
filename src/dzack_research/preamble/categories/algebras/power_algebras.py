@@ -5,20 +5,23 @@ module constructions ``Lambda^n(M)`` and ``Gamma^n(M)``.  This module forms
 their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
-from sage.misc.cachefunc import cached_function
+from sage.categories.map import Map
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import Algebras, MultiplicativeAlgebraMorphism, _algebra_on_module
 from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
-from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.modules.graded_modules import GradedModuleMorphismMethods, GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphismMethods,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
 
 class _PowerAlgebra:
@@ -28,9 +31,6 @@ class _PowerAlgebra:
         self._generating_module = generating_module
         self._power_flavor = power_flavor
         super().__init__(**rest)
-
-    def flavor(self):
-        return self._power_flavor
 
     def generating_module(self):
         r"""The exact input M of Lambda(M) or Gamma(M), not its full graded sum.
@@ -53,6 +53,12 @@ class _PowerAlgebra:
         match value:
             case _ if source is self:
                 return value
+            case _ if source is self.base_ring():
+                # If the input module is R itself, its degree-one copy and
+                # the algebra's scalars are different maps. Ordinary scalar
+                # ingress uses degree zero; from_component(1, value) retains
+                # the explicit degree-one inclusion.
+                return self.scalar_multiple(value, self.one())
             case _ if source is self.generating_module():
                 return self.from_component(1, value)
             case dict():
@@ -63,109 +69,163 @@ class _PowerAlgebra:
                 return super()._element_constructor_(value)
 
     def _commutativity_decision(self):
-        match self.flavor():
+        match self._power_flavor:
             case "divided":
                 return True
             case _:
-                size = self.generating_module().module_generating_set().cardinality()
                 if (self.base_ring()(2) == self.base_ring().zero()) is True:
                     return True
-                if size.is_finite() and int(size.finite_value()) <= 1:
+                size = self.generating_module().module_generating_set().cardinality()
+                # A cyclic module has no nonzero exterior degrees above one.
+                # The owned cardinal comparison may itself remain undecided.
+                if (size <= 1) is True:
                     return True
                 return AtomicProposition("is_commutative", self)
 
-    def divided_power(self, value, exponent):
-        if self.flavor() != "divided":
-            raise TypeError(
-                f"divided powers are defined on a divided power algebra, but {self} is a {self.flavor()} power algebra"
-            )
-        exponent = int(exponent)
-        if exponent < 0:
-            raise ValueError(f"the divided power x^[n] needs n >= 0, but n = {exponent}")
-        if exponent == 0:
-            return self.one()
-        value = self(value)
-        if value == self.zero():
-            return value
-        assert value.is_homogeneous() and value.degree() == 1, (
-            f"the divided power x^[n] is computed here only for homogeneous x of degree 1, but x = {value}"
-        )
-        return self.from_component(
-            exponent,
-            self.generating_module().divided_power_element(
-                exponent,
-                value.homogeneous_component(1),
-            ),
-        )
-
-    gamma = divided_power
-
-    def augmentation(self, value):
-        value = self(value)
-        component = value.homogeneous_component(0)
-        coordinates = self.graded_piece(0).framing_morphism().lift(component)
-        return self.base_ring()(coordinates(0))
-
     def _repr_(self):
-        symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
+        symbol = "Lambda" if self._power_flavor == "alternating" else "Gamma"
         return f"{symbol}({self.generating_module()})"
 
 
 class PowerAlgebraMorphism:
-    r"""A morphism induced by a linear map on the degree-one generators."""
+    r"""A power-construction map, or an exact map with its graded algebra laws.
+
+    A map ``M -> N`` induces the degreewise power maps. For exterior
+    algebras a map with the literal whole-algebra endpoints retains that
+    function and its ordinary law diagnostics. Divided-power construction
+    maps require the degree-one datum: a graded ordinary algebra map need
+    not preserve divided powers. Generator images in the target algebra retain the
+    equations identifying them with their degree-one components; zero is
+    a legitimate such image, and unresolved equations remain premises.
+    """
+
+    @cached_method
+    def _degree_one_image_decision(self):
+        r"""The retained generator-image equations, without enumerating an infinite family."""
+        data = self._degree_one_image_data
+        if data is None:
+            return True
+        labels = data.index_set()
+        if labels.is_finite() is not True:
+            return AtomicProposition("degree_one_images", data)
+        return conjunction(data[label][2] for label in labels)
+
+    def _elementwise_linearity_derivation(self):
+        if self._power_source_map is not None:
+            return self._power_linear_map.linearity_decision()
+        return conjunction((
+            self.degree_one_map().linearity_decision(),
+            self._degree_one_image_decision(),
+        ))
 
     def _multiplicativity_derivation(self):
-        return True
+        if self._power_source_map is not None:
+            from dzack_research.preamble.categories.group.magmas import Magmas
+
+            if self._power_source_map in Magmas().Mor(self.domain(), self.codomain()):
+                return self._power_source_map.is_multiplicative()
+            return None
+        return True if self._elementwise_linearity_derivation() is True else None
 
     def _unit_preservation_derivation(self):
-        return True
+        # The induced degree-zero map is id_R, independently of whether
+        # the degree-one linearity premise has been decided.
+        if self._power_source_map is None:
+            return True
+        unital = Algebras(self.domain().algebra_base_ring()).Unital()
+        if self._power_source_map in unital.Mor(self.domain(), self.codomain()):
+            return self._power_source_map.preserves_unit()
+        return None
+
+    def _degree_preservation_derivation(self):
+        if self._power_source_map is None:
+            return True
+        if isinstance(self._power_source_map, GradedModuleMorphismMethods):
+            return self._power_source_map.degree_preservation_decision()
+        return None
 
     def __init__(self, parent, degree_one_map) -> None:
-        self._preamble_is_identity = False
         domain = parent.domain()
         codomain = parent.codomain()
         source_module = domain.generating_module()
         target_module = codomain.generating_module()
-        if isinstance(degree_one_map, ModuleMorphismMethods):
-            if degree_one_map.domain() is not source_module or degree_one_map.codomain() is not target_module:
+        generator_mor = source_module.module_category().Mor(source_module, target_module)
+        linear_mor = domain.module_category().Mor(domain, codomain)
+        # AlgebraMorphism is also an actual generated lower provider and
+        # owns _source_element_map; keep this construction's datum distinct.
+        self._power_source_map = None
+        self._power_linear_map = None
+        self._degree_one_map = None
+        self._degree_one_image_data = None
+        linear = None
+        if isinstance(degree_one_map, Map):
+            if degree_one_map.domain() is domain and degree_one_map.codomain() is codomain:
+                assert domain._power_flavor == "alternating", (
+                    f"a map of divided-power constructions {domain} -> {codomain} needs its "
+                    f"selected linear map {source_module} -> {target_module}; there is no selected "
+                    "procedure here proving that this whole algebra map preserves all divided powers"
+                )
+                self._power_source_map = degree_one_map
+                linear = linear_mor.elementwise(degree_one_map)
+                self._degree_one_map = generator_mor._from_constructed_element_map(
+                    lambda element: linear(domain.from_component(1, element)).homogeneous_component(1),
+                    premises=(linear,),
+                )
+            elif degree_one_map.domain() is source_module and degree_one_map.codomain() is target_module:
+                self._degree_one_map = (
+                    degree_one_map if degree_one_map in generator_mor
+                    else generator_mor.elementwise(degree_one_map)
+                )
+            elif degree_one_map.domain() is not source_module.module_generating_set():
                 raise ValueError(
                     f"cannot view {degree_one_map} as the degree-one part {source_module} -> {target_module} of a "
-                    f"power algebra morphism: it is a map {degree_one_map.domain()} -> {degree_one_map.codomain()}"
+                    f"power algebra morphism or an exact whole map {domain} -> {codomain}: it is a map "
+                    f"{degree_one_map.domain()} -> {degree_one_map.codomain()}"
                 )
-            self._degree_one_map = degree_one_map
-        else:
-            def target_component(label):
+        if self._degree_one_map is None:
+            def target_data(label):
                 image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
                 if element_parent(image) is codomain:
-                    if not image.is_homogeneous() or image.degree() != 1:
+                    component = image.homogeneous_component(1)
+                    equation = image == codomain.from_component(1, component)
+                    if equation is False:
                         raise ValueError(
                             f"the image {image} of the generator {label} must lie in degree 1 of {codomain}"
                         )
-                    return image.homogeneous_component(1)
+                    return image, component, equation
                 if image not in target_module:
                     raise ValueError(
                         f"the image {image} of the generator {label} must lie in {target_module}"
                     )
-                return target_module(image)
+                return image, target_module(image), True
 
-            self._degree_one_map = source_module.module_category().Mor(source_module, target_module)(target_component)
-        linear = domain.module_category().Mor(
-            domain, codomain
-        )._from_constructed_element_map(
-            lambda element: self._call_(element)
-        )
+            self._degree_one_image_data = indexed_family(
+                source_module.module_generating_set(), target_data,
+                name="Degree-one images and their reconstruction equations",
+            )
+            self._degree_one_map = generator_mor(
+                lambda label: self._degree_one_image_data[label][1]
+            )
+        if linear is None:
+            linear = linear_mor._from_constructed_element_map(
+                lambda element: self._call_(element),
+                premises=(self.degree_one_map(),),
+            )
+        self._power_linear_map = linear
         super().__init__(parent, linear)
 
     def degree_one_map(self):
         return self._degree_one_map
 
     def _call_(self, element):
-        if element.parent() is not self.domain():
+        if element_parent(element) is not self.domain():
             element = self.domain()(element)
+        if self._power_source_map is not None:
+            return self.codomain()(self._power_source_map(element))
         result = self.codomain().zero()
         degree_one_map = self.degree_one_map()
         for degree, component in element.homogeneous_components().items():
-            match self.domain().flavor():
+            match self.domain()._power_flavor:
                 case "alternating":
                     mapped = degree_one_map.exterior_power(degree)(component)
                 case "divided":
@@ -176,17 +236,45 @@ class PowerAlgebraMorphism:
     def __call__(self, element):
         return self._call_(element)
 
-    def is_identity(self) -> bool:
-        return self._preamble_is_identity
+    is_identity = OwnedSetMorphism.is_identity
+
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if other not in self.parent():
+            return op == op_NE
+        if self is other:
+            return op == op_EQ
+        if (
+            isinstance(other, PowerAlgebraMorphism)
+            and self._power_source_map is None
+            and other._power_source_map is None
+        ):
+            left, right = self.degree_one_map(), other.degree_one_map()
+            if left is right:
+                return op == op_EQ
+            mor = left.domain().module_category().Mor(left.domain(), left.codomain())
+            equal = mor.elementwise(left) == mor.elementwise(right)
+        else:
+            forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
+            equal = forget(self) == forget(other)
+        return equal if op == op_EQ else negation(equal)
 
     def __mul__(self, other):
-        if not isinstance(other, PowerAlgebraMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
-        if self.is_identity():
+        if (
+            not isinstance(other, PowerAlgebraMorphism)
+            or other.codomain() is not self.domain()
+            or self._power_source_map is not None
+            or other._power_source_map is not None
+        ):
+            return MultiplicativeAlgebraMorphism.__mul__(self, other)
+        if self.domain() is self.codomain() and self is self.parent().identity():
             return other
-        if other.is_identity():
+        if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        return other.domain().Mor(self.codomain())(self.degree_one_map() * other.degree_one_map())
+        return self.parent().mor_category().Mor(other.domain(), self.codomain())(
+            self.degree_one_map() * other.degree_one_map()
+        )
 
 
 class PowerAlgebraMor(CategoricalMor):
@@ -197,10 +285,10 @@ class PowerAlgebraMor(CategoricalMor):
         assert domain in category and codomain in category, (
             f"a morphism in {category} needs two of its objects, but got {domain} and {codomain}"
         )
-        if domain.flavor() != codomain.flavor():
+        if domain._power_flavor != codomain._power_flavor:
             raise ValueError(
-                f"morphisms of power algebras preserve the flavor, but {domain} is {domain.flavor()} and "
-                f"{codomain} is {codomain.flavor()}"
+                f"morphisms of power algebras preserve the construction, but {domain} is {domain._power_flavor} and "
+                f"{codomain} is {codomain._power_flavor}"
             )
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError(
@@ -212,15 +300,14 @@ class PowerAlgebraMor(CategoricalMor):
     def _element_constructor_(self, degree_one_map):
         return self.element_class(self, degree_one_map)
 
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         module = self.domain().generating_module()
-        identity = self(module.module_category().Mor(module, module).identity())
-        identity._preamble_is_identity = True
-        return identity
+        return self(module.module_category().Mor(module, module).identity())
 
 
 
@@ -254,8 +341,27 @@ def _power_algebra_of(source, flavor):
     divided-power multiplication uses the identities in Stacks, Tag 07GL.
     """
     from dzack_research.preamble.categories.algebras.free_algebras import AlternatingAlgebras, DividedPowerAlgebras
+    from dzack_research.preamble.categories.algebras.algebras import _scalar_module
+    from dzack_research.preamble.categories.algebras.augmented_algebras import (
+        _augmented_algebra,
+    )
+    from dzack_research.preamble.categories.algebras.comparison_maps import (
+        _constructed_algebra_morphism,
+    )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        ModulesWithChosenFinitePresentation,
+    )
 
     ring = source.base_ring()
+    if source not in FramedFreeModules(ring) and source not in ModulesWithChosenFinitePresentation(ring):
+        raise NotImplementedError(
+            f"the {flavor} algebra of {source} exists over {ring}, but its "
+            "current graded-piece realization requires a selected free "
+            "framing or finite module presentation"
+        )
     graded = GradedModules(ring)
     match flavor:
         case "alternating":
@@ -294,7 +400,7 @@ def _power_algebra_of(source, flavor):
                 source.module_generating_set(),
                 lambda label: module.from_component(1, source.module_generator(label)),
             )
-    return _algebra_on_module(
+    algebra = _algebra_on_module(
         module, multiplication, placement=(category,), unit=unit,
         construction_data={
             "generating_module": source,
@@ -303,6 +409,20 @@ def _power_algebra_of(source, flavor):
         },
         law_decisions=law_decisions,
     )
+
+    def augmentation_value(value):
+        component = algebra(value).homogeneous_component(0)
+        coordinates = algebra.graded_piece(0).framing_morphism().lift(component)
+        return ring(coordinates(0))
+
+    # Every nonzero homogeneous degree is positive. The degree-zero
+    # projection is therefore an algebra map, and its restriction to the
+    # scalar summand is the identity. AugmentedAlgebras supplies that same
+    # structural arrow on the resulting enriched object.
+    augmentation = _constructed_algebra_morphism(
+        algebra, _scalar_module(ring), augmentation_value,
+    )
+    return _augmented_algebra(augmentation, default_mor_category=category)
 
 
 def _alternating_algebra_of(module):
@@ -320,12 +440,14 @@ def _alternating_extension(module_morphism):
     same base ring.  The selected generator images must square to zero and
     anticommute, exactly the relations defining the exterior algebra.  The
     current verification is finite-framing based; no finite subset is sampled
-    from an infinite framing.
+    from an infinite framing. Undecided square and pair equations are retained
+    with the actual linear-map premise, rather than declared proved.
     """
     from dzack_research.preamble.categories.algebras.algebras import Algebras
     from dzack_research.preamble.categories.algebras.comparison_maps import (
         _constructed_algebra_morphism,
     )
+    from dzack_research.preamble.logic import conjunction
 
     if not isinstance(module_morphism, ModuleMorphismMethods):
         raise TypeError(
@@ -339,6 +461,10 @@ def _alternating_extension(module_morphism):
         raise TypeError(
             f"the extension Lambda(M) -> A needs A to be a unital associative algebra, but {target} is not one"
         )
+    assert module.has_selected_module_resolution(), (
+        f"computing the extension Lambda({module}) -> {target} needs a selected "
+        "finite module-generating family; no such presentation is retained"
+    )
     labels = module.module_generating_set()
     cardinality = labels.cardinality()
     assert cardinality.is_finite(), (
@@ -351,16 +477,18 @@ def _alternating_extension(module_morphism):
         for label in labels
     }
     zero = target.zero()
-    if any(image * image != zero for image in images.values()):
+    square_equations = tuple(image * image == zero for image in images.values())
+    if conjunction(square_equations) is False:
         raise ValueError(
             f"{module_morphism} does not extend to Lambda(M) -> A: some generator image does not square to "
             f"0 in {target}"
         )
-    if any(
-        images[left] * images[right] + images[right] * images[left] != zero
+    pair_equations = tuple(
+        images[left] * images[right] + images[right] * images[left] == zero
         for position, left in enumerate(labels)
         for right in labels[position + 1 :]
-    ):
+    )
+    if conjunction(pair_equations) is False:
         raise ValueError(
             f"{module_morphism} does not extend to Lambda(M) -> A: some generator images do not "
             f"anticommute in {target}"
@@ -387,7 +515,13 @@ def _alternating_extension(module_morphism):
                 result += coefficient * value
         return result
 
-    return _constructed_algebra_morphism(source, target, evaluate)
+    return _constructed_algebra_morphism(
+        source,
+        target,
+        evaluate,
+        linearity_premises=(module_morphism,),
+        equations=square_equations + pair_equations,
+    )
 
 
 __all__ = [

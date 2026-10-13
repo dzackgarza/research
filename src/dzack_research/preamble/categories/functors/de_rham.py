@@ -1,5 +1,5 @@
 r"""The affine algebraic de Rham functor and its degree-zero adjunction."""
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -8,29 +8,32 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     DifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-def _exterior_word(label, degree):
-    if degree == 0:
-        return ()
-    if degree == 1:
-        return (label,)
-    return tuple(label)
+from dzack_research.preamble.categories.modules.powers import _exterior_word
 
 
 def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
     r"""Extend ``A -> B^0`` uniquely to ``DR(A) -> B`` on the live algebras."""
     source_algebra = source_dga.de_rham_source_algebra()
+    degree_zero = _degree_zero_dga_functor(source_dga.base_ring())
+    target_algebra, target_inclusion, _ = degree_zero._degree_zero_data(target_dga)
     if algebra_morphism.domain() is not source_algebra:
         raise ValueError(
             f"the extension DR(A) -> B of {algebra_morphism} needs a map starting at A = {source_algebra}, "
             f"but it starts at {algebra_morphism.domain()}"
         )
-    if algebra_morphism.codomain() is not target_dga.degree_zero_algebra():
+    if algebra_morphism.codomain() is not target_algebra:
         raise ValueError(
             f"the extension DR(A) -> B of {algebra_morphism} needs a map ending at B^0 = "
-            f"{target_dga.degree_zero_algebra()}, but it ends at {algebra_morphism.codomain()}"
+            f"{target_algebra}, but it ends at {algebra_morphism.codomain()}"
+        )
+    if algebra_morphism not in degree_zero.codomain().Mor(source_algebra, target_algebra):
+        raise TypeError(
+            f"extending {algebra_morphism} to a DGA map requires an algebra morphism "
+            f"over the retained coefficient ring {source_dga.base_ring()}"
         )
 
     source_exterior = source_dga.extension_algebra()
@@ -43,7 +46,7 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
             coordinates = source_piece.framing_morphism().lift(component)
             for label in coordinates.support().domain():
                 coefficient = coordinates(label)
-                coefficient_image = target_dga.from_degree_zero(
+                coefficient_image = target_inclusion(
                     algebra_morphism(source_algebra(coefficient))
                 )
                 term = coefficient_image
@@ -61,7 +64,7 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                                 f"the basis element {label} of the exterior algebra in {source_dga} is not a product of "
                                 f"Kahler differentials da: its factor {differential_label} is not of the form da"
                             )
-                    mapped_generator = target_dga.from_degree_zero(
+                    mapped_generator = target_inclusion(
                         algebra_morphism(source_generator)
                     )
                     term *= target_dga.d(mapped_generator)
@@ -115,25 +118,124 @@ class _DegreeZeroDGAFunctor(Functor):
     def base_ring(self):
         return self._base_ring
 
+    @cached_method(key=lambda self, dga: id(dga))
+    def _degree_zero_data(self, dga):
+        r"""The exact algebra ``B^0``, its module inclusion, and its degree-zero lift.
+
+        De Rham data retain their literal source algebra. A standard power
+        algebra restricted along its coefficient algebra's own structure map
+        also retains that algebra. Other represented graded pieces carry the
+        product induced from B, not a guessed identification with its scalars.
+
+        The last component is used only on elements known to have degree zero;
+        a subobject supplies its existing lift, not a projection on arbitrary
+        elements. Unrepresented pieces or lifts retain their named computation
+        frontier. The identity-keyed cache retains all three data together.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
+        from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            AlternatingAlgebras, DividedPowerAlgebras, SymmetricAlgebras, TensorAlgebras,
+        )
+        from dzack_research.preamble.categories.algebras.restricted_graded_algebras import _RestrictedGradedAlgebra
+        from dzack_research.preamble.categories.modules.graded_direct_sums import _DirectSumOfModules
+
+        ring = self.base_ring()
+        assert dga in self.domain() and dga.base_ring() is ring, (
+            f"degree zero requires a strictly commutative DGA over the exact ring {ring}"
+        )
+        modules = Modules(ring)
+        algebra = None
+        if dga in DeRhamAlgebras(ring):
+            algebra = dga.de_rham_source_algebra()
+        elif isinstance(dga, _RestrictedGradedAlgebra):
+            extension = dga.extension_algebra()
+            coefficient = extension.base_ring()
+            if (
+                coefficient in self.codomain()
+                and dga.ring_map() is coefficient.algebra_structure_morphism()
+                and any(extension in category(coefficient) for category in (
+                    AlternatingAlgebras, DividedPowerAlgebras,
+                    SymmetricAlgebras, TensorAlgebras,
+                ))
+            ):
+                # These selected standard gradings have B^0 = coefficient.
+                algebra = coefficient
+        if algebra is not None:
+            inclusion = modules.Mor(algebra, dga)._from_constructed_element_map(
+                lambda element: dga.from_degree_zero(algebra(element))
+            )
+            return algebra, inclusion, lambda element: algebra(dga.degree_zero_element(element))
+
+        zero = dga.grading_monoid()(0)
+        if (
+            dga in DirectSumObjects(modules)
+            and dga.summand_index_set() is dga.grading_index_set()
+        ):
+            piece = dga.graded_piece(zero)
+            assert dga.summand(zero) is piece, (
+                "the selected direct-sum summand must be the exact degree-zero piece"
+            )
+            inclusion, extract = dga.injection(zero), dga.projection(zero)
+        elif isinstance(dga, _DirectSumOfModules):
+            # This existing graded-sum engine has no DirectSumObjects placement.
+            piece = dga.graded_piece(zero)
+            inclusion, extract = dga.injection(zero), dga.projection(zero)
+        else:
+            assert (
+                dga.has_selected_module_resolution()
+                and dga.module_generating_set().cardinality().is_finite() is True
+            ), (
+                f"degree zero of {dga} needs represented homogeneous inclusion/lift data; "
+                "the available generic subobject construction uses a known finite module framing"
+            )
+            piece = dga.graded_piece(zero)
+            assert piece in SubobjectCategory(modules, dga), (
+                f"degree zero of {dga} needs the selected inclusion of its homogeneous module piece"
+            )
+            inclusion = piece.inclusion()
+            extract = inclusion.lift
+        assert inclusion.domain() is piece and inclusion.codomain() is dga, (
+            "the degree-zero inclusion must retain its actual homogeneous piece and DGA endpoints"
+        )
+        multiplication = modules.tensor_product((piece, piece)).from_bilinear_map(
+            piece,
+            lambda left, right: extract(inclusion(left) * inclusion(right)),
+        )
+        algebra = self.codomain()(piece, multiplication, extract(dga.one()))
+        algebra_inclusion = modules.Mor(algebra, dga)._from_constructed_element_map(
+            lambda element: inclusion(algebra._element_of_unformed_module(element))
+        )
+        return (
+            algebra,
+            algebra_inclusion,
+            lambda element: algebra._element_from_unformed_module(extract(element)),
+        )
+
     def _apply_object(self, dga):
-        r"""Read the degree-zero algebra at its DGA owner, without restricting to de Rham images."""
-        return dga.degree_zero_algebra()
+        r"""Return the algebra on the actual represented degree-zero piece."""
+        return self._degree_zero_data(dga)[0]
 
     def _apply_morphism(self, morphism):
         source_dga = morphism.domain()
         target_dga = morphism.codomain()
-        source = self(source_dga)
-        target = self(target_dga)
-        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
-            {
-                label: target_dga.degree_zero_element(
-                    morphism(
-                        source_dga.from_degree_zero(source.algebra_generator(label))
-                    )
-                )
-                for label in source.algebra_generating_set()
-            }
+        source, inclusion, _ = self._degree_zero_data(source_dga)
+        target, _, extract = self._degree_zero_data(target_dga)
+
+        def image(element):
+            return extract(morphism(inclusion(element)))
+
+        mor = self.codomain().Mor(source, target)
+        if source.is_framed_algebra():
+            assert source.algebra_generating_set().cardinality().is_finite() is True, (
+                "the selected degree-zero generator-extension computation needs a known finite algebra framing"
+            )
+            return mor(lambda label: image(source.algebra_generator(label)))
+        linear = Modules(self.base_ring()).Mor(source, target)._from_constructed_element_map(
+            image, premises=(morphism,)
         )
+        return mor(linear)
 
     def _repr_(self):
         return f"Degree-zero DGA functor over {self.base_ring()}"
@@ -148,18 +250,25 @@ class _DeRhamAdjunction(Adjunction):
 
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
-        super().__init__(_DeRhamFunctor(self._base_ring), _DegreeZeroDGAFunctor(self._base_ring))
+        super().__init__(_de_rham_functor(self._base_ring), _degree_zero_dga_functor(self._base_ring))
 
     def base_ring(self):
         return self._base_ring
 
     def _unit_component(self, algebra):
         degree_zero = self.right_adjoint()(self.left_adjoint()(algebra))
-        return Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, degree_zero)(
-            {label: degree_zero.algebra_generator(label) for label in algebra.algebra_generating_set()}
+        assert degree_zero is algebra, (
+            "degree zero of the selected de Rham algebra must retain its literal source"
         )
+        return self.left_adjoint().domain().Mor(algebra, algebra).identity()
 
     def _counit_component(self, dga):
+        r"""Extend id_(B^0); DR retains its existing presentation frontier.
+
+        The generic degree-zero algebra need not have a selected algebra
+        presentation, even when it is isomorphic to R. No presentation solver
+        is inferred from that isomorphism.
+        """
         degree_zero = self.right_adjoint()(dga)
         source = self.left_adjoint()(degree_zero)
         identity = Algebras(degree_zero.base_ring()).Associative().Unital().Mor(degree_zero, degree_zero).identity()

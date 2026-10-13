@@ -17,6 +17,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_engine_element,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -24,6 +27,7 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     _engine_inverse_form_pullback,
     _engine_row_action_matrix,
+    _engine_symmetrized_form_matrix,
     tensor,
 )
 from dzack_research.preamble.validation import validator
@@ -62,11 +66,8 @@ def _rational_signed_direction(gram, sign):
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
-    engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
-    diagonal, change = QuadraticForm(
-        SageQQ,
-        2 * engine_gram,
-    ).rational_diagonal_form(return_matrix=True)
+    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(SageQQ)
+    diagonal, change = QuadraticForm(SageQQ, engine_hessian).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
     index = next((
         index for index in range(diagonal_matrix.nrows())
@@ -102,23 +103,51 @@ def _raise_rational_lattice_vector(lattice, coordinates):
 
 
 def _signed_vector_witness(lattice, sign):
-    r"""Realize a finite symmetric formed module's signed-vector operation.
+    r"""Realize the norm-sign operation on a finite framed form module.
 
-    Private computation for ``BilinearFormModules.Symmetric.vector_of_sign``.
+    Private computation for ``FormModules.vector_of_sign``.
     The input retains its own form and selected framing; the raised vector
     belongs to that same module, including a represented formed submodule.
-    Return None if the requested sign is absent.
+    The symmetric Hessian ``G + G.transpose()`` represents the diagonal
+    function of any bilinear Gram ``G``. For a quadratic datum, its polar
+    diagonal is twice its selected norm, so its symmetrization has four
+    times that norm. These positive factors preserve the sign over QQ.
+    Return None only if exact rational diagonalization excludes the sign.
     """
     ring = lattice.base_ring()
     assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
         f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    )
+    assert lattice.value_module() is ring, (
+        f"rational signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
+    )
+    assert lattice in FramedFreeModules(ring), (
+        f"rational signed-vector computation needs a selected free framing on {lattice}"
     )
     assert lattice.module_rank().is_finite(), (
         f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
     )
     if lattice.module_rank() == 0:
         return None
-    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
+    labels = tuple(lattice.module_generating_set())
+
+    def hessian_entry(left_label, right_label):
+        left = lattice.module_generator(left_label)
+        right = lattice.module_generator(right_label)
+        forward = lattice.b(left, right)
+        return forward + lattice.b(right, left)
+
+    size = len(labels)
+    hessian = tensor(
+        ring,
+        (),
+        (size, size),
+        tuple(
+            tuple(hessian_entry(left, right) for right in labels)
+            for left in labels
+        ),
+    )
+    coordinates = _rational_signed_direction(hessian, sign)
     return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
 
 
@@ -296,97 +325,12 @@ def _binary_special_orthogonal_representatives(lattice, square):
 
 
 def _binary_reduction_cycle(lattice, bound, start):
-    r"""Realize the specified binary edgewalk cycle and raise its period map.
+    r"""Dispatch the oriented edgewalk cycle to its specialized implementation."""
+    from sage_indefinite_port.indefinite.edgewalk_rank2 import anisotropic_cycle
 
-    The computation is the frozen provider in sage-indefinite-port commit
-    709f81a, indefinite/edgewalk_rank2.py: canonical_companion, promised_step,
-    shorter_pair, reduced_start_pair, and anisotropic_cycle. It is kept
-    private here; its rows are raised through the lattice Mor constructor.
-    """
-    from sage.modules.free_module_element import vector
-
-    discriminant = _binary_form_discriminant(lattice)
-    if discriminant <= 0 or discriminant.is_square():
-        raise ValueError("a binary reduction cycle requires a rationally anisotropic indefinite form")
-    if start.parent() is not lattice or start.content() != lattice.base_ring().one() or start.q() <= 0:
-        raise ValueError("the cycle start must be a primitive positive vector of the lattice")
     rational_bound = lattice.base_ring().fraction_field()(bound)
-    bound = SageQQ(int(rational_bound.numerator())) / int(rational_bound.denominator())
-    if bound <= 0:
-        return None
-    gram = _engine_component_matrix(lattice.gram_tensor())
-    labels = tuple(lattice.module_generating_set())
-
-    def pairing(left, right):
-        return left * gram * right
-
-    def square(point):
-        return pairing(point, point)
-
-    def companion(limit, right, left):
-        rr, rl, ll = square(right), pairing(right, left), square(left)
-        radicand = SageQQ(rl*rl - rr*(ll-limit))
-        root = SageZZ(radicand.floor()).isqrt()
-        multiple = SageZZ((SageQQ(-rl + root) / rr).floor())
-        return left + multiple*right
-
-    def step(limit, right, left):
-        while True:
-            middle = right + left
-            if square(middle) <= limit or pairing(middle, right) < 0:
-                left = middle
-            elif square(left) >= 0 and pairing(right, left) > 0:
-                return left, -right
-            else:
-                right = middle
-
-    def characteristic(right, left):
-        return square(right), pairing(right, left), square(left)
-
-    def shorter(right, left):
-        initial_square = square(right)
-        initial = characteristic(right, left)
-        while True:
-            right, left = step(square(right), right, left)
-            left = companion(square(right), right, left)
-            if square(right) < initial_square:
-                return right, left
-            if characteristic(right, left) == initial:
-                return None
-
-    coordinates = start.to_vector()
-    right = vector(SageZZ, [SageZZ(int(coordinates(label))) for label in labels])
-    _gcd, s, t = right[0].xgcd(right[1])
-    left = companion(bound, right, vector(SageZZ, [-t, s]))
-    if square(right) <= bound:
-        right, left = step(bound, right, left)
-        left = companion(bound, right, left)
-    else:
-        while square(right) > bound:
-            pair = shorter(right, left)
-            if pair is None:
-                return None
-            right, left = pair
-        left = companion(bound, right, left)
-
-    initial = characteristic(right, left)
-    frame = engine_matrix(SageQQ, [right, left])
-    cycle = []
-    while True:
-        cycle.append(right)
-        right, left = step(bound, right, left)
-        left = companion(bound, right, left)
-        if characteristic(right, left) == initial:
-            period = (frame.inverse() * engine_matrix(SageQQ, [right, left])).change_ring(SageZZ)
-            break
-
-    ring = lattice.base_ring()
-
-    def raise_vector(point):
-        return lattice.linear_combination({label: _owned_engine_element(ring, coordinate) for label, coordinate in zip(labels, point, strict=True)})
-
-    automorphism = lattice.Isom(lattice)(tuple(raise_vector(row) for row in period.rows()))
-    return automorphism, tuple(raise_vector(point) for point in cycle)
+    engine_bound = SageQQ(int(rational_bound.numerator())) / int(rational_bound.denominator())
+    return anisotropic_cycle(lattice, engine_bound, start)
 
 
 def _integer_engine_matrix(value):

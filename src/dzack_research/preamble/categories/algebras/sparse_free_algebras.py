@@ -3,14 +3,22 @@ r"""Tensor and symmetric products on the module of relationful words."""
 from math import prod
 from typing import Any
 
+from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
-from dzack_research.preamble.categories.algebras.algebras import Algebras, _AlgebraMorCommonMethods, _algebra_on_module
-from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras, MultiplicativeAlgebraMorphism, UnitalMultiplicativeAlgebraMor,
+    UnitalMultiplicativeAlgebraMorphism,
+    _AlgebraMorCommonMethods, _algebra_on_module,
+)
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras,
+    _symmetric_generator_images_commute,
+)
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules, IntegerGradedModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -135,36 +143,102 @@ def _word_product(module, left, right):
     ), module.zero())
 
 
-def _uses_free_construction_mor(domain):
-    ring = domain.base_ring()
-    return domain in TensorAlgebras(ring) or domain in SymmetricAlgebras(ring)
-
-
-def _compose_with_free_construction(left, right):
-    r"""Compose through a sparse/free map without assuming a free source."""
-    if right.codomain() is not left.domain():
-        return NotImplemented
-    source = right.domain()
-    target = left.codomain()
-    if _uses_free_construction_mor(source):
-        return source.Mor(target)(lambda label: left(right(source.algebra_generator(label))))
-
-    underlying = Algebras(source.base_ring()).underlying_module()
-    linear = underlying(left) * underlying(right)
-    return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(linear)
-
-
 class SparseFreeAlgebraMorphism:
+    r"""Word evaluation retaining its generating module map and descent laws.
+
+    Tensor extension uses the actual linear map from the generating module.
+    Symmetric extension also needs its images to commute. An exact map on
+    the whole algebra retains its evaluator instead of being reinterpreted
+    as generator data. The existing module and algebra validators decide
+    those retained premises only when requested.
+    """
+
+    def _elementwise_linearity_derivation(self):
+        if self._source_element_map is not None:
+            return super()._elementwise_linearity_derivation()
+        linearity = self._generating_module_morphism.linearity_decision()
+        source = self.domain().generating_module()
+        if (
+            self.domain().flavor() == "tensor"
+            or source in FramedFreeModules(source.base_ring())
+        ):
+            return linearity
+        # For a relationful symmetric source, degree-one relations alone
+        # do not make ordered word evaluation descend linearly. Commuting
+        # images supply that implication. A failed implication does not
+        # by itself refute linearity of the chosen representative function.
+        commuting = _symmetric_generator_images_commute(
+            self.codomain(), self._generator_images
+        )
+        if commuting is not None and commuting is not False and linearity is not False:
+            return conjunction((linearity, commuting))
+        return super()._elementwise_linearity_derivation()
+
     def _multiplicativity_derivation(self):
-        return True
+        derived = super()._multiplicativity_derivation()
+        if derived is not None:
+            return derived
+        if self._source_element_map is not None:
+            return None
+        linearity = self._generating_module_morphism.linearity_decision()
+        if self.domain().flavor() == "tensor":
+            return linearity
+        commuting = _symmetric_generator_images_commute(
+            self.codomain(), self._generator_images
+        )
+        return None if commuting is None else conjunction((linearity, commuting))
 
     def _unit_preservation_derivation(self):
-        return True
+        derived = super()._unit_preservation_derivation()
+        if derived is not None:
+            return derived
+        return None if self._source_element_map is not None else True
 
-    def __init__(self, parent, images) -> None:
+    def __init__(
+        self, parent, images, *, _construction_premises=None,
+        _transported_morphism=None,
+    ) -> None:
+        if (
+            _transported_morphism is None
+            and isinstance(images, UnitalMultiplicativeAlgebraMorphism)
+            and images.domain() is parent.domain()
+            and images.codomain() is parent.codomain()
+        ):
+            _transported_morphism = images
         domain = parent.domain()
         codomain = parent.codomain()
+        source = domain.generating_module()
         labels = domain.algebra_generating_set()
+        self._source_element_map = None
+        self._generating_module_morphism = None
+        if isinstance(images, Map):
+            if images.codomain() is not codomain:
+                raise ValueError(
+                    f"a map into {codomain} must retain that exact codomain, but {images} "
+                    f"ends at {images.codomain()}"
+                )
+            if images.domain() is domain:
+                self._source_element_map = images
+                images = indexed_family(
+                    labels,
+                    lambda label: codomain(self._source_element_map(domain.algebra_generator(label))),
+                    name="Generator images",
+                )
+            elif images.domain() is source:
+                generator_mor = Modules(domain.base_ring()).Mor(source, codomain)
+                self._generating_module_morphism = (
+                    images if images in generator_mor else generator_mor.elementwise(images)
+                )
+                images = indexed_family(
+                    labels,
+                    lambda label: self._generating_module_morphism(source.module_generator(label)),
+                    name="Generator images",
+                )
+            elif images.domain() is not labels:
+                raise ValueError(
+                    f"a map out of {domain} must be stated on that algebra, its generating "
+                    f"module {source}, or its generator labels {labels}, not on {images.domain()}"
+                )
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             self._generator_images = indexed_family(
@@ -201,12 +275,22 @@ class SparseFreeAlgebraMorphism:
             )
         self._raw_image = self._generator_images.value
         self._component_maps: dict[Any, Any] = {}
-        linear = domain.module_category().Mor(
-            domain, codomain
-        )._from_constructed_element_map(
-            lambda element: self._call_(element)
+        if self._source_element_map is None and self._generating_module_morphism is None:
+            self._generating_module_morphism = Modules(domain.base_ring()).Mor(
+                source, codomain
+            )(self._raw_image)
+        linear_mor = domain.module_category().Mor(domain, codomain)
+        if self._source_element_map is not None:
+            linear = linear_mor.elementwise(self._source_element_map)
+        else:
+            # The retained generating map and (for Sym) commutation equations
+            # supply linearity above. An arbitrary word evaluator carries no
+            # empty-premise certificate at this ordinary module ingress.
+            linear = linear_mor.elementwise(lambda element: self._call_(element))
+        super().__init__(
+            parent, linear, _construction_premises=_construction_premises,
+            _transported_morphism=_transported_morphism,
         )
-        super().__init__(parent, linear)
 
     def algebra_generator_images(self):
         return self._generator_images
@@ -223,8 +307,17 @@ class SparseFreeAlgebraMorphism:
             return cached
         source = self.domain().generating_module()
         component = source.module_component(key)
-        images = {component_label: self._raw_image(source.module_label_from_component(key, component_label)) for component_label in component.module_generating_set()}
-        certified = component.module_category().Mor(component, self.codomain())(images)
+        certified = component.module_category().Mor(component, self.codomain())(
+            lambda component_label: self._raw_image(
+                source.module_label_from_component(key, component_label)
+            )
+        )
+        # Evaluation touches this actual component only. Its chosen relations
+        # can refute the assignment; undecided equations remain premises.
+        if certified.linearity_decision() is False:
+            raise ValueError(
+                f"the generator images do not respect the module relations of {component}"
+            )
         self._component_maps[key] = certified
         return certified
 
@@ -247,6 +340,8 @@ class SparseFreeAlgebraMorphism:
         return prod(factors, start=self.codomain().one())
 
     def _call_(self, element):
+        if self._source_element_map is not None:
+            return self.codomain()(self._source_element_map(self.domain()(element)))
         coordinates = self.domain().framing_morphism().lift(element)
         return sum(
             (coordinates(label) * self._basis_image(label) for label in coordinates.support().domain()),
@@ -257,14 +352,17 @@ class SparseFreeAlgebraMorphism:
         return self._call_(element)
 
     def __mul__(self, other):
-        return _compose_with_free_construction(self, other)
+        # Retain the composite of the actual maps, including unresolved or
+        # failed premises of whole-algebra input. Generator reconstruction
+        # would replace a nonunital zero map by the unital augmentation.
+        return MultiplicativeAlgebraMorphism.__mul__(self, other)
 
     def _postcompose_algebra_morphism(self, morphism):
-        r"""Return ``morphism ∘ self`` through the free-construction Mor."""
-        return _compose_with_free_construction(morphism, self)
+        r"""Return the exact composite ``morphism ∘ self`` in the common theory."""
+        return MultiplicativeAlgebraMorphism.__mul__(morphism, self)
 
 
-class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
+class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
     ElementMethods = SparseFreeAlgebraMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
@@ -324,7 +422,7 @@ def _sparse_free_algebra_of(source, flavor):
     multiplication = tensor.from_bilinear_map(module, lambda x, y: _word_product(module, x, y))
     flavor_category = TensorAlgebras(ring) if flavor == "tensor" else SymmetricAlgebras(ring)
     categories = (flavor_category, IntegerGradedModules(ring))
-    match source.module_generating_set().cardinality().is_finite():
+    match source.module_generating_set().is_finite():
         case True:
             categories = (
                 *categories,
@@ -336,7 +434,23 @@ def _sparse_free_algebra_of(source, flavor):
         case False:
             pass
     if source in FramedFreeModules(ring):
-        categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
+        # The source basis gives a free direct sum on words or monomials.
+        # Projectivity records that theorem while component coordinates
+        # remain supplied by the existing word-module realization.
+        categories = (
+            *categories, FreeAlgebras(ring), GradedFreeAlgebras(ring),
+            Modules(ring).Projective(),
+        )
+        if flavor == "tensor":
+            categories += (
+                Algebras(ring).Associative().Unital().ProjectiveAsAlgebra(),
+            )
+        if source.module_generating_set().is_finite() is True:
+            # Finite free tensor generators need no relations; a symmetric
+            # algebra additionally has finitely many commutator relations.
+            categories += (
+                Algebras(ring).Associative().Unital().FinitelyPresentedAsAlgebra(),
+            )
     realization_owner = Cat().meet((
         GeneralModules(ring), GradedModules(ring),
         ModulesWithChosenComponentPresentation(ring), Algebras(ring), *categories,

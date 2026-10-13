@@ -495,14 +495,23 @@ class ModuleMorphismMethods:
         relations are checked.  Elementwise maps are either decided in an
         effective regime, derived by a named universal construction, or retain
         the unresolved hypothesis explicitly.  An arrow built by a Mor
-        operation from a family of linear maps, on elements or by generator
-        images, has the conjoined decision of that family.
+        operation from a family of linear maps has a sufficient construction
+        proof when every premise is established.  Undecided or refuted
+        premises do not decide the resulting map's linearity: its own
+        generator relations or elementwise diagnostic are used instead.
         """
         match self._linearity_premises:
             case None:
                 pass
             case premises:
-                return _combined_linearity_decision(premises)
+                try:
+                    construction_decision = _combined_linearity_decision(premises)
+                except ValueError:
+                    # A refuted input law does not refute the output law.
+                    pass
+                else:
+                    if construction_decision is True:
+                        return True
         match self._element_function:
             case None:
                 return self._generator_image_linearity_derivation()
@@ -724,7 +733,7 @@ class ModuleMorphismMethods:
         for relation_label in relations.domain().module_generating_set():
             relation = relations(relations.domain().module_generator(relation_label)).to_vector()
             relation_image = self._linear_combination_of_generator_images(
-                domain.framing_source()({label: relation(label) for label in relation.support().domain()})
+                domain.framing_source()(relation.parent()._selected_module_coefficients(relation))
             )
             relation_holds = relation_image == zero
             if relation_holds is False:
@@ -767,15 +776,20 @@ class ModuleMorphismMethods:
     def __add__(self, other):
         r"""Return the pointwise sum ``(f + g)(m) = f(m) + g(m)``.
 
-        ``other`` is read by the element constructor of the Mor that holds
-        the sum: a linear map with the same endpoints, or a scalar of an
-        endomorphism ring, which is that multiple of the identity.
+        ``other`` must already be an arrow of the Mor that holds the sum,
+        or a scalar of an endomorphism ring. The explicit map constructor
+        can admit a new linearity hypothesis; arithmetic does not do so.
         """
         parent = self._pointwise_mor()
-        summand = parent(other)
+        if other in parent:
+            summand = parent(other)
+        elif parent.domain() is parent.codomain() and other in parent.base_ring():
+            summand = parent._scalar_identity(parent.base_ring()(other))
+        else:
+            return NotImplemented
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
+        left, right = _scalar_identity_coefficient(self, parent), _scalar_identity_coefficient(summand, parent)
         if left is not None and right is not None:
             return parent._scalar_identity(left + right)
         return parent.element_class(
@@ -790,7 +804,7 @@ class ModuleMorphismMethods:
         parent = self._pointwise_mor()
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        scalar = _scalar_identity_coefficient(self)
+        scalar = _scalar_identity_coefficient(self, parent)
         if scalar is not None:
             return parent._scalar_identity(-scalar)
         return parent.element_class(
@@ -802,7 +816,12 @@ class ModuleMorphismMethods:
 
     def __sub__(self, other):
         r"""Return the pointwise difference ``f - g = f + (-g)``."""
-        return self + (-self._pointwise_mor()(other))
+        parent = self._pointwise_mor()
+        if other in parent:
+            return self + (-parent(other))
+        if parent.domain() is parent.codomain() and other in parent.base_ring():
+            return self + parent._scalar_identity(-parent.base_ring()(other))
+        return NotImplemented
 
     def _richcmp_(self, other, op):
         r"""Compare admitted linear maps on an available finite spanning family.
@@ -819,7 +838,7 @@ class ModuleMorphismMethods:
             return op == op_EQ
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        left, right = _scalar_identity_coefficient(self, self.parent()), _scalar_identity_coefficient(other, self.parent())
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         undecided = AtomicProposition("equal", self, other)
@@ -856,15 +875,12 @@ class ModuleMorphismMethods:
         # not scalar multiplication.  Delegate to the left morphism so the
         # ordinary endpoint check and composition constructor remain the one
         # owner of the operation.
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            LinearMorModules,
-        )
-
-        match element_parent(actor) in LinearMorModules(self.domain().base_ring()):
-            case True:
-                return actor.__mul__(self)
-            case False:
-                return self.parent().scalar_multiple(actor, self)
+        if isinstance(actor, Morphism) and _precomposable(actor, self):
+            return actor.__mul__(self)
+        # A scalar can itself be a morphism when the retained coefficient
+        # ring is an endomorphism ring. Noncomposable map-valued scalars
+        # therefore keep the ordinary scalar-action ingress.
+        return self.parent().scalar_multiple(actor, self)
 
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
@@ -889,17 +905,20 @@ class ModuleMorphismMethods:
         ``scalar * element`` therefore bypasses the module abstraction.  The
         linear extension is intrinsic: apply the codomain's represented scalar
         action directly to each selected generator image and add the results.
-        No codomain framing is involved.
+        The retained finite coefficient family suffices; evaluating this sum
+        does not require deciding which of its coefficients vanish. No
+        codomain framing is involved.
         """
         codomain = self.codomain()
         ring = codomain.base_ring()
+        coefficients = coordinates.parent()._selected_module_coefficients(coordinates)
         return sum(
             (
                 codomain.scalar_multiple(
-                    ring(coordinates(source_label)),
+                    ring(coefficient),
                     self._generator_image(source_label),
                 )
-                for source_label in coordinates.support().domain()
+                for source_label, coefficient in coefficients.items()
             ),
             codomain.zero(),
         )
@@ -921,6 +940,30 @@ class ModuleMorphismMethods:
         )
 
         return _alternating_extension(self)
+
+    @cached_method
+    def tensor_square_morphism(self):
+        r"""Return ``f tensor f: M tensor_R M -> N tensor_R N`` for this R-linear map.
+
+        R is commutative. The exact source and target are the selected module
+        tensor products, also used by algebra multiplication classifiers;
+        neither module needs an algebra multiplication. The existing tensor
+        product map supplies the induced arrow on those endpoints.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        ring = self.domain().base_ring()
+        assert ring in OwnedRings().Commutative(), (
+            f"the tensor square of {self} as a map of left {ring}-modules needs "
+            "commutative coefficients for this tensor construction"
+        )
+        modules = Modules(ring)
+        return self.tensor_product_map(
+            self,
+            source=modules.tensor_product((self.domain(), self.domain())),
+            target=modules.tensor_product((self.codomain(), self.codomain())),
+        )
 
     def tensor_product_map(self, other, *, source=None, target=None):
         r"""Return the induced map ``self tensor other`` on selected tensor products."""
@@ -1260,8 +1303,8 @@ class ModuleMorphismMethods:
         denominator = ring.one()
         for vector in source.module_generators():
             coordinates = framing.lift(restricted(vector).underlying_element())
-            for label in coordinates.support().domain():
-                denominator = denominator.lcm(coordinates(label).denominator())
+            for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values():
+                denominator = denominator.lcm(coefficient.denominator())
         return ring.ideal(denominator)
 
     def affine_inverse_image(self, target_inclusion, offset=None):
@@ -1300,7 +1343,7 @@ class ModuleMorphismMethods:
         domain = self.domain()
         codomain = self.codomain()
         element = element if element.parent() is codomain else codomain(element)
-        if element == codomain.zero():
+        if (element == codomain.zero()) is True:
             return domain.zero()
         preimage = self._preimage_or_none(element)
         if preimage is None:
@@ -1426,6 +1469,11 @@ class ModuleMorphismMethods:
                     "the given lift returned no preimage, but that lift is not known to find every preimage"
                 )
             candidate = self.domain()(candidate)
+            # The selected construction proves both which values have a
+            # preimage and that a returned value is its section. Consume
+            # that same certificate on a successful lift as on None.
+            if self.selected_lift_exactness_decision() is True:
+                return candidate
             target = element if element.parent() is self.codomain() else self.codomain()(element)
             section_equation = self(candidate) == target
             if section_equation is False:
@@ -1444,6 +1492,13 @@ class ModuleMorphismMethods:
             f"cannot compute a preimage of {element} under {domain} -> {codomain}: the domain must be finitely "
             f"generated, but its generating set {domain.module_generating_set()} is infinite"
         )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _singular_presentation_preimage,
+        )
+
+        polynomial_preimage = _singular_presentation_preimage(self, element)
+        if polynomial_preimage is not NotImplemented:
+            return polynomial_preimage
         match codomain:
             case _ if _has_finite_free_framing(domain) and _has_finite_free_framing(codomain):
                 pass
@@ -1574,7 +1629,7 @@ class ModuleMorphismMethods:
 
         def lift_target(element):
             coordinates = target.framing_morphism().lift(element)
-            return target_cover.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
+            return target_cover.linear_combination(coordinates.parent()._selected_module_coefficients(coordinates))
 
         cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
         relation_source = source_presentation.domain()
@@ -1618,7 +1673,7 @@ class ModuleMorphismMethods:
 
         def lift_to_cover(value):
             coordinates = codomain_framing.lift(value)
-            return cover.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
+            return cover.linear_combination(coordinates.parent()._selected_module_coefficients(coordinates))
 
         domain_framing = domain.framing_morphism()
         generator_cover = domain_framing.domain()
@@ -1688,9 +1743,9 @@ class ModuleMorphismMethods:
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
             tuple(
-                coordinates(label)
+                coefficient
                 for coordinates in (*image_coordinates.values(), target_coordinates)
-                for label in coordinates.support().domain()
+                for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values()
             ),
             ring.one(),
         )
@@ -1698,7 +1753,10 @@ class ModuleMorphismMethods:
         cleared_module = ring._fresh_free_module_on(extension.module_generating_set())
 
         def cleared(coordinates):
-            return cleared_module.linear_combination({label: ring(scale * coordinates(label)) for label in coordinates.support().domain()})
+            return cleared_module.linear_combination({
+                label: ring(scale * coefficient)
+                for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items()
+            })
 
         cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
         return cleared_span._preimage_or_none(cleared(target_coordinates))
@@ -1890,15 +1948,15 @@ class ModuleMorphismMethods:
         )(forward, inverse)
 
     def _is_the_identity(self) -> bool:
-        r"""Return whether this is the selected scalar realization of the identity."""
+        r"""Return whether the retained scalar datum establishes the identity."""
         if self.domain() is not self.codomain():
             return False
         from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
         )
 
-        scalar = _scalar_identity_coefficient(self)
-        return scalar is not None and scalar == self.parent().base_ring().one()
+        scalar = _scalar_identity_coefficient(self, self.parent())
+        return scalar is not None and (scalar == self.parent().base_ring().one()) is True
 
     def __mul__(self, other):
         r"""Return ``self . other`` for a composable arrow, or ``other * self`` for a scalar."""
@@ -1911,9 +1969,9 @@ class ModuleMorphismMethods:
                 # The identity is a two-sided unit.  That is a theorem, so the
                 # composite is the other factor itself rather than a fresh
                 # morphism that would then have to be compared with it.
-                if self._is_the_identity():
+                if self._is_the_identity() is True:
                     return other
-                if other._is_the_identity():
+                if other._is_the_identity() is True:
                     return self
                 # Keep the Mor theory in which both arrows were admitted.
                 # Redispatching Modules(R) from the source's scalar ring can
@@ -2337,12 +2395,19 @@ def _initialize_module_mor_parent(
     codomain,
     *,
     full_internal_mor=False,
+    full_linear_mor=True,
 ) -> None:
     r"""Install the common enriched ``R``-module Mor parent semantics.
 
     This is implementation reuse only.  Structured Mor categories such as
     ``Hom_{R[G]}`` must not subclass ``Hom_R`` as Python classes merely because
     they have ``Hom_R`` as a categorical supercategory.
+
+    ``full_linear_mor`` records whether this constructor supplies a
+    full-linear-Hom realization. Graded and cochain maps pass ``False``:
+    their extra equations may cut down the Hom, so endpoint bases alone
+    do not supply a full-Hom basis. This withholds that representation
+    claim without deciding inequivalence or proving an arrow law.
     """
     modules = mor_family.base_category()
     ring = modules.base_ring()
@@ -2353,6 +2418,7 @@ def _initialize_module_mor_parent(
         domain,
         codomain,
         full_internal_mor=full_internal_mor,
+        full_linear_mor=full_linear_mor,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
@@ -2527,11 +2593,9 @@ class _ModuleMorCommonMethods:
                     raise TypeError(
                         f"the scalars of {self} lie in {center}, which is not the selected centre of {ring}"
                     )
-                match hasattr(ring, "center_inclusion"):
-                    case True:
-                        inclusion = ring.center_inclusion()
-                    case False:
-                        inclusion = center.inclusion()
+                # The enrichment retained this literal ring centre. The
+                # general magma/algebra centre may have another realization.
+                inclusion = center.inclusion()
                 if inclusion.domain() is not center or inclusion.codomain() is not ring:
                     raise TypeError(
                         f"the selected centre inclusion {inclusion} must have endpoints {center} -> {ring}"
@@ -2556,8 +2620,8 @@ class _ModuleMorCommonMethods:
             _scalar_identity_coefficient,
         )
 
-        left_scalar = _scalar_identity_coefficient(left)
-        right_scalar = _scalar_identity_coefficient(right)
+        left_scalar = _scalar_identity_coefficient(left, self)
+        right_scalar = _scalar_identity_coefficient(right, self)
         if left_scalar is not None and right_scalar is not None:
             return self._scalar_identity(left_scalar * right_scalar)
         return self.element_class(
@@ -2572,18 +2636,21 @@ class _ModuleMorCommonMethods:
 
     def _module_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action ``(r f)(m) = r f(m)`` defining this Mor's scalar enrichment."""
+        if morphism not in self:
+            raise TypeError(
+                f"scalar multiplication in {self} needs an arrow already admitted there"
+            )
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)
         from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
-        coefficient = _scalar_identity_coefficient(morphism)
+        coefficient = _scalar_identity_coefficient(morphism, self)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
-        codomain = self.codomain()
         return self.element_class(
             self,
-            lambda element: codomain.scalar_multiple(scalar, morphism(element)),
+            lambda element: self._apply_pointwise_scalar(scalar, morphism(element)),
             elementwise=True,
             linearity_premises=(morphism,),
         )
@@ -2781,7 +2848,7 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def linear_combination(self, coefficients):
         result = self.zero()
         for label, coefficient in coefficients.items():
-            if coefficient:
+            if (self.base_ring()(coefficient) == self.base_ring().zero()) is not True:
                 result = result + self.scalar_multiple(
                     coefficient,
                     self.module_generator(label),
@@ -2887,12 +2954,13 @@ class TensorProductModuleMorphismMethods:
         codomain = self.codomain()
         left_coordinates = self.left_module().framing_morphism().lift(left_element)
         right_coordinates = self.right_module().framing_morphism().lift(right_element)
-        right_support = right_coordinates.support().domain()
+        left_coefficients = left_coordinates.parent()._selected_module_coefficients(left_coordinates)
+        right_coefficients = right_coordinates.parent()._selected_module_coefficients(right_coordinates)
         value = codomain.zero()
-        for left_label in left_coordinates.support().domain():
-            for right_label in right_support:
+        for left_label, left_coefficient in left_coefficients.items():
+            for right_label, right_coefficient in right_coefficients.items():
                 value = value + codomain.scalar_multiple(
-                    left_coordinates(left_label) * right_coordinates(right_label),
+                    left_coefficient * right_coefficient,
                     self._gram_entry(left_label, right_label),
                 )
         return value
@@ -2969,6 +3037,23 @@ class TensorProductModuleMorphismMethods:
                 for i in range(n)
                 for j in range(m)
             ),
+        )
+
+    def values_matrix(self):
+        r"""Return the pairing values indexed by the two selected framings."""
+        from dzack_research.preamble.categories.sets.coordinate_families import (
+            _coordinate_family_from_function,
+            _finite_framing,
+        )
+
+        left_labels = _finite_framing(self.left_module())
+        right_labels = _finite_framing(self.right_module())
+        return _coordinate_family_from_function(
+            left_labels,
+            right_labels,
+            self.codomain(),
+            self._gram_entry,
+            name="Pairing values on the selected framings",
         )
 
     def _gram_entry(self, left_label, right_label):

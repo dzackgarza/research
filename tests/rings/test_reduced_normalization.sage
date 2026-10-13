@@ -11,6 +11,14 @@ def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
     assert node.is_reduced()
     assert node.minimal_primes().cardinality() == 2
     assert node.irreducible_components().cardinality() == 2
+    for quotient in node.irreducible_components():
+        # Components are quotients of the actual node, not merely abstractly
+        # isomorphic quotients of its polynomial presentation. The chosen
+        # enumeration of components need not order the minimal primes alike.
+        assert quotient.quotient_source() is node
+        assert quotient.quotient_map().domain() is node
+        assert quotient.defining_ideal().ring() is node
+        assert any(quotient.defining_ideal() == prime for prime in node.minimal_primes())
     components = node.normalization_components()
     assert components.cardinality() == 2
     for minimal_prime, component, component_map in components:
@@ -34,6 +42,13 @@ def test_total_quotient_ring_of_reduced_node_is_product_of_component_fields() ->
     total_map = node.total_quotient_map()
     assert total_map.domain() is node
     assert total_map.codomain() is total
+    for component in node.irreducible_components():
+        # The total-quotient map is assembled from actual maps A -> A/p,
+        # not from arbitrary lifts to its polynomial presentation.
+        projection = component.quotient_map()
+        assert projection.domain() is node
+        assert projection(node(x * y)) == component.zero()
+        assert projection(node.one()) == component.one()
     assert total_map(node(x + y)).is_unit()
     assert not total_map(node(x)).is_unit()
 

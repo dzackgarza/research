@@ -57,6 +57,9 @@ from dzack_research.preamble.validation import validator
 def _commutative_presentation_data(algebra):
     r"""Return ``(P, labels, variables, relations, lift)`` for ``A = P/I``."""
 
+    from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+    from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+
     base = algebra.base_ring()
     if algebra not in Algebras(base).Associative().Unital().Commutative():
         raise TypeError(
@@ -80,7 +83,18 @@ def _commutative_presentation_data(algebra):
         relations = finite_ordered_set(())
         lift = presentation
 
+    assert presentation in SymmetricAlgebras(base) and isinstance(
+        _engine_ring(presentation), (PolynomialRing_generic, MPolynomialRing_base)
+    ), (
+        f"the selected conormal and differential computation for {algebra} needs "
+        f"a polynomial presentation; its retained presentation {presentation} "
+        "needs a different differential computation"
+    )
     labels = presentation.algebra_generating_set()
+    assert labels.cardinality().is_finite() is True, (
+        f"the selected conormal and differential computation for {algebra} requires "
+        "a known finite family of polynomial generators"
+    )
     variables = FiniteOrderedSets().from_indexed(
         labels,
         presentation.algebra_generator,
@@ -188,7 +202,10 @@ class Derivation(ModuleElement):
                 localized_coefficients = tuple(
                     localization_map(coefficient) for coefficient in coefficients
                 )
-                if self._evaluate_coefficients(localized_coefficients) != self.codomain().zero():
+                if (
+                    self._evaluate_coefficients(localized_coefficients)
+                    == self.codomain().zero()
+                ) is False:
                     raise ValueError(
                         f"the generator images do not define a derivation of {self.domain()}: the localized "
                         "derivation rule does not send a defining relation to 0"
@@ -204,7 +221,9 @@ class Derivation(ModuleElement):
                 relation,
                 variables,
             )
-            if self._evaluate_coefficients(coefficients) != self.codomain().zero():
+            if (
+                self._evaluate_coefficients(coefficients) == self.codomain().zero()
+            ) is False:
                 raise ValueError(
                     f"the generator images do not define a derivation of {self.domain()}: a defining relation "
                     "is not sent to 0"
@@ -328,15 +347,13 @@ class Derivation(ModuleElement):
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, Derivation)
-            and other.parent() is self.parent()
-            and all(
-                self.generator_image(label) == other.generator_image(label)
-                for label in self.parent().generator_labels()
-            )
+        if not isinstance(other, Derivation) or other.parent() is not self.parent():
+            return op == op_NE
+        equal = conjunction(
+            self.generator_image(label) == other.generator_image(label)
+            for label in self.parent().generator_labels()
         )
-        return equal if op == op_EQ else not equal
+        return equal if op == op_EQ else negation(equal)
 
 
 class DerivationUnderlyingLinearMorphism(ModuleMorphism):

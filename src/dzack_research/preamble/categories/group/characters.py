@@ -82,6 +82,28 @@ class CharacterSets(OwnedParameterizedCategory):
                 f"{class_function} is not a character of {self.group()}: a class function is a map "
                 f"of sets {self.group()} -> {class_function.codomain()}"
             )
+            representatives = self.group().conjugacy_classes_representatives()
+            character = self.group().character(
+                tuple(class_function(representative) for representative in representatives)
+            )
+            field = character.codomain()
+            if any(
+                field(class_function(element)) != character(element)
+                for element in self.group()
+            ):
+                raise ValueError(
+                    f"{class_function} is not a character of {self.group()}: its values are not the "
+                    "conjugacy-invariant ordinary character determined by their values on the selected classes"
+                )
+            return character
+
+        def _from_known_character(self, class_function):
+            r"""Construct a character whose genuineness was proved by its supplying construction."""
+            if not isinstance(class_function, Morphism) or class_function.domain() is not self.group():
+                raise TypeError(
+                    f"a known character of {self.group()} must be represented by a map with domain {self.group()}, "
+                    f"but got {class_function}"
+                )
             return self.element_class(self, class_function)
 
         def __contains__(self, candidate) -> bool:

@@ -17,7 +17,8 @@ import pytest
 
 
 def a2():
-    return (ZZ ^ 2).equip_bilinear_form(ZZ, [[2, 1], [1, 2]])
+    module = ZZ ^ 2
+    return FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[2, 1], [1, 2]]))
 
 
 def test_the_values_of_the_a2_form() -> None:
@@ -48,7 +49,8 @@ def test_the_twist_by_three_triples_the_form() -> None:
 
 def test_the_hyperbolic_plane_has_isotropic_basis_vectors_and_raises_by_swapping() -> None:
     r"""In $U$, $f_0^2 = 0$ and $f_0 \cdot f_1 = 1$; $U^{-1} = U$ so raising $(3, 7)$ gives $(7, 3)$."""
-    hyperbolic_plane = (ZZ ^ 2).equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
+    module = ZZ ^ 2
+    hyperbolic_plane = FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[0, 1], [1, 0]]))
     f0, f1 = hyperbolic_plane.module_generator(0), hyperbolic_plane.module_generator(1)
 
     assert f0.is_isotropic()

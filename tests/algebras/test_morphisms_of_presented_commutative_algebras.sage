@@ -76,6 +76,12 @@ def test_the_coproduct_of_two_polynomial_rings_is_the_polynomial_ring_in_both_va
     coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
     first = coproduct.coproduct_injection(0)
     second = coproduct.coproduct_injection(1)
+    try:
+        coproduct.coproduct_injection(QQ(1) / 2)
+    except IndexError:
+        pass
+    else:
+        assert False, "a nonintegral index was truncated into the left coproduct injection"
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
 

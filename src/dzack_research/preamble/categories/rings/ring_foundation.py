@@ -43,6 +43,7 @@ from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.infinity import Infinity as SageInfinity
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -67,15 +68,16 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.semirings import (
     OwnedRngs,
     OwnedSemirings,
     RingMorCategoryConstruction,
 )
 from dzack_research.preamble.categories import sets as owned_sets
-from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category
 
 
 class _OwnedRingBootstrapParent(metaclass=ABCMeta):
@@ -296,6 +298,11 @@ class RingMorphism:
         already contains every image.  So this needs nothing of ``f`` beyond
         its values, and the localization of an ideal is the case where ``f``
         inverts a submonoid.
+
+        For the retained completion map of a Noetherian source, flatness
+        also transports the ideal's presented inclusion. A different map
+        into that same completed ring need not be flat, so that construction
+        is selected only for the actual canonical completion arrow.
         """
 
         domain = self.domain()
@@ -307,7 +314,11 @@ class RingMorphism:
             AdicCompletions,
         )
 
-        if codomain in AdicCompletions() and domain in OwnedRings().Noetherian():
+        if (
+            codomain in AdicCompletions()
+            and domain in OwnedRings().Noetherian()
+            and self is codomain.completion_map()
+        ):
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 _flat_extension_commutative_ideal,
             )
@@ -494,6 +505,30 @@ def _ringlike_mor_element(parent, datum, provider_type):
     )
 
 
+def _engine_ring_value(ring, value):
+    """Lower an owned or already-engine ring element to the selected engine."""
+    from sage.categories.rings import Rings as SageRings
+    from sage.structure.element import parent as element_parent
+
+    source = _own_ring(ring)
+    engine = _engine_ring(source)
+    value_parent = element_parent(value)
+    if value_parent is engine or value_parent in SageRings():
+        return engine(value)
+    return engine(_engine_element(source, source(value)))
+
+
+def _ringlike_mor_identity(mor):
+    """Identity of a fixed ring-like Mor, retaining its identity datum."""
+    if mor.domain() is not mor.codomain():
+        raise ValueError(
+            f"the identity morphism exists only on Mor(R, R), but this is Mor({mor.domain()}, {mor.codomain()})"
+        )
+    identity = mor.elementwise(lambda element: element)
+    identity._preamble_is_identity = True
+    return identity
+
+
 class RngMor(CategoricalMor):
     r"""The owned set ``Hom_Rng(A,B)`` of maps preserving sum and product."""
 
@@ -520,13 +555,7 @@ class RngMor(CategoricalMor):
         )
 
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(R, R), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        identity = self.elementwise(lambda element: element)
-        identity._preamble_is_identity = True
-        return identity
+        return _ringlike_mor_identity(self)
 
     def _repr_(self):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
@@ -535,13 +564,16 @@ class RngMor(CategoricalMor):
 def _is_ring_map_into(candidate, target) -> bool:
     r"""Whether ``candidate`` is a ring morphism ending at ``target``.
 
-    Composition is asked of an arbitrary right operand, so this is the one
-    site that decides whether it is a map at all (Sage's ``Map`` protocol).
+    RingMorphism composition calls this protected admission predicate on its
+    right operand. Its actual ordinary RingMor membership supplies unitality;
+    ring endpoints alone do not upgrade a set, magma or nonunital rng map.
+    Native engine maps first enter through the owned RingMor constructor.
     """
     return (
         isinstance(candidate, Map)
         and candidate.codomain() is target
         and candidate.domain() in OwnedRings()
+        and candidate in OwnedRings().Mor(candidate.domain(), target)
     )
 
 
@@ -631,8 +663,8 @@ def _field_generators(field):
     when they agree on these generators.
     """
     assert _is_finite_or_number_field(field), (
-        f"cannot list field generators of {field}: generators are computed only for finite fields "
-        f"and number fields, and {field} is neither"
+        f"cannot list field generators of {field}: this computation requires a represented finite "
+        "field or number field, and no such generator computation is supplied here"
     )
     return owned_sets.finite_ordered_set(tuple(
         _owned_engine_element(field, generator)
@@ -657,16 +689,19 @@ def _ring_morphisms_equal(left, right):
 
     domain = left.domain()
     match domain:
+        case _ if domain in PrimeFields():
+            # An existing unital map from a prime field is uniquely determined
+            # by 1, including when the field has a quotient or localization
+            # presentation.  No source transport or engine is needed.
+            return True
         case _ if domain in LocalizationRings():
             source_map = domain.localization_map()
             return _ring_morphisms_equal(left * source_map, right * source_map)
         case _ if domain in QuotientRings():
             quotient_map = domain.quotient_map()
             return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
-        case _ if _engine_ring(domain) is SageZZ or domain in PrimeFields():
-            # A unital map out of Z, or out of a prime field when it exists, is
-            # unique.  This includes Q and F_p; proper finite-field extensions
-            # are excluded because they can have distinct embeddings.
+        case _ if _engine_ring(domain) is SageZZ:
+            # A unital map out of Z is uniquely determined by 1.
             return True
         case _ if _is_finite_or_number_field(domain):
             # A map of fields fixes the prime field, so it is determined by its
@@ -746,13 +781,7 @@ class RingMor(CategoricalMor):
         )
 
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity morphism exists only on Mor(R, R), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-        identity = self.elementwise(lambda element: element)
-        identity._preamble_is_identity = True
-        return identity
+        return _ringlike_mor_identity(self)
 
     def embeddings(self):
         r"""The elements of ``Mor(K, L)`` for fields ``K`` and ``L``, in the engine's deterministic order.
@@ -792,6 +821,54 @@ class PredicateSubrings(OwnedCategory):
 
         def defining_predicate(self):
             return self._predicate
+
+        def _cardinality_decision(self):
+            r"""Count the represented subring, or use its characteristic-zero injection.
+
+            A decided predicate on a supplied finite ambient enumeration
+            gives the exact finite count. A unital subring of a countably
+            infinite characteristic-zero ring contains the integers, so it
+            is countably infinite. Neither finite placement nor a missing
+            characteristic computation supplies an enumeration or a value.
+            """
+            from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
+
+            ambient = self.ambient_ring()
+            ambient_size = ambient._cardinality_decision()
+            if ambient_size is None:
+                return super()._cardinality_decision()
+            ambient_size = cardinal(ambient_size)
+            if (ambient_size == cardinal(1)) is True:
+                # The sole ambient point is both ring constants, retained
+                # by the defining unital-subring datum.
+                return cardinal(1)
+            if not ambient_size.expression().is_normal_form():
+                return None
+            if ambient_size.is_finite():
+                if ambient in owned_sets.EnumeratedSets():
+                    points = ambient
+                elif ambient not in LocalizationRings():
+                    engine = ambient._selected_engine_ring()
+                    if engine is None or engine is ambient:
+                        return None
+                    points = (
+                        _owned_engine_element(ambient, point) for point in engine
+                    )
+                else:
+                    return None
+                count = 0
+                for point in points:
+                    member = self.defining_predicate()(point)
+                    if member is True:
+                        count += 1
+                    elif member is not False:
+                        return None
+                return cardinal(count)
+            if ambient_size.is_countably_infinite():
+                characteristic = ambient._characteristic_decision()
+                if characteristic is not None and (characteristic == 0) is True:
+                    return aleph0
+            return super()._cardinality_decision()
 
         def __contains__(self, element):
             from sage.structure.element import parent as element_parent
@@ -876,18 +953,7 @@ class LocalizationRings(OwnedCategory):
                 self.denominator() * other.denominator(),
             )
 
-        def __mul__(self, other):
-            from sage.structure.element import parent as element_parent
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-            other_parent = element_parent(other)
-            if other_parent is self.parent():
-                return LocalizationRings.ElementMethods._mul_(self, other)
-            if other_parent in Modules(self.parent()):
-                return other_parent.scalar_multiple(self, other)
-            return NotImplemented
-
-        def inverse_of_unit(self):
+        def _unit_inverse_decision(self):
             r"""Return the inverse of a unit ``a/s``.
 
             An inverse is ``sb/u`` for any ``b`` in ``R`` and ``u`` in ``S``
@@ -902,72 +968,28 @@ class LocalizationRings(OwnedCategory):
                 case True:
                     pass
                 case False:
-                    raise ValueError(f"{self} is not a unit of {parent}")
+                    raise ZeroDivisionError(f"{self} is not a unit of {parent}")
                 case _:
-                    raise ValueError(f"cannot decide whether {self} is a unit of {parent}")
+                    return None
             engine = parent._selected_engine_ring()
+            if engine is None:
+                return None
             represented = parent._engine_element(self)
             inverse = engine(represented) ** -1
             return _owned_engine_element(parent, inverse)
 
-        def is_unit(self):
+        def _unit_decision(self):
             r"""Return whether ``a/s`` is invertible in ``S^{-1}R``.
 
-            An inverse is a fraction ``b/t`` with ``ab/st = 1``, and the
-            denominator is already a unit, so ``a/s`` is a unit exactly when
-            the ideal ``(a)`` meets ``S``.  For ``S`` generated by
-            ``f_1, ..., f_r`` a monomial in the ``f_i`` lies in ``(a)`` exactly
-            when a power of their product does -- raise every factor to the
-            largest exponent the monomial uses -- so the criterion is that
-            saturating ``(a)`` by the product gives the unit ideal.
-
-            This is an ideal computation and needs nothing of ``S^{-1}R``,
-            which is what lets a localization of a ring with zero divisors
-            answer.  It is made in the ring at the bottom of a tower of
-            localizations, where the ideals are: ``a/s`` is a unit exactly when
-            ``a`` is, so a tower inverts a single family over that ring and the
-            question descends to it unchanged.  A prime localization inverts a
-            submonoid with no finite generating set and states the criterion
-            for it separately.
+            The denominator is already a unit, so ``a/s`` is a unit exactly
+            when ``a`` is an admissible denominator. Both questions therefore
+            use the same source-ring predicate: ``(a)`` meets ``S``. A
+            computation model may invert more elements and cannot decide
+            this predicate merely by its own unit test.
             """
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _localization_descent,
-                _one_step_inverted_family,
-            )
+            return self.parent()._valid_denominator(self.numerator())
 
-            parent = self.parent()
-            source = parent.localization_source()
-            structure = parent.localization_submonoid()._structure_data()
-            match structure.get("kind"):
-                case "prime_complement":
-                    prime = structure["prime_ideal"]
-                    return not prime.contains_ambient_element(self.numerator())
-                case "nonzero_elements":
-                    return self.numerator() != source.zero()
-                case _:
-                    pass
-            # Sage's localization decides a unit by its numerator's units, which
-            # is exact when numerators lie in the source ring and wrong for a
-            # number-field order, whose numerators lie in the field (TRAPS.md).
-            if parent._preamble_engine_ring is not None and source not in OwnedOrders():
-                engine = parent._selected_engine_ring()
-                return bool(engine(parent._engine_element(self)).is_unit())
-            bottom, inverted_family = _one_step_inverted_family(
-                source, parent.inverted_elements()
-            )
-            bottom, (numerator,) = _localization_descent(source, (self.numerator(),))
-            inverted_product = bottom.one()
-            for inverted in inverted_family:
-                inverted_product = inverted_product * inverted
-            numerator_ideal = bottom.ideal(numerator)
-            inverted_ideal = bottom.ideal(inverted_product)
-            return numerator_ideal.ideal_saturation(
-                inverted_ideal
-            ).contains_ambient_element(bottom.one())
-
-        def __truediv__(self, other):
-            other = self.parent()(other)
-            return self * other.inverse_of_unit()
+        __truediv__ = Monoids.ElementMethods.divide_by_unit
 
         def _neg_(self):
             return self.parent().fraction(
@@ -975,12 +997,8 @@ class LocalizationRings(OwnedCategory):
                 self.denominator(),
             )
 
-        def _sub_(self, other):
-            r"""Subtraction in the additive group of ``S^{-1}R``."""
-            return self._add_(-other)
-
         def equality_status(self, other):
-            if other.parent() is not self.parent() or other.parent() is not self.parent():
+            if element_parent(other) is not self.parent():
                 return False
             return self.parent()._fraction_equality_status(self, other)
 
@@ -995,25 +1013,47 @@ class LocalizationRings(OwnedCategory):
                     return status if op == op_EQ else not bool(status)
 
         def _repr_(self):
-            if self.denominator() == self.parent().localization_source().one():
+            if (self.denominator() == self.parent().localization_source().one()) is True:
                 return repr(self.numerator())
             return f"({self.numerator()})/({self.denominator()})"
 
     def super_categories(self):
         return [OwnedRings().Commutative()]
 
+    class Local(CategoryWithAxiom):
+        r"""Local rings retaining their selected localization source and submonoid."""
+
+        def an_object(self):
+            r"""The localization of the integers at all nonzero elements."""
+            return _own_ring(SageZZ).fraction_field_localization()
+
+        class ParentMethods:
+            @cached_method
+            def source_residue_map(self):
+                r"""Return ``R -> kappa(m)`` through this local localization ``S^-1 R``."""
+                return self.residue_map() * self.localization_map()
+
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
 
-        def cardinality(self):
-            r"""Return the exact cardinality of a localization of a domain.
+        def _cardinality_decision(self):
+            r"""Supply the cardinality for a zero source or an integral-domain source.
 
             If ``0 in S`` then ``S^-1 R`` is the zero ring.  Otherwise the
-            canonical map ``R -> S^-1 R`` is injective, while every fraction is
-            represented by a pair in ``R x S``, so ``|S^-1 R| = |R|``.
+            canonical map ``R -> S^-1 R`` is injective. A finite domain is a
+            field, so every element of ``S`` is already a unit and this map
+            is an isomorphism. For infinite ``R``, fraction representatives
+            give ``|S^-1 R| <= |R x S| <= |R x R| = |R|``. Thus either case
+            gives ``|S^-1 R| = |R|``.
             """
             source = self.localization_source()
-            match source in OwnedRings().Commutative().NoZeroDivisors():
+            if (source.one() == source.zero()) is True:
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                return Cardinalities().one()
+            match source in OwnedIntegralDomains():
                 case True:
                     from dzack_research.preamble.categories.rings.commutative_algebra import (
                         _submonoid_contains_zero_in_domain,
@@ -1028,15 +1068,15 @@ class LocalizationRings(OwnedCategory):
                     )
                     match contains_zero:
                         case False:
-                            return source.cardinality()
+                            return source._cardinality_decision()
                         case True:
                             return Cardinalities().one()
                         case _:
-                            return super().cardinality()
+                            return super()._cardinality_decision()
                 case False:
-                    return super().cardinality()
+                    return super()._cardinality_decision()
 
-        def inverted_submonoid_meets(self, ideal) -> bool:
+        def inverted_submonoid_meets(self, ideal):
             r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
 
             For a prime complement this means a generator of I lies outside
@@ -1056,12 +1096,23 @@ class LocalizationRings(OwnedCategory):
             match self:
                 case _ if self in PrimeLocalizations():
                     prime = self.localized_prime()
-                    return any(not prime.contains_ambient_element(g) for g in ideal.ideal_generators())
-                case _ if self.is_fraction_field_localization():
-                    return ideal != ring.ideal(ring.zero())
+                    return negation(conjunction(
+                        prime.contains_ambient_element(generator)
+                        for generator in ideal.ideal_generators()
+                    ))
+                case _ if self._has_selected_nonzero_element_submonoid():
+                    return negation(conjunction(
+                        generator == ring.zero()
+                        for generator in ideal.ideal_generators()
+                    ))
                 case _:
+                    if self.localization_submonoid()._selected_representation_kind() != "generators":
+                        return AtomicProposition("inverted_submonoid_meets", self, ideal)
                     element = prod(self.inverted_elements(), ring.one())
-                    return ideal.ideal_saturation(ring.ideal(element)).contains_ambient_element(ring.one())
+                    saturated = ideal._ideal_saturation_decision(ring.ideal(element))
+                    if saturated is None:
+                        return AtomicProposition("inverted_submonoid_meets", self, ideal)
+                    return saturated.contains_ambient_element(ring.one())
 
         def __init__(
             self,
@@ -1079,46 +1130,45 @@ class LocalizationRings(OwnedCategory):
             self._localization_submonoid = submonoid
             self._localization_engine_source_decoder = _engine_source_decoder
             self._localization_engine_source_encoder = _engine_source_encoder
-            self._localization_algebra_source = algebra_source
             self._fraction_field_realization = fraction_field_realization
             self._preamble_engine_ring = _engine_ring
             from dzack_research.preamble.categories.algebras.algebras import Algebras
             from dzack_research.preamble.owned_category import owned_category_join
 
+            coefficient_base = (
+                algebra_source.base_ring()
+                if algebra_source is not None
+                else source.base_ring()
+            )
             algebra = (
-                Algebras(self.algebra_base_ring())
+                Algebras(coefficient_base)
                 .Associative()
                 .Unital()
                 .Commutative()
             )
             rest["category"] = owned_category_join((rest["category"], algebra))
             super().__init__(
-                base_ring=self.algebra_base_ring(),
+                base_ring=coefficient_base,
                 _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
                 _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
                 _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
                 **rest,
             )
 
-        def algebra_base_ring(self):
-            algebra_source = self._localization_algebra_source
-            return (
-                algebra_source.base_ring()
-                if algebra_source is not None
-                else self.localization_source().base_ring()
-            )
-
         def _selected_engine_ring(self):
-            r"""Return the private realization that computes in this localization.
+            r"""Return this localization's retained private realization, or ``None``.
 
-            Protected contract: the element arithmetic of this category asks its
-            parent for the realization that decides invertibility.
+            The element arithmetic of this category asks for this realization
+            to compute the inverse of a unit whose membership in the actual
+            localization has been established. The realization itself need
+            not reflect the unit predicate. The inherited ring-realization
+            contract also permits optional cardinality and selected-presentation
+            computation suppliers to retain absence. The required
+            ``_engine_ring`` dispatcher asserts at that boundary. This
+            model may be larger than the actual localization; it supplies
+            no replacement for the source/submonoid mathematics.
             """
-            engine = self._preamble_engine_ring
-            assert engine is not None, (
-                f"cannot compute in the localization {self}: it has no computer-algebra model"
-            )
-            return engine
+            return self._preamble_engine_ring
 
         @cached_method
         def localization_functor(self):
@@ -1139,19 +1189,77 @@ class LocalizationRings(OwnedCategory):
                 )
             return self.localization_functor()(module)
 
-        def _valid_denominator(self, denominator) -> bool:
+        @cached_method
+        def _normalization_data(self):
+            r"""Transport a retained finite normalization to this localization.
+
+            The selected computation currently requires finitely many
+            inverted elements, an ordered finite component family, a chosen finite
+            normalization-module presentation over the source, and decided
+            component-survival tests. It retains the source localization,
+            actual component maps, and the localized unit and cokernel.
+            No finite normalization is inferred for an arbitrary source.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                ModulesWithChosenFinitePresentation,
+            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _localized_affine_normalization_data,
+            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+            if self.localization_submonoid()._selected_representation_kind() != "generators":
+                return None
             source = self.localization_source()
-            if denominator == source.one():
+            data = source._normalization_data()
+            if data is None:
+                return None
+            if (data.normalization_module in ModulesWithChosenFinitePresentation(source)) is not True:
+                return None
+            if (data.components.index_set() in FiniteOrderedSets()) is not True:
+                return None
+            return _localized_affine_normalization_data(self, data)
+
+        def _normality_decision(self):
+            r"""Read normality when the retained finite normalization is localized."""
+            data = self._normalization_data()
+            if data is not None:
+                return data.is_normal
+            return super()._normality_decision()
+
+        def _valid_denominator(self, denominator):
+            r"""Return whether the source element becomes a unit, without forcing a predicate.
+
+            Private localization-owner contract. Fraction construction,
+            represented membership, and the numerator unit predicate call
+            this with an element of the actual source ring. The result is
+            ``True``, ``False``, or an owned proposition. A source unit or a
+            proved member of ``S`` is sufficient; the general criterion is
+            ``(denominator) intersect S != empty``. Predicate membership alone
+            need not decide membership in the saturation of ``S``.
+            """
+            source = self.localization_source()
+            if (denominator == source.one()) is True:
                 return True
-            structure = self.localization_submonoid()._structure_data()
+            if (denominator == -source.one()) is True:
+                return True
+            submonoid = self.localization_submonoid()
+            structure = submonoid._structure_data()
             match structure.get("kind"):
                 case "prime_complement":
                     prime = structure["prime_ideal"]
-                    return not prime.contains_ambient_element(denominator)
+                    return negation(prime.contains_ambient_element(denominator))
                 case "nonzero_elements":
-                    return denominator != source.zero()
+                    return negation(denominator == source.zero())
                 case _:
-                    return bool(self.localization_map()(denominator).is_unit())
+                    pass
+            if submonoid._selected_representation_kind() == "predicate":
+                if submonoid.defining_predicate()(denominator) is True:
+                    return True
+                return AtomicProposition("is_unit", self.fraction(denominator))
+            if any((denominator == generator) is True for generator in submonoid.monoid_generators()):
+                return True
+            return self.inverted_submonoid_meets(source.ideal(denominator))
 
         def fraction(self, numerator, denominator=None):
             r"""Construct ``a/s`` after admitting ``s`` through the selected submonoid.
@@ -1169,8 +1277,12 @@ class LocalizationRings(OwnedCategory):
                     pass
                 case False:
                     raise ValueError(
-                        f"{numerator}/{denominator} is not an element of {self}: the denominator {denominator} is "
-                        "not in the multiplicative set being inverted"
+                        f"cannot use {denominator} as a denominator in {self}: its image does not become a unit"
+                    )
+                case _:
+                    raise ValueError(
+                        f"cannot use {denominator} as a denominator in {self}: it is not known whether its image "
+                        "becomes a unit"
                     )
             return self.element_class(self, numerator, denominator)
 
@@ -1191,29 +1303,120 @@ class LocalizationRings(OwnedCategory):
         def __call__(self, value):
             return self._element_constructor_(value)
 
-        def __contains__(self, value) -> bool:
-            if element_parent(value) is self:
+        def is_parent_of(self, value):
+            r"""Return the owned membership predicate in the represented localization.
+
+            A pair requests its stated numerator and denominator. For a value
+            of the actual ``Frac(R)``, an exact source presentation ``a/b``
+            is checked through the canonical map ``R -> Frac(R)``. It belongs
+            to ``S^-1 R`` exactly when ``a`` lies in ``S^-1(b)``, equivalently
+            when ``((b):(a))`` meets ``S``. This does not require the stated
+            ``b`` itself to become a unit and does not select a new denominator
+            witness. The constructor ``fraction(a, b)`` still requires its
+            stated denominator to be admitted. The membership computation is the existing
+            localized-ideal membership operation, which retains an undecided
+            proposition when the source ideal computation is unavailable.
+
+            This selected route uses the existing fraction-field and canonical
+            map computations of ``R``; their construction frontier remains.
+            Unrecognized endpoints and undecided comparisons return the
+            actual membership proposition of this localization.
+            A larger computation field alone gives no membership answer.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            parent = element_parent(value)
+            if parent is self:
+                return True
+            if (
+                isinstance(parent, Parent)
+                and parent in Modules(self.base_ring())
+                and parent.unformed_module() is self
+            ):
                 return True
             source = self.localization_source()
             if isinstance(value, tuple) and len(value) == 2:
                 numerator, denominator = value
-                if numerator not in source or denominator not in source:
+                numerator_status = source.is_parent_of(numerator)
+                denominator_status = source.is_parent_of(denominator)
+                if numerator_status is False or denominator_status is False:
                     return False
+                if numerator_status is not True or denominator_status is not True:
+                    return AtomicProposition("is_parent_of", self, value)
                 return self._valid_denominator(source(denominator))
-            parent = element_parent(value)
-            match parent:
-                case _ if (
-                    parent is not source
-                    and parent in OwnedRings()
-                    and self._preamble_engine_ring is not None
-                    and self._localization_engine_source_decoder is None
-                ):
-                    # An element of a larger ring, such as 1/4 in QQ for
-                    # ZZ[1/2], is in S^-1 A exactly when it is some a/s; the
-                    # engine localization decides that on its own fractions.
-                    return _engine_element(parent, value) in self._preamble_engine_ring
-                case _:
-                    return value in source
+            source_status = source.is_parent_of(value)
+            if source_status is True:
+                return True
+            if not isinstance(parent, Parent) or parent not in OwnedRings():
+                if source_status is False:
+                    return False
+                return AtomicProposition("is_parent_of", self, value)
+            if (
+                source not in OwnedIntegralDomains()
+                or parent is not source.fraction_field()
+            ):
+                return AtomicProposition("is_parent_of", self, value)
+            numerator = value.numerator()
+            denominator = value.denominator()
+            if (
+                source.is_parent_of(numerator) is not True
+                or source.is_parent_of(denominator) is not True
+            ):
+                return AtomicProposition("is_parent_of", self, value)
+            numerator = source(numerator)
+            denominator = source(denominator)
+            if (denominator == source.zero()) is not False:
+                return AtomicProposition("is_parent_of", self, value)
+            comparison = source.fraction_field_map()
+            if (comparison(numerator) == value * comparison(denominator)) is not True:
+                return AtomicProposition("is_parent_of", self, value)
+            return source.ideal(denominator).extension_to_localization(
+                self
+            ).contains_ambient_element(self.localization_map()(numerator))
+
+        def __contains__(self, value):
+            r"""Use the owned membership predicate at Python's Boolean boundary."""
+            return self.is_parent_of(value)
+
+        def _inverse_variable_engine_cover(self):
+            r"""Return the current cover admitted by the inverse-variable decoder.
+
+            Private localization-owner contract. The only callers are this
+            owner's element decoder and exact-coefficient capability check.
+            The source, inverted family and native engine are fixed defining
+            data. Return the engine's cover when its variables consist of
+            the source variables followed by the represented inverses;
+            ``None`` means that this particular crossing is not selected.
+            Other existing element-decoder cases remain available.
+            """
+            engine = self._preamble_engine_ring
+            if not isinstance(engine, QuotientRing_generic):
+                return None
+            source_engine = _engine_ring(self.localization_source())
+            if not (
+                isinstance(source_engine, QuotientRing_generic)
+                or self._localization_engine_source_encoder is not None
+            ):
+                return None
+            engine_cover = engine.cover_ring()
+            source_cover = (
+                source_engine.cover_ring()
+                if isinstance(source_engine, QuotientRing_generic)
+                else source_engine
+            )
+            source_names = tuple(source_cover.variable_names())
+            inverted = tuple(self.inverted_elements())
+            engine_names = tuple(engine_cover.variable_names())
+            if (
+                engine_names[: len(source_names)] == source_names
+                and len(engine_names) == len(source_names) + len(inverted)
+                and all(
+                    name.startswith("localization_inverse_")
+                    for name in engine_names[len(source_names) :]
+                )
+            ):
+                return engine_cover
+            return None
 
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
@@ -1236,11 +1439,7 @@ class LocalizationRings(OwnedCategory):
             # by sending the original variables through ``P -> P/I`` and each
             # auxiliary variable to the represented inverse of its selected
             # denominator.  This is exactly the universal localization map.
-            if isinstance(engine, QuotientRing_generic) and (
-                isinstance(source_engine, QuotientRing_generic)
-                or self._localization_engine_source_encoder is not None
-            ):
-                engine_cover = engine.cover_ring()
+            if self._inverse_variable_engine_cover() is not None:
                 source_cover = (
                     source_engine.cover_ring()
                     if isinstance(source_engine, QuotientRing_generic)
@@ -1248,31 +1447,22 @@ class LocalizationRings(OwnedCategory):
                 )
                 source_names = tuple(source_cover.variable_names())
                 inverted = tuple(self.inverted_elements())
-                engine_names = tuple(engine_cover.variable_names())
-                if (
-                    engine_names[: len(source_names)] == source_names
-                    and len(engine_names) == len(source_names) + len(inverted)
-                    and all(
-                        name.startswith("localization_inverse_")
-                        for name in engine_names[len(source_names) :]
+                result = self.zero()
+                for exponents, coefficient in represented.lift().dict().items():
+                    source_monomial = source_cover(coefficient)
+                    for position, exponent in enumerate(exponents[: len(source_names)]):
+                        source_monomial *= source_cover.gen(position) ** int(exponent)
+                    term = self.fraction(
+                        _owned_engine_element(source, source_engine(source_monomial))
                     )
-                ):
-                    result = self.zero()
-                    for exponents, coefficient in represented.lift().dict().items():
-                        source_monomial = source_cover(coefficient)
-                        for position, exponent in enumerate(exponents[: len(source_names)]):
-                            source_monomial *= source_cover.gen(position) ** int(exponent)
-                        term = self.fraction(
-                            _owned_engine_element(source, source_engine(source_monomial))
-                        )
-                        for position, exponent in enumerate(exponents[len(source_names) :]):
-                            if exponent:
-                                term *= self.fraction(
-                                    source.one(),
-                                    inverted[position],
-                                ) ** int(exponent)
-                        result += term
-                    return result
+                    for position, exponent in enumerate(exponents[len(source_names) :]):
+                        if exponent:
+                            term *= self.fraction(
+                                source.one(),
+                                inverted[position],
+                            ) ** int(exponent)
+                    result += term
+                return result
             return self.fraction(
                 _owned_engine_element(source, source_engine(represented.numerator())),
                 _owned_engine_element(source, source_engine(represented.denominator())),
@@ -1303,6 +1493,69 @@ class LocalizationRings(OwnedCategory):
             )
             return engine(numerator.lift()) / engine(denominator.lift())
 
+        def _has_selected_exact_coefficient_presentation(self) -> bool:
+            r"""Whether the current inverse-variable quotient is an exact cover.
+
+            This implements the inherited ring-owner contract for module
+            algorithms. Only a finite-generator localization using its
+            admitted polynomial quotient crossing and source encoding is
+            selected. For ``L=S^-1(P/I)``, the existing realization is
+            ``P[u]/(I,u_i f_i-1)``. Its descent sends ``u_i`` to ``1/f_i``;
+            descent after the selected coefficient lift is the identity of L.
+            Prime and fraction-field models, flattened localization towers,
+            decoder overrides and all-unit source-engine reuse do not supply
+            this capability. Their existing element crossings are unchanged.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                QuotientRings,
+            )
+
+            if self.localization_submonoid()._selected_representation_kind() != "generators":
+                return False
+            source = self.localization_source()
+            if (
+                source in LocalizationRings()
+                or self._localization_engine_source_decoder is not None
+                or (
+                    source not in QuotientRings()
+                    and self._localization_engine_source_encoder is None
+                )
+            ):
+                return False
+            cover = self._inverse_variable_engine_cover()
+            return (
+                isinstance(cover, (MPolynomialRing_base, PolynomialRing_generic))
+                and self._preamble_engine_ring is not _engine_ring(source)
+            )
+
+        def _exact_coefficient_presentation_ring(self):
+            if self._has_selected_exact_coefficient_presentation():
+                return _own_ring(self._preamble_engine_ring.cover_ring())
+            return super()._exact_coefficient_presentation_ring()
+
+        def _exact_coefficient_presentation_relations(self):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                return owned_sets.finite_ordered_set(tuple(
+                    _owned_engine_element(cover, relation)
+                    for relation in self._preamble_engine_ring.defining_ideal().gens()
+                ))
+            return super()._exact_coefficient_presentation_relations()
+
+        def _lift_coefficient_to_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                represented = self._preamble_engine_ring(self._engine_element(value))
+                return _owned_engine_element(cover, represented.lift())
+            return super()._lift_coefficient_to_presentation(value)
+
+        def _descend_coefficient_from_presentation(self, value):
+            if self._has_selected_exact_coefficient_presentation():
+                cover = self._exact_coefficient_presentation_ring()
+                represented = self._preamble_engine_ring(_engine_element(cover, value))
+                return self._from_engine_element(represented)
+            return super()._descend_coefficient_from_presentation(value)
+
         def zero(self):
             return self.fraction(self.localization_source().zero())
 
@@ -1310,7 +1563,15 @@ class LocalizationRings(OwnedCategory):
             return self.fraction(self.localization_source().one())
 
         def _fraction_equality_status(self, left, right):
-            r"""Decide ``a/s = b/t``, else return the proposition ``equal(a/s, b/t)``."""
+            r"""Compare ring fractions through localization of the actual regular module.
+
+            The rank-one source coordinate sends ``a/s`` to ``(a*1_R)/s``
+            in ``S^-1(R.regular_module())``. This preserves and reflects
+            equality. The module-localization owner supplies annihilator,
+            finite-orbit, and free-coordinate computations and retains any
+            undecided proposition. Both images use its ordinary fraction
+            constructor, including denominator admission.
+            """
             source = self.localization_source()
             left_product = left.numerator() * right.denominator()
             right_product = right.numerator() * left.denominator()
@@ -1319,98 +1580,21 @@ class LocalizationRings(OwnedCategory):
             # negation directly, while Sage's inherited binary-subtraction
             # dispatch need not recognize their common owned parent.
             difference = source(left_product + (-right_product))
-            if difference == source.zero():
+            if (difference == source.zero()) is True:
                 return True
-
-            if source in OwnedRings().Commutative().NoZeroDivisors():
-                return False
-
-            structure = self.localization_submonoid()._structure_data()
-            if structure.get("kind") == "prime_complement":
-                prime = structure.get("prime_ideal")
-                if prime is None:
-                    return AtomicProposition("equal", left, right)
-                annihilator = source.ideal(source.zero()).colon(
-                    source.ideal(difference)
-                )
-                return any(
-                    not prime.contains_ambient_element(generator)
-                    for generator in annihilator.ideal_generators()
-                )
-
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                QuotientRings,
+            regular = source.regular_module()
+            (label,) = tuple(regular.module_generating_set())
+            generator = regular.module_generator(label)
+            localized = self.localization_functor()(regular)
+            left_image = localized.fraction(
+                regular.scalar_multiple(left.numerator(), generator),
+                left.denominator(),
             )
-
-            if source in QuotientRings():
-                source_ring = source.quotient_source()
-                representative = source_ring(difference.lift())
-                lifted_generators = tuple(
-                    source_ring(generator.lift())
-                    for generator in self.localization_submonoid().monoid_generators()
-                )
-                if not lifted_generators:
-                    return False
-                product = source_ring.one()
-                for generator in lifted_generators:
-                    product *= generator
-                saturated = source.defining_ideal().saturation(
-                    source_ring.ideal(product)
-                )
-                return saturated.contains_ambient_element(representative)
-
-            # A selected exact coefficient presentation A = P/I contains the
-            # same data needed for localization equality as an explicit
-            # QuotientRing object.  For a finitely generated multiplicative set
-            # S = <f_1,...,f_r>, a class d vanishes in S^{-1}A exactly when its
-            # lift to P belongs to I : (f_1 ... f_r)^∞.  Indeed, a monomial in
-            # the f_i kills d iff a sufficiently large common power of their
-            # product kills d, and conversely every such common power lies in S.
-            has_presentation = source._has_selected_exact_coefficient_presentation()
-            if has_presentation:
-                presentation_ring = source._exact_coefficient_presentation_ring()
-                representative = presentation_ring(
-                    source._lift_coefficient_to_presentation(difference)
-                )
-                lifted_generators = tuple(
-                    presentation_ring(
-                        source._lift_coefficient_to_presentation(generator)
-                    )
-                    for generator in self.localization_submonoid().monoid_generators()
-                )
-                if not lifted_generators:
-                    return False
-                product = presentation_ring.one()
-                for generator in lifted_generators:
-                    product *= generator
-                relations = tuple(
-                    presentation_ring(relation)
-                    for relation in source._exact_coefficient_presentation_relations()
-                )
-                defining_ideal = presentation_ring.ideal(
-                    *(relations or (presentation_ring.zero(),))
-                )
-                saturated = defining_ideal.saturation(
-                    presentation_ring.ideal(product)
-                )
-                return saturated.contains_ambient_element(representative)
-
-            if source in owned_sets.FiniteSets():
-                generators = tuple(self.localization_submonoid().monoid_generators())
-                pending = [difference]
-                seen = []
-                while pending:
-                    current = pending.pop()
-                    if current == source.zero():
-                        return True
-                    if any(current == old for old in seen):
-                        continue
-                    seen.append(current)
-                    pending.extend(
-                        source(generator * current) for generator in generators
-                    )
-                return False
-            return AtomicProposition("equal", left, right)
+            right_image = localized.fraction(
+                regular.scalar_multiple(right.numerator(), generator),
+                right.denominator(),
+            )
+            return left_image.equality_status(right_image)
 
         def _repr_(self):
             return f"Localization of {self.localization_source()} at {self.localization_submonoid()}"
@@ -1421,8 +1605,63 @@ class LocalizationRings(OwnedCategory):
         def localization_submonoid(self):
             return self._localization_submonoid
 
-        def is_fraction_field_localization(self) -> bool:
-            r"""Whether this localizes a domain at all of its nonzero elements."""
+        def _field_decision(self):
+            r"""Inverting finitely many elements of a finite free ZZ-algebra gives no field.
+
+            Finite generation as a ZZ-module supplies finite generation as a
+            ZZ-algebra, and adjoining finitely many inverses preserves finite
+            type. If the localization is nonzero, torsion-freeness over ZZ
+            makes its canonical ZZ map injective: an equation ``n/1 = 0`` for
+            nonzero n would give ``n*s = 0`` for some s in the submonoid,
+            forcing s = 0 and hence the zero localization. But a field of
+            finite type over the Jacobson domain ZZ cannot contain ZZ
+            (Stacks, 00G4 and 0CY7). The zero localization is not a field either.
+
+            This uses the source's finite-free property and the selected
+            finite generating presentation of the submonoid. It selects no
+            basis, computes no rank, and does not read the possibly larger
+            ring computation model. Other cases keep the inherited predicate.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            if (
+                self.localization_submonoid()._selected_representation_kind() == "generators"
+                and self.localization_source() in Modules(_owned_integers()).Free().FinitelyGenerated()
+            ):
+                return False
+            return super()._field_decision()
+
+        def is_fraction_field_localization(self):
+            r"""Whether the canonical localization realizes its source's fraction field.
+
+            A localization of a domain is its fraction field exactly when it
+            is a field. In that case its nonzero source elements stay nonzero
+            and become invertible, and every target element is a source
+            fraction. The chosen submonoid need not be presented as all the
+            nonzero elements: localizing a domain at its zero prime has the
+            same property. Undecided domain or field predicates are retained.
+
+            This mathematical predicate does not supply the separate selected
+            realization used by the fraction-field comparison methods.
+            """
+            source_is_domain = self.localization_source().is_integral_domain()
+            if source_is_domain is False:
+                return False
+            return conjunction((source_is_domain, self.is_field()))
+
+        def _has_selected_nonzero_element_submonoid(self) -> bool:
+            r"""Return whether the selected submonoid is the nonzero elements.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            this owner's submonoid-intersection and fraction-field realization
+            and comparison methods, and the CommutativeIdeals contraction
+            adapter. The input is this exact owned localization. The Boolean
+            result reads its retained construction tag: True supplies the
+            selected nonzero-element submonoid of its domain source; False
+            says only that this presentation was not selected. It neither
+            decides the mathematical fraction-field predicate nor supplies
+            an absent computation realization.
+            """
             return (
                 self.localization_submonoid()._structure_data().get("kind")
                 == "nonzero_elements"
@@ -1430,10 +1669,10 @@ class LocalizationRings(OwnedCategory):
 
         def fraction_field_realization(self):
             r"""Return the canonical owned field privately realizing this localization."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
-                    f"{self} is not the fraction field of {self.localization_source()}: it does not invert "
-                    "all nonzero elements"
+                    f"the selected fraction-field realization for {self} requires the "
+                    "nonzero-element localization presentation"
                 )
             field = self._fraction_field_realization
             if field is None:
@@ -1446,10 +1685,10 @@ class LocalizationRings(OwnedCategory):
         @cached_method
         def fraction_field_comparison(self):
             r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
-                    f"there is no map {self} -> Frac(R): {self} is not the localization of "
-                    f"{self.localization_source()} at all nonzero elements"
+                    f"the selected comparison from {self} to its fraction-field realization "
+                    "requires the nonzero-element localization presentation"
                 )
             from dzack_research.preamble.categories.rings.commutative_algebra import (
                 _canonical_map,
@@ -1465,18 +1704,18 @@ class LocalizationRings(OwnedCategory):
                 denominator = source_to_field(fraction.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return self.Mor(self.fraction_field_realization())(image)
+            return OwnedRings().Mor(self, self.fraction_field_realization())(image)
 
         @cached_method
         def fraction_field_comparison_inverse(self):
             r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
-            if not self.is_fraction_field_localization():
+            if not self._has_selected_nonzero_element_submonoid():
                 raise ValueError(
-                    f"there is no map Frac(R) -> {self}: {self} is not the localization of "
-                    f"{self.localization_source()} at all nonzero elements"
+                    f"the selected inverse comparison into {self} from its fraction-field realization "
+                    "requires the nonzero-element localization presentation"
                 )
             field = self.fraction_field_realization()
-            return field.Mor(self)(
+            return OwnedRings().Mor(field, self)(
                 lambda element: self._from_engine_element(_engine_element(field, element)),
             )
 
@@ -1484,14 +1723,15 @@ class LocalizationRings(OwnedCategory):
             return self.localization_submonoid().monoid_generators()
 
         def inverted_element(self):
-            r"""Return the one element ``f`` this localization inverts.
+            r"""Return the selected singleton generator ``f`` of this localization.
 
-            Localizing at a single ``f`` is the distinguished open ``D(f)``, and
-            there every represented denominator is a power of ``f``, so a
-            fraction is read as ``a/f^n``.  A localization at several elements
-            inverts every monomial in them, so a denominator is described by one
-            exponent per inverted element rather than by a single natural
-            number; that reading is not stated here.
+            Every element of ``R[1/f]`` admits an expression ``a/f^n``.
+            Its stored fraction may use any denominator whose image is a unit,
+            however: in ``ZZ[1/6]``, the represented denominator of ``1/2``
+            need not be a power of ``6``. This accessor selects no rewriting
+            or exponent. A localization at several selected generators can
+            also be presented by their product, but this accessor does not
+            replace that family with a new singleton generator.
             """
             inverted = self.inverted_elements()
             match inverted.cardinality() == 1:
@@ -1504,34 +1744,136 @@ class LocalizationRings(OwnedCategory):
                     )
             return inverted[0]
 
+        def quotient_contraction_map(self, quotient):
+            r"""The canonical injection R/I -> (S^-1 R)/J, with I contracted from J.
+
+            The exact selected quotient must have this localization as its
+            source. Extension of its contracted ideal is J (Stacks, 02C9),
+            and quotient commutes with localization (00CT). Hence this map
+            is injective and presents the target as a localization of its
+            retained domain. It need not be an isomorphism.
+
+            Contraction is computed when this construction is requested;
+            neither the source localization nor the quotient is reconstructed.
+            """
+            morphism = self._quotient_contraction_map_decision(quotient)
+            assert morphism is not None, (
+                "the canonical contraction map requires an exact source-ideal contraction in the selected representation"
+            )
+            return morphism
+
+        @cached_method
+        def _quotient_contraction_map_decision(self, quotient):
+            r"""Protected canonical-map result, or None at the computation frontier.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            quotient_contraction_map, this owner's finite comparison, and
+            the QuotientRings finiteness hook. The input is an exact quotient
+            of this localization. The output is the canonical owned ring
+            arrow from its contracted source quotient to that same input,
+            or None when the ideal owner has no selected contraction result.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
+            if quotient not in QuotientRings() or quotient.quotient_source() is not self:
+                raise ValueError(
+                    f"the contraction comparison from {self} requires its exact selected quotient, not {quotient}"
+                )
+            contracted = quotient.defining_ideal()._localization_contraction_decision()
+            if contracted is None:
+                return None
+            source_quotient = contracted.quotient_ring()
+            localization_map = self.localization_map()
+            quotient_map = quotient.quotient_map()
+
+            def image(element):
+                return quotient_map(localization_map(source_quotient(element).lift()))
+
+            return OwnedRings().Mor(source_quotient, quotient)(image)
+
+        @cached_method
+        def _finite_quotient_contraction_isomorphism(self, quotient):
+            r"""Protected exact finite comparison, or None when it is unavailable.
+
+            Owner: LocalizationRings.ParentMethods. The permitted callers
+            are quotient_contraction_isomorphism and the QuotientRings finite
+            computation adapters. The input is an owned quotient with this
+            exact localization as source. The result is an owned ring-core
+            isomorphism from quotient_contraction_map(quotient).domain() to
+            that exact quotient, retaining the same forward arrow.
+
+            The contraction is S-saturated, so multiplication by each image
+            of S is injective on the contracted quotient B. When B is finite
+            as a set, multiplication is surjective, hence that image is a
+            unit. The inverse sends the class of a/s to [a] [s]^-1. No
+            enumeration or property of the target quotient is used to prove
+            this. Finiteness alone does not supply a computation engine.
+            """
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _isomorphism_from_known_inverse_pair,
+            )
+
+            forward = self._quotient_contraction_map_decision(quotient)
+            if forward is None:
+                return None
+            source_quotient = forward.domain()
+            if source_quotient.is_finite() is not True:
+                return None
+            source_projection = source_quotient.quotient_map()
+            zero_quotient = (source_quotient.one() == source_quotient.zero()) is True
+
+            def inverse_image(element):
+                if zero_quotient:
+                    return source_quotient.zero()
+                numerator, denominator = self.localization_fraction_data(
+                    quotient(element).lift()
+                )
+                return source_projection(numerator) * source_projection(
+                    denominator
+                ).inverse_of_unit()
+
+            inverse = OwnedRings().Mor(quotient, source_quotient)(inverse_image)
+            return _isomorphism_from_known_inverse_pair(
+                forward, inverse, base_category=OwnedRings()
+            )
+
+        def quotient_contraction_isomorphism(self, quotient):
+            r"""Return the retained ring isomorphism when the contracted quotient is finite.
+
+            The canonical injection is invertible precisely when its domain
+            already inverts S. Finite cardinality proves this sufficient case;
+            an unavailable finite computation is not proof that the map is
+            noninvertible for an infinite domain.
+            """
+            comparison = self._finite_quotient_contraction_isomorphism(quotient)
+            assert comparison is not None, (
+                "the selected contraction-isomorphism computation requires a contracted quotient known to be finite"
+            )
+            return comparison
+
         def induced_morphism(self, morphism):
             r"""Return the unique ``S^{-1}R -> T`` extending ``g: R -> T``.
 
-            Localization is universal among ring maps out of ``R`` that invert
-            ``S``.  So when ``g`` carries ``S`` into the units exactly one map
-            out of ``S^{-1}R`` composes with the localization map to give
-            ``g``, and it sends ``a/s`` to ``g(a)g(s)^{-1}``.  Which
-            representative of a fraction is used does not matter: ``a/f`` and
-            ``af/f^2`` have the same image, so the map is defined on the
-            fraction and not on a chosen presentation of it.
+            The hypothesis is that ``g`` carries every element of ``S`` to a
+            unit. For a selected generating family it suffices to establish
+            that hypothesis on its generators. A predicate presentation of
+            ``S`` supplies no such family or general unit-image decision.
 
-            Both terms come from the fraction itself, which a localization
-            built from a numerator and a denominator, so the source ring is
-            asked for nothing beyond the two elements it already holds.
+            Retained canonical data also establish concrete predicate cases:
+            this localization's own map induces its identity; a quotient map
+            ``R -> R/p`` induces ``R_p -> R/p`` when that quotient is a field;
+            and canonical maps between prime localizations use their existing
+            prime-containment construction. Every map to the zero ring
+            carries all of ``S`` to units. Other predicate cases require a
+            selected proof of the global unit-image hypothesis.
 
-            The hypothesis is one statement about a generating set: a monomial
-            in elements carried to units is carried to a unit, so it suffices
-            on generators.  The complement of a prime has no finite generating
-            set, and there the hypothesis is asked of each denominator the map
-            meets, which is where inverting it is what the map has to do.
-
-            A transition map of a toric atlas is such a map: the pullback to a
-            face localization is a ring morphism out of the source that carries
-            the inverted character to a unit.  So is the residue map
-            ``R_p -> kappa(p)``, which extends ``R -> kappa(p)``.
+            Once that hypothesis is established, the unique arrow sends
+            ``a/s`` to ``g(a)g(s)^-1``. This is independent of the represented
+            fraction. Merely attempting inverses at encountered denominators
+            would not establish the existence of that ring arrow.
             """
             from dzack_research.preamble.categories.rings.commutative_algebra import (
-                PrimeLocalizations,
+                QuotientRings,
             )
 
             source = self.localization_source()
@@ -1543,10 +1885,16 @@ class LocalizationRings(OwnedCategory):
                         f"a map out of {self} is induced from a ring morphism out of {source}, but {morphism} starts "
                         f"at {morphism.domain()}"
                     )
-            match self in PrimeLocalizations():
-                case True:
-                    pass
-                case False:
+
+            target = morphism.codomain()
+            if target is self and morphism is self.localization_map():
+                return OwnedRings().Mor(self, self).identity()
+            if (target.one() == target.zero()) is True:
+                return self._induced_morphism_from_unit_images(morphism)
+
+            submonoid = self.localization_submonoid()
+            match submonoid._selected_representation_kind():
+                case "generators":
                     for inverted in self.inverted_elements():
                         match morphism(inverted).is_unit():
                             case True:
@@ -1557,10 +1905,85 @@ class LocalizationRings(OwnedCategory):
                                     f"factor through {self}"
                                 )
                             case _:
-                                raise ValueError(
-                                    f"it is undecided whether {morphism} sends {inverted} to a unit, so it is not known to "
-                                    f"factor through {self}"
+                                assert False, (
+                                    f"invertibility of the image of {inverted} under {morphism} is unresolved; "
+                                    f"constructing the induced map from {self} requires that unit-image hypothesis"
                                 )
+                    return self._induced_morphism_from_unit_images(morphism)
+                case "predicate":
+                    pass
+                case representation:
+                    assert False, (
+                        f"the selected submonoid representation {representation!r} supplies no unit-image computation"
+                    )
+
+            structure = submonoid._structure_data()
+            if (
+                target in LocalizationRings()
+                and target.localization_source() is source
+                and morphism is target.localization_map()
+            ):
+                if target.localization_submonoid() is submonoid:
+                    return self._induced_morphism_from_unit_images(morphism)
+                if (
+                    structure.get("kind") == "prime_complement"
+                    and target.localization_submonoid()._structure_data().get("kind") == "prime_complement"
+                ):
+                    return self.restriction_to(target)
+
+            if (
+                structure.get("kind") == "prime_complement"
+                and target in QuotientRings()
+                and target.quotient_source() is source
+                and morphism is target.quotient_map()
+                and (target.defining_ideal() == structure["prime_ideal"]) is True
+            ):
+                match target.is_field():
+                    case True:
+                        return self._induced_morphism_from_unit_images(morphism)
+                    case False:
+                        raise ValueError(
+                            f"the quotient {target} is not a field, so its quotient map does not invert "
+                            f"the complement of {structure['prime_ideal']}"
+                        )
+                    case _:
+                        assert False, (
+                            f"whether the quotient {target} is a field is unresolved; inducing its quotient "
+                            f"map from {self} requires that field hypothesis"
+                        )
+
+            assert False, (
+                f"the predicate presentation of {submonoid} selects no generating family or unit-image proof "
+                f"for {morphism}; constructing a map from {self} requires every element of that submonoid "
+                "to have a unit image"
+            )
+
+        def _induced_morphism_from_unit_images(self, morphism):
+            r"""Construct the localization arrow after its unit-image premise is established.
+
+            Owner: LocalizationRings.ParentMethods. Permitted callers are
+            induced_morphism, the PrimeLocalizations local residue-map
+            supplier, the QuotientRings total-quotient-map supplier after
+            contracting a localized ideal, the maximal adic-localization
+            comparison, and the adic-completion factory's maximal-prime case.
+
+            The inputs are this exact localization ``L = S^-1 R`` and an owned
+            ring morphism ``g: R -> T`` with this literal source. Each caller
+            must establish ``g(S)`` lies in the units of ``T`` from its retained
+            defining data: generator images or canonical maps at the public
+            ingress; nonzero images in ``Frac(R/p)`` for the residue supplier;
+            regular images in the total quotient ring of an S-saturated
+            contraction; or the complement of a proved maximal adic ideal.
+            A predicate or successful inversions of some denominators alone
+            is not that global premise.
+
+            The result is the owned ring map ``L -> T`` whose composite with
+            ``R -> L`` is exactly ``g``. This is the single fraction evaluator
+            for these callers; it does not infer or store a new premise.
+            """
+            assert morphism.domain() is self.localization_source(), (
+                "an induced localization map must retain the exact localization source"
+            )
 
             def image(element):
                 fraction = self(element)
@@ -1568,29 +1991,11 @@ class LocalizationRings(OwnedCategory):
                     fraction.denominator()
                 ).inverse_of_unit()
 
-            engine_source = _engine_ring(source)
-            engine_target = _engine_ring(morphism.codomain())
-            engine_localization = self._selected_engine_ring()
-            source_generators = tuple(engine_source.gens())
-            localization_generators = tuple(engine_localization.gens())
-            engine_morphism = None
-            if len(source_generators) == len(localization_generators):
-                engine_images = [
-                    _engine_element(
-                        morphism.codomain(),
-                        morphism(_owned_engine_element(source, generator)),
-                    )
-                    for generator in source_generators
-                ]
-                engine_morphism = engine_localization.hom(
-                    engine_images,
-                    engine_target,
-                )
-
-            return self.Mor(morphism.codomain(), category=OwnedRings())._elementwise_with_engine(
-                image,
-                engine_morphism,
-            )
+            # The universal map is defined on the actual localization. Its
+            # larger fraction-field computation model need not admit this
+            # map: a residue or component map can kill elements that become
+            # invertible in that model. The owned fraction formula is exact.
+            return OwnedRings().Mor(self, morphism.codomain())(image)
 
         @cached_method
         def localization_map(self):
@@ -1623,10 +2028,11 @@ class LocalizationRings(OwnedCategory):
 
             Between two prime localizations the containment ``S <= T`` is
             ``R \\ q <= R \\ p``, that is ``p <= q``, so ``R_q -> R_p`` exists
-            exactly when ``p`` specializes to ``q``: the germ at a point maps
-            to the germ at any point whose closure contains it.  Neither
-            complement has a finite generating set, so the containment is
-            decided on the primes rather than on inverted elements.
+            exactly when ``p`` generalizes ``q``: the germ at a point maps
+            to the germ at any point whose closure contains it. These
+            presentations do not select finite generating sets, so the
+            containment is decided on the primes rather than on inverted
+            elements.
             """
 
             from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -1659,11 +2065,11 @@ class LocalizationRings(OwnedCategory):
                         pass
                     case False:
                         raise ValueError(
-                            f"{self} inverts the complement of the prime {self.localized_prime()}, which has no finite "
-                            f"generating set, so a map to {target} is constructed only when {target} is also a localization "
-                            "at a prime"
+                            f"{self} inverts the complement of the prime {self.localized_prime()}, whose presentation "
+                            f"has no chosen finite generating family; this selected restriction construction to {target} "
+                            "requires a prime localization as target"
                         )
-                match all(
+                match conjunction(
                     self.localized_prime().contains_ambient_element(generator)
                     for generator in target.localized_prime().ideal_generators()
                 ):
@@ -1674,6 +2080,12 @@ class LocalizationRings(OwnedCategory):
                             f"{target.localized_prime()} is not contained in {self.localized_prime()}, "
                             f"so {target} does not invert everything {self} inverts and the universal "
                             "property of localization gives no map between them"
+                        )
+                    case _:
+                        assert False, (
+                            f"the containment of {target.localized_prime()} in {self.localized_prime()} "
+                            f"is unresolved; constructing the selected restriction {self} -> {target} "
+                            "requires that containment to be established"
                         )
             else:
                 for inverted in self.inverted_elements():
@@ -1686,9 +2098,9 @@ class LocalizationRings(OwnedCategory):
                                 f"property of localization gives no map from {self}"
                             )
                         case _:
-                            raise ValueError(
-                                f"invertibility of {inverted} in {target} is unresolved, so the "
-                                f"universal property of localization does not admit a map from {self}"
+                            assert False, (
+                                f"invertibility of {inverted} in {target} is unresolved; constructing the selected "
+                                f"restriction from {self} requires that unit-image hypothesis to be established"
                             )
 
             def image(element):
@@ -1696,7 +2108,7 @@ class LocalizationRings(OwnedCategory):
                 denominator = target(element.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return self.Mor(target)(image)
+            return OwnedRings().Mor(self, target)(image)
 
         def localization_fraction_data(self, element):
             r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
@@ -1817,20 +2229,59 @@ def _predicate_subring(ambient_ring, predicate, description, category=None):
 
 
 class LocalRingConstruction:
-    r"""The selected maximal ideal and residue quotient data of a local ring."""
+    r"""The selected maximal ideal and residue quotient data of a local ring.
 
-    def __init__(self, maximal_ideal, residue_field, residue_map=None) -> None:
+    A construction owner may supply a value or a fixed zero-argument factory
+    for each datum. The factories return an owned maximal ideal, its owned
+    residue field, and an owned quotient map from the same local ring, with
+    that ideal as kernel. The accessors cache their results independently;
+    requesting the maximal ideal need not compute a residue field.
+    """
+
+    def __init__(
+        self,
+        maximal_ideal=None,
+        residue_field=None,
+        residue_map=None,
+        *,
+        maximal_ideal_factory=None,
+        residue_field_factory=None,
+        residue_map_factory=None,
+    ) -> None:
+        for name, value, factory in (
+            ("maximal ideal", maximal_ideal, maximal_ideal_factory),
+            ("residue field", residue_field, residue_field_factory),
+            ("residue map", residue_map, residue_map_factory),
+        ):
+            if value is not None and factory is not None:
+                raise ValueError(f"the selected {name} needs one value or factory, not both")
+        if maximal_ideal is None and maximal_ideal_factory is None:
+            raise ValueError("a local-ring construction needs its maximal ideal or a factory for it")
+        if residue_field is None and residue_field_factory is None:
+            raise ValueError("a local-ring construction needs its residue field or a factory for it")
         self._maximal_ideal = maximal_ideal
         self._residue_field = residue_field
         self._residue_map = residue_map
+        self._maximal_ideal_factory = maximal_ideal_factory
+        self._residue_field_factory = residue_field_factory
+        self._residue_map_factory = residue_map_factory
 
+    @cached_method
     def maximal_ideal(self):
+        if self._maximal_ideal_factory is not None:
+            return self._maximal_ideal_factory()
         return self._maximal_ideal
 
+    @cached_method
     def residue_field(self):
+        if self._residue_field_factory is not None:
+            return self._residue_field_factory()
         return self._residue_field
 
+    @cached_method
     def residue_map(self):
+        if self._residue_map_factory is not None:
+            return self._residue_map_factory()
         return self._residue_map
 
 
@@ -1886,10 +2337,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
     # Functors out of rings, sited on their domain.
 
-    def unit_group(self):
-        r"""``R |-> R^x : Ring -> Grp``."""
-        return UnitGroupFunctor()
-
     def center_functor(self):
         r"""Return ``Z : Core(Ring) -> CRing``."""
         return RingCenterFunctor()
@@ -1904,11 +2351,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self._with_axiom("NoZeroDivisors")
 
         def Noetherian(self):
-            r"""Return this category with the ascending chain condition on ideals."""
+            r"""Return this category with the ascending chain condition on left ideals."""
             return self._with_axiom("Noetherian")
 
         def Artinian(self):
-            r"""Return this category with the descending chain condition on ideals."""
+            r"""Return this category with the descending chain condition on left ideals."""
             return self._with_axiom("Artinian")
 
         def Nontrivial(self):
@@ -1927,7 +2374,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _own_ring(SageZZ)
 
     class Division(CategoryWithAxiom):
-        r"""Division rings: every nonzero element is a unit."""
+        r"""Nontrivial rings in which every nonzero element is a unit."""
 
         @classmethod
         def _repr_object_names(cls):
@@ -1938,11 +2385,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return GF(2)
 
         def extra_super_categories(self):
-            r"""A division ring has ``1 != 0`` (Mathlib ``DivisionRing.toNontrivial``)."""
+            r"""A division ring is nontrivial and has no zero divisors."""
             return [OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial()]
 
+        class ElementMethods:
+            def _unit_decision(self):
+                r"""Unit status is the negation of the possibly undecided zero equality."""
+                return negation(self == self.parent().zero())
+
         class Commutative(CategoryWithAxiom):
-            r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``.
+            r"""Fields: nontrivial commutative rings in which every nonzero element is a unit.
 
             Fields are a full subcategory of rings, so a map of fields is a
             ring map and this category inherits the ring ``Mor``.
@@ -1957,11 +2409,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return GF(2)
 
             def extra_super_categories(self):
-                r"""The ideals of a field are ``0`` and the field."""
+                r"""A field has ideals ``0`` and itself and is complete for ``(0)``.
+
+                Its unique maximal ideal is zero, so its maximal-adic
+                completion is the field itself.
+                """
                 return [
                     OwnedRings().Commutative().PrincipalIdeals(),
                     OwnedRings().Artinian(),
-                    OwnedRings().Commutative().Local(),
+                    OwnedRings().Commutative().Local().Complete(),
                 ]
 
             class SubcategoryMethods:
@@ -1978,44 +2434,86 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def an_object(self):
                     r"""The field of two elements."""
-                    return GF(2)
+                    return self(2)
+
+                def _call_(self, characteristic):
+                    r"""Return the prime field of characteristic zero or a positive prime.
+
+                    Characteristic zero selects the owned rational field;
+                    characteristic ``p`` selects the existing field ``GF(p)``.
+                    The input is a characteristic, not a finite-field order.
+                    """
+                    integers = _owned_integers()
+                    selected = _owned_engine_element(
+                        integers, _engine_numeral(integers, characteristic)
+                    )
+                    if selected.is_zero() is True:
+                        return _own_ring(SageQQ)
+                    if (selected < integers.zero()) is True:
+                        raise ValueError(
+                            f"a prime field has characteristic zero or a positive prime, but got {selected}"
+                        )
+                    match selected.is_prime():
+                        case True:
+                            return GF(selected)
+                        case False:
+                            raise ValueError(
+                                f"a prime field has characteristic zero or a positive prime, but got {selected}"
+                            )
+                        case _:
+                            assert False, (
+                                f"constructing the prime field of characteristic {selected} requires its "
+                                "primality to be established"
+                            )
 
             class ParentMethods:
-                def krull_dimension(self):
+                def _krull_dimension_decision(self):
                     r"""``0``: the only prime ideal of a field is ``(0)``."""
                     return _own_ring(SageZZ).zero()
 
                 def field_generators(self):
-                    r"""Return exact elements which determine a unital map out of this field."""
+                    r"""Return the selected finite generators over the prime field.
+
+                    The current computation covers represented finite fields
+                    and number fields, including the levels of a relative
+                    tower. These elements determine every unital field map;
+                    arbitrary fields need not have a finite generating set.
+                    """
                     return _field_generators(self)
 
                 def exact_embeddings(self, codomain):
-                    r"""Return the embeddings of this field into ``codomain``, the elements of ``Mor(self, codomain)``."""
-                    return self.Mor(codomain).embeddings()
+                    r"""Enumerate the supplied exact field embeddings into ``codomain``.
+
+                    Field embeddings are the unital ring maps, independently
+                    of any additional coefficient-algebra presentation. The
+                    existing ring-Mor computation supplies a finite ordered
+                    enumeration in its supported realization cases; this does
+                    not assert that every pair of fields has finitely many
+                    embeddings or an available enumeration.
+                    """
+                    return OwnedRings().Mor(self, codomain).embeddings()
 
                 def first_exact_embedding(self, codomain):
-                    r"""Choose the first exact embedding into ``codomain`` in deterministic order."""
+                    r"""Choose the first embedding in the supplied finite enumeration.
+
+                    The selected enumeration fixes the order; the fields
+                    themselves do not have a canonical first embedding.
+                    """
                     embeddings = self.exact_embeddings(codomain)
-                    if embeddings.cardinality() == 0:
+                    if (embeddings.cardinality() == 0) is True:
                         raise ValueError(f"{self} has no embedding into {codomain}")
                     return embeddings[0]
-
-                def maximal_ideal(self):
-                    r"""Return the zero ideal, the unique maximal ideal of a field."""
-                    return self.ideal(self.zero())
-
-                def residue_field(self):
-                    return self
-
-                def residue_map(self):
-                    return self.Mor(self).identity()
 
                 def absolute_galois_group(self):
                     r"""Return the absolute Galois group ``G_K`` of this field ``K``.
 
                     The group is the existing profinite owner; this field method is
                     only the mathematical construction site and creates no parallel
-                    realization.
+                    realization. That owner retains the selected algebraic closure
+                    and base embedding. Its existing closure and exact-embedding
+                    computations determine the available realization cases; the
+                    general group is defined without a finite-field or number-field
+                    hypothesis.
                     """
                     from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
                         AbsoluteGaloisGroup,
@@ -2024,83 +2522,158 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return AbsoluteGaloisGroup(self)
 
     class NoZeroDivisors(CategoryWithAxiom):
-        r"""Domains: rings in which ``xy = 0`` forces ``x = 0`` or ``y = 0``."""
+        r"""Rings in which ``xy = 0`` forces ``x = 0`` or ``y = 0``.
+
+        This axiom allows the zero ring. Nontriviality is the separate
+        ``Nontrivial`` axiom, and commutativity is not assumed.
+        """
 
         @classmethod
         def _repr_object_names(cls):
-            return "domains"
+            return "rings without zero divisors"
 
         def an_object(self):
             r"""The integers."""
             return _own_ring(SageZZ)
 
-        class Commutative(CategoryWithAxiom):
-            r"""Integral domains, spelled as Sage spells them: ``Domains().Commutative()``."""
+        class ParentMethods:
+            def _reducedness_decision(self):
+                r"""The zero-product axiom excludes nonzero positive-power nilpotents.
+
+                Induction on the positive exponent proves the assertion
+                without commutativity or nontriviality; the zero ring also
+                satisfies it. This supplies the inherited nonunital-semiring
+                predicate and needs no ideal or radical computation.
+                """
+                return True
+
+        class Nontrivial(CategoryWithAxiom):
+            r"""Nontrivial rings without zero divisors, with no commutativity assumption."""
 
             @classmethod
             def _repr_object_names(cls):
-                return "integral domains"
+                return "nontrivial rings without zero divisors"
 
             def an_object(self):
-                r"""The integers."""
+                r"""The integers, whose zero and one are distinct."""
                 return _own_ring(SageZZ)
 
             class ParentMethods:
-                def fractional_ideal(self, *module_generators):
-                    r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
-                    from dzack_research.preamble.categories.modules.fractional_ideals import (
-                        _fractional_ideal,
-                    )
-
-                    if len(module_generators) == 1 and isinstance(
-                        module_generators[0], (tuple, list)
-                    ):
-                        module_generators = tuple(module_generators[0])
-                    return _fractional_ideal(self, tuple(module_generators))
-
                 @cached_method
                 def nonzero_multiplicative_submonoid(self):
-                    r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
+                    r"""Return the multiplicative submonoid ``R - {0}`` of this ring.
+
+                    Nontriviality puts one in this subset; the zero-product
+                    axiom makes it closed under multiplication. A ring map
+                    restricts to these submonoids only when it preserves
+                    nonzero elements.
+                    """
                     from dzack_research.preamble.categories.rings.commutative_algebra import (
                         _nonzero_element_submonoid,
                     )
 
                     return _nonzero_element_submonoid(self)
 
-                @cached_method
-                def fraction_field_localization(self):
-                    r"""Return the represented localization ``(R-{0})^-1 R``."""
-                    from dzack_research.preamble.categories.rings.commutative_algebra import (
-                        _localization_at_submonoid,
-                    )
+        class Commutative(CategoryWithAxiom):
+            r"""Commutative rings satisfying the zero-product axiom.
 
-                    if self in OwnedRings().Division().Commutative():
-                        return self
-                    return _localization_at_submonoid(
-                        self,
-                        self.nonzero_multiplicative_submonoid(),
-                    )
+            This intersection still allows the zero ring. Integral domains
+            are its existing ``Nontrivial`` refinement; nonzero denominators
+            and fraction fields require that additional hypothesis.
+            """
 
-                @cached_method
-                def fraction_field_map(self):
-                    r"""Return the localization map ``R -> Frac(R)``.
+            @classmethod
+            def _repr_object_names(cls):
+                return "commutative rings without zero divisors"
 
-                    This is the localization of ``R`` at its nonzero elements, so it is
-                    injective exactly because ``R`` is a domain.  Scalar extension along
-                    it is the generic fibre: a module dies under it exactly on its
-                    torsion, and an ideal extends along it to the unit ideal exactly
-                    when it is nonzero.
-                    """
-                    if self in OwnedRings().Division().Commutative():
-                        return self.Mor(self).identity()
-                    localization = self.fraction_field_localization()
-                    return (
-                        localization.fraction_field_comparison()
-                        * localization.localization_map()
-                    )
+            def an_object(self):
+                r"""The integers."""
+                return _own_ring(SageZZ)
+
+            class Nontrivial(CategoryWithAxiom):
+                r"""Integral domains: nonzero commutative rings without zero divisors.
+
+                The inherited arrows remain all unital ring maps. The
+                fraction-field operations below construct objects and their
+                canonical injections; they do not assert a functor on every
+                domain map, since a noninjective map need not extend to
+                fraction fields.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "integral domains"
+
+                def an_object(self):
+                    r"""The integers."""
+                    return _own_ring(SageZZ)
+
+                class ParentMethods:
+                    def fractional_ideal(self, *module_generators):
+                        r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
+                        from dzack_research.preamble.categories.modules.fractional_ideals import (
+                            _fractional_ideal,
+                        )
+
+                        if len(module_generators) == 1 and isinstance(
+                            module_generators[0], (tuple, list)
+                        ):
+                            module_generators = tuple(module_generators[0])
+                        return _fractional_ideal(self, tuple(module_generators))
+
+                    @cached_method
+                    def fraction_field_localization(self):
+                        r"""Return the target of the localization ``(R-{0})^-1 R``.
+
+                        For a field the target is this same field. Otherwise
+                        the existing localization owner retains the source,
+                        nonzero submonoid and selected field realization.
+                        """
+                        from dzack_research.preamble.categories.rings.commutative_algebra import (
+                            _localization_at_submonoid,
+                        )
+
+                        if self in OwnedRings().Division().Commutative():
+                            return self
+                        return _localization_at_submonoid(
+                            self,
+                            self.nonzero_multiplicative_submonoid(),
+                        )
+
+                    @cached_method
+                    def fraction_field_map(self):
+                        r"""Return the localization map ``R -> Frac(R)``.
+
+                        Scalar extension along it is the generic fibre: its
+                        kernel on a module is exactly the torsion submodule.
+                        An ideal extends to the unit ideal exactly when it
+                        is nonzero. The source is nontrivial, so ``R-{0}``
+                        contains the multiplicative identity.
+                        """
+                        if self in OwnedRings().Division().Commutative():
+                            return OwnedRings().Mor(self, self).identity()
+                        localization = self.fraction_field_localization()
+                        return (
+                            localization.fraction_field_comparison()
+                            * localization.localization_map()
+                        )
+
+                    def fraction_field(self):
+                        r"""Return the fraction field through its nonzero-element localization."""
+                        if self in OwnedRings().Division().Commutative():
+                            return self
+                        return self.fraction_field_localization().fraction_field_realization()
 
     class Noetherian(CategoryWithAxiom):
-        r"""Noetherian rings: the ascending chain condition on ideals."""
+        r"""Rings satisfying the ascending chain condition on left ideals.
+
+        Following Mathlib's ``IsNoetherianRing R = IsNoetherian R R``,
+        this says that the left regular module is Noetherian, equivalently
+        every left ideal is finitely generated. In the commutative case
+        this is the usual Noetherian condition. The property admits the
+        zero ring and supplies no chosen ideal generators or right-module
+        Noetherian hypothesis.
+        """
 
         @classmethod
         def _repr_object_names(cls):
@@ -2111,7 +2684,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _own_ring(SageZZ)
 
     class Artinian(CategoryWithAxiom):
-        r"""Artinian rings: the descending chain condition on ideals."""
+        r"""Left Artinian rings: the descending chain condition on left ideals.
+
+        The left regular module is Artinian (Mathlib ``IsArtinianRing R``).
+        In the commutative case this is the usual Artinian condition. The
+        zero ring is allowed; no right-module condition or selected
+        composition series is part of this axiom.
+        """
 
         @classmethod
         def _repr_object_names(cls):
@@ -2122,7 +2701,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return GF(2)
 
         def extra_super_categories(self):
-            r"""Hopkins–Levitzki: an artinian ring is noetherian."""
+            r"""Hopkins–Levitzki: a left Artinian unital ring is left Noetherian."""
             return [OwnedRings().Noetherian()]
 
     class Commutative(CategoryWithAxiom):
@@ -2135,15 +2714,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def an_object(self):
             r"""The integers."""
             return _own_ring(SageZZ)
-
-        @cached_method
-        def square_class_group(self):
-            r"""``R |-> R^×/(R^×)^2 : CRing -> Grp``, the square-class group functor."""
-            from dzack_research.preamble.categories.rings.square_classes import (
-                SquareClassGroupFunctor,
-            )
-
-            return SquareClassGroupFunctor()
 
         class SubcategoryMethods:
             def Local(self):
@@ -2175,11 +2745,26 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._with_axiom("Complete")
 
             class ParentMethods:
+                @cached_method
                 def local_ring_construction(self):
+                    r"""Return the fixed local quotient, with the canonical field default.
+
+                    Explicitly supplied local data keep their exact ideal,
+                    residue field and map. Without such data, a field has
+                    canonical residue field itself and quotient map the ring
+                    identity. Its zero maximal ideal is computed independently
+                    on demand, so reading the field or map needs no ideal
+                    computation.
+                    """
                     construction = self._selected_local_ring_construction()
+                    if construction is None and self in OwnedRings().Division().Commutative():
+                        construction = LocalRingConstruction(
+                            maximal_ideal_factory=lambda: self.ideal(self.zero()),
+                            residue_field=self,
+                            residue_map_factory=lambda: OwnedRings().Mor(self, self).identity(),
+                        )
                     assert construction is not None, (
-                        f"{self} is in the category of local rings that are not fields, but its maximal ideal and "
-                        "residue field are missing"
+                        f"the local ring {self} has no selected maximal-ideal and residue-field data"
                     )
                     return construction
 
@@ -2197,6 +2782,20 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     )
                     return selected
 
+                def _field_decision(self):
+                    r"""A local ring is a field exactly when its maximal ideal is zero."""
+                    construction = self._selected_local_ring_construction()
+                    if construction is None:
+                        return super()._field_decision()
+                    from dzack_research.preamble.categories.rings.commutative_ideals import (
+                        CommutativeIdeals,
+                    )
+
+                    maximal_ideal = construction.maximal_ideal()
+                    if maximal_ideal not in CommutativeIdeals(self):
+                        return super()._field_decision()
+                    return maximal_ideal.is_zero()
+
             class Complete(CategoryWithAxiom):
                 r"""Complete local rings: complete and separated for the maximal-ideal topology."""
 
@@ -2209,8 +2808,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return _own_ring(SageZZ).adic_completion(2)
 
                 def extra_super_categories(self):
-                    r"""The maximal ideal is the ideal of definition, so the datum is determined."""
+                    r"""The maximal ideal supplies a canonical complete adic structure.
+
+                    An independently chosen ideal of definition is retained
+                    when supplied; it need not be the maximal ideal.
+                    """
                     return [OwnedAdicallyCompleteRings()]
+
+                class ParentMethods:
+                    @RealizationHook
+                    def _selected_adic_defining_ideal(self):
+                        r"""Supply the canonical maximal-adic datum to ``ideal_of_definition``.
+
+                        An owned realization's explicit selected-ideal
+                        supplier takes precedence over this default.
+                        """
+                        return self.maximal_ideal()
 
         class PrincipalIdeals(CategoryWithAxiom):
             r"""Principal ideal rings: every ideal is principal (Mathlib's ``IsPrincipalIdealRing``)."""
@@ -2228,60 +2841,262 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return [OwnedRings().Noetherian()]
 
         class ParentMethods:
-            def nilradical(self):
-                r"""Return the nilradical ``sqrt((0))`` of this commutative ring."""
+            @RealizationHook
+            def _nilradical_decision(self):
+                r"""Supply the common nonunital-semiring nilradical from this ideal owner."""
                 return self.ideal(self.zero()).radical()
 
-            def _reducedness_decision(self) -> bool:
+            def affine_equation_family(self, relative_variables, equations):
+                r"""Return ``Spec(self[x]/I) -> Spec(self)`` for the stated equations.
+
+                This construction needs a commutative unital coefficient
+                ring; no additional choice of an algebra structure is used.
+                """
+                from dzack_research.preamble.categories.schemes.families import (
+                    _relative_affine_family,
+                )
+
+                return _relative_affine_family(self, relative_variables, equations)
+
+            @RealizationHook
+            def _reducedness_decision(self) -> bool | Predicate:
                 r"""Return whether this commutative ring has zero nilradical."""
                 zero_ideal = self.ideal(self.zero())
                 return self.nilradical() == zero_ideal
 
-            def is_reduced(self) -> bool:
-                return self._reducedness_decision()
+            @RealizationHook
+            def _normality_decision(self):
+                r"""Protected normality decision, whose only caller is is_normal.
+
+                Owned realizations and more specific categories may decide the
+                local-normal-domain predicate. Otherwise retain that proposition;
+                no computed normalization or finite presentation is presumed.
+                """
+                return AtomicProposition("is_normal", self)
+
+            def is_normal(self):
+                r"""Whether every prime localization is a normal domain.
+
+                This is the definition for a general commutative ring
+                (Stacks, Section 10.37, Definition 10.37.11). Normal domains
+                are integrally closed in their fraction fields. The zero ring
+                has no prime ideals; fields already satisfy the definition.
+                """
+                if (self.one() == self.zero()) is True:
+                    return True
+                if self in OwnedRings().Division().Commutative():
+                    return True
+                return self._normality_decision()
+
+            @RealizationHook
+            def _normalization_data(self):
+                r"""A retained normalization construction, or no selected computation.
+
+                Protected computation contract for ``normalization``,
+                ``normalization_map``, ``normalization_components``,
+                ``conductor_ideal`` and this ring's coefficient-dependent
+                ``delta_invariant``, for the finite-localization producer
+                reading its source's retained data, and for
+                ``LocalizationRings._normality_decision``. The convention is
+                ``A -> A_red -> B``, where ``B`` is the integral closure of
+                ``A_red`` in its total quotient ring in the represented case
+                of finitely many minimal primes (Stacks, Tag 035P).
+
+                A producer retains those two maps, their composite, the
+                normalized component domains and maps, and an actual module
+                ``N`` realizing ``Res_nu(B)``. The map ``A -> N`` sends one
+                to the unit; its cokernel is ``B/image(A)`` as an A-module.
+                Any coefficient field map used for delta is retained data.
+                A bare ring does not select such a field.
+
+                Finite component data do not assert that ``B`` is a finite
+                A-module. Only a producer establishing that stronger
+                hypothesis may supply finite presentation or finite-algebra
+                placement. The default provides neither a computation nor
+                a finiteness assertion.
+                """
+                return None
 
             @cached_method
-            def square_class_group(self):
-                r"""Return ``R^×/(R^×)^2``, the cokernel of squaring on the unit group.
+            def normalization_map(self):
+                r"""Return the retained ``A -> A_red -> normalization(A_red)``.
 
-                For a field ``K`` this is the codomain of the spinor norm of a
-                quadratic space over ``K`` (Gritsenko--Hulek--Sankaran,
-                *Abelianisation of orthogonal groups*, arXiv:0810.1614, §1).
+                Its kernel is the nilradical. It is injective for reduced
+                input, and is finite only under an additional finiteness
+                hypothesis on the normalization. This convention differs
+                from taking the integral closure of a nonreduced ``A`` in
+                its own total quotient ring.
                 """
-                from dzack_research.preamble.categories.rings.square_classes import (
-                    _square_class_group,
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization construction with its component and module data is represented for {self}"
                 )
+                return data.normalization_map
 
-                return _square_class_group(self)
+            @cached_method
+            def normalization(self):
+                r"""Return the target of this ring's retained normalization map."""
+                return self.normalization_map().codomain()
 
-            def krull_dimension(self):
+            def normalization_components(self):
+                r"""Return the retained normalized components and their maps from A.
+
+                The selected finite family consists of triples
+                ``(minimal_prime_of_A, normal_component, A_to_component)``.
+                The construction retains their projections from the common
+                normalization target as well. No finite enumeration is
+                inferred for an arbitrary commutative ring.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalized component construction is represented for {self}"
+                )
+                return data.components
+
+            @cached_method
+            def conductor_ideal(self):
+                r"""Return ``Ann_A(B/image(A))`` for the retained normalization.
+
+                Equivalently this is ``{a : nu(a) B <= image(nu)}``, an ideal
+                of the original ``A``. Under the reduction convention it
+                contains the nilradical; for reduced input it is the usual
+                conductor ``(A :_A B)``.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization quotient module is represented for {self}"
+                )
+                return data.normalization_cokernel.annihilator()
+
+            @cached_method
+            def delta_invariant(self, base_field_map=None):
+                r"""Return the retained coefficient dimension of ``B/image(A)``.
+
+                The normalization construction retains an actual field map
+                ``c:k -> A`` on this commutative ring, independently of an
+                ambient algebra base. With no argument this is
+                ``dim_k(Res_c(B/image(A)))``, including an infinite dimension when
+                the module owner represents it. For reduced input the quotient is
+                the usual ``B/A``. A quotient's immediate algebra base may be its
+                polynomial presentation ring; it does not replace this chosen ``k``.
+
+                An optional actual ``base_field_map:F -> k`` asks for a second
+                scalar restriction, hence dimension for the composite ``F -> k -> A``.
+                For example a one-dimensional quotient over a quadratic field over
+                QQ has dimension two along that supplied field inclusion. Both maps
+                and the module are retained by the restriction constructors. No
+                factorization of an arbitrary map ``F -> A`` is guessed, and a
+                dimension algorithm for every alternate field is not presumed.
+                """
+                data = self._normalization_data()
+                assert data is not None, (
+                    f"no normalization construction with a coefficient action is represented for {self}"
+                )
+                coefficient_map = data.coefficient_map
+                assert coefficient_map is not None, (
+                    f"the normalization of {self} has no retained coefficient field map"
+                )
+                field = _owned_ring(coefficient_map.domain())
+                assert (
+                    field in OwnedFields()
+                    and coefficient_map.codomain() is self
+                    and coefficient_map in OwnedRings().Mor(field, self)
+                ), (
+                    f"delta for {self} requires its retained unital ring map from an actual field"
+                )
+                quotient = data.normalization_cokernel.restrict_scalars(coefficient_map)
+                if base_field_map is not None:
+                    alternate_field = _owned_ring(base_field_map.domain())
+                    assert (
+                        alternate_field in OwnedFields()
+                        and base_field_map.codomain() is field
+                        and base_field_map in OwnedRings().Mor(alternate_field, field)
+                    ), f"the alternate coefficient map must be an actual field map into {field}"
+                    quotient = quotient.restrict_scalars(base_field_map)
+                return quotient.dimension()
+
+            @RealizationHook
+            def _krull_dimension_decision(self):
+                r"""Supply the common prime-chain dimension from the selected ring model.
+
+                The inherited krull_dimension operation calls this hook.
+                More specific categories and owned realizations retain their
+                selected computations. This default keeps the existing exact
+                ring-engine route, including its explicit availability frontier.
+                """
+                assert (self.one() == self.zero()) is not True, (
+                    "the empty prime spectrum has Krull dimension -infinity; "
+                    "an owned extended-dimension representation is not yet supplied"
+                )
                 return _engine_krull_dimension(self)
 
+            @cached_method(key=lambda self, base_ring: id(_own_ring(base_ring)))
             def as_algebra_over(self, base_ring):
+                r"""Read this ring through its selected canonical coefficient map.
+
+                A commutative target makes any unital map from a
+                commutative coefficient ring central. The selected scalar
+                tower, the identity, and the unique integer map supply such
+                maps without a foreign realization. A native coercion is
+                used only when its two parents realize the actual endpoints;
+                a larger computation model supplies no coefficient action
+                on a proper subring. Use an explicit central ring map and
+                its ``as_algebra`` operation to select another action.
+                """
                 base = _own_ring(base_ring)
                 from dzack_research.preamble.categories.algebras.algebras import (
                     Algebras,
                 )
 
-                selected = Algebras(base).Associative().Unital().Commutative()
-                match (self.base_ring() is base, self in selected):
-                    case (True, True):
-                        return self
-                    case _:
-                        pass
-                engine = _engine_ring(self)
-                if not engine.has_coerce_map_from(_engine_ring(base)):
-                    raise ValueError(
-                        f"{self} is not an algebra over {base}: there is no canonical ring morphism {base} -> {self}"
+                if base not in OwnedRings().Commutative():
+                    raise TypeError(
+                        f"an algebra over {base} requires a commutative coefficient ring"
                     )
-                match base is self:
-                    case True:
-                        structure_map = self.Mor(self).identity()
-                    case False:
-                        structure_map = base.Mor(self)(
-                            engine.coerce_map_from(_engine_ring(base))
-                        )
-                return structure_map.as_algebra()
+                selected = Algebras(base).Associative().Unital().Commutative()
+                if self.base_ring() is base and self in selected:
+                    return self
+                if base is self:
+                    return OwnedRings().Mor(self, self).identity().as_algebra()
+                if base is _owned_integers():
+                    return self.as_ZZ_algebra()
+
+                current = self
+                coefficient_map = OwnedRings().Mor(self, self).identity()
+                seen = set()
+                while id(current) not in seen:
+                    seen.add(id(current))
+                    current_base = current.base_ring()
+                    if current_base is current or current_base not in OwnedRings():
+                        break
+                    current_algebras = Algebras(current_base).Associative().Unital().Commutative()
+                    if current not in current_algebras:
+                        break
+                    selected_map = current.algebra_structure_morphism()
+                    assert selected_map.domain() is current_base and selected_map.codomain() is current, (
+                        "the selected coefficient map of a commutative algebra must retain "
+                        "its literal coefficient and algebra endpoints"
+                    )
+                    coefficient_map = coefficient_map * selected_map
+                    if current_base is base:
+                        return coefficient_map.as_algebra()
+                    current = current_base
+
+                engine = self._selected_engine_ring()
+                base_engine = base._selected_engine_ring()
+                assert (
+                    engine is not None and base_engine is not None
+                    and _own_ring(engine) is self and _own_ring(base_engine) is base
+                ), (
+                    f"no canonical coefficient map {base} -> {self} is supplied by the retained "
+                    "scalar tower or exact native endpoints; state the chosen ring map and use its as_algebra"
+                )
+                engine_map = engine.coerce_map_from(base_engine)
+                if engine_map is None:
+                    raise ValueError(
+                        f"no canonical coefficient map {base} -> {self} is supplied by the retained "
+                        "scalar tower or exact native realization; an explicit ring map may state another action"
+                    )
+                return OwnedRings().Mor(base, self)(engine_map).as_algebra()
 
             def affine_spectrum(self, base_ring=None):
                 r"""Return the affine scheme represented by this commutative ring or algebra."""
@@ -2291,11 +3106,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _affine_spectrum(self, base_ring=base_ring)
 
-            def as_ZZ_algebra(self):
-                return self.as_algebra_over(_own_ring(SageZZ))
+            @RealizationHook
+            def _ideal_generated_by(self, generators):
+                r"""Supply the inherited two-sided ideal from owned commutative-ideal data.
 
-            def ideal(self, *generators):
-                r"""Return the ideal of this ring generated by the elements given.
+                The common rng-ideal constructor is the caller;
+                its tuple consists of elements of this exact ring. The result
+                retains the ordinary ideal's inclusion in this ring's regular
+                module. Commutativity makes every ordinary ideal two-sided.
 
                 In a localization every denominator is a unit, so
                 ``(a_1/s_1, ..., a_r/s_r)`` is the extension of the source ideal
@@ -2311,8 +3129,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     _commutative_ideal,
                 )
 
-                if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
-                    generators = tuple(generators[0])
                 if self in LocalizationRings():
                     source = self.localization_source()
                     numerators = tuple(
@@ -2320,9 +3136,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         for generator in generators
                     )
                     return source.ideal(*numerators).extension_to_localization(self)
-                return _commutative_ideal(self, tuple(generators))
+                return _commutative_ideal(self, generators)
 
-            def quotient_ring(self, ideal):
+            @RealizationHook
+            def _quotient_ring_construction(self, ideal):
+                r"""Supply the common ring quotient from its owned commutative ideal.
+
+                The inherited quotient_ring operation is the caller. Its
+                represented ideal or generator input is interpreted by the
+                existing ideal owner in this exact ring. Every such ideal is
+                two-sided, so the quotient retains this ring as its source
+                and its actual kernel and canonical projection.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     _owned_ideal,
                     _quotient_ring,
@@ -2352,15 +3177,30 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _residue_field_at(self, ideal)
 
-            def dual_numbers(self, name="epsilon"):
-                r"""Return ``self[epsilon]/(epsilon^2)``."""
+            @RealizationHook
+            def _dual_numbers_construction(self, name):
+                r"""Supply the inherited semiring dual numbers from the retained quotient.
+
+                The common semiring dual_numbers operation is the caller.
+                The existing commutative-algebra constructor retains its
+                actual coefficient ring, quotient source, defining ideal,
+                parameter and selected rank-two module coordinates.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     _dual_numbers,
                 )
 
                 return _dual_numbers(self, name=name)
 
-            def adic_completion(self, ideal, precision=20):
+            @RealizationHook
+            def _adic_completion_construction(self, ideal, precision):
+                r"""Supply the common ring completion from its selected adic construction.
+
+                The inherited adic_completion operation is the caller. The
+                existing commutative construction keeps its source, defining
+                ideal, completion map and quotient projections, with only
+                the completeness refinements its represented case proves.
+                """
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     AdicCompletions,
                 )
@@ -2383,6 +3223,83 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     topology_data=_PrimeSpectrumTopologyData(self),
                 )
 
+            @RealizationHook
+            def _finite_irreducible_components(self):
+                r"""Protected finite component-ring computation, or None.
+
+                Only irreducible_components calls this hook. An owned ring
+                realization may retain a finite set of component domains R/p
+                for its minimal primes, including their selected presentations.
+                These are the same ring-valued objects represented by the
+                public operation's general image of the minimal-prime locus.
+                The separately named irreducible_component_locus consists of
+                closed subsets of the prime spectrum.
+                """
+                return None
+
+            @cached_method
+            def irreducible_components(self):
+                r"""The component domains ``R/p`` indexed by the minimal primes.
+
+                A selected finite computation retains its quotient-ring
+                presentations. Otherwise this is the image of the full
+                minimal-prime locus under ``p |-> R/p``; no finite generation
+                or enumeration of prime ideals is inferred. Evaluation at a
+                particular prime still requires that ideal-subset quotient
+                construction to be represented. The closed subsets ``V(p)``
+                themselves are returned by irreducible_component_locus.
+                """
+                components = self._finite_irreducible_components()
+                if components is not None:
+                    return components
+                # A selected finite minimal-prime family already determines
+                # the actual component rings R/p. Do not discard this finite
+                # construction merely because no separate component hook was
+                # installed; each quotient keeps the literal source R.
+                minimal = self._finite_minimal_primes()
+                if minimal is not None:
+                    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                    return finite_ordered_set(tuple(self.quotient_ring(prime) for prime in minimal))
+                from dzack_research.preamble.categories.sets.set_categories import Sets
+
+                return Sets().image_set(
+                    lambda minimal_prime: self.quotient_ring(minimal_prime),
+                    self.minimal_prime_locus(),
+                )
+
+            @RealizationHook
+            def _total_quotient_map_decision(self):
+                r"""Protected selected regular-element localization map, or None.
+
+                Only total_quotient_map calls this hook. An owned realization
+                or more specific category returns an owned ring morphism from
+                this exact ring to its total quotient ring, retaining the
+                canonical injection and its target together. It must establish
+                the hypotheses of its localization computation; a product of
+                component fields requires the corresponding finite reduced case.
+                """
+                return None
+
+            @cached_method
+            def total_quotient_map(self):
+                r"""The canonical injection into the localization at all regular elements."""
+                if (self.one() == self.zero()) is True:
+                    return OwnedRings().Mor(self, self).identity()
+                if self.is_finite() is True:
+                    # Multiplication by a regular element is injective on
+                    # this finite set, hence surjective; every regular
+                    # element is already a unit, including in nonreduced rings.
+                    return OwnedRings().Mor(self, self).identity()
+                if self in OwnedIntegralDomains():
+                    return self.fraction_field_map()
+                morphism = self._total_quotient_map_decision()
+                assert morphism is not None, (
+                    f"the total quotient ring of {self} is defined, but no regular-element localization "
+                    "computation is available for this ring"
+                )
+                return morphism
+
             def total_quotient_ring(self):
                 r"""Return ``Q(R) = S^{-1}R`` for ``S`` the regular elements of ``R``.
 
@@ -2393,44 +3310,72 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 the fraction field.
                 """
 
-                assert self in OwnedRings().Commutative().NoZeroDivisors(), (
-                    f"the total quotient ring of {self} is computed here only for an integral domain, where it is "
-                    f"Frac(R), but {self} is not known to be an integral domain"
-                )
-                return self.fraction_field()
+                return self.total_quotient_map().codomain()
 
         class ElementMethods:
-            def is_regular(self) -> bool:
-                r"""Return whether this scalar is a non-zerodivisor.
+            def _regularity_decision(self):
+                r"""Supply the magma regularity predicate by ring ideal computations.
 
                 Multiplication by ``r`` is injective exactly when nothing
                 nonzero is killed by it, that is when the colon ideal
                 ``(0 : r)`` is zero.  Over a domain that reduces to being
                 nonzero, which is a theorem about domains rather than a second
-                definition.
+                definition. In the zero ring its sole element is regular,
+                since its multiplication map on the singleton is injective.
                 """
 
                 ring = self.parent()
-                if ring in OwnedRings().Commutative().NoZeroDivisors():
-                    return not self.is_zero()
+                if (ring.one() == ring.zero()) is True:
+                    return True
+                if ring in OwnedIntegralDomains():
+                    return negation(self.is_zero())
                 zero_ideal = ring.ideal(ring.zero())
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        @cached_method
+        def as_ZZ_algebra(self):
+            r"""Read this unital ring with its unique central integer action.
+
+            The map sends ``n`` to ``n*1``. Its nonnegative part is the
+            existing initial semiring map, and additive inverses determine
+            its values on negative integers. This applies to noncommutative
+            rings and the zero ring, without a centre computation or a
+            selected foreign engine. An existing selected ZZ-algebra keeps
+            its literal parent and scalar data.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            integers = _owned_integers()
+            if self.base_ring() is integers and self in Algebras(integers).Associative().Unital():
+                return self
+            natural_map = OwnedSemirings().initial_morphism(self)
+
+            def image(integer):
+                value = int(integer)
+                return natural_map(value) if value >= 0 else -natural_map(-value)
+
+            return OwnedRings().Mor(integers, self)(image).as_algebra()
+
         def _integral_domain_decision(self):
             return AtomicProposition("is_integral_domain", self)
 
         def is_integral_domain(self):
+            r"""Return whether this is a nonzero commutative ring without zero divisors."""
             match self:
-                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                case _ if self in OwnedIntegralDomains():
                     return True
+                case _ if self in OwnedRings().NoZeroDivisors().Commutative():
+                    return negation(self.one() == self.zero())
                 case _:
                     return self._integral_domain_decision()
 
         def is_noetherian(self):
+            r"""Return whether the left regular module is Noetherian."""
             return True if self in OwnedRings().Noetherian() else AtomicProposition("is_noetherian", self)
 
         def is_artinian(self):
+            r"""Return whether the left regular module is Artinian."""
             return True if self in OwnedRings().Artinian() else AtomicProposition("is_artinian", self)
 
         def is_local(self):
@@ -2447,23 +3392,35 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return self._field_decision()
 
         def _selected_local_ring_construction(self):
-            r"""Return an installed local-ring datum, or ``None``.
+            r"""Return selected local-ring quotient data, or ``None``.
 
-            Protected ring-construction contract under OWN-05. Ordinary local
-            rings such as fields and prime localizations compute their residue
-            data through their mathematical owners and therefore return
-            ``None`` here. Native/adically completed/dual-number parents that
-            retain a selected maximal-ideal quotient override this endpoint.
+            Protected ring-construction contract under OWN-05. The callers
+            are the local-ring datum accessor, the local field decision,
+            and the local-ring installation adapter. A construction owner returns
+            a ``LocalRingConstruction`` for this exact ring: its selected
+            maximal ideal, the owned residue field, and its quotient map when
+            selected. The local field decision uses the ideal's zero predicate
+            only when that datum is an owned commutative ideal.
+            Fixed factories may compute these data independently on demand.
+            ``None`` means no such datum is selected; it does not deny locality.
+            Native/completed parents retain installed values, while a prime
+            localization supplies its actual source-quotient construction.
             """
             return None
 
         def _selected_engine_ring(self):
             r"""Return the private computation parent selected for this ring.
 
-            Protected ring-realization contract under OWN-05--07.  The only
-            permitted callers are the ring owner's lowering/raising dispatchers
-            and ring-local computation adapters after a mathematical operation
-            has already been selected.  A ring with no separate foreign
+            Protected ring-realization contract under OWN-05--07. Permitted
+            callers are the ring owner's lowering/raising dispatchers,
+            ring-local computation adapters, and the existing cardinality
+            and selected-presentation field-rank/Smith computation suppliers.
+            The canonical coefficient-map selector and scalar-action algebra
+            view constructor may retain this optional realization as well.
+            These optional suppliers retain ``None`` when a construction
+            has no selected model; required engine computations enter through
+            ``_engine_ring``, which asserts at that frontier. No model is
+            queried to infer a mathematical category. A ring with no separate foreign
             realization computes in its owned parent itself; engine-backed
             constructions override this method at their construction owner.
             Raw computation parents never leave those adapters.
@@ -2516,6 +3473,65 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return _polynomial_ring(self, *args, **kwargs)
 
+        @RealizationHook
+        def _quotient_ring_construction(self, ideal):
+            r"""Protected selected quotient by a two-sided ideal, or None.
+
+            Only quotient_ring calls this hook. Its ideal or represented
+            generator input is interpreted in this exact ring. A supplier
+            retains the two-sided ideal, the quotient ring and its canonical
+            source map with that kernel. An arbitrary left ideal does not
+            suffice. None means that no such quotient construction is
+            represented; no smaller mathematical input domain is inferred.
+            """
+            return None
+
+        def quotient_ring(self, ideal):
+            r"""Return the unital quotient ring by the specified two-sided ideal.
+
+            The additive quotient carries multiplication because the ideal
+            absorbs multiplication from both sides. Its canonical map has
+            this exact source and the given ideal as kernel; commutativity
+            is unnecessary. Selected generator input denotes its generated
+            two-sided ideal. A mere left ideal does not define a quotient ring.
+            """
+            result = self._quotient_ring_construction(ideal)
+            assert result is not None, (
+                f"the quotient ring of {self} by a two-sided ideal is defined, "
+                "but this exact ideal and canonical-map construction is not represented"
+            )
+            return result
+
+        @RealizationHook
+        def _adic_completion_construction(self, ideal, precision):
+            r"""Protected selected inverse limit of the quotients ``R/I^n``, or None.
+
+            Only adic_completion calls this hook. The input is a represented
+            two-sided ideal (or its generator input) of this exact ring and
+            the requested computation precision. A supplier retains the
+            source, ideal, canonical completion map and quotient projections.
+            Completeness for the extended ideal is a separate assertion;
+            it is not inferred for arbitrary infinitely generated ideals.
+            None supplies no selected inverse-limit computation.
+            """
+            return None
+
+        def adic_completion(self, ideal, precision=20):
+            r"""Return ``lim_n R/I^n`` for the specified two-sided ideal.
+
+            Every transition and source map is a unital ring map; this
+            definition needs no commutativity. Precision selects computation
+            data for that limit. Identifying its inverse-limit topology with
+            the topology of the extended ideal requires further hypotheses;
+            the returned construction carries only established refinements.
+            """
+            result = self._adic_completion_construction(ideal, precision)
+            assert result is not None, (
+                f"the adic inverse limit of {self} is defined for a two-sided "
+                "ideal, but this source, ideal and completion-map construction is not represented"
+            )
+            return result
+
         def laurent_polynomial_ring(self, *args, **kwargs):
             r"""Return the Laurent polynomial ring over this ring with the stated variables."""
             from dzack_research.preamble.categories.algebras.free_algebras import (
@@ -2563,11 +3579,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 
             return self.free_module(exponent)
-
-        @cached_method
-        def unit_group(self):
-            r"""Return ``self^×``, the group of units of this ring."""
-            return _unit_group(self)
 
         @cached_method
         def regular_module(self):
@@ -2698,6 +3709,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 )
             return rings.Mor(self, codomain)
 
+        @RealizationHook
         def _cardinality_decision(self):
             r"""Return the exact represented cardinal of the underlying set."""
             from dzack_research.preamble.categories.sets.cardinals import (
@@ -2710,11 +3722,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 case _ if category.is_subcategory(owned_sets.FiniteSets()):
                     from sage.rings.integer_ring import ZZ as SageZZ
 
+                    engine = self._selected_engine_ring()
+                    if engine is None or engine is self:
+                        # A finite ring can be realized on its own module
+                        # data. Its inherited cardinality is this operation,
+                        # so only a distinct selected engine supplies a
+                        # native count here.
+                        return super()._cardinality_decision()
                     integers = _own_ring(SageZZ)
                     return cardinal(
                         _owned_engine_element(
                             integers,
-                            SageZZ(_engine_ring(self).cardinality()),
+                            SageZZ(engine.cardinality()),
                         )
                     )
                 case _ if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
@@ -2753,8 +3772,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             In a framed algebra it is enough to commute with the selected
             algebra generators: scalar coefficients are central and the
             commuting relation is preserved by sums and products.  In an
-            endomorphism algebra a represented scalar map ``r id`` is central
-            because every linear ``h`` satisfies ``h(r x) = r h(x)``.
+            endomorphism algebra a map ``r id`` represented in that exact
+            algebra's scalar action is central because every admitted ``h``
+            satisfies ``h(r x) = r h(x)``. A scalar map for a stronger module
+            theory does not establish centrality in a weaker additive End.
             """
             match element in self:
                 case False:
@@ -2780,7 +3801,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     )
 
                     match self:
-                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element) is not None:
+                        case _ if self in AdditiveEndomorphismRings(self.base_ring()) and _scalar_identity_coefficient(element, self) is not None:
                             return True
                         case _:
                             assert False, (
@@ -2799,17 +3820,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 "z commutes with every element",
                 OwnedRings().Commutative(),
             )
-
-        def fraction_field(self):
-            r"""Return the fraction field through its nonzero-element localization."""
-            if self in OwnedRings().Division().Commutative():
-                return self
-            if self not in OwnedRings().Commutative().NoZeroDivisors():
-                raise ValueError(
-                    f"{self} is not an integral domain, so it has no fraction field; "
-                    "inverting its regular elements is the total quotient-ring construction"
-                )
-            return self.fraction_field_localization().fraction_field_realization()
 
 
 class OwnedOrderedRings(OwnedCategory):
@@ -2833,17 +3843,21 @@ class OwnedOrderedRings(OwnedCategory):
 
 
 def OwnedIntegralDomains():
-    r"""``OwnedRings().Commutative().NoZeroDivisors()``, the session name for integral domains."""
-    return OwnedRings().Commutative().NoZeroDivisors()
+    r"""The nontrivial commutative rings satisfying the zero-product axiom."""
+    return OwnedRings().Commutative().NoZeroDivisors().Nontrivial()
 
 
 def OwnedPrincipalIdealDomains():
-    r"""``OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()``, the session name for PIDs."""
-    return OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+    r"""The integral domains in which every ideal is principal."""
+    return OwnedIntegralDomains().PrincipalIdeals()
 
 
 def _engine_krull_dimension(ring):
-    return _krull_dimension_of_engine(_engine_ring(ring))
+    engine = _engine_ring(ring)
+    assert engine is not ring, (
+        f"no exact Krull-dimension algorithm is selected for the retained realization of {ring}"
+    )
+    return _krull_dimension_of_engine(engine)
 
 
 def _krull_dimension_of_engine(engine):
@@ -2853,10 +3867,16 @@ def _krull_dimension_of_engine(engine):
     engine but one: the generic quotient ``S/I`` of a multivariate polynomial
     ring falls to the ``CommutativeRings`` default, which raises.  There
     ``dim S/I = dim I``, the dimension Singular computes for ``I`` (TRAPS.md).
-    A quotient of a principal ideal domain ``D/(d)`` -- ``Zmod(n)`` is one, over
-    ``ZZ`` -- has dimension zero for ``d != 0`` and the dimension of ``D`` for
-    ``d = 0``.  A univariate quotient ``K[x]/(f)`` answers its own.
+    A nonzero quotient of a principal ideal domain ``D/(d)`` has dimension
+    zero for nonzero, nonunit ``d``, and the dimension of ``D`` for ``d = 0``.
+    The empty spectrum has dimension -infinity (Stacks, Tags 0055 and 00KD),
+    for which this finite-integer adapter provides no owned representation.
+    A univariate quotient ``K[x]/(f)`` answers its own.
     """
+    assert (engine.one() == engine.zero()) is not True, (
+        "the empty prime spectrum has Krull dimension -infinity; "
+        "an owned extended-dimension representation is not yet supplied"
+    )
     match engine:
         case PolynomialQuotientRing_generic():
             dimension = engine.krull_dimension()
@@ -2872,16 +3892,20 @@ def _krull_dimension_of_engine(engine):
                     dimension = defining.dimension()
         case _:
             dimension = engine.krull_dimension()
+    assert dimension not in (SageInfinity, -SageInfinity) and dimension >= 0, (
+        "this Krull dimension requires an owned extended-dimension representation; "
+        "the selected adapter currently represents finite nonnegative dimensions"
+    )
     return _owned_engine_element(SageZZ, SageZZ(dimension))
 
 
 def OwnedNoetherianRings():
-    r"""``OwnedRings().Commutative().Noetherian()``, the session name for Noetherian rings."""
+    r"""The session shorthand for commutative Noetherian rings."""
     return OwnedRings().Commutative().Noetherian()
 
 
 def OwnedArtinianRings():
-    r"""``OwnedRings().Commutative().Artinian()``, the session name for Artinian rings."""
+    r"""The session shorthand for commutative Artinian rings."""
     return OwnedRings().Commutative().Artinian()
 
 
@@ -2894,6 +3918,8 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
     r"""Commutative rings with a chosen ideal of definition for which they are adically complete.
 
     The ideal is a chosen datum: every ring is complete for its zero ideal.
+    The inherited arrows are unital ring maps; no continuity condition is
+    imposed on this category's ``Mor``.
     """
 
     def an_object(self):
@@ -2905,10 +3931,41 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
 
     class ParentMethods:
         def is_adically_complete(self):
+            r"""Return the completeness supplied by this chosen adic structure."""
             return True
 
+        @RealizationHook
+        def _selected_adic_defining_ideal(self):
+            r"""Supply the selected defining ideal of this exact ring, or ``None``.
+
+            Only ``ideal_of_definition`` calls this protected datum supplier.
+            A complete-local category supplies its actual maximal ideal by
+            default. An owned completion realization supplies the extension
+            of its fixed source ideal along its fixed completion map, using
+            the existing cached ideal-extension construction. These are
+            evaluations of already selected data, not choices of topology
+            made by this accessor. An explicit supplier takes precedence
+            over the complete-local default; its ``None`` means that its
+            selected datum is unavailable, never that the maximal ideal
+            should be substituted.
+            """
+            return None
+
         def ideal_of_definition(self):
-            return self._adic_defining_ideal
+            r"""Return the selected defining ideal as an owned ideal of ``self``."""
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
+            selected = self._selected_adic_defining_ideal()
+            assert selected is not None, (
+                f"the selected adic structure of {self} has no supplied defining ideal"
+            )
+            assert selected in CommutativeIdeals(self) and selected.ring() is self, (
+                f"the defining ideal of the selected adic structure of {self} must be "
+                f"an owned ideal of that ring, but the supplied datum is {selected}"
+            )
+            return selected
 
 
 def OwnedCompleteLocalRings():
@@ -2951,7 +4008,7 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
 
         return [
             Algebras(_owned_integers()).Associative().Unital().Commutative().FinitelyGenerated(),
-            OwnedRings().Commutative().NoZeroDivisors().Noetherian(),
+            OwnedIntegralDomains().Noetherian(),
         ]
 
     def fraction_field_adjunction(self):
@@ -3009,65 +4066,6 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
 def PrimeFields():
     r"""``OwnedRings().Division().Commutative().Prime()``, the session name for prime fields."""
     return OwnedRings().Division().Commutative().Prime()
-
-
-@cached_function
-def _unit_group(ring):
-    r"""Return \(R^\times\), the group of units of the owned ring ``ring``.
-
-    A ring is a monoid under multiplication, and its invertible elements are a
-    submonoid: the identity is invertible, and a product of invertibles is
-    invertible.  That submonoid is a group, because every one of its elements
-    has an inverse by the very predicate that admitted it, so the group law is
-    the ring's multiplication and nothing is chosen.
-
-    Invertibility is asked of the ring element.  A ring whose elements do not
-    decide it has no represented unit group, and that absence is a gap on the
-    element interface rather than a second construction here.
-    """
-    from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-    assert ring in OwnedRings(), (
-        f"the unit group R^* needs a ring R of this session, but {ring!r} is not one"
-    )
-    units = ring.predicate_submonoid(
-        lambda element: element.is_unit(),
-        f"{ring}^×",
-        placements=(OwnedGroups(),),
-    )
-    return units
-
-
-class UnitGroupFunctor(Functor):
-    r"""\(R\mapsto R^\times\) and \(f\mapsto f|_{R^\times}\), from rings to groups.
-
-    A ring morphism carries a unit to a unit: from \(rs = 1\) it gives
-    \(f(r)f(s) = 1\), so the restriction is defined with no further data, and
-    functoriality is the functoriality of restriction.
-
-    Applied to \(\operatorname{End}_{\mathbf C}(X)\) this is
-    \(\operatorname{Aut}_{\mathbf C}(X)\): an endomorphism is invertible in the
-    endomorphism ring exactly when it is an isomorphism of \(X\).
-    """
-
-    def __init__(self) -> None:
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-        super().__init__(OwnedRings(), OwnedGroups())
-
-    def _apply_object(self, ring):
-        return ring.unit_group()
-
-    def _apply_morphism(self, morphism):
-        source = self.object_image(morphism.domain())
-        target = self.object_image(morphism.codomain())
-        return SetMorphism(
-            source.Mor(target),
-            lambda unit: target(morphism(unit)),
-        )
-
-    def _repr_(self):
-        return "Unit group functor"
 
 
 def _center_transport_of_ring_isomorphism(morphism):
@@ -3508,12 +4506,17 @@ class _OwnedRingElement(RingElement):
     def is_one(self):
         return bool(self._backend() == self.parent()._engine.one())
 
-    def is_unit(self):
+    def _unit_decision(self):
         return bool(self._backend().is_unit())
 
-    def inverse_of_unit(self):
-        if not self.is_unit():
-            raise ZeroDivisionError(f"{self} is not a unit")
+    def _unit_inverse_decision(self):
+        match self.is_unit():
+            case True:
+                pass
+            case False:
+                raise ZeroDivisionError(f"{self} is not a unit")
+            case _:
+                return None
         return _owned_engine_element(self.parent(), self._backend() ** -1)
 
     def __invert__(self):
@@ -3716,8 +4719,12 @@ class _OwnedRingElement(RingElement):
         r"""The binomial coefficient of this element over the natural number ``m``."""
         return _owned_engine_element(self.parent(), self._backend().binomial(int(m)))
 
-    def is_square(self):
-        return bool(self._backend().is_square())
+    def _squareness_decision(self):
+        r"""Supply the retained exact ring-element square procedure to Magmas."""
+        decision = self._backend().is_square()
+        if decision is True or decision is False or isinstance(decision, Predicate):
+            return decision
+        return AtomicProposition("is_square", self)
 
     def sqrt(self):
         return _cross_engine_ring_value(self._backend().sqrt())
@@ -3792,17 +4799,15 @@ class _PredicateSubringElement(_OwnedRingElement):
     def is_one(self):
         return self == self.parent().one()
 
-    def is_unit(self):
+    def _unit_decision(self):
         if (self == self.parent().one()) is True or (self == -self.parent().one()) is True:
             return True
         value = self.parent().inclusion()(self)
         decision = value.is_unit()
         if decision is False:
             return False
-        assert decision is True, (
-            f"cannot decide whether {self} is a unit: it is undecided whether its image {value} is a unit "
-            f"in {value.parent()}"
-        )
+        if decision is not True:
+            return AtomicProposition("is_unit", self)
         return value.inverse_of_unit() in self.parent()
 
 
@@ -4074,7 +5079,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def an_element(self):
         return self._from_engine_element(self._engine.an_element())
 
-    def characteristic(self):
+    def _characteristic_decision(self):
         integers = _own_ring(SageZZ)
         return _owned_engine_element(integers, SageZZ(self._engine.characteristic()))
 
@@ -4325,13 +5330,12 @@ def _placed_nonzero(ring) -> bool:
     r"""Whether the placement of ``ring`` states ``1 != 0``.
 
     A nontrivial ring states it: division rings, local rings and ``ZZ/nZZ``
-    for ``n >= 2`` are placed there by their categories and constructor.  A
-    domain has ``1 != 0`` by definition, and an infinite ring has more than
-    one element.  The zero ring ``ZZ/1ZZ`` is the finite ring these exclude.
+    for ``n >= 2`` are placed there by their categories and constructor. An
+    infinite ring has more than one element. The bare zero-product axiom
+    alone does not exclude the zero ring ``ZZ/1ZZ``.
     """
     return (
         ring in OwnedRings().Nontrivial()
-        or ring in OwnedRings().Commutative().NoZeroDivisors()
         or ring in owned_sets.CountablyInfiniteSets()
         or ring in owned_sets.UncountableSets()
     )
@@ -4371,8 +5375,9 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
     with finitely many indeterminates:
 
     - ``A`` is commutative when ``R`` is;
-    - ``A`` is a domain when ``R`` is (the leading or lowest-order term of a
-      product is the product of those terms);
+    - ``A`` has no zero divisors when ``R`` does (the leading or lowest-order
+      term of a product is the product of those terms);
+    - ``A`` is nontrivial when ``R`` is, since the constants embed;
     - ``A`` is Noetherian when ``R`` is (Hilbert's basis theorem, and its
       power series form; a localization of a Noetherian ring is Noetherian).
 
@@ -4386,10 +5391,12 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
         placements.append(OwnedRings().Commutative())
     if coefficients in OwnedRings().Commutative().NoZeroDivisors():
         placements.append(OwnedRings().Commutative().NoZeroDivisors())
+    if coefficients in OwnedRings().Nontrivial():
+        placements.append(OwnedRings().Nontrivial())
     if coefficients in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     if univariate_over_field_is_principal and coefficients in OwnedRings().Division().Commutative():
-        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
+        placements.append(OwnedPrincipalIdealDomains())
     return tuple(placements)
 
 
@@ -4400,7 +5407,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     constructor received: the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
     ring and the number of indeterminates of a polynomial, Laurent, power
     series or free algebra, the cover of a quotient, the ring of a fraction
-    field, the size and entries of a matrix ring.  A constituent ring the
+    field, the factors of a finite product, the size and entries of a matrix ring.  A constituent ring the
     preamble already owns is read by its placement.  The theorem that places
     the result is stated in the case.  No answer the engine computes about the
     ring itself -- ``is_field``, ``is_commutative``, ``is_noetherian``, its
@@ -4433,6 +5440,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
     from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.sets.cartesian_product import CartesianProduct
 
     from dzack_research.preamble.categories.rings.number_fields import (
         NumberFieldsWithChosenPrimitiveElement,
@@ -4441,7 +5449,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     )
     from dzack_research.preamble.owned_category import owned_category_join
 
-    domain = OwnedRings().Commutative().NoZeroDivisors()
+    domain = OwnedIntegralDomains()
     principal = domain.PrincipalIdeals()
     noetherian = OwnedRings().Noetherian()
     # A field is a commutative division ring; its only ideals are 0 and
@@ -4449,10 +5457,10 @@ def _presented_ring_category(engine: Ring) -> Category:
     field = (OwnedRings().Division().Commutative(), principal, noetherian)
     match engine:
         case _ if engine is SageZZ:
-            # ZZ is Euclidean, ordered, countable, and its own ring of
-            # integers with the integral basis (1).
+            # ZZ has distinct 0 and 1; it is Euclidean, ordered, countable,
+            # and its own ring of integers with the integral basis (1).
             placements = (
-                principal, noetherian, OwnedOrderedRings(),
+                principal, noetherian, OwnedRings().Nontrivial(), OwnedOrderedRings(),
                 owned_sets.CountablyInfiniteSets(), OrdersWithChosenIntegralBasis(),
             )
         case _ if engine is SageQQ:
@@ -4482,9 +5490,14 @@ def _presented_ring_category(engine: Ring) -> Category:
             # construction, and for n >= 2 the ring has 1 != 0 (Mathlib
             # ``ZMod.nontrivial`` under ``Fact (1 < n)``).  Whether n is
             # prime or a prime power is computed, never a datum of the
-            # construction, so it places nothing here.
+            # construction, so it places nothing here. For n = 1 the ring is
+            # zero and satisfies the bare zero-product property vacuously.
             nontrivial = (OwnedRings().Nontrivial(),) if engine.order() >= 2 else ()
-            placements = (OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(), *nontrivial)
+            zero_product = (OwnedRings().NoZeroDivisors(),) if engine.order() == 1 else ()
+            placements = (
+                OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(),
+                *nontrivial, *zero_product,
+            )
         case NumberField():
             # A number field K = QQ[x]/(f) with f irreducible, presented by
             # its chosen generator.
@@ -4572,8 +5585,45 @@ def _presented_ring_category(engine: Ring) -> Category:
                         coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
                     )
                 case False:
-                    inherited = ()
+                    # Constants embed. The greatest words in two nonzero
+                    # finite supports have a unique greatest product, whose
+                    # coefficient is the product of their coefficients.
+                    # These facts do not make the variables commute.
+                    inherited = tuple(
+                        placement
+                        for placement in (
+                            OwnedRings().NoZeroDivisors(),
+                            OwnedRings().Nontrivial(),
+                        )
+                        if coefficients in placement
+                    )
             placements = (*inherited, _size_of_finitely_supported_families(coefficients, engine.ngens()))
+        case CartesianProduct():
+            # Finite products use coordinatewise ring operations. Commutative,
+            # Noetherian and Artinian factors give the corresponding product;
+            # a product of fields is not thereby a field or a domain.
+            factors = tuple(_own_ring(factor) for factor in engine.cartesian_factors())
+            commutative = (
+                (OwnedRings().Commutative(),)
+                if all(factor in OwnedRings().Commutative() for factor in factors)
+                else ()
+            )
+            product_noetherian = (
+                (noetherian,)
+                if all(factor in noetherian for factor in factors)
+                else ()
+            )
+            artinian = (
+                (OwnedRings().Artinian(),)
+                if all(factor in OwnedRings().Artinian() for factor in factors)
+                else ()
+            )
+            finite = (
+                (owned_sets.FiniteSets(),)
+                if all(factor in owned_sets.FiniteSets() for factor in factors)
+                else ()
+            )
+            placements = (*commutative, *product_noetherian, *artinian, *finite)
         case MatrixSpace():
             # M_n(R) is commutative exactly when n <= 1 and R is; it is a
             # finitely generated R-module, so Noetherian when R is; it is
@@ -4785,7 +5835,12 @@ def _engine_ring(ring):
     contract declared on :class:`OwnedRings.ParentMethods`.  It performs no
     representation probing: each construction owner states its realization.
     """
-    return _own_ring(ring)._selected_engine_ring()
+    owned = _own_ring(ring)
+    engine = owned._selected_engine_ring()
+    assert engine is not None, (
+        f"cannot compute in {owned}: its construction supplies no selected computer-algebra model"
+    )
+    return engine
 
 
 def _engine_quotient_cover_ideal(ring, engine_ideal):
@@ -4890,7 +5945,8 @@ FiniteField = GF
 
 
 def PrimeField(characteristic):
-    return GF(characteristic)
+    r"""Return the prime field of the given characteristic through its category owner."""
+    return PrimeFields()(characteristic)
 
 
 def Zmod(*args, **kwargs):

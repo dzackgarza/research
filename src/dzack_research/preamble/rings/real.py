@@ -372,9 +372,8 @@ class ExactRealNumber(FieldElement):
     def __invert__(self):
         return self.parent().one() / self
 
-    def inverse_of_unit(self):
+    def _unit_inverse_decision(self):
         r"""``x^{-1}``: every nonzero real number is a unit."""
-        assert not self.is_zero(), f"0 is not a unit of {self.parent()}"
         return ~self
 
     def __pow__(self, exponent, modulus=None):
@@ -507,17 +506,14 @@ class ExactRealNumber(FieldElement):
     def is_negative(self):
         return self < self.parent().zero()
 
-    def is_square(self) -> bool:
+    def _squareness_decision(self):
         r"""Whether this is ``y^2`` for a real ``y``: exactly when it is nonnegative.
 
         A nonnegative real has the real square root :meth:`sqrt`, and a square
-        is nonnegative, so squareness is the sign.
+        is nonnegative. The exact sign relation may remain undecided and is
+        returned as that proposition to the magma squareness owner.
         """
-        nonnegative = self >= self.parent().zero()
-        assert nonnegative is True or nonnegative is False, (
-            f"cannot decide whether {self} is a square in the real field: whether {self} >= 0 is undecided"
-        )
-        return nonnegative
+        return self >= self.parent().zero()
 
     def __bool__(self):
         relation = self != self.parent().zero()
@@ -627,8 +623,8 @@ class ExactRealField(UniqueRepresentation, Field):
     def one(self) -> ExactRealNumber:
         return self(ZZ.one())
 
-    def characteristic(self):
-        return ZZ.zero()
+    def _characteristic_decision(self):
+        return _own_ring(ZZ).zero()
 
     def is_exact(self) -> bool:
         return True
@@ -636,8 +632,8 @@ class ExactRealField(UniqueRepresentation, Field):
     def is_finite(self) -> bool:
         return False
 
-    def cardinality(self):
-
+    def _cardinality_decision(self):
+        r"""Supply the cardinality of the real numbers at the set owner."""
         return continuum
 
     def fraction_field(self):

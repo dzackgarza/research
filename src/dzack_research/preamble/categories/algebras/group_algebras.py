@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     _algebra_on_module,
     _center_algebra,
+    _scalar_module,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import (
     AugmentedAlgebras,
@@ -122,6 +123,31 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return Monoids().Mor(self.group(), self)(self.module_generator)
 
         @cached_method
+        def _left_regular_action_functor(self):
+            r"""The retained ``BG -> Modules(R)`` action by left multiplication.
+
+            The image of ``g`` sends ``a`` to ``[g] a``.  Group basis
+            elements commute with the coefficient scalars, so this map is
+            ``R``-linear, and the group law gives the action law.  Its
+            elementwise description needs no enumeration of the group basis.
+            """
+            from dzack_research.preamble.categories.functors.group_actions import (
+                GroupActionFunctor,
+            )
+
+            modules = Modules(self.base_ring())
+            endomorphisms = modules.Mor(self, self)
+            inclusion = self.group_inclusion()
+            return GroupActionFunctor(
+                self.group(),
+                modules,
+                self,
+                lambda group_element: endomorphisms.elementwise(
+                    lambda element: inclusion(group_element) * self(element)
+                ),
+            )
+
+        @cached_method
         def regular_representation(self):
             r"""``R[G]`` as a module over itself by left multiplication.
 
@@ -129,12 +155,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             multiplication through the group inclusion; ``Modules(R[G])``
             equips that action with the group-algebra scalar action.
             """
-            inclusion = self.group_inclusion()
-
-            def left_action(group_element, element):
-                return inclusion(group_element) * self(element)
-
-            return Modules(self)(self, left_action)
+            return Modules(self)(self, self._left_regular_action_functor())
 
         @cached_method
         def regular_representation_basis_isomorphism(self):
@@ -192,7 +213,18 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
 @cached_function
 def _group_algebra(base_ring, group):
-    r"""The group algebra \(R[G]\): the free \(R\)-module on \(G\), multiplied by the group law."""
+    r"""The group algebra and its coefficient-sum augmentation.
+
+    First retain the group-law product on the free module. Its augmentation
+    is then an actual algebra map, since the coefficient sum sends a product
+    to the product of the sums and the basis element of the identity to one.
+    Adding the group and augmentation data keeps that exact algebra as the
+    retained module, so each augmentation law transports independently.
+    """
+    from dzack_research.preamble.categories.algebras.comparison_maps import (
+        _constructed_algebra_morphism,
+    )
+
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
     module = ring.free_module(group)
@@ -202,8 +234,8 @@ def _group_algebra(base_ring, group):
         module,
         lambda left, right: module.module_generator(left * right),
     )
-    scalars = Algebras(ring).underlying_module()(ring)
-    selected_augmentation = module.module_category().Mor(module, scalars)(
+    scalars = _scalar_module(ring)
+    coefficient_sum = module.module_category().Mor(module, scalars)(
         lambda _label: scalars(ring.one())
     )
     # The group law decides the placement (Lam, A First Course in
@@ -222,14 +254,24 @@ def _group_algebra(base_ring, group):
             law_decisions["commutativity"] = True
         case ():
             pass
-    return _algebra_on_module(
+    algebra = _algebra_on_module(
         module,
         multiplication,
-        placement=(GroupAlgebras(ring), *commutative),
+        placement=(Algebras(ring).Associative().Unital(), *commutative),
         unit=module.module_generator(group.one()),
+        law_decisions=law_decisions,
+    )
+    selected_augmentation = _constructed_algebra_morphism(
+        algebra, scalars, lambda element: coefficient_sum(module(element)),
+    )
+    return _algebra_on_module(
+        algebra,
+        algebra.multiplication_morphism(),
+        placement=(GroupAlgebras(ring), *commutative),
+        unit=algebra.one(),
         construction_data={
             "group": group,
-            "selected_augmentation": selected_augmentation,
+            "slice_arrows": {AugmentedAlgebras(ring): selected_augmentation},
         },
         law_decisions=law_decisions,
     )

@@ -14,7 +14,11 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat, _FunctorCategory
+from dzack_research.preamble.categories.abstract_categories.cat import (
+    Cat,
+    CategoryFunctorMorphism,
+    _FunctorCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -29,7 +33,7 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
@@ -450,6 +454,68 @@ class FiniteSequenceDiagram(Functor):
         for position in range(source + 1, target):
             composite = self._transitions[position] * composite
         return composite
+
+
+class _FiniteSequenceFunctorCategory(_FunctorCategory):
+    r"""The canonical functor category on a finite ordinal, with its adjacent arrows."""
+
+    def object(
+        self,
+        functor: Functor | CategoryFunctorMorphism | tuple[Morphism, ...] | list[Morphism],
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
+        r"""Read a functor or its ordered family of consecutive arrows."""
+        if isinstance(functor, (tuple, list)):
+            transitions = tuple(functor)
+            size = int(self.domain_category().object_set().cardinality())
+            expected = max(0, size - 1)
+            if len(transitions) != expected:
+                raise ValueError(
+                    f"a diagram on a finite ordinal with {size} objects needs {expected} adjacent arrows, "
+                    f"but {len(transitions)} were given"
+                )
+            if size == 1:
+                raise ValueError(
+                    "an empty transition family does not specify the object of a one-object diagram; "
+                    "supply the actual functor"
+                )
+            base = self.codomain_category()
+            for transition in transitions:
+                if not isinstance(transition, Morphism) or not _category_accepts_morphism(
+                    base, transition.domain(), transition.codomain(), transition
+                ):
+                    raise TypeError(
+                        f"each transition must be a morphism in {base}, but got {transition}"
+                    )
+            objects = (
+                (transitions[0].domain(), *(transition.codomain() for transition in transitions))
+                if transitions else ()
+            )
+            functor = FiniteSequenceDiagram(objects, transitions, base)
+        return super().object(
+            functor,
+            _engine=_engine,
+            construction_data=construction_data,
+        )
+
+    __call__ = object
+
+    class ParentMethods:
+        @cached_method
+        def arrows(self):
+            r"""Return adjacent arrows with their ordinal positions and repetitions."""
+            functor = self.functor()
+            shape = functor.domain()
+            length = max(0, int(shape.object_set().cardinality()) - 1)
+            return indexed_family(
+                Sets.Δ[length - 1],
+                lambda position: functor(
+                    shape.Mor(shape(int(position)), shape(int(position) + 1)).unique()
+                ),
+                name="Adjacent arrows of a finite sequence",
+            )
 
 
 class ParallelPairMorphism(Morphism):
@@ -1069,23 +1135,39 @@ class SelectedColimitConstruction(SageObject):
         return self.factor(induced_cocone).apex_map()
 
 
-def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
-    for index in source.diagram().domain().objects():
+def _commutes_with_diagram(source, target, apex_map, cocone=False):
+    from dzack_research.preamble.logic import AtomicProposition, conjunction
+
+    shape = source.diagram().domain()
+    object_set = shape.object_set()
+    if cardinal(object_set.cardinality()).is_finite() is not True:
+        return AtomicProposition("commutes_with_diagram", source, target, apex_map)
+
+    def equation(index):
         if cocone:
             left = apex_map * source.costructure_morphism(index)
             right = target.costructure_morphism(index)
         else:
             left = target.structure_morphism(index) * apex_map
             right = source.structure_morphism(index)
-        if (left == right) is not True:
-            return False
-    return True
+        return left == right
+
+    return conjunction(equation(index) for index in shape.objects())
+
+
+def _apex_morphism_equal(left, right):
+    """Equality of cone or cocone morphisms in one fixed Mor parent."""
+    if left is right:
+        return True
+    if parent(right) is not left.parent():
+        return False
+    return left.apex_map() == right.apex_map()
 
 
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = False) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError(
@@ -1107,22 +1189,29 @@ class ConeMorphism(Morphism):
                 f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
                 f"{self.codomain().apex()} of the category the diagram takes values in"
             )
-        if verify and not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
-            raise ValueError(
-                f"{apex_map} is not a morphism of cones {self.domain()} -> {self.codomain()}: it does not "
-                "commute with the legs of the cones"
-            )
         self._apex_map = apex_map
+        if verify:
+            self.validate_commutation()
 
     def apex_map(self) -> Morphism:
         return self._apex_map
 
+    def commutation_decision(self):
+        return _commutes_with_diagram(
+            self.domain(), self.codomain(), self.apex_map()
+        )
+
+    def validate_commutation(self):
+        decision = self.commutation_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self.apex_map()} is not a morphism of cones {self.domain()} -> {self.codomain()}: "
+                "it does not commute with the legs of the cones"
+            )
+        return decision
+
     def __eq__(self, other: Any) -> bool | Predicate:
-        if self is other:
-            return True
-        if parent(other) is not self.parent():
-            return False
-        return self.apex_map() == other.apex_map()
+        return _apex_morphism_equal(self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
@@ -1145,7 +1234,7 @@ class ConeMorphism(Morphism):
 class CoconeMorphism(Morphism):
     r"""A morphism of cocones, determined by its apex map."""
 
-    def __init__(self, parent: CoconeMor, apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: CoconeMor, apex_map: Morphism, *, verify: bool = False) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError(
@@ -1167,24 +1256,29 @@ class CoconeMorphism(Morphism):
                 f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
                 f"{self.codomain().apex()} of the category the diagram takes values in"
             )
-        if verify and not _commutes_with_diagram(
-            self.domain(), self.codomain(), apex_map, cocone=True
-        ):
-            raise ValueError(
-                f"{apex_map} is not a morphism of cocones {self.domain()} -> {self.codomain()}: it does not "
-                "commute with the legs of the cocones"
-            )
         self._apex_map = apex_map
+        if verify:
+            self.validate_commutation()
 
     def apex_map(self) -> Morphism:
         return self._apex_map
 
+    def commutation_decision(self):
+        return _commutes_with_diagram(
+            self.domain(), self.codomain(), self.apex_map(), cocone=True
+        )
+
+    def validate_commutation(self):
+        decision = self.commutation_decision()
+        if decision is False:
+            raise ValueError(
+                f"{self.apex_map()} is not a morphism of cocones {self.domain()} -> {self.codomain()}: "
+                "it does not commute with the legs of the cocones"
+            )
+        return decision
+
     def __eq__(self, other: Any) -> bool | Predicate:
-        if self is other:
-            return True
-        if parent(other) is not self.parent():
-            return False
-        return self.apex_map() == other.apex_map()
+        return _apex_morphism_equal(self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
@@ -2016,6 +2110,10 @@ def _finite_factor_family(factors, *, name="Selected factors"):
             f"products and coproducts are computed here only for finitely many factors, but {name} has "
             f"cardinality {family.cardinality()}"
         )
+    if family.index_set() not in EnumeratedSets():
+        raise TypeError(
+            f"{name} has finite cardinality but no selected enumeration of its factor indices"
+        )
     return family
 
 
@@ -2033,6 +2131,8 @@ def _two_factors_of(factors, *, name="Selected factors"):
     assert family.cardinality() == cardinal(2), (
         f"this construction takes exactly two factors, but {name.lower()} has {family.cardinality()}"
     )
+    if family.index_set() not in EnumeratedSets():
+        raise TypeError(f"{name} needs an enumeration to select its two factors")
     labels = tuple(family.index_set())
     return family[labels[0]], family[labels[1]]
 
@@ -2046,13 +2146,35 @@ def _discrete_diagram(factors, target_category=None):
             )
         target = target_category
     else:
-        target = (
-            Cat().join(tuple(obj.category() for obj in family))
-            if target_category is None
-            else target_category
-        )
+        if target_category is not None:
+            target = target_category
+        elif family.constant_value() is not None:
+            target = family.constant_value().category()
+        elif family.selected_diagram() is not None:
+            target = family.selected_diagram().codomain()
+        else:
+            if not family.cardinality().is_finite() or family.index_set() not in EnumeratedSets():
+                raise TypeError(
+                    "the codomain of a nonconstant diagram without finite enumerated indices "
+                    "requires a selected category-valued diagram or an explicit target category"
+                )
+            target = Cat().join(tuple(obj.category() for obj in family))
 
     index = DiscreteCategory(family.index_set())
+    if not family.cardinality().is_finite() or family.index_set() not in EnumeratedSets():
+        selected = family.selected_diagram()
+        if selected is not None:
+            if selected.domain() is not index or selected.codomain() is not target:
+                raise ValueError("the selected factor diagram does not have the requested exact endpoints")
+            return selected
+        constant = family.constant_value()
+        if constant is not None:
+            if constant not in target:
+                raise ValueError("the selected constant factor is outside the diagram's target category")
+            return Cat().Mor(index, target).constant_functor(constant)
+        raise TypeError(
+            "an unenumerated nonconstant factor family does not supply a verified discrete diagram"
+        )
     return Cat().Mor(index, target).discrete_diagram(family)
 
 

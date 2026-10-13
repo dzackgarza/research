@@ -6,6 +6,10 @@ simplicial resolutions through degree n whose resolved levels lie in P; its
 morphisms are maps of the augmented truncated simplicial objects.  The target
 projection remembers only the augmentation target.  Hence this is not a
 subcategory of C: several resolution objects can lie over the same object.
+For finite truncation the resolution equations concern the augmentation
+and degrees below the last chosen level. A degree-one presentation gives
+its degree-zero coequalizer, not vanishing of top-degree homotopy or a
+resolution terminating in degree one.
 
 The common owner supplies three constructions whose acyclicity follows from
 the construction itself: a projective-source epimorphism in truncation zero,
@@ -30,6 +34,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
     _category_accepts_morphism,
     _category_mor_parent,
+    _category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -348,7 +353,16 @@ class _DegreeZeroResolutionTransport(Functor):
 
 
 class Resolutions(OwnedCategory):
-    r"""The category of chosen n-truncated resolutions with levels in P."""
+    r"""The category of chosen n-truncated resolutions with levels in P.
+
+    ``augmentation_family`` states the represented covering arrows used by
+    the bare degree-zero constructor. It defaults to categorical
+    epimorphisms of the base. A theory may instead supply a stronger exact
+    family, such as epimorphisms of the underlying sets for algebra
+    generation. The supplied projective class is projective relative to
+    those covering arrows; this is part of the resolution datum, not a
+    theorem inferred from an arbitrary category's name.
+    """
 
     _MorCategory = ResolutionMorCategoryConstruction
 
@@ -359,18 +373,22 @@ class Resolutions(OwnedCategory):
         projective_class: Category,
         truncation=0,
         level_category=None,
+        augmentation_family=None,
     ):
         match level_category:
             case None:
                 level_category = projective_class
             case _:
                 pass
+        if augmentation_family is None:
+            augmentation_family = _category_packet(base_category).Epis()
         return Category.__classcall__(
             cls,
             base_category,
             projective_class,
             _normalize_truncation(truncation),
             level_category,
+            augmentation_family,
         )
 
     def __init__(
@@ -379,6 +397,7 @@ class Resolutions(OwnedCategory):
         projective_class: Category,
         truncation=0,
         level_category=None,
+        augmentation_family=None,
     ) -> None:
         truncation = _normalize_truncation(truncation)
         match level_category:
@@ -386,6 +405,8 @@ class Resolutions(OwnedCategory):
                 level_category = projective_class
             case _:
                 pass
+        if augmentation_family is None:
+            augmentation_family = _category_packet(base_category).Epis()
         match projective_class.is_subcategory(base_category):
             case False:
                 raise TypeError(
@@ -405,6 +426,7 @@ class Resolutions(OwnedCategory):
         self._base_category = base_category
         self._projective_class = projective_class
         self._level_category = level_category
+        self._augmentation_family = augmentation_family
         self._truncation = truncation
         super().__init__()
 
@@ -418,6 +440,10 @@ class Resolutions(OwnedCategory):
         r"""Return the category imposed levelwise on this chosen truncation."""
         return self._level_category
 
+    def augmentation_family(self):
+        r"""Return the exact covering-arrow family for bare degree-zero data."""
+        return self._augmentation_family
+
     def truncation(self):
         return self._truncation
 
@@ -427,7 +453,8 @@ class Resolutions(OwnedCategory):
     def _repr_(self) -> str:
         return (
             f"{self.truncation()}-truncated resolutions in {self.base_category()} "
-            f"with projective class {self.projective_class()} and levels in {self.level_category()}"
+            f"with projective class {self.projective_class()}, levels in {self.level_category()}, "
+            f"and augmentations in {self.augmentation_family()}"
         )
 
     def an_object(self):
@@ -497,7 +524,13 @@ class Resolutions(OwnedCategory):
         )
 
     def degree_zero(self, augmentation, *, length=Unknown):
-        r"""Return the truncation-zero resolution represented by an epimorphism."""
+        r"""Return degree-zero data with represented covering-arrow evidence.
+
+        Failure of admission to the selected family may mean that its
+        predicate is undecided; it does not establish that the map fails
+        the covering condition. Constructor-selected generating data enter
+        separately through ``selected_degree_zero`` with their own premise.
+        """
         match self.truncation():
             case 0:
                 pass
@@ -506,17 +539,13 @@ class Resolutions(OwnedCategory):
                     f"a bare generating epimorphism belongs to truncation zero, but {self} has "
                     f"truncation {self.truncation()}"
                 )
-        match self.base_category().Epi(
-            augmentation.domain(), augmentation.codomain()
-        ).accepts(augmentation):
-            case False:
-                raise ValueError(
-                    f"{augmentation} is not a represented epimorphism of {self.base_category()}; "
-                    "use a theorem-backed constructor for a generating epimorphism whose epi structure "
-                    "is known by construction"
-                )
-            case True:
-                pass
+        if self.augmentation_family().accepts(augmentation) is not True:
+            raise ValueError(
+                f"the degree-zero resolution of {augmentation.codomain()} needs represented "
+                f"admission of {augmentation} to {self.augmentation_family()}; no such evidence "
+                "was supplied by this map's current realization. Constructor-selected "
+                "generating augmentations use selected_degree_zero with their defining premise"
+            )
         return self._object(
             augmentation.codomain(),
             lambda degree: augmentation.domain(),
@@ -599,7 +628,13 @@ class Resolutions(OwnedCategory):
         relation_source=None,
         relations=None,
     ):
-        r"""Store a chosen presentation as a 1-truncated reflexive resolution."""
+        r"""Store a chosen presentation as a 1-truncated reflexive resolution.
+
+        The constructor's presentation premise identifies the target with
+        the coequalizer of the two faces. It supplies the represented two
+        levels, not a theorem that the projective resolution terminates in
+        degree one. The full resolution length therefore remains unknown.
+        """
         match self.truncation():
             case 1:
                 pass
@@ -670,7 +705,7 @@ class Resolutions(OwnedCategory):
             augmentation,
             face_function=face,
             degeneracy_function=degeneracy_map,
-            length=1,
+            length=Unknown,
             model="selected-presentation",
             resolution_generating_set=generating_set,
             resolution_generator_morphism=generator_morphism,
@@ -995,6 +1030,13 @@ class Resolutions(OwnedCategory):
                     return degeneracy_function(degree, index)
 
         def is_acyclic_through_truncation(self) -> bool:
+            r"""The exactness asserted by these partial resolution data.
+
+            In a finite truncation the last chosen level has unresolved
+            higher relations. In particular, a selected presentation
+            asserts its degree-zero coequalizer, not vanishing of degree-one
+            homotopy. Resolution length is an independent datum.
+            """
             return True
 
         def _validate_resolution_morphism_to(

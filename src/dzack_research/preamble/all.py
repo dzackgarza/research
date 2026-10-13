@@ -173,6 +173,8 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
 )
 from dzack_research.preamble.groups import (
+    FreeGroupQuotients,
+    CoxeterGroups,
     AbelianGroups,
     AbsoluteDecompositionGroup,
     AbsoluteGaloisGroup,
@@ -195,6 +197,7 @@ from dzack_research.preamble.groups import (
     FiniteGSets,
     FinitelyGeneratedGroups,
     FinitelyPresentedGroups,
+    GeneralLinearGroups,
     FrobeniusConjugacyClass,
     FrobeniusElement,
     GObjectMor,
@@ -227,6 +230,7 @@ from dzack_research.preamble.groups import (
     QuadraticCharacter,
     RestrictedProfiniteCharacter,
     Subgroups,
+    SymmetricGroups,
     Torsors,
     groups,
 )

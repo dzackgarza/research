@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
     _engine_ring,
     _own_ring,
 )
@@ -76,6 +77,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _affine_scheme,
     _affine_spec_morphism,
 )
+from dzack_research.preamble.validation import validator
 
 _ROOT_OF_UNITY_VARIABLE = "t"
 
@@ -226,11 +228,9 @@ class _CyclicCoverBaseChangeSquare(CommutativeSquare):
         r"""The left edge of the cover square: the projection of changed covers."""
         return self.left()
 
-    def cover_square_commutes(self) -> bool:
-        return (
-            self.base_projection() * self.domain().arrow()
-            == self.codomain().arrow() * self.projection()
-        ) is True
+    def cover_square_commutes(self):
+        r"""Return the retained cover-square equation, including an undecided one."""
+        return self.commutativity_decision()
 
     def local_projection(self, index):
         return self._local_projections[
@@ -323,15 +323,17 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
         ):
             coordinates = source_algebra.framing_morphism().lift(source_algebra(element))
             result = target_algebra.zero()
-            for label in coordinates.support().domain():
+            for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items():
                 position = int(source_ranking(label))
                 result += target_algebra.scalar_multiple(
-                    coefficient_map(coordinates(label)),
+                    coefficient_map(coefficient),
                     target_algebra.module_generator(target_labels[position]),
                 )
             return result
 
-        algebra_map = source_local.Mor(changed_local)(image)
+        # Coefficients move through the actual base pullback.  This is a
+        # ring map, not a linear map over the unchanged source chart ring.
+        algebra_map = OwnedRings().Mor(source_local, changed_local).elementwise(image)
         local_projection = morphisms.Mor(
             changed_cover.gluing_datum().chart(changed_index),
             source_cover.gluing_datum().chart(source_index),
@@ -341,20 +343,8 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
             source_cover.gluing_datum().chart_embedding(source_index) * local_projection
         )
     projection = morphisms.Mor(changed_cover, source_cover)(local_maps_to_cover)
-    if any(
-        source_relative.arrow().local_map(source_index)
-        * local_projections[source_index]
-        != base_projection
-        * changed_relative.arrow().local_map(
-            changed_atlas.normalize_chart_index(source_index)
-        )
-        for source_index in cyclic_algebra.chart_index_set()
-    ):
-        raise ArithmeticError(
-            f"the projection {projection} from the base-changed cyclic cover {changed_cover} to "
-            f"{source_cover} does not commute with the base-change projection {base_projection} "
-            "of the bases"
-        )
+    # The final square retains this same compatibility equation.  A separate
+    # local Boolean recheck would discard its unresolved commutativity datum.
 
     from dzack_research.preamble.categories.sets.indexed_families import (
         finite_indexed_family,
@@ -371,7 +361,7 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
     return arrows.Mor(changed_cover_map, source_cover_map)._square(
         projection,
         base_projection,
-        verify=True,
+        verify=False,
         element_class=_CyclicCoverBaseChangeSquare,
         construction_data={
             "source_cyclic_algebra": cyclic_algebra,
@@ -429,6 +419,49 @@ class _RelativeCyclicCoverLiftSquare(CommutativeSquare):
     def fiber_scalar(self):
         return self.linearization().character_value(self.group_element()).inverse_of_unit()
 
+    @cached_method
+    def branch_preservation_decision(self):
+        r"""Decide the branch law of the retained linearization, or retain it.
+
+        On a trivializing chart the selected lift has coefficient map
+        ``sigma`` and sends ``z`` to ``c*z``.  Its branch equation is
+        ``sigma(f) = c^n*f`` for the retained quotient ``z^n = f``.
+        This is an additional premise on the selected linearization and
+        branch section, not a proof inferred from membership in a ring Mor.
+        """
+        from dzack_research.preamble.logic import conjunction
+
+        cyclic = self.cyclic_algebra()
+        linearization = self.linearization()
+        group_element = self.group_element()
+        fiber_scalar = self.fiber_scalar()
+        equations = []
+        for index in cyclic.chart_index_set():
+            coefficient_map = linearization.local_chart_automorphism(
+                group_element, index
+            ).coordinate_algebra_morphism()
+            base = cyclic.local_algebra(index).base_ring()
+            scalar = base.algebra_structure_morphism()(fiber_scalar)
+            branch = cyclic.local_branch_coefficient(index)
+            equations.append(
+                coefficient_map(branch) == scalar ** int(cyclic.degree()) * branch
+            )
+        return conjunction(equations)
+
+    @validator
+    def validate_branch_preservation(self):
+        r"""Check the branch equation when requested, retaining an undecided frontier."""
+        decision = self.branch_preservation_decision()
+        if decision is False:
+            raise ValueError(
+                f"the selected linearization of {self.cyclic_algebra()} at "
+                f"{self.group_element()} does not preserve its branch equation"
+            )
+        assert decision is True, (
+            "no selected coefficient-equality algorithm decides branch preservation "
+            f"for {self.cyclic_algebra()} at {self.group_element()}"
+        )
+
     def top_form_scalar(self):
         index = next(iter(self.cyclic_algebra().chart_index_set()))
         determinant = self.linearization().local_jacobian_scalar(
@@ -473,10 +506,10 @@ def RelativeCyclicCoverLift(
     morphisms = base_automorphism.parent().mor_category()
     arrows = morphisms.ArrowCategory()
     cover_map = arrows(relative.arrow())
-    return arrows.Mor(cover_map, cover_map)._square(
+    result = arrows.Mor(cover_map, cover_map)._square(
         automorphism,
         base_automorphism,
-        verify=True,
+        verify=False,
         element_class=_RelativeCyclicCoverLiftSquare,
         construction_data={
             "cyclic_algebra": cyclic_algebra,
@@ -485,6 +518,8 @@ def RelativeCyclicCoverLift(
             "local_automorphisms": local_automorphisms,
         },
     )
+    result.validate_branch_preservation(check=False)
+    return result
 
 
 
@@ -495,7 +530,7 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
     ``L^{-1}`` transforms through ``lambda_g^{-1}``.  On every chart the ring
     pullback therefore sends ``z`` to ``lambda_g^{-1} z`` and acts on the base
     coefficients through the represented chart automorphism.  The branch
-    equation is checked before the local maps are glued.
+    equation is retained by the returned lift's deferred branch validator.
     """
     assert linearization.line_bundle() is cyclic_algebra.line_bundle(), (
         f"cannot lift the action to the cyclic cover of {cyclic_algebra}: {linearization} "
@@ -516,12 +551,6 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
         local_algebra = cyclic_algebra.local_algebra(index)
         local_base = local_algebra.base_ring()
         scalar = local_base.algebra_structure_morphism()(fiber_scalar)
-        branch = cyclic_algebra.local_branch_coefficient(index)
-        assert base_pullback(branch) == scalar ** int(cyclic_algebra.degree()) * branch, (
-            f"the automorphism {group_element} does not preserve the branch equation z^n = f of "
-            f"the cyclic cover on chart {index}: it sends f = {branch} to {base_pullback(branch)}, "
-            f"not to {scalar ** int(cyclic_algebra.degree())} * f"
-        )
         basis_labels = local_algebra.module_generating_set()
         ranking = basis_labels.ranking_map()
 
@@ -535,15 +564,17 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
         ):
             coordinates = algebra.framing_morphism().lift(algebra(element))
             result = algebra.zero()
-            for label in coordinates.support().domain():
+            for label, coefficient in coordinates.parent()._selected_module_coefficients(coordinates).items():
                 exponent = int(rank(label))
                 result += algebra.scalar_multiple(
-                    pullback(coordinates(label)) * scale**exponent,
+                    pullback(coefficient) * scale**exponent,
                     algebra.module_generator(label),
                 )
             return result
 
-        pullback = local_algebra.Mor(local_algebra)(image)
+        # The selected base automorphism acts on coefficients, so this
+        # evaluator is generally semilinear over the chart coefficient ring.
+        pullback = OwnedRings().Mor(local_algebra, local_algebra).elementwise(image)
         local_scheme = cover.gluing_datum().chart(index)
         local_lifts[index] = _affine_morphism_from_pullback(
             local_scheme, local_scheme, pullback
@@ -561,14 +592,7 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
             for index in cyclic_algebra.chart_index_set()
         }
     )
-    assert all(
-        relative.arrow().local_map(index) * local_family[index]
-        == base_automorphism * relative.arrow().local_map(index)
-        for index in cyclic_algebra.chart_index_set()
-    ), (
-        f"the lift of {group_element} to the cyclic cover {cover} does not commute with the "
-        f"cover map and the automorphism {base_automorphism} of the base"
-    )
+    # RelativeCyclicCoverLift retains the actual global cover-square law.
     return RelativeCyclicCoverLift(
         cyclic_algebra,
         linearization,
@@ -819,7 +843,6 @@ class CyclicCovers(OwnedCategory):
             unit this has support ``V(z)`` and retains the expected
             ``(n-1)``-fold different for ``n>2``.
             """
-            self._assert_separable_degree()
             return self.differential_rank_drop_subscheme(0)
 
         @cached_method

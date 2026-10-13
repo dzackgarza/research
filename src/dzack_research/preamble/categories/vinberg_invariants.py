@@ -294,6 +294,8 @@ class VinbergInvariantMatrices(OwnedCategory):
             form \(G\) on \(R^n\); \(p + q = n\) is the statement that the
             radical is zero, so the form is nondegenerate.
             """
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import BilinearFormModules
+
             gram = self.root_gram_tensor()
             ring = gram.base_ring()
             rank = gram.tensor_shape()[0]
@@ -306,8 +308,8 @@ class VinbergInvariantMatrices(OwnedCategory):
             if any(gram[i, j] > 0 for i, j in combinations(positions, 2)):
                 return False
             module = ring.free_module(self.index_set())
-            normals = module.equip_bilinear_form(
-                module.bilinear_hom_space(ring)(gram)
+            normals = BilinearFormModules(ring).Symmetric()(
+                module.bilinear_forms(ring)(gram)
             )
             signature = normals.signature_pair()
             return (

@@ -5,18 +5,31 @@ from sage.arith.misc import factorial
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
-def _constructed_algebra_morphism(domain, codomain, evaluator):
-    r"""Return a theorem-supplied map through the ordinary unital algebra Mor."""
-    if domain.base_ring() is not codomain.base_ring():
+def _constructed_algebra_morphism(
+    domain, codomain, evaluator, *, linearity_premises=(), equations=(),
+    transported_morphism=None,
+):
+    r"""Return the constructed algebra map under its retained defining premises.
+
+    The existing algebra-Mor supplier consumes the actual linear maps and
+    equations. Empty families express an unconditional canonical construction;
+    unresolved premises retain the ordinary evaluator diagnostics. An actual
+    ``transported_morphism`` instead retains each law separately when the
+    structured source keeps the same module, multiplication and unit.
+    """
+    if domain.algebra_base_ring() is not codomain.algebra_base_ring():
         raise ValueError(
             f"a morphism of algebras {domain} -> {codomain} needs one base ring, but they are over "
-            f"{domain.base_ring()} and {codomain.base_ring()}"
+            f"{domain.algebra_base_ring()} and {codomain.algebra_base_ring()}"
         )
-    mor = Algebras(domain.base_ring()).Associative().Unital().Mor(
+    mor = Algebras(domain.algebra_base_ring()).Unital().Mor(
         domain,
         codomain,
     )
-    return mor._from_constructed_element_map(evaluator)
+    return mor._from_constructed_element_map(
+        evaluator, linearity_premises=linearity_premises, equations=equations,
+        transported_morphism=transported_morphism,
+    )
 
 
 def _tensor_to_symmetric(module):
@@ -53,10 +66,40 @@ def _symmetric_to_divided(module):
 
 
 def _divided_to_symmetric(module):
-    r"""Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible."""
+    r"""Return the factorial comparison over a selected rational coefficient algebra.
+
+    Its formula uses inverses of every factorial, so checking denominators
+    only on a requested element cannot establish a map on the whole algebra.
+    The retained coefficient tower supplies the rational algebra structure.
+    An empty chosen module-generating family instead proves ``M=0``, when
+    both algebras consist only of scalars and no factorial inversion is needed.
+    """
+    from sage.rings.rational_field import QQ as SageQQ
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    ring = module.base_ring()
+    zero_module = (
+        module.has_selected_module_resolution()
+        and module.module_generating_set().is_empty() is True
+    )
+    rational_structure = None
+    if not zero_module:
+        rationals = _own_ring(SageQQ)
+        try:
+            rational_algebra = ring.as_algebra_over(rationals)
+        except (AssertionError, ValueError) as error:
+            raise AssertionError(
+                f"the comparison Gamma({module}) -> Sym({module}) needs a selected "
+                f"rational-algebra structure on {ring} proving that all factorials "
+                "are units; no global factorial-invertibility computation is supplied"
+            ) from error
+        rational_structure = rational_algebra.algebra_structure_morphism()
+        assert (
+            rational_structure.domain() is rationals
+            and rational_structure.codomain() is rational_algebra
+        ), "the rational structure map of a commutative algebra retains its exact endpoints"
     source = module.divided_power_algebra()
     target = module.symmetric_algebra()
-    ring = module.base_ring()
 
     def evaluate(element):
         element = source(element)
@@ -79,13 +122,25 @@ def _divided_to_symmetric(module):
                 for generator_label, power in support:
                     denominator *= int(factorial(power))
                     monomial *= target.algebra_generator(generator_label) ** int(power)
-                denominator_scalar = ring(denominator)
-                if not denominator_scalar.is_unit():
-                    raise ValueError(
-                        f"the map Gamma(M) -> Sym(M) needs the factorial {denominator_scalar} to be invertible, but it "
-                        f"does not divide {coefficient}"
+                if denominator == 1:
+                    inverse = ring.one()
+                else:
+                    assert rational_structure is not None, (
+                        "a nontrivial factorial denominator needs the retained rational structure"
                     )
-                scalar = coefficient * denominator_scalar.inverse_of_unit()
+                    image = rational_structure(rationals(denominator).inverse_of_unit())
+                    if rational_algebra is ring:
+                        inverse = image
+                    else:
+                        # as_algebra_over retains the literal original ring
+                        # as this module's additive group. Read that datum,
+                        # without asking R to invert the denominator again.
+                        coefficient_module = rational_algebra.unformed_module()
+                        assert coefficient_module.underlying_additive_group() is ring, (
+                            "the rational scalar view retains the original coefficient ring"
+                        )
+                        inverse = coefficient_module(image).underlying_element()
+                scalar = coefficient * ring(inverse)
                 result += scalar * monomial
         return result
 

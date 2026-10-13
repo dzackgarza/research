@@ -7,6 +7,7 @@ packet, using Sage's ``Mor``, ``Morphism`` and integer multiplication action.
 """
 
 from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.coerce_actions import IntegerMulAction
@@ -15,10 +16,14 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategories,
+    _compose_operation_preserving_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
-from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
+from dzack_research.preamble.categories.sets.set_categories import (
+    OwnedSetMorphism,
+    SetMorCategory,
+)
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -38,17 +43,7 @@ class AdditiveMagmaMorphism:
         super().__init__(parent, function)
 
     def _composition(self, right):
-        if right.codomain() is not self.domain():
-            return NotImplemented
-        category = self.parent().mor_family().base_category()
-        if (
-            right.domain() not in category
-            or not right.parent().mor_family().base_category().is_subcategory(category)
-        ):
-            return super()._composition(right)
-        return self.parent().mor_family().Of(
-            right.domain(), self.codomain()
-        )(lambda element: self(right(element)))
+        return _compose_operation_preserving_mor(self, right, super()._composition)
 
 
 def _additive_operation_mor_element(parent, datum):
@@ -60,7 +55,6 @@ def _additive_operation_mor_element(parent, datum):
             )
         if datum.parent() is parent:
             return datum
-        datum = datum.__call__
     if not callable(datum):
         raise TypeError(
             f"an additive morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, "
@@ -75,12 +69,9 @@ class AdditiveMagmaMor(CategoricalMor):
     def _element_constructor_(self, datum):
         return _additive_operation_mor_element(self, datum)
 
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
-            )
-        return self(lambda element: element)
+    # The identity function preserves addition. Reuse the declared cached
+    # descriptor: its constructor uses this Mor's actual element_class.
+    identity = SetMorCategory.__dict__["identity"]
 
 
 class AdditiveMonoidMorphism:
@@ -89,6 +80,50 @@ class AdditiveMonoidMorphism:
     def __init__(self, parent, function) -> None:
         super().__init__(parent, function)
 
+    def _factor_through_inclusion(self, target):
+        r"""Supply the additive factor between two retained additive inclusions.
+
+        The existing set inclusion owns injectivity, image and finite-set
+        factorization. A chosen additive generating family additionally
+        supplies containment by the target's addition-closure premise.
+        The resulting arrow retains that actual subset inclusion, so its
+        range need not re-decide the target's defining predicate.
+        """
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+        from dzack_research.preamble.categories.group.submonoids import (
+            _AdditiveSubmonoidEngine, _submonoid_generator_containment,
+        )
+        from dzack_research.preamble.categories.sets.set_categories import SetInjection
+
+        if not isinstance(target, AdditiveMonoidMorphism):
+            return None
+        donor = self._owned_function
+        target_donor = target._owned_function
+        if not (
+            isinstance(donor, SetInjection) and donor._subset_premise
+            and isinstance(target_donor, SetInjection) and target_donor._subset_premise
+        ):
+            return None
+        source = self.domain()
+        if (
+            isinstance(source, _AdditiveSubmonoidEngine)
+            and source._selected_representation_kind() == "generators"
+        ):
+            contained = _submonoid_generator_containment(
+                self, target, source.additive_monoid_generators()
+            )
+            if contained is False:
+                return False
+            assert contained is True, (
+                f"cannot factor {self} through {target}: containment of the chosen additive "
+                "generators remains undecided"
+            )
+            return AdditiveMonoids().Mor(source, target.domain())._from_submonoid_inclusion()
+        factor = donor.factor_through_or_none(target_donor)
+        if factor is None:
+            return False
+        return AdditiveMonoids().Mor(source, target.domain())(factor)
+
 
 class AdditiveMonoidMor(CategoricalMor):
     ElementMethods = AdditiveMonoidMorphism
@@ -96,12 +131,24 @@ class AdditiveMonoidMor(CategoricalMor):
     def _element_constructor_(self, datum):
         return _additive_operation_mor_element(self, datum)
 
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"there is no identity morphism {self.domain()} -> {self.codomain()}: the endpoints differ"
-            )
-        return self(lambda element: element)
+    @cached_method
+    def _from_submonoid_inclusion(self):
+        r"""Retain the set inclusion of an additive submonoid as its actual additive arrow.
+
+        Protected construction contract under OWN-05. Additive-submonoid
+        construction and its generator-proved containment factor are the
+        callers. The exact source is a subset of the exact target, with
+        zero and addition inherited there. The existing set-injection datum
+        supplies injectivity and the literal image, without evaluating points.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        donor = Sets().Mono(self.domain(), self.codomain())._from_subset_inclusion()
+        return self.element_class(self, donor)
+
+    # The identity function preserves both addition and zero. Bind the same
+    # cached descriptor to this Mor and its generated additive-monoid arrow.
+    identity = SetMorCategory.__dict__["identity"]
 
 
 class _ScalarIdentityEvaluation:
@@ -109,8 +156,9 @@ class _ScalarIdentityEvaluation:
 
     This callable is the defining computation, not an annotation on another
     map. The parent supplies its already constructed pointwise scalar action.
-    Arithmetic of two such maps is arithmetic of the supplied scalars, even
-    when arbitrary endomorphism equality cannot be decided.
+    Within that same retained parent, arithmetic of two such maps is
+    arithmetic of the supplied scalars, even when arbitrary endomorphism
+    equality cannot be decided.
     """
 
     def __init__(self, parent, scalar):
@@ -126,27 +174,56 @@ class _ScalarIdentityEvaluation:
         return self._parent._apply_pointwise_scalar(self.scalar, element)
 
 
-def _scalar_identity_coefficient(morphism):
-    r"""Read only the actual scalar-evaluation realization of an owned map.
+def _scalar_identity_coefficient(morphism, parent):
+    r"""Read a coefficient for the scalar action of this exact diagonal Mor.
 
-    Private shared additive/linear map adapter. Its callers are native map
-    arithmetic and endomorphism centrality. It inspects the selected callable
-    at those two declared engines, never infers a scalar by sampling a map.
+    Private shared additive/linear/group map adapter. Its callers are native map
+    arithmetic and endomorphism centrality, and supply their actual result or
+    comparison parent. A retained scalar evaluation belongs to that parent's
+    selected action; even equal coefficient rings do not identify two actions.
+    A scalar map for a stronger module theory therefore need not be a scalar
+    map in the weaker additive End ring. Foreign action data return ``None``
+    so the caller uses its ordinary formula or computation frontier.
+
+    The retained subgroup-inclusion datum with identical endpoints is the
+    identity in its owning group Mor, so also supplies the scalar one there.
+    Neither case infers a scalar by sampling a map or transporting scalars.
     """
+    from dzack_research.preamble.categories.group.groups import GroupMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphismMethods
 
+    if (
+        parent.domain() is not parent.codomain()
+        or morphism.domain() is not parent.domain()
+        or morphism.codomain() is not parent.codomain()
+    ):
+        return None
     match morphism:
+        case ModuleMorphismMethods():
+            # Its cooperative additive initializer retains the bound _call_
+            # wrapper; the actual selected evaluator is _element_function.
+            evaluation = morphism._element_function
         case AdditiveMorphism():
             evaluation = morphism._function
-        case ModuleMorphismMethods():
-            evaluation = morphism._element_function
+        case GroupMorphism() if morphism._subgroup_premise and morphism.parent() is parent:
+            return parent.base_ring().one()
+        case OwnedSetMorphism():
+            evaluation = morphism._owned_function
         case _:
             return None
-    return evaluation.scalar if isinstance(evaluation, _ScalarIdentityEvaluation) else None
+    if isinstance(evaluation, _ScalarIdentityEvaluation) and evaluation._parent is parent:
+        return evaluation.scalar
+    return None
 
 
 class AdditiveMorGroups(OwnedCategory):
-    r"""Additively enriched Mor groups with pointwise operations."""
+    r"""Mor groups with the pointwise abelian law of their target.
+
+    This includes additive and linear maps, and group homomorphisms
+    ``G -> A`` with abelian target ``A`` written multiplicatively. The
+    source need not be abelian; commutativity of the target makes the
+    pointwise product of two homomorphisms another homomorphism.
+    """
 
     def an_object(self):
         r"""The additive endomorphism group of the rank-one integer module."""
@@ -160,26 +237,84 @@ class AdditiveMorGroups(OwnedCategory):
         return [AdditiveGroups().AdditiveCommutative()]
 
     class ParentMethods:
+        def base_ring(self):
+            r"""The scalar ring retained by this Mor's selected enrichment."""
+            return self._preamble_base_ring
+
+        def _is_additive(self):
+            r"""The notation of the actual target abelian law.
+
+            This is the shared value-operation supplier for pointwise Mor
+            arithmetic. It selects a declared mathematical law, without
+            deciding equality of target values or inspecting an engine.
+            """
+            if self.codomain() in AdditiveGroups().AdditiveCommutative():
+                return True
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            if self.codomain() not in OwnedGroups().Commutative():
+                raise TypeError(f"pointwise abelian arithmetic needs an abelian target, but got {self.codomain()}")
+            return False
+
+        def _sum_values(self, left, right):
+            return left + right if self._is_additive() else left * right
+
+        def _negative_value(self, value):
+            return -value if self._is_additive() else value**-1
+
+        def _identity_value(self):
+            return self.codomain().zero() if self._is_additive() else self.codomain().one()
+
         def zero(self):
             if self.domain() is self.codomain():
                 return self._scalar_identity(self.base_ring().zero())
-            return self.elementwise(lambda element: self.codomain().zero())
+            return self.elementwise(lambda element: self._identity_value())
+
+        def _pointwise_scalar_multiple(self, scalar, morphism):
+            r"""Apply the retained scalar action to the values of this arrow.
+
+            The additive, linear and multiplicative-group Mor realizations
+            supply ``_apply_pointwise_scalar`` on their actual target.
+            This shared formula is called by their scalar-action adapters;
+            it does not select a new target action or coerce a weaker map
+            into this Mor.
+            """
+            if morphism not in self:
+                raise TypeError(f"pointwise scalar multiplication in {self} needs an arrow already admitted there")
+            scalar = self.base_ring()(scalar)
+            coefficient = _scalar_identity_coefficient(morphism, self)
+            if coefficient is not None:
+                return self._scalar_identity(scalar * coefficient)
+            return self.elementwise(
+                lambda element: self._apply_pointwise_scalar(scalar, morphism(element))
+            )
 
     class ElementMethods:
         def _add_(self, other):
-            r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Mor."""
-            left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+            r"""Pointwise sum of arrows admitted in the same additive Mor.
+
+            The constructor can accept a function supplied as additive data;
+            arithmetic instead needs an already declared additive arrow.
+            In particular a set map with these endpoints is not enough.
+            """
+            parent = self._pointwise_mor()
+            if other not in parent:
+                return NotImplemented
+            left, right = _scalar_identity_coefficient(self, parent), _scalar_identity_coefficient(other, parent)
             if left is not None and right is not None:
-                return self.parent()._scalar_identity(left + right)
-            return self.parent().elementwise(lambda element: self(element) + other(element))
+                return parent._scalar_identity(left + right)
+            return parent.elementwise(lambda element: parent._sum_values(self(element), other(element)))
 
         def __neg__(self):
-            scalar = _scalar_identity_coefficient(self)
+            parent = self._pointwise_mor()
+            scalar = _scalar_identity_coefficient(self, parent)
             if scalar is not None:
-                return self.parent()._scalar_identity(-scalar)
-            return self.parent().elementwise(lambda element: -self(element))
+                return parent._scalar_identity(-scalar)
+            return parent.elementwise(lambda element: parent._negative_value(self(element)))
 
         def __sub__(self, other):
+            if other not in self._pointwise_mor():
+                return NotImplemented
             return self + (-other)
 
         def _composition(self, right):
@@ -205,11 +340,17 @@ class AdditiveMorGroups(OwnedCategory):
             return mor.elementwise(lambda element: self(right(element)))
 
         def __rmul__(self, scalar):
-            return self.parent()._owned_scalar_multiple(scalar, self)
+            if isinstance(scalar, Morphism):
+                return scalar.__mul__(self)
+            return self._pointwise_mor()._owned_scalar_multiple(scalar, self)
 
 
 class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
     r"""Endomorphism algebras over their selected commutative scalar ring."""
+
+    def parameter_category(self):
+        r"""The coefficient datum is a commutative unital ring."""
+        return OwnedRings().Commutative()
 
     def an_object(self):
         r"""The endomorphism ring of the regular rank-one module."""
@@ -230,35 +371,38 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         return [AdditiveMorGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        @abstract_method
         def _compose_endomorphisms(self, left, right):
-            left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
+            r"""The selected composition of two admitted endomorphisms.
+
+            The arrow multiplication and the algebra's bilinear classifier
+            call this contract. Additive and group realizations use the
+            pointwise computation below; linear and cochain realizations
+            retain the premises carried by their own map constructors.
+            """
+
+        def _pointwise_endomorphism_composite(self, left, right):
+            r"""Realize composition through an admitted elementwise map.
+
+            Only the additive and group Mor suppliers call this shared
+            computation. Their maps retain their laws as admitted data;
+            module and component realizations keep their richer premises
+            through their selected composition supplier instead.
+            """
+            left_scalar, right_scalar = _scalar_identity_coefficient(left, self), _scalar_identity_coefficient(right, self)
             if left_scalar is not None and right_scalar is not None:
                 return self._scalar_identity(left_scalar * right_scalar)
             return self.elementwise(lambda element: left(right(element)))
 
+        @abstract_method
         def _owned_scalar_multiple(self, scalar, morphism):
-            r"""Apply the selected scalar enrichment pointwise.
+            r"""Apply the retained scalar action, preserving the map's premises.
 
-            The Mor constructor supplies its scalar ring.  Integer scalars
-            act on every additive group through Sage's repeated addition;
-            a commutative scalar ring acts through the target module.
+            The scalar-action realization and inherited additive arithmetic
+            call this contract. The actual Mor supplies its additive,
+            linear, group or component constructor; no stronger arrow law
+            is inferred from equal endpoints.
             """
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-            scalar = self.base_ring()(scalar)
-            coefficient = _scalar_identity_coefficient(morphism)
-            if coefficient is not None:
-                return self._scalar_identity(scalar * coefficient)
-            if self.base_ring() is _own_ring(SageZZ):
-                action = IntegerMulAction(SageZZ, self.codomain(), m=self.codomain().zero())
-                return self.elementwise(lambda element: action(int(scalar), morphism(element)))
-            return self.elementwise(
-                lambda element: self.codomain().scalar_multiple(scalar, morphism(element))
-            )
-
-        @cached_method
-        def identity(self):
-            return self._scalar_identity(self.base_ring().one())
 
 
 class AdditiveMorphism:
@@ -267,6 +411,34 @@ class AdditiveMorphism:
     def __init__(self, parent, function) -> None:
         self._function = function
         super().__init__(parent, function)
+
+    def _pointwise_mor(self):
+        r"""The actual Mor holding this arrow's additive arithmetic.
+
+        Protected result-placement contract for AdditiveMorphism and
+        AdditiveMorGroups.ElementMethods: sums, negatives, differences and
+        scalar actions use it; composition retains its own Mor theory.
+        A parent carrying an additive-group law already supplies closure
+        and keeps its selected enrichment. Otherwise only the underlying
+        additive-map laws are available, so use the canonical additive Mor
+        with the same literal endpoints. In particular a ring or rng Mor
+        does not acquire a pointwise additive-group law.
+
+        ModuleMorphismMethods already refines this contract to the linear
+        Mor, since sums and negatives of linear maps remain linear even
+        when their originally selected restricted Mor is not additive.
+        """
+        parent = self.parent()
+        match parent:
+            case _ if parent in AdditiveGroups():
+                return parent
+            case _:
+                return AdditiveGroups().AdditiveCommutative().MorCategory().Of(
+                    self.domain(), self.codomain()
+                )
+
+    def __add__(self, other):
+        return AdditiveMorGroups.ElementMethods._add_(self, other)
 
     def _add_(self, other):
         return AdditiveMorGroups.ElementMethods._add_(self, other)
@@ -277,21 +449,25 @@ class AdditiveMorphism:
     def __neg__(self):
         return AdditiveMorGroups.ElementMethods.__neg__(self)
 
+    def __sub__(self, other):
+        return AdditiveMorGroups.ElementMethods.__sub__(self, other)
+
     def __rmul__(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _lmul_(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _rmul_(self, scalar):
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return AdditiveMorGroups.ElementMethods.__rmul__(self, scalar)
 
     def _acted_upon_(self, actor, self_on_left):
         r"""Scalar action of the Mor's scalar ring; any other actor is not an action here."""
-        scalars = self.parent().base_ring()
+        parent = self._pointwise_mor()
+        scalars = parent.base_ring()
         if actor not in scalars:
             return None
-        return self.parent()._owned_scalar_multiple(scalars(actor), self)
+        return parent._owned_scalar_multiple(scalars(actor), self)
 
     def _composition(self, right):
         if right.codomain() is not self.domain():
@@ -303,16 +479,21 @@ class AdditiveMorphism:
             return NotImplemented
         if self is other:
             return op == op_EQ
-        from sage.structure.element import parent as element_parent
         from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
 
-        if element_parent(other) is not self.parent():
+        if other not in self.parent():
             return op == op_NE
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        left, right = _scalar_identity_coefficient(self, self.parent()), _scalar_identity_coefficient(other, self.parent())
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         domain = self.domain()
-        if domain.is_finite() is not True or domain not in EnumeratedSets():
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        if domain is _own_ring(SageZZ):
+            # A homomorphism from (ZZ,+) is determined by the image of 1.
+            # The target equality may still be an undecided proposition.
+            equal = self(domain.one()) == other(domain.one())
+        elif domain.is_finite() is not True or domain not in EnumeratedSets():
             equal = AtomicProposition("equal", self, other)
         else:
             equal = conjunction(self(element) == other(element) for element in domain)
@@ -339,15 +520,27 @@ class AdditiveMor(CategoricalMor):
         r"""The integer scalar ring of this additive Mor group."""
         return self._preamble_base_ring
 
+    @cached_method
+    def identity(self):
+        r"""The canonical identity in this additive Mor's diagonal."""
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"there is no identity map {self.domain()} -> {self.codomain()}: "
+                "the domain and codomain are different additive groups"
+            )
+        return self._scalar_identity(self.base_ring().one())
+
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):
             assert datum.domain() is self.domain() and datum.codomain() is self.codomain(), (
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a "
                 f"morphism {self.domain()} -> {self.codomain()}"
             )
-            if datum.parent() is self:
-                return datum
-            return self.elementwise(datum)
+            raise TypeError(
+                f"{datum} is not already represented as an additive morphism "
+                f"{self.domain()} -> {self.codomain()}; constructing an additive morphism from "
+                "a weaker arrow would assert additivity without supplying it"
+            )
         if callable(datum):
             return self.elementwise(datum)
         assert self.domain() is self.codomain(), (
@@ -371,10 +564,9 @@ class AdditiveMor(CategoricalMor):
     def _scalar_identity(self, scalar):
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
 
+    def _compose_endomorphisms(self, left, right):
+        return self._pointwise_endomorphism_composite(left, right)
+
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the canonical integer action through Sage's additive action."""
-        coefficient = _scalar_identity_coefficient(morphism)
-        if coefficient is not None:
-            return self._scalar_identity(self._preamble_base_ring(scalar) * coefficient)
-        integer = int(self._preamble_base_ring(scalar))
-        return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))
+        return self._pointwise_scalar_multiple(scalar, morphism)

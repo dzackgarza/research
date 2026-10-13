@@ -16,7 +16,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
-from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.finite_families import (
+    finite_family,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
@@ -381,22 +386,6 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 self._engine_normal_fan()
             )
 
-        def toric_variety(self, base_ring):
-            r"""Return ``X_P``, the toric variety of the normal fan of ``P``.
-
-            ``P`` is retained as the polarizing polytope of the result: it is
-            the polytope of the ample divisor that the construction produced,
-            and it is not recoverable from the fan alone.
-            """
-            assert self.is_lattice_polytope(), (
-                f"the toric variety of {self} is defined only for a lattice polytope, but {self} "
-                "has a vertex that is not a lattice point"
-            )
-            return self.normal_fan().toric_variety(
-                base_ring,
-                polarizing_polytope=self,
-            )
-
         def volume(self):
             rationals = _own_ring(SageQQ)
             return _owned_engine_element(rationals,
@@ -404,8 +393,65 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             )
 
         def normalized_volume(self):
-            integers = _own_ring(SageZZ)
-            return integers(factorial(int(self.dimension())) * self.volume())
+            r"""Volume normalized in the lattice parallel to the affine hull.
+
+            For affine dimension ``d`` the measure is ``d!`` times lattice
+            measure, so a unimodular simplex has volume one even when it
+            lies in a larger ambient lattice. A rational polytope need not
+            have integral normalized volume. The empty polytope has volume
+            zero and a point has volume one.
+
+            The full-dimensional case retains the existing exact ambient
+            engine computation. In lower dimension the selected polyhedral
+            engine must supply its exact ``induced_lattice`` measure; an
+            unavailable relative-volume algorithm is a computation frontier.
+            """
+            polyhedron = self._engine_polyhedron()
+            dimension = int(self.dimension())
+            if dimension < 0:
+                value = SageQQ.zero()
+            elif dimension == 0:
+                value = SageQQ.one()
+            elif dimension == polyhedron.ambient_dim():
+                value = factorial(dimension) * SageQQ(polyhedron.volume())
+            else:
+                value = SageQQ(polyhedron.volume(measure="induced_lattice"))
+            target = SageZZ if self.is_lattice_polytope() else SageQQ
+            return _owned_engine_element(target, target(value))
+
+        @cached_method
+        def integral_invariants(self):
+            r"""The dimension, volumes and lattice-point counts of this polytope.
+
+            These invariants require only a rational polytope in its chosen
+            lattice. The ``volume`` entry uses ambient Lebesgue measure;
+            ``normalized_volume`` uses the lattice parallel to the affine
+            hull. Dimension is integral, volumes are rational (normalized
+            volume is integral for a lattice polytope), and the counts are
+            cardinals. The selected algorithms are those of the individual
+            operations, with no toric or ADE hypothesis.
+            """
+            labels = finite_ordered_set(
+                (
+                    "dimension",
+                    "volume",
+                    "normalized_volume",
+                    "n_integral_points",
+                    "n_interior_points",
+                    "n_boundary_points",
+                )
+            )
+            values = {
+                "dimension": self.dimension(),
+                "volume": self.volume(),
+                "normalized_volume": self.normalized_volume(),
+                "n_integral_points": self.n_integral_points(),
+                "n_interior_points": self.n_interior_points(),
+                "n_boundary_points": self.n_boundary_points(),
+            }
+            return finite_indexed_family(
+                labels, values.__getitem__, name=f"Integral invariants of {self}"
+            )
 
         def is_compact(self) -> bool:
             return True
@@ -503,68 +549,6 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         def n_boundary_points(self):
             return self.boundary_integral_points().cardinality()
 
-        def _dilate(self, scalar):
-            integers = _own_ring(SageZZ)
-            scalar = integers(scalar)
-            assert scalar >= integers.zero(), (
-                f"the dilate k P of {self} is taken here only for k >= 0, but k = {scalar}"
-            )
-            return ConvexPolytopes(self.ambient_lattice()).Integral()(
-                [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
-            )
-
-        def ehrhart_polynomial(self, variable="t"):
-            r"""Return the exact owned Ehrhart polynomial by interpolation."""
-            assert self.is_lattice_polytope(), (
-                f"the Ehrhart polynomial of {self} is computed only for a lattice polytope, but "
-                f"{self} has a vertex that is not a lattice point"
-            )
-
-            rationals = _own_ring(SageQQ)
-            integers = _own_ring(SageZZ)
-            polynomial_ring = rationals.polynomial_ring(variable)
-            t = polynomial_ring.algebra_generator(variable)
-            d = int(self.dimension())
-            values = [
-                integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
-                for k in range(d + 1)
-            ]
-            result = polynomial_ring.zero()
-            for i, value in enumerate(values):
-                basis = polynomial_ring.one()
-                denominator = rationals.one()
-                for j in range(d + 1):
-                    if i == j:
-                        continue
-                    basis *= t - j
-                    denominator *= rationals(i - j)
-                result += rationals(value) / denominator * basis
-            return result
-
-        def h_star_vector(self):
-            r"""Return the owned Ehrhart ``h*`` vector ``(h*_0,...,h*_d)``."""
-            from math import comb
-
-            integers = _own_ring(SageZZ)
-            assert self.is_lattice_polytope(), (
-                f"the h* vector of {self} is computed only for a lattice polytope, but {self} has "
-                "a vertex that is not a lattice point"
-            )
-            d = int(self.dimension())
-            counts = [
-                integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
-                for k in range(d + 1)
-            ]
-            result = []
-            for j in range(d + 1):
-                value = integers.zero()
-                for i in range(j + 1):
-                    coefficient = integers(((-1) ** (j - i)) * comb(d + 1, j - i))
-                    value += coefficient * counts[i]
-                result.append(value)
-
-            return finite_family(result, name="h* vector")
-
         def is_reflexive(self) -> bool:
             if not self.is_lattice_polytope():
                 return False
@@ -623,6 +607,67 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         def _call_(self, vertices, lattice=None):
             r"""Construct the lattice polytope on the selected integral vertices."""
             return _polytope_in(self, vertices, lattice)
+
+        class ParentMethods:
+            def toric_variety(self, base_ring):
+                r"""Return ``X_P`` with ``P`` retained as its polarizing lattice polytope."""
+                return self.normal_fan().toric_variety(
+                    base_ring,
+                    polarizing_polytope=self,
+                )
+
+            def _dilate(self, scalar):
+                integers = _own_ring(SageZZ)
+                scalar = integers(scalar)
+                assert scalar >= integers.zero(), (
+                    f"the dilate k P of {self} is taken here only for k >= 0, but k = {scalar}"
+                )
+                return ConvexPolytopes(self.ambient_lattice()).Integral()(
+                    [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
+                )
+
+            def ehrhart_polynomial(self, variable="t"):
+                r"""Return the exact owned Ehrhart polynomial by interpolation."""
+                rationals = _own_ring(SageQQ)
+                integers = _own_ring(SageZZ)
+                polynomial_ring = rationals.polynomial_ring(variable)
+                t = polynomial_ring.algebra_generator(variable)
+                d = int(self.dimension())
+                values = [
+                    integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
+                    for k in range(d + 1)
+                ]
+                result = polynomial_ring.zero()
+                for i, value in enumerate(values):
+                    basis = polynomial_ring.one()
+                    denominator = rationals.one()
+                    for j in range(d + 1):
+                        if i == j:
+                            continue
+                        basis *= t - j
+                        denominator *= rationals(i - j)
+                    result += rationals(value) / denominator * basis
+                return result
+
+            def h_star_vector(self):
+                r"""Return the owned Ehrhart ``h*`` vector ``(h*_0,...,h*_d)``."""
+                from math import comb
+
+                integers = _own_ring(SageZZ)
+                d = int(self.dimension())
+                counts = [
+                    integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
+                    for k in range(d + 1)
+                ]
+                result = []
+                for j in range(d + 1):
+                    value = integers.zero()
+                    for i in range(j + 1):
+                        coefficient = integers(((-1) ** (j - i)) * comb(d + 1, j - i))
+                        value += coefficient * counts[i]
+                    result.append(value)
+
+                return finite_family(result, name="h* vector")
 
         @cached_method
         def reflexive_polytopes(self, dimension):

@@ -9,7 +9,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _a2_free_form():
-    return ZZ.free_module(2).equip_bilinear_form(ZZ, [[2, 1], [1, 2]])
+    module = ZZ.free_module(2)
+    return FormModules(ZZ)(module.bilinear_hom_space(ZZ)([[2, 1], [1, 2]]))
 
 
 def test_free_form_module_exposes_correlation_and_nondegeneracy() -> None:

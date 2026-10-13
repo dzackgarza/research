@@ -1,11 +1,15 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
 from sage.libs.gap.libgap import libgap
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import Subgroups
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    OrderedEnumeratedSets,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Set, Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Set, Sets
 
 
 class OrthogonalCharacterQuotient:
@@ -365,6 +369,64 @@ def _subgroup_vector_orbit_representatives(subgroup, square):
         return _finite_subgroup_vector_orbit_representatives(subgroup, square)
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()
+    lattice = orthogonal_group.domain()
+    square = lattice.base_ring()(square)
+
+    if square == lattice.base_ring().zero() and not lattice.is_definite():
+        primitive_orbits = orthogonal_group.orbit_decomposition(
+            lattice.primitive_isotropic_vectors()
+        )
+        primitive_representatives = []
+        for representative in primitive_orbits.representatives():
+            stabilizer = orthogonal_group.vector_stabilizer_generators(representative)
+            primitive_representatives.extend(
+                splitting(representative)
+                for splitting in quotient.splitting_isometries(stabilizer)
+            )
+        primitive_representatives = tuple(primitive_representatives)
+        zero = lattice.zero()
+        if not primitive_representatives:
+            return finite_ordered_set((zero,))
+        orbit_count = len(primitive_representatives)
+
+        def element_at(index):
+            position = int(index)
+            if position == 0:
+                return zero
+            content_position, orbit_position = divmod(position - 1, orbit_count)
+            return lattice.scalar_multiple(
+                lattice.base_ring()(content_position + 1),
+                primitive_representatives[orbit_position],
+            )
+
+        def index_of(vector):
+            if element_parent(vector) is not lattice:
+                return None
+            if vector == zero:
+                return NN(0)
+            if vector.q() != square:
+                return None
+            content = int(vector.content())
+            primitive_part = vector.primitive_part()
+            orbit_position = next(
+                (
+                    position
+                    for position, representative in enumerate(primitive_representatives)
+                    if primitive_part == representative
+                ),
+                None,
+            )
+            if orbit_position is None:
+                return None
+            return NN(1 + (content - 1) * orbit_count + orbit_position)
+
+        return OrderedEnumeratedSets()(
+            NN,
+            element_at,
+            index_of=index_of,
+            name=f"Square-zero orbit representatives of {subgroup}",
+        )
+
     def split_representatives():
         for representative in orthogonal_group.vector_orbit_representatives(square):
             stabilizer = orthogonal_group.vector_stabilizer_generators(representative)

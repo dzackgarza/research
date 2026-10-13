@@ -194,11 +194,7 @@ def _total_quotient_pullback(ring_morphism, rational_section):
     rational_section = source_total(rational_section)
     match source_total in LocalizationRings():
         case True:
-            match target in OwnedRings().Commutative().NoZeroDivisors():
-                case True:
-                    target_map = target.fraction_field_map()
-                case False:
-                    target_map = target.total_quotient_map()
+            target_map = target.total_quotient_map()
             numerator = target_map(ring_morphism(source(rational_section.numerator())))
             denominator = target_map(
                 ring_morphism(source(rational_section.denominator()))

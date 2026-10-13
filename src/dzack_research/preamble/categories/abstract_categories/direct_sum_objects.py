@@ -126,6 +126,11 @@ class DirectSumObjects(OwnedCategory):
                     raise TypeError(
                         f"the summands of a direct sum are an indexed family, but {summands!r} is not one"
                     )
+            if summands.index_set().cardinality().is_finite() is not True:
+                raise ValueError(
+                    f"{self} is a selected finite direct sum, but its summands are indexed by the "
+                    f"non-finite set {summands.index_set()}"
+                )
             self._summands = summands
             super().__init__(**rest)
 

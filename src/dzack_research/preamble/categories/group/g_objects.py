@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     CategoryPacketMethods,
     MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
@@ -578,9 +579,19 @@ def Grp(category):
 class EquivariantMorphismMethods:
     r"""A morphism of ``C`` between two ``G``-objects that commutes with the actions."""
 
-    def __init__(self, parent, arrow, *, equivariance_decision=None) -> None:
+    def __init__(
+        self,
+        parent,
+        arrow,
+        *,
+        equivariance_decision=None,
+        equivariance_premises=None,
+    ) -> None:
         arrow = parent.underlying_mor()(arrow)
         self._equivariance_premise = equivariance_decision
+        self._equivariance_premises = (
+            None if equivariance_premises is None else tuple(equivariance_premises)
+        )
         args, options = arrow._transport_initialization_to_mor(parent)
         super().__init__(*args, **options)
         self.validate_equivariance(check=False)
@@ -589,11 +600,20 @@ class EquivariantMorphismMethods:
     def equivariance_decision(self):
         r"""Return whether ``f rho_X(g) = rho_Y(g) f`` for all ``g``, computed on first request.
 
-        A construction that gives equivariance supplies it as its premise;
-        otherwise the parent decides it on a determining family of ``G``.
+        A structural construction supplies its law.  A construction from
+        equivariant arrows retains those actual arrows: their known laws
+        prove the result's law.  An undecided or failed input law supplies
+        no such proof, so the parent then decides the result's own equations
+        on a determining family of ``G``.  Failed input laws do not imply a
+        failed composite law: inverse translations can compose to identity.
         """
         match self._equivariance_premise:
             case None:
+                if self._equivariance_premises is not None and all(
+                    premise.equivariance_decision() is True
+                    for premise in self._equivariance_premises
+                ):
+                    return True
                 return self.parent().is_equivariant(self.underlying_arrow())
             case premise:
                 return premise
@@ -636,11 +656,16 @@ class EquivariantMorphismMethods:
         of ``C`` it stays an arrow of ``C``.
         """
         composite = super().__mul__(other)
+        if composite is self or composite is other:
+            return composite
         objects = self.parent().mor_family().base_category()
         source = other.domain()
         match other:
             case _ if source in objects and other in objects.Mor(source, self.domain()):
-                return objects.Mor(source, self.codomain())._from_equivariant_arrow(composite)
+                return objects.Mor(source, self.codomain())._from_equivariant_arrow(
+                    composite,
+                    equivariance_premises=(self, other),
+                )
             case _:
                 return composite
 
@@ -704,10 +729,16 @@ class GObjectMor(CategoricalMor):
         group = self.domain().acting_group()
         arrow = self.underlying_mor()(arrow)
         match group:
-            case _ if group.has_selected_finite_group_generating_set():
+            case _ if (
+                group.has_selected_group_resolution()
+                and group.group_generating_set().cardinality().is_finite() is True
+            ):
                 determining = group.group_generators()
             case _ if group.is_finite() is True:
-                determining = group
+                try:
+                    determining = iter(group)
+                except (TypeError, NotImplementedError):
+                    return AtomicProposition("is_equivariant", self, arrow)
             case _:
                 return AtomicProposition("is_equivariant", self, arrow)
         return conjunction(
@@ -716,15 +747,28 @@ class GObjectMor(CategoricalMor):
             for element in determining
         )
 
-    def _from_equivariant_arrow(self, arrow):
-        r"""Construct from an arrow whose equivariance follows from its construction."""
-        return self.element_class(self, arrow, equivariance_decision=True)
+    def _from_equivariant_arrow(self, arrow, *, equivariance_premises=()):
+        r"""Construct a structural or premise-derived equivariant arrow.
+
+        The empty family is reserved for a construction, such as identity,
+        whose formula proves equivariance.  Composition supplies its actual
+        input arrows.  Their laws prove equivariance only when each is known;
+        otherwise the resulting arrow keeps its own equation diagnostic.
+        Arbitrary supplied arrows use the ordinary constructor instead.
+        """
+        return self.element_class(
+            self,
+            arrow,
+            equivariance_premises=tuple(equivariance_premises),
+        )
 
     def _element_constructor_(self, datum):
         arrow = self.underlying_mor()(datum)
         return self.element_class(self, arrow)
 
+    @cached_method
     def identity(self):
+        r"""Return the retained identity of this exact equivariant Mor."""
         assert self.domain() is self.codomain(), (
             f"no identity morphism from {self.domain()} to {self.codomain()}: they are "
             f"different objects"
@@ -937,12 +981,179 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             self.underlying_category(),
         )
 
+    def _scheme_action_functor(self, acted):
+        r"""Read the retained BG -> Sch_R datum of an admitted scheme action.
+
+        The category API also accepts the existing functor-category object;
+        that object remains a functor, while evaluation supplies its exact
+        underlying scheme. No scheme placement is added to the functor.
+        """
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _action_functor_of,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        category = self.underlying_category()
+        match category:
+            case Schemes():
+                pass
+            case _:
+                raise TypeError(
+                    f"global sections and affine scheme quotients require a scheme action, "
+                    f"but {self} consists of actions in {category}"
+                )
+        if acted not in self:
+            raise TypeError(f"{acted} is not an action in {self}")
+        return _action_functor_of(acted, self.acting_group(), category)
+
+    @cached_method(key=lambda self, acted: id(acted))
+    def _affine_invariant_action(self, acted):
+        r"""Select the existing affine invariant computation on the same action.
+
+        A generic functor presentation is evaluated before the affine
+        constructor is used as its computation supplier. That supplier
+        retains the literal coordinate algebra and the supplied pullbacks;
+        public maps continue to use the original action's exact carrier.
+        """
+        from dzack_research.preamble.categories.schemes.schemes import (
+            AffineGSchemes,
+            Schemes,
+        )
+
+        action = self._scheme_action_functor(acted)
+        base = self.underlying_category().base_ring()
+        affine_actions = AffineGSchemes(self.acting_group(), base)
+        carrier = action(action.domain().an_object())
+        match acted:
+            case _ if acted in affine_actions:
+                return acted
+            case _ if carrier in Schemes(base).Affine():
+                point = action.domain().an_object()
+                arrows = action.domain().Mor(point, point)
+                return affine_actions(
+                    carrier,
+                    lambda group_element: action(arrows(group_element)),
+                )
+            case _:
+                raise AssertionError(
+                    f"the invariant algebra Gamma({carrier}, O)^{{{self.acting_group()}}} "
+                    "and its universal quotient to affine targets are defined, but no "
+                    "selected computation of global sections and their invariants for "
+                    "this nonaffine scheme is available"
+                )
+
+    def global_sections_functor(self):
+        r"""Return Gamma(-, O): GSch_R^op -> Modules(R[G]).
+
+        The left section action is g.s = rho(g^-1)^*(s). Affine schemes
+        supply their coordinate algebra; other schemes reach the named
+        global-section computation frontier of the same functor.
+        """
+        from dzack_research.preamble.categories.schemes.quotients import (
+            _AffineSectionModuleFunctor,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        category = self.underlying_category()
+        match category:
+            case Schemes():
+                return _AffineSectionModuleFunctor(
+                    self.acting_group(), category.base_ring(), source_category=self
+                )
+            case _:
+                raise TypeError(f"global sections require scheme actions, not {self}")
+
+    def invariant_algebra(self, acted):
+        r"""Return Gamma(U(acted), O)^G in the selected represented regime.
+
+        This algebra is defined for every scheme action. The finite linear
+        affine algorithm is a supplier, not a restriction of the definition.
+        """
+        return self._affine_invariant_action(acted)._invariant_algebra_data()[0]
+
+    def invariant_algebra_inclusion(self, acted):
+        r"""Return the exact inclusion Gamma(U(acted), O)^G -> Gamma(U(acted), O)."""
+        return self._affine_invariant_action(acted)._invariant_algebra_data()[1]
+
+    def invariant_algebra_element(self, acted, element):
+        r"""Lift an invariant global section through the retained inclusion."""
+        return self._affine_invariant_action(acted)._invariant_algebra_element(element)
+
+    @cached_method(key=lambda self, acted: id(acted))
+    def affine_quotient(self, acted):
+        r"""Return Spec(Gamma(U(acted), O)^G), universal for affine targets.
+
+        This does not assert a quotient universal among all schemes.
+        """
+        algebra = self.invariant_algebra(acted)
+        return algebra.affine_spectrum(base_ring=self.underlying_category().base_ring())
+
+    @cached_method(key=lambda self, acted: id(acted))
+    def quotient_morphism(self, acted):
+        r"""Return the invariant map from the exact carrier to its affine quotient."""
+        from dzack_research.preamble.categories.schemes.schemes import (
+            _affine_morphism_from_pullback,
+        )
+
+        action = self._scheme_action_functor(acted)
+        carrier = action(action.domain().an_object())
+        return _affine_morphism_from_pullback(
+            carrier,
+            self.affine_quotient(acted),
+            self.invariant_algebra_inclusion(acted),
+        )
+
+    def factor_through_affine_quotient(self, acted, morphism):
+        r"""Factor an invariant map U(acted) -> Y uniquely, for affine Y."""
+        from dzack_research.preamble.categories.schemes.schemes import (
+            Schemes,
+            _affine_morphism_from_pullback,
+        )
+
+        action = self._scheme_action_functor(acted)
+        carrier = action(action.domain().an_object())
+        base = self.underlying_category().base_ring()
+        if morphism.domain() is not carrier:
+            raise ValueError(
+                f"a factor through the affine quotient of {acted} needs a map out of "
+                f"its exact carrier {carrier}, not {morphism.domain()}"
+            )
+        target = morphism.codomain()
+        if target not in Schemes(base).Affine():
+            raise TypeError(f"the affine quotient factors maps to affine {base}-schemes, not {target}")
+        if morphism not in Schemes(base).Mor(carrier, target):
+            raise TypeError(f"{morphism} is not a morphism over the retained base {base}")
+        supplier = self._affine_invariant_action(acted)
+        supplied_morphism = (
+            morphism
+            if supplier is carrier
+            else _affine_morphism_from_pullback(
+                supplier, target, morphism.coordinate_algebra_morphism()
+            )
+        )
+        return supplier._factor_through_affine_quotient(supplied_morphism)
+
+    def descend_invariant_family(self, acted, family_morphism):
+        r"""Descend an invariant map to an affine parameter scheme."""
+        return self.factor_through_affine_quotient(acted, family_morphism)
+
+    def quotient_base_change_comparison(self, acted, ring_map):
+        r"""Return the canonical comparison for scalar change of the affine quotient."""
+        from dzack_research.preamble.categories.schemes.quotients import (
+            AffineInvariantQuotientBaseChangeComparison,
+        )
+
+        self._scheme_action_functor(acted)
+        return AffineInvariantQuotientBaseChangeComparison(
+            acted, ring_map, _action_category=self
+        )
+
     def affine_quotient_functor(self):
         r"""Return ``(-)/G: GObjects(G, Sch_R) -> AffSch_R``.
 
-        The quotient of one affine action and its universal property are owned
-        by the affine specialization; the functor adds the action on
-        equivariant morphisms, which that universal property determines.
+        This is the universal quotient to affine targets, defined from
+        invariant global sections. The selected affine invariant algorithm
+        supplies the computation; equivariance determines the arrow action.
         """
         from dzack_research.preamble.categories.schemes.quotients import (
             AffineQuotientFunctor,
@@ -990,6 +1201,54 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         def underlying_category(self):
             r"""Return the category in which this object is acted on."""
             return self._underlying_category
+
+        def Mor(self, codomain, category=None):
+            r"""Return the equivariant Mor, or an explicitly requested weaker Mor.
+
+            Equivariance is part of being a ``G``-object, independently of
+            whether the underlying object is a set, module, scheme, or other
+            represented object.  With no explicit category, morphisms are
+            therefore the arrows of ``GObjects(G,C)``.  An explicit weaker
+            category forgets the actions first and asks that category for the
+            Mor of the underlying endpoints.
+            """
+            acted = GObjects(self.acting_group(), self.underlying_category())
+            if category is None or category.is_subcategory(acted):
+                return acted.Mor(self, codomain)
+            forget = acted.forgetful_functor()
+            return _category_mor_parent(category, forget(self), forget(codomain))
+
+        def invariant_algebra(self):
+            r"""Return the invariant global-section algebra of this scheme action."""
+            return GObjects(self.acting_group(), self.underlying_category()).invariant_algebra(self)
+
+        def invariant_algebra_inclusion(self):
+            r"""Return the retained inclusion of invariant global sections."""
+            return GObjects(self.acting_group(), self.underlying_category()).invariant_algebra_inclusion(self)
+
+        def invariant_algebra_element(self, element):
+            r"""Lift an invariant section through the retained inclusion."""
+            return GObjects(self.acting_group(), self.underlying_category()).invariant_algebra_element(self, element)
+
+        def affine_quotient(self):
+            r"""Return the universal quotient of this action to affine targets."""
+            return GObjects(self.acting_group(), self.underlying_category()).affine_quotient(self)
+
+        def quotient_morphism(self):
+            r"""Return the map from this action's carrier to its affine quotient."""
+            return GObjects(self.acting_group(), self.underlying_category()).quotient_morphism(self)
+
+        def factor_through_affine_quotient(self, morphism):
+            r"""Factor an invariant map to an affine scheme."""
+            return GObjects(self.acting_group(), self.underlying_category()).factor_through_affine_quotient(self, morphism)
+
+        def descend_invariant_family(self, family_morphism):
+            r"""Descend an invariant affine-parameter family."""
+            return GObjects(self.acting_group(), self.underlying_category()).descend_invariant_family(self, family_morphism)
+
+        def quotient_base_change_comparison(self, ring_map):
+            r"""Return the canonical scalar-change comparison of affine quotients."""
+            return GObjects(self.acting_group(), self.underlying_category()).quotient_base_change_comparison(self, ring_map)
 
         @cached_method
         def action_functor(self):

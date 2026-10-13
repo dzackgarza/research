@@ -163,3 +163,119 @@ def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
     assert (union.order_type(), intersection.order_type(), difference.order_type()) == (
         Ordinals()(4), Ordinals()(1), Ordinals()(2)
     )
+
+
+def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
+    r"""A finite cardinality does not provide a canonical order for the union."""
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    left = finite_ordered_set(("a", "b"))
+    unordered = Set(("b", "c"))
+    try:
+        left.union(unordered)
+    except (AssertionError, TypeError):
+        pass
+    else:
+        raise AssertionError("unordered finite points were treated as an ordered union")
+
+
+def test_literal_union_preserves_unenumerated_finite_image() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+    from dzack_research.preamble.logic import AtomicProposition
+
+    left = Set((0, 1))
+    unknown_subset = Sets().condition_set(
+        left, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    # The retained ambient inclusion establishes B subset A, so A union B
+    # is literally A without enumerating B or deciding its predicate.
+    assert left.union(unknown_subset) is left
+    universe = Sets.Δ[2]
+    undecided = Sets().condition_set(
+        universe, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    assert undecided in Sets().Finite()
+    union = left.union(undecided)
+    assert union in Sets().Finite()
+    assert union not in EnumeratedSets()
+    for point in left:
+        assert union.is_parent_of(point) is not False
+    assert union.is_parent_of(universe(2)) is not False
+
+
+def test_literal_union_with_infinite_set_keeps_its_coproduct_image() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    finite = Set((0, 1))
+    union = finite.union(NN)
+    assert union in Sets()
+    assert union not in Sets().Finite()
+    assert union.source_set().index_set().cardinality() == cardinal(2)
+    assert union.source_set().cofactor(union.source_set().index_set()(1)) is NN
+
+
+def test_literal_intersection_and_difference_preserve_undecided_membership() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+    from dzack_research.preamble.logic import AtomicProposition
+
+    ambient = Sets.Δ[2]
+    left = Set(tuple(ambient))
+    undecided = Sets().condition_set(
+        ambient, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    meet = left.intersection(undecided)
+    complement = left.difference(undecided)
+    assert meet in Sets().Finite() and complement in Sets().Finite()
+    for point in ambient:
+        assert isinstance(meet.is_parent_of(point), AtomicProposition)
+        assert complement.is_parent_of(point) is not True
+        assert complement.is_parent_of(point) is not False
+
+
+def test_ordered_intersection_retains_finite_predicate_when_membership_is_undecided() -> None:
+    from dzack_research.preamble.logic import AtomicProposition
+
+    ordered = finite_ordered_set(("a", "b", "c"))
+    unknown = Sets().condition_set(
+        ordered, lambda value: AtomicProposition("unspecified_member", value)
+    )
+    meet = ordered.intersection(unknown)
+    complement = ordered.difference(unknown)
+    for result in (meet, complement):
+        assert result in Sets().Finite()
+        assert result not in EnumeratedSets()
+        for value in ordered:
+            assert result.is_parent_of(value) is not True
+            assert result.is_parent_of(value) is not False
+
+
+def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    ascending = finite_ordered_set(("a", "b"))
+    descending = finite_ordered_set(("b", "a"))
+    underlying = Set(("a", "b"))
+    assert ascending != descending
+    assert ascending != underlying and underlying != ascending
+    assert descending != underlying and underlying != descending
+    assert tuple(ascending) == ("a", "b")
+    assert tuple(descending) == ("b", "a")
+
+
+def test_finite_indexed_enumeration_evaluates_selected_points_once() -> None:
+    r"""The finite presentation retains its chosen values across all operations."""
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+    indices = Sets.Δ[2]
+    calls = []
+
+    def selected(index):
+        calls.append(int(index))
+        return ("point", int(index))
+
+    points = FiniteOrderedSets().from_indexed(indices, selected)
+    assert len(calls) == 3
+    assert tuple(points) == (("point", 0), ("point", 1), ("point", 2))
+    assert points.is_parent_of(("point", 1)) is True
+    assert int(points.ranking_map()(("point", 2))) == 2
+    assert len(calls) == 3

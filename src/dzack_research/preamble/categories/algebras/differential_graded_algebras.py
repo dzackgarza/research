@@ -245,6 +245,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
                     "graded_algebra": self,
                     "graded_algebra_action": right_action,
                     "dg_algebra": self,
+                    "dg_module_leibniz_decision": True,
                     "regular_module_source": source,
                 },
             )
@@ -425,6 +426,7 @@ class DGAMorphism:
         morphism,
         *,
         differential_compatibility=None,
+        check=False,
     ) -> None:
         source = parent.domain()
         target = parent.codomain()
@@ -436,14 +438,10 @@ class DGAMorphism:
         else:
             underlying = graded_mor(morphism)
         super().__init__(parent, underlying)
-        observed = self._decide_differential_compatibility()
-        if observed is False:
-            raise ValueError(
-                f"{morphism} is not a morphism of differential graded algebras {self.domain()} -> "
-                f"{self.codomain()}: f d != d f"
-            )
         if differential_compatibility is None:
-            self._differential_compatibility = observed
+            self._differential_compatibility = AtomicProposition(
+                "commutes_with_differentials", self
+            )
         else:
             if not (
                 differential_compatibility is True
@@ -453,6 +451,8 @@ class DGAMorphism:
                     f"compatibility f d = d f is recorded only as True or a proposition, but got {differential_compatibility}"
                 )
             self._differential_compatibility = differential_compatibility
+        if check:
+            self.validate_differential_compatibility()
 
     def differential_compatibility_decision(self):
         return self._differential_compatibility
@@ -480,6 +480,16 @@ class DGAMorphism:
             and target.differential().linearity_decision() is True
         )
         return True if linear and all(answer is True for answer in comparisons) else undecided
+
+    def validate_differential_compatibility(self):
+        r"""Diagnose a proved failure of ``f d = d f`` without forcing unknown equations."""
+        observed = self._decide_differential_compatibility()
+        if observed is False:
+            raise ValueError(
+                f"{self} is not a morphism of differential graded algebras {self.domain()} -> "
+                f"{self.codomain()}: f d != d f"
+            )
+        return observed
 
     def __mul__(self, other):
         if not isinstance(other, DGAMorphism) or other.codomain() is not self.domain():
@@ -517,8 +527,8 @@ class DGAMor(CategoricalMor):
             codomain,
         )
 
-    def _element_constructor_(self, morphism):
-        return self.element_class(self, morphism)
+    def _element_constructor_(self, morphism, *, check=False):
+        return self.element_class(self, morphism, check=check)
 
     def _from_differential_preserving_generator_map(self, images):
         r"""Construct from generator images when the construction proves all DGA laws."""
@@ -536,8 +546,10 @@ class DGAMor(CategoricalMor):
     def _from_differential_preserving_underlying_morphism(self, morphism, decision=True):
         r"""Lift a graded algebra morphism, with ``decision`` as its decision that it commutes with the differentials.
 
-        ``None`` supplies no decision: the lift then decides the compatibility
-        on algebra generators, or answers the proposition that states it.
+        ``None`` supplies no construction proof, so the resulting arrow retains
+        the proposition that it commutes with the differentials.  An explicit
+        diagnostic may later compute generatorwise evidence without changing
+        that retained law.
         """
         return self.element_class(
             self,

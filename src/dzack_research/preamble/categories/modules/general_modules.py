@@ -36,6 +36,17 @@ from dzack_research.preamble.owned_category import _object_of
 _LOGGER = logging.getLogger(__name__)
 
 
+def _module_element_scalar_action(element, actor, self_on_left):
+    """Dispatch the scalar-ring action of an owned module element."""
+    _ = self_on_left
+    parent = element.parent()
+    match actor:
+        case _ if actor in parent.base_ring():
+            return parent.scalar_multiple(actor, element)
+        case _:
+            return None
+
+
 class GeneralModules(OwnedCategoryOverBaseRing):
     r"""Modules presented by an abelian group and a ring morphism ``rho : R -> End(A)``."""
 
@@ -71,13 +82,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            _ = self_on_left
-            parent = self.parent()
-            match actor:
-                case _ if actor in parent.base_ring():
-                    return parent.scalar_multiple(actor, self)
-                case _:
-                    return None
+            return _module_element_scalar_action(self, actor, self_on_left)
 
         def _richcmp_(self, other, op):
             if other.parent() is not self.parent():
@@ -172,9 +177,9 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             self._underlying_set = Set(underlying_set)
             self._addition = addition
             self._negation = negation
-            assert zero in self._underlying_set, (
-                f"cannot construct an {ring}-module on {underlying_set}: the zero {zero!r} is not an "
-                f"element of {underlying_set}"
+            assert self._underlying_set.is_parent_of(zero) is True, (
+                f"cannot construct an {ring}-module on {underlying_set}: membership of the zero "
+                f"{zero!r} in {underlying_set} is not established"
             )
             self._zero_value = zero
             self._rho = rho
@@ -261,6 +266,20 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 if value.parent() is self:
                     return value
                 value = value.underlying_element()
+            return self._element_from_underlying_set(value)
+
+        def _element_from_underlying_set(self, value):
+            r"""Construct the module element on a datum of its retained underlying set.
+
+            Protected GeneralModules construction contract (``OWN-05``).
+            The element constructor, this owner's arithmetic and iteration,
+            and a realization of further structure on this module call it
+            with an underlying-set value and receive an element of this
+            exact module. Its normalization and element allocation have one
+            owner here. Further structure may give coefficient inputs a
+            different meaning, so computed additive or scalar-action results
+            cannot re-enter through that public input interpretation.
+            """
             underlying = self.underlying_set()
             normalized = value if value in underlying else underlying(value)
             assert normalized in underlying, (
@@ -285,17 +304,17 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return value in self.underlying_set()
 
         def __iter__(self):
-            return (self(value) for value in self.underlying_set())
+            return (self._element_from_underlying_set(value) for value in self.underlying_set())
 
         def zero(self):
-            return self(self._zero_value)
+            return self._element_from_underlying_set(self._zero_value)
 
         def an_element(self):
             r"""The zero element, which every module contains."""
             return self.zero()
 
         def _add_elements(self, left, right):
-            return self(
+            return self._element_from_underlying_set(
                 self._addition(
                     self(left).underlying_element(),
                     self(right).underlying_element(),
@@ -303,16 +322,20 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             )
 
         def _negate_element(self, element):
-            return self(self._negation(self(element).underlying_element()))
+            return self._element_from_underlying_set(
+                self._negation(self(element).underlying_element())
+            )
 
         def _owned_scalar_multiple(self, scalar, element):
             scalar = self.base_ring()(scalar)
             value = self(element).underlying_element()
             match self._rho:
                 case None:
-                    return self(self._elementwise_scalar_action(scalar, value))
+                    return self._element_from_underlying_set(
+                        self._elementwise_scalar_action(scalar, value)
+                    )
                 case rho:
-                    return self(rho(scalar)(value))
+                    return self._element_from_underlying_set(rho(scalar)(value))
 
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""
@@ -332,17 +355,29 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 f"cannot compute the annihilator of {self}: this algorithm needs a finite underlying set, "
                 f"and {self.underlying_set()} is not known to be finite"
             )
+            assert self.underlying_set() in EnumeratedSets(), (
+                f"cannot compute the annihilator of {self}: finite cardinality alone does not "
+                "supply an enumeration of the module elements"
+            )
             scalars = _enumerated_ring_elements(self.base_ring())
             assert scalars is not None, (
                 f"cannot compute the annihilator of {self}: this algorithm needs a finite scalar ring "
                 f"whose elements can be listed, and {self.base_ring()} is not one"
             )
             zero = self.zero()
-            annihilating = tuple(
-                scalar
-                for scalar in scalars
-                if all(self.scalar_multiple(scalar, element) == zero for element in self)
-            )
+            annihilating = []
+            from dzack_research.preamble.logic import conjunction
+
+            for scalar in scalars:
+                equations = (self.scalar_multiple(scalar, element) == zero for element in self)
+                decision = conjunction(equations)
+                if decision is True:
+                    annihilating.append(scalar)
+                elif decision is not False:
+                    raise ValueError(
+                        f"annihilator membership for {scalar} in {self.base_ring()} is undecided; "
+                        "finite enumeration does not establish symbolic scalar-action equality"
+                    )
             return self.base_ring().ideal(*(annihilating or (self.base_ring().zero(),)))
 
         def _verify_module_laws_when_decidable(self):
@@ -376,22 +411,22 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
             zero = self.zero()
             for element in elements:
-                assert element + zero == element and zero + element == element, (
+                assert (element + zero == element) is True and (zero + element == element) is True, (
                     f"{self} is not a module: the given zero {zero} is not an additive identity, "
                     f"since {element} + {zero} != {element}"
                 )
-                assert element + (-element) == zero, (
+                assert (element + (-element) == zero) is True, (
                     f"{self} is not a module: the given negation does not give additive inverses, "
                     f"since {element} + ({-element}) != {zero}"
                 )
             for left in elements:
                 for right in elements:
-                    assert left + right == right + left, (
+                    assert (left + right == right + left) is True, (
                         f"{self} is not a module: its addition is not commutative, "
                         f"since {left} + {right} != {right} + {left}"
                     )
                     for third in elements:
-                        assert (left + right) + third == left + (right + third), (
+                        assert ((left + right) + third == left + (right + third)) is True, (
                             f"{self} is not a module: its addition is not associative on "
                             f"{left}, {right}, {third}"
                         )
@@ -409,36 +444,36 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             one = self.base_ring().one()
             zero_scalar = self.base_ring().zero()
             for element in elements:
-                assert self.scalar_multiple(one, element) == element, (
+                assert (self.scalar_multiple(one, element) == element) is True, (
                     f"{self} is not a module: 1 in {self.base_ring()} does not act as the identity, "
                     f"since 1 * {element} != {element}"
                 )
-                assert self.scalar_multiple(zero_scalar, element) == zero, (
+                assert (self.scalar_multiple(zero_scalar, element) == zero) is True, (
                     f"{self} is not a module: 0 in {self.base_ring()} does not act as zero, "
                     f"since 0 * {element} != {zero}"
                 )
                 for scalar in scalars:
                     for other in elements:
-                        assert self.scalar_multiple(scalar, element + other) == (
+                        assert (self.scalar_multiple(scalar, element + other) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(scalar, other)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: scalar multiplication by {scalar} is not additive, "
                             f"since {scalar} * ({element} + {other}) != {scalar} * {element} + {scalar} * {other}"
                         )
                     for second_scalar in scalars:
-                        assert self.scalar_multiple(scalar + second_scalar, element) == (
+                        assert (self.scalar_multiple(scalar + second_scalar, element) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(second_scalar, element)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: ({scalar} + {second_scalar}) * {element} != "
                             f"{scalar} * {element} + {second_scalar} * {element}"
                         )
-                        assert self.scalar_multiple(
+                        assert (self.scalar_multiple(
                             scalar * second_scalar, element
                         ) == self.scalar_multiple(
                             scalar, self.scalar_multiple(second_scalar, element)
-                        ), (
+                        )) is True, (
                             f"{self} is not a module: ({scalar} * {second_scalar}) * {element} != "
                             f"{scalar} * ({second_scalar} * {element})"
                         )

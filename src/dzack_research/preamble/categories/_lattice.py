@@ -267,7 +267,11 @@ def _form_of_gram(module, gram):
             # lowering it to rows and recovering it from generator images.
             return forms(gram)
         case False:
-            return forms(lambda left, right: gram(left, right))
+            form = forms(lambda left, right: gram(left, right))
+            # This is the supplied exact infinite Gram construction, including
+            # its justified invariants, not a finite observation of the form.
+            form.gram_tensor.set_cache(gram)
+            return form
 
 
 def _gram_rank(gram):

@@ -121,7 +121,7 @@ FiniteField = GF
 
 
 def PrimeField(characteristic):
-    return GF(characteristic)
+    return PrimeFields()(characteristic)
 
 
 def Zmod(*args, **kwargs):

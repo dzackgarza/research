@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    MultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -169,7 +170,7 @@ class CohomologyAlgebraMorphism:
             cycle = source_piece.cycle_representative(cohomology_class)
             image_cycle = self.underlying_dga_morphism().component(degree)(cycle)
             image_class = target_piece.class_of_cycle(image_cycle)
-            if image_class != target_piece.zero():
+            if (image_class == target_piece.zero()) is not True:
                 result += target.from_component(degree, image_class)
         return result
 
@@ -178,7 +179,7 @@ class CohomologyAlgebraMorphism:
 
     def __mul__(self, other):
         if not isinstance(other, CohomologyAlgebraMorphism):
-            return NotImplemented
+            return MultiplicativeAlgebraMorphism.__mul__(self, other)
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()

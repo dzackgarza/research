@@ -3,6 +3,8 @@ r"""Modules equipped as localizations of modules over the source ring."""
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.modules.general_modules import _module_element_scalar_action
+
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _relation_morphism,
     _SelectedFinitePresentationModules,
@@ -18,7 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.logic import AtomicProposition, Propositions, negation
+from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
@@ -88,13 +90,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            _ = self_on_left
-            parent = self.parent()
-            match actor:
-                case _ if actor in parent.base_ring():
-                    return parent.scalar_multiple(actor, self)
-                case _:
-                    return None
+            return _module_element_scalar_action(self, actor, self_on_left)
 
         def equality_status(self, other):
             r"""Return ``True``, ``False``, or the proposition ``equal(x, y)`` for fraction equality."""
@@ -113,7 +109,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     return bool(status) if op == op_EQ else not bool(status)
 
         def _repr_(self):
-            if self.denominator() == self.parent().source_ring().one():
+            if (self.denominator() == self.parent().source_ring().one()) is True:
                 return repr(self.numerator())
             return f"({self.numerator()})/({self.denominator()})"
 
@@ -162,8 +158,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             denominator = localization_map(element.denominator())
             denominator_inverse = denominator.inverse_of_unit()
             return {
-                label: localization_map(source_coordinates(label)) * denominator_inverse
-                for label in source_coordinates.support().domain()
+                label: localization_map(coefficient) * denominator_inverse
+                for label, coefficient in source_coordinates.parent()._selected_module_coefficients(source_coordinates).items()
             }
 
         def base_ring(self):
@@ -217,45 +213,103 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         def _fraction_equality_status(self, left, right):
             r"""Decide ``m/s = m'/s'``: some ``u`` in ``S`` kills ``d = s'm - sm'``.
 
-            That holds exactly when ``Ann_R(d)`` meets ``S``.  A module with a
-            chosen finite presentation computes ``Ann_R(d)`` as a kernel, so
-            the question is decided there.  A finite module has a finite orbit
-            of ``d`` under the chosen generators of ``S``, searched for zero.
-            A torsion-free module over a domain has ``Ann_R(d) = 0`` for ``d``
-            nonzero, which meets no submonoid of nonzero elements.  Otherwise
-            the answer is the proposition ``equal(x, y)``.
+            That holds exactly when ``Ann_R(d)`` meets ``S``. The selected
+            finite-presentation owner computes that ideal when its kernel
+            computation applies. A finite module has a finite orbit
+            under a selected finite generating family of ``S``; the search
+            applies when zero and repeated-point comparisons are decided.
+            A torsion-free module over a domain has ``Ann_R(d) = 0`` when
+            ``d`` is proved nonzero. For a free module over a represented
+            quotient or exact coefficient presentation, localization kills
+            ``d`` exactly when it kills every stored source coordinate. The
+            localized zero ideal already owns this source membership test.
+
+            A source coordinate proved to be ``1`` or ``-1`` gives
+            ``Ann_R(d) = 0`` directly, without a general unit computation.
+            This also keeps the coordinate test nonrecursive: constructing
+            the localized zero ideal may transport its unit relation and
+            compare ``1`` with ``0`` in the localized coefficient ring. That
+            comparison is settled over the source before constructing any
+            localized zero ideal. Outside these computations the answer is
+            the proposition ``equal(x, y)``.
             """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                QuotientRings,
+                _submonoid_contains_zero_in_domain,
+            )
+
             source = self.numerator_module()
             source_ring = self.source_ring()
             cross_difference = (
                 source.scalar_multiple(right.denominator(), left.numerator())
                 - source.scalar_multiple(left.denominator(), right.numerator())
             )
-            if cross_difference == source.zero():
+            zero_status = cross_difference == source.zero()
+            if zero_status is True:
                 return True
             match source:
                 case _ if source in _SelectedFinitePresentationModules(source_ring):
                     return self.localization_ring().inverted_submonoid_meets(
                         source.annihilator_of(cross_difference)
                     )
-                case _ if source.is_finite() is True:
+                case _ if (
+                    source.is_finite() is True
+                    and self.localization_submonoid()._selected_representation_kind() == "generators"
+                ):
                     generators = tuple(self.inverted_elements())
                     pending = [cross_difference]
                     seen = []
                     while pending:
                         current = pending.pop()
-                        if current == source.zero():
+                        current_zero = current == source.zero()
+                        if current_zero is True:
                             return True
-                        if any(current == old for old in seen):
+                        if current_zero is not False:
+                            return AtomicProposition("equal", left, right)
+                        comparisons = tuple(current == old for old in seen)
+                        if any(comparison is True for comparison in comparisons):
                             continue
+                        if any(comparison is not False for comparison in comparisons):
+                            return AtomicProposition("equal", left, right)
                         seen.append(current)
                         pending.extend(
                             source.scalar_multiple(generator, current)
                             for generator in generators
                         )
                     return False
-                case _ if source_ring in IntegralDomains() and source.is_torsion_free() is True:
-                    return self.localization_ring().inverted_submonoid_meets(source_ring.ideal(source_ring.zero()))
+                case _ if (
+                    zero_status is False
+                    and source_ring in IntegralDomains()
+                    and source.is_torsion_free() is True
+                ):
+                    return _submonoid_contains_zero_in_domain(
+                        source_ring, self.localization_submonoid()
+                    )
+                case _ if (
+                    source in FramedFreeModules(source_ring)
+                    and (
+                        source_ring in QuotientRings()
+                        or source_ring._has_selected_exact_coefficient_presentation() is True
+                    )
+                ):
+                    coefficients = source._selected_module_coefficients(cross_difference)
+                    localization = self.localization_ring()
+                    zero_ideal = source_ring.ideal(source_ring.zero())
+                    one = source_ring.one()
+                    if any(
+                        (coefficient == one) is True or (coefficient == -one) is True
+                        for coefficient in coefficients.values()
+                    ):
+                        return localization.inverted_submonoid_meets(zero_ideal)
+                    localized_zero = zero_ideal.extension_to_localization(localization)
+                    localization_map = localization.localization_map()
+                    return conjunction(
+                        localized_zero.contains_ambient_element(localization_map(coefficient))
+                        for coefficient in coefficients.values()
+                    )
                 case _:
                     return AtomicProposition("equal", left, right)
 
@@ -309,6 +363,25 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     return all(status is True for status in statuses)
                 case _:
                     return AtomicProposition("is_zero", self)
+
+        def _represented_annihilator_ideal(self):
+            r"""Localize the annihilator of a represented finite source module.
+
+            For finitely generated M,
+            ``Ann_(S^-1 A)(S^-1 M) = S^-1 Ann_A(M)``
+            (Stacks, Tag 07T8). Finiteness is essential: a common
+            denominator can be chosen for the finitely many generators.
+            The public module annihilator and the selected-presentation
+            provider delegate here; no conductor-specific calculation is
+            introduced. Return ``NotImplemented`` outside this source regime.
+            """
+            source = self.numerator_module()
+            if source not in FinitelyGeneratedModules(self.source_ring()):
+                return NotImplemented
+            annihilator = source._represented_annihilator_ideal()
+            if annihilator is NotImplemented:
+                return NotImplemented
+            return annihilator.extension_to_localization(self.localization_ring())
 
         def _repr_(self):
             return (
@@ -467,7 +540,10 @@ def _transported_presentation(numerator_module, localization_ring):
     def localized_relation(relation_label):
         relation = relations(relations.domain().module_generator(relation_label)).to_vector()
         return free_generators.linear_combination(
-            {label: localization_map(relation(label)) for label in relation.support().domain()}
+            {
+                label: localization_map(coefficient)
+                for label, coefficient in relation.parent()._selected_module_coefficients(relation).items()
+            }
         )
 
     return {

@@ -11,6 +11,8 @@ Algebra*, §6.1).  The functors here are the scalar-change functors of
 represented equalizer and coequalizer as the computation.
 """
 
+from sage.misc.cachefunc import cached_function
+
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import (
     Functor,
@@ -23,7 +25,7 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     _RestrictionOfScalarsFunctor,
     _ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings, _owned_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -178,18 +180,55 @@ class TransportGroupActionFunctor(Functor):
         return f"Transport of {self.group()}-actions through {self.transport_functor()}"
 
 
+@cached_function(key=lambda algebra: id(algebra))
+def _group_algebra_augmentation_ring_map(algebra):
+    r"""Return the canonical augmentation with literal ring target ``R``.
+
+    The algebra augmentation ends at the scalar algebra ``S = R`` over
+    itself. If its retained carrier differs from the ring ``R``, the module
+    defining ``S`` retains the actual ring elements. Reading those elements
+    gives the canonical ring isomorphism ``S -> R``, inverse to its identity
+    scalar structure. Compose that map with the retained augmentation; never
+    identify its two endpoints. This supplier is used by ``Modules._augmentation``
+    and the canonical augmentation recognizer below.
+    """
+    from dzack_research.preamble.categories.algebras.algebras import _scalar_module
+
+    ring = _owned_ring(algebra.base_ring())
+    assert algebra in GroupAlgebras(ring), (
+        f"the canonical group augmentation requires an actual group algebra over {ring}"
+    )
+    augmentation = algebra.augmentation()
+    if augmentation.codomain() is ring:
+        return augmentation
+    scalars = _scalar_module(ring)
+    assert augmentation.codomain() is scalars, (
+        f"the augmentation of {algebra} must retain the scalar algebra of {ring}"
+    )
+    module = scalars.unformed_module()
+    comparison = OwnedRings().Mor(scalars, ring).elementwise(
+        lambda element: module(element).underlying_element()
+    )
+    return comparison * augmentation
+
+
 def _is_augmentation_of_group_algebra(ring_map) -> bool:
-    r"""Decide whether ``ring_map`` is the augmentation ``R[G] -> R``.
+    r"""Recognize either retained form of the canonical group augmentation.
 
     The augmentation is a canonical construction of the group algebra and is
-    cached by that owner.  Recognize that exact selected map rather than
-    manufacturing a chosen generating family of ``G`` merely to inspect it.
+    cached by that owner. Its algebra target is the scalar algebra of ``R``;
+    scalar change also uses its canonical composite to the literal ring ``R``.
+    Recognize these actual maps without manufacturing a generating family of
+    ``G`` or deciding arbitrary equality of functions. Specializations over
+    ``R`` must additionally require that literal target.
     """
     source = _owned_ring(ring_map.domain())
-    target = _owned_ring(ring_map.codomain())
-    if source not in GroupAlgebras(target):
+    if source not in GroupAlgebras(source.base_ring()):
         return False
-    return ring_map is source.augmentation()
+    return (
+        ring_map is source.augmentation()
+        or ring_map is _group_algebra_augmentation_ring_map(source)
+    )
 
 
 def _augmentation_data(ring_map):
@@ -422,16 +461,18 @@ class RestrictionOfGroupActionFunctor(Functor):
                     lambda group_element, point: acted.act(morphism(group_element), point),
                 )
 
-        # The affine-scheme specialization still owns a concrete underlying object and
-        # its fixed-locus operations; retain that owner until the scheme stream
-        # moves its two-argument compatibility constructor.
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
+        # The affine owner retains the coordinate algebra and constructs the
+        # restricted action on it, including the resulting fixed-locus data.
+        from dzack_research.preamble.categories.schemes.schemes import (
+            AffineGSchemes,
+            Schemes,
+        )
 
         match category:
             case Schemes():
                 base_ring = category.base_ring()
-                if acted in Schemes(base_ring):
-                    return self.codomain()(
+                if acted in Schemes(base_ring).Affine():
+                    return AffineGSchemes(morphism.domain(), base_ring)(
                         acted,
                         lambda group_element: acted.action_of(morphism(group_element)),
                     )
@@ -467,6 +508,30 @@ class RestrictionOfGroupActionFunctor(Functor):
                     lambda _obj: underlying,
                 )
             )
+
+        from dzack_research.preamble.categories.schemes.schemes import (
+            AffineGSchemes,
+            Schemes,
+            _affine_morphism_from_pullback,
+        )
+
+        match category:
+            case Schemes():
+                affine_actions = AffineGSchemes(
+                    self.group_morphism().domain(), category.base_ring()
+                )
+                if source in affine_actions and target in affine_actions:
+                    restricted_mor = self.codomain().Mor(source, target)
+                    if arrow._is_the_identity():
+                        return restricted_mor.identity()
+                    # Restriction keeps both coordinate algebras literally;
+                    # the same pullback therefore has these exact endpoints.
+                    restricted = _affine_morphism_from_pullback(
+                        source, target, underlying.coordinate_algebra_morphism()
+                    )
+                    return restricted_mor._from_equivariant_arrow(
+                        restricted, equivariance_premises=(arrow,)
+                    )
         return self.codomain().Mor(source, target)(underlying)
 
     def _repr_(self):

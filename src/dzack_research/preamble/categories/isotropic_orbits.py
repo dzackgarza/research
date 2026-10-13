@@ -113,8 +113,10 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
     """
 
     def __init__(self, group, locus, **rest) -> None:
-        if group.lattice() is not locus.universe():
-            raise ValueError(f"{group} cannot act on {locus}: the group acts on {group.lattice()}, but the primitive isotropic vectors lie in {locus.universe()}")
+        # The cached public locus can be a finite represented subset or a
+        # condition set; its identity retains the same exact lattice in both.
+        if locus is not group.lattice().primitive_isotropic_vectors():
+            raise ValueError(f"{group} cannot act on {locus}: it is not the primitive isotropic vector locus of {group.lattice()}")
         self._group = group
         self._locus = locus
         representatives = []
@@ -135,7 +137,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def orbit_of(self, vector):
         if vector not in self.locus():
-            raise ValueError(f"{vector} has no orbit in {self}: it is not a primitive isotropic vector of {self.locus().universe()}")
+            raise ValueError(f"{vector} has no orbit in {self}: it is not a primitive isotropic vector of {self.group().lattice()}")
         for orbit in self:
             if vector in orbit:
                 return orbit
@@ -146,7 +148,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
-            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be primitive isotropic vectors of {self.locus().universe()}")
+            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be primitive isotropic vectors of {self.group().lattice()}")
         return self.group().vector_equivalence_witness(source, target)
 
 
@@ -781,23 +783,119 @@ def _same_subobject(left, right) -> bool:
     )
 
 
+def _zero_isotropic_shape(lattice, rank):
+    r"""The rank-``rank`` zero-form lattice used as an isotropic marking shape."""
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    rank = int(rank)
+    zero = lattice.base_ring().zero()
+    return Lattices(lattice.base_ring())(
+        tuple(tuple(zero for _column in range(rank)) for _row in range(rank))
+    )
+
+
+def _marked_isotropic_category(lattice, *, flag):
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        FiniteOrdinalCategory,
+    )
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    return Cat().Mor(
+        FiniteOrdinalCategory(3 if flag else 2),
+        Lattices(lattice.base_ring()),
+    )
+
+
+def _marked_isotropic_object(obj, *, flag):
+    r"""Read a represented isotropic subobject/flag as the corresponding marked lattice."""
+    match flag:
+        case False:
+            return _marked_isotropic_category(obj.ambient_lattice(), flag=False).object(
+                obj.inclusion()
+            )
+        case True:
+            terms = tuple(obj.terms())
+            if len(terms) != 2:
+                raise ValueError(
+                    f"the frozen isotropic flag algorithm accepts a rank-(1,2) flag, but {obj} has {len(terms)} terms"
+                )
+            line, plane = terms
+            line_into_plane = line.inclusion().factor_through(plane.inclusion())
+            line_into_plane = line.Emb(plane)(line_into_plane)
+            return _marked_isotropic_category(obj.lattice(), flag=True).object(
+                (line_into_plane, plane.inclusion())
+            )
+
+
+def _isotropic_object_from_marked(marked, *, flag):
+    r"""Return the existing research isotropic object represented by a marked lattice."""
+    match flag:
+        case False:
+            arrow = marked.arrow()
+            lattice = arrow.codomain()
+            vectors = tuple(
+                arrow(arrow.domain().module_generator(label))
+                for label in arrow.domain().module_generating_set()
+            )
+            return lattice.primitive_isotropic_subobject(*vectors)
+        case True:
+            first, second = marked.arrows()
+            lattice = second.codomain()
+            line_label = next(iter(first.domain().module_generating_set()))
+            line_vector = second(first(first.domain().module_generator(line_label)))
+            line = lattice.primitive_isotropic_subobject(line_vector)
+            plane_vectors = tuple(
+                second(second.domain().module_generator(label))
+                for label in second.domain().module_generating_set()
+            )
+            plane = lattice.primitive_isotropic_subobject(*plane_vectors)
+            line_into_plane = line.inclusion().factor_through(plane.inclusion())
+            quotient = line_into_plane.cokernel()
+            if quotient.is_torsion_free() is not True or int(quotient.module_rank()) != 1:
+                raise ArithmeticError(
+                    f"the marked flag {marked} does not present a primitive line in a primitive plane"
+                )
+            trivialization = quotient.finite_free_trivialization()
+            normalized = trivialization.codomain()
+            quotient_label = next(iter(normalized.module_generating_set()))
+            quotient_generator = trivialization.inverse()(
+                normalized.module_generator(quotient_label)
+            )
+            complement_in_plane = line_into_plane.cokernel_projection().preimage(
+                quotient_generator
+            )
+            complement = plane.inclusion()(complement_in_plane)
+            return IsotropicFlag(lattice, (line_vector, complement))
+
+
 def _isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     r"""Return full-``O(L)`` orbit representatives of primitive isotropic subobjects/flags."""
     lattice = orthogonal_group.domain()
     rank = lattice.base_ring()(rank)
     if rank <= lattice.base_ring().zero():
         raise ValueError(f"there are no isotropic sublattices of rank {rank} in {lattice}: the rank must be positive")
-    if flag:
-        from sage_indefinite_port.indefinite.isotropic_flags import (
-            isotropic_flag_orbit_representatives,
-        )
-
-        return isotropic_flag_orbit_representatives(orthogonal_group, rank)
-    from sage_indefinite_port.indefinite.isotropic_flags import (
-        isotropic_sublattice_orbit_representatives,
+    from sage_indefinite_port.indefinite.marked_lattices import (
+        primitive_marking_classes,
     )
 
-    return isotropic_sublattice_orbit_representatives(orthogonal_group, rank)
+    category = _marked_isotropic_category(lattice, flag=flag)
+    if flag:
+        if int(rank) != 2:
+            raise ValueError(
+                f"the frozen isotropic flag algorithm classifies rank-(1,2) flags, not flags with top rank {rank}"
+            )
+        line = _zero_isotropic_shape(lattice, 1)
+        plane = _zero_isotropic_shape(lattice, 2)
+        plane_label = next(iter(plane.module_generating_set()))
+        shape = line.Mor(plane)(lambda _label: plane.module_generator(plane_label))
+    else:
+        shape = _zero_isotropic_shape(lattice, int(rank))
+    classes = primitive_marking_classes(category, shape, lattice)
+    return finite_ordered_set(tuple(
+        _isotropic_object_from_marked(marked, flag=flag)
+        for marked in classes
+    ))
 
 
 def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
@@ -811,32 +909,29 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
             return orthogonal_group.one()
     elif _same_subobject(left, right):
         return orthogonal_group.one()
-    if flag:
-        from sage_indefinite_port.indefinite.isotropic_flags import (
-            isotropic_flag_equivalence_witness,
-        )
-
-        return isotropic_flag_equivalence_witness(orthogonal_group, left, right)
-    from sage_indefinite_port.indefinite.isotropic_flags import (
-        isotropic_sublattice_equivalence_witness,
+    from sage_indefinite_port.indefinite.marked_lattices import (
+        isometry,
     )
 
-    return isotropic_sublattice_equivalence_witness(orthogonal_group, left, right)
+    category = _marked_isotropic_category(orthogonal_group.domain(), flag=flag)
+    return isometry(
+        category,
+        _marked_isotropic_object(left, flag=flag),
+        _marked_isotropic_object(right, flag=flag),
+    )
 
 
 def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     r"""Return generators of the full-orthogonal-group stabilizer of an isotropic subobject/flag."""
-    if flag:
-        from sage_indefinite_port.indefinite.isotropic_flags import (
-            isotropic_flag_stabilizer_generators,
-        )
-
-        return isotropic_flag_stabilizer_generators(orthogonal_group, obj)
-    from sage_indefinite_port.indefinite.isotropic_flags import (
-        isotropic_sublattice_stabilizer_generators,
+    from sage_indefinite_port.indefinite.marked_lattices import (
+        automorphism_group_generators,
     )
 
-    return isotropic_sublattice_stabilizer_generators(orthogonal_group, obj)
+    category = _marked_isotropic_category(orthogonal_group.domain(), flag=flag)
+    return automorphism_group_generators(
+        category,
+        _marked_isotropic_object(obj, flag=flag),
+    )
 
 
 __all__ = [

@@ -16,7 +16,7 @@ A2_GRAM = [[2, 1], [1, 2]]
 def test_a_symmetric_bilinear_form_from_a_gram_matrix(commutative_ring) -> None:
     ring = commutative_ring
     module = ring.free_module(2)
-    form = module.equip_bilinear_form(ring, A2_GRAM)
+    form = FormModules(ring)(module.bilinear_hom_space(ring)(A2_GRAM))
     e0, e1 = form.module_generator(0), form.module_generator(1)
 
     assert form in BilinearFormModules(ring)
@@ -43,7 +43,7 @@ def test_a_covariant_two_tensor_is_gram_data_for_a_bilinear_form(commutative_rin
     ring = commutative_ring
     module = ring.free_module(2)
     gram = tensor(ring, (), (2, 2), A2_GRAM)
-    form = module.equip_bilinear_form(ring, gram)
+    form = FormModules(ring)(module.bilinear_hom_space(ring)(gram))
     e0, e1 = form.module_generator(0), form.module_generator(1)
 
     assert form.gram_tensor() == gram
@@ -54,7 +54,7 @@ def test_a_covariant_two_tensor_is_gram_data_for_a_bilinear_form(commutative_rin
 def test_the_form_is_a_morphism_out_of_the_tensor_square(commutative_ring) -> None:
     ring = commutative_ring
     module = ring.free_module(2)
-    form = module.equip_bilinear_form(ring, A2_GRAM)
+    form = FormModules(ring)(module.bilinear_hom_space(ring)(A2_GRAM))
     morphism = form.form()
     square = Modules(ring).tensor_product((module, module))
 
@@ -126,7 +126,8 @@ def test_the_free_form_adjunctions_over_every_commutative_ring(commutative_ring)
 
 
 def test_base_change_of_a_form(build) -> None:
-    form = ZZ.free_module(2).equip_bilinear_form(ZZ, A2_GRAM)
+    module = ZZ.free_module(2)
+    form = FormModules(ZZ)(module.bilinear_hom_space(ZZ)(A2_GRAM))
     rational = form.base_change(ZZ.Mor(QQ)(lambda n: QQ(n)))
     mod_three = form.base_change(ZZ.Mor(GF(3))(lambda n: GF(3)(n)))
     mod_five = form.base_change(ZZ.Mor(GF(5))(lambda n: GF(5)(n)))
@@ -234,7 +235,8 @@ def test_determinant_lines_and_exterior_forms(commutative_ring) -> None:
 def test_forms_over_a_polynomial_ring_and_over_a_field() -> None:
     polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
-    form = polynomials.free_module(2).equip_bilinear_form(polynomials, [[x, 1], [1, x]])
+    module = polynomials.free_module(2)
+    form = FormModules(polynomials)(module.bilinear_hom_space(polynomials)([[x, 1], [1, x]]))
     e0, e1 = form.module_generator(0), form.module_generator(1)
     assert form.determinant() == x**2 - polynomials.one()
     assert form.is_nondegenerate()

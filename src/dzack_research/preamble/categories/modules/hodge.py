@@ -7,32 +7,42 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedIntegralDomains,
+    OwnedRings,
+)
 
 
 def _require_finite_free(module) -> int:
-    from sage.rings.infinity import Infinity
+    r"""Select the currently implemented finite framed exterior computations.
 
+    These algorithms use a finite free framing.  The assertion does not deny
+    determinant or duality constructions on other finite projective modules.
+    """
     ring = module.base_ring()
-    if module not in FinitelyGeneratedFreeModules(ring):
-        raise TypeError(
-            f"{module} is not a finitely generated free {ring}-module, which determinant, Poincaré "
-            f"duality and Hodge constructions require; it is only known to be in {module.category()}"
-        )
+    assert ring in OwnedRings().Commutative(), (
+        f"the current determinant, Poincaré duality and Hodge computations on {module} "
+        f"require a declared commutative coefficient ring, but the base is {ring}"
+    )
+    assert (
+        module in FinitelyGeneratedFreeModules(ring)
+        and module in FramedFreeModules(ring)
+    ), (
+        f"the current determinant, Poincaré duality and Hodge computations on {module} "
+        "require a selected finite free framing; no computation for this represented module is selected"
+    )
     rank = module.module_rank()
-    if rank == Infinity:
-        raise TypeError(
-            f"{module} has infinite rank; determinant, Poincaré duality and Hodge constructions require finite rank"
-        )
+    assert rank.is_finite() is True, (
+        f"the selected determinant, Poincaré duality and Hodge computation on {module} "
+        f"requires a finite represented rank, but its rank is {rank}"
+    )
     return int(rank)
 
 
-def _power_word(label, degree: int) -> tuple:
-    if degree == 0:
-        return ()
-    if degree == 1:
-        return (label,)
-    return tuple(label)
+from dzack_research.preamble.categories.modules.powers import (
+    _degree,
+    _exterior_word as _power_word,
+)
 
 
 def _power_label(word: tuple, degree: int):
@@ -63,7 +73,7 @@ def _exterior_forms(module, degree):
     r"""Return ``Lambda^degree(module^vee)``."""
 
     rank = _require_finite_free(module)
-    degree = int(degree)
+    degree = _degree(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"no exterior power of degree {degree} of {module}: the degree must lie in [0, {rank}], the rank of {module}")
     return module.dual_module().exterior_power(degree)
@@ -111,10 +121,17 @@ def _framing_volume_trivialization(module, unit=None):
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
     unit = ring.one() if unit is None else ring(unit)
-    if not unit.is_unit():
-        raise ValueError(
-            f"cannot trivialize det({module}) by sending its generator to {unit}: {unit} is not a unit of {ring}"
-        )
+    match unit.is_unit():
+        case True:
+            pass
+        case False:
+            raise ValueError(
+                f"cannot trivialize det({module}) by sending its generator to {unit}: {unit} is not a unit of {ring}"
+            )
+        case _:
+            assert False, (
+                f"the selected framing-volume computation on {module} cannot decide whether {unit} is a unit of {ring}"
+            )
     inverse_unit = unit.inverse_of_unit()
     forward = determinant.module_category().Mor(determinant, scalars)(
         {next(iter(determinant.module_generating_set())): scalars.scalar_multiple(unit, one)}
@@ -149,7 +166,7 @@ def _poincare_duality(module, volume, degree):
     r"""Return ``Lambda^k M ~= Lambda^(n-k) M^vee`` from ``volume``."""
 
     rank = _require_finite_free(module)
-    degree = int(degree)
+    degree = _degree(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"no Poincaré duality in degree {degree} on {module}: the degree must lie in [0, {rank}], the rank of {module}")
     volume_scalar, inverse_volume_scalar = _volume_scalars(module, volume)
@@ -207,12 +224,11 @@ def _poincare_duality(module, volume, degree):
     forward = source.module_category().Mor(source, target)(forward_images)
     inverse = target.module_category().Mor(target, source)(inverse_images)
     modules = Modules(module.base_ring())
-    result = modules.Core().Mor(source, target)(forward, inverse)
-    if result not in modules.Iso(source, target):
-        raise ArithmeticError(
-            f"the Poincaré duality maps {source} <-> {target} of {module} in degree {degree} are not mutually inverse"
-        )
-    return result
+    # Complementary wedges have inverse signs, and the two volume scalars
+    # come from the retained volume isomorphism and its actual inverse.
+    return modules.Core().Mor(source, target)._from_known_inverse_pair(
+        forward, inverse
+    )
 
 
 def _algebraic_correlation_morphism(metric, *, injective=False):
@@ -254,18 +270,22 @@ def _algebraic_correlation_morphism(metric, *, injective=False):
                         source_generator,
                         metric.module_generator(dual_label),
                     )
-                    if coefficient != ring.zero():
+                    if (coefficient == ring.zero()) is not True:
                         coefficients[dual_label] = coefficient
                 return dual.linear_combination(coefficients)
 
             return correlation_from_generator_images(finite_generator_image)
         case False:
-            regular = ring.regular_module()
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                _as_module_element,
+            )
 
             def infinite_generator_image(source_label):
                 source_generator = metric.module_generator(source_label)
                 return dual(
-                    lambda target_label: regular(
+                    lambda target_label: _as_module_element(
+                        ring,
+                        ring,
                         metric.b(
                             source_generator,
                             metric.module_generator(source_labels(target_label)),
@@ -279,11 +299,23 @@ def _algebraic_correlation_morphism(metric, *, injective=False):
 def _correlation_isomorphism(metric):
     r"""Return the perfect correlation ``M ~= M^vee`` for a unimodular form."""
 
-    if not metric.is_unimodular():
-        raise ValueError(
-            f"the form on {metric} is not unimodular, so its correlation {metric} -> dual module is not an "
-            f"isomorphism and there is no Hodge star over {metric.base_ring()}; use the Hodge star over the fraction field"
-        )
+    _require_finite_free(metric)
+    assert metric.value_module() is metric.base_ring(), (
+        f"the selected scalar correlation-inverse computation on {metric} requires values in {metric.base_ring()}; "
+        f"no identification of its value module {metric.value_module()} with that scalar module is selected"
+    )
+    match metric.is_unimodular():
+        case True:
+            pass
+        case False:
+            raise ValueError(
+                f"the form on {metric} is not unimodular, so its correlation {metric} -> dual module is not an "
+                f"isomorphism and there is no Hodge star over {metric.base_ring()}; use the Hodge star over the fraction field"
+            )
+        case _:
+            assert False, (
+                f"the selected correlation-inverse computation cannot decide whether the scalar pairing on {metric} is perfect"
+            )
     forward = metric.algebraic_correlation_morphism()
     dual = forward.codomain()
     inverse = dual.module_category().Mor(dual, metric)(
@@ -293,21 +325,11 @@ def _correlation_isomorphism(metric):
         }
     )
     modules = Modules(metric.base_ring())
-    result = modules.Core().Mor(metric, dual)(forward, inverse)
-    forward_inverse = all(
-        inverse(forward(metric.module_generator(label)))
-        == metric.module_generator(label)
-        for label in metric.module_generating_set()
+    # Lift supplies actual preimages of the target basis.  Their linear
+    # extension is a right inverse, and bijectivity makes it a left inverse.
+    return modules.Core().Mor(metric, dual)._from_known_inverse_pair(
+        forward, inverse
     )
-    inverse_forward = all(
-        forward(inverse(dual.module_generator(label))) == dual.module_generator(label)
-        for label in dual.module_generating_set()
-    )
-    if not (forward_inverse and inverse_forward):
-        raise ArithmeticError(
-            f"the correlation of the unimodular form on {metric} and its computed inverse are not mutually inverse"
-        )
-    return result
 
 
 def _hodge_discriminant(metric, volume):
@@ -326,7 +348,7 @@ def _hodge_star(metric, volume, degree):
     """
 
     rank = _require_finite_free(metric)
-    degree = int(degree)
+    degree = _degree(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"no Hodge star on {degree}-forms of {metric}: the degree must lie in [0, {rank}], the rank of {metric}")
     correlation = metric.correlation_isomorphism()
@@ -338,12 +360,9 @@ def _hodge_star(metric, volume, degree):
     source = metric.exterior_forms(degree)
     target = metric.exterior_forms(rank - degree)
     modules = Modules(metric.base_ring())
-    result = modules.Core().Mor(source, target)(forward, inverse)
-    if result not in modules.Iso(source, target):
-        raise ArithmeticError(
-            f"the Hodge star maps {source} <-> {target} of {metric} in degree {degree} are not mutually inverse"
-        )
-    return result
+    return modules.Core().Mor(source, target)._from_known_inverse_pair(
+        forward, inverse
+    )
 
 
 def _multivector_hodge_star(metric, volume, degree):
@@ -355,7 +374,7 @@ def _multivector_hodge_star(metric, volume, degree):
     """
 
     rank = _require_finite_free(metric)
-    degree = int(degree)
+    degree = _degree(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"no Hodge star on {degree}-vectors of {metric}: the degree must lie in [0, {rank}], the rank of {metric}")
     correlation = metric.algebraic_correlation_morphism()
@@ -381,11 +400,12 @@ def _hodge_star_over_fraction_field(metric, volume, degree):
     """
 
     _require_finite_free(metric)
-    if not metric.is_nondegenerate():
-        raise ValueError(
-            f"the form on {metric} is degenerate, so it has no Hodge star even over the fraction field"
-        )
+    degree = _degree(degree)
     ring = metric.base_ring()
+    assert ring in OwnedIntegralDomains(), (
+        f"the selected fraction-field Hodge computation on {metric} requires a declared integral domain, "
+        f"but its base ring is {ring}"
+    )
     ring_map = ring.fraction_field_map()
     fraction_field = ring_map.codomain()
     if fraction_field is ring:
@@ -393,6 +413,8 @@ def _hodge_star_over_fraction_field(metric, volume, degree):
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
     changed_volume = changed_metric.framing_volume_trivialization(
-        unit=_engine_ring(fraction_field)(volume_scalar),
+        unit=ring_map(volume_scalar),
     )
+    # Perfection is decided by the actual extended correlation.  Over the
+    # fraction field this is exactly the generic-fibre nondegeneracy needed.
     return changed_metric.hodge_star(changed_volume, degree)

@@ -1,27 +1,30 @@
 r"""Integral stabilizers of a commensurability class under a rational group.
 
 Let ``V`` be a finite-dimensional vector space over ``QQ`` and let ``G`` be a
-finitely generated subgroup of ``GL(V)``.  Two lattices ``L`` and ``M`` in
-``V`` are commensurable when ``d M <= L <= M`` for some positive integer
-``d``.  The integral stabilizer is
+finitely generated subgroup of ``GL(V)``. Two lattices are commensurable
+when their intersection has finite index in both. For a containing lattice
+``L <= M``, this is equivalent to ``d M <= L <= M`` for some positive
+integer ``d``. The integral stabilizer is
 
 ``G_L = G ∩ GL(L) = {g in G : g(L) = L}``,
 
-which is the definition, and it is what :meth:`IntegralStructureAction.stabilizer` returns: a
-predicate subgroup cut out by that condition, with nothing enumerated and no
-engine called.
+which is the definition.  For a generated group with a bounded integral model,
+:meth:`IntegralStructureAction.stabilizer` returns the effective preimage of
+the stabilizer in the finite residue action; without that finite construction,
+the owned-group fallback remains the exact predicate subgroup cut out by the
+same condition.
 
-The other three operations go through the finite quotient ``F_M = M / dM``.
-Every element of ``G`` that preserves ``M`` acts on ``F_M``, so there is a
-morphism ``rho : G -> Aut(F_M)`` with finite image, and ``L`` becomes the
-subgroup ``S_L = L / dM`` of ``F_M``.  Then
+The effective stabilizer and the other three operations go through the finite quotient ``F_M = M / dM``.
+When ``M`` is stable under ``G``, restriction and descent give a morphism
+``rho : G -> Aut(F_M)`` with finite image, and ``L`` becomes the
+submodule ``S_L = L / dM`` of ``F_M``. Then
 
 ``G_L = rho^{-1}(Stab_{rho(G)}(S_L))``,
 
 the orbit of ``S_L`` under the finite group ``rho(G)`` indexes the right
-cosets ``G_L \\ G``, a transporter between two commensurable lattices is a
+cosets ``G / G_L`` with the stabilizer on the right. A transporter is a
 preimage of an element carrying one subgroup to the other, and a double coset
-space ``V \\ G / G_L`` is computed in that finite image.  One finite quotient
+space ``H \\ G / G_L`` is computed in that finite image. One finite quotient
 therefore carries those three answers, which would otherwise be a search in an
 infinite group.
 
@@ -54,23 +57,21 @@ framing of its own, being divisible and so not finitely generated over ``ZZ``,
 and none is needed.
 
 The structural finite quotient remains available locally through
-:class:`FiniteCommensurabilityQuotient`.  For a proper finitely generated
-rational isometry group, ``sage-indefinite-port`` now supplies the T2
-``IntegralStructureAction``: it constructs the invariant over-lattice, the
-exponent and finite submodule action, lifts the lattice stabilizer and
-transporters back to live rational isometries, and returns ``G/G_L`` and
-``V \ G / G_L`` with their sides retained.  This file imports the port at the
-call, since the port imports the preamble.  For ``G=O(V)`` and full-rank
-integral lattices, the transporter is an isometry of the two pullback lattices.
-Predicate-only rational subgroups with no represented generating family still
-do not satisfy the T2 input contract and are refused rather than approximated.
+:class:`FiniteCommensurabilityQuotient`.  A proper finitely generated rational
+group is handled here from its supplied generators.  For an infinite group the
+caller additionally retains a justified finite stable containing module with
+``with_stable_containing_bound``; this hypothesis is not inferred from mere
+commensurability.  The common orbit-span construction gives the least stable
+module ``M``.  The exponent of ``M/L`` gives ``d`` with ``dM <= L``, and the
+finite residue action on ``M/dM`` computes stabilizer generators,
+transporters, right cosets and double cosets with live source-group witnesses.
+For ``G=O(V)`` and full-rank integral lattices, the direct transporter remains
+an isometry of the two pullback lattices.
 
-One further gap bounds the argument these operations take.  The preamble names
-no general linear group of a module: ``V.module_category().Mor(V, V)`` is the
-endomorphism set, and the group of its units is not an owned object.  A
-rational group here is therefore a subgroup of ``V.Aut()`` for a rational
-lattice (``rational_lattices.py``), which is the arithmetic case this program
-uses, and not the full ``GL(V)`` the rows are stated over.
+The action datum implemented here is a subgroup of ``V.Aut()`` for a rational
+formed lattice (``rational_lattices.py``). The invariant-module and finite-action
+argument applies to linear groups generally; this owner's ambient action reads
+the supplied rational isometries and their actual subgroup inclusions.
 
 What *is* owned, so a caller does not come here for it:
 
@@ -89,41 +90,209 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.g_objects import GObjects
+from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
+from dzack_research.preamble.categories.group.groups import (
+    OwnedGroups,
+    _fix_selected_group_resolution_data,
+    _integer_engine_point,
+    _owned_point,
+)
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     RestrictedScalarsModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.logic import ask
+from dzack_research.preamble.validation import validator
 
-_ABSENCE = (
-    "the finite quotient L/dL exists, but the integral structure of a proper "
-    "subgroup of O(V) is computed only for a RationalMatrixGroup from "
-    "sage-indefinite-port.  A subgroup given only by a predicate, with no "
-    "generating set, cannot be integralized by bounding denominators or by "
-    "filtering generators of O(V)"
-)
+class _FiniteIntegralRepresentation(SageObject):
+    r"""The finite lattice orbit, retaining its action and free-word maps.
 
+    The module adapter only codes submodules of M/dM by integer positions.
+    FiniteGSets owns orbit closure and transporters; the selected free-group
+    augmentation keeps words in the supplied generators before evaluation
+    in the rational group. No word-recovery algorithm for that group is used.
+    """
 
-def _ported_rational_group(rational_group):
-    r"""Return the rational group supplied by the T2 provider, or ``None`` for an owned group."""
-    match rational_group:
-        case _ if rational_group in OwnedGroups():
+    def __init__(self, action) -> None:
+        self._action = action
+        quotient = action.finite_module()
+        assert quotient.cardinality().is_finite() is True, (
+            "the residue-action computation requires a represented finite module M/dM"
+        )
+        self._quotient_points = tuple(quotient)
+        selected = action.selected_submodule()
+        self._submodules = [selected]
+        self._position_by_key = {self._submodule_key(selected): 0}
+        self._registering_orbit = True
+        augmentation = self.generating_augmentation()
+        free = augmentation.domain()
+        zero = _own_ring(SageZZ).zero()
+        self._word_orbit = FiniteGSets(free).from_finite_orbits(
+            (zero,),
+            lambda word, position: self._act_on_position(augmentation(word), position),
+        )
+        self._registering_orbit = False
+        self._g_set = FiniteGSets(action.rational_group())(
+            self._word_orbit.point_set(), self._act_on_position
+        )
+
+    def action(self):
+        return self._action
+
+    def g_set(self):
+        return self._g_set
+
+    @cached_method
+    def generating_augmentation(self):
+        r"""The actual finite free-group augmentation pi:F -> G."""
+        group = self.action().rational_group()
+        if group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set():
+            return group.selected_group_resolution().augmentation()
+        labels = finite_ordered_set(self.action()._group_generators())
+        free = OwnedGroups.Free(index_set=labels)
+        return free.Mor(group)(Sets().Mor(labels, group)(lambda generator: generator))
+
+    def permutation_representation(self):
+        return self.g_set().permutation_representation()
+
+    @cached_method
+    def word_representation(self):
+        r"""The finite permutation representation composed with pi:F -> G."""
+        return self.permutation_representation() * self.generating_augmentation()
+
+    @cached_method
+    def finite_image(self):
+        representation = self.permutation_representation()
+        return representation.codomain().subgroup(tuple(
+            representation(generator) for generator in self.action()._group_generators()
+        ))
+
+    def _submodule_key(self, submodule):
+        inclusion = submodule.inclusion()
+        positions = []
+        for position, point in enumerate(self._quotient_points):
+            contained = ask(inclusion.is_in_image(point))
+            assert contained is True or contained is False, (
+                "coding a submodule of the finite residue module requires decided membership"
+            )
+            if contained is True:
+                positions.append(position)
+        return tuple(positions)
+
+    def _move_submodule(self, group_element, submodule):
+        quotient = self.action().finite_module()
+        automorphism = self.action().quotient_automorphism(group_element)
+        inclusion = submodule.inclusion()
+        images = tuple(
+            automorphism(inclusion(submodule.module_generator(label)))
+            for label in submodule.module_generating_set()
+        )
+        return quotient.subobject_on(images)
+
+    def _act_on_position(self, group_element, position):
+        candidate = self._move_submodule(group_element, self._submodules[int(position)])
+        key = self._submodule_key(candidate)
+        if key not in self._position_by_key:
+            assert self._registering_orbit, (
+                "the supplied rational action leaves its computed finite lattice orbit"
+            )
+            self._position_by_key[key] = len(self._submodules)
+            self._submodules.append(candidate)
+        return _own_ring(SageZZ)(self._position_by_key[key])
+
+    def orbit_submodules(self):
+        return tuple(self._submodules)
+
+    @cached_method
+    def orbit_word_section(self):
+        r"""A chosen free word above each point of the lattice orbit."""
+        return Sets().Mor(self.g_set(), self.generating_augmentation().domain())(
+            lambda point: self._word_orbit.transporter_witness(_own_ring(SageZZ).zero(), point)
+        )
+
+    @cached_method
+    def orbit_section(self):
+        r"""The actual section from lattice-orbit points to G, evaluated through pi."""
+        return self.generating_augmentation() * self.orbit_word_section()
+
+    def orbit_witnesses(self):
+        section = self.orbit_section()
+        return tuple(section(point) for point in self.g_set())
+
+    def transporter_to(self, submodule):
+        position = self._position_by_key.get(self._submodule_key(submodule))
+        if position is None:
             return None
-        case _:
-            return rational_group
+        return self.orbit_section()(self.g_set().point_set()(_own_ring(SageZZ)(position)))
 
+    @cached_method
+    def finite_stabilizer(self):
+        image = self.finite_image()
+        permutations = self.permutation_representation().codomain()
+        selected = self.g_set().point_set()(_own_ring(SageZZ).zero())
+        # The preimage target must be a subgroup of the literal codomain of
+        # rho, not only a subgroup of its intermediate image.
+        return permutations.subgroup(tuple(
+            permutations(element)
+            for element in image
+            if _owned_point(permutations(element)(_integer_engine_point(selected))) == selected
+        ))
 
-def _ported_integral_structure(rational_group, lattice_inclusion):
-    r"""Compute the integral structure of ``rational_group`` through ``sage-indefinite-port``."""
-    selected = _ported_rational_group(rational_group)
-    assert selected is not None, f"cannot compute transporters or cosets of {rational_group} acting on the lattice {lattice_inclusion.domain()}: {_ABSENCE}"
-    from sage_indefinite_port.groups.integral_structures import (
-        integral_structure_action_for_group,
-    )
+    @cached_method
+    def lattice_stabilizer(self):
+        preimage = self.permutation_representation().preimage_subgroup(self.finite_stabilizer())
+        group = self.action().rational_group()
+        if group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set():
+            augmentation = preimage.schreier_generating_morphism()
+        else:
+            augmentation = preimage.schreier_generating_morphism(
+                generators=self.action()._group_generators()
+            )
+        free = augmentation.domain()
+        _fix_selected_group_resolution_data(
+            preimage,
+            free,
+            free.free_basis(),
+            augmentation * free.group_generator_morphism(),
+        )
+        return preimage
 
-    return integral_structure_action_for_group(selected, lattice_inclusion)
+    @cached_method
+    def word_lifts(self):
+        r"""One actual free word above every element of the finite image."""
+        return self.generating_augmentation().domain().finite_image_lifts(self.word_representation())
+
+    @cached_method
+    def image_lifts(self):
+        augmentation = self.generating_augmentation()
+        return {image: augmentation(word) for image, word in self.word_lifts().items()}
+
+    @cached_method
+    def right_cosets(self):
+        r"""G/G_L as the pointed transitive G-set of its finite lattice orbit."""
+        return LeftCosetGSets(self.lattice_stabilizer()).from_transitive_action(
+            self.g_set(), _own_ring(SageZZ).zero(), self.orbit_section()
+        )
+
+    def double_cosets(self, left_subgroup):
+        group = self.action().rational_group()
+        if left_subgroup is group:
+            inclusion = OwnedGroups().Mor(group, group).identity()
+        else:
+            if left_subgroup.supergroup() is not group:
+                raise ValueError(f"the left subgroup {left_subgroup} lies in {left_subgroup.supergroup()}, not in {group}")
+            inclusion = left_subgroup.inclusion()
+        cosets = self.right_cosets()
+        # Retain the owned G/G_L object itself as the point set, so the
+        # orbit quotient retains H, G, G_L and both quotient maps.
+        return FiniteGSets(left_subgroup)(
+            cosets, lambda element, point: cosets.act(inclusion(element), point)
+        ).orbits()
 
 
 class IntegralStructureAction(SageObject):
@@ -131,13 +300,18 @@ class IntegralStructureAction(SageObject):
 
     The defining datum is the pair ``(G, i: L -> Res(V))``.  Stabilizers,
     transporters, and the associated coset decompositions are operations of
-    that action; the finite quotient ``L/dL`` is a further construction from
-    the same selected lattice.
+    that action. Under a justified stable containing bound, the least invariant
+    module ``M`` supplies the finite residue quotient ``M/dM``.
     """
 
     def __init__(self, rational_group, lattice_inclusion) -> None:
+        if rational_group not in OwnedGroups():
+            raise TypeError(
+                f"an integral-structure action needs an owned rational group with supplied generators, but got {rational_group}"
+            )
         self._rational_group = rational_group
         self._lattice_inclusion = lattice_inclusion
+        self._stable_containing_bound = None
 
     def rational_group(self):
         return self._rational_group
@@ -145,18 +319,173 @@ class IntegralStructureAction(SageObject):
     def lattice_inclusion(self):
         return self._lattice_inclusion
 
+    def with_stable_containing_bound(self, containing_inclusion, *, check=False):
+        r"""Return this action with a justified finite stable module containing ``L`` retained."""
+        result = IntegralStructureAction(self.rational_group(), self.lattice_inclusion())
+        result._stable_containing_bound = containing_inclusion
+        result.validate_stable_containing_bound(check=check)
+        return result
+
+    def stable_containing_bound(self):
+        return self._stable_containing_bound
+
+    def _group_generators(self):
+        group = self.rational_group()
+        if group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set():
+            return tuple(group.group_generators())
+        if group.is_finite() is True:
+            return tuple(group)
+        assert False, (
+            f"integral-structure computation for {group} requires a selected finite generating family "
+            "or a represented finite group"
+        )
+
+    @cached_method
+    def _ambient_group_inclusion(self):
+        group = self.rational_group()
+        inclusion = OwnedGroups().Mor(group, group).identity()
+        current = group
+        while current.supergroup() is not current:
+            step = current.inclusion()
+            inclusion = step * inclusion
+            current = current.supergroup()
+        ambient = self.lattice_inclusion().codomain().module_over_extension()
+        if current is not ambient.Aut():
+            raise ValueError(
+                f"the rational group {group} must be a represented subgroup of Aut({ambient}), but its ambient group is {current}"
+            )
+        return inclusion
+
+    @cached_method
+    def ambient_action_functor(self):
+        lattice = self.lattice_inclusion().domain()
+        ring = lattice.base_ring()
+        space = self.lattice_inclusion().codomain()
+        if space not in RestrictedScalarsModules(ring):
+            raise TypeError(
+                f"the lattice inclusion must land in a restriction-of-scalars module, but it lands in {space}"
+            )
+        ambient = space.module_over_extension()
+        restrict = Modules(ambient.base_ring()).restriction_of_scalars(space.ring_map())
+        group_inclusion = self._ambient_group_inclusion()
+        return GroupActionFunctor(
+            self.rational_group(),
+            Modules(ring),
+            space,
+            lambda element: restrict(
+                ambient.module_category().Mor(ambient, ambient)(group_inclusion(element))
+            ),
+        )
+
+    @validator
+    def validate_stable_containing_bound(self):
+        r"""Check the supplied finite containing module and its generator stability."""
+        containing = self.stable_containing_bound()
+        if containing is None:
+            return
+        selected = self.lattice_inclusion()
+        if containing.codomain() is not selected.codomain():
+            raise ValueError("the stable containing bound and selected lattice must lie in one rational space")
+        finite = containing.domain().module_generating_set().cardinality().is_finite()
+        if finite is False:
+            raise ValueError("the stable containing bound must be finitely generated")
+        assert finite is True, "checking a stable containing bound requires a known finite module generating family"
+        selected.factor_through(containing)
+        action = self.ambient_action_functor()
+        generators = self._group_generators()
+        classifying = self.rational_group().classifying_category()
+        point = classifying.an_object()
+        arrows = classifying.Mor(point, point)
+        for element in generators + tuple(~generator for generator in generators):
+            arrow = action(arrows(element))
+            for generator in containing.domain().module_generators():
+                contained = ask(containing.is_in_image(arrow(containing(generator))))
+                if contained is False:
+                    raise ValueError(
+                        f"the supplied containing module {containing.domain()} is not stable under {element}"
+                    )
+                assert contained is True, (
+                    f"whether {element} preserves the supplied containing module is undecided"
+                )
+
+    @cached_method
+    def invariant_module_construction(self):
+        group = self.rational_group()
+        containing = self.stable_containing_bound()
+        if group.is_finite() is not True and containing is None:
+            assert False, (
+                f"computing the orbit-generated integral module for {group} requires a known finite group "
+                "or a justified finite stable containing module; supply the latter with "
+                "with_stable_containing_bound(...)"
+            )
+        return GObjects(group, Modules(self.lattice_inclusion().domain().base_ring())).orbit_generated_submodule(
+            self.ambient_action_functor(), self.lattice_inclusion(), containing=containing
+        )
+
+    def invariant_module(self):
+        r"""Return the least represented stable module ``M`` containing the selected lattice."""
+        return self.invariant_module_construction().inclusion()
+
+    invariant_overlattice = invariant_module
+
+    @cached_method
+    def quotient_exponent(self):
+        invariant = self.invariant_module()
+        selected_into_invariant = self.lattice_inclusion().factor_through(invariant)
+        quotient = selected_into_invariant.cokernel()
+        exponent = quotient.exponent()
+        if exponent == quotient.base_ring().zero():
+            raise ValueError(
+                f"the selected lattice {self.lattice_inclusion().domain()} has infinite index in the stable module {invariant.domain()}"
+            )
+        return abs(exponent)
+
+    @cached_method
+    def finite_quotient_action(self):
+        return FiniteCommensurabilityQuotient(
+            self.rational_group(), self.invariant_module(), self.quotient_exponent()
+        )
+
+    def finite_module(self):
+        return self.finite_quotient_action().quotient_module()
+
+    def finite_projection(self):
+        return self.finite_quotient_action().quotient_projection()
+
+    def quotient_automorphism(self, automorphism):
+        return self.finite_quotient_action().quotient_automorphism(automorphism)
+
+    def intermediate_image(self, lattice_inclusion):
+        return self.finite_quotient_action().intermediate_image(lattice_inclusion)
+
+    @cached_method
+    def selected_submodule(self):
+        return self.intermediate_image(self.lattice_inclusion())
+
+    @cached_method
+    def residue_action_functor(self):
+        quotient = self.finite_module()
+        return GroupActionFunctor(
+            self.rational_group(), Modules(quotient.base_ring()), quotient, self.quotient_automorphism
+        )
+
+    @cached_method
+    def finite_representation(self):
+        return _FiniteIntegralRepresentation(self)
+
     def stabilizer(self):
         r"""Return ``{g in G : g(L)=L}`` for the selected lattice ``L``."""
         rational_group = self.rational_group()
         lattice_inclusion = self.lattice_inclusion()
-        match _ported_rational_group(rational_group):
-            case None:
-                pass
-            case _:
-                return _ported_integral_structure(
-                    rational_group,
-                    lattice_inclusion,
-                ).lattice_stabilizer()
+        if (
+            rational_group.is_finite() is True
+            or (
+                rational_group.has_selected_group_resolution()
+                and rational_group.has_selected_finite_group_generating_set()
+                and self.stable_containing_bound() is not None
+            )
+        ):
+            return self.finite_representation().lattice_stabilizer()
 
         lattice = lattice_inclusion.domain()
         space = lattice_inclusion.codomain()
@@ -199,32 +528,58 @@ class IntegralStructureAction(SageObject):
                 )
             case _:
                 pass
-        return _ported_integral_structure(
-            rational_group,
-            source_inclusion,
-        ).transporter(source_inclusion, target_inclusion)
+        assert (
+            rational_group.has_selected_group_resolution()
+            and rational_group.has_selected_finite_group_generating_set()
+        ) or rational_group.is_finite() is True, (
+            f"a transporter in {rational_group} requires a finite selected generating family "
+            "or a represented finite group"
+        )
+        target_submodule = self.finite_quotient_action().intermediate_image_or_none(target_inclusion)
+        if target_submodule is None:
+            return None
+        witness = self.finite_representation().transporter_to(target_submodule)
+        if witness is None:
+            return None
+        if not self._carries_lattice(witness, source_inclusion, target_inclusion):
+            raise ArithmeticError(
+                "a finite residue-action witness does not carry the actual source lattice to the target"
+            )
+        return witness
+
+    def _carries_lattice(self, automorphism, source_inclusion, target_inclusion):
+        if source_inclusion.codomain() is not target_inclusion.codomain():
+            return False
+        space = source_inclusion.codomain()
+        inverse = ~automorphism
+        return all(
+            target_inclusion.is_in_image(
+                space.wrap(automorphism(source_inclusion(generator).underlying_element()))
+            )
+            for generator in source_inclusion.domain().module_generators()
+        ) and all(
+            source_inclusion.is_in_image(
+                space.wrap(inverse(target_inclusion(generator).underlying_element()))
+            )
+            for generator in target_inclusion.domain().module_generators()
+        )
 
     def right_cosets(self):
         r"""Return ``G/G_L`` with the selected lattice stabilizer on the right."""
-        return _ported_integral_structure(
-            self.rational_group(),
-            self.lattice_inclusion(),
-        ).right_cosets()
+        return self.finite_representation().right_cosets()
 
     def double_cosets(self, subgroup):
         r"""Return ``subgroup \\ G / G_L`` with all three sides retained."""
         rational_group = self.rational_group()
-        action = _ported_integral_structure(
-            rational_group,
-            self.lattice_inclusion(),
-        )
-        if subgroup.supergroup() is not rational_group:
+        if subgroup is not rational_group and subgroup.supergroup() is not rational_group:
             raise ValueError(
                 f"cannot form the double cosets {subgroup} \\ G / G_L for G = "
                 f"{rational_group}: {subgroup} must be a subgroup of G, but it is a "
                 f"subgroup of {subgroup.supergroup()}"
             )
-        return action.double_cosets(subgroup)
+        return self.finite_representation().double_cosets(subgroup)
+
+    lattice_stabilizer = stabilizer
 
     def finite_quotient(self, modulus):
         r"""Return the finite commensurability quotient ``L/modulus*L``."""
@@ -309,8 +664,6 @@ class FiniteCommensurabilityQuotient(SageObject):
 
     def restricted_automorphism(self, automorphism):
         r"""Restrict one ``g in G`` to the stable reference lattice ``M``."""
-        if automorphism not in self.reference_stabilizer():
-            raise ValueError(f"cannot restrict {automorphism} to the lattice {self.reference_lattice()}: restriction needs g(M) = M, and this automorphism does not preserve M")
         lattice = self.reference_lattice()
         inclusion = self.reference_inclusion()
         space = self.ambient_restricted_space()
@@ -320,7 +673,18 @@ class FiniteCommensurabilityQuotient(SageObject):
             moved = space.wrap(automorphism(embedded))
             return inclusion.lift(moved)
 
-        return lattice.Aut()({label: image(label) for label in lattice.module_generating_set()})
+        forward = lattice.Aut()({label: image(label) for label in lattice.module_generating_set()})
+        inverse = ~automorphism
+        if not all(
+            inclusion.is_in_image(
+                space.wrap(inverse(inclusion(generator).underlying_element()))
+            )
+            for generator in lattice.module_generators()
+        ):
+            raise ValueError(
+                f"cannot restrict {automorphism} to {lattice}: its inverse does not preserve the reference lattice"
+            )
+        return forward
 
     def quotient_automorphism(self, automorphism):
         r"""Return the induced automorphism of ``F_M``."""
@@ -341,7 +705,7 @@ class FiniteCommensurabilityQuotient(SageObject):
             self.quotient_automorphism,
         )
 
-    def intermediate_image(self, lattice_inclusion):
+    def intermediate_image_or_none(self, lattice_inclusion):
         r"""Return ``S_L=L/dM`` inside ``F_M`` for ``dM <= L <= M``.
 
         Both containments are verified through the actual inclusions in
@@ -354,10 +718,22 @@ class FiniteCommensurabilityQuotient(SageObject):
                 f"{self.reference_lattice()}: it lies in {lattice_inclusion.codomain()}, not "
                 f"in the rational space {self.ambient_restricted_space()} containing M"
             )
-        into_reference = lattice_inclusion.factor_through(self.reference_inclusion())
+        into_reference = lattice_inclusion.factor_through_or_none(self.reference_inclusion())
+        if into_reference is None:
+            return None
         scaled_reference = self.reference_inclusion() * self.scaling_morphism()
-        scaled_reference.factor_through(lattice_inclusion)
+        if scaled_reference.factor_through_or_none(lattice_inclusion) is None:
+            return None
         return (self.quotient_projection() * into_reference).image()
+
+    def intermediate_image(self, lattice_inclusion):
+        r"""Return ``L/dM`` for a represented intermediate lattice ``dM <= L <= M``."""
+        image = self.intermediate_image_or_none(lattice_inclusion)
+        if image is None:
+            raise ValueError(
+                f"{lattice_inclusion.domain()} is not intermediate between dM and M for d={self.modulus()}"
+            )
+        return image
 
 
 def _full_orthogonal_integral_transporter(

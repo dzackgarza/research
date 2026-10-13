@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.groups import (
     OwnedAbelianGroups,
     OwnedFiniteAbelianGroups,
+    OwnedFiniteGroups,
     OwnedGroups,
     _element_from_engine,
     _element_to_engine,

@@ -46,12 +46,14 @@ class _AlgebraUnderlyingModuleFunctor(Functor):
 
         \(U\) changes neither an element nor its image; it changes which
         operations the map answers to.  An \(R\)-algebra morphism is
-        \(R\)-linear by definition, so the construction alone gives linearity.
+        \(R\)-linear by definition, under the same retained linearity
+        premise as the admitted arrow. Forgetting multiplication does not
+        decide an unresolved premise.
         """
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return source.module_category().Mor(source, target)._from_constructed_element_map(
-            lambda element: morphism(element)
+            lambda element: morphism(element), premises=(morphism,)
         )
 
     def _repr_(self):

@@ -24,6 +24,12 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 )
 
 
+def _homogeneous_section_identity_comparison(sections):
+    """The identity in the core Mor of an owned section module."""
+    identity = sections.module_category().Mor(sections, sections).identity()
+    return sections.module_category().Core().Mor(sections, sections)(identity, identity)
+
+
 def _rank_one_generator(module):
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite() or int(labels.cardinality()) != 1:
@@ -872,11 +878,7 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         return self.global_sections()
 
     def homogeneous_polynomial_comparison(self):
-        sections = self.global_sections()
-        identity = sections.module_category().Mor(sections, sections).identity()
-        return sections.module_category().Core().Mor(sections, sections)(
-            identity, identity
-        )
+        return _homogeneous_section_identity_comparison(self.global_sections())
 
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
@@ -1347,11 +1349,7 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         return self.global_sections()
 
     def homogeneous_polynomial_comparison(self):
-        sections = self.global_sections()
-        identity = sections.module_category().Mor(sections, sections).identity()
-        return sections.module_category().Core().Mor(sections, sections)(
-            identity, identity
-        )
+        return _homogeneous_section_identity_comparison(self.global_sections())
 
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
