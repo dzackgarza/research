@@ -126,17 +126,12 @@ class FixedSizeSelectionElement(Element):
                 first = False
                 previous = position
 
-        count_distinct = sum(1 for _position in distinct_positions())
-        indices = Sets.Δ[count_distinct - 1]
+        positions = tuple(distinct_positions())
+        indices = Sets.Δ[len(positions) - 1]
 
         def source_label(index):
             requested = int(index)
-            for offset, position in enumerate(distinct_positions()):
-                if offset == requested:
-                    return self.parent().source()[position]
-            raise IndexError(
-                f"position {requested} is out of range for the distinct labels of the selection {self}"
-            )
+            return self.parent().source()[positions[requested]]
 
         return FiniteOrderedSets().from_indexed(
             indices,
