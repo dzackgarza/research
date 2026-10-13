@@ -128,21 +128,14 @@ class IndexedFamily[IndexT, ValueT]:
         else:
             bucket = self._value_cache.setdefault(index_hash, [])
             candidates = (*bucket, *self._unhashable_value_cache)
-        undecided = False
         for known, value in candidates:
             equal = True if normalized is known else normalized == known
             if equal is True:
-                if undecided:
-                    raise ValueError(
-                        "cannot select a family value: equality with an earlier index is undecided"
-                    )
                 return value
-            if equal is not False:
-                undecided = True
-        if undecided:
-            raise ValueError(
-                "cannot distinguish this family index from previously evaluated indices"
-            )
+            # Undecidable equality is not a reason to reuse a previous
+            # value, nor evidence that the two labels are distinct.  Keep
+            # both presentations in the memoization cache until an exact
+            # identity or decided equality justifies reuse.
         value = self._value_function(normalized)
         bucket.append((normalized, value))
         if bucket is not self._unhashable_value_cache:
