@@ -109,17 +109,15 @@ def _finite_set_quotient_by_generated_relation(target, relation_pairs):
     ranking positions.  The returned quotient and projection are owned sets and
     maps; ``representative_point`` is used only to define the universal factor.
     """
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
-
     assert Sets().is_provably_finite(target) and target in EnumeratedSets(), (
         f"the finite quotient algorithm requires a selected enumeration of {target}; "
         "finiteness alone gives no ranking of quotient relation vertices"
     )
-    enumerated_target = finite_ordered_set(tuple(target))
-    target_points = tuple(enumerated_target)
-    target_ranking = enumerated_target.ranking_map()
+    # The target already retains its chosen bijection to its finite ordinal.
+    # Reconstructing a second finite ordered set would replace that datum
+    # and could compare symbolic target points to recover their positions.
+    target_ranking = target.ranking_map()
+    target_points = tuple(target)
 
     def position(value):
         return int(target_ranking(value))

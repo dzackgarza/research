@@ -84,3 +84,18 @@ def test_finite_coequalizer_does_not_infer_enumeration_from_finiteness() -> None
         assert "finite enumerat" in str(error)
     else:
         raise AssertionError("the coequalizer algorithm enumerated an unenumerated finite source")
+
+
+def test_coequalizer_uses_the_targets_selected_ranking() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    source = Sets.Δ[0]
+    target = finite_ordered_set(("c", "a", "b"))
+    first = Sets().Mor(source, target)(lambda _point: target("c"))
+    second = Sets().Mor(source, target)(lambda _point: target("b"))
+    quotient = Sets().coequalizer(first, second)
+    assert quotient.cardinality() == cardinal(2)
+    # The target order identifies the positions of c and b (0 and 2),
+    # independently of lexicographic order or a reconstructed set.
+    assert target.ranking_map()(target("c")) == 0
+    assert target.ranking_map()(target("b")) == 2
