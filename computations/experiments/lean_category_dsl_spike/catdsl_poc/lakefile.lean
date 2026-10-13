@@ -3,9 +3,10 @@ open Lake DSL
 
 package «catdsl_poc» where
   version := v!"0.1.0"
+  packagesDir := "../../../../../.local/share/lean/v4.33.0/packages"
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "v4.32.0"
+  "https://github.com/leanprover-community/mathlib4" @ "v4.33.0"
 
 @[default_target]
 lean_lib CatDSL

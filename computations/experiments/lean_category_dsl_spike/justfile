@@ -1,6 +1,6 @@
 # Lean category-DSL spike.
 #
-# Two Lean projects, both pinned to leanprover/lean4:v4.32.0 + mathlib v4.32.0:
+# Two Lean projects, both pinned to leanprover/lean4:v4.33.0 + mathlib v4.33.0:
 #
 #   .            LeanCategoryDslSpike — the finite-pair numbering lemma
 #   catdsl_poc/  CatDSL — the categorical DSL proof of concept
@@ -34,9 +34,9 @@ setup:
       exit 1
     fi
     ours=$(lean --version | grep -oE '[0-9a-f]{40}')
-    theirs=$(gh api repos/leanprover/lean4/commits/v4.32.0 --jq .sha 2>/dev/null || echo unknown)
+    theirs=$(gh api repos/leanprover/lean4/commits/v4.33.0 --jq .sha 2>/dev/null || echo unknown)
     echo "lean githash : $ours"
-    echo "v4.32.0      : $theirs"
+    echo "v4.33.0      : $theirs"
     if [ "$ours" != "$theirs" ] && [ "$theirs" != "unknown" ]; then
       echo "MISMATCH -- not the official build; mathlib's cache will not apply." >&2
       exit 1
