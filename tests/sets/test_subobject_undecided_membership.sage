@@ -23,6 +23,11 @@ def test_finite_subobject_boolean_operations_retain_propositions() -> None:
     assert (empty <= unknown) is True
     assert (unknown <= empty) is not True
     assert (unknown == full) is not True
+    # Equalities and inclusions are characteristic propositions, not
+    # Boolean coercions of a membership computation still undecided.
+    assert (unknown == empty) is not True
+    assert (full <= unknown) is not False
+    assert (empty == full) is False
 
 
 def test_characteristic_morphism_requires_actual_set_arrow_endpoints() -> None:
