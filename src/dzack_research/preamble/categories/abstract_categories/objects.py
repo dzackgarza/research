@@ -1,5 +1,7 @@
 """Dependency-light bases for the owned mathematical category graph."""
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
