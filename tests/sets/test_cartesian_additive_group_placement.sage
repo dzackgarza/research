@@ -54,6 +54,25 @@ def test_group_product_retains_monoid_universal_property() -> None:
         assert product.projection(label)(induced(source(3))) == ZZ(3)
 
 
+def test_infinite_group_product_retains_monoid_cones() -> None:
+    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+    index = DiscreteCategory(NN)
+    additive = AdditiveMonoids()
+    source_diagram = Cat().Mor(index, additive).constant_functor(NN)
+    target_diagram = Cat().Mor(index, additive).constant_functor(ZZ)
+    inclusion = additive.Mor(NN, ZZ)(lambda n: ZZ(int(n)))
+    components = NaturalTransformation(source_diagram, target_diagram, lambda _index: inclusion)
+    product = Sets().product(indexed_family(NN, ZZ))
+    induced = product.from_maps(NN, components)
+    assert induced.parent() is additive.Mor(NN, product)
+    for position in (0, 2, 7):
+        projection = product.projection(NN(position))
+        assert projection(induced(NN(4))) == ZZ(4)
+        assert projection(induced(NN(2) + NN(3))) == ZZ(5)
+
+
 def test_mixed_finite_monoid_product_is_not_an_additive_group() -> None:
     mixed = Sets().product((ZZ, NN))
     assert mixed in AdditiveMonoids()
