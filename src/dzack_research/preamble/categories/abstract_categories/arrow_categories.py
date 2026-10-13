@@ -1825,10 +1825,12 @@ class SetSubobjectCategory(SliceCategory):
         def symmetric_difference(self, other):
             from dzack_research.preamble.logic import conjunction, negation
 
-            return self._subset_from_predicate(other, lambda member: negation(conjunction((
-                negation(conjunction((self.is_parent_of(member), negation(other.is_parent_of(member))))),
-                negation(conjunction((other.is_parent_of(member), negation(self.is_parent_of(member))))),
-            ))))
+            return self._subset_from_predicate(other, lambda member: (lambda left, right: negation(conjunction((
+                    negation(conjunction((left, negation(right)))),
+                    negation(conjunction((right, negation(left)))),
+                ))))(
+                    self.is_parent_of(member), other.is_parent_of(member)
+                ))
 
         def complement(self):
             from dzack_research.preamble.logic import negation
@@ -1860,6 +1862,8 @@ class SetSubobjectCategory(SliceCategory):
                 # predicates, not Python equality of their truth values.
                 # Either membership may remain undecided even over a finite
                 # enumerated ambient set.
+                # In particular, both implications for one point must be
+                # evaluated from the same two membership propositions.
                 return conjunction(
                     conjunction((
                         negation(conjunction((left, negation(right)))),
