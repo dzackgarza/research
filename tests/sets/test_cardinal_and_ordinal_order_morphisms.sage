@@ -184,6 +184,12 @@ def test_literal_union_requires_actual_enumeration_not_finiteness() -> None:
     from dzack_research.preamble.logic import AtomicProposition
 
     left = Set((0, 1))
+    unknown_subset = Sets().condition_set(
+        left, lambda point: AtomicProposition("unspecified_member", point)
+    )
+    # The retained ambient inclusion establishes B subset A, so A union B
+    # is literally A without enumerating B or deciding its predicate.
+    assert left.union(unknown_subset) is left
     universe = Sets.Δ[2]
     undecided = Sets().condition_set(
         universe, lambda point: AtomicProposition("unspecified_member", point)

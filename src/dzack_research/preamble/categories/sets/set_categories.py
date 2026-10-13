@@ -2044,6 +2044,11 @@ class _FiniteLiteralSet(Sets().ObjectType):
         )
         if isinstance(other, _FiniteLiteralSet):
             return _FiniteLiteralSet(self._points.union(other._points))
+        # The chosen ambient of a predicate subset supplies its inclusion,
+        # independently of whether the predicate can be decided or listed.
+        # Hence A union B = A whenever B is constructed as a subset of A.
+        if isinstance(other, _ConditionSetEngine) and other.universe() is self:
+            return self
         assert other in EnumeratedSets(), (
             f"the literal-set union with {other} requires its selected finite enumeration; "
             "the general union has no represented literal-set algorithm for this input"
