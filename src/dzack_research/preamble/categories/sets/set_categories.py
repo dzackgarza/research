@@ -4693,12 +4693,12 @@ def _coproduct_of_indexed_family(family: IndexedFamily) -> Sets().ObjectType:
         CoproductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="sum"),
     ]
-    if (
-        Sets().is_provably_finite(index_set)
-        and index_set in EnumeratedSets()
-        and all(family(index) in EnumeratedSets() for index in index_set)
-    ):
-        placements.append(EnumeratedCoproductsOfSets())
+    if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
+        # Select the summand family once, retaining exactly the values used
+        # by the coproduct's dependent family and cardinality supplier.
+        summands = tuple(family(index) for index in index_set)
+        if all(summand in EnumeratedSets() for summand in summands):
+            placements.append(EnumeratedCoproductsOfSets())
     elif (
         index_set in EnumeratedSets()
         and index_set in Sets().Infinite()
