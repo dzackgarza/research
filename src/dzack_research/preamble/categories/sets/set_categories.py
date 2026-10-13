@@ -230,6 +230,19 @@ class _GeneratedRelationQuotient:
                                 added = True
                 if not added:
                     break
+            # All certified finite paths have been explored. Distinct
+            # representatives may still compare undecidably, so a failed
+            # search alone never certifies inequivalence.
+            if any((right == seen) is True for seen in reached):
+                return True
+            # Finite support and decidable equality on its vertices also
+            # certify nonmembership in the generated equivalence class.
+            # Never conclude False when an unknown endpoint comparison
+            # could connect another component to the explored one.
+            vertices = (left, right) + tuple(value for edge in edges for value in edge)
+            decisions = tuple(a == b for a in vertices for b in vertices)
+            if all(decision is True or decision is False for decision in decisions):
+                return False
         return AtomicProposition("generated_equivalence", self, left, right)
 
     def class_of(self, representative):

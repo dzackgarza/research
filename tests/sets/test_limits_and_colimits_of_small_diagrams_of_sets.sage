@@ -78,6 +78,10 @@ def test_finite_generated_relation_on_infinite_set_closes_paths() -> None:
     assert projection(target(2)) == projection(target(9))
     assert projection(target(9)) == projection(target(2))
     assert projection * left == projection * right
+    # Decidable equality on this finite relation support also separates
+    # components without enumerating the ambient infinite target.
+    assert projection(target(2)) != projection(target(11))
+    assert projection(target(11)) != projection(target(9))
 
 
 def test_set_equalizer_uses_selected_parallel_morphisms_and_inclusion() -> None:
