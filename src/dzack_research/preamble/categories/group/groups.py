@@ -3912,7 +3912,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             source, target = left_morphism.domain(), left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError(f"the group coequalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
-            if source.has_selected_finite_group_generating_set():
+            if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 generators = source.group_generators()
             elif source in OwnedFiniteGroups():
                 generators = source
