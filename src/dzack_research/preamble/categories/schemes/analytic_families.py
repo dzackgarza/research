@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_complex_field,
     _owned_rationals,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
@@ -71,8 +72,8 @@ class _AffineSpaceAnalytificationFunctor(Functor):
 
     def __init__(self, scalar_embedding) -> None:
         self._scalar_embedding = scalar_embedding
-        source = _own_ring(scalar_embedding.domain())
-        target = _own_ring(scalar_embedding.codomain())
+        source = _owned_ring(scalar_embedding.domain())
+        target = _owned_ring(scalar_embedding.codomain())
         assert _engine_ring(target) is SageCC, (
             f"analytification along {scalar_embedding} needs an embedding into the complex "
             f"numbers CC, but its codomain is {target}"

@@ -103,6 +103,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _proper_restriction_base_ring,
     _owned_integers,
     _owned_rationals,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
@@ -1994,7 +1995,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 _scheme_base_change_functor,
             )
 
-            assert _own_ring(ring_map.domain()) is self.base_ring(), (
+            assert _owned_ring(ring_map.domain()) is self.base_ring(), (
                 f"cannot form the base change of {self} along {ring_map}: the ring map must start at the "
                 f"base ring {self.base_ring()}, but it starts at {ring_map.domain()}"
             )
@@ -4332,7 +4333,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
     def analytification(self, scalar_embedding):
         r"""Return affine-space analytification along this base embedding."""
-        assert _own_ring(scalar_embedding.domain()) is self.base_ring(), (
+        assert _owned_ring(scalar_embedding.domain()) is self.base_ring(), (
             f"cannot analytify the affine spaces over {self.base_ring()} along {scalar_embedding}: the "
             f"embedding must start at {self.base_ring()}, but it starts at {scalar_embedding.domain()}"
         )

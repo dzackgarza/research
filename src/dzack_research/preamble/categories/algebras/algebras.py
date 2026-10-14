@@ -4511,7 +4511,7 @@ def _algebra_structure_on(
         f"the structure map R -> A of an algebra must end at A = {selected_ring}, but {structure_map} "
         f"ends at {structure_map.codomain()}"
     )
-    base = _own_ring(structure_map.domain())
+    base = _owned_ring(structure_map.domain())
     assert base in OwnedRings().Commutative(), (
         f"{selected_ring} is an algebra over {base} through {structure_map} only if {base} is "
         "commutative, and it is not known to be"

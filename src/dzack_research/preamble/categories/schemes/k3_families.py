@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_rationals,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
@@ -391,7 +392,7 @@ class _HorikawaK3BaseChangeComparison(SageObject):
         changed_surface = changed_line.projective_product()
         group = source.family().acting_group()
         changed_action = changed_surface.c2_diagonal_sign_action(group)
-        target_base = _own_ring(ring_map.codomain())
+        target_base = _owned_ring(ring_map.codomain())
         trivial = lambda _element: target_base.one()
         sign = lambda element: (
             target_base.one()

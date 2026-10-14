@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _cross_engine_ring_value,
     _engine_numeral,
     _own_ring,
+    _owned_real_algebraic_numbers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -611,7 +612,7 @@ class VinbergInvariantMatrices(OwnedCategory):
                 diagram.root_gram_tensor(), index_set=tuple(diagram.index_set())
             )
         vertices = tuple(diagram.index_set())
-        real_algebraics = _own_ring(AA)
+        real_algebraics = _owned_real_algebraic_numbers()
         values = [
             [
                 _cross_engine_ring_value(
