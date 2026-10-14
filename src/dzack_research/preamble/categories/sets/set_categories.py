@@ -5451,7 +5451,8 @@ class _PosetOnOrderRelation:
         return point
 
     def _cardinality_decision(self):
-        return self._underlying_set._cardinality_decision()
+        r"""The cardinality of the set ``X``, asked of ``X``."""
+        return self._underlying_set.cardinality()
 
     def _repr_(self) -> str:
         return f"Partial order on {self._underlying_set}"
@@ -5475,24 +5476,28 @@ class PartiallyOrderedSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
-    def __call__(self, underlying_set, le):
-        r"""The poset \((X,\le)\) on the owned set ``X`` with the order relation ``le(x, y)``.
+    def __call__(self, *data):
+        r"""``P(x)`` is Sage's membership and conversion; ``P(X, le)`` constructs the poset \((X,\le)\).
 
-        The caller is trusted that ``le`` is reflexive, antisymmetric and
-        transitive on ``X`` (``OWN-22``); nothing is checked here.  Sage's
-        ``Category.__call__`` would return ``X`` unchanged when ``X`` is
-        already ordered, discarding ``le``, so the constructor is this method.
+        With one argument this is ``Category.__call__``: an object already in
+        the category is returned.  With two, ``X`` is an owned set and
+        ``le(x, y)`` its order relation; the caller is trusted that it is
+        reflexive, antisymmetric and transitive (``OWN-22``).
         """
-        assert underlying_set in Sets(), (
-            f"a partial order is a relation on a set, but {underlying_set} is not a set: "
-            f"it is in {underlying_set.category()}"
-        )
-        return _object_of(
-            self,
-            _engine=(self, _PosetOnOrderRelation, None),
-            underlying_set=underlying_set,
-            order_relation=le,
-        )
+        match data:
+            case (underlying_set, le):
+                assert underlying_set in Sets(), (
+                    f"a partial order is a relation on a set, but {underlying_set} is not a set: "
+                    f"it is in {underlying_set.category()}"
+                )
+                return _object_of(
+                    self,
+                    _engine=(self, _PosetOnOrderRelation, None),
+                    underlying_set=underlying_set,
+                    order_relation=le,
+                )
+            case _:
+                return super().__call__(*data)
 
     class ParentMethods:
         @abstract_method
@@ -5504,7 +5509,7 @@ class PartiallyOrderedSets(OwnedCategory):
 
             Decided here on a finite poset, by comparing against every point.
             """
-            assert Sets().is_provably_finite(self), (
+            assert self.cardinality().is_finite() is True, (
                 f"the maximum of {self} is found here only on a finite poset, and {self} is "
                 f"not known to be finite"
             )
@@ -5515,7 +5520,7 @@ class PartiallyOrderedSets(OwnedCategory):
 
         def minimum(self):
             r"""The point below every point, which a partial order has at most one of."""
-            assert Sets().is_provably_finite(self), (
+            assert self.cardinality().is_finite() is True, (
                 f"the minimum of {self} is found here only on a finite poset, and {self} is "
                 f"not known to be finite"
             )
