@@ -184,12 +184,8 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             return Sets().Core().Mor(parameters, self)._from_known_inverse_pair(forward, backward)
 
         @cached_method
-        def integral_members(self):
-            r"""The integral lift locus with its integral-kernel action.
-
-            This locus can be empty. Its definition does not infer emptiness
-            from the failure of one chosen rational lift to be integral.
-            """
+        def _integral_lift_locus(self):
+            r"""The integral kernel and the defining locus of integral lifts."""
             source = self.source_reduction().isotropic_embedding().codomain()
             target = self.target_reduction().isotropic_embedding().codomain()
             points = self.point_set().condition_set(
@@ -199,8 +195,29 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                 lambda g: g.integral_restriction(target, target) is not None,
                 "integral automorphisms in the marked-line reduction kernel",
             )
+            return integral_kernel, points
+
+        @cached_method
+        def integral_members(self):
+            r"""The integral lift locus with its integral-kernel action, decided.
+
+            Every integral lift has its parameter in the lattice ``P`` of
+            :meth:`integral_parameter_quotient`, and integrality is constant
+            on the cosets of the period sublattice ``mP``. So the locus is
+            empty exactly when the finite residue locus
+            :meth:`integral_parameter_classes` is empty. Otherwise two
+            integral lifts differ by an integral kernel element, so the locus
+            is the torsor :meth:`integral_torsor` through
+            :meth:`integral_base_point`. Emptiness is never inferred from one
+            chosen rational lift.
+            """
+            for _residue in self.integral_parameter_classes():
+                return self.integral_torsor()
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            integral_kernel, _points = self._integral_lift_locus()
             return GObjects(integral_kernel, Sets()).on_set(
-                points, lambda g, lift: g * lift, orbit_relation=lambda left, right: True
+                finite_ordered_set(()), lambda g, lift: g * lift, orbit_relation=lambda left, right: True
             )
 
         @cached_method
@@ -296,9 +313,7 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             """
             from dzack_research.preamble.categories.group.g_sets import Torsors
 
-            members = self.integral_members()
-            group = members.acting_group()
-            points = members.point_set()
+            group, points = self._integral_lift_locus()
             chosen = self.integral_base_point()
             forward = Sets().Mor(group, points)(lambda g: points(g * chosen))
             backward = Sets().Mor(points, group)(lambda lift: group(lift * chosen.inverse()))
