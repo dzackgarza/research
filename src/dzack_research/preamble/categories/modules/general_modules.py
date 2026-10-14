@@ -483,6 +483,276 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return f"Module over {self.base_ring()} on {self.underlying_set()}"
 
 
+class _PointwiseValues:
+    r"""The map ``a |-> operation(B, f_1(a), ..., f_k(a))`` built by one pointwise module operation.
+
+    Defining function of a map of ``B^A`` assembled by the pointwise law
+    (``_pointwise_module_operations``): the sum, negative, scalar multiple
+    or zero of maps already in ``B^A``.  Protected contract (``OWN-05``):
+    owner, this module's function-module construction, which alone builds
+    it; ``operation()`` and ``operands()`` are read by one consumer, the
+    formula adapter of ``categories/functions/real_functions.py``, which
+    recovers a symbolic formula of the assembled map from the formulas of
+    its operands.  The operands are maps of ``Sets().Mor(A, B)``.
+    """
+
+    def __init__(self, codomain, operation, operands) -> None:
+        self._codomain = codomain
+        self._operation = operation
+        self._operands = operands
+
+    def operation(self):
+        return self._operation
+
+    def operands(self):
+        return self._operands
+
+    def __call__(self, point):
+        return self._operation(self._codomain, *(operand(point) for operand in self._operands))
+
+
+class _FunctionModuleElement:
+    r"""A map ``A -> B``, as an element of the module ``B^A`` of all such maps."""
+
+    def __call__(self, point):
+        r"""The value at ``point``: the element is the map of ``Sets().Mor(A, B)`` it is built on."""
+        return self.underlying_element()(point)
+
+
+class _FunctionModule:
+    r"""Private computation class (``OWN-06``) of ``B.function_module(A)``.
+
+    An object of ``GeneralModules(R)`` whose underlying set is
+    ``Sets().Mor(A, B)`` and whose operations are the pointwise law; the
+    datum this class adds is the codomain module ``B``, whose operations
+    the law reads.  ``_function_module`` is the construction route.
+    """
+
+    def __init__(self, function_module_codomain, **rest) -> None:
+        self._function_module_codomain = function_module_codomain
+        super().__init__(**rest)
+
+    def domain(self):
+        r"""The set ``A`` the maps start at."""
+        return self.underlying_set().domain()
+
+    def codomain(self):
+        r"""The module ``B`` the maps take values in."""
+        return self._function_module_codomain
+
+    def _repr_(self):
+        return f"Module over {self.base_ring()} of maps {self.domain()} -> {self.codomain()}"
+
+
+@cached_function(key=lambda module, domain: (id(module), id(domain)))
+def _function_module(module, domain):
+    r"""Construct ``B^A`` on ``Sets().Mor(A, B)``; the route of ``Modules.ParentMethods.function_module``."""
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        _pointwise_module_operations,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    ring = _owned_ring(module.base_ring())
+    assert domain in Sets(), (
+        f"the maps into {module} start at a set, but {domain} is not in the category of sets"
+    )
+    maps = Sets().Mor(domain, module)
+
+    def combine(operation, operands):
+        return maps(_PointwiseValues(module, operation, operands))
+
+    category = GeneralModules(ring)
+    return _object_of(
+        category,
+        _engine=(category, _FunctionModule, _FunctionModuleElement),
+        base_ring=ring,
+        underlying_set=maps,
+        function_module_codomain=module,
+        **_pointwise_module_operations(combine),
+    )
+
+
+class _ConditionSubmoduleElement:
+    r"""An element of ``{x in M : P(x)}``: a point of ``M``, admitted by the construction's hypothesis."""
+
+    @validator
+    def validate_condition_membership(self) -> None:
+        r"""Raise ``ValueError`` unless ``P(x)`` holds for this element ``x`` (``OWN-22``).
+
+        Construction does not ask ``P``; this validator does, when called by
+        hand, with ``check=True`` at the element constructor, or under
+        strict checking.
+        """
+        submodule = self.parent()
+        point = self.underlying_element()
+        decision = submodule.condition_predicate()(point)
+        if decision is False:
+            raise ValueError(
+                f"{point} is not in {submodule}: it fails the condition {submodule.condition_predicate()} "
+                f"that cuts the submodule out of {submodule.condition_ambient_module()}"
+            )
+        assert decision is True, (
+            f"cannot decide whether {point} satisfies the condition {submodule.condition_predicate()} "
+            f"cutting {submodule} out of {submodule.condition_ambient_module()}: the condition answers {decision}"
+        )
+
+
+class _ConditionSubmodule:
+    r"""Private computation class (``OWN-06``) of ``M.condition_submodule(P)``.
+
+    The datum is the module ``M``, the predicate ``P`` on its elements, and
+    the condition set ``{x in M : P(x)}`` (``Sets().condition_set``), which
+    is the underlying set; the operations are ``M``'s, and closure of the
+    condition set under them is the construction's hypothesis.  An element
+    holds its point of ``M``.  The structured objects built on these data
+    (an algebra or a form on the submodule, through
+    ``_module_with_structure``) are realized by the same class, so their
+    elements are admitted the same way.  ``_condition_submodule`` and
+    ``_condition_submodule_object`` are the construction routes.
+    """
+
+    def __init__(
+        self,
+        condition_ambient,
+        condition_predicate,
+        condition_categories,
+        condition_engine,
+        **rest,
+    ) -> None:
+        self._condition_ambient = condition_ambient
+        self._condition_predicate = condition_predicate
+        self._condition_categories = condition_categories
+        self._condition_engine = condition_engine
+        super().__init__(**rest)
+
+    def condition_ambient_module(self):
+        r"""The module ``M`` the condition cuts this submodule out of."""
+        return self._condition_ambient
+
+    def condition_predicate(self):
+        r"""The predicate ``P`` with ``self = {x in M : P(x)}``."""
+        return self._condition_predicate
+
+    def _element_from_underlying_set(self, value):
+        r"""Construct the element on a point of ``M``, without asking ``P``.
+
+        Realizes the protected ``GeneralModules`` construction contract for
+        a condition submodule.  Its callers are the element constructor and
+        this module's arithmetic: a sum or a scalar multiple of elements is
+        an element by the closure hypothesis, and an element supplied by the
+        caller is admitted by the caller's claim, checked by
+        ``validate_condition_membership`` when that is asked (``OWN-22``).
+        """
+        return self.element_class(self, self._condition_ambient(value))
+
+    def _element_constructor_(self, value):
+        element = super()._element_constructor_(value)
+        element.validate_condition_membership(check=False)
+        return element
+
+    def __contains__(self, value) -> bool:
+        r"""Whether ``value`` lies in this submodule; a point of ``M`` is asked ``P``."""
+        if element_parent(value) is self._condition_ambient:
+            return self.underlying_set().is_parent_of(value)
+        return super().__contains__(value)
+
+    def _module_with_structure(self, categories, construction_data):
+        r"""Build further structure (an algebra, a form) on the data of this submodule.
+
+        The structured object is realized by the same class on the same
+        ambient module, predicate and condition set, so its elements are
+        the points of ``M`` that this submodule's are.  It is not itself a
+        subobject: its ``unformed_module()`` is this submodule, which carries
+        the inclusion.
+        """
+        return _condition_submodule_object(
+            self._condition_ambient,
+            self._condition_predicate,
+            self.underlying_set(),
+            engine=self._condition_engine,
+            categories=(*self._condition_categories, *categories),
+            construction_data=construction_data,
+            subobject=False,
+        )
+
+    def _repr_(self):
+        return f"Submodule of {self._condition_ambient} cut out by {self._condition_predicate}"
+
+
+def _condition_submodule_object(
+    ambient,
+    predicate,
+    points,
+    *,
+    engine,
+    categories=(),
+    construction_data=None,
+    subobject=True,
+):
+    r"""Construct a condition submodule, or a structured object on its data.
+
+    ``points`` is the condition set of ``predicate`` in ``ambient``;
+    ``engine`` is the pair of computation classes realizing the objects and
+    elements (this module's, or a specialization of them such as a function
+    space); ``categories`` are the further placements the caller established.
+    With ``subobject`` the object is placed in ``ModuleSubobjects`` with the
+    inclusion of ``points``; a structured object on its data is not.
+    """
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+
+    ring = ambient.base_ring()
+    general = GeneralModules(ring)
+    placement = [general, *categories]
+    data = {
+        "base_ring": ring,
+        "underlying_set": points,
+        "addition": operator.add,
+        "zero": ambient.zero(),
+        "negation": operator.neg,
+        "scalar_action": lambda scalar, value: ambient.scalar_multiple(scalar, value),
+        "condition_ambient": ambient,
+        "condition_predicate": predicate,
+        "condition_categories": tuple(categories),
+        "condition_engine": engine,
+    }
+    if subobject:
+        placement.append(ModuleSubobjects(ring))
+        data["subobject_inclusion_factory"] = lambda submodule: submodule.Mono(ambient)._from_constructed_embedding(
+            lambda element: ambient(submodule(element).underlying_element())
+        )
+    object_engine, element_engine = engine
+    return _object_of(
+        Cat().meet(tuple(placement)),
+        _engine=(general, object_engine, element_engine),
+        _ambient=Cat().meet((general, *categories)) if subobject else None,
+        **data,
+        **(construction_data or {}),
+    )
+
+
+def _condition_submodule(module, predicate, *, engine=None, categories=()):
+    r"""Construct ``M.condition_submodule(P)``; the route of ``Modules.ParentMethods.condition_submodule``.
+
+    Zero satisfies the condition by the submodule hypothesis, so the zero
+    of ``M`` is admitted to the condition set without asking ``P`` on it.
+    """
+    zero = module.zero()
+
+    def condition(point):
+        if (point == zero) is True:
+            return True
+        return predicate(point)
+
+    return _condition_submodule_object(
+        module,
+        predicate,
+        module.condition_set(condition),
+        engine=engine or (_ConditionSubmodule, _ConditionSubmoduleElement),
+        categories=categories,
+    )
+
+
 __all__ = [
     "GeneralModules",
 ]

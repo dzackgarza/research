@@ -2171,10 +2171,7 @@ of it (`CON-17`). Mathlib states the module as `Function.module`
 **Dependency path:** set `A`, module `B` -> `Sets().Mor(A, B)` -> pointwise
 `R`-module on that set -> its submodules cut out by a predicate -> the
 function spaces `C^k(A, B)`, `L^p(A, B)`, `ell^p(A, B)`.
-**Existing capability:** `_module_product_created_by_underlying_sets`
-(`modules/pure/modules.py`) builds the product module, with the same
-pointwise law, on `Sets().product(...)`, which is a different set from
-`Sets().Mor(A, B)`; `SetMorCategory` is placed in `FunctionSets` only.
+**Existing capability:** `B.function_module(A)` and `M.condition_submodule(P)` (`modules/general_modules.py`) now present the module on `Sets().Mor(A, B)` and its condition submodules, sharing the pointwise law with the module product (`_pointwise_module_operations`); source only, unexecuted.
 **Consumers:** `categories/functions/real_functions.py`,
 `modules/pure/function_modules.py`, `lebesgue_quotients.py`, `convolution.py`.
 **Coverage boundary:** `lean-categories` at `e1d422eb` was searched with
@@ -2187,8 +2184,7 @@ which `STY-148` asks for, is not addressed by this entry.
 `R`-module `B`, the `R`-module of maps `A -> U(B)` with pointwise operations
 and its isomorphism with the product `prod_{a in A} B` in `ModuleCat R`,
 citing Mathlib `Function.module` and `Pi.module`.
-Repair: `set-maps-into-a-module-form-a-module` and `condition-submodules` in
-[TODO.md](TODO.md).
+What remains is the `lean-categories` request; it runs beside the computation and parks no node.
 
 ### Protected function-space expectations use spellings that CON-17 removes
 
