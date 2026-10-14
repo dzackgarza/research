@@ -2003,11 +2003,30 @@ class GroupMorphism:
     construction gives two premises, which are stored and never checked:
     the arrow is injective (``injectivity_decision``), and its image is the
     domain ``H`` itself (``subgroup_of_codomain``).
+
+    The constructing owner of ``f: G -> H`` may also supply two chosen data
+    of the morphism (``CON-08``), stored and never checked (``OWN-22``):
+    ``section``, a function choosing one point of the fibre ``f^-1(h)`` for
+    each ``h`` in the image, which asserts off the image (a set-theoretic
+    section, not a homomorphic splitting); and ``kernel_generators``, a
+    function returning a family of elements of ``G`` that generates
+    ``ker(f)``, called on the first request for the kernel's generators.
     """
 
-    def __init__(self, parent, realization, *, injectivity_decision=None, subgroup_of_codomain=False) -> None:
+    def __init__(
+        self,
+        parent,
+        realization,
+        *,
+        injectivity_decision=None,
+        subgroup_of_codomain=False,
+        section=None,
+        kernel_generators=None,
+    ) -> None:
         self._injectivity_premise = injectivity_decision
         self._subgroup_premise = subgroup_of_codomain
+        self._section_premise = section
+        self._kernel_generators_premise = kernel_generators
         self._gap_homomorphism = None
         self._generator_images = None
         match realization:
@@ -2360,9 +2379,11 @@ class GroupMorphism:
         determining generators (a selected finite generating family, its
         subgroup generators, or its finitely many elements), the lift is the
         word section of the finite image (``finite_image_lifts``); it is a
-        set section, not a homomorphic splitting.  An infinite image, or a
-        source with no determining generators, is outside these cases and
-        reaches the GAP computation, which states that hypothesis.
+        set section, not a homomorphic splitting.  A section chosen by the
+        constructing owner (the ``section`` premise) answers before either.
+        An infinite image, or a source with no determining generators, is
+        outside these cases and reaches the GAP computation, which states
+        that hypothesis.
         """
         if self._subgroup_premise:
             assert element in self.domain(), f"{element} is not in the image of {self}"
@@ -2371,6 +2392,8 @@ class GroupMorphism:
         codomain = self.codomain()
         if (element == codomain.one()) is True:
             return source.one()
+        if self._section_premise is not None:
+            return source(self._section_premise(element))
         if codomain in OwnedFiniteGroups() and (
             source.has_selected_finite_group_generating_set()
             or source in GeneratedSubgroups(source.supergroup())
@@ -2437,7 +2460,9 @@ class GroupMorphism:
             KernelSubgroups,
         )
 
-        return KernelSubgroups(self.domain())(self)
+        return KernelSubgroups(self.domain())(
+            self, generating_family=self._kernel_generators_premise
+        )
 
     @cached_method
     def image(self):
@@ -2887,16 +2912,18 @@ class _GroupMorRealizationMixin:
                     continue
             return endpoint(element)
 
-    def _from_elementwise_rule(self, function):
+    def _from_elementwise_rule(self, function, **chosen_data):
         r"""Retain an admitted group map by its rule on elements (``OWN-22``).
 
         The multiplication-preserving law is construction data, not a
         request for a GAP model or a generating resolution. A free-source
         realization reads this same rule on its selected free generators.
+        ``chosen_data`` are the ``section`` and ``kernel_generators``
+        premises of :class:`GroupMorphism`.
         """
-        return self.element_class(self, function)
+        return self.element_class(self, function, **chosen_data)
 
-    def elementwise(self, function):
+    def elementwise(self, function, *, section=None, kernel_generators=None):
         r"""Retain an admitted homomorphism on elements in this exact Mor.
 
         This is the shared pointwise-arithmetic constructor contract. A
@@ -2905,7 +2932,9 @@ class _GroupMorRealizationMixin:
         """
         if not callable(function):
             raise TypeError(f"a morphism in {self} needs a function on elements")
-        return self._from_elementwise_rule(function)
+        return self._from_elementwise_rule(
+            function, section=section, kernel_generators=kernel_generators
+        )
 
     def _apply_pointwise_scalar(self, scalar, element):
         r"""The integer action on the multiplicatively written abelian target.
@@ -3063,8 +3092,17 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
 
-    def _from_elementwise_rule(self, function):
-        r"""Restrict an admitted elementwise rule to the selected free basis."""
+    def _from_elementwise_rule(self, function, *, section=None, kernel_generators=None):
+        r"""Restrict an admitted elementwise rule to the selected free basis.
+
+        A morphism out of a free group is its function on the free basis; a
+        chosen section or kernel family is not part of that datum here.
+        """
+        assert section is None and kernel_generators is None, (
+            f"a morphism {self.domain()} -> {self.codomain()} out of a free group is given by "
+            f"the images of its free basis; a chosen section or kernel generating family is "
+            f"not admitted on this route"
+        )
         domain = self.domain()
         return self(
             Sets().Mor(domain.free_basis(), self.codomain())(
