@@ -6263,9 +6263,6 @@ def _finite_field_with_modulus(characteristic: int, label: str, coefficients: tu
     return polynomials.quotient_ring(CommutativeIdeals(polynomials).Maximal()(modulus))
 
 
-FiniteField = GF
-
-
 def PrimeField(characteristic):
     r"""Return the prime field of the given characteristic through its category owner."""
     return PrimeFields()(characteristic)
@@ -6282,10 +6279,6 @@ def Zmod(modulus):
     if int(modulus) == 0:
         return integers
     return integers.quotient_ring(integers.ideal(integers(int(modulus))))
-
-
-IntegerModRing = Zmod
-Integers = Zmod
 
 
 def Qp(prime, precision=20):

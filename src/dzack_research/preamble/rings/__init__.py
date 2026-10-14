@@ -124,19 +124,12 @@ def GF(order, name=None):
     return _public_commutative_ring(_GF(order, name))
 
 
-FiniteField = GF
-
-
 def PrimeField(characteristic):
     return PrimeFields()(characteristic)
 
 
 def Zmod(modulus):
     return _public_commutative_ring(_Zmod(modulus))
-
-
-IntegerModRing = Zmod
-Integers = Zmod
 
 
 def Qp(prime, precision=20):
@@ -204,11 +197,8 @@ def ring_constructor_surface() -> dict[str, object]:
     r"""Return the constructors exported into a preamble session."""
     return {
         "GF": GF,
-        "FiniteField": FiniteField,
         "PrimeField": PrimeField,
         "Zmod": Zmod,
-        "IntegerModRing": IntegerModRing,
-        "Integers": Integers,
         "Zp": Zp,
         "Qp": Qp,
         "RealField": RealField,
@@ -243,12 +233,9 @@ __all__ = [
     "ExactRealField",
     "ExactRealNumber",
     "Fields",
-    "FiniteField",
     "FormalPowerSeriesRings",
     "GF",
     "GeneratedIdealView",
-    "IntegerModRing",
-    "Integers",
     "IntegralDomains",
     "LocalizationRings",
     "LocalRings",
