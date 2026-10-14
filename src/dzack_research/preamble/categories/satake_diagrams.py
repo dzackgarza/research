@@ -129,6 +129,10 @@ class SatakeDiagrams(OwnedCategory):
         return self(diagram, (), diagram.Mor(diagram)((second, first)))
 
     def _call_(self, diagram, black_nodes, involution):
+        assert diagram in RootedCoxeterDiagrams(), (
+            f"{diagram} is not the Dynkin diagram of a root basis: a Satake diagram decorates a "
+            f"Coxeter diagram constructed with its roots, and {diagram} has none"
+        )
         satake = _coxeter_diagram(
             diagram.coxeter_matrix(),
             category=self,
@@ -165,7 +169,7 @@ class SatakeDiagrams(OwnedCategory):
             return not self == other
 
         def __hash__(self) -> int:
-            return hash((self.dynkin_diagram(), tuple(self.black_nodes())))
+            return hash((self.dynkin_diagram(), self.black_nodes(), self.involution()))
 
         def dynkin_diagram(self):
             r"""Return the Dynkin diagram this Satake diagram decorates."""
