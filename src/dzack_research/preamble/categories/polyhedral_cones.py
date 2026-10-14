@@ -9,6 +9,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -270,7 +271,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 )
             from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
-            return CoxeterDiagrams().from_roots(tuple(self._wall_roots))
+            return CoxeterDiagrams().from_roots(finite_indexed_family_from_values(None, tuple(self._wall_roots)))
 
         def transport(self, isometry):
             r"""Transport this cone and all retained defining covectors along an isometry."""

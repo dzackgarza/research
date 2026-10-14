@@ -64,12 +64,15 @@ def test_triality_fuses_the_sixteen_subdiagrams_of_d4_into_eight_orbits_ordered_
     centre = diagram.index_set()[0]
     poset = diagram.elliptic_subdiagram_orbit_poset()
 
+    subdiagram_of_rank = diagram.induced_subdiagrams().ranking_map().inverse()
+
     def orbit(holds_centre: bool, outer_count: int):
         return next(
             member
             for member in poset
-            if (centre in member.representative().index_set()) == holds_centre
-            and member.representative().cardinality() == outer_count + (1 if holds_centre else 0)
+            if (centre in subdiagram_of_rank(member.representative()).index_set()) == holds_centre
+            and subdiagram_of_rank(member.representative()).cardinality()
+            == outer_count + (1 if holds_centre else 0)
         )
 
     assert diagram.Aut().cardinality() == 6

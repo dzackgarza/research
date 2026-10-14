@@ -15,7 +15,7 @@ def test_the_category_applied_to_the_cartan_type_agrees() -> None:
 def test_the_category_applied_to_the_roots_agrees() -> None:
     r"""$A_2$: two nodes with $m_{12} = 3$; the rooted diagram of its simple roots."""
     roots = Lattices(ZZ)("A2").module_generators()
-    assert CoxeterDiagrams()(roots) == CoxeterDiagrams().from_roots(tuple(roots.values()))
+    assert CoxeterDiagrams()(roots) == CoxeterDiagrams().from_roots(roots)
 
 
 def test_the_categories_of_the_diagram() -> None:

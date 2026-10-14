@@ -1,5 +1,7 @@
 r"""Coble lattice cusp candidates and a rank-ten Coxeter configuration."""
 
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.catalogue import Embeddings, NamedLattices
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
@@ -74,7 +76,10 @@ class Coble:
     @staticmethod
     def rank_ten_diagram():
         _lattice, roots = Coble.rank_ten_coxeter_roots()
-        return CoxeterDiagrams().from_roots(roots, names=tuple(f"r{i + 1}" for i in range(len(roots))))
+        return CoxeterDiagrams().from_roots(
+            finite_indexed_family_from_values(None, roots),
+            names=finite_ordered_set(tuple(f"r{i + 1}" for i, _root in enumerate(roots))),
+        )
 
 
 __all__ = ["Coble"]
