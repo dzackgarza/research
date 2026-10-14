@@ -265,12 +265,13 @@ def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
 
 def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     matrix = [[1, 3], [3, 1]]
-    theory = CoxeterGroups(matrix)
-    assert theory.is_subcategory(OwnedGroups().Finite())
-    group = theory()
-    assert theory.coxeter_matrix() is matrix
-    assert group in theory
-    assert group.coxeter_matrix() is matrix
+    group = CoxeterGroups()(matrix)
+    assert group in OwnedGroups().Finite()
+    assert group in CoxeterGroups()
+    assert group in FreeGroupQuotients()
+    assert group.ambient_category() is FreeGroupQuotients()
+    retained = group.coxeter_matrix()
+    assert group.coxeter_matrix() is retained
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     # The Coxeter realization is not Sage's FinitelyPresentedGroup; its
@@ -309,7 +310,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
 
     # For an even Coxeter bond, killing one reflection leaves the other
     # involution (unlike A2's odd bond, which kills both reflections).
-    b2 = CoxeterGroups([[1, 4], [4, 1]])()
+    b2 = CoxeterGroups()([[1, 4], [4, 1]])
     b2_reflection = tuple(b2.group_generators())[0]
     b2_quotient, b2_map = b2.quotient_by_relators((b2_reflection,), return_projection=True)
     assert b2_quotient.order() == 2
@@ -331,7 +332,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     # Adjoining (s*t)^3 makes precisely I_2(3) = S_3; the quotient is
     # finite even though its source is provably infinite. This separates
     # Coxeter presentation relations from inherited source finiteness.
-    infinite_dihedral = CoxeterGroups([[1, -1], [-1, 1]])()
+    infinite_dihedral = CoxeterGroups()([[1, -1], [-1, 1]])
     infinite_s, infinite_t = tuple(infinite_dihedral.group_generators())
     finite_dihedral, finite_projection = infinite_dihedral.quotient_by_relators(
         ((infinite_s * infinite_t)**3,), return_projection=True
@@ -363,120 +364,90 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
 
 
 def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
-    commuting = CoxeterGroups([[1, 2], [2, 1]])
-    finite = CoxeterGroups([[1, 4], [4, 1]])
-    infinite = CoxeterGroups([[1, -1], [-1, 1]])
-    assert commuting.is_subcategory(OwnedGroups().Commutative())
-    assert commuting.is_subcategory(OwnedGroups().Finite())
-    assert finite.is_subcategory(OwnedGroups().Finite())
-    assert infinite.is_subcategory(OwnedGroups().Infinite())
-    assert not infinite.is_subcategory(OwnedGroups().Finite())
+    commuting = CoxeterGroups()([[1, 2], [2, 1]])
+    finite = CoxeterGroups()([[1, 4], [4, 1]])
+    infinite = CoxeterGroups()([[1, -1], [-1, 1]])
+    assert commuting in (OwnedGroups().Commutative())
+    assert commuting in (OwnedGroups().Finite())
+    assert finite in (OwnedGroups().Finite())
+    assert infinite in (OwnedGroups().Infinite())
+    assert infinite not in (OwnedGroups().Finite())
 
-    commuting_rank_three = CoxeterGroups([[1, 2, 2], [2, 1, 2], [2, 2, 1]])
-    assert commuting_rank_three.is_subcategory(OwnedGroups().Finite())
-    assert commuting_rank_three.is_subcategory(OwnedGroups().Commutative())
-    two_a2_components = CoxeterGroups([
+    commuting_rank_three = CoxeterGroups()([[1, 2, 2], [2, 1, 2], [2, 2, 1]])
+    assert commuting_rank_three in (OwnedGroups().Finite())
+    assert commuting_rank_three in (OwnedGroups().Commutative())
+    two_a2_components = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 2, 2], [2, 2, 1, 3], [2, 2, 3, 1]
     ])
-    assert two_a2_components.is_subcategory(OwnedGroups().Finite())
-    assert not two_a2_components.is_subcategory(OwnedGroups().Commutative())
-    a4 = CoxeterGroups([
+    assert two_a2_components in (OwnedGroups().Finite())
+    assert two_a2_components not in (OwnedGroups().Commutative())
+    a4 = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    affine_a3 = CoxeterGroups([
+    affine_a3 = CoxeterGroups()([
         [1, 3, 2, 3], [3, 1, 3, 2], [2, 3, 1, 3], [3, 2, 3, 1]
     ])
-    assert a4.is_subcategory(OwnedGroups().Finite())
-    assert not affine_a3.is_subcategory(OwnedGroups().Finite())
-    assert affine_a3.is_subcategory(OwnedGroups().Infinite())
-    b4 = CoxeterGroups([
+    assert a4 in (OwnedGroups().Finite())
+    assert affine_a3 not in (OwnedGroups().Finite())
+    assert affine_a3 in (OwnedGroups().Infinite())
+    b4 = CoxeterGroups()([
         [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    affine_c3 = CoxeterGroups([
+    affine_c3 = CoxeterGroups()([
         [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 4], [2, 2, 4, 1]
     ])
-    assert b4.is_subcategory(OwnedGroups().Finite())
-    assert not affine_c3.is_subcategory(OwnedGroups().Finite())
-    assert affine_c3.is_subcategory(OwnedGroups().Infinite())
-    d4 = CoxeterGroups([
+    assert b4 in (OwnedGroups().Finite())
+    assert affine_c3 not in (OwnedGroups().Finite())
+    assert affine_c3 in (OwnedGroups().Infinite())
+    d4 = CoxeterGroups()([
         [1, 3, 3, 3], [3, 1, 2, 2], [3, 2, 1, 2], [3, 2, 2, 1]
     ])
-    assert d4.is_subcategory(OwnedGroups().Finite())
-    f4 = CoxeterGroups([
+    assert d4 in (OwnedGroups().Finite())
+    f4 = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 4, 2], [2, 4, 1, 3], [2, 2, 3, 1]
     ])
-    h4 = CoxeterGroups([
+    h4 = CoxeterGroups()([
         [1, 5, 2, 2], [5, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    assert f4.is_subcategory(OwnedGroups().Finite())
-    assert h4.is_subcategory(OwnedGroups().Finite())
-    # The finite-type decision belongs to the selected Sage Coxeter
-    # matrix, not to a separately maintained ADE/B/H pattern catalogue.
-    assert f4._engine_coxeter_matrix.is_finite() is True
-    assert h4._engine_coxeter_matrix.is_finite() is True
+    assert f4 in (OwnedGroups().Finite())
+    assert h4 in (OwnedGroups().Finite())
     # E6: the central vertex has arms of lengths 1, 2, 2.
-    e6 = CoxeterGroups([
+    e6 = CoxeterGroups()([
         [1, 3, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2],
         [2, 3, 1, 3, 2, 3], [2, 2, 3, 1, 3, 2],
         [2, 2, 2, 3, 1, 2], [2, 2, 3, 2, 2, 1],
     ])
-    assert e6.is_subcategory(OwnedGroups().Finite())
+    assert e6 in (OwnedGroups().Finite())
     # Affine E6 has three arms of length two, so it is not spherical.
-    affine_e6 = CoxeterGroups([
+    affine_e6 = CoxeterGroups()([
         [1, 3, 2, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2, 2],
         [2, 3, 1, 3, 2, 3, 2], [2, 2, 3, 1, 3, 2, 2],
         [2, 2, 2, 3, 1, 2, 2], [2, 2, 3, 2, 2, 1, 3],
         [2, 2, 2, 2, 2, 3, 1],
     ])
-    assert not affine_e6.is_subcategory(OwnedGroups().Finite())
-    infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
-    assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
-    affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
-    assert affine_a2.is_subcategory(OwnedGroups().Infinite())
-    assert not affine_a2.is_subcategory(OwnedGroups().Finite())
-    affine_c2 = CoxeterGroups([[1, 4, 4], [4, 1, 2], [4, 2, 1]])
-    hyperbolic_triangle = CoxeterGroups([[1, 5, 5], [5, 1, 5], [5, 5, 1]])
-    spherical_triangle = CoxeterGroups([[1, 3, 3], [3, 1, 2], [3, 2, 1]])
-    assert affine_c2.is_subcategory(OwnedGroups().Infinite())
-    assert hyperbolic_triangle.is_subcategory(OwnedGroups().Infinite())
-    assert not spherical_triangle.is_subcategory(OwnedGroups().Infinite())
-    assert spherical_triangle.is_subcategory(OwnedGroups().Finite())
+    assert affine_e6 not in (OwnedGroups().Finite())
+    infinite_rank_three = CoxeterGroups()([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
+    assert infinite_rank_three in (OwnedGroups().Infinite())
+    affine_a2 = CoxeterGroups()([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
+    assert affine_a2 in (OwnedGroups().Infinite())
+    assert affine_a2 not in (OwnedGroups().Finite())
+    affine_c2 = CoxeterGroups()([[1, 4, 4], [4, 1, 2], [4, 2, 1]])
+    hyperbolic_triangle = CoxeterGroups()([[1, 5, 5], [5, 1, 5], [5, 5, 1]])
+    spherical_triangle = CoxeterGroups()([[1, 3, 3], [3, 1, 2], [3, 2, 1]])
+    assert affine_c2 in (OwnedGroups().Infinite())
+    assert hyperbolic_triangle in (OwnedGroups().Infinite())
+    assert spherical_triangle not in (OwnedGroups().Infinite())
+    assert spherical_triangle in (OwnedGroups().Finite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
+    r"""Rows of a Coxeter matrix are read once into the owned matrix; mutating them later changes nothing."""
     matrix = [[1, 3], [3, 1]]
-    category = CoxeterGroups(matrix)
-    matrix[0][1] = 4
-    matrix[1][0] = 4
-    try:
-        category.super_categories()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "a mutated Coxeter matrix retained its category placement"
-    try:
-        category.coxeter_matrix()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "the Coxeter category returned a mutated defining matrix"
-    try:
-        category()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "a mutated defining matrix silently changed the selected Coxeter group"
-
-    matrix = [[1, 3], [3, 1]]
-    realized = CoxeterGroups(matrix)()
-    assert realized.coxeter_matrix() is matrix
+    group = CoxeterGroups()(matrix)
+    retained = group.coxeter_matrix()
     matrix[0][1] = matrix[1][0] = 4
-    try:
-        realized.coxeter_matrix()
-    except ValueError as error:
-        assert "changed after group construction" in str(error)
-    else:
-        assert False, "a realized Coxeter group reported a mutated defining matrix"
+    assert group.coxeter_matrix() is retained
+    assert group.order() == 6
 
 
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:

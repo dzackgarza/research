@@ -1953,52 +1953,102 @@ def _SmallGroup(order, index):
     return _own_group(PermutationGroup(gap_group=model))
 
 
-def _coxeter_group_of_owned_data(data, base_ring=None):
-    r"""``Groups.Coxeter``: the Coxeter group of owned data (``API-05``).
+@cached_function
+def _cartan_label_coxeter_matrix(label):
+    r"""The owned Coxeter matrix of a Cartan type label, read once per label so one label names one group."""
+    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_cartan_label
 
-    ``data`` is the owned Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\)
-    (an indexed family) or a Cartan type given as the plain label
-    ``[letter, rank]`` or ``[letter, rank, 1]``; ``base_ring`` is an owned
-    ring over which the reflection representation is realized.  The engine's
-    implementation and index-set options are private to ``_Coxeter``.
+    return _coxeter_matrix_of_cartan_label(list(label))
+
+
+def _coxeter_matrix_datum(data):
+    r"""Read Coxeter data as the owned Coxeter matrix ``m: V x V -> Card``.
+
+    Literal ingress adapter (``OWN-06``): an owned Coxeter matrix (an
+    indexed family on ``V x V``) is the datum itself; a Cartan type label
+    ``[letter, rank]`` or ``[letter, rank, 1]`` and a list of rows are
+    raised to the owned matrix once, so the group retains owned, immutable
+    data.
     """
-    from dzack_research.preamble.categories.coxeter_diagrams import (
-        _engine_cartan_type_data,
-        _engine_coxeter_matrix_of,
-    )
+    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_rows
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
     match data:
         case IndexedFamily():
-            engine_data = _engine_coxeter_matrix_of(data)
+            return data
         case [str(), *_] | (str(), *_):
-            engine_data = _engine_cartan_type_data(list(data))
+            return _cartan_label_coxeter_matrix(tuple(data))
+        case list() | tuple():
+            return _coxeter_matrix_of_rows(data)
         case _:
             assert False, (
                 f"{data!r} does not define a Coxeter group: give the owned Coxeter matrix "
-                f"m: V x V -> Card or a Cartan type label [letter, rank]"
+                f"m: V x V -> Card, its rows, or a Cartan type label [letter, rank]"
             )
+
+
+def _coxeter_group(coxeter_matrix, *, constructing_category, base_ring=None):
+    r"""``W(m) = F(V) / <<s_v^2, (s_v s_w)^{m_vw}>>`` for an owned Coxeter matrix ``m``.
+
+    The group is the presented group of ``lean-categories`` Def. 60.4
+    (FOUNDATIONS.md, "Coxeter system and Coxeter diagram"; Humphreys,
+    *Reflection groups and Coxeter groups*, 5.1), an object of
+    :class:`FreeGroupQuotients` retaining that presentation; Sage's Coxeter
+    matrix group, the reflection representation over ``base_ring``, is its
+    private engine and supplies the presentation through
+    ``_chosen_engine_presentation``.  Placement is read from the matrix:
+    finite when Sage's ``CoxeterMatrix`` certifies finite type; infinite for
+    an affine matrix, an entry ``m_vw = aleph_0``, or a triangle
+    ``1/m + 1/m' + 1/m'' <= 1`` (an infinite standard parabolic subgroup);
+    commutative, and finite, when every entry off the diagonal is ``2``.
+    """
+    from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+
     assert base_ring is None or base_ring in OwnedRings(), (
         f"the Coxeter group is realized over a ring, but {base_ring} is not a ring"
     )
-    return _Coxeter(engine_data, base_ring=base_ring)
-
-
-def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
-    r"""Private: the owned Coxeter group of Sage Coxeter data already lowered by its caller."""
-    from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
-
+    engine_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
+    indices = tuple(engine_matrix.index_set())
+    commutative = all(engine_matrix[left, right] == 2 for left, right in combinations(indices, 2))
+    finite = engine_matrix.is_finite() is True or commutative
+    infinite = not finite and (
+        engine_matrix.is_affine() is True
+        or any(engine_matrix[left, right] in (-1, infinity) for left, right in combinations(indices, 2))
+        or any(
+            sum((QQ(1) / ZZ(engine_matrix[left, right]) for left, right in combinations(triple, 2)), QQ(0)) <= 1
+            for triple in combinations(indices, 3)
+            if all(engine_matrix[left, right] > 0 for left, right in combinations(triple, 2))
+        )
+    )
+    refinements = (
+        CoxeterGroups(),
+        FreeGroupQuotients(),
+        *((OwnedGroups().Finite(),) if finite else ()),
+        *((OwnedGroups().Infinite(),) if infinite else ()),
+        *((OwnedGroups().Commutative(),) if commutative else ()),
+    )
     scalar_ring = None if base_ring is None else _engine_ring(base_ring)
     return _own_group(
-        CoxeterGroup(
-            data,
-            implementation=implementation,
-            base_ring=scalar_ring,
-            index_set=index_set,
-        ),
+        CoxeterMatrixGroup(engine_matrix, scalar_ring, None),
         refinements=refinements,
-        coxeter_matrix=selected_matrix,
+        coxeter_matrix=coxeter_matrix,
+        constructing_category=constructing_category,
     )
+
+
+def _coxeter_catalogue(data, base_ring=None):
+    r"""``Groups.Coxeter``: the Coxeter group of Coxeter data, as an object of the groups.
+
+    Built by the construction of :class:`CoxeterGroups` with ``OwnedGroups()``
+    as the constructing category, so its Mor is all group homomorphisms.
+    ``data`` is an owned Coxeter matrix, its rows, or a Cartan type label;
+    ``base_ring`` is an owned ring over which the reflection representation
+    is realized.
+    """
+    return _coxeter_group(
+        _coxeter_matrix_datum(data), constructing_category=OwnedGroups(), base_ring=base_ring
+    )
+
 
 
 # --------------------------------------------------------------------------
@@ -3783,7 +3833,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     Braid = _owned_group_constructor(_SageBraid)
     Cactus = _owned_group_constructor(_SageCactus)
     PureCactus = _owned_group_constructor(_SagePureCactus)
-    Coxeter = staticmethod(_coxeter_group_of_owned_data)
+    Coxeter = staticmethod(_coxeter_catalogue)
     Weyl = _owned_group_constructor(_SageWeyl)
     Reflection = _owned_group_constructor(_SageReflection)
     RightAngledArtin = _owned_group_constructor(_SageRightAngledArtin)
@@ -6236,92 +6286,32 @@ class GeneralLinearGroups(OwnedCategory):
 
 
 class CoxeterGroups(OwnedCategory):
-    r"""The Coxeter group defined by the actual selected Coxeter matrix."""
+    r"""The Coxeter groups ``W(m)`` of Coxeter matrices ``m``, as presented groups.
 
-    def __init__(self, coxeter_matrix):
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-        # Category placement asserts that the datum is a Coxeter matrix,
-        # not merely a square array. Validate that law at category ingress,
-        # retaining the caller's exact datum for its mathematical identity.
-        self._engine_coxeter_matrix = (
-            _engine_coxeter_matrix_of(coxeter_matrix)
-            if isinstance(coxeter_matrix, IndexedFamily)
-            else CoxeterMatrix(coxeter_matrix)
-        )
-        self._coxeter_matrix = coxeter_matrix
-        super().__init__()
-
-    def coxeter_matrix(self):
-        # The retained datum may be a mutable list. A category cannot
-        # continue to claim a different Coxeter matrix after its defining
-        # representation was selected; this check belongs on the category
-        # accessor too, not only on its group constructor and group accessor.
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-        current = (
-            _engine_coxeter_matrix_of(self._coxeter_matrix)
-            if isinstance(self._coxeter_matrix, IndexedFamily)
-            else CoxeterMatrix(self._coxeter_matrix)
-        )
-        if current != self._engine_coxeter_matrix:
-            raise ValueError("the chosen Coxeter matrix changed after category construction")
-        return self._coxeter_matrix
+    An object is ``W(m) = <s_v | s_v^2, (s_v s_w)^{m_vw}>`` for a Coxeter
+    matrix ``m: V x V -> Card``, built by ``CoxeterGroups()(m)`` and
+    retaining ``m`` (``lean-categories`` FOUNDATIONS.md Def. 60.4).  It is
+    constructed through :class:`FreeGroupQuotients` with that presentation,
+    which is its constructing category: its arrows are the maps of
+    presentations.  Arrows of Coxeter data are not formalized in
+    ``lean-categories`` (request in ``COMPLAINTS.md``), so this category
+    presents its objects and states no arrows of its own.
+    """
 
     def super_categories(self):
-        # Check that the retained defining data have not been mutated.
-        self.coxeter_matrix()
-        # Sage's CoxeterMatrix owns the diagram classification, including
-        # reducible systems, exceptional finite types and affine systems.
-        # Its is_finite() returns True for certified finite type and False
-        # otherwise; False need not certify infinitude (unknown type).
-        finite = self._engine_coxeter_matrix.is_finite()
-        indices = tuple(self._engine_coxeter_matrix.index_set())
-        commutative = all(
-            self._engine_coxeter_matrix[left, right] == 2
-            for left, right in combinations(indices, 2)
-        )
-        categories = [OwnedGroups().FinitelyPresentedAsGroup()]
-        if finite is True:
-            categories.append(OwnedGroups().Finite())
-        elif (
-            self._engine_coxeter_matrix.is_affine() is True
-            or any(self._engine_coxeter_matrix[left, right] in (-1, infinity)
-                   for left, right in combinations(indices, 2))
-            or any(
-                sum((QQ(1) / ZZ(self._engine_coxeter_matrix[left, right])
-                     for left, right in combinations(triple, 2)), QQ(0)) <= 1
-                for triple in combinations(indices, 3)
-                if all(self._engine_coxeter_matrix[left, right] > 0
-                       for left, right in combinations(triple, 2))
-            )
-        ):
-            # These are positive witnesses for infinite standard parabolic
-            # subsystems; the negative answer from is_finite() alone is not.
-            categories.append(OwnedGroups().Infinite())
-        if commutative:
-            # Commuting Coxeter involutions give (C2)^rank, including
-            # the empty diagram. This also independently proves finiteness.
-            categories.extend((OwnedGroups().Commutative(), OwnedGroups().Finite()))
-        return _distinct_supercategories(categories)
+        return [FreeGroupQuotients()]
 
     def an_object(self):
-        return self()
+        r"""``W(A_2)``, of order six."""
+        return self([[1, 3], [3, 1]])
 
-    def _call_(self):
-        # The Coxeter matrix realization exposes the Coxeter presentation
-        # and its generating reflections at the existing engine adapter.
-        # The catalogue's default reflection realization need not carry
-        # those presentation data even when the abstract group is the same.
-        # Validate through the category's mathematical datum accessor.
-        selected_matrix = self.coxeter_matrix()
-        return _Coxeter(
-            self._engine_coxeter_matrix, implementation="matrix",
-            refinements=(self,), selected_matrix=selected_matrix,
+    @classmethod
+    def _repr_object_names(cls):
+        return "Coxeter groups"
+
+    def _call_(self, coxeter_matrix):
+        return _coxeter_group(
+            _coxeter_matrix_datum(coxeter_matrix), constructing_category=FreeGroupQuotients()
         )
 
     class ParentMethods:
@@ -6330,25 +6320,7 @@ class CoxeterGroups(OwnedCategory):
             super().__init__(**rest)
 
         def coxeter_matrix(self):
-            r"""The chosen Coxeter datum, provided it still defines this group.
-
-            The engine was constructed from a matrix snapshot. A caller can
-            subsequently mutate a list used as the chosen matrix; returning
-            that altered list as the group's defining matrix would assert a
-            different Coxeter presentation without changing the group.
-            """
-            from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-            from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-            chosen = self._selected_coxeter_matrix
-            current = (
-                _engine_coxeter_matrix_of(chosen)
-                if isinstance(chosen, IndexedFamily)
-                else CoxeterMatrix(chosen)
-            )
-            if current != _engine_group(self).coxeter_matrix():
-                raise ValueError("the chosen Coxeter matrix changed after group construction")
+            r"""The Coxeter matrix ``m: V x V -> Card`` this group was built from."""
             return self._selected_coxeter_matrix
 
 
