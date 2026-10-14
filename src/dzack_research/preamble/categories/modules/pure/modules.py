@@ -1473,6 +1473,14 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
             return Modules(self.base_ring()).End(self)
 
+        def general_linear_group(self):
+            r"""``GL(M) = Aut_R(M)``: the automorphism group of the underlying module, one object with ``Modules(R).Aut(M)``.
+
+            For a lattice this is the group of the underlying module, of
+            which ``O(L)`` is a subgroup; it is not ``L.Aut()``.
+            """
+            return self.module_category().Aut(self)
+
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
 

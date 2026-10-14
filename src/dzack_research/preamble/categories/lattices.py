@@ -7724,21 +7724,20 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             r"""Return \(\rho_I:P_I\to GL(I)\), \(g\mapsto g|_I\), the action on the isotropic sublattice.
 
             An isometry stabilizing \(\iota(I)\) restricts along the
-            monomorphism \(\iota\).  The form \(I\) inherits is identically
-            zero, so its isometry group ``I.Aut()`` is all of \(GL(I)\): every
-            module automorphism preserves the zero form.  The kernel is the
-            pointwise parabolic \(P_I^1\).
+            monomorphism \(\iota\) to an automorphism of the underlying
+            module of \(I\), an element of ``I.general_linear_group()``
+            (``Aut_R(I)``).  The kernel is the pointwise parabolic \(P_I^1\).
             """
             embedding = self.isotropic_embedding()
             sublattice = embedding.domain()
-            automorphisms = sublattice.Aut()
+            automorphisms = sublattice.general_linear_group()
+            endomorphisms = sublattice.module_category().Mor(sublattice, sublattice)
 
             def restrict(isometry):
-                return automorphisms(
-                    lambda label: embedding.lift(
-                        isometry(embedding(sublattice.module_generator(label)))
-                    )
-                )
+                return automorphisms(endomorphisms({
+                    label: embedding.lift(isometry(embedding(sublattice.module_generator(label))))
+                    for label in sublattice.module_generating_set()
+                }))
 
             return self.parabolic_subgroup().Mor(automorphisms)(restrict)
 
