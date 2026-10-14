@@ -1993,6 +1993,55 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 return _aleph0()
             return None
 
+        @RealizationHook
+        def _emptiness_decision(self) -> bool | None:
+            r"""Protected decision of ``X = ∅`` supplied by a construction.
+
+            Owner: ``Sets``; ``is_empty`` is the only caller.  ``True`` or
+            ``False`` is a decision; ``None`` states that the construction
+            supplies none, and ``is_empty`` then returns the proposition.
+            The cases decided here:
+
+            - a set whose construction decides its cardinality is empty
+              exactly when that cardinal is ``0`` (``_cardinality_decision``,
+              which already counts enumerated, finite-ordered, power, product
+              and coproduct sets);
+            - an infinite set is not empty.
+
+            A realization or category whose construction decides more supplies
+            this hook on its own class: a monoid is not empty because it has a
+            unit, an image is empty exactly when its source is, a product
+            exactly when some factor is.  A
+            torsor is not empty by definition; ``Torsors`` supplies that case
+            in its own file.
+            """
+            match self:
+                case _ if self in Sets().Infinite():
+                    return False
+                case _:
+                    count = self._cardinality_decision()
+                    if count is None:
+                        return None
+                    return cardinal(count) == cardinal(0)
+
+        def is_empty(self) -> bool | Predicate:
+            r"""Whether this set has no points, ``X = ∅``.
+
+            Decided where the construction decides it (``_emptiness_decision``);
+            otherwise the proposition ``is_empty(X)``, which ``ask`` answers
+            ``Unknown`` (`DEF-06`).  A predicate here never answers ``False``
+            for an undecided set.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            match self._emptiness_decision():
+                case True:
+                    return True
+                case False:
+                    return False
+                case _:
+                    return AtomicProposition("is_empty", self)
+
         def is_finite(self):
             r"""Return whether the underlying set has finite cardinality."""
             match self:
@@ -3342,8 +3391,7 @@ class _ConditionSetEngine:
     def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
-        self._admitted_members = []
-        self._admitted_member_ids = set()
+        self._admitted_members = {}
         super().__init__(facade=True, **rest)
 
     def _retain_admitted_member(self, element):
@@ -3354,12 +3402,32 @@ class _ConditionSetEngine:
         zero or generators, and a protected subset inclusion applied to an
         admitted source point. This records that point, not a decision of
         the defining predicate and not a rule for admitting arbitrary data.
+        The record is read by ``__contains__``: an admitted point is a member
+        without asking the predicate again (which may be undecided on it).
+        It is keyed by the point's identity and holds the point, so the key
+        cannot be reused by another object while the record stands.
         """
         point = self.universe()(element)
-        if id(point) not in self._admitted_member_ids:
-            self._admitted_members.append(point)
-            self._admitted_member_ids.add(id(point))
+        self._admitted_members.setdefault(id(point), point)
         return point
+
+    def _an_element_(self):
+        r"""Sage's element-selection protocol: the first point of a decided finite enumeration.
+
+        Emptiness and the count are asked of the owned cardinality
+        (``_cardinality_decision``); a subset whose count is not decided has no
+        selected point here.
+        """
+        count = self._cardinality_decision()
+        assert count is not None, (
+            f"cannot select a point of {self}: its membership predicate {self.predicate()} "
+            f"is not decided on an enumerated universe"
+        )
+        assert cardinal(count) != cardinal(0), (
+            f"{self} has no point to select: it is the empty subset of {self.universe()} "
+            f"cut out by {self.predicate()}"
+        )
+        return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""
@@ -3418,7 +3486,7 @@ class _ConditionSetEngine:
                 return False
             case True:
                 point = universe(element)
-                if id(point) in self._admitted_member_ids:
+                if id(point) in self._admitted_members:
                     return True
                 member = self.predicate()(point)
                 if member is not True and member is not False and not isinstance(member, Predicate):
@@ -3520,6 +3588,10 @@ class _ImageSetEngine:
     def source_set(self) -> Sets().ObjectType:
         r"""The set \(A\) of which this set is the image \(f(A)\)."""
         return self._source
+
+    def _emptiness_decision(self) -> bool | None:
+        r"""Realization of ``Sets``' emptiness hook: ``f(A)`` is empty exactly when ``A`` is."""
+        return self.source_set()._emptiness_decision()
 
     def image_map(self) -> Callable[[SourcePointT], TargetPointT]:
         r"""The map \(f\) of which this set is the image \(f(A)\)."""
@@ -3973,6 +4045,22 @@ class CartesianProductsOfSets(OwnedCategory):
 
         def family(self) -> IndexedFamily[IndexT, Sets().ObjectType]:
             return self._family
+
+        def _emptiness_decision(self) -> bool | None:
+            r"""``Sets``' emptiness hook: a product is empty exactly when some factor is.
+
+            Decided over a finite enumerated index set when a factor is decided
+            empty, or every factor is decided nonempty.
+            """
+            indices = self.index_set()
+            if not self.has_finite_index_set() or indices not in EnumeratedSets():
+                return None
+            decisions = tuple(self.factor(index)._emptiness_decision() for index in indices)
+            if any(decision is True for decision in decisions):
+                return True
+            if all(decision is False for decision in decisions):
+                return False
+            return None
 
         def has_finite_index_set(self) -> bool:
             index = self.index_set()

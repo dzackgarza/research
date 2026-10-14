@@ -515,6 +515,10 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             return generic_power(self, exponent)
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""A monoid is not empty: it contains its unit (``Sets``' emptiness hook)."""
+            return False
+
         @cached_method
         def unit_group(self):
             r"""Return the group of two-sided units of this exact monoid."""
@@ -695,6 +699,10 @@ class AdditiveMonoids(CategoryPacketMethods, OwnedCategory):
         return [AdditiveSemigroups()]
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""An additive monoid is not empty: it contains its zero (``Sets``' emptiness hook)."""
+            return False
+
         @abstract_method
         def zero(self):
             r"""Return the identity element for the additive monoid law."""

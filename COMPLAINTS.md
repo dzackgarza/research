@@ -14,6 +14,26 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### A torsor does not decide its own nonemptiness
+
+A torsor under a group is nonempty by definition. `Sets()` owns `is_empty()` with the protected `_emptiness_decision` hook (decided cardinality, infinite sets, monoids, images, products, G-sets on points, condition subsets with an admitted member), but `Torsors` (`categories/group/g_sets.py`) supplies no hook, so `TrivializedTorsors.is_empty()` is the proposition. Evidence: `IsotropicReductionLiftTorsors.integral_torsor()`; `integral_members()` itself is decided. Remediation: `port-configurations-cones-and-integral-lifts`. Source inspection only (DEV-58).
+
+### Labelled graphs present no isomorphisms or automorphism groups
+
+`LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group. Configuration equivalence (#399) needs both, so `_SpanningConfiguration` (`categories/vector_configurations.py`) keeps a Sage `Graph` inside a declared private adapter for bliss/nauty. Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism. Source inspection only.
+
+### Port consumers of binary fibres and cone marks must move (port #33, #15)
+
+`Lattices.vectors_of_square(n)` returns the square fibre for every form (DEV-51); the orbits of a nonsplit binary fibre are `binary_fixed_norm_representatives(n, acting_group)`, an orbit set with projection and `section()`. The port's `edgewalk.py:254,563` (and its iteration at `:1154`) must move to that operation through port #33. `RationalPolyhedralCones.vectors_of_square` is removed: the port's `lorentzian_cells.py:502` performs the fixed-norm enumeration itself (port #15) from `triangulation()`, `ray_span_saturation_index()` and `ConvexPolytopes(L).integral_points()`.
+
+### Rational polyhedral cones present no morphisms
+
+`RationalPolyhedralCones(L)` constructs cones (`from_rays`, `triangulation()`) but has no `Mor`: the inclusion of a simplicial subcone `S_t -> C` from `simplicial_subcone_inclusion` (`polyhedral_cones.py`) is only a map of underlying subsets of `L tensor QQ`. Missing: the category of rational polyhedral cones in `L tensor QQ` with linear maps carrying one cone into another (inclusions as the first specimens), presented as `C.Mor(D)`; request from `lean-categories` if it lacks the category. Consumer: port `lorentzian_cells` (#15) composing subcone inclusions.
+
+### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
+
+Request (not yet filed): the integral proper orthogonal group of a nondegenerate integral binary form has finitely many orbits on the vectors of a nonzero norm (Cassels, *Rational Quadratic Forms*, Ch. 9, Lemma 6.1). Consumer: `binary_fixed_norm_representatives`, whose transversal presents this finite orbit set. It runs beside the computation and blocks no node.
+
 ### Implementation code retains mathematical construction authority
 
 **Because the intended route is enforced inside a callable constructor, but use of that constructor is optional.** The preamble still gives ordinary implementation code the power to define and construct mathematical objects. The rules prohibit this; the runtime permits it.
