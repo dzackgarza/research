@@ -334,10 +334,29 @@ class ArithmeticFrobeniusElement(AbsoluteGaloisGroupElement):
         super().__init__(parent, stage_rule=self._frobenius_at_stage)
 
     def _frobenius_at_stage(self, stage):
+        r"""The restriction to ``Gal(L/K)``.
+
+        With a prolongation: the Frobenius at its prime of ``L``. Without one
+        the element is a Frobenius at an unspecified prime of ``Kbar`` above
+        ``p``, and its restriction is defined exactly when ``Gal(L/K)`` is
+        abelian (and ``p`` unramified in ``L``): then the Frobenius at a prime
+        above ``p`` does not depend on that prime (``lean-categories``
+        ``serreArtinFamilyAtPrime_eq``, ``LeanCategories/Algebra/ArithmeticFrobeniusData.lean``:
+        in an abelian invariant extension the coherent Frobenius family is
+        independent of the prime above ``P``). Any prime above ``p`` serves,
+        and none is stored.
+        """
         quotient = self.parent().finite_quotient(stage)
-        return quotient.frobenius_class(
-            self._base_prime, self._prolongation.at(stage)
-        ).representative()
+        if self._prolongation is not None:
+            prime_above = self._prolongation.at(stage)
+        else:
+            assert quotient.is_abelian() is True, (
+                f"the restriction of {self} to {stage.field()} depends on the prime of "
+                f"{stage.field()} above {self._base_prime}, since Gal(L/K) is not known "
+                f"to be abelian; supply frobenius({self._base_prime}, prolongation=...)"
+            )
+            prime_above = next(iter(stage.field().primes_above(int(self._base_prime))))
+        return quotient.frobenius_class(self._base_prime, prime_above).representative()
 
     def base_prime(self):
         return self._base_prime
@@ -351,6 +370,8 @@ class ArithmeticFrobeniusElement(AbsoluteGaloisGroupElement):
         return FrobeniusConjugacyClass(self.parent(), self._base_prime)
 
     def _repr_(self) -> str:
+        if self._prolongation is None:
+            return f"Frobenius at {self._base_prime} in {self.parent()}, at an unspecified prime above it"
         return f"Frobenius at {self._base_prime} in {self.parent()}, at {self._prolongation}"
 
 
@@ -597,8 +618,10 @@ class _AbsoluteGaloisGroupEngine:
         Over a number field ``K`` the element is determined by a prime of
         ``Kbar`` above ``prime``, supplied as a :func:`PrimeProlongation`;
         the conjugacy class :meth:`frobenius_class` does not depend on it.
-        No prolongation is chosen here: a coherent prime of ``Kbar`` needs a
-        datum such as an embedding ``Kbar -> Qbar_p``, which the caller holds.
+        Without ``prolongation`` the element is a Frobenius at an unspecified
+        (existentially quantified) prime of ``Kbar`` above ``prime``: nothing
+        is chosen, and it restricts only to abelian stages, where the
+        Frobenius does not depend on the prime above ``prime``.
         """
         from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
 
@@ -613,12 +636,14 @@ class _AbsoluteGaloisGroupEngine:
             f"a Frobenius element at the prime {prime} is constructed here only over a "
             f"number field, but the base field of {self} is {self._field}"
         )
-        assert prolongation is not None, (
-            f"a Frobenius element of {self} at {prime} depends on a prime of "
-            f"{self._closure} above {prime}; supply it as "
-            f"prolongation=PrimeProlongation({prime}, ...). Its class is "
-            f"frobenius_class({prime})"
-        )
+        if prolongation is None:
+            from dzack_research.preamble.categories.rings.ring_foundation import PrimeFields
+
+            assert self._field in PrimeFields(), (
+                f"a Frobenius element at {prime} with an unspecified prime above it is "
+                f"constructed here only over QQ, where {prime} is a rational prime; over "
+                f"{self._field} supply prolongation=PrimeProlongation({prime}, ...)"
+            )
         return ArithmeticFrobeniusElement(self, prime, prolongation)
 
     def _finite_frobenius_image(self, element, exponent):

@@ -492,8 +492,8 @@ class _FrobeniusConjugacyClassEngine:
         r"""``q = |O_K/p|`` for the prime ``p`` of this class, as an owned integer."""
         return _own_ring(ZZ)(_residue_field_order(self._prime))
 
-    def representative(self, prolongation):
-        r"""The Frobenius element at ``prolongation``, a prime of ``Kbar`` above this prime.
+    def representative(self, prolongation=None):
+        r"""The Frobenius element at ``prolongation``, or at an unspecified prime of ``Kbar`` above this prime.
 
         The class does not depend on the prolongation; its representative does.
         """
