@@ -2280,6 +2280,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
     def _computed_group_generators(self):
         r"""Return generators of ``O(L)``, computed by a backend, as a finite ordered set of ``O(L)``.
 
+        Protected realization hook (``OWN-05``): owner ``LatticeIsometryMor``;
+        callers ``select_group_resolution`` and ``Lattices._core_automorphism_generators``
+        (the lattice implementer of ``CoreMor``'s core contract).
+
         For definite ``L``, Sage's ``GroupOfIsometries`` computes the
         generators of the finite group ``O(L)``. For indefinite ``L``,
         ``sage_indefinite_port`` computes them. Both answers are untrusted

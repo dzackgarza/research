@@ -7817,8 +7817,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             \(GL(I)\).  The image in a trivial \(O(K_I)\) is trivial.
             """
             automorphisms = self.Aut()
-            if automorphisms.cardinality() == 1:
-                return automorphisms.subgroup(())
+            if automorphisms.is_trivial() is True:
+                return automorphisms.trivial_subgroup()
             identity_on_line = self.isotropic_action().codomain().one()
             return automorphisms.subgroup(
                 target

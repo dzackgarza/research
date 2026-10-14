@@ -4338,7 +4338,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return free.Mor(self)(Sets().Mor(labels, self)(lambda label: elements[int(label)]))
 
         def select_group_resolution(self, *, generators):
-            r"""Select the generating epimorphism ``F(S) ->> G`` on a supplied family ``S``, and return ``G``.
+            r"""Select the generating epimorphism ``F(S) ->> G`` on a supplied set ``S``, and return ``G``.
+
+            ``generators`` is an owned set or family of elements of ``G``.
 
             It is the degree-zero truncation of a free-group resolution of
             ``G`` (``CAT-29``): the caller supplies a family that generates
@@ -4351,6 +4353,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             """
             if self.has_selected_group_resolution():
                 raise ValueError(f"{self} already has a selected generating resolution")
+            assert generators in Sets(), (
+                f"a generating set of {self} is an owned set or family of its elements, but {generators!r} "
+                f"is not one"
+            )
             selected = finite_ordered_set(tuple(self(generator) for generator in generators))
             _fix_selected_group_resolution_on(self, lambda: selected)
             return self

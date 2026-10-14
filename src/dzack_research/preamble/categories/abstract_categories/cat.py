@@ -1580,7 +1580,7 @@ class _FunctorCategory(FixedMorCategory):
         source, target = core_mor.domain(), core_mor.codomain()
         forward = self.Mor(source, target)(self._natural_transformation_from_apex(source, target, apex))
         inverse = self.Mor(target, source)(self._natural_transformation_from_apex(target, source, ~apex))
-        return core_mor._from_known_inverse_pair(forward, inverse)
+        return core_mor(forward, inverse)
 
     def _core_isomorphism_witness(self, core_mor):
         r"""One isomorphism of ``core_mor``, or ``None`` when the codomain decides there is none."""
@@ -1613,9 +1613,9 @@ class _FunctorCategory(FixedMorCategory):
 
         source, target = core_mor.domain(), core_mor.codomain()
         codomain = self.codomain_category()
-        isomorphism = core_mor._isomorphism_witness()
-        if isomorphism is None:
+        if core_mor.is_empty():
             return None
+        isomorphism = core_mor.an_element()
         _shape, top = self._marking_shape()
         witness = isomorphism.forward().component(top)
         group = subgroup.supergroup()
