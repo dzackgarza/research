@@ -217,34 +217,34 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             period = residue.kernel()
             period_inclusion = period.inclusion()
             classes = self.integral_parameter_classes()
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
-            # C x ker(r), indexed by the named factors of the decomposition
-            # r^{-1}(C) = { s(c) + k }.
-            first, second = "residue class", "period"
-            factors = finite_ordered_set((first, second))
+            # C x ker(r), the decomposition r^{-1}(C) = { s(c) + k }; its
+            # components are read by the product's own projections and its
+            # points built by its universal map from the component maps.
             period_set = period.inclusion().domain()
-            pairs = Sets().product(
-                indexed_family(factors, lambda factor: classes if factor == first else period_set)
-            )
+            pairs = classes.product_with(period_set)
+            class_projection, period_projection = (pairs.projection(index) for index in pairs.index_set())
             parameterization = self.parameterization()
             coordinates = parameterization.inverse()
 
             def lift_of(pair):
                 parameter_point = (
-                    residue.preimage(pairs.projection(first)(pair))
-                    + period_inclusion(pairs.projection(second)(pair))
+                    residue.preimage(class_projection(pair))
+                    + period_inclusion(period_projection(pair))
                 )
                 return parameterization(lattice_inclusion(parameter_point).underlying_element())
 
-            def pair_of(lift):
-                parameter_point = lattice_inclusion.lift(
-                    lattice_inclusion.codomain().wrap(coordinates(lift))
+            def parameter_of(lift):
+                return lattice_inclusion.lift(lattice_inclusion.codomain().wrap(coordinates(lift)))
+
+            to_class = Sets().Mor(self, classes)(lambda lift: residue(parameter_of(lift)))
+            to_period = Sets().Mor(self, period_set)(
+                lambda lift: period_inclusion.lift(
+                    parameter_of(lift) - residue.preimage(residue(parameter_of(lift)))
                 )
-                residue_class = residue(parameter_point)
-                period_point = period_inclusion.lift(parameter_point - residue.preimage(residue_class))
-                return pairs(lambda factor: residue_class if factor == first else period_point)
+            )
+            ranking = pairs.index_set().ranking_map()
+            components = (to_class, to_period)
+            pair_of = pairs.from_maps(self, lambda index: components[int(ranking(index))])
 
             locus = Sets().image_set(Sets().Mor(pairs, self)(lift_of), pairs, inverse=pair_of)
             return integral_kernel, locus
