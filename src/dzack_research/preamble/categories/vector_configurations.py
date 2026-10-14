@@ -89,48 +89,11 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         # generic IntegralStructureAction is the finite-residue realization
         # of the source's LinearSpace_Stabilizer (GroupAction.g:350-543).
         # Enumerating all graph permutations is NOT that source algorithm.
-        fraction_map = lattice.base_ring().fraction_field_map()
-        rational = lattice.base_change(fraction_map)
-        rational_ring = rational.base_ring()
-        labels = tuple(lattice.module_generating_set())
-        rational_generators = []
-        for permutation in group.gens():
-            image_rows = realization.rows.matrix_from_rows(
-                [int(permutation(position)) for position in range(len(realization.vectors))]
-            )
-            transformation = realization.inverse_basis * image_rows.matrix_from_rows(
-                realization.basis_positions
-            )
-            if realization.rows * transformation != image_rows:
-                raise ArithmeticError("a graph automorphism fails to preserve the configuration's linear relations")
-            images = {
-                label: rational.linear_combination({
-                    image_label: rational_ring(int(entry.numerator())) / rational_ring(int(entry.denominator()))
-                    for image_label, entry in zip(labels, row, strict=True) if entry
-                })
-                for label, row in zip(labels, transformation.rows(), strict=True)
-            }
-            rational_generators.append(rational.O()(images))
-
-        generated = lattice.vector_configuration(realization.vectors)
-        exponent = generated.inclusion().cokernel().exponent()
-        if exponent <= lattice.base_ring().zero():
-            raise ArithmeticError("a spanning vector configuration must generate a finite-index integral sublattice")
-        ambient_inclusion = ModulesOverIntegralDomains(lattice.base_ring())(lattice).generic_fibre_map()
-        ambient_space = ambient_inclusion.codomain()
-        scale = rational_ring.one() / rational_ring(exponent)
-        containing = Modules(lattice.base_ring()).Mono(generated, ambient_space)(
-            lambda label: ambient_space.wrap(rational.scalar_multiple(
-                scale,
-                ambient_inclusion(generated.inclusion()(generated.module_generator(label))).underlying_element(),
-            ))
-        )
-        # The group/action module also consumes lattices; delay this import
-        # until the lattice-category graph has completed construction.
         from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
 
-        rational_group = rational.O().subgroup(tuple(rational_generators))
-        stabilizer = IntegralStructureAction(rational_group, ambient_inclusion).with_stable_containing_bound(
+        rational_group = realization.rational_configuration_group(group)
+        _exponent, containing = realization.containing_bound()
+        stabilizer = IntegralStructureAction(rational_group, realization.rationalization()).with_stable_containing_bound(
             containing
         ).stabilizer()
         return finite_ordered_set(tuple(
@@ -139,7 +102,25 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         ))
 
     def spanning_isometry(self, source, source_vectors, source_colours, target, target_vectors, target_colours):
-        r"""One integral ambient isometry of two coloured spanning families, or None."""
+        r"""One integral ambient isometry of two coloured spanning families, or None.
+
+        A colour- and pairing-preserving bijection of the families is a
+        labelled graph isomorphism, and because each family spans a
+        nondegenerate space it extends to a unique rational isometry
+        ``T0``. Every rational equivalence of the configurations is
+        ``g T0`` for ``g`` in the rational configuration group ``G`` of the
+        target. An integral one is a ``g`` carrying the lattice ``T0(L_1)``
+        to ``L_2``: the transporter of the integral-structure action of
+        ``G``, bounded by the ``G``-stable module ``K_2/e`` for ``K_2`` the
+        span of the target family and ``e`` the exponent of ``L_2/K_2``.
+        That exponent is an invariant of the equivalence, so differing
+        exponents decide inequivalence. This is
+        KernelLinPolytopeIntegral_Isomorphism_Subspaces
+        (Indefinite.jl@374a5ebb/indef/lib/AutomorphismPolytope.g:288-339)
+        with LinearSpace_Equivalence (GroupAction.g:793) realized by
+        :meth:`IntegralStructureAction.transporter`; the graph group is
+        never enumerated.
+        """
         left = _SpanningConfiguration(source, source_vectors, source_colours)
         right = _SpanningConfiguration(target, target_vectors, target_colours)
         if len(left.vectors) != len(right.vectors) or left.rows.ncols() != right.rows.ncols():
@@ -150,11 +131,38 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         lifted = left.lift(right, certificate.__getitem__)
         if lifted is not None:
             return lifted
-        for permutation in left.graph.automorphism_group(edge_labels=True):
-            lifted = left.lift(right, lambda position: certificate[permutation(position)])
-            if lifted is not None:
-                return lifted
-        return None
+        left_exponent, _left_containing = left.containing_bound()
+        right_exponent, containing = right.containing_bound()
+        if left_exponent != right_exponent:
+            return None
+        transformation = left.rational_transformation(right, certificate.__getitem__)
+        if transformation is None:
+            raise ArithmeticError(
+                "a pairing-preserving bijection of nondegenerate spanning families fails to preserve their linear relations"
+            )
+        rational_source = left.rational_space()
+        rational_target = right.rational_space()
+        equivalence = left.rational_morphism(rational_source.Isom(rational_target), right, transformation)
+        source_rationalization = left.rationalization()
+        target_rationalization = right.rationalization()
+        ambient_space = target_rationalization.codomain()
+        moved = Modules(source.base_ring()).Mono(source, ambient_space)(
+            lambda label: ambient_space.wrap(
+                equivalence(source_rationalization(source.module_generator(label)).underlying_element())
+            )
+        )
+        from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
+
+        rational_group = right.rational_configuration_group(right.graph.automorphism_group(edge_labels=True))
+        transporter = IntegralStructureAction(rational_group, moved).with_stable_containing_bound(
+            containing
+        ).transporter(target_rationalization)
+        if transporter is None:
+            return None
+        composite = rational_source.Isom(rational_target)(
+            lambda label: transporter(equivalence(rational_source.module_generator(label)))
+        )
+        return target.integral_isometry(composite, source=source)
 
     class ParentMethods:
         def configuration_positions(self):
@@ -390,10 +398,74 @@ class _SpanningConfiguration:
             for right in range(left):
                 self.graph.add_edge(left, right, ("pairing", int(pairings[left, right])))
 
-    def lift(self, target, permutation):
+    def rationalization(self):
+        r"""The lattice in its rational space, ``L -> Res(L tensor Q)``."""
+        return ModulesOverIntegralDomains(self.lattice.base_ring())(self.lattice).generic_fibre_map()
+
+    def rational_space(self):
+        return self.lattice.base_change(self.lattice.base_ring().fraction_field_map())
+
+    def rational_transformation(self, target, permutation):
+        r"""The coordinate matrix ``T`` with ``rows * T`` the permuted target rows, or None."""
         image_rows = target.rows.matrix_from_rows([int(permutation(position)) for position in range(len(self.vectors))])
         transformation = self.inverse_basis * image_rows.matrix_from_rows(self.basis_positions)
         if self.rows * transformation != image_rows:
+            return None
+        return transformation
+
+    def rational_morphism(self, homset, target, transformation):
+        r"""The element of ``homset`` sending basis vector ``i`` to row ``i`` of ``transformation``."""
+        codomain = homset.codomain()
+        rational_ring = codomain.base_ring()
+        labels = tuple(self.lattice.module_generating_set())
+        target_labels = tuple(target.lattice.module_generating_set())
+        images = {
+            label: codomain.linear_combination({
+                image_label: rational_ring(int(entry.numerator())) / rational_ring(int(entry.denominator()))
+                for image_label, entry in zip(target_labels, row, strict=True) if entry
+            })
+            for label, row in zip(labels, transformation.rows(), strict=True)
+        }
+        return homset(images)
+
+    def rational_configuration_group(self, permutation_group):
+        r"""The subgroup of ``O(L tensor Q)`` realizing generators of the graph group."""
+        rational = self.rational_space()
+        generators = []
+        for permutation in permutation_group.gens():
+            transformation = self.rational_transformation(self, permutation)
+            if transformation is None:
+                raise ArithmeticError("a graph automorphism fails to preserve the configuration's linear relations")
+            generators.append(self.rational_morphism(rational.O(), self, transformation))
+        return rational.O().subgroup(tuple(generators))
+
+    def containing_bound(self):
+        r"""The exponent ``e`` of ``L/K`` and the stable module ``K/e`` containing ``L``.
+
+        ``K`` is the span of the family. The configuration group permutes
+        the family, so ``K`` and ``K/e`` are stable, and ``eL`` lies in ``K``.
+        """
+        lattice = self.lattice
+        generated = lattice.vector_configuration(self.vectors)
+        exponent = generated.inclusion().cokernel().exponent()
+        if exponent <= lattice.base_ring().zero():
+            raise ArithmeticError("a spanning vector configuration must generate a finite-index integral sublattice")
+        rationalization = self.rationalization()
+        ambient_space = rationalization.codomain()
+        rational = self.rational_space()
+        rational_ring = rational.base_ring()
+        scale = rational_ring.one() / rational_ring(exponent)
+        containing = Modules(lattice.base_ring()).Mono(generated, ambient_space)(
+            lambda label: ambient_space.wrap(rational.scalar_multiple(
+                scale,
+                rationalization(generated.inclusion()(generated.module_generator(label))).underlying_element(),
+            ))
+        )
+        return exponent, containing
+
+    def lift(self, target, permutation):
+        transformation = self.rational_transformation(target, permutation)
+        if transformation is None:
             return None
         if any(entry.denominator() != 1 for entry in transformation.list()) or abs(transformation.det()) != 1:
             return None
