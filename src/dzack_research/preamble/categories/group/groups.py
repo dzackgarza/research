@@ -4889,7 +4889,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 self.normalizer,
             )
 
-        @cached_method(key=lambda self, subgroup: id(subgroup))
+        @cached_method
         def left_cosets(self, subgroup):
             r"""Return the represented left-coset space ``G/H``.
 
@@ -6235,8 +6235,8 @@ class Subgroups(OwnedParameterizedCategory):
                     generators = self.selected_subgroup_generators()
                 case _ if self in OwnedFiniteGroups():
                     generators = tuple(self)
-                case _ if hasattr(self, "schreier_generators"):
-                    generators = self.schreier_generators(generators=ambient_generators)
+                case _ if self.has_selected_group_resolution():
+                    generators = self.group_generators()
                 case _ if index_bound is not None and hasattr(self, "finite_index_schreier_generators"):
                     generators = self.finite_index_schreier_generators(index_bound=index_bound, generators=ambient_generators)
                 case _:
