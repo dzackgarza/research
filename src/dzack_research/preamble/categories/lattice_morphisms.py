@@ -2651,8 +2651,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         citation of what established nonemptiness.  No isometry is
         constructed here; :meth:`an_element` constructs one on request.
 
-        After the invariant obstructions the two lattices lie in one genus:
-        equal signature and canonical ``ZZ_p``-symbols at every ``p | 2d``
+        After the invariant obstructions the decision compares the owned
+        genera, ``L.genus() == M.genus()`` (equal signature and canonical
+        ``ZZ_p``-symbols at every ``p | 2d``)
         [CS99, Ch. 15, §7, Thms 9-10; extraction
         ``references/literature/lattice-research/conway1999sphere.md``
         l.12139, l.12197, l.12251].  Inside one genus:
@@ -2704,41 +2705,29 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain.discriminant_module().invariant_factors() != codomain.discriminant_module().invariant_factors():
             return (True, None)
 
-        from sage.quadratic_forms.genera.genus import Genus as SageGenus
-        from sage.quadratic_forms.genera.genus import LocalGenusSymbol
-
-        rational_domain = QuadraticForm(SageQQ, 2 * domain_gram.change_ring(SageQQ))
-        rational_codomain = QuadraticForm(SageQQ, 2 * codomain_gram.change_ring(SageQQ))
-        if not rational_domain.is_rationally_isometric(rational_codomain):
-            return (True, None)
-
-        determinant = abs(SageZZ(domain_gram.det()))
-        for prime in (2 * determinant).prime_divisors():
-            if LocalGenusSymbol(domain_gram, prime) != LocalGenusSymbol(codomain_gram, prime):
-                return (True, None)
-
-        if not domain.discriminant_group().is_isomorphic(codomain.discriminant_group()):
+        if domain.genus() != codomain.genus():
             return (True, None)
 
         signature = domain.signature_pair()
         definite = signature.first() == 0 or signature.second() == 0
         match definite, int(rank.finite_value()) >= 3:
             case False, True:
-                if not SageGenus(domain_gram).spinor_generators(proper=False):
+                if domain.genus().spinor_genus_count() == domain.base_ring().one():
                     return (False, "one genus with one spinor genus is one class [CS99, Ch. 15, Thm 14]")
-                if lattice_engines._oscar_lattices.integer_lattices_are_isometric(domain_gram, codomain_gram):
+                if lattice_engines.isometric_within_genus(domain, codomain):
                     return (False, "one spinor genus [CS99, Ch. 15, Thms 14-15]")
                 return (True, None)
             case False, False:
-                return (self._witness_matrix() is False, None)
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "equivalent in the cycle classification of binary forms [CS99, Ch. 15, §3.3]")
             case True, _:
-                from sage.libs.pari import pari
-
-                sign = SageZZ.one() if signature.second() == 0 else -SageZZ.one()
-                automorphisms = SageZZ(pari(sign * domain_gram).qfauto()[0])
-                if SageGenus(domain_gram).mass() * automorphisms == 1:
+                order = domain.orthogonal_group().cardinality()
+                if domain.genus().mass() * domain.base_ring().fraction_field()(order) == 1:
                     return (False, "a genus of mass 1/|O(L)| is one class [Conway--Sloane, Low-dimensional lattices IV, eq. (1)]")
-                return (self._witness_matrix() is False, None)
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "the exact equivalence search found an isometry [CS99, Ch. 15, §10-§11]")
 
     @cached_method
     def _engine_grams(self):

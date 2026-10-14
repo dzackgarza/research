@@ -562,8 +562,17 @@ class _Genus(Sets().ObjectType):
     def level(self, prime):
         return self.local_symbol(prime).level()
 
+    @cached_method
     def mass(self):
-        r"""Return the Smith--Minkowski--Siegel mass of a definite genus."""
+        r"""Return the Smith--Minkowski--Siegel mass of a definite genus.
+
+        The mass is ``sum_i 1/|O(L_i)|`` over the classes of the genus
+        [Conway--Sloane, *Low-dimensional lattices IV*, eq. (1);
+        ``references/literature/lattice-research/conway1988mass.md`` l.13-16].
+        Sage's ``GenusSymbol_global_ring.mass`` (read in the ``sage-stubs``
+        source checkout, ``genus.py:3175``) restricts only to definite genera
+        and special-cases rank 1, so rank 2 is computed by the same formula.
+        """
         from sage.rings.rational_field import QQ as SageQQ
 
         signature = self.signature_pair()
@@ -573,6 +582,20 @@ class _Genus(Sets().ObjectType):
                 f"the Smith--Minkowski--Siegel mass of {self!r} is not defined: the mass is a finite sum only for a definite genus, and this genus has signature ({positive}, {negative})"
             )
         return _owned_engine_element(_own_ring(SageQQ), SageQQ(self._engine().mass()))
+
+    @cached_method
+    def spinor_genus_count(self):
+        r"""Return the number of improper spinor genera in this genus, a power of 2 [CS99, Ch. 15, §9.1].
+
+        Defined here for rank at least 3 [CS99, Ch. 15, §3.5, l.11778]; Sage's
+        ``spinor_generators(proper=False)`` on the genus symbol computes it.
+        """
+        integers = _own_ring(SageZZ)
+        rank = int(self._lattice.module_rank())
+        assert rank >= 3, (
+            f"the spinor-genus count of {self!r} is taken here in rank at least three, and the rank is {rank}"
+        )
+        return integers(2 ** len(self._engine().spinor_generators(proper=False)))
 
     def theta_series(self, precision=20, variable="q"):
         r"""Return the theta series of this definite genus.
@@ -3485,23 +3508,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def spinor_genus_count(self):
             r"""Return the number of improper spinor genera in the integral genus."""
-            from sage.quadratic_forms.genera.genus import Genus as SageGenus
-
             ring = self.base_ring()
             assert _engine_ring(ring) is SageZZ, (
                 f"the spinor-genus count here is implemented for ZZ-lattices, but {self} is over {ring}"
             )
-            assert (
-                self.module_rank().is_finite()
-                and int(self.module_rank()) >= 3
-                and self.is_nondegenerate()
-            ), (
-                f"the spinor-genus count of {self} requires a nondegenerate lattice of finite rank at least three"
-            )
-            genus = SageGenus(
-                _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
-            )
-            return ring(2 ** len(genus.spinor_generators(proper=False)))
+            return ring(self.genus().spinor_genus_count())
 
         def spinor_genus_class_numbers(self):
             r"""Return class numbers of the improper spinor genera, with that of ``self`` first."""

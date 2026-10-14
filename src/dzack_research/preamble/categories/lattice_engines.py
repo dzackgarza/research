@@ -865,6 +865,24 @@ class _OscarLatticeAdapter:
 
 _oscar_lattices = _OscarLatticeAdapter()
 
+
+def isometric_within_genus(domain, codomain):
+    r"""Decide whether two lattices over ``ZZ`` of one genus, indefinite of rank at least 3, are isometric.
+
+    Protected adapter contract (`OWN-05`).  Owner: this module.  Caller:
+    ``LatticeIsometryMor._isometry_decision`` (``lattice_morphisms.py``), and
+    only in the regime of several improper spinor genera, where membership in
+    one spinor genus decides isometry [CS99, Ch. 15, Thms 14-15].  Input: two
+    preamble lattices over ``ZZ``, nondegenerate, of finite rank at least 3,
+    already established to lie in one genus.  Output: a Python ``bool``, the
+    untrusted Hecke answer; no engine object crosses back.  It lowers the Gram
+    tensors and calls :meth:`_OscarLatticeAdapter.integer_lattices_are_isometric`.
+    """
+    return _oscar_lattices.integer_lattices_are_isometric(
+        _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ),
+        _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ),
+    )
+
 __all__: list[str] = []
 
 
