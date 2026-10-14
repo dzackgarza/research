@@ -1594,33 +1594,35 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
-### A Vinberg invariant is not yet a point of the projective line
+### `lean-categories` does not formalize the Vinberg invariant or the PID description of P^1(R)
 
-The invariant of two mirrors is the point `[4 b(r,s)^2 : q(r) q(s)]` of
-`P^1`; for normals of positive square it dehomogenizes to `4 g^2`, where `g`
-is the entry of the Gram matrix of the unit normals (Vinberg, *Hyperbolic
-reflection groups*, 1985, section 1). An `R`-point of `P^1_R` is a morphism
-`Spec R -> P^1_R`. `VinbergInvariantMatrices.vinberg_invariant`
-(`categories/vinberg_invariants.py`) asks the owned scheme
-`ProjectiveSpaces(R)(1)` to accept the pair `[numerator, denominator]`, and
-that scheme has no element constructor: the call raises `AttributeError`
-for `_element_constructor_`. So `vinberg_invariant`, `vertex_label`,
-`edge_label` and `weighted_graph` fail on every invariant matrix, while
-`vinberg_ratio` (the dehomogenized value) works.
-**Dependency path:** owned `ProjectiveSpaces(R)(n)` -> its `R`-points as
-`Mor(Spec R, P^n_R)` -> the Vinberg invariant -> the labelled graph of
-mirrors. `Schemes(R).projective_morphism_from_coordinates` builds such a
-morphism from a basepoint-free coordinate family; over `ZZ` the pair
-`(4 b^2, q(r) q(s))` need not generate the unit ideal (`(4, 4)` for two
-roots of square `-2` with product `1`), so the point is that of the
-primitive pair, which exists because `P^1(ZZ) = P^1(QQ)`.
-**Consumers:** `VinbergInvariantMatrices.vinberg_invariant`, its graph
-labels and `weighted_graph`; the lattice-db graph cards that read them.
-**Coverage boundary:** the scheme route was not executed on 2026-10-07:
-`Spec ZZ.projective_morphism_from_coordinates` failed earlier, in
-`_restriction_to_base`, with `RngMorphism.__init__() got an unexpected
-keyword argument 'evaluator'` from the module-morphism construction.
-Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
+The invariant of two mirrors with normals `r, s` of a nondegenerate formed
+module is the point `[4 b(r,s)^2 : b(r,r) b(s,s)]` of `P^1`, an `R`-point
+`Spec R -> P^1_R`; for normals of positive norm it dehomogenizes to `4 g^2`,
+`g` the Gram entry of the unit normals. The preamble presents it
+(`VinbergInvariantMatrices.vinberg_invariant`, `categories/vinberg_invariants.py`)
+through `point_morphism` on a pair generating `R`.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`
+(`rg -i 'vinberg|coxeter|ProjectiveSpace'`): `Schemes/Varieties.lean:50`
+defines `ProjectiveSpace k n` as `Proj` of the graded polynomial ring, with
+its structure morphism to `Spec` of the degree-zero part (`:54`); no
+Vinberg invariant, no statement describing `P^1(R)` by pairs. Mathlib
+(corpus API): `AlgebraicGeometry/ValuativeCriterion.lean`,
+`ProjectiveSpectrum/Proper.lean` (`IsProper (Proj.toSpecZero 𝒜)`).
+**Requests (not yet filed):**
+1. The Vinberg invariant of a pair of non-isotropic vectors as a point of
+   `P^1`, its invariance under rescaling either vector, and `t = 4 cos^2(pi/m)`
+   for mirrors meeting at angle `pi/m`. Source: Vinberg, *Hyperbolic
+   reflection groups*, Russian Math. Surveys 40 (1985), section 1; not
+   opened for this entry (not in `references/pdfs`), so open it before
+   filing (`FSA-06`).
+2. For a PID `R`, an `R`-point of `P^1_R` is a pair `(a, b)` generating `R`,
+   up to a unit; equivalently `P^1(R) = P^1(Frac R)`. Sources, opened
+   2026-10-14: Stacks Lemma 27.13.1 (tag 01NE), Definition 27.13.2 (01NF),
+   Lemma 15.22.11 (0AUW).
+**Consumers:** `vinberg_invariant`, its graph labels, `weighted_graph`,
+`CoxeterDiagrams.vertex_weight`/`edge_weight`, and the lattice-db graph
+cards. The requests run beside the computation and park no node.
 
 ### A Coxeter diagram is not constructed by its category
 
