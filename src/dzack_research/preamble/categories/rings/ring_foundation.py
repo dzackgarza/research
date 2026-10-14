@@ -806,7 +806,7 @@ class RingMor(CategoricalMor):
 class PredicateSubrings(OwnedCategory):
     def an_object(self):
         r"""The integers inside the rationals, cut out by integrality."""
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         return rationals.predicate_subring(
             lambda element: element.denominator() == 1,
             "z is an integer",
@@ -925,7 +925,7 @@ class LocalizationRings(OwnedCategory):
 
     def an_object(self):
         r"""The integers with 2 inverted."""
-        return _own_ring(SageZZ).localization(2)
+        return _owned_integers().localization(2)
 
     class ElementMethods(CommutativeRingElement):
         r"""A represented fraction ``a/s`` in ``S^{-1}R``."""
@@ -1025,7 +1025,7 @@ class LocalizationRings(OwnedCategory):
 
         def an_object(self):
             r"""The localization of the integers at all nonzero elements."""
-            return _own_ring(SageZZ).fraction_field_localization()
+            return _owned_integers().fraction_field_localization()
 
         class ParentMethods:
             @cached_method
@@ -2145,7 +2145,7 @@ class _PredicateSubringParent(Parent):
         # algebra/category placement cannot take this partially initialized
         # object as the scalar ring: doing so recursively constructs
         # Algebras(self) before self has a subcategory_class.
-        base = _own_ring(SageZZ)
+        base = _owned_integers()
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         algebra = Algebras(base).Associative().Unital()
@@ -2326,7 +2326,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The integers, the initial object of this category."""
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [OwnedSemirings(), OwnedRngs()]
@@ -2374,7 +2374,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def an_object(self):
             r"""The integers."""
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
     class Division(CategoryWithAxiom):
         r"""Nontrivial rings in which every nonzero element is a unit."""
@@ -2451,7 +2451,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         integers, _engine_numeral(integers, characteristic)
                     )
                     if selected.is_zero() is True:
-                        return _own_ring(SageQQ)
+                        return _owned_rationals()
                     if (selected < integers.zero()) is True:
                         raise ValueError(
                             f"a prime field has characteristic zero or a positive prime, but got {selected}"
@@ -2472,7 +2472,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             class ParentMethods:
                 def _krull_dimension_decision(self):
                     r"""``0``: the only prime ideal of a field is ``(0)``."""
-                    return _own_ring(SageZZ).zero()
+                    return _owned_integers().zero()
 
                 def field_generators(self):
                     r"""Return the selected finite generators over the prime field.
@@ -2537,7 +2537,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def an_object(self):
             r"""The integers."""
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
         class ParentMethods:
             def _reducedness_decision(self):
@@ -2559,7 +2559,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             def an_object(self):
                 r"""The integers, whose zero and one are distinct."""
-                return _own_ring(SageZZ)
+                return _owned_integers()
 
             class ParentMethods:
                 @cached_method
@@ -2591,7 +2591,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             def an_object(self):
                 r"""The integers."""
-                return _own_ring(SageZZ)
+                return _owned_integers()
 
             class Nontrivial(CategoryWithAxiom):
                 r"""Integral domains: nonzero commutative rings without zero divisors.
@@ -2609,7 +2609,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def an_object(self):
                     r"""The integers."""
-                    return _own_ring(SageZZ)
+                    return _owned_integers()
 
                 class ParentMethods:
                     def fractional_ideal(self, *module_generators):
@@ -2684,7 +2684,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def an_object(self):
             r"""The integers."""
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
     class Artinian(CategoryWithAxiom):
         r"""Left Artinian rings: the descending chain condition on left ideals.
@@ -2716,7 +2716,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def an_object(self):
             r"""The integers."""
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
         class SubcategoryMethods:
             def Local(self):
@@ -2736,7 +2736,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             def an_object(self):
                 r"""The integers localized at the prime (2)."""
-                return _own_ring(SageZZ).localize_at_prime(2)
+                return _owned_integers().localize_at_prime(2)
 
             def extra_super_categories(self):
                 r"""A local ring has ``1 != 0`` (Mathlib ``IsLocalRing.toNontrivial``)."""
@@ -2808,7 +2808,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def an_object(self):
                     r"""The 2-adic integers: complete, and local because (2) is maximal."""
-                    return _own_ring(SageZZ).adic_completion(2)
+                    return _owned_integers().adic_completion(2)
 
                 def extra_super_categories(self):
                     r"""The maximal ideal supplies a canonical complete adic structure.
@@ -2837,7 +2837,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             def an_object(self):
                 r"""The integers."""
-                return _own_ring(SageZZ)
+                return _owned_integers()
 
             def extra_super_categories(self):
                 r"""A principal ideal is finitely generated."""
@@ -3735,7 +3735,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         # so only a distinct selected engine supplies a
                         # native count here.
                         return super()._cardinality_decision()
-                    integers = _own_ring(SageZZ)
+                    integers = _owned_integers()
                     return cardinal(
                         _owned_engine_element(
                             integers,
@@ -3837,7 +3837,7 @@ class OwnedOrderedRings(OwnedCategory):
 
     def an_object(self):
         r"""The integers with their usual order."""
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [OwnedRings()]
@@ -3930,7 +3930,7 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
 
     def an_object(self):
         r"""The 2-adic integers, complete for the ideal (2)."""
-        return _own_ring(SageZZ).adic_completion(2)
+        return _owned_integers().adic_completion(2)
 
     def super_categories(self):
         return [OwnedRings().Commutative()]
@@ -4007,7 +4007,7 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The integers, the ring of integers of the rationals."""
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -4129,7 +4129,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         Sage's ``Category_over_base.an_instance`` (category_types.py) returns
         ``cls(QQ)``; here ``QQ`` is the owned rational field.
         """
-        return cls(_own_ring(SageQQ))
+        return cls(_owned_rationals())
 
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
@@ -4234,17 +4234,17 @@ def _proper_restriction_base_ring(ring):
     have no proper restriction base.
 
     The engine test is essential while ``ZZ`` itself is being constructed:
-    asking ``_own_ring(SageZZ)`` again before its cache entry exists would
+    asking ``_owned_integers()`` again before its cache entry exists would
     recursively start a second construction of the same parent.
     """
     base = ring.base_ring()
     if base is None:
-        return None if _engine_ring(ring) is SageZZ else _own_ring(SageZZ)
+        return None if _engine_ring(ring) is SageZZ else _owned_integers()
     if base is not ring:
         return _owned_ring(base)
     if _engine_ring(ring) is SageZZ:
         return None
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _engine_multiplicative_generator(engine):
@@ -4618,7 +4618,7 @@ class _OwnedRingElement(RingElement):
 
     def valuation(self, prime):
         prime = self.parent()(prime)
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return _owned_engine_element(integers, SageZZ(self._backend().valuation(prime._backend())))
 
     def prime_divisors(self):
@@ -4644,12 +4644,12 @@ class _OwnedRingElement(RingElement):
 
     def euler_phi(self):
         r"""Return Euler's totient as an owned nonnegative integer."""
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return _owned_engine_element(integers, SageZZ(_engine_euler_phi(self._backend())))
 
     def number_of_divisors(self):
         r"""Return the number of positive divisors as an owned integer."""
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return _owned_engine_element(integers,
             SageZZ(_engine_number_of_divisors(self._backend()))
         )
@@ -5094,7 +5094,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine.an_element())
 
     def _characteristic_decision(self):
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return _owned_engine_element(integers, SageZZ(self._engine.characteristic()))
 
     def is_exact(self):
@@ -5747,7 +5747,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
                 _fix_selected_module_resolution,
             )
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
             source = integers.free_module(labels)
             _fix_selected_module_resolution(
@@ -5833,6 +5833,48 @@ def _set_owned_ring_display(ring, display, *, kind=None):
 def _owned_integers() -> _OwnedRingParent:
     r"""The canonical owned integers, including their initial order placement."""
     return _owned_engine_ring(SageZZ)
+
+
+# The named session rings.  Each is the one owned object of its name; a
+# caller that needs it names it here instead of adopting the engine.
+
+
+def _owned_rationals() -> _OwnedRingParent:
+    r"""The canonical owned rational numbers ``QQ``."""
+    return _owned_engine_ring(SageQQ)
+
+
+def _owned_real_algebraic_numbers() -> _OwnedRingParent:
+    r"""The canonical owned real algebraic numbers ``AA``."""
+    return _owned_engine_ring(SageAA)
+
+
+def _owned_algebraic_numbers() -> _OwnedRingParent:
+    r"""The canonical owned algebraic numbers ``QQbar``."""
+    from sage.rings.qqbar import QQbar as SageQQbar
+
+    return _owned_engine_ring(SageQQbar)
+
+
+def _owned_real_double_field() -> _OwnedRingParent:
+    r"""The canonical owned double-precision real field ``RDF``."""
+    from sage.rings.real_double import RDF as SageRDF
+
+    return _owned_engine_ring(SageRDF)
+
+
+def _owned_complex_double_field() -> _OwnedRingParent:
+    r"""The canonical owned double-precision complex field ``CDF``."""
+    from sage.rings.complex_double import CDF as SageCDF
+
+    return _owned_engine_ring(SageCDF)
+
+
+def _owned_complex_field() -> _OwnedRingParent:
+    r"""The canonical owned 53-bit complex field ``CC``."""
+    from sage.rings.cc import CC as SageCC
+
+    return _owned_engine_ring(SageCC)
 
 
 def _owned_ring(ring):
