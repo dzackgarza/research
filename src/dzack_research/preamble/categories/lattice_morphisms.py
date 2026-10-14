@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGrou
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
-    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -2322,7 +2321,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         Selecting computes nothing; the generators are computed when
         ``group_generators()`` first reads the selected resolution.
         """
-        _fix_selected_group_resolution_on(self, self._computed_group_generators)
+        self.select_group_generators(self._computed_group_generators)
 
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.

@@ -52,6 +52,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
+        r"""``A_L`` is the cokernel of ``L -> L^#``: a quotient with its projection, not a subobject."""
         return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
@@ -516,6 +517,7 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         return "discriminant submodules"
 
     def super_categories(self):
+        r"""A subgroup ``H <= A_L`` is a finite module with its inclusion into ``A_L``."""
         return [
             Modules(self.base_ring()).FinitelyPresented().Torsion(),
             ModuleSubobjects(self.base_ring()),

@@ -107,7 +107,7 @@ class _PendingResolution:
 
 def _fix_selected_resolution(target, owner, resolution_factory, *, replace=False, generating_set=None):
     r"""Fix one chosen resolution of target relative to owner."""
-    selected_by_owner = target._selected_resolution_registry()
+    selected_by_owner = target._selected_data_registry()
     match owner in selected_by_owner, replace:
         case (True, False):
             raise ValueError(
@@ -331,16 +331,16 @@ class Objects(OwnedCategory):
             return (), dict(construction_data)
 
         @cached_method
-        def _selected_resolution_registry(self):
+        def _selected_data_registry(self):
             return {}
 
         def has_selected_resolution(self, owner) -> bool:
             r"""Whether a chosen resolution relative to owner is stored."""
-            return owner in self._selected_resolution_registry()
+            return owner in self._selected_data_registry()
 
         def selected_resolution(self, owner):
             r"""Return the chosen resolution relative to owner."""
-            registry = self._selected_resolution_registry()
+            registry = self._selected_data_registry()
             selected = registry.get(owner)
             match selected:
                 case None:
@@ -356,7 +356,7 @@ class Objects(OwnedCategory):
 
         def selected_resolution_generating_set(self, owner):
             r"""The set ``S`` of the chosen resolution relative to owner, realizing it only when unstated."""
-            selected = self._selected_resolution_registry().get(owner)
+            selected = self._selected_data_registry().get(owner)
             match selected:
                 case _PendingResolution() if selected.generating_set() is not None:
                     return selected.generating_set()

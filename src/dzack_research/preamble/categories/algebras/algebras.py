@@ -2311,6 +2311,19 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             _MorCategory = UnitalAlgebraMorCategoryConstruction
 
+            class ParentMethods:
+                def Mor(self, codomain, category=None):
+                    r"""Ask the algebra owner for the arrows, not the ring route.
+
+                    This category declares both ``Algebras(R).Unital()`` and
+                    ``OwnedRings()`` (``CAT-21``), and Sage's linearization
+                    puts ``OwnedRings`` first, so the ring ``Mor`` would
+                    answer for every object here.  The algebra owner selects
+                    the unital algebra maps, and sends a ring over itself to
+                    the ring ``Mor`` (``ARC-07``).
+                    """
+                    return Algebras.ParentMethods.Mor(self, codomain, category=category)
+
             @property
             def _SliceCategory(self):
                 r"""Supply the algebra realization of the canonical scalar slice."""

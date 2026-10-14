@@ -1402,6 +1402,20 @@ class Torsors(OwnedParameterizedCategory):
         )
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""``Sets``' emptiness hook: a torsor is not empty, by definition.
+
+            A torsor under ``G`` is a nonempty ``G``-set on which ``G`` acts
+            freely and transitively: Mathlib's ``AddTorsor``
+            (``Mathlib/Algebra/Torsor/Defs.lean``) carries the field
+            ``nonempty : Nonempty P``, and ``lean-categories`` Definition 34.2
+            (``FOUNDATIONS.md``, *Torsor*) requires the torsor to be locally
+            nonempty.  A possibly empty locus on which ``G`` acts, such as the
+            integral lifts of an isotropic reduction isometry, is a ``G``-set,
+            not an object of this category.
+            """
+            return False
+
         def an_element(self):
             r"""Return the selected point trivializing this represented torsor.
 

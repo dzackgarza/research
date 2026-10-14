@@ -160,9 +160,22 @@ def _finite_inertia_group(quotient, prime_above):
 
 
 def _finite_frobenius_class(quotient, base_prime, prime_above):
-    r"""The Frobenius class at an unramified ``P``: the ``sigma in D_P`` with ``sigma(x) = x^q`` mod ``P``."""
+    r"""The Frobenius class at an unramified ``P``: the class of :func:`_finite_frobenius_element`."""
+    return FiniteElementConjugacyClass(
+        quotient, _finite_frobenius_element(quotient, base_prime, prime_above)
+    )
+
+
+def _finite_frobenius_element(quotient, base_prime, prime_above):
+    r"""The arithmetic Frobenius at an unramified ``P``: the ``sigma in D_P`` with ``sigma(x) = x^q`` mod ``P``.
+
+    Definition: Mathlib ``IsArithFrobAt`` (``Mathlib/RingTheory/Frobenius.lean``,
+    module docstring), ``sigma x = x^q mod P`` for every ``x`` of ``O_L``,
+    ``q = |O_K/p|``; at an unramified ``P`` it is unique
+    (``AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt``, same file).
+    """
     assert quotient.inertia_group(prime_above).cardinality() == 1, (
-        f"the Frobenius class at {prime_above} in {quotient} is defined only when "
+        f"the Frobenius at {prime_above} in {quotient} is defined only when "
         f"{prime_above} is unramified, but its inertia group is nontrivial"
     )
     residue_order = _residue_field_order(base_prime)
@@ -186,7 +199,7 @@ def _finite_frobenius_class(quotient, base_prime, prime_above):
         f"should hold exactly one element acting as x -> x^{residue_order} on the residue "
         f"field, but {len(candidates)} elements do"
     )
-    return FiniteElementConjugacyClass(quotient, candidates[0])
+    return candidates[0]
 
 
 class _AbsoluteDecompositionGroupEngine:
@@ -474,6 +487,17 @@ class _FrobeniusConjugacyClassEngine:
 
     def image(self, quotient, prime_above):
         return quotient.frobenius_class(self._prime, prime_above)
+
+    def residue_field_cardinality(self):
+        r"""``q = |O_K/p|`` for the prime ``p`` of this class, as an owned integer."""
+        return _own_ring(ZZ)(_residue_field_order(self._prime))
+
+    def representative(self, prolongation=None):
+        r"""The Frobenius element at ``prolongation``, or at an unspecified prime of ``Kbar`` above this prime.
+
+        The class does not depend on the prolongation; its representative does.
+        """
+        return self._supergroup.frobenius(self._prime, prolongation=prolongation)
 
     def conjugacy_class(self):
         return self
