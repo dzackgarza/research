@@ -5,7 +5,6 @@ from sage.arith.misc import gcd
 from sage.geometry.cone import Cone as SageCone
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
-from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
@@ -666,107 +665,60 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             return all(value >= 0 for value in pairings)
 
         @cached_method
-        def vectors_of_square(self, square):
-            r"""Return the finite set of lattice vectors of this cone with ``q = square``.
+        def triangulation(self):
+            r"""Return simplicial subcones covering this pointed cone, as a family.
 
-            Hypothesis: the cone is pointed and its primitive rays pair with
-            one weak sign, isotropic rays strictly with every other ray, as
-            for a cone in the closed positive cone of a Lorentzian lattice;
-            ``square`` is nonzero of that sign.  (The zero fibre contains
-            every multiple of an isotropic ray and is infinite.)
-
-            Finiteness (research#401).  Triangulate the cone by its rays.
-            A lattice vector of a simplicial piece ``S`` is ``sum c_i r_i``
-            with ``c_i`` in ``(1/D) ZZ_{>=0}``, ``D`` the index of ``ZZ S``
-            in its saturation.  Every term of ``q = sum c_i c_j b(r_i, r_j)``
-            has the sign of ``square``, so ``c_i^2 q(r_i) <= |square|``
-            bounds a timelike ray, and for an isotropic ray some other
-            ``c_j >= 1/D`` gives ``2 c_i b(r_i, r_j) / D <= |square|``.
-            The lattice points of each bounded parallelotope are
-            enumerated and kept when their square is ``square``.
+            The family is indexed by the simplices of a triangulation of the
+            primitive rays: each simplex ``t`` is a set of linearly independent
+            rays, its value is the subcone ``S_t`` they generate (built by
+            ``from_rays``), and the ``S_t`` cover the cone.  Each ``S_t`` lies in
+            the cone because its rays do; :meth:`simplicial_subcone_inclusion`
+            is that inclusion.  Private engine (``OWN-06``): Sage's
+            ``PointConfiguration`` on the rays as projective points computes the
+            simplices; only their ray labels leave it.
             """
             from sage.geometry.triangulation.point_configuration import PointConfiguration
-            from sage.matrix.constructor import matrix
 
-            from dzack_research.preamble.categories.lattices import Lattices
-            from dzack_research.preamble.tensors.tensor import (
-                _engine_component_matrix,
-                _engine_row_family_gram,
-                _engine_row_family_squares,
-            )
+            from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
-            lattice = self.ambient_lattice()
-            ring = lattice.base_ring()
-            assert lattice in Lattices(ring) and ring is _own_ring(SageZZ), (
-                f"cannot enumerate vectors of square {square} in {self}: the cone must lie in a "
-                f"ZZ-lattice, but it lies in {lattice}, in {lattice.category()}"
-            )
             assert self.is_pointed(), (
-                f"cannot enumerate vectors of square {square} in {self}: the cone contains the "
-                f"lines {self.lineality_generators()}"
+                f"cannot triangulate {self} by its rays: it contains the lines {self.lineality_generators()}"
             )
-            square = ring(square)
-            labels = tuple(lattice.module_generating_set())
+            lattice = self.ambient_lattice()
             rays = tuple(self.primitive_rays())
-            gram = _engine_component_matrix(lattice.gram_tensor())
-            rows = matrix(SageZZ, [[int(ray.to_vector()(label)) for label in labels] for ray in rays])
-            pairings = _engine_row_family_gram(gram, rows)
-            sign = SageZZ(1) if sum(pairings.list()) > 0 else SageZZ(-1)
-            signed = sign * pairings
-            assert all(entry >= 0 for entry in signed.list()), (
-                f"cannot enumerate vectors of square {square} in {self}: the bound needs every "
-                f"pair of rays to pair with one sign, as in a closed positive cone, but the ray "
-                f"pairings are {pairings}"
-            )
-            target = sign * SageZZ(int(square))
-            assert target != 0, (
-                f"cannot enumerate the vectors of square 0 in {self}: this fibre contains every "
-                f"multiple of each isotropic ray of the cone, so it is infinite; the finite "
-                f"enumeration is stated for a nonzero square of the cone's sign"
-            )
-            if target < 0:
-                # Every term of q(sum c_i r_i) has the rays' sign, so no vector
-                # of the cone has a square of the opposite sign.
-                return lattice.finite_subsets()(())
-            found = {}
-            for simplex in PointConfiguration(rows.rows(), projective=True).triangulate():
-                positions = tuple(simplex)
-                piece = rows.matrix_from_rows(positions)
-                index = prod(SageZZ(entry) for entry in piece.elementary_divisors() if entry)
-                bounds = []
-                for position in positions:
-                    if signed[position, position] > 0:
-                        bound = SageZZ((target * index**2 / signed[position, position]).floor()).isqrt()
-                    else:
-                        partners = tuple(signed[position, other] for other in positions if other != position)
-                        if not partners:
-                            continue
-                        assert min(partners) > 0, (
-                            f"cannot enumerate vectors of square {square} in {self}: the isotropic "
-                            f"ray {rays[position]} is orthogonal to another ray of its piece"
-                        )
-                        bound = SageZZ((target * index**2 / (2 * min(partners))).floor())
-                    bounds.append((position, bound))
-                if not bounds:
-                    continue
-                zero = (SageQQ.zero(),) * len(labels)
-                parallelotope = Polyhedron(vertices=[zero], base_ring=SageQQ)
-                for position, bound in bounds:
-                    parallelotope += Polyhedron(
-                        vertices=[zero, tuple((SageQQ(bound) / index) * entry for entry in rows.row(position))],
-                        base_ring=SageQQ,
-                    )
-                points = tuple(parallelotope.integral_points())
-                if not points:
-                    continue
-                coordinates = matrix(SageZZ, points)
-                norms = _engine_row_family_squares(gram, coordinates)
-                for point, norm in zip(points, norms.column(0), strict=True):
-                    if norm == int(square):
-                        found[tuple(int(entry) for entry in point)] = point
-            return lattice.finite_subsets()(tuple(
-                _owned_vector(lattice, point) for point in found.values()
+            labels = tuple(lattice.module_generating_set())
+            rows = [[SageQQ(int(ray.to_vector()(label))) for label in labels] for ray in rays]
+            simplices = finite_ordered_set(tuple(
+                tuple(simplex) for simplex in PointConfiguration(rows, projective=True).triangulate()
             ))
+            category = RationalPolyhedralCones(lattice)
+            return finite_indexed_family(
+                simplices,
+                lambda simplex: category.from_rays(tuple(rays[position] for position in simplex)),
+                name=f"Simplicial subcones covering {self}",
+            )
+
+        def simplicial_subcone_inclusion(self, simplex):
+            r"""Return the inclusion ``S_t -> C`` of the subcone of :meth:`triangulation` at ``simplex``.
+
+            A set map that is the identity on points: ``S_t`` is generated by
+            rays of ``C``, so it is contained in ``C``.
+            """
+            subcone = self.triangulation().value(simplex)
+            return Sets().Mor(subcone, self)(lambda point: point)
+
+        def ray_span_saturation_index(self, subcone):
+            r"""Return ``[sat(ZZ S) : ZZ S]`` for the rays ``S`` of ``subcone``.
+
+            ``ZZ S`` is the sublattice the rays span, with its inclusion into
+            the ambient lattice; the saturation quotient ``sat(ZZ S)/ZZ S`` is
+            the torsion of its cokernel, and the index is its cardinality. A
+            lattice point of a simplicial subcone has coordinates in
+            ``(1/D) ZZ`` in its rays, ``D`` this index.
+            """
+            lattice = self.ambient_lattice()
+            span = lattice.subobject_on(tuple(subcone.primitive_rays()))
+            return span.inclusion().cokernel().torsion_submodule().cardinality()
 
         def _repr_(self):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
