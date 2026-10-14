@@ -28,6 +28,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
@@ -39,7 +40,7 @@ from dzack_research.preamble.categories.schemes.singularities import (
 from dzack_research.preamble.categories.schemes.varieties import Curves
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
-_RATIONALS = _own_ring(SageQQ)
+_RATIONALS = _owned_rationals()
 
 
 class CurveLocalDeltaContribution(SageObject):

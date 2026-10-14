@@ -1723,8 +1723,11 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
         r"""The affine ringed space ``Spec(ZZ)``."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-        return (_own_ring(SageZZ)).affine_spectrum()
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
+        return (_owned_integers()).affine_spectrum()
 
     @classmethod
     def _repr_object_names(cls):

@@ -409,11 +409,14 @@ class TopologicalSpaces(OwnedCategory):
             Betti vector ``(b_0, ..., b_d)`` with the covector
             ``((-1)^0, ..., (-1)^d)``.
             """
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+                _owned_integers,
+            )
             from dzack_research.preamble.tensors import tensor
             from sage.rings.integer_ring import ZZ as SageZZ
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             degrees = range(int(self._finite_cw_dimension()) + 1)
             betti_vector = tensor.vector(
                 integers, [integers(int(self.betti_number(degree))) for degree in degrees]

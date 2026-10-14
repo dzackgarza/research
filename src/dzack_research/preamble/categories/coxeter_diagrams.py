@@ -25,6 +25,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _own_ring,
+    _owned_integers,
+    _owned_real_algebraic_numbers,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -52,7 +54,7 @@ def _engine_cartan_type_data(value):
             return tuple(_engine_cartan_type_data(entry) for entry in value)
     parent = element_parent(value)
     if parent is not None and parent in OwnedRings():
-        return _engine_numeral(_own_ring(SageZZ), value)
+        return _engine_numeral(_owned_integers(), value)
     return value
 
 
@@ -406,7 +408,7 @@ class CoxeterDiagrams(OwnedCategory):
             "parallel": ((-2, 2), (2, -2)),
             "ultraparallel": ((-2, 3), (3, -2)),
         }
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return indexed_family(
             labels,
             lambda label: Lattices(integers)(grams[str(label)], names=("r1", "r2")),
@@ -738,7 +740,7 @@ class CoxeterDiagrams(OwnedCategory):
             from sage.all import cos, pi
             from sage.rings.qqbar import AA as SageAA
 
-            real_algebraics = _own_ring(SageAA)
+            real_algebraics = _owned_real_algebraic_numbers()
             rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
             ranking = self.index_set().ranking_map()
             values = []
@@ -1355,7 +1357,7 @@ class CoxeterDiagrams(OwnedCategory):
                     f"[letter, rank, 1]"
                 )
         if scale is not None:
-            scale = _own_ring(SageZZ)(scale)
+            scale = _owned_integers()(scale)
             if scale < 1:
                 raise ValueError(
                     f"cannot scale the root lattice of type {label} by {scale}: the scale "

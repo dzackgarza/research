@@ -38,7 +38,10 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -55,7 +58,7 @@ class HorikawaK3Family(SageObject):
     r"""Invariant ``(4,4)`` branch sections and their double covers."""
 
     def __init__(self, base_ring=None) -> None:
-        base = _own_ring(SageQQ) if base_ring is None else _own_ring(base_ring)
+        base = _owned_rationals() if base_ring is None else _own_ring(base_ring)
         assert int(base.characteristic()) == 0, (
             f"the Horikawa family of K3 double covers of P^1 x P^1 needs a base ring of "
             f"characteristic zero, but {base} has characteristic {base.characteristic()}"

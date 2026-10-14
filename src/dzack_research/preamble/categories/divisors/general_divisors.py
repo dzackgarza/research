@@ -26,11 +26,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedNoetherianRings,
     _own_ring,
+    _owned_integers,
 )
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _affine_normal_weil_divisor_group(scheme):

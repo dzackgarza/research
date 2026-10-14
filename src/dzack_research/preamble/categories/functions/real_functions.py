@@ -77,7 +77,10 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -87,7 +90,7 @@ from dzack_research.preamble.rings.real import RR, ExactRealNumber
 def _regularity(k):
     if k is Infinity or k == Infinity:
         return Infinity
-    integers = _own_ring(ZZ)
+    integers = _owned_integers()
     k = integers(k)
     if k < integers.zero():
         raise ValueError(f"C^k is defined for k >= 0, but k = {k}")
@@ -111,7 +114,7 @@ def _integrability(p):
             expression = real.expression()
             if expression in QQ:
                 rational = _owned_engine_element(QQ, QQ(expression))
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 return integers(rational) if rational in integers else rational
             return real
         case False:
@@ -346,7 +349,7 @@ def _space_latex(space) -> str:
 def _conjugate_exponent(p):
     r"""The Hölder conjugate: \(1/p + 1/p' = 1\)."""
     if p is Infinity:
-        return _own_ring(ZZ).one()
+        return _owned_integers().one()
     if p == 1:
         return Infinity
     return _integrability(p / (p - 1))

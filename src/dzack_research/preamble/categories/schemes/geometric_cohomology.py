@@ -26,6 +26,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_ring,
     _own_ring,
+    _owned_complex_field,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -254,7 +257,7 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
         r"""The degree-zero cohomology of a point with the selected coefficients."""
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        point = Schemes(_owned_rationals()).base_scheme()
         return self.base_ring()._fresh_free_module_on(
             finite_ordered_set(("H0",)),
             _extra_categories=(self,),
@@ -315,7 +318,7 @@ class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
         r"""The degree-zero singular cohomology of a point with the selected coefficients."""
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        point = Schemes(_owned_rationals()).base_scheme()
         return self.base_ring()._fresh_free_module_on(
             finite_ordered_set(("H0",)),
             _extra_categories=(self,),
@@ -342,7 +345,7 @@ class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
         r"""The degree-zero cohomology of the identity resolution of a point."""
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        point = Schemes(_own_ring(SageQQ)).base_scheme()
+        point = Schemes(_owned_rationals()).base_scheme()
         return self.base_ring()._fresh_free_module_on(
             finite_ordered_set(("H0",)),
             _extra_categories=(self,),
@@ -369,7 +372,7 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
         r"""The degree-zero cohomology of the complex toric projective line."""
         from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
 
-        projective_line = ToricSchemes(_own_ring(SageQQ)).an_object()
+        projective_line = ToricSchemes(_owned_rationals()).an_object()
         return self.base_ring()._fresh_free_module_on(
             finite_ordered_set(("H0",)),
             _extra_categories=(self,),
@@ -455,8 +458,8 @@ class ToricFundamentalGroups(OwnedCategory):
             RationalPolyhedralFans,
         )
 
-        cocharacters = _own_ring(SageZZ).free_module(2)
-        plane = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(_own_ring(SageQQ))
+        cocharacters = _owned_integers().free_module(2)
+        plane = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(_owned_rationals())
         return plane.fundamental_group()
 
     class ParentMethods:
@@ -697,7 +700,7 @@ class _QuarticK3IntegralTopology(SageObject):
         assert degree >= 0, (
             f"singular cohomology of {self.scheme()} is defined in degrees >= 0, not in degree {degree}"
         )
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         if degree == 2:
             return self.middle_cohomology_lattice()
         if degree in (0, 4):
@@ -757,7 +760,7 @@ class _QuarticK3IntegralTopology(SageObject):
     @cached_method
     def cup_product_pairing(self):
         middle = self.middle_cohomology_lattice()
-        values = _own_ring(SageZZ).regular_module()
+        values = _owned_integers().regular_module()
         return BilinearMap(
             middle,
             middle,
@@ -773,7 +776,7 @@ class _QuarticK3IntegralTopology(SageObject):
         middle = self.middle_cohomology_lattice()
         e1, f1 = tuple(middle.module_generators())[:2]
         hyperplane = e1 + 2 * f1
-        assert middle.q(hyperplane) == _own_ring(SageZZ)(4), (
+        assert middle.q(hyperplane) == _owned_integers()(4), (
             f"the hyperplane class {hyperplane} of the quartic {self.scheme()} must have square "
             f"H^2 = 4 in the K3 lattice, but it has square {middle.q(hyperplane)}"
         )
@@ -906,7 +909,7 @@ def _free_integral_topology_group(
     category=None,
     theory="ordinary singular cohomology",
 ):
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     category = IntegralSingularCohomologyGroups(integers) if category is None else category
     return integers._fresh_free_module_on(
         finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
@@ -920,7 +923,7 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
         _presented_module_from_morphism,
     )
 
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     source = integers.free_module(1)
     target = integers.free_module(1)
     presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
@@ -936,7 +939,7 @@ def NodalCubic():
     r"""Return the rational nodal cubic ``y^2 z = x^2(x+z)`` in ``P^2``."""
     from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
-    base = _own_ring(SageQQ)
+    base = _owned_rationals()
     plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
     ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
     x = ring.algebra_generator("x")
@@ -1065,7 +1068,7 @@ class NodalCubicIntegralTopology(SageObject):
             degree,
             rank,
             self._ordinary_realization,
-            category=IntegralSingularCohomologyGroups(_own_ring(SageZZ)),
+            category=IntegralSingularCohomologyGroups(_owned_integers()),
             theory="ordinary singular cohomology",
         )
 
@@ -1082,7 +1085,7 @@ class NodalCubicIntegralTopology(SageObject):
             degree,
             rank,
             self._resolution_realization,
-            category=ResolutionIntegralCohomologyGroups(_own_ring(SageZZ)),
+            category=ResolutionIntegralCohomologyGroups(_owned_integers()),
             theory="resolution cohomology via normalization",
         )
 
@@ -1107,7 +1110,7 @@ def ProjectiveGeneralLinearGroup2():
     r"""Return ``PGL_2`` over ``QQ`` as ``P^3 - V(ad-bc)``."""
     from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
-    base = _own_ring(SageQQ)
+    base = _owned_rationals()
     projective = ProjectiveSpaces(base)(3, names=("a", "b", "c", "d"))
     sections = projective.O(2).global_sections()
     ring = sections.homogeneous_coordinate_ring()
@@ -1181,7 +1184,7 @@ class PGL2IntegralTopology(SageObject):
 
     @cached_method
     def rational_cohomology(self, degree):
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         extension = integers.fraction_field_map()
         return self.integral_cohomology(degree).base_change(extension)
 
@@ -1189,7 +1192,7 @@ class PGL2IntegralTopology(SageObject):
     def coefficient_change_to_rationals(self, degree):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         extension = integers.fraction_field_map()
         return Modules(integers).base_change_adjunction(extension).unit(self.integral_cohomology(degree))
 
@@ -1225,7 +1228,7 @@ def _toric_integral_singular_cohomology(scheme, degree):
         f"singular cohomology of {scheme}(CC) is computed in degrees 0 through {2 * dimension} "
         f"(twice its dimension), but degree {degree} was requested"
     )
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     construction_data = _integral_topology_construction_data(
         scheme,
         degree,
@@ -1293,7 +1296,7 @@ def _toric_middle_cohomology_form(scheme):
     picard_to_chow = scheme.picard_to_chow_isomorphism()
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     # Degree-two classes commute under cup product.
     return BilinearFormModules(integers).Symmetric()(
         cohomology.bilinear_forms(integers)(
@@ -1542,8 +1545,8 @@ def _integral_singular_cohomology_over_rationals(scheme, degree):
 
 def _rational_complex_embedding():
     r"""The embedding ``QQ -> CC``; it is the only one, since ``QQ`` is the prime field."""
-    rationals = _own_ring(SageQQ)
-    complexes = _own_ring(SageCC)
+    rationals = _owned_rationals()
+    complexes = _owned_complex_field()
     return rationals.Mor(complexes, category=OwnedRings())(lambda scalar: complexes(scalar))
 
 

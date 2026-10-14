@@ -21,7 +21,10 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
@@ -32,7 +35,7 @@ class HesseBertiniFamily(SageObject):
     r"""The Hesse cubic pencil with its exact good and exceptional parameter loci."""
 
     def __init__(self) -> None:
-        base = _own_ring(SageQQ)
+        base = _owned_rationals()
         parameter = base.polynomial_ring("t")
         t = parameter.algebra_generator("t")
         plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
