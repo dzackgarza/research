@@ -7716,10 +7716,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             \(O(K_I)\) not placed finite, the selected section is the one that
             asserts (port #18 owns those extension equations).
             """
-            from dzack_research.preamble.categories.group.groups import (
-                OwnedFiniteGroups,
-                _fix_selected_group_resolution_on,
-            )
+            from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 
             perpendicular = self.orthogonal_complement()
             perpendicular_inclusion = perpendicular.inclusion()
@@ -7737,94 +7734,74 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 )
 
             levi = self.parabolic_subgroup().Mor(automorphisms)(descend)
-            rank = int(self.isotropic_sublattice().module_rank())
-            match rank:
-                case _ if rank == 1 or automorphisms not in OwnedFiniteGroups():
-                    image = automorphisms.condition_set(self._levi_image_contains)
-                    levi.select_section(Sets().Mor(image, levi.domain())(self._levi_section))
-                case _:
-                    pass
-            match rank:
-                case 1:
-                    kernel = levi.kernel()
-                    _fix_selected_group_resolution_on(
-                        kernel,
-                        lambda: finite_ordered_set(
-                            tuple(kernel(generator) for generator in self._levi_kernel_generators())
-                        ),
+            reduces_a_line = self.isotropic_sublattice().module_rank() == NN(1)
+            finite_reduction_group = automorphisms in OwnedFiniteGroups()
+            # When I has rank >= 2 and O(K_I) is placed finite, ``lift``'s own
+            # finite-image word section applies and nothing is selected.
+            if reduces_a_line or not finite_reduction_group:
+                image = automorphisms.condition_set(self._levi_image_contains)
+                levi.select_section(Sets().Mor(image, levi.domain())(self._levi_section))
+            if reduces_a_line:
+                kernel = levi.kernel()
+                kernel.select_group_generators(
+                    lambda: finite_ordered_set(
+                        tuple(kernel(generator) for generator in self._levi_kernel_generators())
                     )
-                case _:
-                    pass
+                )
             return levi
 
-        def _levi_image_contains(self, isometry):
-            r"""Whether ``isometry`` lies in the image of :meth:`levi_action`, decided by the lift torsors.
+        @cached_method
+        def _levi_fibres(self, isometry):
+            r"""The two lift torsors over ``isometry``: \(F^+(\gamma)\), then \(F^-(\gamma)\).
 
-            For a line \(I=\mathbf Z e\), \(\gamma\) is in the image exactly when
-            \(F^+(\gamma)\) or \(F^-(\gamma)\) (see :meth:`_levi_section`) is
-            nonempty, and each is empty exactly when its finite residue locus
-            is.  For higher-rank \(I\) this is port #18's computation.
-            """
-            match int(self.isotropic_sublattice().module_rank()):
-                case 1:
-                    if self.rational_lifts(self, isometry).integral_members().is_empty() is False:
-                        return True
-                    opposite, identification = self._opposite_marking()
-                    return (
-                        self.rational_lifts(opposite, identification * isometry).integral_members().is_empty()
-                        is False
-                    )
-                case rank:
-                    assert False, (
-                        f"cannot decide whether {isometry!r} lifts from O(K_I) to P_I for K_I = {self!r}: "
-                        f"I has rank {rank}, and O(K_I) is not placed finite, so this solves the extension "
-                        f"equations of an isotropic sublattice of rank at least 2, which are "
-                        f"sage-indefinite-port #18's computation"
-                    )
-
-        def _levi_section(self, isometry):
-            r"""One point of the fibre \(\rho^{-1}(\gamma)\) of :meth:`levi_action`, asserting off its image.
-
-            A set-theoretic section of \(\rho\) on its image, not a
-            homomorphic splitting.  For a primitive isotropic line
-            \(I=\mathbf Z e\) every \(g\in P_I\) sends \(e\) to \(\pm e\), so
-            \(\rho^{-1}(\gamma)=F^+(\gamma)\cup F^-(\gamma)\): \(F^+\) is the
-            integral locus of the marked-line lift torsor
-            ``rational_lifts(self, gamma)`` (lifts fixing \(e\)), and \(F^-\)
-            that of the torsor to the reduction of the same line marked by
-            \(-e\) (Gritsenko--Hulek--Sankaran, arXiv:0810.1614, section 3.1,
-            (4)--(5), as cited in ``isotropic_lifts.py``).  Each locus is empty
-            exactly when its finite residue locus is, which decides
-            membership of \(\gamma\) in the image.  The point returned is the
-            selected integral base point of the first nonempty locus.
+            For a primitive isotropic line \(I=\mathbf Z e\) every \(g\in P_I\)
+            sends \(e\) to \(\pm e\), so \(\rho^{-1}(\gamma)\) is the union of the
+            integral loci of the marked-line lift torsor ``rational_lifts(self,
+            gamma)`` (lifts fixing \(e\)) and of the torsor to the reduction of
+            the same line marked by \(-e\) (Gritsenko--Hulek--Sankaran,
+            arXiv:0810.1614, section 3.1, (4)--(5), as cited in
+            ``isotropic_lifts.py``).  Each integral locus is empty exactly when
+            its finite residue locus is.
 
             For \(I\) of rank at least 2, a lift must also choose the action on
             \(I\) and solve the extension equations \(B = XA + A^tX^t\); those
             are the specialized extension equations of port #18, and research
             has no route here.
             """
+            rank = self.isotropic_sublattice().module_rank()
+            assert rank == NN(1), (
+                f"cannot lift {isometry!r} from O(K_I) to P_I for K_I = {self!r}: I has rank {rank}, "
+                f"and O(K_I) is not placed finite, so a lift solves the extension equations of an "
+                f"isotropic sublattice of rank at least 2, which are sage-indefinite-port #18's "
+                f"computation"
+            )
+            opposite, identification = self._opposite_marking()
+            return (
+                self.rational_lifts(self, isometry),
+                self.rational_lifts(opposite, identification * isometry),
+            )
+
+        def _levi_image_contains(self, isometry):
+            r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
+            return any(
+                fibre.integral_members().is_empty() is False for fibre in self._levi_fibres(isometry)
+            )
+
+        def _levi_section(self, isometry):
+            r"""One point of \(\rho^{-1}(\gamma)\): the integral base point of the first nonempty fibre of :meth:`_levi_fibres`.
+
+            A set-theoretic section of \(\rho\) on its image, not a
+            homomorphic splitting.  Its domain, the subset of \(O(K_I)\) cut
+            out by :meth:`_levi_image_contains`, has already decided that a
+            fibre is nonempty.
+            """
             lattice = self.isotropic_embedding().codomain()
-            parabolic = self.parabolic_subgroup()
-            match int(self.isotropic_sublattice().module_rank()):
-                case 1:
-                    fixing = self.rational_lifts(self, isometry)
-                    if fixing.integral_members().is_empty() is False:
-                        return parabolic(lattice.integral_isometry(fixing.integral_base_point()))
-                    opposite, identification = self._opposite_marking()
-                    reversing = self.rational_lifts(opposite, identification * isometry)
-                    assert reversing.integral_members().is_empty() is False, (
-                        f"{isometry!r} is not in the image of P_I -> O(K_I) for K_I = {self!r}: "
-                        f"no integral isometry of {lattice!r} sends the marked isotropic vector to "
-                        f"itself or to its negative and induces it on I^perp/I"
-                    )
-                    return parabolic(lattice.integral_isometry(reversing.integral_base_point()))
-                case rank:
-                    assert False, (
-                        f"cannot lift {isometry!r} from O(K_I) to P_I for K_I = {self!r}: I has rank "
-                        f"{rank}, and O(K_I) is not placed finite, so a lift solves the extension "
-                        f"equations of an isotropic sublattice of rank at least 2, which are "
-                        f"sage-indefinite-port #18's computation"
-                    )
+            fibre = next(
+                fibre
+                for fibre in self._levi_fibres(isometry)
+                if fibre.integral_members().is_empty() is False
+            )
+            return self.parabolic_subgroup()(lattice.integral_isometry(fibre.integral_base_point()))
 
         def _levi_kernel_generators(self):
             r"""A generating family of \(\ker\rho\) for an isotropic line \(I=\mathbf Z e\).
@@ -7837,13 +7814,11 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             """
             lattice = self.isotropic_embedding().codomain()
             parabolic = self.parabolic_subgroup()
-            identity = self.Isom(self).identity()
+            fixing, reversing = self._levi_fibres(self.Aut().one())
             transvections = (
                 parabolic(lattice.integral_isometry(transvection))
-                for transvection in self.rational_lifts(self, identity).integral_kernel_group_generators()
+                for transvection in fixing.integral_kernel_group_generators()
             )
-            opposite, identification = self._opposite_marking()
-            reversing = self.rational_lifts(opposite, identification)
             reversal = (
                 ()
                 if reversing.integral_members().is_empty() is True
@@ -7857,11 +7832,18 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
             Both reductions are quotients of the same \(I^\perp\subseteq L\)
             by the same line, so the identity of \(I^\perp\) induces an
-            isometry between them; it is read on the chosen lifts.
+            isometry between them; it is read on the chosen lifts.  The
+            marked vector \(e\) is the image of the single module generator
+            of the line \(I\).
             """
             lattice = self.isotropic_embedding().codomain()
             line = self.isotropic_sublattice()
-            marked = self.isotropic_embedding()(line.module_generators()[0])
+            labels = line.module_generating_set()
+            assert labels.cardinality() == NN(1), (
+                f"the opposite marking of {self!r} reverses a marked isotropic line, but I = {line!r} "
+                f"has {labels.cardinality()} module generators"
+            )
+            marked = self.isotropic_embedding()(line.module_generator(labels.an_element()))
             opposite = lattice.primitive_isotropic_subobject(-marked).isotropic_reduction()
             own = self.orthogonal_complement().inclusion()
             theirs = opposite.orthogonal_complement().inclusion()
@@ -7871,28 +7853,6 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 lambda label: projection(theirs.lift(own(lifts(label))))
             )
             return opposite, identification
-
-        @cached_method
-        def isotropic_action(self):
-            r"""Return \(\rho_I:P_I\to GL(I)\), \(g\mapsto g|_I\), the action on the isotropic sublattice.
-
-            An isometry stabilizing \(\iota(I)\) restricts along the
-            monomorphism \(\iota\) to an automorphism of the underlying
-            module of \(I\), an element of ``I.general_linear_group()``
-            (``Aut_R(I)``).  The kernel is the pointwise parabolic \(P_I^1\).
-            """
-            embedding = self.isotropic_embedding()
-            sublattice = embedding.domain()
-            automorphisms = sublattice.general_linear_group()
-            endomorphisms = sublattice.module_category().Mor(sublattice, sublattice)
-
-            def restrict(isometry):
-                return automorphisms(endomorphisms({
-                    label: embedding.lift(isometry(embedding(sublattice.module_generator(label))))
-                    for label in sublattice.module_generating_set()
-                }))
-
-            return self.parabolic_subgroup().Mor(automorphisms)(restrict)
 
         def levi_image(self):
             r"""Return \(\operatorname{im}(P_I\to O(K_I))\), the image of :meth:`levi_action`.
