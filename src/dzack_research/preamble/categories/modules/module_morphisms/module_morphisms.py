@@ -3298,6 +3298,7 @@ def _flag_stabilizer_engine_data(automorphisms, terms):
     return change, sizes, block_generators
 
 
+
 class _ModuleCore(_CoreCategory):
     r"""The core of ``Modules(R)``: at ``(M, M)`` its Mor is ``Aut_R(M)``, the one module automorphism group."""
 
@@ -3564,6 +3565,74 @@ class ModuleAutomorphismGroup(CoreMor):
             generating_morphism=self.free_cover(generators),
             basis_change=change,
         )
+
+    def finite_index_left_cosets(self, subgroup, index):
+        r"""``G/H`` for ``G = GL(M)``, ``M`` free of rank two over ``ZZ``, and ``H`` of finite index ``index``.
+
+        ``H`` is a subgroup of ``G`` with selected generators; that its index
+        in ``G`` is the natural number ``index`` is the caller's stated
+        hypothesis (``OWN-22``), which coset enumeration needs: Todd--Coxeter
+        terminates exactly when the index is finite.  The enumeration is
+        asserted to find that many cosets.  The result is the pointed
+        transitive ``G``-set of ``LeftCosetGSets(H)`` on the finite ordinal
+        ``{0, ..., index - 1}`` (``0`` the coset ``H``), with the left action
+        ``g . Hx = H x g^-1`` and its section through the selected free cover
+        of ``G``; ``G.select_left_cosets`` makes it ``G.left_cosets(H)``, so
+        double cosets ``H \ G / Q`` are its ``Q``-orbits.  For ``B`` the
+        stabilizer of a line, ``H \ G / B`` is the set of cusps of ``H``,
+        its orbits on ``P^1(QQ) = B \ G`` (Mathlib ``CuspOrbits``,
+        ``Mathlib/NumberTheory/ModularForms/Cusps.lean``; TauCeti
+        ``doubleCosetEquivOrbitQuotient``,
+        ``TauCeti/GroupTheory/DoubleCoset/Orbits.lean``).
+        """
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+        from dzack_research.preamble.categories.group.groups import GeneratedSubgroups
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+        from dzack_research.preamble.categories.sets.set_categories import NN, finite_ordinal_set
+        from dzack_research.preamble.tensors.tensor import _engine_permutation_word_action
+
+        module = self.domain()
+        assert module.base_ring() == _owned_integers() and self._framed_rank() == 2, (
+            f"cosets of a finite-index subgroup of {self} are enumerated through a presentation of "
+            f"GL_2(ZZ), but {module} is not a free ZZ-module of rank two"
+        )
+        assert subgroup in GeneratedSubgroups(self), (
+            f"{subgroup} has no selected generators in {self}: coset enumeration writes each selected "
+            f"generator as a word in GL_2(ZZ)"
+        )
+        assert index in NN, f"the index of {subgroup} in {self} is a natural number, not {index!r}"
+        permutations = self._finite_index_coset_permutations(subgroup, NN(index))
+        points = finite_ordinal_set(int(NN(index)))
+        return FiniteGSets(self).pointed_orbit(
+            subgroup,
+            points(0),
+            lambda automorphism, point: points(
+                _engine_permutation_word_action(
+                    permutations, self._general_linear_two_word(~automorphism), int(point)
+                )
+            ),
+        )
+
+    @cached_method
+    def _finite_index_coset_permutations(self, subgroup, index):
+        r"""The right action of ``s_2, s_3, e`` on the cosets of ``subgroup``, computed once per subgroup.
+
+        Private realization for ``finite_index_left_cosets``; the engine work
+        is ``tensors.tensor._engine_general_linear_two_coset_permutations``.
+        """
+        from dzack_research.preamble.tensors.tensor import _engine_general_linear_two_coset_permutations
+
+        return _engine_general_linear_two_coset_permutations(
+            tuple(self._row_action_matrix(generator) for generator in subgroup.selected_subgroup_generators()),
+            int(index),
+        )
+
+    @cached_method
+    def _general_linear_two_word(self, automorphism):
+        r"""The word of ``automorphism`` in ``s_2, s_3, e``, lowered once per element (``tensors.tensor._engine_general_linear_two_word``)."""
+        from dzack_research.preamble.tensors.tensor import _engine_general_linear_two_word
+
+        return _engine_general_linear_two_word(self._row_action_matrix(automorphism))
 
     def _basis_general_linear_generators(self):
         r"""Generators of ``GL(M)``: Sage's generators of ``GL(n, R)``, raised through the basis."""

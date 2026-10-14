@@ -1211,6 +1211,129 @@ def _engine_column_matrix_from_row_action(row_action):
     return row_action.transpose()
 
 
+def _engine_general_linear_two_word(row_action):
+    r"""Private engine adapter (`OWN-05`, `OWN-06`, `OWN-24`): an element of ``GL_2(ZZ)`` as a word.
+
+    Protected caller: ``ModuleAutomorphismGroup._general_linear_two_word``
+    (``modules/module_morphisms/module_morphisms.py``), and
+    :func:`_engine_general_linear_two_coset_permutations` here.  Input: the
+    engine row action of an automorphism of a free rank-two ``ZZ``-module on
+    its selected basis.  Output: a tuple of signed letters, ``1, 2, 3`` for
+    ``s_2 = [[0,-1],[1,0]]``, ``s_3 = [[0,1],[-1,1]]``, ``e = diag(1,-1)`` and
+    negative for inverses, whose product is the column matrix ``C``
+    (``C(gh) = C(g) C(h)``).  ``C = e A`` with ``det A = 1`` when
+    ``det C = -1``; ``A`` is written in ``l, r`` by Sage's
+    ``sl2z_word_problem``, with ``l = s_3^-1 s_2^-1`` and ``r = s_3 s_2``.
+    """
+    return _engine_general_linear_two_column_word(_engine_column_matrix_from_row_action(row_action))
+
+
+def _engine_general_linear_two_column_word(column):
+    r"""The word of :func:`_engine_general_linear_two_word`, read from the column matrix ``C`` itself."""
+    from sage.modular.arithgroup.arithgroup_perm import sl2z_word_problem
+    from sage.modular.arithgroup.congroup_sl2z import SL2Z
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    reflection = _sage_matrix.diagonal(SageZZ, [1, -1])
+    letters = ((-2, -1), (2, 1))
+
+    def special(matrix):
+        return tuple(
+            letter
+            for which, exponent in sl2z_word_problem(SL2Z(matrix))
+            for letter in (
+                letters[int(which)] * int(exponent)
+                if int(exponent) >= 0
+                else tuple(-step for step in reversed(letters[int(which)])) * -int(exponent)
+            )
+        )
+
+    match column.det():
+        case 1:
+            return special(column)
+        case -1:
+            return (3, *special(reflection * column))
+        case determinant:
+            raise AssertionError(f"{column} has determinant {determinant}, not +-1")
+
+
+def _engine_general_linear_two_coset_permutations(generator_row_actions, index):
+    r"""Private engine adapter (`OWN-05`, `OWN-06`): Todd--Coxeter for a subgroup of ``GL_2(ZZ)``.
+
+    Protected caller: ``ModuleAutomorphismGroup._finite_index_coset_permutations``.
+    ``generator_row_actions`` are the engine row actions of generators of
+    ``H``; ``index`` is the caller's stated finite index.  GAP's
+    ``CosetTable`` enumerates the right cosets of ``H`` in
+
+        < s_2, s_3, e | s_2^4, s_2^2 s_3^-3, e^2, e s_2 e^-1 = w(e s_2 e),
+                        e s_3 e^-1 = w(e s_3 e) >,
+
+    a presentation of ``GL_2(ZZ)``: generation is Mathlib's
+    ``Matrix.SpecialLinearGroup.SL2Z_generators``, the relation
+    ``(TS)^3 = -1`` TauCeti's ``T_mul_S_pow_three``; that these relations
+    present the group is not formalized (COMPLAINTS.md, *A finite
+    presentation of GL_2(ZZ)*).  Enumeration terminates exactly when the
+    index is finite (TauCeti's ``CosetTable.index_le`` bounds the index by a
+    table's size).  Returns, for ``s_2, s_3, e``, the right action on the
+    coset numbers ``0, ..., index - 1`` (``0`` is ``H``) as tuples.
+    """
+    from functools import reduce
+
+    from sage.libs.gap.libgap import libgap
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    free = libgap.FreeGroup(["s2", "s3", "e"])
+    letters = free.GeneratorsOfGroup()
+
+    def word(signed_letters, generators):
+        return reduce(
+            lambda product, letter: product * generators[abs(letter) - 1] ** (1 if letter > 0 else -1),
+            signed_letters,
+            generators[0] ** 0,
+        )
+
+    two = _sage_matrix(SageZZ, [[0, -1], [1, 0]])
+    three = _sage_matrix(SageZZ, [[0, 1], [-1, 1]])
+    reflection = _sage_matrix.diagonal(SageZZ, [1, -1])
+    s2, s3, e = letters
+    relators = [
+        s2 ** 4,
+        s2 ** 2 * s3 ** -3,
+        e ** 2,
+        e * s2 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * two * reflection), letters).Inverse(),
+        e * s3 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * three * reflection), letters).Inverse(),
+    ]
+    presented = free / relators
+    presented_letters = presented.GeneratorsOfGroup()
+    subgroup = presented.Subgroup(
+        [word(_engine_general_linear_two_word(row_action), presented_letters) for row_action in generator_row_actions]
+    )
+    table = presented.CosetTable(subgroup)
+    assert int(libgap.Length(table[0])) == int(index), (
+        f"the subgroup was stated to have index {index} in GL_2(ZZ), but Todd--Coxeter enumeration "
+        f"found {libgap.Length(table[0])} cosets"
+    )
+    # Row 2k of GAP's coset table is the right action of the k-th generator.
+    return tuple(tuple(int(point) - 1 for point in table[2 * position]) for position in range(3))
+
+
+def _engine_permutation_word_action(permutations, signed_letters, point):
+    r"""Private engine adapter: the right action of a word on a point, from the generators' permutations.
+
+    Protected caller: ``ModuleAutomorphismGroup.finite_index_left_cosets``.
+    """
+    from functools import reduce
+
+    inverses = tuple(
+        tuple(sorted(range(len(permutation)), key=permutation.__getitem__)) for permutation in permutations
+    )
+    return reduce(
+        lambda current, letter: (permutations if letter > 0 else inverses)[abs(letter) - 1][current],
+        signed_letters,
+        point,
+    )
+
+
 def _engine_row_family_gram(gram, row_family):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): the Gram matrix of a family given by coordinate rows.
 

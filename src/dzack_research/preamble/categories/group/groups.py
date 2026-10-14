@@ -4999,18 +4999,63 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 self.normalizer,
             )
 
-        @cached_method
         def left_cosets(self, subgroup):
             r"""Return the represented left-coset space ``G/H``.
 
             The result is the pointed transitive left ``G``-set ``G/H`` with
             the projection ``G -> G/H`` and its section, the representative
-            map ``G/H -> G`` (a transversal).  For infinite ``G`` and
-            ``H = f^-1(K)`` along a map to a finite group, ``G/H`` is
-            realized as the finite orbit of ``K`` in ``F/K``.
+            map ``G/H -> G`` (a transversal).  A realization selected with
+            ``select_left_cosets`` is that object.  Otherwise, for infinite
+            ``G`` and ``H = f^-1(K)`` along a map to a finite group, ``G/H``
+            is realized as the finite orbit of ``K`` in ``F/K``.
             """
+            from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
+
+            if self.has_selected_left_cosets(subgroup):
+                return self._selected_resolution_registry()[LeftCosetGSets(subgroup)]
+            return self._left_coset_construction(subgroup)
+
+        @cached_method
+        def _left_coset_construction(self, subgroup):
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
+
+        def has_selected_left_cosets(self, subgroup) -> bool:
+            r"""Whether a realization of ``G/H`` was selected with ``select_left_cosets``."""
+            from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
+
+            return LeftCosetGSets(subgroup) in self._selected_resolution_registry()
+
+        def select_left_cosets(self, coset_space):
+            r"""Select a supplied finite realization of ``G/H`` as ``left_cosets(H)``, and return ``G``.
+
+            ``coset_space`` is a finite ``G``-set in ``LeftCosetGSets(H)`` for
+            a subgroup ``H`` of this group: a pointed transitive action with
+            stabilizer ``H`` at its base point and a section
+            (``LeftCosetGSets.from_transitive_action``,
+            ``FiniteGSets.pointed_orbit``, or a computation such as
+            ``GL(M).finite_index_left_cosets``).  It states that ``H`` has
+            finite index; the caller is trusted to have established that
+            (``OWN-22``), as ``select_group_resolution`` trusts a generating
+            family, and it is stored in the same registry of selected data,
+            keyed by the category ``LeftCosetGSets(H)``.  Afterwards
+            ``left_cosets(H)`` is that object, so ``double_cosets`` with ``H``
+            on either side computes orbits on it.  Selecting computes nothing.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
+
+            assert coset_space in FiniteGSets(self), (
+                f"a selected realization of a coset space of {self} is a finite {self}-set, "
+                f"but {coset_space} is in {coset_space.category()}"
+            )
+            subgroup = coset_space.subgroup()
+            assert coset_space in LeftCosetGSets(subgroup) and subgroup.supergroup() is self, (
+                f"{coset_space} is not a pointed coset space {self}/{subgroup} of a subgroup of {self}"
+            )
+            if self.has_selected_left_cosets(subgroup):
+                raise ValueError(f"{self}/{subgroup} already has a selected realization")
+            self._selected_resolution_registry()[LeftCosetGSets(subgroup)] = coset_space
+            return self
 
         def right_cosets(self, subgroup):
             r"""Return ``H\\G``, presented as ``G/H`` through ``Hx |-> x^-1 H``.
