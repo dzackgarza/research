@@ -121,10 +121,8 @@ class _FiniteIntegralRepresentation(SageObject):
         assert quotient.cardinality().is_finite() is True, (
             "the residue-action computation requires a represented finite module M/dM"
         )
-        self._quotient_points = tuple(quotient)
         selected = action.selected_submodule()
         self._submodules = [selected]
-        self._position_by_key = {self._submodule_key(selected): 0}
         self._registering_orbit = True
         augmentation = self.generating_augmentation()
         free = augmentation.domain()
@@ -169,17 +167,21 @@ class _FiniteIntegralRepresentation(SageObject):
             representation(generator) for generator in self.action()._group_generators()
         ))
 
-    def _submodule_key(self, submodule):
-        inclusion = submodule.inclusion()
-        positions = []
-        for position, point in enumerate(self._quotient_points):
-            contained = ask(inclusion.is_in_image(point))
-            assert contained is True or contained is False, (
-                "coding a submodule of the finite residue module requires decided membership"
-            )
-            if contained is True:
-                positions.append(position)
-        return tuple(positions)
+    def _position_of(self, submodule):
+        r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``.
+
+        Two submodules are equal exactly when each contains the generators of
+        the other; this compares a candidate with the orbit, not with every
+        point of ``M/dM``.
+        """
+        return next(
+            (
+                position
+                for position, known in enumerate(self._submodules)
+                if submodule.is_contained_in(known) and known.is_contained_in(submodule)
+            ),
+            None,
+        )
 
     def _move_submodule(self, group_element, submodule):
         quotient = self.action().finite_module()
@@ -193,14 +195,14 @@ class _FiniteIntegralRepresentation(SageObject):
 
     def _act_on_position(self, group_element, position):
         candidate = self._move_submodule(group_element, self._submodules[int(position)])
-        key = self._submodule_key(candidate)
-        if key not in self._position_by_key:
+        image_position = self._position_of(candidate)
+        if image_position is None:
             assert self._registering_orbit, (
                 "the supplied rational action leaves its computed finite lattice orbit"
             )
-            self._position_by_key[key] = len(self._submodules)
+            image_position = len(self._submodules)
             self._submodules.append(candidate)
-        return _own_ring(SageZZ)(self._position_by_key[key])
+        return _own_ring(SageZZ)(image_position)
 
     def orbit_submodules(self):
         return tuple(self._submodules)
@@ -214,7 +216,7 @@ class _FiniteIntegralRepresentation(SageObject):
         return tuple(section(point) for point in self.g_set())
 
     def transporter_to(self, submodule):
-        position = self._position_by_key.get(self._submodule_key(submodule))
+        position = self._position_of(submodule)
         if position is None:
             return None
         return self.orbit_section()(self.g_set().point_set()(_own_ring(SageZZ)(position)))

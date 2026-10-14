@@ -20,6 +20,11 @@ from collections.abc import Hashable, Mapping, Sequence
 from functools import cache
 from typing import TYPE_CHECKING, overload
 
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+
+    from dzack_research.preamble.owned_category import ConstructionData
+
 from sage.arith.misc import gcd
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
@@ -62,6 +67,11 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    CosliceCategory,
+    _WalkingArrowFunctorCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.products import _FiniteSequenceFunctorCategory
 from dzack_research.preamble.categories.definite_lattices import (
     _babai,
     _bkz_reduction,
@@ -1369,6 +1379,21 @@ def _ring_notation(ring):
     return str(ring), raw
 
 
+class _MarkedLatticeMethods:
+    r"""Operations of the categories of marked lattices: ``<n>/Lattices``, ``Ar(Lattices)``, ``Fun([2], Lattices)``."""
+
+    def primitive_marking_classes(self, source: Parent, lattice: Parent) -> Parent:
+        r"""One marked lattice per isomorphism class of primitive markings of ``lattice`` of shape ``source``.
+
+        ``source`` is the shape of the marking: ``<n>`` for a pointed lattice,
+        a totally isotropic lattice for a sublattice, a chain for a flag.  The
+        classes are decided by ``sage_indefinite_port`` (#403).
+        """
+        from sage_indefinite_port.indefinite.marked_lattices import primitive_marking_classes
+
+        return primitive_marking_classes(self, source, lattice)
+
+
 class Lattices(OwnedCategoryOverBaseRing):
     r"""
     The category of lattices over a base ring, and the constructor for
@@ -1442,6 +1467,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return LatticesOverGroupAlgebra(ring)
         return super().__classcall__(cls, ring)
+
+    class Coslices(_MarkedLatticeMethods, CosliceCategory):
+        r"""``X/Lattices``: lattices marked by a map from ``X``, the coslice construction on ``Lattices``."""
+
+    class ArrowDiagrams(_MarkedLatticeMethods, _WalkingArrowFunctorCategory):
+        r"""``Ar(Lattices) = [[1], Lattices]``: lattices marked by a sublattice."""
+
+    class SequenceDiagrams(_MarkedLatticeMethods, _FiniteSequenceFunctorCategory):
+        r"""``[[n], Lattices]``: lattices marked by a chain of sublattices, such as a flag."""
 
     @cached_method
     def Core(self):
@@ -2206,6 +2240,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             self._preamble_gram_tensor = gram_tensor
             super().__init__(**rest)
 
+        def _added_structure(self, construction_data: dict[str, ConstructionData]) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+            r"""The Gram tensor this level adds, kept when the lattice is constructed again (``OWN-05``; see ``Objects``)."""
+            categories, data = super()._added_structure(construction_data)
+            return categories, {"gram_tensor": self.gram_tensor(), **data}
+
         def _first_ngens(self, n):
             r"""Return the first ``n`` module generators, for Sage's ``L.<e,f> =`` naming syntax."""
             labels = self.module_generating_set()
@@ -2439,7 +2478,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``rho_L:O(L)->O(A_L)`` by functoriality of discriminants."""
             source = self.Aut()
             target = self.discriminant_group().orthogonal_group()
-            return source.Mor(target)(lambda isometry: isometry.discriminant_morphism())
+            return OwnedGroups().Mor(source, target)(lambda isometry: isometry.discriminant_morphism())
 
         @cached_method
         def discriminant_image(self):
@@ -7333,7 +7372,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 lift = perpendicular_inclusion(self.coordinate_frame()[label])
                 return lift - ambient.scalar_multiple(lift.b(f), e)
 
-            section = self.Mor(ambient)(section_image)
+            section = Lattices(ring).Mor(self, ambient)(section_image)
             plane = Lattices(ring)("U")
             labels = tuple(plane.module_generating_set())
             plane_embedding = plane.Mor(ambient)(

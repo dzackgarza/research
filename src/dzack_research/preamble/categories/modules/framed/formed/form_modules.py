@@ -101,6 +101,12 @@ from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunct
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+
+    from dzack_research.preamble.owned_category import ConstructionData
 
 for _form_axiom in ("Symmetric", "Nondegenerate", "Unimodular", "Even"):
     if _form_axiom not in all_axioms:
@@ -1485,6 +1491,11 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""The form determines its module; the two are not independent data."""
             self._preamble_form = source_form
             super().__init__(**rest)
+
+        def _added_structure(self, construction_data: "dict[str, ConstructionData]") -> "tuple[tuple[Category, ...], dict[str, ConstructionData]]":
+            r"""The form this level adds, kept when the module is constructed again (``OWN-05``; see ``Objects``)."""
+            categories, data = super()._added_structure(construction_data)
+            return categories, {"source_form": self.form(), **data}
 
         def form(self):
             r"""Return the selected form datum, stated on the unformed module."""

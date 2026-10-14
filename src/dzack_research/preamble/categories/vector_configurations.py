@@ -589,11 +589,26 @@ class _SpanningConfiguration:
         relabel = Modules(source_positions.base_ring()).Mor(source_positions, target_positions)(
             lambda label: target_positions.module_generator(target_label(sigma(to_integral(label))))
         )
-        rational_source = self.rational_space()
         rational_target = target.rational_space()
+        section = self._family_section()
+        rational_source = self.rational_space()
         return rational_source.Isom(rational_target)(
-            lambda label: target_family(relabel(source_family.lift(rational_source.module_generator(label))))
+            lambda label: target_family(relabel(section(rational_source.module_generator(label))))
         )
+
+    @cached_method
+    def _family_section(self):
+        r"""A section ``L tensor Q -> F_Q(I)`` of the surjective rational family, solved once on the framing.
+
+        It depends only on this configuration, so every ``T_sigma`` composes
+        with the same section instead of solving again for each ``sigma``.
+        """
+        source_family = self.rational_family()
+        rational_source = self.rational_space()
+        return Modules(rational_source.base_ring()).Mor(rational_source, source_family.domain())({
+            label: source_family.lift(rational_source.module_generator(label))
+            for label in rational_source.module_generating_set()
+        })
 
     def rational_equivalence(self, target):
         r"""One rational isometry carrying this coloured family onto ``target``'s, or ``None``."""

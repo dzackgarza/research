@@ -780,7 +780,7 @@ def _group_generating_epimorphism(group, source, labels, generator_morphism):
     assert source.free_basis() is labels, (
         f"the free group {source} does not have {labels} as its free basis, so it cannot map onto {group} by sending the free generators to the elements indexed by {labels}"
     )
-    return source.Mor(group)(generator_morphism)
+    return OwnedGroups().Mor(source, group)(generator_morphism)
 
 
 def _fix_selected_group_resolution_data(
@@ -1478,6 +1478,11 @@ def _own_group(
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    # ARC-07: the ambient category is the category whose constructor
+                    # built the object; Groups.Free and the engine groups are
+                    # constructed by Groups, as subobjects record their objects' plain
+                    # category (cc66c2d1ed).
+                    _constructing_category=OwnedGroups(),
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     **({"selected_linear_data": linear_data} if linear_data is not None else {}),
@@ -1491,6 +1496,11 @@ def _own_group(
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    # ARC-07: the ambient category is the category whose constructor
+                    # built the object; Groups.Free and the engine groups are
+                    # constructed by Groups, as subobjects record their objects' plain
+                    # category (cc66c2d1ed).
+                    _constructing_category=OwnedGroups(),
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     **({"selected_linear_data": linear_data} if linear_data is not None else {}),

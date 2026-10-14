@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategories,
     MorCategoryConstruction,
     _category_mor_parent,
+    _declared_construction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
@@ -251,11 +252,18 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
 
         match domain.represented_category():
             case shape if shape is FiniteOrdinalCategory(2):
-                return _WalkingArrowFunctorCategory
+                realization = _WalkingArrowFunctorCategory
             case FiniteOrdinalCategory():
-                return _FiniteSequenceFunctorCategory
+                realization = _FiniteSequenceFunctorCategory
             case _:
                 return self.fixed_category_class()
+        # [shape, D] is a functorial construction in D: the codomain's class
+        # declares the construction's class for its arrow and sequence
+        # diagrams as the nested ``ArrowDiagrams`` / ``SequenceDiagrams``
+        # (subclasses of these realizations), through its class inheritance.
+        name = "ArrowDiagrams" if realization is _WalkingArrowFunctorCategory else "SequenceDiagrams"
+        construction = _declared_construction(codomain.represented_category(), name)
+        return realization if construction is None else construction
 
     def Of(
         self,

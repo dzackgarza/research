@@ -1112,6 +1112,14 @@ class CosliceCategory(_SubcategoryOfArrows):
         match cls:
             case DynamicMetaclass():
                 return cls.__base__(base_category, base_object)
+        if cls is CosliceCategory:
+            # X/C is the functorial construction C |-> X/C: a category class
+            # declares the construction's class for its coslices as the nested
+            # ``Coslices`` (a subclass of CosliceCategory), found through its
+            # class inheritance like any category-level declaration.
+            construction = _declared_construction(base_category, "Coslices")
+            if construction is not None:
+                return typecall(construction, base_category, base_object)
         return typecall(cls, base_category, base_object)
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
@@ -1233,6 +1241,34 @@ class CosliceCategory(_SubcategoryOfArrows):
     def admits_arrow(self, arrow: Morphism) -> bool:
         r"""An arrow out of the fixed base object."""
         return arrow.domain() is self.base_object() and super().admits_arrow(arrow)
+
+    # Implementer side of CoreMor's core contract (OWN-05) for X/C: an
+    # isomorphism (B, i) -> (B', i') is a base isomorphism g with g i = i',
+    # the square (id_X, g). The base category owns the marked decisions, as it
+    # does for marked diagrams (_FunctorCategory).
+    def _core_isomorphism_from_apex(self, core_mor, apex):
+        r"""The isomorphism of ``core_mor`` whose component on the apex is ``apex``."""
+        source, target = core_mor.domain(), core_mor.codomain()
+        base = self.base_object()
+        identity = _category_mor_parent(self.base_category(), base, base).identity()
+        forward = self.Mor(source, target)(identity, apex)
+        inverse = self.Mor(target, source)(identity, ~apex)
+        return core_mor(forward, inverse)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""One isomorphism of ``core_mor``, or ``None`` when the base category decides there is none."""
+        apex = self.base_category()._marked_isometry(self, core_mor.domain(), core_mor.codomain())
+        return None if apex is None else self._core_isomorphism_from_apex(core_mor, apex)
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Automorphisms of the marked object generating its automorphism group, from the base category."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"group generators belong to Aut(X) = Iso(X, X), but {core_mor} has distinct endpoints"
+        )
+        apexes = self.base_category()._marked_automorphism_generators(self, core_mor.domain())
+        return finite_ordered_set(tuple(self._core_isomorphism_from_apex(core_mor, apex) for apex in apexes))
 
     def _repr_(self) -> str:
         return f"Coslice category {self.base_object()}/{self.base_category()}"
@@ -2238,6 +2274,13 @@ class CoreMor(CategoricalMor):
         if category is not None:
             placement = category if placement is None else Cat().meet((placement, category))
         CategoricalMor.__init__(self, family, domain, codomain, category=placement)
+        if domain is codomain:
+            # Aut(X) selects the generating family its base category computes
+            # (the protected core contract); selecting computes nothing until
+            # group_generators() first reads it.
+            self.select_group_generators(
+                lambda: self.core_category().base_category()._core_automorphism_generators(self)
+            )
 
     @staticmethod
     def _vertex_group_placement(domain: Parent, codomain: Parent) -> Category | None:
@@ -2298,18 +2341,6 @@ class CoreMor(CategoricalMor):
         group of the common apex; the base category owns the search.
         """
         return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
-
-    def group_generators(self):
-        r"""Generators of ``Aut(X) = Iso(X, X)``: the selected free cover, else the base category's computation.
-
-        Without a selected resolution, the base category supplies the
-        generating family (its protected core contract) and it is selected.
-        """
-        if not self.has_selected_group_resolution():
-            self.select_group_resolution(
-                generators=self.core_category().base_category()._core_automorphism_generators(self)
-            )
-        return self.selected_group_resolution().generators(name="Group generators")
 
     def _element_constructor_(self, forward, inverse=None):
         match forward:

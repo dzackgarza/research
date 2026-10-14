@@ -88,7 +88,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, conjunction
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, ask, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 
@@ -3290,6 +3290,25 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             )
             super().__init__(**rest)
 
+        def is_contained_in(self, other) -> bool:
+            r"""Whether this submodule lies in the submodule ``other`` of the same ambient module.
+
+            ``S <= T`` exactly when every generator of ``S`` lies in the image
+            of ``T``'s inclusion; equality is containment both ways.
+            """
+            if self.inclusion().codomain() is not other.inclusion().codomain():
+                raise ValueError(f"{self} and {other} are submodules of different modules")
+            target = other.inclusion()
+            inclusion = self.inclusion()
+            for label in self.module_generating_set():
+                decision = ask(target.is_in_image(inclusion(self.module_generator(label))))
+                assert decision is True or decision is False, (
+                    f"containment of {self} in {other} requires decided membership of its generators"
+                )
+                if decision is False:
+                    return False
+            return True
+
         def module_subobject_construction(self):
             r"""Return the selected construction defining this module subobject."""
             return self._module_subobject_construction
@@ -5488,16 +5507,13 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
             f"must be {left_morphism.codomain()} and {right_morphism.codomain()}"
         )
 
+    # f + g = i_L f p_L + i_R g p_R, read on the biproduct's own projections and
+    # injections, so it does not depend on how the source labels its generators.
+    left_projection, right_projection = source.projection(source_left), source.projection(source_right)
+    left_injection, right_injection = target.injection(target_left), target.injection(target_right)
     return source.module_category().Mor(source, target)(
-        lambda label: (
-            target.injection(target_left)(
-                left_morphism(left_morphism.domain().module_generator(label.summand_element()))
-            )
-            if label.summand_index() == source_left
-            else target.injection(target_right)(
-                right_morphism(right_morphism.domain().module_generator(label.summand_element()))
-            )
-        )
+        lambda label: left_injection(left_morphism(left_projection(source.module_generator(label))))
+        + right_injection(right_morphism(right_projection(source.module_generator(label))))
     )
 
 
