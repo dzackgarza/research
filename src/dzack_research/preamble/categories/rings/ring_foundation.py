@@ -3692,7 +3692,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def Mor(self, codomain, category=None):
             rings = OwnedRings()
-            if category is None or (isinstance(category, OwnedCategory) and category.is_subcategory(rings)):
+            if category is None:
+                # ``A.Mor(B) := A.ambient_category().Mor(A, B)`` (``ARC-07``).
+                return super().Mor(codomain)
+            if isinstance(category, OwnedCategory) and category.is_subcategory(rings):
                 return rings.Mor(self, codomain)
             # A Sage category here is not a mathematical request: it is Sage's
             # coercion machinery asking for somewhere to keep a conversion map,

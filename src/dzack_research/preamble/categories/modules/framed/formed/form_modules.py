@@ -1690,10 +1690,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case False:
                     return self.left_curry().is_injective() and self.right_curry().is_injective()
 
-        def Mor(self, codomain, category=None):
-            if category is None and codomain in FormModules(self.base_ring()):
-                return FormModules(self.base_ring()).Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""

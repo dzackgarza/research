@@ -143,15 +143,6 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             r"""Return the selected connection datum on :meth:`unformed_module`."""
             return self._preamble_source_connection
 
-        def Mor(self, codomain, category=None):
-            connections = ModulesWithConnection(self.base_ring())
-            if codomain in connections and (
-                category is None or category.is_subcategory(connections)
-            ):
-                return connections.Mor(self, codomain)
-            if category is None:
-                return self.module_category().Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             return self.Mor(codomain, category=category)

@@ -1162,15 +1162,6 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def _algebra_mor_class(self):
             return FramedFreeAlgebraMor
 
-        def Mor(self, codomain, category=None):
-            r"""Select the algebra arrow theory before the inherited ring Mor.
-
-            The common algebra selector retains the requested theory and the
-            actual endpoint laws. In particular, a nonassociative unital
-            target uses its unital linear-map constructor rather than an
-            associative free-algebra word extension.
-            """
-            return Algebras.ParentMethods.Mor(self, codomain, category=category)
 
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
@@ -1725,16 +1716,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         return _power_algebra_of(module, "alternating")
 
     class ParentMethods(_PowerAlgebra):
-        def Mor(self, codomain, category=None):
-            if category is None:
-                selected = self._default_algebra_mor_category(codomain)
-                if selected is not None:
-                    return _category_mor_parent(selected, self, codomain)
-            alternating = AlternatingAlgebras(self.base_ring())
-            if category is None and codomain in alternating:
-                return alternating.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
-
+        r"""The exterior power realization of the alternating algebra on ``M``."""
 
 
 def _presentation_data(algebra):
@@ -2013,15 +1995,6 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         gamma = divided_power
 
-        def Mor(self, codomain, category=None):
-            if category is None:
-                selected = self._default_algebra_mor_category(codomain)
-                if selected is not None:
-                    return _category_mor_parent(selected, self, codomain)
-            divided = DividedPowerAlgebras(self.base_ring())
-            if category is None and codomain in divided:
-                return divided.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
 
 

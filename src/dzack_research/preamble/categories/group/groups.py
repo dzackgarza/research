@@ -4508,11 +4508,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return ClassifyingCategory(self)
 
-        def Mor(self, codomain, category=None):
-            groups = OwnedGroups()
-            if category is None or category.is_subcategory(groups):
-                return groups.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()

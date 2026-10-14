@@ -2430,13 +2430,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 root_system_type_name=root_system_type_name,
             )
 
-        def Mor(self, codomain, category=None):
-            lattices = Lattices(self.base_ring())
-            if category is None or category.is_subcategory(lattices):
-                return _lattice_mor(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-
-            return SageHom(self, codomain, category)
 
         def _Hom_(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
