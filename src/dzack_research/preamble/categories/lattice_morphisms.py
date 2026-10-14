@@ -1998,11 +1998,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
         For lattice vectors this is an exact orbit witness ``g(source)=target``.
         For two isometries in ``Isom(L,M)`` it retains the torsor operation
-        ``g ∘ source = target``.
+        ``g ∘ source = target``.  For two finite families of vectors of ``L``
+        (``IndexedFamily`` of vectors, or of points of ``L x C`` for coloured
+        families) it is one ``g`` in ``O(L)`` with ``g o v = w o sigma`` for
+        some colour-preserving bijection ``sigma`` of the index sets, or
+        ``None`` when there is none; see ``coloured_vector_families`` for the
+        computation and its spanning hypothesis.
         """
         lattice = self.codomain()
         if self.domain() is lattice and element_parent(source) is lattice and element_parent(target) is lattice:
             return self.vector_equivalence_witness(source, target)
+        if self.domain() is lattice and element_parent(source) is not self and element_parent(target) is not self:
+            from dzack_research.preamble.categories.coloured_vector_families import _transporter
+
+            return _transporter(self, source, target)
         for candidate in (source, target):
             if element_parent(candidate) is not self:
                 raise ValueError(
@@ -2125,11 +2134,17 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         )
 
     def stabilizer(self, target, action="setwise"):
-        r"""Return a vector or sublattice stabilizer in ``O(L)``.
+        r"""Return a vector, sublattice or family stabilizer in ``O(L)``.
 
         A lattice vector is fixed pointwise.  A represented lattice subobject
         accepts ``action='setwise'`` or ``action='pointwise'`` and delegates to
-        the existing inclusion-based subgroup constructions.
+        the existing inclusion-based subgroup constructions.  A finite family
+        ``(v_i)_{i in I}`` of vectors of ``L`` (``IndexedFamily``), or a
+        coloured family of points ``(v_i, c_i)`` of ``L x C``, has the stabilizer
+        ``O(L)_[v] = {g : g o v = v o sigma for some colour-preserving bijection sigma of I}``,
+        the image in ``O(L)`` of its stabilizer under ``O(L) x Sym_C(I)``; the
+        kernel of that projection, ``K_v``, is trivial exactly when the coloured
+        family is injective (``coloured_vector_families``).
         """
         lattice = self.lattice()
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -2146,15 +2161,62 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 return self.pointwise_stabilizer(embedding)
             raise ValueError(f"action={action!r} is not a stabilizer of the sublattice {target}: use 'setwise' (g(I) = I) or 'pointwise' (g fixes I elementwise)")
         if action != "setwise":
-            raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector is always fixed pointwise")
-        assert target.parent() is lattice, (
-            f"{target} has no stabilizer in O({lattice}): it is neither a vector nor a sublattice of {lattice}, but an element of {target.parent()}"
-        )
+            raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector or a family is stabilized up to reindexing")
+        if element_parent(target) is not lattice:
+            return self._family_stabilizer(target)
         return StabilizerSubgroups(self)(
             target,
             self.natural_module_action_functor(),
             lambda automorphism: automorphism(target) == target,
             description=f"g fixes {target}",
+        )
+
+    @cached_method(key=lambda self, family: id(family))
+    def _family_stabilizer(self, family):
+        r"""``O(L)_[v]`` for a finite (coloured) family of vectors, with its computed group generators.
+
+        The subgroup is cut out of ``O(L)`` by its definition: ``g`` carries
+        the coloured family to itself up to a colour-preserving bijection of
+        its indices.  Its generators are the stabilizer of the integral
+        structure ``L`` under the rational configuration group of the family
+        (``coloured_vector_families``), selected as its generating set; they
+        are the computation's answer, untrusted like every answer.
+        """
+        from dzack_research.preamble.categories.coloured_vector_families import (
+            _matching,
+            _realization,
+            _stabilizer_generators,
+        )
+
+        realization = _realization(self.lattice(), family)
+        return self.predicate_subgroup(
+            lambda automorphism: _matching(realization, realization, automorphism) is not None,
+            f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
+            generating_morphism=self.free_cover(_stabilizer_generators(self, family)),
+        )
+
+    def index_action(self, family):
+        r"""The action of ``O(L)_[v]`` on the index set ``I`` of an injective coloured family.
+
+        For an injective coloured family ``(v_i, c_i)_{i in I}`` an element
+        ``g`` of its stabilizer determines the colour-preserving bijection
+        ``sigma = (v, c)^-1 o (g x id) o (v, c)`` of ``I``, and
+        ``g . i = sigma(i)`` is an action.  The result is that finite
+        ``O(L)_[v]``-set on ``I``; its ``permutation_representation()`` is the
+        group morphism ``O(L)_[v] -> Sym(I)``.  For a family carrying one
+        coloured vector at two indices ``sigma`` is determined only up to
+        ``K_v`` and no action on ``I`` is defined.
+        """
+        from dzack_research.preamble.categories.coloured_vector_families import (
+            _assert_injective,
+            _index_permutation,
+        )
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+        realization = _assert_injective(self, family)
+        return FiniteGSets(self.stabilizer(family))(
+            realization.indices(),
+            lambda automorphism, index: _index_permutation(self, family, automorphism)[index],
         )
 
     def pointwise_stabilizer(self, embedding):

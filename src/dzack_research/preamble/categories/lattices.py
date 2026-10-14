@@ -195,9 +195,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
-from dzack_research.preamble.categories.vector_configurations import (
-    VectorConfigurations,
-)
 from dzack_research.preamble.categories.vector_orbits import (
     VectorPrimitiveExtension,
     _definite_complement_extensions,
@@ -356,8 +353,7 @@ def _lattice_subobject_on_basis(module, basis, extra_categories, construction_da
     r"""The lattice subobject framed by ``basis``, placed also in ``extra_categories``.
 
     ``construction_data`` is the datum each extra category introduces, passed
-    to its constructor: a root-system type name for ``RootLattices``, a
-    colouring for ``VectorConfigurations``.
+    to its constructor: a root-system type name for ``RootLattices``.
     """
     ring = module.base_ring()
     basis_elements = tuple(basis)
@@ -5165,39 +5161,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
             return _lorentzian_reduction_complex(self, marked_vectors=marked_vectors)
-
-        def vector_configuration(self, family: IndexedFamily, colouring=None):
-            r"""Return the sublattice framed by the stated vector family, with its colouring.
-
-            The family ``I -> L`` is the framing: the configuration's positions
-            correspond to ``I`` by ``configuration_indexing()``, and the family
-            must be a basis of the sublattice it spans (a redundant spanning
-            family is compared through ``VectorConfigurations.spanning_isometry``).
-            ``colouring`` is a set map ``I -> C`` out of the index set of the
-            caller's family: the family is the caller's ``IndexedFamily``, taken
-            as the datum without re-wrapping, and the colouring an element of
-            ``Sets().Mor(family.index_set(), C)``.
-            Omitted, it is the map to the one-point set ``Sets.Δ[0]``, under
-            which every pairing-preserving permutation preserves colours.
-            """
-            index_set = family.index_set()
-            match colouring:
-                case None:
-                    point_set = Sets.Δ[0]
-                    point = next(iter(point_set))
-                    colouring = Sets().Mor(index_set, point_set)(lambda _position: point)
-                case _:
-                    assert colouring.domain() is index_set, (
-                        f"a colouring of the configuration on {family} is a map out of its "
-                        f"index set {index_set}, but {colouring} is a map out of {colouring.domain()}; "
-                        f"pass a colouring out of the family's own index set"
-                    )
-            return _lattice_subobject_on_basis(
-                self,
-                tuple(family),
-                (VectorConfigurations(self.base_ring()),),
-                {"configuration_colouring": colouring},
-            )
 
         def integral_structure(self, vectors: IndexedFamily):
             r"""The ``ZZ``-lattice spanned by a finite family of vectors of this ``QQ``-space, as ``L -> Res(V)``.

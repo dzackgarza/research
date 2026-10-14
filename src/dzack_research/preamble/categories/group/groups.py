@@ -5139,8 +5139,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             *,
             character_data=None,
             character_data_complete=None,
+            generating_morphism=None,
         ):
-            r"""Return the subgroup of elements satisfying ``predicate``."""
+            r"""Return the subgroup of elements satisfying ``predicate``.
+
+            ``generating_morphism`` is the constructing owner's free group
+            morphism onto the subgroup, when it has one.
+            """
             from dzack_research.preamble.categories.group.predicate_subgroups import (
                 PredicateSubgroups,
             )
@@ -5150,6 +5155,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 description,
                 character_data=character_data,
                 character_data_complete=character_data_complete,
+                generating_morphism=generating_morphism,
             )
 
         def centralizer(self, element):
