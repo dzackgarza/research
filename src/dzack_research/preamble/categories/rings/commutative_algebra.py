@@ -1252,7 +1252,7 @@ class QuotientRings(OwnedCategory):
                 field_map * component.quotient_map()
                 for component, field_map in zip(components, field_maps, strict=True)
             )
-            target = _finite_product_ring(fields)
+            target = OwnedRings().product(fields)
             target_engine = _engine_ring(target)
 
             def image(element):
@@ -1404,18 +1404,6 @@ def _identity_affine_normalization_data(algebra, coefficient_map, components):
     )
 
 
-def _finite_product_ring(factors):
-    factors = tuple(factors)
-    if not factors:
-        raise ValueError(
-            "a finite product ring R_1 x ... x R_n needs at least one factor, but none was given"
-        )
-    if len(factors) == 1:
-        return factors[0]
-    engines = tuple(_engine_ring(factor) for factor in factors)
-    return _own_ring(engines[0].cartesian_product(*engines[1:]))
-
-
 def _localized_affine_normalization_data(localization, source_data):
     r"""Localize a retained finite normalization along finitely many elements.
 
@@ -1483,9 +1471,9 @@ def _localized_affine_normalization_data(localization, source_data):
 
     # If every minimal component is killed, a power of an element of S is
     # zero in A. Thus L itself is the zero ring and represents the empty
-    # product; _finite_product_ring deliberately requires a nonempty family.
+    # product; the product of rings is represented for a nonempty family.
     component_values = tuple(localized_components[index] for index in indices)
-    normalization = _finite_product_ring(component_values) if component_values else localization
+    normalization = OwnedRings().product(component_values) if component_values else localization
     normalization_engine = _engine_ring(normalization)
 
     def in_product(values):
@@ -1942,7 +1930,7 @@ def _affine_quotient_normalization_data(quotient):
         normalizations = tuple(normalizations)
         normalization_maps = tuple(normalization_maps)
         component_primes = tuple(component_primes)
-        normalization = _finite_product_ring(normalizations)
+        normalization = OwnedRings().product(normalizations)
         if len(normalizations) == 1:
             normalization_map = normalization_maps[0]
         else:

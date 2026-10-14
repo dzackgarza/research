@@ -2289,6 +2289,53 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
         return _ring_mor_category(domain, codomain)
 
+    def product(self, factors):
+        r"""``prod_{i in I} R_i``, the product of an indexed family of rings, with its projections.
+
+        The product of rings is the product of underlying sets with
+        coordinatewise operations (Mathlib ``Pi.ring``).  The family is taken
+        over its index set (``CON-15``); a bare sequence is the family on the
+        canonical labels.  Equal families give one ring.
+        """
+        return self._categorical_product_construction(factors).object()
+
+    def _categorical_product(self, left, right):
+        return self.product((left, right))
+
+    def _categorical_product_construction(self, factors):
+        r"""The product ring with its discrete diagram and universal cone of projections.
+
+        A cone with legs ``f_i: A -> R_i`` factors through the product by
+        ``a |-> (f_i(a))_i``, the unique ring map with those components.
+        """
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            SelectedLimitConstruction,
+            _discrete_diagram,
+            _finite_factor_family,
+        )
+
+        family = _finite_factor_family(factors, name="Product factors")
+        assert all(factor in self for factor in family), (
+            f"a product of rings is a product of objects of {self}, but not every factor of {family} is a ring"
+        )
+        product = _product_ring_of_family(family)
+        diagram = _discrete_diagram(family, self)
+        universal_cone = diagram.ProductCones().cone(
+            product, lambda index: _product_ring_projection(product, family, index.value())
+        )
+
+        def factorizer(cone):
+            apex = cone.apex()
+            legs = {label: cone.structure_morphism(diagram.domain()(label)) for label in family.index_set()}
+            apex_map = OwnedRings().Mor(apex, product)(
+                lambda element: _product_ring_element(
+                    product, family, {label: legs[label](element) for label in family.index_set()}
+                )
+            )
+            return diagram.Cones().Mor(cone, universal_cone)._from_commuting_apex_map(apex_map)
+
+        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
     # Functors out of rings, sited on their domain.
 
     def center_functor(self):
@@ -5241,6 +5288,94 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 _OwnedRingBootstrapParent.register(_OwnedRingParent)
 
 
+def _product_ring_placements(factors) -> tuple[Category, ...]:
+    r"""The placement of ``R_1 x ... x R_n`` read from the factors.
+
+    The operations are coordinatewise, so the product is commutative when
+    every factor is; its ideals are the products of ideals of the factors,
+    so it is Noetherian, or Artinian, when every factor is; its underlying
+    set is the product of finitely many sets, finite when every factor is.
+    A product of fields is not a field or a domain.  (No named Mathlib
+    instance for the finite-product chain conditions was found by the
+    formalization-corpus search of 2026-10-14.)
+    """
+    placements = []
+    for placement in (
+        OwnedRings().Commutative(),
+        OwnedRings().Noetherian(),
+        OwnedRings().Artinian(),
+        owned_sets.FiniteSets(),
+    ):
+        if all(factor in placement for factor in factors):
+            placements.append(placement)
+    return tuple(placements)
+
+
+class _ProductRingParent(_OwnedRingParent):
+    r"""``R_1 x ... x R_n`` over a finite enumerated index set, realized by Sage's Cartesian product.
+
+    The index set and the factor at each index are this level's datum; the
+    projections are the universal cone of :meth:`OwnedRings.product`.
+    """
+
+    def __init__(self, index_set, factors) -> None:
+        self._product_index_set = index_set
+        self._product_factors = factors
+        engine = _engine_ring(factors[0]).cartesian_product(
+            *(_engine_ring(factor) for factor in factors[1:])
+        )
+        super().__init__(engine, named_placement=lambda: _product_ring_placements(factors))
+
+    def product_factor(self, label):
+        r"""The factor ``R_i`` at the index ``i``."""
+        return self._product_factors[int(self._product_index_set.ranking_map()(label))]
+
+
+@cached_function
+def _product_ring(index_set, factors):
+    r"""The one product ring of these factors over this index set."""
+    return _ProductRingParent(index_set, factors)
+
+
+def _product_ring_of_family(family):
+    r"""The product ring of a finite family; a one-factor family is its factor (``ARC-10``)."""
+    index_set = family.index_set()
+    factors = tuple(family.value(label) for label in index_set)
+    assert factors, (
+        "the empty product of rings is the zero ring, which is not represented here as a product"
+    )
+    if len(factors) == 1:
+        return factors[0]
+    return _product_ring(index_set, factors)
+
+
+def _product_ring_projection(product, family, label):
+    r"""The projection ``prod_j R_j -> R_i`` at the index ``i``."""
+    factor = family.value(label)
+    if product is factor:
+        return OwnedRings().Mor(factor, factor).identity()
+    position = int(family.index_set().ranking_map()(label))
+    return OwnedRings().Mor(product, factor)(
+        lambda element: _owned_engine_element(
+            factor, _engine_element(product, element).cartesian_projection(position)
+        )
+    )
+
+
+def _product_ring_element(product, family, components):
+    r"""The element of the product ring with the stated component at each index."""
+    labels = tuple(family.index_set())
+    if len(labels) == 1:
+        return product(components[labels[0]])
+    engine = _engine_ring(product)
+    return _owned_engine_element(
+        product,
+        engine(tuple(_engine_element(family.value(label), components[label]) for label in labels)),
+    )
+
+
+
+
 def _engine_scalar_ring(engine: Ring):
     r"""Return the owned ring over which ``engine`` presents this ring.
 
@@ -5581,7 +5716,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
     from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
-    from sage.sets.cartesian_product import CartesianProduct
 
     from dzack_research.preamble.owned_category import owned_category_join
 
@@ -5644,32 +5778,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
             finite = (owned_sets.FiniteSets(),) if cover in owned_sets.FiniteSets() else ()
             placements = (*commutative, *cover_noetherian, *finite)
-        case CartesianProduct():
-            # Finite products use coordinatewise ring operations. Commutative,
-            # Noetherian and Artinian factors give the corresponding product;
-            # a product of fields is not thereby a field or a domain.
-            factors = tuple(_own_ring(factor) for factor in engine.cartesian_factors())
-            commutative = (
-                (OwnedRings().Commutative(),)
-                if all(factor in OwnedRings().Commutative() for factor in factors)
-                else ()
-            )
-            product_noetherian = (
-                (noetherian,)
-                if all(factor in noetherian for factor in factors)
-                else ()
-            )
-            artinian = (
-                (OwnedRings().Artinian(),)
-                if all(factor in OwnedRings().Artinian() for factor in factors)
-                else ()
-            )
-            finite = (
-                (owned_sets.FiniteSets(),)
-                if all(factor in owned_sets.FiniteSets() for factor in factors)
-                else ()
-            )
-            placements = (*commutative, *product_noetherian, *artinian, *finite)
         case MatrixSpace():
             # M_n(R) is commutative exactly when n <= 1 and R is; it is a
             # finitely generated R-module, so Noetherian when R is; it is
