@@ -5541,20 +5541,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # An algebraic closure of F_p is a field, and it is the union of
             # the finite fields F_{p^n}, so countably infinite.
             placements = (*field, owned_sets.CountablyInfiniteSets())
-        case IntegerModRing_generic():
-            # ZZ/nZZ is a quotient of ZZ, so commutative and Noetherian, and
-            # it has n elements.  The modulus n is the datum of the
-            # construction, and for n >= 2 the ring has 1 != 0 (Mathlib
-            # ``ZMod.nontrivial`` under ``Fact (1 < n)``).  Whether n is
-            # prime or a prime power is computed, never a datum of the
-            # construction, so it places nothing here. For n = 1 the ring is
-            # zero and satisfies the bare zero-product property vacuously.
-            nontrivial = (OwnedRings().Nontrivial(),) if engine.order() >= 2 else ()
-            zero_product = (OwnedRings().NoZeroDivisors(),) if engine.order() == 1 else ()
-            placements = (
-                OwnedRings().Commutative(), noetherian, owned_sets.FiniteSets(),
-                *nontrivial, *zero_product,
-            )
         case NumberField():
             # A number field K = QQ[x]/(f) with f irreducible, presented by
             # its chosen generator.
@@ -5855,6 +5841,9 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             # A finite-field engine is raised through ``GF``'s construction
             # on its order and generator label.
             return _owned_finite_field(int(engine.order()), engine.variable_name())
+        case IntegerModRing_generic():
+            # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
+            return Zmod(int(engine.order()))
         case PolynomialRing_generic() | MPolynomialRing_base():
             flavor = "symmetric"
         case FreeAlgebra_generic():
@@ -6114,15 +6103,16 @@ def PrimeField(characteristic):
 
 
 def Zmod(modulus):
-    r"""Return ``ZZ/nZZ`` for the modulus ``n``, its defining datum."""
-    engine = _SageZmod(*_lowered_integer_arguments((modulus,)))
-    ring = _own_ring(engine)
-    if engine is SageZZ:
-        return ring
-    modulus = SageZZ(engine.characteristic())
-    _set_owned_ring_display(ring, f"ZZ/{modulus}ZZ", kind="modular")
+    r"""``ZZ/(n)``: the quotient of ``ZZ`` by the ideal ``(n)``, ``n`` the modulus.
 
-    return ring
+    It is that quotient, one object (``OWN-02``), placed where the ideal's
+    routing puts it: a field when ``n`` is prime.  ``ZZ/(0)`` is ``ZZ``.
+    """
+    (modulus,) = _lowered_integer_arguments((modulus,))
+    integers = _owned_integers()
+    if int(modulus) == 0:
+        return integers
+    return integers.quotient_ring(integers.ideal(integers(int(modulus))))
 
 
 IntegerModRing = Zmod

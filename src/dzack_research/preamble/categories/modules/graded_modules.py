@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    Zmod,
     _own_ring,
     _owned_integers,
 )
@@ -81,14 +80,15 @@ def _parity_key(parity):
 def _integer_parity():
     r"""The reduction ``ZZ -> ZZ/2``, the canonical parity of the integer grading."""
     integers = _owned_integers()
-    parity_target = Zmod(2)
+    parity_target = integers.quotient_ring(integers.ideal(integers(2)))
     return integers.Mor(parity_target)(parity_target)
 
 
 @cached_function
 def _two_parity():
     r"""The identity of ``ZZ/2``, the canonical parity of a grading by ``ZZ/2``."""
-    two = Zmod(2)
+    integers = _owned_integers()
+    two = integers.quotient_ring(integers.ideal(integers(2)))
     return two.Mor(two)(lambda degree: degree)
 
 
@@ -102,7 +102,8 @@ def _grading_parity(grading_monoid, parity=None):
     none otherwise, and a construction that reads the parity (the Koszul sign
     of a supercommutative product) refuses a grading that recorded none.
     """
-    parity_target = Zmod(2)
+    integers = _owned_integers()
+    parity_target = integers.quotient_ring(integers.ideal(integers(2)))
     if parity is None:
         if grading_monoid is _owned_integers():
             return _integer_parity()
@@ -496,7 +497,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         r"""Return the stated parity ``M -> ZZ/2`` of the grading."""
         assert self._parity_key is not None, (
             f"{self.grading_index_set()} is an indexing set with no canonical parity "
-            f"homomorphism to {Zmod(2)}; state the parity with the grading"
+            f"homomorphism to ZZ/(2); state the parity with the grading"
         )
         return self._parity_key.morphism()
 

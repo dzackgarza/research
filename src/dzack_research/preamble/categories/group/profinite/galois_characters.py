@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    Zmod,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -145,7 +144,8 @@ def _cyclotomic_stage(domain, n):
     base_field = domain.base_field()
     match domain:
         case _ if domain in AbsoluteGaloisGroupsOfFiniteFields():
-            residues = Zmod(n)
+            integers = _owned_integers()
+            residues = integers.quotient_ring(integers.ideal(integers(n)))
             q = residues.unit_group()(residues(int(domain.base_field_order())))
             stage = domain.finite_extension(q.multiplicative_order())
             return owned_root, _finite_root_at_stage(root, stage), stage
@@ -191,7 +191,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
     ``chi_n(sigma)`` is the unit ``a`` with ``sigma(zeta) = zeta^a`` for every
     ``n``-th root of unity ``zeta`` (Mathlib ``modularCyclotomicCharacter``,
     ``Mathlib/NumberTheory/Cyclotomic/CyclotomicCharacter.lean``). Its codomain
-    is ``(ZZ/n)^x``, the unit group of the owned ring ``Zmod(n)``.
+    is ``(ZZ/n)^x``, the unit group of the owned ring ``ZZ/(n)``.
     """
 
     @staticmethod
@@ -207,7 +207,8 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 f"the cyclotomic character chi_{n} of {domain} needs n prime to the "
                 f"characteristic, but the base field has characteristic {characteristic}"
             )
-        residues = Zmod(n)
+        integers = _owned_integers()
+        residues = integers.quotient_ring(integers.ideal(integers(n)))
         target = residues.unit_group()
         owned_root, root_at_stage, stage = _cyclotomic_stage(domain, n)
         return domain.continuous_morphisms_to(target)._from_realization_engine(
