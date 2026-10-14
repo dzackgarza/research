@@ -1394,8 +1394,9 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None, linear_data=None: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None, linear_data=None, constructing_category=None: (
         id(group),
+        constructing_category,
         refinements,
         description,
         id(free_basis),
@@ -1423,6 +1424,7 @@ def _own_group(
     chosen_presentation=None,
     coxeter_matrix=None,
     linear_data=None,
+    constructing_category=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1437,7 +1439,13 @@ def _own_group(
     object, the proved refinements, the catalogue notation, the chosen free
     basis, and—when this is a computed presented model—the exact source group.
     Its comparison images are derived from that source group's selected
-    group resolution rather than retained a second time.  Sage groups compare
+    group resolution rather than retained a second time.
+
+    ``constructing_category`` is the category whose constructor builds the
+    group, recorded as its ambient category (``ARC-07``): a category applied
+    to data (``SymmetricGroups()(Omega)``) names itself, so the group's Mor is
+    the maps induced by morphisms of that data.  ``None`` keeps the placement
+    category, and a catalogue constructor of ``Groups`` names ``OwnedGroups()``.  Sage groups compare
     structurally, so the engine enters the key by identity, and the cache keeps
     the engine alive while its owned group is.
     """
@@ -1475,6 +1483,7 @@ def _own_group(
             if free_basis is None:
                 owned = _object_of(
                     Cat().meet(placement),
+                    _ambient=constructing_category,
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
@@ -1488,6 +1497,7 @@ def _own_group(
                     Cat().meet(
                         (*placement, GroupsWithChosenFreeBasis())
                     ),
+                    _ambient=constructing_category,
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
@@ -1728,6 +1738,67 @@ def _group_over_ring(constructor, degree, ring, *args, **kwargs):
             **engine_kwargs,
         )
     )
+
+
+def _symmetric_group(points, *, constructing_category, description=None):
+    r"""``Sym(points)``, built from its point set and placed by that set's cardinality.
+
+    ``Sym(Omega)`` is finite when ``Omega`` is, and commutative when
+    ``|Omega| <= 2`` (it is trivial or cyclic of order two), while the
+    transpositions ``(12)`` and ``(23)`` do not commute once ``|Omega| >= 3``.
+    The engine is Sage's symmetric group on ``{1, ..., |Omega|}``; a point of
+    ``Omega`` is read through the ranking of ``Omega``.
+    """
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    assert points in FiniteSets(), (
+        f"Sym({points}) is a group for every set, but it is computed here only for a finite point set, "
+        f"and {points} is not known to be finite (it lies in {points.category()})"
+    )
+    size = cardinal(points.cardinality()).finite_value()
+    refinements = (
+        SymmetricGroups(),
+        OwnedGroups().Finite(),
+        *((OwnedGroups().Commutative(),) if size <= 2 else ()),
+    )
+    return _own_group(
+        SymmetricGroup(int(size)),
+        refinements=refinements,
+        description=description,
+        symmetric_points=points,
+        constructing_category=constructing_category,
+    )
+
+
+@cached_function
+def _standard_symmetric_points(size):
+    r"""The point set ``{1, ..., n}`` on which ``Groups.S(n)`` acts, as owned integers."""
+    integers = _own_ring(ZZ)
+    return finite_ordered_set(tuple(integers(point) for point in range(1, int(size) + 1)))
+
+
+def _S(points):
+    r"""``Groups.S``: the symmetric group as an object of the groups.
+
+    ``Groups.S(n)`` is ``Sym({1, ..., n})`` and ``Groups.S(Omega)`` is
+    ``Sym(Omega)``, built by the construction of :class:`SymmetricGroups`
+    and constructed in the groups, so its Mor is all group homomorphisms.
+    ``SymmetricGroups()(Omega)`` is the same group constructed in the
+    category of symmetric groups, whose arrows are the maps induced by
+    bijections.
+    """
+    match points:
+        case _ if points in Sets():
+            return _symmetric_group(points, constructing_category=OwnedGroups())
+        case _:
+            assert points in ZZ and points >= 0, (
+                f"Groups.S takes a finite set or a number n >= 0 of points, but got {points!r}"
+            )
+            return _symmetric_group(
+                _standard_symmetric_points(int(points)),
+                constructing_category=OwnedGroups(),
+                description=f"Symmetric group S_{points}",
+            )
 
 
 def _GL(degree, ring, var="a"):
@@ -3605,9 +3676,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     from sage.groups.perm_gps.permgroup_named import (
         QuaternionGroup as _SageQuaternionGroup,
     )
-    from sage.groups.perm_gps.permgroup_named import (
-        SymmetricGroup as _SageSymmetricGroup,
-    )
     from sage.groups.perm_gps.permutation_groups_catalog import (
         PGL as _SagePGL,
     )
@@ -3654,7 +3722,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         return self.C(2)
 
     C = _owned_group_constructor(_SageCyclicGroup)
-    S = _owned_group_constructor(_SageSymmetricGroup)
+    S = staticmethod(_S)
     A = _owned_group_constructor(_SageAlternatingGroup)
     D = _owned_group_constructor(_SageDihedralGroup)
     Dic = _owned_group_constructor(_SageDiCyclicGroup)
@@ -5835,39 +5903,120 @@ class PermutationGroups(OwnedCategory):
             return self.natural_g_set().is_transitive_action()
 
 
-class SymmetricGroups(OwnedParameterizedCategory):
-    r"""Full permutation groups of a chosen finite enumerated set."""
+class _InducedPermutationMap:
+    r"""The homomorphism ``Sym(Omega) -> Sym(Omega')``, ``sigma |-> f sigma f^-1``, of a bijection ``f``.
 
-    def __init__(self, points):
-        super().__init__(points)
-        assert points in FiniteSets(), (
-            "a category of finite full symmetric groups requires a finite "
-            "point set; an infinite symmetric group is not a finite group"
+    The action of the symmetric-group construction on a bijection
+    ``f: Omega -> Omega'`` (Mathlib ``Equiv.permCongr``,
+    ``Mathlib/Logic/Equiv/Defs.lean``).  The image of ``sigma`` sends
+    ``f(x)`` to ``f(sigma(x))`` for every ``x`` in ``Omega``; that pointwise
+    datum is handed to the codomain's engine as the images of its ranked
+    points.  Nothing is evaluated at construction.
+    """
+
+    def __init__(self, bijection, codomain) -> None:
+        self._bijection = bijection
+        self._codomain = codomain
+
+    def __call__(self, permutation):
+        source_points = self._bijection.domain()
+        target_points = self._codomain.natural_points()
+        ranking = target_points.ranking_map()
+        engine_images = {
+            int(ranking(self._bijection(point))): int(ranking(self._bijection(permutation(point)))) + 1
+            for point in source_points
+        }
+        return self._codomain([engine_images[position] for position in sorted(engine_images)])
+
+
+class SymmetricGroupMor(GroupMor):
+    r"""``Mor(Sym(Omega), Sym(Omega'))`` in ``SymmetricGroups()``: the maps induced by bijections.
+
+    An arrow is the homomorphism ``sigma |-> f sigma f^-1`` of a bijection
+    ``f: Omega -> Omega'`` (Mathlib ``Equiv.permCongr``); it is constructed
+    from ``f``, an arrow of ``Sets()`` between the natural point sets.  Two
+    bijections induce the same arrow exactly when they differ by an element of
+    the centre of ``Sym(Omega)``.  These arrows are group homomorphisms, so
+    this Mor is a subcategory of the group Mor; it is not closed under the
+    pointwise product of a commutative target, so it carries no pointwise
+    enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        point_maps = Sets().Mor(self.domain().natural_points(), self.codomain().natural_points())
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in point_maps:
+                return self._from_elementwise_rule(_InducedPermutationMap(datum, self.codomain()))
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of symmetric groups is induced by a bijection "
+                    f"{self.domain().natural_points()} -> {self.codomain().natural_points()}, but got {datum!r}"
+                )
+
+    @cached_method
+    def _cardinality_decision(self):
+        r"""``|Bij(Omega, Omega')| / |Z(Sym(Omega))|``: bijections differing by a central element induce one arrow."""
+        domain, codomain = self.domain(), self.codomain()
+        source_size = cardinal(domain.natural_points().cardinality())
+        if source_size != cardinal(codomain.natural_points().cardinality()):
+            return cardinal(0)
+        bijections = int(_gap_model(domain).Size())
+        centre = int(_gap_model(domain).Centre().Size())
+        return cardinal(bijections // centre)
+
+    def _repr_(self):
+        return f"Mor_SymmetricGroups({self.domain()}, {self.codomain()})"
+
+
+class SymmetricGroupMorCategoryConstruction(MorCategoryConstruction):
+    r"""The family ``(Sym(Omega), Sym(Omega')) |-> `` the arrows induced by bijections ``Omega -> Omega'``."""
+
+    def Of(self, domain, codomain=None):
+        codomain = domain if codomain is None else codomain
+        assert domain in self.base_category() and codomain in self.base_category(), (
+            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
+            f"symmetric groups constructed by it, but they lie in {domain.category()} and {codomain.category()}"
         )
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
+            return cached
+        return self._remember_between(domain, codomain, SymmetricGroupMor(self, domain, codomain))
 
-    def parameter_category(self):
-        return EnumeratedSets()
+
+class SymmetricGroups(OwnedCategory):
+    r"""The symmetric groups ``Sym(Omega)`` of sets, with the arrows induced by bijections.
+
+    An object is ``Sym(Omega)``, built from the set ``Omega`` by
+    ``SymmetricGroups()(Omega)``; an arrow ``Sym(Omega) -> Sym(Omega')`` is
+    ``sigma |-> f sigma f^-1`` for a bijection ``f: Omega -> Omega'``.  The
+    construction is functorial on bijections only (Mathlib ``Equiv.Perm``,
+    ``Equiv.permCongr``, ``Mathlib/Logic/Equiv/Defs.lean``), so these are the
+    arrows of the category and an object constructed here answers ``Mor``
+    with them.  ``lean-categories`` does not formalize symmetric groups; the
+    request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
+    group, by its action on ``Omega``.
+    """
+
+    _MorCategory = SymmetricGroupMorCategoryConstruction
 
     def super_categories(self):
-        categories = [PermutationGroups(), OwnedGroups().Finite()]
-        # For at most two points S_n is trivial or cyclic of order two;
-        # for three points the transpositions (12) and (23) fail to
-        # commute. The axiom is determined by the chosen point set.
-        if cardinal(self.parameter().cardinality()).finite_value() <= 2:
-            categories.append(OwnedGroups().Commutative())
-        return categories
+        return [PermutationGroups()]
 
     def an_object(self):
-        return self()
+        r"""``Sym(Delta[2])``, of order six."""
+        return self(Sets.Δ[2])
 
-    def _call_(self):
-        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+    @classmethod
+    def _repr_object_names(cls):
+        return "symmetric groups"
 
-        points = self.parameter()
-        return _own_group(
-            SymmetricGroup(int(cardinal(points.cardinality()).finite_value())),
-            refinements=(self,), symmetric_points=points,
-        )
+    def _call_(self, points):
+        return _symmetric_group(points, constructing_category=self)
 
     class ParentMethods:
         def __init__(self, symmetric_points=None, **rest):

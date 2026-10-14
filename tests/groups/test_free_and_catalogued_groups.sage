@@ -151,10 +151,11 @@ def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
 
 def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     points = Sets.Δ[2]
-    group = SymmetricGroups(points)()
-    assert group in SymmetricGroups(points)
-    assert not SymmetricGroups(points).is_subcategory(OwnedGroups().Commutative())
-    assert SymmetricGroups(Sets.Δ[1]).is_subcategory(OwnedGroups().Commutative())
+    group = SymmetricGroups()(points)
+    assert group in SymmetricGroups()
+    assert group.ambient_category() is SymmetricGroups()
+    assert group not in OwnedGroups().Commutative()
+    assert SymmetricGroups()(Sets.Δ[1]) in OwnedGroups().Commutative()
     assert group.order() == 6
     assert group.natural_points() is points
     action = group.natural_g_set()
@@ -188,7 +189,7 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
         assert False, "the common permutation action silently fixed an external point"
 
     labelled = finite_ordered_set(("alpha", "beta", "gamma"))
-    labelled_group = SymmetricGroups(labelled)()
+    labelled_group = SymmetricGroups()(labelled)
     assert labelled_group.natural_points() is labelled
     permutation = labelled_group((1, 2))
     labelled_action = labelled_group.natural_g_set()
@@ -221,13 +222,40 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
         assert labelled_action.act(cycle, point) == cycle(point)
 
 
-def test_finite_symmetric_group_category_rejects_infinite_point_set() -> None:
+def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
+    r"""An arrow of ``SymmetricGroups()`` is ``sigma |-> f sigma f^-1`` for a bijection ``f``.
+
+    Mathlib ``Equiv.permCongr``.  ``Z(S_3)`` is trivial, so the six
+    bijections ``Delta[2] -> {a, b, c}`` induce six distinct arrows, while
+    ``S_3`` has ten group endomorphisms (four of them with image of order at
+    most two, one of them trivial).
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    points = Sets.Δ[2]
+    labels = finite_ordered_set(("a", "b", "c"))
+    source = SymmetricGroups()(points)
+    target = SymmetricGroups()(labels)
+    arrows = source.Mor(target)
+    unrank = labels.ranking_map().inverse()
+    relabel = Sets().Mor(points, labels)(lambda point: unrank(int(point)))
+    induced = arrows(relabel)
+    transposition = source((1, 2))
+    assert induced(transposition)(labels("a")) == labels("b")
+    assert induced(transposition)(labels("c")) == labels("c")
+    assert arrows.cardinality() == cardinal(6)
+    assert source.Mor(source).cardinality() == cardinal(6)
+    assert Groups.S(3).Mor(Groups.S(3)).cardinality() == cardinal(10)
+    assert source.Mor(SymmetricGroups()(Sets.Δ[1])).cardinality() == cardinal(0)
+
+
+def test_symmetric_group_of_an_infinite_set_is_outside_the_computed_cases() -> None:
     try:
-        SymmetricGroups(NN)
+        SymmetricGroups()(NN)
     except AssertionError as error:
         assert "finite point set" in str(error)
     else:
-        assert False, "the finite-group category admitted an infinite permutation domain"
+        assert False, "Sym(NN) was realized by a finite permutation engine"
 
 
 def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
@@ -244,7 +272,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert group in theory
     assert group.coxeter_matrix() is matrix
     assert group.order() == 6
-    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     # The Coxeter realization is not Sage's FinitelyPresentedGroup; its
     # canonical reduced words must nevertheless lift through the selected
     # Coxeter presentation when adjoining a normal relator.
@@ -310,7 +338,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     )
     assert infinite_dihedral.is_finite() is False
     assert finite_dihedral.order() == 6
-    assert finite_dihedral.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert finite_dihedral.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     assert finite_projection(infinite_s * infinite_t) == (
         finite_projection(infinite_s) * finite_projection(infinite_t)
     )
@@ -322,7 +350,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert projection.domain() is source
     assert projection.codomain() is group
     assert all(projection(relation) == group.one() for relation in group.defining_relations())
-    symmetric = SymmetricGroups(Sets.Δ[2])()
+    symmetric = SymmetricGroups()(Sets.Δ[2])
     free_generators = tuple(source.group_generators())
     f = source.Mor(symmetric)({
         free_generators[0]: symmetric((1, 2)),
@@ -472,7 +500,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert descended.codomain() is quotient
     assert all(descended(projection(generator)) == projection(generator) for generator in (a, b))
     assert all(descended(projection(word)) == projection(word) for word in (a*b, b*a, a*b*a, b**2*a))
-    symmetric = SymmetricGroups(Sets.Δ[2])()
+    symmetric = SymmetricGroups()(Sets.Δ[2])
     free_to_symmetric = free.Mor(symmetric)(
         {a: symmetric((1, 2)), b: symmetric((1, 2, 3))}
     )
@@ -503,7 +531,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
         assert "defining relators" in str(error)
     else:
         assert False, "a map not killing the relations descended to the quotient"
-    assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert quotient.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
 
     # The ordinary quotient operation is another entry into the same
     # mathematical construction, not a weaker anonymous presentation.
@@ -711,7 +739,7 @@ def test_general_linear_group_retains_ring_and_rank() -> None:
     assert group.coefficient_ring() is category.coefficient_ring()
     assert group.degree() == category.degree()
     assert group.order() == 6
-    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
 
     # Repeated constructions must retain the same selected ring and rank;
     # the temporary pair passed to the engine cache is not a datum identity.
