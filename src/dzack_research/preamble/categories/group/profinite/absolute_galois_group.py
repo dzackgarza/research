@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     InertiaGroupConjugacyClass,
     _chosen_rational_prolongation,
     _finite_frobenius_element,
+    _residue_field_order,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteExtensionAutomorphismGroup,
@@ -175,6 +176,10 @@ class AbsoluteGaloisGroupElement(Element):
 
     def frobenius_prolongation(self):
         r"""The chosen prolongation of :meth:`arithmetic_frobenius_prime`, or ``None``."""
+        return None
+
+    def frobenius_residue_cardinality(self):
+        r"""``q = |O_K/p|`` at :meth:`arithmetic_frobenius_prime`, or ``None``."""
         return None
 
     def is_globally_evaluable(self) -> bool:
@@ -357,6 +362,9 @@ class ArithmeticFrobeniusElement(AbsoluteGaloisGroupElement):
 
     def frobenius_prolongation(self):
         return self._prolongation
+
+    def frobenius_residue_cardinality(self):
+        return _owned_engine_element(ZZ, ZZ(_residue_field_order(self._base_prime)))
 
     def conjugacy_class(self):
         r"""The Frobenius class at ``p``: the Frobenius elements at all prolongations of ``p``."""
