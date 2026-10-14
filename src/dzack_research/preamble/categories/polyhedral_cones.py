@@ -692,6 +692,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             from dzack_research.preamble.tensors.tensor import (
                 _engine_component_matrix,
                 _engine_row_family_gram,
+                _engine_row_family_squares,
             )
 
             lattice = self.ambient_lattice()
@@ -712,12 +713,21 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             pairings = _engine_row_family_gram(gram, rows)
             sign = SageZZ(1) if sum(pairings.list()) > 0 else SageZZ(-1)
             signed = sign * pairings
-            target = sign * SageZZ(int(square))
-            assert target > 0 and all(entry >= 0 for entry in signed.list()), (
-                f"cannot enumerate vectors of square {square} in {self}: the rays must pair with "
-                f"one sign and the square must be nonzero of that sign, but the ray pairings are "
-                f"{pairings}"
+            assert all(entry >= 0 for entry in signed.list()), (
+                f"cannot enumerate vectors of square {square} in {self}: the bound needs every "
+                f"pair of rays to pair with one sign, as in a closed positive cone, but the ray "
+                f"pairings are {pairings}"
             )
+            target = sign * SageZZ(int(square))
+            assert target != 0, (
+                f"cannot enumerate the vectors of square 0 in {self}: this fibre contains every "
+                f"multiple of each isotropic ray of the cone, so it is infinite; the finite "
+                f"enumeration is stated for a nonzero square of the cone's sign"
+            )
+            if target < 0:
+                # Every term of q(sum c_i r_i) has the rays' sign, so no vector
+                # of the cone has a square of the opposite sign.
+                return lattice.finite_subsets()(())
             found = {}
             for simplex in PointConfiguration(rows.rows(), projective=True).triangulate():
                 positions = tuple(simplex)
@@ -750,7 +760,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 if not points:
                     continue
                 coordinates = matrix(SageZZ, points)
-                norms = (coordinates * gram).elementwise_product(coordinates) * matrix(SageZZ, len(labels), 1, [1] * len(labels))
+                norms = _engine_row_family_squares(gram, coordinates)
                 for point, norm in zip(points, norms.column(0), strict=True):
                     if norm == int(square):
                         found[tuple(int(entry) for entry in point)] = point

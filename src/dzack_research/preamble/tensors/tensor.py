@@ -1170,6 +1170,22 @@ def _engine_row_family_gram(gram, row_family):
     return row_family * gram * row_family.transpose()
 
 
+def _engine_row_family_squares(gram, row_family):
+    r"""Private engine adapter (`OWN-06`, `OWN-24`): the squares ``b(b_i, b_i)`` of a row family.
+
+    The diagonal of :func:`_engine_row_family_gram`, computed as one
+    contraction without forming the off-diagonal pairings: entry ``i`` is
+    ``sum_k (B G)_{ik} B_{ik}``.  Returned as the engine column of the
+    family's squares, in the family's row order.
+    """
+    from sage.matrix.constructor import matrix as _engine_matrix
+
+    paired = row_family * gram
+    ring = paired.base_ring()
+    ones = _engine_matrix(ring, paired.ncols(), 1, [1] * paired.ncols())
+    return paired.elementwise_product(row_family.change_ring(ring)) * ones
+
+
 def _engine_symmetrized_form_matrix(form):
     r"""Private backend matrix of ``b(x,y) + b(y,x)`` for a bilinear tensor.
 
