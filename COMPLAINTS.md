@@ -2186,6 +2186,36 @@ and its isomorphism with the product `prod_{a in A} B` in `ModuleCat R`,
 citing Mathlib `Function.module` and `Pi.module`.
 What remains is the `lean-categories` request; it runs beside the computation and parks no node.
 
+### The real line is placed in no manifold category
+
+`C(k, X, Y)`, the maps `X -> Y` of class `C^k`, is defined for `X` a `C^k`
+manifold, so its constructor owes the assertion `X in` the manifold category
+of class `k` (`STY-49`), and the calculus it computes (derivative,
+antiderivative, Taylor series) is the calculus of the manifold `RR`.
+Mathlib makes every topological space a charted space over itself
+(`chartedSpaceSelf`, `Mathlib/Geometry/Manifold/ChartedSpace.lean:341`) and
+defines `C^n` manifolds modelled on a normed space with the self model
+`modelWithCornersSelf` (`Mathlib/Geometry/Manifold/IsManifold/Basic.lean`,
+module docstring); formalization-corpus API, 2026-10-14. The instance making
+the model space a `C^n` manifold over itself was not located by line.
+**Dependency path:** `RR` as a topological space -> the charted space `RR`
+over itself -> a smooth manifold of dimension 1 -> `C(k, RR, Y)` with its
+hypothesis asserted.
+**Evidence (source, 2026-10-14):** `rg -n "SmoothManifolds|DifferentiableManifolds|TopologicalManifolds" src` finds them only in
+`categories/manifolds.py`; `ExactRealField.__init__` (`rings/real.py`)
+places `RR` in the meet of `OwnedFields()`, `UncountableSets()`, its regular
+algebra and `FinitelyGeneratedFreeModules(RR)`, and no topology. The
+manifold categories construct their objects from a dimension and a name
+through a SageManifolds engine (`SmoothManifolds()(1, "M")`), which is a new
+manifold, not `RR`.
+**Consequence:** `_differentiability_class` asserts nothing about `X`, and
+the formula decisions of `real_functions.py` are routed on `domain is RR`
+instead of on manifold membership.
+**Consumers:** `C(k, X, Y)` and every operation of `_DifferentiableMap`.
+**Coverage boundary:** `lean-categories` was not searched for the real line
+as a manifold. Remediation: `the-real-line-is-a-smooth-manifold` in
+[TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
