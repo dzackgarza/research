@@ -5537,11 +5537,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     # itself, so it is a principal ideal domain and Noetherian.
     field = (OwnedRings().Division().Commutative(), principal, noetherian)
     match engine:
-        case FiniteField():
-            # F_q is a finite field; it is the prime field F_p exactly when
-            # its degree over F_p, a datum of GF(p^k), is k = 1.
-            prime_field = (PrimeFields(),) if engine.degree() == 1 else ()
-            placements = (*field, *prime_field, owned_sets.FiniteSets())
         case AlgebraicClosureFiniteField_generic():
             # An algebraic closure of F_p is a field, and it is the union of
             # the finite fields F_{p^n}, so countably infinite.
@@ -5830,6 +5825,7 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     from sage.rings.cc import CC as SageCC
     from sage.rings.complex_double import CDF as SageCDF
     from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
     from sage.rings.real_double import RDF as SageRDF
 
     match engine:
@@ -5849,6 +5845,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             return _owned_complex_double_field()
         case _ if engine is SageCC:
             return _owned_complex_field()
+        case SageFiniteFieldClass():
+            # A finite-field engine is raised through ``GF``'s construction
+            # on its order and generator label.
+            return _owned_finite_field(int(engine.order()), engine.variable_name())
         case PolynomialRing_generic() | MPolynomialRing_base():
             flavor = "symmetric"
         case FreeAlgebra_generic():
@@ -6060,10 +6060,44 @@ def _lowered_integer_arguments(args):
     return tuple(int(argument) if argument in integers else argument for argument in args)
 
 
-def GF(*args, **kwargs):
-    engine = _SageGF(*_lowered_integer_arguments(args), **kwargs)
-    field = _own_ring(engine)
-    _set_owned_ring_display(field, f"GF({engine.order()})", kind="finite_field")
+def GF(order, name=None):
+    r"""The finite field with ``order`` elements.
+
+    ``order`` is the defining datum, a prime power ``q``; ``name`` labels the
+    generator of ``F_q`` over its prime field and is presentation data.  Equal
+    data give the same field (``OWN-02``).
+    """
+    (order,) = _lowered_integer_arguments((order,))
+    # An unnamed generator takes the default label, so ``GF(4)`` and
+    # ``GF(4, "z2")`` state the same data and give one field.
+    label = _SageGF(int(order)).variable_name() if name is None else str(name)
+    return _owned_finite_field(int(order), label)
+
+
+def _prime_field_placements() -> tuple[Category, ...]:
+    r"""``F_p``: a finite field that is its own prime field."""
+    return (*_field_placements(), PrimeFields(), owned_sets.FiniteSets(), OwnedRings().Artinian())
+
+
+def _finite_field_placements() -> tuple[Category, ...]:
+    r"""``F_q`` with ``q = p^k``, ``k > 1``: a finite field, not prime."""
+    return (*_field_placements(), owned_sets.FiniteSets(), OwnedRings().Artinian())
+
+
+@cached_function
+def _owned_finite_field(order: int, name: str) -> _OwnedRingParent:
+    r"""Construct ``F_q`` from its order and generator label.
+
+    ``F_q`` is the prime field exactly when ``q`` is prime (``q = p^k`` and the
+    prime field ``F_p`` has ``p`` elements), so the primality of the datum
+    ``q`` places it (``CON-07``).  The engine is selected privately.
+    """
+    engine = _SageGF(order, name)
+    placement = (
+        _prime_field_placements if SageZZ(order).is_prime() else _finite_field_placements
+    )
+    field = _OwnedRingParent(engine, named_placement=placement)
+    _set_owned_ring_display(field, f"GF({order})", kind="finite_field")
     return field
 
 

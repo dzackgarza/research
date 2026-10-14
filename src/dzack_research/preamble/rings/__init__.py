@@ -120,8 +120,8 @@ def _public_commutative_ring(ring):
     return ring
 
 
-def GF(*args, **kwargs):
-    return _public_commutative_ring(_GF(*args, **kwargs))
+def GF(order, name=None):
+    return _public_commutative_ring(_GF(order, name))
 
 
 FiniteField = GF
