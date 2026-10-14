@@ -5039,6 +5039,21 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def has_selected_group_resolution(self) -> bool:
+                r"""A finite group has its canonical free cover ``F(U(G)) ->> G``, so this is ``True``."""
+                return True
+
+            def selected_group_resolution(self):
+                r"""The selected free cover, or the canonical one ``F(U(G)) ->> G``, ``g |-> g``.
+
+                The free group on the finite underlying set of ``G``, each
+                letter sent to itself, is determined by ``G`` and involves no
+                choice; it is fixed here when no other cover was selected.
+                """
+                if not self.has_selected_resolution(OwnedGroups()):
+                    _fix_selected_group_resolution_on(self, lambda: self)
+                return self.selected_resolution(OwnedGroups())
+
             def conjugate_subgroup(self, group_element, subgroup):
                 r"""Return ``g H g^-1``; GAP's ``ConjugateSubgroup(H, x)`` is ``x^-1 H x``."""
                 assert group_element in self, f"{group_element} is not an element of {self}"

@@ -486,7 +486,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             stabilizer constructor as that subgroup's generating datum.
             Without a selected resolution of ``G`` no value is supplied.
             """
-            if not self.acting_group().has_selected_resolution(OwnedGroups()):
+            if not self.acting_group().has_selected_group_resolution():
                 return None
             return self.orbit_schreier_morphism(point)
 
