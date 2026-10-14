@@ -5012,6 +5012,36 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
 
+        def select_left_cosets(self, coset_space):
+            r"""Select a supplied finite realization of ``G/H`` as ``left_cosets(H)``, and return ``G``.
+
+            ``coset_space`` is an object of ``LeftCosetGSets(H)`` for a
+            subgroup ``H`` of this group that is also a finite ``G``-set: a
+            pointed transitive action with stabilizer ``H`` at its base
+            point and a section (``LeftCosetGSets.from_transitive_action``,
+            ``FiniteGSets.pointed_orbit``, or a computation such as
+            ``GL(M).finite_index_left_cosets``).  It states that ``H`` has
+            finite index; the caller is trusted to have established that
+            (``OWN-22``), as ``select_group_resolution`` trusts a generating
+            family.  Afterwards ``left_cosets(H)`` is that object, so
+            ``double_cosets`` with ``H`` on either side computes orbits on it.
+            Selecting computes nothing.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
+
+            subgroup = coset_space.subgroup()
+            assert subgroup.supergroup() is self, (
+                f"{coset_space} realizes cosets of {subgroup}, a subgroup of {subgroup.supergroup()}, not of {self}"
+            )
+            assert coset_space in LeftCosetGSets(subgroup) and coset_space in FiniteGSets(self), (
+                f"a selected realization of {self}/{subgroup} is a finite pointed {self}-set of cosets, "
+                f"but {coset_space} is in {coset_space.category()}"
+            )
+            if self.left_cosets.is_in_cache(subgroup):
+                raise ValueError(f"{self}/{subgroup} was already realized as {self.left_cosets(subgroup)}")
+            self.left_cosets.set_cache(coset_space, subgroup)
+            return self
+
         def right_cosets(self, subgroup):
             r"""Return ``H\\G``, presented as ``G/H`` through ``Hx |-> x^-1 H``.
 
