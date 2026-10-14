@@ -7707,15 +7707,19 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             descends to the quotient.  The descended map is read on the
             chosen lifts.
 
-            For a line \(I\) the morphism carries two chosen data
-            (``GroupMorphism``): the set-theoretic section :meth:`_levi_section`
-            on the image, and the kernel generating family
-            :meth:`_levi_kernel_generators`, both computed from the
-            marked-line lift torsors.  For a higher-rank \(I\) with
-            \(O(K_I)\) not placed finite, the section is the one that asserts
-            (port #18 owns those extension equations).
+            For a line \(I\) the owner selects two choices on the
+            morphism, both computed only on first request: the set section
+            :meth:`_levi_section` on the image (``select_section``; the image is
+            the subset of \(O(K_I)\) cut out by :meth:`_levi_image_contains`),
+            and generators of ``kernel()`` from :meth:`_levi_kernel_generators`
+            (its selected generating resolution).  For a higher-rank \(I\) with
+            \(O(K_I)\) not placed finite, the selected section is the one that
+            asserts (port #18 owns those extension equations).
             """
-            from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
+            from dzack_research.preamble.categories.group.groups import (
+                OwnedFiniteGroups,
+                _fix_selected_group_resolution_on,
+            )
 
             perpendicular = self.orthogonal_complement()
             perpendicular_inclusion = perpendicular.inclusion()
@@ -7732,18 +7736,51 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                     )
                 )
 
-            morphisms = self.parabolic_subgroup().Mor(automorphisms)
+            levi = self.parabolic_subgroup().Mor(automorphisms)(descend)
+            rank = int(self.isotropic_sublattice().module_rank())
+            match rank:
+                case _ if rank == 1 or automorphisms not in OwnedFiniteGroups():
+                    image = automorphisms.condition_set(self._levi_image_contains)
+                    levi.select_section(Sets().Mor(image, levi.domain())(self._levi_section))
+                case _:
+                    pass
+            match rank:
+                case 1:
+                    kernel = levi.kernel()
+                    _fix_selected_group_resolution_on(
+                        kernel,
+                        lambda: finite_ordered_set(
+                            tuple(kernel(generator) for generator in self._levi_kernel_generators())
+                        ),
+                    )
+                case _:
+                    pass
+            return levi
+
+        def _levi_image_contains(self, isometry):
+            r"""Whether ``isometry`` lies in the image of :meth:`levi_action`, decided by the lift torsors.
+
+            For a line \(I=\mathbf Z e\), \(\gamma\) is in the image exactly when
+            \(F^+(\gamma)\) or \(F^-(\gamma)\) (see :meth:`_levi_section`) is
+            nonempty, and each is empty exactly when its finite residue locus
+            is.  For higher-rank \(I\) this is port #18's computation.
+            """
             match int(self.isotropic_sublattice().module_rank()):
                 case 1:
-                    return morphisms.elementwise(
-                        descend,
-                        section=self._levi_section,
-                        kernel_generators=self._levi_kernel_generators,
+                    if self.rational_lifts(self, isometry).integral_members().is_empty() is False:
+                        return True
+                    opposite, identification = self._opposite_marking()
+                    return (
+                        self.rational_lifts(opposite, identification * isometry).integral_members().is_empty()
+                        is False
                     )
-                case _ if automorphisms in OwnedFiniteGroups():
-                    return morphisms.elementwise(descend)
-                case _:
-                    return morphisms.elementwise(descend, section=self._levi_section)
+                case rank:
+                    assert False, (
+                        f"cannot decide whether {isometry!r} lifts from O(K_I) to P_I for K_I = {self!r}: "
+                        f"I has rank {rank}, and O(K_I) is not placed finite, so this solves the extension "
+                        f"equations of an isotropic sublattice of rank at least 2, which are "
+                        f"sage-indefinite-port #18's computation"
+                    )
 
         def _levi_section(self, isometry):
             r"""One point of the fibre \(\rho^{-1}(\gamma)\) of :meth:`levi_action`, asserting off its image.
