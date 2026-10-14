@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
-    finite_indexed_family,
     finite_indexed_family_from_values,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -202,83 +201,41 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                 for position in self.configuration_positions()
             )
 
-        def _pairing_graph(self):
-            r"""Return the private labelled graph encoding every pairing.
-
-            Vertices run over ``1..m`` as Sage's permutation groups do.  A loop
-            carries a vector's square and an edge carries a nonzero pairing; a
-            missing edge is the pairing zero, which a labelled automorphism
-            preserves as well.
-            """
-            lattice = self.inclusion().codomain()
-            positions = self.configuration_positions()
-            vectors = self.embedded_module_generators()
-            colouring = self.configuration_colouring()
-            size = int(positions.cardinality())
-            graph = Graph(loops=True, multiedges=False)
-            graph.add_vertices(range(1, size + 1))
-            for left in range(size):
-                left_vector = vectors[positions[left]]
-                graph.add_edge(left + 1, left + 1, (colouring(positions[left]), int(lattice.q(left_vector))))
-                for right in range(left + 1, size):
-                    pairing = int(
-                        lattice.b(left_vector, vectors[positions[right]])
-                    )
-                    if pairing:
-                        graph.add_edge(left + 1, right + 1, pairing)
-            return graph
-
         @cached_method
-        def configuration_automorphism_group(self, algorithm=None):
-            r"""Return framing permutations preserving every pairing.
+        def _pairing_adapter(self):
+            r"""The declared engine adapter on this configuration's coloured pairings.
 
-            ``algorithm`` is the graph-canonization algorithm selector
-            accepted by Sage (notably ``None``, ``"bliss"`` and ``"sage"``).
-            The returned object is still the owned permutation group.
+            Its data are the framing positions, the Gram tensor of the framed
+            sublattice (the ambient form pulled back along the inclusion), and
+            :meth:`configuration_colouring`; the engine graph stays inside it.
             """
-            from dzack_research.preamble.categories.group.groups import _owned_group
-
-            return _owned_group(
-                self._pairing_graph().automorphism_group(
-                    edge_labels=True,
-                    algorithm=algorithm,
-                )
+            return _LabelledPairingGraph(
+                self.configuration_positions(), self.gram_tensor(), self.configuration_colouring()
             )
+
+        def configuration_automorphism_group(self, algorithm=None):
+            r"""Return the group of framing permutations preserving every pairing and colour.
+
+            An owned subgroup of the symmetric group on the positions; its
+            elements act on :meth:`configuration_positions` through
+            :meth:`position_permutation`.  ``algorithm`` is the engine's
+            graph-canonization selector (``None``, ``"bliss"``, ``"sage"``).
+            """
+            return self._pairing_adapter().automorphism_group(algorithm)
+
+        def position_permutation(self, automorphism):
+            r"""Return the permutation of :meth:`configuration_positions` an automorphism induces."""
+            return self._pairing_adapter().position_permutation(automorphism)
 
         @cached_method
         def _canonical_pairing_data(self, algorithm=None):
-            r"""Return the canonical Gram matrix and framing-position certificate."""
-            _canonical_graph, certificate = self._pairing_graph().canonical_label(
-                edge_labels=True,
-                certificate=True,
-                algorithm=algorithm,
-            )
-            positions = self.configuration_positions()
-            size = int(positions.cardinality())
-            canonical_to_source = [None] * size
-            for source_position in range(size):
-                canonical_position = int(certificate[source_position + 1])
-                canonical_to_source[canonical_position] = positions[source_position]
-            if any(position is None for position in canonical_to_source):
-                raise ArithmeticError(
-                    f"the canonical labelling of the pairing graph of {self} is not a "
-                    f"permutation of its {size} basis positions: the certificate is {certificate}"
-                )
-
+            r"""Return the canonical Gram matrix and the framing-position map to canonical positions."""
+            adapter = self._pairing_adapter()
             canonical_basis = tuple(
                 self.module_generator(position)
-                for position in canonical_to_source
+                for position in adapter.canonical_ordering(algorithm)
             )
-            canonical_matrix = self.gram_matrix(canonical_basis)
-            canonical_positions = finite_ordered_set(range(size))
-            certificate_family = finite_indexed_family(
-                positions,
-                lambda position: canonical_positions[
-                    int(certificate[int(positions.ranking_map()(position)) + 1])
-                ],
-                name="Canonical positions of the vector configuration",
-            )
-            return canonical_matrix, certificate_family
+            return self.gram_matrix(canonical_basis), adapter.canonical_position_map(algorithm)
 
         def canonical_pairing_matrix(self, algorithm=None):
             r"""Return the Gram matrix in the canonical pairing-graph order."""
@@ -360,43 +317,29 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             )
 
         def configuration_isometry_from_automorphism(self, automorphism):
-            r"""Lift one owned pairing-graph automorphism through libGAP.
+            r"""Lift one configuration automorphism to an isometry of the framed sublattice.
 
-            The graph automorphism group is an owned permutation group.  Its
-            private permutation representation crosses into GAP only long enough to evaluate
-            the action on the canonical point set ``1..m``; the resulting map
-            on the configuration's own framing positions is then lifted by
-            :meth:`configuration_isometry`, which verifies every pairing.
+            The automorphism acts on the framing positions by
+            :meth:`position_permutation`; that map is lifted by
+            :meth:`configuration_isometry`.
             """
             automorphisms = self.configuration_automorphism_group()
-            if automorphism not in automorphisms:
-                raise ValueError(
-                    f"cannot lift {automorphism} to an isometry of {self}: it is not an "
-                    f"element of the automorphism group {automorphisms} of the configuration"
-                )
-            positions = self.configuration_positions()
-            def position_map(label):
-                source = int(positions.ranking_map()(label)) + 1
-                target = int(automorphism(source))
-                return positions[target - 1]
-
+            assert automorphism in automorphisms, (
+                f"cannot lift {automorphism} to an isometry of {self}: it is not an "
+                f"element of the automorphism group {automorphisms} of the configuration"
+            )
+            position_map = self.position_permutation(automorphism)
             return self.configuration_isometry(position_map)
 
         def ambient_isometry_from_automorphism(self, automorphism):
             r"""Lift a graph automorphism to ``O(L)`` when the configuration frames ``L``."""
             automorphisms = self.configuration_automorphism_group()
-            if automorphism not in automorphisms:
-                raise ValueError(
-                    f"cannot lift {automorphism} to an isometry of the lattice framed by "
-                    f"{self}: it is not an element of the automorphism group {automorphisms} "
-                    f"of the configuration"
-                )
-            positions = self.configuration_positions()
-            def position_map(label):
-                source = int(positions.ranking_map()(label)) + 1
-                target = int(automorphism(source))
-                return positions[target - 1]
-
+            assert automorphism in automorphisms, (
+                f"cannot lift {automorphism} to an isometry of the lattice framed by "
+                f"{self}: it is not an element of the automorphism group {automorphisms} "
+                f"of the configuration"
+            )
+            position_map = self.position_permutation(automorphism)
             return self.ambient_isometry(position_map)
 
         def diagram_automorphism_isometries(self):
@@ -410,19 +353,127 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             )
 
 
-class _SpanningConfiguration:
-    """Private adapter (OWN-06): a coloured spanning family and its labelled pairing graph.
+class _LabelledPairingGraph:
+    """Private adapter (OWN-06): the labelled pairing graph of a coloured framed family.
 
-    Declared engine boundary.  The labelled pairing graph is a Sage ``Graph``
-    used only inside this adapter for its isomorphism and automorphism
-    computations (bliss/nauty), because ``LabelledGraphs`` presents
+    Declared engine boundary, and the only site in this module holding a Sage
+    ``Graph`` or integer vertex coordinates.  ``LabelledGraphs`` presents
     label-preserving ``Mor`` but no computed isomorphism or automorphism group
-    (recorded in COMPLAINTS).  The supplied vectors and colours are held as
-    private Python data.  Every value leaving the adapter is a preamble
-    object: the rational family morphism ``F_Q(I) -> L tensor Q``, the
-    rational equivalence ``T_sigma``, the configuration group
-    ``rho(Aut(Gamma)) <= O(L tensor Q)``, the stable bound, and the number of
-    positions as a cardinal.
+    (recorded in COMPLAINTS), so the bliss/nauty computations run here.
+
+    Data: an owned finite ordered set of positions, the owned Gram tensor on
+    the free module those positions frame, and the owned colouring map of the
+    positions.  The tensor is lowered once (``_engine_component_matrix``);
+    the positions are lowered by their ``ranking_map``.  Leaving the adapter:
+    an owned subgroup of the symmetric group on the positions, the induced
+    permutations of the positions as set maps, isomorphisms as set maps of
+    positions, and the canonical labelling as a set map onto canonical
+    positions.
+    """
+
+    def __init__(self, positions, gram, colouring):
+        self._positions = positions
+        self._gram = gram
+        self._colouring = colouring
+
+    def _size(self):
+        return int(self._positions.cardinality())
+
+    def _vertex(self, position):
+        return int(self._positions.ranking_map()(position))
+
+    def _position(self, vertex):
+        return self._positions.ranking_map().inverse()(int(vertex))
+
+    @cached_method
+    def _graph(self):
+        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
+        pairings = _engine_component_matrix(self._gram)
+        size = self._size()
+        graph = Graph(loops=True, multiedges=False)
+        graph.add_vertices(range(size))
+        for left in range(size):
+            colour = self._colouring(self._position(left))
+            graph.add_edge(left, left, ("vertex", colour, pairings[left, left]))
+            for right in range(left):
+                if pairings[left, right]:
+                    graph.add_edge(left, right, ("pairing", pairings[left, right]))
+        return graph
+
+    @cached_method
+    def _symmetric_group(self):
+        from dzack_research.preamble.categories.group.groups import Groups
+
+        return Groups.S(self._size())
+
+    @cached_method
+    def automorphism_group(self, algorithm=None):
+        r"""``Aut(Gamma)``: the subgroup of ``S_m`` generated by the engine's automorphisms."""
+        symmetric = self._symmetric_group()
+        size = self._size()
+        engine = self._graph().automorphism_group(edge_labels=True, algorithm=algorithm)
+        return symmetric.subgroup(tuple(
+            symmetric([int(generator(vertex)) + 1 for vertex in range(size)])
+            for generator in engine.gens()
+        ))
+
+    def position_permutation(self, automorphism):
+        r"""The permutation of the positions induced by an element of ``Aut(Gamma)``."""
+        return Sets().Mor(self._positions, self._positions)(
+            lambda position: self._position(int(automorphism(self._vertex(position) + 1)) - 1)
+        )
+
+    def isomorphism(self, other):
+        r"""A colour- and pairing-preserving bijection of positions onto ``other``'s, or ``None``."""
+        equivalent, certificate = self._graph().is_isomorphic(
+            other._graph(), edge_labels=True, certificate=True
+        )
+        if not equivalent:
+            return None
+        return Sets().Mor(self._positions, other._positions)(
+            lambda position: other._position(certificate[self._vertex(position)])
+        )
+
+    @cached_method
+    def _certificate(self, algorithm=None):
+        _canonical, certificate = self._graph().canonical_label(
+            edge_labels=True, certificate=True, algorithm=algorithm
+        )
+        return certificate
+
+    @cached_method
+    def canonical_positions(self):
+        r"""The canonical positions, the ordinal ``{0, ..., m-1}`` as an owned ordered set."""
+        return finite_ordered_set(range(self._size()))
+
+    def canonical_position_map(self, algorithm=None):
+        r"""The canonical labelling as the set map ``positions -> canonical positions``."""
+        certificate = self._certificate(algorithm)
+        canonical = self.canonical_positions()
+        return Sets().Mor(self._positions, canonical)(
+            lambda position: canonical.ranking_map().inverse()(int(certificate[self._vertex(position)]))
+        )
+
+    def canonical_ordering(self, algorithm=None):
+        r"""The positions as an ordered set in canonical order."""
+        certificate = self._certificate(algorithm)
+        by_canonical = {int(certificate[vertex]): vertex for vertex in range(self._size())}
+        return finite_ordered_set(tuple(
+            self._position(by_canonical[rank]) for rank in range(self._size())
+        ))
+
+
+class _SpanningConfiguration:
+    """Private realization of a coloured spanning family ``(v_i)_{i in I}`` of ``L``.
+
+    Holds the supplied vectors and colours as private data and the integral
+    family morphism ``F(I) -> L``.  Its graph computations go through the
+    declared adapter :class:`_LabelledPairingGraph` on the Gram tensor pulled
+    back along that morphism; every value leaving this class is a preamble
+    object: the rational family morphism, the rational equivalence
+    ``T_sigma``, the configuration group ``rho(Aut(Gamma)) <= O(L tensor Q)``,
+    the stable bound, and the number of positions as a cardinal.
 
     Nothing is computed or checked at construction (``OWN-22``); the
     nondegenerate spanning hypothesis is asserted by the computations that
@@ -433,6 +484,19 @@ class _SpanningConfiguration:
         self._lattice = lattice
         self._vectors = tuple(lattice(point) for point in vectors)
         self._colouring = finite_indexed_family_from_values(None, colours)
+
+    @cached_method
+    def _positions_module(self):
+        return Modules(self._lattice.base_ring()).free_module(self._colouring.cardinality())
+
+    @cached_method
+    def family(self):
+        r"""The integral family morphism ``F(I) -> L``."""
+        positions = self._positions_module()
+        labels = positions.module_generating_set()
+        return Modules(self._lattice.base_ring()).Mor(positions, self._lattice)(
+            lambda label: self._vectors[int(labels.ranking_map()(label))]
+        )
 
     def cardinality(self):
         r"""The number of positions, as a cardinal."""
@@ -454,30 +518,16 @@ class _SpanningConfiguration:
         )
 
     @cached_method
-    def _graph(self):
-        r"""The private Sage labelled pairing graph on vertices ``0..m-1``.
-
-        Squares and pairings are the Gram tensor pulled back along the family
-        morphism ``F(I) -> L``, lowered once to an engine matrix.
-        """
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-
+    def _pairing_adapter(self):
         self._assert_spanning_nondegenerate()
-        lattice = self._lattice
-        positions = Modules(lattice.base_ring()).free_module(len(self._vectors))
-        labels = tuple(positions.module_generating_set())
-        family = Modules(lattice.base_ring()).Mor(positions, lattice)(
-            lambda label: self._vectors[labels.index(label)]
-        )
-        pairings = _engine_component_matrix(lattice.gram_tensor().pullback(family))
-        colours = tuple(self._colouring)
-        graph = Graph(loops=True, multiedges=False)
-        graph.add_vertices(range(len(self._vectors)))
-        for left in range(len(self._vectors)):
-            graph.add_edge(left, left, ("vertex", colours[left], pairings[left, left]))
-            for right in range(left):
-                graph.add_edge(left, right, ("pairing", pairings[left, right]))
-        return graph
+        positions = self._positions_module()
+        labels = positions.module_generating_set()
+        indices = self._colouring.index_set().ranking_map().inverse()
+
+        def colouring(label):
+            return self._colouring.value(indices(int(labels.ranking_map()(label))))
+
+        return _LabelledPairingGraph(labels, self._lattice.gram_tensor().pullback(self.family()), colouring)
 
     def rationalization(self):
         r"""The lattice in its rational space, ``L -> Res(L tensor Q)``."""
@@ -488,18 +538,34 @@ class _SpanningConfiguration:
 
     @cached_method
     def rational_family(self):
-        r"""The family as the rational module morphism ``F_Q(I) -> L tensor Q``, surjective by spanning."""
+        r"""The family as the rational module morphism ``F_Q(I) -> L tensor Q``, surjective by spanning.
+
+        Its positions are those of :meth:`family` under the rank bijection of
+        the two free modules' framings.
+        """
         rational = self.rational_space()
         rationalization = self.rationalization()
-        positions = Modules(rational.base_ring()).free_module(len(self._vectors))
-        labels = tuple(positions.module_generating_set())
+        integral = self.family()
+        positions = Modules(rational.base_ring()).free_module(self._colouring.cardinality())
+        to_integral = self._rational_to_integral_labels(positions)
         return Modules(rational.base_ring()).Mor(positions, rational)(
-            lambda label: rationalization(self._vectors[labels.index(label)]).underlying_element()
+            lambda label: rationalization(
+                integral(integral.domain().module_generator(to_integral(label)))
+            ).underlying_element()
         )
 
-    def _rational_transformation(self, target, image_position):
+    def _rational_to_integral_labels(self, rational_positions):
+        r"""The rank bijection of ``F_Q(I)``'s framing onto ``F(I)``'s."""
+        rational_labels = rational_positions.module_generating_set()
+        integral_labels = self._positions_module().module_generating_set()
+        return Sets().Mor(rational_labels, integral_labels)(
+            lambda label: integral_labels.ranking_map().inverse()(rational_labels.ranking_map()(label))
+        )
+
+    def _rational_transformation(self, target, sigma):
         r"""The rational isometry ``T_sigma`` with ``T_sigma(v_i) = w_{sigma(i)}``.
 
+        ``sigma`` is a set map of :meth:`family` positions onto ``target``'s.
         For a pairing-preserving bijection of nondegenerate spanning families
         ``T_sigma`` exists and is unique.  It is computed at the module owner:
         a vector is lifted along the surjective family morphism (exact
@@ -510,12 +576,16 @@ class _SpanningConfiguration:
         target_family = target.rational_family()
         source_positions = source_family.domain()
         target_positions = target_family.domain()
-        source_labels = tuple(source_positions.module_generating_set())
-        target_labels = tuple(target_positions.module_generating_set())
+        to_integral = self._rational_to_integral_labels(source_positions)
+        target_to_integral = target._rational_to_integral_labels(target_positions)
+        target_labels = target_positions.module_generating_set()
+        target_integral_labels = target._positions_module().module_generating_set()
+
+        def target_label(integral_label):
+            return target_labels.ranking_map().inverse()(target_integral_labels.ranking_map()(integral_label))
+
         relabel = Modules(source_positions.base_ring()).Mor(source_positions, target_positions)(
-            lambda label: target_positions.module_generator(
-                target_labels[image_position(source_labels.index(label))]
-            )
+            lambda label: target_positions.module_generator(target_label(sigma(to_integral(label))))
         )
         rational_source = self.rational_space()
         rational_target = target.rational_space()
@@ -525,39 +595,33 @@ class _SpanningConfiguration:
 
     def rational_equivalence(self, target):
         r"""One rational isometry carrying this coloured family onto ``target``'s, or ``None``."""
-        equivalent, certificate = self._graph().is_isomorphic(target._graph(), edge_labels=True, certificate=True)
-        if not equivalent:
+        sigma = self._pairing_adapter().isomorphism(target._pairing_adapter())
+        if sigma is None:
             return None
-        return self._rational_transformation(target, lambda position: int(certificate[position]))
+        return self._rational_transformation(target, sigma)
 
     @cached_method
     def configuration_group(self):
         r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``.
 
-        ``Aut(Gamma)`` is the subgroup of the symmetric group on the positions
-        generated by the graph automorphisms the engine returns; ``rho`` is
-        constructed from the images of those generators, each the rational
-        isometry realizing it, and ``G`` is its image.
+        ``Aut(Gamma)`` is the adapter's owned subgroup of the symmetric group
+        on the positions; ``rho`` is constructed from the images of its
+        group generators, each the rational isometry realizing the induced
+        permutation of positions, and ``G`` is its image.
         """
-        from dzack_research.preamble.categories.group.groups import Groups
-
+        adapter = self._pairing_adapter()
         rational = self.rational_space()
-        size = len(self._vectors)
-        symmetric = Groups.S(size)
-        realizations = {}
-        for permutation in self._graph().automorphism_group(edge_labels=True).gens():
-            owned = symmetric([int(permutation(position)) + 1 for position in range(size)])
-            realizations[owned] = self._rational_transformation(
-                self, lambda position, chosen=permutation: int(chosen(position))
-            )
-        automorphisms = symmetric.subgroup(tuple(realizations))
+        automorphisms = adapter.automorphism_group()
         orthogonal = rational.O()
-        rho = automorphisms.Mor(orthogonal)({
-            generator: orthogonal({
-                label: realizations[generator](rational.module_generator(label))
+        def realization(generator):
+            isometry = self._rational_transformation(self, adapter.position_permutation(generator))
+            return orthogonal({
+                label: isometry(rational.module_generator(label))
                 for label in rational.module_generating_set()
             })
-            for generator in automorphisms.group_generators()
+
+        rho = automorphisms.Mor(orthogonal)({
+            generator: realization(generator) for generator in automorphisms.group_generators()
         })
         return rho.image()
 
