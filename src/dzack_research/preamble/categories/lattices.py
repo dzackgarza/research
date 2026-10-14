@@ -4794,7 +4794,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def reflection(self, root):
             r"""Return the integral orthogonal reflection in ``root``.
 
-            A lattice root is defined by this integrality: for every selected
+            The reflection exists exactly when ``root`` is an integral reflection vector: for every selected
             module generator ``e_i``, ``2*b(e_i,root)/b(root,root)`` must lie
             in the base ring.
 
@@ -4810,9 +4810,12 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"cannot reflect {self!r} in {root!r}: the vector lies in {root.parent()!r}, not in this lattice"
                 )
-            if not root.is_root():
+            assert root.q() != self.base_ring().zero(), (
+                f"there is no reflection of {self!r} in {root}: s_r is defined only for b(r, r) != 0"
+            )
+            if not root.is_integral_reflection_vector():
                 raise ValueError(
-                    f"the reflection of {self!r} in {root} is not an isometry of the lattice: 2 b(x, r)/b(r, r) is not in {self.base_ring()} for every x, so {root} is not a root"
+                    f"the reflection of {self!r} in {root} is not an isometry of the lattice: 2 b(x, r)/b(r, r) is not in {self.base_ring()} for every x, so {root} is not an integral reflection vector"
                 )
             ring = self.base_ring()
             fraction_field = ring.fraction_field()
@@ -5096,19 +5099,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             The condition is ``2 b(v,L) / b(v,v)`` integral; the locus can
             be infinite for an indefinite lattice.
             """
-            ring = self.base_ring()
 
-            def reflective(vector):
-                if vector == self.zero() or vector.q() == ring.zero():
-                    return False
-                if not self.subobject_on((vector,)).is_primitive():
-                    return False
-                return all(
-                    (ring(2) * vector.b(generator)) / vector.b(vector) in ring
-                    for generator in self.module_generators()
-                )
-
-            return self.condition_set(reflective)
+            return self.condition_set(lambda vector: vector.is_root())
 
         @cached_method
         def root_module_generating_set(self):
@@ -6472,7 +6464,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.isotropic_reduction()
 
         def is_root(self) -> bool:
-            r"""Return whether the orthogonal reflection in this vector is integral.
+            r"""Return whether this vector lies in ``R(L) = {v : v primitive, s_v in O(L)}``.
+
+            A root is a primitive integral reflection vector (owner ruling,
+            #406; requested from ``lean-categories``, see ``COMPLAINTS.md``).
+            ``s_{2r} = s_r``, so integrality alone admits non-primitive
+            multiples; :meth:`is_integral_reflection_vector` is that weaker
+            predicate.
 
             EXAMPLES::
 
@@ -6482,15 +6480,33 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: Iinf.linear_combination({0: ZZ(2), 1: ZZ(1)}).is_root()
                 False
+                sage: L = Lattices(ZZ)([[1, 0, 0], [0, 2, 0], [0, 0, -2]])
+                sage: v = 2 * L.basis_vector(0)
+                sage: v.is_integral_reflection_vector(), v.is_root()
+                (True, False)
+            """
+            parent = self.parent()
+            return bool(
+                self.is_integral_reflection_vector()
+                and parent.subobject_on((self,)).is_primitive()
+            )
+
+        def is_integral_reflection_vector(self) -> bool:
+            r"""Return whether ``s_r(x) = x - 2 b(x, r)/b(r, r) r`` maps the lattice into itself.
+
+            ``lean-categories`` FOUNDATIONS §60.1 (*integral reflection
+            vector*): ``2 b(x, r)/b(r, r)`` is integral for every ``x``.  No
+            primitivity is required; :meth:`is_root` adds it.
             """
 
             parent = self.parent()
             ring = parent.base_ring()
             assert ring.is_integral_domain(), (
-                f"cannot decide whether {self!r} is a root: roots are defined here for lattices over an integral domain, and {ring} is not one"
+                f"cannot decide whether {self!r} is an integral reflection vector: the reflection is defined here for lattices over an integral domain, and {ring} is not one"
             )
             norm = ring(self.q())
             if norm == ring.zero():
+                # s_r exists only for b(r, r) != 0, so a vector of square zero is not one.
                 return False
             fraction_field = ring if ring.is_field() else ring.fraction_field()
             norm_in_fraction_field = fraction_field(norm)
