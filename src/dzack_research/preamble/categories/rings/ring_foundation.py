@@ -8,6 +8,9 @@ from sage.all import (
     GF as _SageGF,
 )
 from sage.all import (
+    PolynomialRing as _SagePolynomialRing,
+)
+from sage.all import (
     ComplexField as _SageComplexField,
 )
 from sage.all import (
@@ -5938,10 +5941,18 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             return _owned_complex_field_of_precision(int(engine.precision()))
         case SagePadicFieldClass() if engine is _SageQp(engine.prime(), engine.precision_cap()):
             return _owned_padic_field(int(engine.prime()), int(engine.precision_cap()))
+        case SageFiniteFieldClass() if engine.degree() == 1:
+            # A prime-field engine is ZZ/(p).
+            return Zmod(int(engine.characteristic()))
         case SageFiniteFieldClass():
-            # A finite-field engine is raised through ``GF``'s construction
-            # on its order and generator label; a prime field is ``ZZ/(p)``.
-            return GF(int(engine.order()), engine.variable_name())
+            # A finite-field engine is F_p[label]/(m) for its own modulus m,
+            # never the field rebuilt with GF's default modulus: two
+            # presentations of F_q are isomorphic only non-uniquely.
+            return _finite_field_with_modulus(
+                int(engine.characteristic()),
+                engine.variable_name(),
+                tuple(int(coefficient) for coefficient in engine.modulus().list()),
+            )
         case SageMatrixSpaceClass():
             # M_n(R) is End_R(F_R([n])), the matrix ring R.matrix_space(n)
             # (ARC-09, ARC-10); a rectangular matrix space is no ring.
@@ -6188,42 +6199,63 @@ def _lowered_integer_arguments(args):
 
 
 def GF(order, name=None):
-    r"""The finite field with ``order`` elements.
+    r"""``F_q``, ``q = p^k``: the quotient ``F_p[label]/(m)`` by a monic irreducible ``m`` of degree ``k``.
 
-    ``order`` is the defining datum, a prime power ``q``; ``name`` labels the
-    generator of ``F_q`` over its prime field and is presentation data.  Equal
-    data give the same field (``OWN-02``).  For a prime ``q = p`` the field is
-    ``ZZ/(p)``, the one object ``Zmod(p)`` also returns; ``F_p`` has no
-    generator over its prime field, so ``name`` names nothing there.
+    ``F_q`` is unique only up to a non-unique isomorphism, so its presentation
+    is data.  ``GF(q, label)`` is the field ``F_p[label]/(m)`` with
+
+    - ``label`` the name of the class of the variable, ``z<k>`` when none is
+      given (Sage's default name);
+    - ``m`` Sage's default modulus for a named ``GF(q, label)``:
+      ``F_p[x].irreducible_element(k)``, the Conway polynomial ``C_{p,k}`` when
+      Sage's database holds it, otherwise the minimal-weight irreducible
+      polynomial for ``p = 2`` and PARI's Adleman--Lenstra polynomial for odd
+      ``p`` (``sage/rings/polynomial/polynomial_ring.py``,
+      ``PolynomialRing_dense_finite_field.irreducible_element``;
+      ``finite_field_constructor.py``, ``create_key_and_extra_args``).  Sage's
+      unnamed ``GF(q)`` uses a pseudo-Conway polynomial outside the database;
+      that polynomial is not used here, so ``GF(q)`` is ``GF(q, "z<k>")``.
+
+    It is that quotient, one object for ``(p, m, label)`` (``OWN-02``): the
+    ideal ``(m)`` is constructed maximal (the caller's claim, ``OWN-22``) and
+    the quotient is interned on ``F_p[label]`` and that ideal.  A finite field
+    with another modulus is ``F_p[label].quotient_ring`` of that modulus.
+
+    For a prime ``q = p`` the field is ``ZZ/(p)``, the one object ``Zmod(p)``
+    also returns; ``F_p`` has no generator over its prime field, so ``name``
+    is ignored there.
     """
     (order,) = _lowered_integer_arguments((order,))
-    if SageZZ(order).is_prime():
-        return Zmod(order)
-    # An unnamed generator takes the default label, so ``GF(4)`` and
-    # ``GF(4, "z2")`` state the same data and give one field.
-    label = _SageGF(int(order)).variable_name() if name is None else str(name)
-    return _owned_finite_field(int(order), label)
-
-
-def _finite_field_placements() -> tuple[Category, ...]:
-    r"""``F_q`` with ``q = p^k``, ``k > 1``: a finite field, not prime."""
-    return (*_field_placements(), owned_sets.FiniteSets(), OwnedRings().Artinian())
-
-
-@cached_function
-def _owned_finite_field(order: int, name: str) -> _OwnedRingParent:
-    r"""Construct ``F_q``, ``q = p^k`` with ``k > 1``, from its order and generator label.
-
-    The prime fields are the quotients ``ZZ/(p)`` (:func:`GF`).  The engine is
-    selected privately.
-    """
-    assert not SageZZ(order).is_prime(), (
-        f"the field with {order} elements is ZZ/({order}); it is constructed as that quotient"
+    order = SageZZ(order)
+    if order.is_prime():
+        return Zmod(int(order))
+    assert order.is_prime_power(), (
+        f"there is no field with {order} elements: the order of a finite field is a prime power"
     )
-    engine = _SageGF(order, name)
-    field = _OwnedRingParent(engine, named_placement=_finite_field_placements)
-    _set_owned_ring_display(field, f"GF({order})", kind="finite_field")
-    return field
+    characteristic, degree = order.is_prime_power(get_data=True)
+    label = f"z{degree}" if name is None else str(name)
+    modulus = _SagePolynomialRing(_SageGF(int(characteristic)), "x").irreducible_element(int(degree))
+    return _finite_field_with_modulus(
+        int(characteristic), label, tuple(int(coefficient) for coefficient in modulus.list())
+    )
+
+
+def _finite_field_with_modulus(characteristic: int, label: str, coefficients: tuple[int, ...]):
+    r"""``F_p[label]/(m)``, ``m`` the monic irreducible with these coefficients, lowest degree first.
+
+    The construction of :func:`GF` and of a finite-field engine raised in an
+    adapter (:func:`_owned_engine_ring`, by the engine's own modulus).  The
+    ideal ``(m)`` is placed maximal by construction; the quotient selects
+    Sage's finite field with modulus exactly ``m`` as its realization
+    (``_quotient_ring``).
+    """
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    polynomials = Zmod(characteristic).polynomial_ring(label)
+    modulus = _owned_engine_element(polynomials, _engine_ring(polynomials)(list(coefficients)))
+    return polynomials.quotient_ring(CommutativeIdeals(polynomials).Maximal()(modulus))
 
 
 FiniteField = GF

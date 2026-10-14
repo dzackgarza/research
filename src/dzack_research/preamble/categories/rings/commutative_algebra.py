@@ -667,6 +667,26 @@ def _distinguished_open_subobject(spectrum, function):
 
 
 
+def _engine_quotient_representative(quotient_engine, backend_value):
+    r"""A source-engine representative of a class held by a quotient's selected realization.
+
+    Private adapter of :class:`QuotientRings` (``OWN-06``), called only by its
+    element constructor after the realization is selected.  Sage quotient
+    rings and ``ZZ/nZZ`` lift a class by ``lift()``.  The realization of
+    ``F_p[t]/(m)`` is a Sage finite field of degree ``deg m`` over its prime
+    field, whose elements have no ``lift()``; ``polynomial()`` returns the
+    reduced representative in ``F_p[t]`` (``element_givaro.pyx``,
+    ``element_pari_ffelt.pyx``, ``element_ntl_gf2e.pyx``).
+    """
+    from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
+
+    match quotient_engine:
+        case SageFiniteFieldClass() if quotient_engine.degree() > 1:
+            return backend_value.polynomial()
+        case _:
+            return backend_value.lift()
+
+
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
@@ -772,7 +792,7 @@ class QuotientRings(OwnedCategory):
                 backend_value = quotient_engine(value)
                 value = _owned_engine_element(
                     quotient_source,
-                    source_engine(backend_value.lift()),
+                    source_engine(_engine_quotient_representative(quotient_engine, backend_value)),
                 )
             elif value_parent in OwnedRings():
                 value_engine = _engine_ring(value_parent)
@@ -784,7 +804,7 @@ class QuotientRings(OwnedCategory):
                     backend_value = quotient_engine(_engine_element(value_parent, value))
                     value = _owned_engine_element(
                         quotient_source,
-                        source_engine(backend_value.lift()),
+                        source_engine(_engine_quotient_representative(quotient_engine, backend_value)),
                     )
             elif value_parent is source_engine:
                 value = _owned_engine_element(quotient_source, source_engine(value))
@@ -3379,6 +3399,31 @@ def _quotient_ring(source, defining_ideal):
     )
     if prime_field:
         quotient_engine = _SageGF(abs(defining.gen()))
+    # F_p[t]/(m) for a maximal (m) is the field F_q, q = p^(deg m): the
+    # classes of 1, t, ..., t^(deg m - 1) are an F_p-basis (Mathlib
+    # ``AdjoinRoot.powerBasis``, Mathlib/RingTheory/AdjoinRoot.lean), so it
+    # has p^(deg m) elements.  This is the construction of ``GF(q, label)``.
+    # Sage's finite field with modulus exactly m is selected as its private
+    # realization (CON-12); the modulus is the caller's (OWN-22), so Sage
+    # does not re-test irreducibility.
+    finite_extension_field = (
+        quotient_is_field
+        and not exact_source_quotient
+        and not prime_field
+        and source.base_ring() in PrimeFields()
+        and source in SymmetricAlgebras(source.base_ring())
+        and source.algebra_generating_set().is_finite() is True
+        and (source.algebra_generating_set().cardinality() == cardinal(1)) is True
+    )
+    if finite_extension_field:
+        modulus = defining.gen()
+        characteristic = int(_engine_ring(source.base_ring()).characteristic())
+        quotient_engine = _SageGF(
+            characteristic ** int(modulus.degree()),
+            _engine_ring(source).variable_name(),
+            modulus=modulus,
+            check_irreducible=False,
+        )
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -3393,9 +3438,10 @@ def _quotient_ring(source, defining_ideal):
         source in FiniteSets()
         or isinstance(quotient_engine, IntegerModRing_generic)
         or finite_order_quotient
+        or finite_extension_field
     ):
         placements.append(FiniteSets())
-    if dimension == 0:
+    if dimension == 0 or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
     return _object_of(
