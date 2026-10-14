@@ -141,8 +141,8 @@ def test_the_two_three_infinity_triangle_is_a_quasi_lanner_diagram() -> None:
 def test_the_invariant_matrix_with_t_equal_one_everywhere_is_the_affine_A2_triangle() -> None:
     r"""\(t = 1\) off the diagonal makes every bond \(3\): the cycle \(\tilde A_2\),
     whose Schläfli matrix \(2I - (J - I)\) has the all-ones vector in its kernel."""
-    invariants = VinbergInvariantMatrices()(
-        matrix(ZZ, [[4, 1, 1], [1, 4, 1], [1, 1, 4]])
+    invariants = VinbergInvariantMatrices().from_invariants(
+        ZZ, [[4, 1, 1], [1, 4, 1], [1, 1, 4]]
     )
 
     assert invariants.cardinality() == 3
