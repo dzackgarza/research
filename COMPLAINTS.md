@@ -2318,3 +2318,11 @@ on the original lattice. The twelve closure groups are retained under T.
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
+
+### Coset results: coset spaces versus lifted representatives
+
+**Mathematics:** for H <= G, the right coset space H\G and the double coset space Q\G/H are quotient sets of G; a consumer that iterates them and multiplies needs, in addition, a section of the quotient map G -> H\G (representatives lifted to G).
+**Observed:** `OwnedGroups.ParentMethods.right_cosets` returns, for finite G, a finite ordered set whose points are cosets as ordered sets of elements (`groups.py:_engine_cosets`); the rational integral-structure owner returns `LeftCosetGSets` with a retained representative map. The frozen port row (R#396, "representatives lifted to G") is consumed as group elements at sage-indefinite-port `recursive.py:165` (`coset * reduced`) and `isotropic_induction.py:89,128` (`coset(vector)`).
+**Gap:** no single owner states the coset space together with its representative section, so the finite route, the pointed-action route and the port contract disagree on the result. The infinite-G and double-coset routes of `port-group-primitives-with-generators` wait on one result type.
+**Coverage boundary:** source reading only; unexecuted (DEV-58).
+
