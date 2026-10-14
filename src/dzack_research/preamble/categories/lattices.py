@@ -5130,22 +5130,31 @@ class Lattices(OwnedCategoryOverBaseRing):
         def vector_configuration(self, module_generating_set, colouring=None):
             r"""Return the sublattice framed by the stated vector family, with its colouring.
 
-            The family is the framing: the configuration's positions are its
-            positions, and it must be a basis of the sublattice it spans (a
-            redundant spanning family is compared through
-            ``VectorConfigurations.spanning_isometry``). ``colouring`` is the
-            map from those positions to a set of colours, given as an indexed
-            family or a finite literal family read at its owner; omitted, it is
-            the constant colouring, under which every pairing-preserving
+            The family ``I -> L`` is the framing: the configuration's positions
+            correspond to ``I`` in order, and the family must be a basis of the
+            sublattice it spans (a redundant spanning family is compared through
+            ``VectorConfigurations.spanning_isometry``). ``colouring`` is a set
+            map ``I -> C`` into a set of colours; omitted, it is the map to the
+            one-point set ``Sets.Δ[0]``, under which every pairing-preserving
             permutation preserves colours.
             """
-            family = tuple(module_generating_set)
-            colours = (0,) * len(family) if colouring is None else colouring
+            family = finite_indexed_family_from_values(None, module_generating_set)
+            index_set = family.index_set()
+            match colouring:
+                case None:
+                    point_set = Sets.Δ[0]
+                    point = next(iter(point_set))
+                    colouring = Sets().Mor(index_set, point_set)(lambda _position: point)
+                case _:
+                    assert colouring.domain() is index_set, (
+                        f"a colouring of the configuration on {family} is a map out of its "
+                        f"index set {index_set}, but {colouring} is a map out of {colouring.domain()}"
+                    )
             return _lattice_subobject_on_basis(
                 self,
-                family,
+                tuple(family),
                 (VectorConfigurations(self.base_ring()),),
-                {"configuration_colouring": finite_indexed_family_from_values(None, colours)},
+                {"configuration_colouring": colouring},
             )
 
         def vector_primitive_extension(self, element):

@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     finite_indexed_family_from_values,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -169,21 +170,27 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             return self.module_generating_set()
 
         def configuration_colouring(self):
-            r"""Return the colouring: the family assigning each framing position its colour.
+            r"""Return the colouring as the set map ``positions -> C``.
 
-            Its index set is the ordinal of the supplied family, in the order
-            of :meth:`configuration_positions`.
+            The constructor received a map ``I -> C`` out of the index set of
+            the supplied family; the positions correspond to ``I`` in order, so
+            this is that map composed with the order isomorphism
+            ``positions -> I`` of the two ranking maps.
             """
-            return self._configuration_colouring
+            supplied = self._configuration_colouring
+            positions = self.configuration_positions()
+            indices = supplied.domain()
+            to_index = indices.ranking_map().inverse()
+            return Sets().Mor(positions, supplied.codomain())(
+                lambda position: supplied(to_index(positions.ranking_map()(position)))
+            )
 
         def preserves_colouring(self, position_map) -> bool:
             r"""Return whether a framing permutation carries each position to one of its colour."""
-            positions = self.configuration_positions()
-            colours = tuple(self.configuration_colouring())
-            ranking = positions.ranking_map()
+            colouring = self.configuration_colouring()
             return all(
-                colours[int(ranking(position))] == colours[int(ranking(position_map(position)))]
-                for position in positions
+                colouring(position) == colouring(position_map(position))
+                for position in self.configuration_positions()
             )
 
         def _pairing_graph(self):
@@ -197,13 +204,13 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             lattice = self.inclusion().codomain()
             positions = self.configuration_positions()
             vectors = self.embedded_module_generators()
-            colours = tuple(self.configuration_colouring())
+            colouring = self.configuration_colouring()
             size = int(positions.cardinality())
             graph = Graph(loops=True, multiedges=False)
             graph.add_vertices(range(1, size + 1))
             for left in range(size):
                 left_vector = vectors[positions[left]]
-                graph.add_edge(left + 1, left + 1, (colours[left], int(lattice.q(left_vector))))
+                graph.add_edge(left + 1, left + 1, (colouring(positions[left]), int(lattice.q(left_vector))))
                 for right in range(left + 1, size):
                     pairing = int(
                         lattice.b(left_vector, vectors[positions[right]])
@@ -273,16 +280,17 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             return self._canonical_pairing_data(algorithm)[1]
 
         def preserves_every_pairing(self, position_map) -> bool:
-            r"""Return whether a framing permutation preserves all squares and pairings."""
-            lattice = self.inclusion().codomain()
-            vectors = self.embedded_module_generators()
-            positions = self.configuration_positions()
-            return all(
-                lattice.b(vectors[left], vectors[right])
-                == lattice.b(vectors[position_map(left)], vectors[position_map(right)])
-                for left in positions
-                for right in positions
+            r"""Return whether a framing permutation preserves the form: ``P^* b = b``.
+
+            ``P`` is the endomorphism of the framed sublattice moving each
+            framing vector to its image position; the claim is the equality of
+            the pulled-back Gram tensor with the Gram tensor (``OWN-24``).
+            """
+            permutation = Modules(self.base_ring()).Mor(self, self)(
+                lambda label: self.module_generator(position_map(label))
             )
+            gram = self.gram_tensor()
+            return gram.pullback(permutation).is_equal_tensor(gram)
 
         def configuration_isometry(self, position_map):
             r"""Return the isometry of the framed sublattice permuting the framing.
