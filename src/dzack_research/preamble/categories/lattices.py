@@ -4970,10 +4970,17 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def vectors_of_square(self, square):
-            r"""Return the complete square fibre with its lattice inclusion.
+            r"""Return the square fibre, enumerated where it is finite.
 
             Definite fibres and nonzero split binary fibres are finite and
-            enumerated. Other fibres retain the complete defining locus.
+            enumerated. A nonzero fibre of a nonsplit indefinite binary form
+            is infinite: the automorph generates an infinite subgroup of
+            ``SO(L)`` acting on it with finitely many orbits. Its result is
+            the selected transversal modulo ``SO(L)`` (PARI ``qfbsolve`` flag
+            3), retaining the action on the complete fibre, the orbit
+            projection and the representative section; iteration runs over
+            the representatives only. Other fibres retain the complete
+            defining locus.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
@@ -4989,6 +4996,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 if discriminant > 0 and discriminant.is_square():
                     return self.finite_subsets()(
                         lattice_engines._split_binary_vectors_of_square(self, square)
+                    )
+                if discriminant > 0:
+                    from dzack_research.preamble.categories.group.g_objects import GObjects
+                    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+                    action = GObjects(self.special_orthogonal_group(), Sets()).on_set(
+                        self.square_fibre(square).object(),
+                        lambda isometry, vector: isometry(vector),
+                    )
+                    return action.orbit_representatives(
+                        lattice_engines._binary_special_orthogonal_representatives(self, square)
                     )
             return self.square_fibre(square).object()
 
