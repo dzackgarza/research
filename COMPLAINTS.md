@@ -28,7 +28,10 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
 
-Request (not yet filed): the integral proper orthogonal group of a nondegenerate integral binary form has finitely many orbits on the vectors of a nonzero norm (Cassels, *Rational Quadratic Forms*, Ch. 9, Lemma 6.1). Consumer: `binary_fixed_norm_representatives`, whose transversal presents this finite orbit set. It runs beside the computation and blocks no node.
+Two `lean-categories` requests, neither filed yet. Both are consumed by `binary_fixed_norm_representatives(n, acting_group)` (`categories/lattices.py`). That operation presents the orbit set `q^{-1}(n)/G`, `G` being `O(L)` or `SO(L)`, by a finite transversal. Its orbit relation is decided by the rank-one perpendicular extension (`definite_complement_extensions`). The requests run beside the computation and block no node.
+
+1. **Nonsplit case.** Let `L` be a nondegenerate integral binary lattice whose discriminant is not a nonzero square. Then `SO(L)` has finitely many orbits on `{v in L : q(v) = n}` for every `n != 0`. Source: Cassels, *Rational Quadratic Forms*, Ch. 9, Lemma 6.1. This locator predates this entry and was not reopened when the entry was written; open it before filing (`FSA-06`).
+2. **Split case.** Let `L` be a nondegenerate integral binary lattice whose discriminant is a nonzero square, so `L tensor QQ` is a hyperbolic plane. Then `O(L)` is finite. For `n != 0` the fibre `{v in L : q(v) = n}` is finite. Its `O(L)`-orbits are therefore the orbits of a finite group on a finite set. This is the case `vectors_of_square` enumerates (`lattice_engines._split_binary_vectors_of_square`), and `binary_fixed_norm_representatives` decides its orbits by the same perpendicular-extension relation. Source: none was opened for this entry; find a citable statement before filing (`FSA-06`, `FSA-16`). Until it is formalized, research holds no theorem that the split fibre or `O(L)` is finite. `binary_fixed_norm_representatives` therefore keeps the orbit relation, which is correct without the theorem. It does not route through an enumeration of `O(L)`.
 
 ### Implementation code retains mathematical construction authority
 
