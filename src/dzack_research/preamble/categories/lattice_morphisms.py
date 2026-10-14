@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGrou
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
-    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -2318,7 +2317,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         Selecting computes nothing; the generators are computed when
         ``group_generators()`` first reads the selected resolution.
         """
-        _fix_selected_group_resolution_on(self, self._computed_group_generators)
+        self.select_group_generators(self._computed_group_generators)
 
     def select_group_resolution(self, *, generators=None):
         r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
@@ -2349,7 +2348,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             self._select_computed_group_resolution()
         else:
             selected = finite_ordered_set(tuple(self(generator) for generator in generators))
-            _fix_selected_group_resolution_on(self, lambda: selected)
+            self.select_group_generators(lambda: selected)
         return self
 
     def structure_description(self):
