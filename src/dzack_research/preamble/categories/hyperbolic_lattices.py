@@ -33,6 +33,7 @@ from sage.rings.qqbar import AA as SageAA
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -610,7 +611,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots=max_roots,
                 max_decompositions=max_decompositions,
             )
-            return CoxeterDiagrams().from_roots(tuple(roots))
+            return CoxeterDiagrams().from_roots(finite_indexed_family_from_values(None, tuple(roots)))
 
         def _chamber_vertex_squares(self, controlling_vector, max_roots, max_decompositions):
             r"""Return the squares of the vertices of the fundamental polyhedron.

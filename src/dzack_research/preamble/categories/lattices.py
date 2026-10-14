@@ -8171,7 +8171,7 @@ class RootLattices(OwnedCategory):
                 CoxeterDiagrams,
             )
 
-            return CoxeterDiagrams().from_roots(tuple(self.simple_roots()))
+            return CoxeterDiagrams().from_roots(self.simple_roots())
 
         def simple_roots(self):
             r"""Return the selected framing, which is the chosen simple system."""

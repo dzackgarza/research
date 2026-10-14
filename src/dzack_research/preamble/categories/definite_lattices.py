@@ -14,6 +14,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleSubobjects,
@@ -397,7 +398,7 @@ def _reflective_root_system_components(lattice):
     match simple:
         case ():
             return finite_ordered_set(())
-    return CoxeterDiagrams().from_roots(simple).connected_components()
+    return CoxeterDiagrams().from_roots(finite_indexed_family_from_values(None, simple)).connected_components()
 
 
 def _vectors_of_square_and_divisibility(lattice, square, divisibility):

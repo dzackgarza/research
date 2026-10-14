@@ -2,11 +2,9 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
 from itertools import combinations
 
-from sage.combinat.posets.posets import Poset
-from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
+from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
-from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -16,6 +14,7 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.graph_categories import LabelledGraphs
@@ -29,58 +28,66 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family_from_values,
+    indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    PartiallyOrderedSets,
+    Sets,
+    finite_ordinal_set,
+)
 from dzack_research.preamble.logic import conjunction, negation
-from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
 def _engine_cartan_type_data(value):
     r"""Lower owned session numerals before Sage parses Cartan presentation data."""
-    if isinstance(value, list):
-        return [_engine_cartan_type_data(entry) for entry in value]
-    if isinstance(value, tuple):
-        return tuple(_engine_cartan_type_data(entry) for entry in value)
+    match value:
+        case list():
+            return [_engine_cartan_type_data(entry) for entry in value]
+        case tuple():
+            return tuple(_engine_cartan_type_data(entry) for entry in value)
     parent = element_parent(value)
     if parent is not None and parent in OwnedRings():
         return _engine_numeral(_own_ring(SageZZ), value)
     return value
 
 
-def _coxeter_entry(q1, q2, pairing):
+def _coxeter_entry(ring, q1, q2, pairing):
     r"""Return the Coxeter matrix entry of the mirrors of two roots with squares ``q1``, ``q2``.
 
     The angle \(\theta\) between the mirrors satisfies
-    \(4\cos^2\theta = 4b^2/(q_1 q_2)\) for the pairing \(b\), a rational number
-    for roots of a rational form whatever its scale.  The entry is \(m\)
-    with \(4\cos^2(\pi/m)\) equal to it: \(0, 1, 2, 3\) give \(m = 2, 3, 4, 6\),
-    and a value of at least \(4\) means parallel or divergent mirrors, \(m=\infty\).
+    \(4\cos^2\theta = 4b^2/(q_1 q_2)\) for the pairing \(b\).  The entry
+    is the \(m\geq 2\) with \(4\cos^2(\pi/m)\) equal to it, for any natural
+    number \(m\), and \(m=\aleph_0\) when the value is at least \(4\)
+    (parallel or divergent mirrors).  Private adapter: the values of the
+    owned ring ``ring`` are compared in Sage's real algebraic numbers, and a
+    candidate \(m\) read off a floating approximation of the angle is
+    accepted only when \(\left(\zeta_{2m}+\zeta_{2m}^{-1}\right)^2\) equals the
+    value exactly.  An angle that is not \(\pi/m\) has no Coxeter entry.
     """
-    rationals = _own_ring(QQ)
-    q1 = _engine_element(rationals, q1)
-    q2 = _engine_element(rationals, q2)
-    pairing = _engine_element(rationals, pairing)
+    from math import acos, pi
+
+    from sage.rings.qqbar import AA as SageAA, QQbar
+
+    q1, q2, pairing = (SageAA(_engine_element(ring, value)) for value in (q1, q2, pairing))
     assert q1 != 0 and q2 != 0, (
         f"cannot compute the Coxeter angle of two vectors with squares {q1} and {q2}: "
         f"a root must have nonzero square"
     )
     four_cos_squared = 4 * pairing**2 / (q1 * q2)
-    match four_cos_squared:
-        case 0:
-            return SageZZ(2)
-        case 1:
-            return SageZZ(3)
-        case 2:
-            return SageZZ(4)
-        case 3:
-            return SageZZ(6)
-        case _ if four_cos_squared >= 4:
-            return Infinity
+    if four_cos_squared >= 4:
+        return aleph0
+    order = round(pi / acos(float(four_cos_squared.sqrt()) / 2))
+    zeta = QQbar.zeta(2 * order)
+    if order >= 2 and (zeta + ~zeta) ** 2 == QQbar(four_cos_squared):
+        return cardinal(order)
     raise ValueError(
-        f"two roots with squares {q1}, {q2} and pairing {pairing} have no crystallographic "
-        f"Coxeter angle pi/m: 4 cos^2(pi/m) would be {four_cos_squared}, which is not 0, 1, 2, 3 "
-        f"or at least 4"
+        f"two roots with squares {q1}, {q2} and pairing {pairing} meet at an angle that is not "
+        f"pi/m for any natural number m: 4 cos^2 of the angle is {four_cos_squared}"
     )
 
 
@@ -118,6 +125,86 @@ def _engine_coxeter_matrix_of(coxeter_matrix):
     )
 
 
+def _coxeter_entry_cardinal(entry):
+    r"""Read one Coxeter matrix entry \(m_{vw}\) as an owned cardinal.
+
+    \(m_{vw}\) is the order of \(s_v s_w\): a positive integer, or
+    \(\aleph_0\) (``aleph0``) for an element of infinite order.  An entry
+    computed by a private Sage adapter may arrive as Sage's ``Infinity`` or
+    as ``-1``, Sage's spelling of \(\infty\) in a ``CoxeterMatrix``.
+    """
+    match entry:
+        case _ if entry in Cardinalities():
+            return entry
+        case _ if entry is Infinity or entry == -1:
+            return aleph0
+        case _:
+            order = int(entry)
+            assert order >= 1, (
+                f"{entry} is not a Coxeter matrix entry: m_vw is the order of s_v s_w, a positive "
+                f"integer, or aleph0 when that order is infinite"
+            )
+            return cardinal(order)
+
+
+def _coxeter_entries_of(coxeter_matrix):
+    r"""The values \(m(v,w)\) of an owned Coxeter matrix, keyed by the pair of vertices.
+
+    Private realization of the function \(m\colon V\times V\to\mathrm{Card}\)
+    stored by a diagram: it is read once from the defining family, and every
+    entry lookup reads it.
+    """
+    return {(pair[0], pair[1]): _coxeter_entry_cardinal(value) for pair, value in coxeter_matrix.items()}
+
+
+def _owned_coxeter_matrix(vertices, entries):
+    r"""The owned Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\) on the owned finite set ``vertices``.
+
+    ``entries`` is keyed by pairs of elements of ``vertices``.
+    """
+    return indexed_family(
+        vertices**2,
+        lambda pair: entries[pair[0], pair[1]],
+        name="Coxeter matrix",
+    )
+
+
+def _coxeter_matrix_of_rows(rows):
+    r"""The owned Coxeter matrix whose vertices are the row positions of ``rows``."""
+    rows = tuple(tuple(row) for row in rows)
+    vertices = finite_ordered_set(tuple(position for position, _row in enumerate(rows)))
+    labels = tuple(vertices)
+    return _owned_coxeter_matrix(
+        vertices,
+        {
+            (labels[left], labels[right]): _coxeter_entry_cardinal(entry)
+            for left, row in enumerate(rows)
+            for right, entry in enumerate(row)
+        },
+    )
+
+
+def _coxeter_matrix_of_cartan_label(label):
+    r"""The owned Coxeter matrix of the Cartan type named by the plain data ``[letter, rank(, affine)]``.
+
+    Private adapter: Sage's ``CartanType`` and ``CoxeterMatrix`` read the
+    label and supply the entries, which are raised to owned cardinals on the
+    index set Sage assigns to the type.
+    """
+    engine = CoxeterMatrix(CartanType(_engine_cartan_type_data(list(label))))
+    engine_vertices = tuple(engine.index_set())
+    vertices = finite_ordered_set(engine_vertices)
+    owned = dict(zip(engine_vertices, vertices, strict=True))
+    return _owned_coxeter_matrix(
+        vertices,
+        {
+            (owned[left], owned[right]): _coxeter_entry_cardinal(engine[left, right])
+            for left in engine_vertices
+            for right in engine_vertices
+        },
+    )
+
+
 class CoxeterDiagramMorphism:
     r"""A vertex map preserving every Coxeter matrix entry.
 
@@ -139,14 +226,14 @@ class CoxeterDiagramMorphism:
         return self.codomain().index_set()(self._vertex_function(source_vertex))
 
     def __mul__(self, other):
-        if not isinstance(other, CoxeterDiagramMorphism) or other.codomain() is not self.domain():
+        if not _precomposable(self, other) or other.domain() not in CoxeterDiagrams():
             return NotImplemented
         return CoxeterDiagrams().Mor(other.domain(), self.codomain())(
             lambda vertex: self(other(vertex))
         )
 
     def __eq__(self, other):
-        if not isinstance(other, CoxeterDiagramMorphism) or other.parent() is not self.parent():
+        if element_parent(other) is not self.parent():
             return False
         return conjunction(
             self(vertex) == other(vertex) for vertex in self.domain().index_set()
@@ -185,13 +272,13 @@ class CoxeterDiagramMorphism:
             for right in self.domain().index_set()
         )
 
-    def validate_preservation(self):
-        decision = self.preservation_decision()
-        if decision is False:
+    @validator
+    def validate_preservation(self) -> None:
+        r"""Check that every Coxeter matrix entry is preserved (``OWN-22``)."""
+        if self.preservation_decision() is False:
             raise ValueError(
                 f"{self} is not a morphism of Coxeter diagrams: it does not preserve every Coxeter matrix entry"
             )
-        return decision
 
 
 class CoxeterDiagramMor(CategoricalMor):
@@ -199,29 +286,17 @@ class CoxeterDiagramMor(CategoricalMor):
 
     ElementMethods = CoxeterDiagramMorphism
 
-    def _element_constructor_(self, datum, *, check=False):
-        if isinstance(datum, CoxeterDiagramMorphism):
-            if datum.parent() is self:
-                return datum
-            raise ValueError(
-                f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
-                f"{self.domain()} -> {self.codomain()} of Coxeter diagrams"
-            )
+    def _element_constructor_(self, datum):
+        r"""The vertex map given by a callable, or by the images of the vertices in their order."""
+        if element_parent(datum) is self:
+            return datum
         if callable(datum):
             function = datum
         else:
-            images = tuple(datum)
-            vertices = tuple(self.domain().index_set())
-            if len(images) != len(vertices):
-                raise ValueError(
-                    f"{images} does not define a morphism of Coxeter diagrams from {self.domain()}: "
-                    f"it gives {len(images)} images for {len(vertices)} vertices"
-                )
-            assignment = dict(zip(vertices, images, strict=True))
+            assignment = dict(zip(self.domain().index_set(), datum, strict=True))
             function = assignment.__getitem__
         morphism = self.element_class(self, function)
-        if check:
-            morphism.validate_preservation()
+        morphism.validate_preservation(check=False)
         return morphism
 
     @cached_method
@@ -244,10 +319,14 @@ class CoxeterDiagrams(OwnedCategory):
     _MorCategory = CoxeterDiagramMorCategoryConstruction
 
     def _call_(self, datum, *, names=None, positions=None):
-        r"""Construct the diagram presented by a Coxeter matrix or by roots.
+        r"""Construct the diagram of owned defining data.
 
-        The defining data determine whether this is an unrooted diagram or
-        a diagram equipped with its root realization.
+        The admitted data are the owned Coxeter matrix
+        \(m\colon V\times V\to\mathrm{Card}\) (an indexed family), the rows of
+        its entries, a family of roots of one lattice, and a Cartan type given
+        as the plain label ``[letter, rank]`` or ``[letter, rank, 1]``.  Roots
+        give a rooted diagram; the other data give an unrooted one.  No Sage
+        ``CoxeterMatrix`` or ``CartanType`` is admitted (``API-05``).
 
         EXAMPLES::
 
@@ -261,22 +340,16 @@ class CoxeterDiagrams(OwnedCategory):
             sage: C(roots).is_rooted()
             True
         """
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
         match datum:
-            case CoxeterMatrix():
-                return self.from_coxeter_matrix(datum, names=names, positions=positions)
             case IndexedFamily():
                 first_value = next(iter(datum.values()), None)
                 match first_value:
                     case _ if first_value in Cardinalities():
                         return self.from_coxeter_matrix(datum, names=names, positions=positions)
                     case _:
-                        return self.from_roots(tuple(datum.values()), names=names, positions=positions)
-            case CartanType_abstract():
-                return self.from_cartan_type(datum, names=names, positions=positions)
-            case [str() as letter, rank] | (str() as letter, rank):
-                return self.from_cartan_type([letter, rank], names=names, positions=positions)
+                        return self.from_roots(datum, names=names, positions=positions)
+            case [str(), *_] | (str(), *_):
+                return self.from_cartan_type(list(datum), names=names, positions=positions)
             case list() | tuple():
                 entries = tuple(datum)
                 match entries[0] if entries else None:
@@ -284,13 +357,16 @@ class CoxeterDiagrams(OwnedCategory):
                         return self.from_coxeter_matrix(entries, names=names, positions=positions)
                     case _:
                         first_parent = element_parent(entries[0])
-                        match first_parent:
-                            case _ if first_parent in Lattices(first_parent.base_ring()):
-                                return self.from_roots(entries, names=names, positions=positions)
-                            case _:
-                                return self.from_coxeter_matrix(entries, names=names, positions=positions)
+                        assert first_parent is not None and first_parent in Lattices(first_parent.base_ring()), (
+                            f"{datum!r} is neither the rows of a Coxeter matrix nor a family of lattice roots"
+                        )
+                        return self.from_roots(
+                            finite_indexed_family_from_values(None, entries), names=names, positions=positions
+                        )
             case _:
-                raise TypeError(f"{datum!r} is not a Coxeter matrix, Cartan type, or family of roots")
+                raise TypeError(
+                    f"{datum!r} is not a Coxeter matrix, its rows, a Cartan type label or a family of roots"
+                )
 
     def an_object(self):
         r"""The diagram of ``A_2``: two vertices joined by an edge of order 3."""
@@ -303,123 +379,9 @@ class CoxeterDiagrams(OwnedCategory):
     def super_categories(self):
         return [LabelledGraphs()]
 
-    class Rooted(CategoryWithAxiom):
-        r"""Coxeter diagrams equipped with a selected realization by lattice roots."""
-
-        def an_object(self):
-            return CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
-
-        @classmethod
-        def _repr_object_names(cls):
-            return "rooted Coxeter diagrams"
-
-        class ParentMethods:
-            def roots(self):
-                return self._roots
-
-            def root_gram_tensor(self):
-                return self._root_gram
-
-            def root_realization(self):
-                r"""Return the lattice in which the diagram roots are realized."""
-                roots = self.roots()
-                assert roots, (
-                    f"{self} has no vertices, so it has no roots and no lattice in which they lie"
-                )
-                return roots[0].parent()
-
-            def root_lattice(self):
-                r"""Return the abstract lattice presented by the root Gram."""
-                return Lattices(self.root_realization().base_ring())(
-                    self.root_gram_tensor()
-                )
-
-            def root_morphism(self):
-                r"""Return the form morphism carrying each formal root to its realization."""
-                roots = self.roots()
-                return self.root_lattice().Mor(self.root_realization())(
-                    {position: root for position, root in enumerate(roots)}
-                )
-
-            def root(self, vertex):
-                r"""Return the selected realizing root attached to ``vertex``."""
-                normalized = self.index_set()(vertex)
-                position = int(self.index_set().ranking_map()(normalized))
-                return self.roots()[position]
-
-            def _engine_root_squares(self):
-                gram = self.root_gram_tensor()
-                return tuple(
-                    QQ(_engine_element(gram.base_ring(), gram[index, index]))
-                    for index in range(int(self.cardinality()))
-                )
-
-            def _engine_root_scale(self):
-                squares = self._engine_root_squares()
-                assert squares and (
-                    all(square > 0 for square in squares)
-                    or all(square < 0 for square in squares)
-                ), (
-                    f"{self} has no root scale: its root squares {squares} must be nonempty and of "
-                    "one sign, as the squares of a root basis are"
-                )
-                return min(squares, key=abs) / 2
-
-            def root_scale(self):
-                r"""Return ``q(r)/2`` for a shortest root of this rooted diagram."""
-                return _cross_engine_ring_value(self._engine_root_scale())
-
-            def node_color(self, vertex):
-                r"""Return the archived rooted-diagram fill convention determined by root square."""
-                square = self.root(vertex).q()
-                colors = {-4: "#F8F9FE", -2: "#BFC9CA"}
-                square_key = int(square)
-                if square_key not in colors:
-                    raise ValueError(
-                        f"cannot draw the vertex {vertex} of {self}: node colors are defined for "
-                        f"roots of square -2 and -4, and this root has square {square}"
-                    )
-                return colors[square_key]
-
-            def root_intersection_graph(self):
-                r"""Return the root Gram matrix as a labelled graph."""
-                gram = self.root_gram_tensor()
-                positioned = tuple(enumerate(self.index_set()))
-                edges = {
-                    (left, right): gram[i, j]
-                    for (i, left), (j, right) in combinations(positioned, 2)
-                    if gram[i, j] != 0
-                }
-                return LabelledGraphs().from_labels(
-                    tuple(self.index_set()),
-                    tuple(edges),
-                    {vertex: gram[position, position] for position, vertex in positioned},
-                    edges,
-                )
-
-            def _engine_root_intersection_graph(self):
-                gram = self.root_gram_tensor()
-                graph = Graph(multiedges=False, loops=True)
-                graph.add_vertices(tuple(self.index_set()))
-                for position, vertex in enumerate(self.index_set()):
-                    graph.add_edge(vertex, vertex, gram[position, position])
-                for (i, left), (j, right) in combinations(enumerate(self.index_set()), 2):
-                    if gram[i, j] != 0:
-                        graph.add_edge(left, right, gram[i, j])
-                return graph
-
-            def _root_pair_discriminant(self, left, right):
-                gram = self.root_gram_tensor()
-                ranking = self.index_set().ranking_map()
-                i = ranking(left)
-                j = ranking(right)
-                return gram[i, j] ** 2 - gram[i, i] * gram[j, j]
-
-            def mirrors_are_parallel(self, left, right) -> bool:
-                return self._root_pair_discriminant(left, right) == 0
-
-            def mirrors_are_divergent(self, left, right) -> bool:
-                return self._root_pair_discriminant(left, right) > 0
+    def Rooted(self):
+        r"""The rooted Coxeter diagrams, the data category :class:`RootedCoxeterDiagrams`."""
+        return RootedCoxeterDiagrams()
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -456,95 +418,95 @@ class CoxeterDiagrams(OwnedCategory):
             self,
             coxeter_matrix,
             names=None,
-            roots=None,
-            root_gram=None,
             positions=None,
             type_label=None,
             **rest,
         ) -> None:
-            self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
+            r"""Retain the owned Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\).
+
+            ``coxeter_matrix`` is the defining datum; ``_entries`` is its
+            private realization, read once.  The vertex set, edges and labels
+            are the Coxeter graph's, held by the ``LabelledGraphs``
+            realization this construction threads through.  ``names`` is an
+            owned ordered set of vertex names in vertex order; ``positions``
+            is drawing data, checked by :meth:`validate_positions` on request.
+            """
+            self._coxeter_matrix = coxeter_matrix
+            self._entries = _coxeter_entries_of(coxeter_matrix)
             self._type_label = type_label
-            self._index_set = finite_ordered_set(tuple(self._coxeter_matrix.index_set()))
-            if names is None:
-                names = (f"s_{index}" for index in self._index_set)
-            elif isinstance(names, str):
-                names = (part.strip() for part in names.split(","))
-            # One name per vertex, stated as the pairing of the names with the
-            # vertices rather than by measuring the names against the vertex
-            # cardinality.
-            self._names = tuple(
-                name for _vertex, name in zip(self._index_set, names, strict=True)
+            vertices = tuple(dict.fromkeys(left for left, _right in self._entries))
+            self._names = (
+                finite_ordered_set(tuple(f"s_{vertex}" for vertex in vertices))
+                if names is None
+                else names
             )
-            self._roots = None if roots is None else tuple(roots)
-            self._root_gram = root_gram
-            if positions is None:
-                self._preferred_positions = None
-            else:
-                if set(positions) != set(self._index_set):
-                    raise ValueError(
-                        f"the drawing positions {positions} do not place the vertices "
-                        f"{self._index_set}: every vertex needs exactly one position"
-                    )
-                if any(len(coordinates) != 2 for coordinates in positions.values()):
-                    raise ValueError(
-                        f"the drawing positions {positions} are not all points of the plane: every "
-                        f"position must be a pair of coordinates"
-                    )
-                self._preferred_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in positions.items()}
+            self._preferred_positions = (
+                None
+                if positions is None
+                else {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in positions.items()}
+            )
             self._computed_positions = None
             super().__init__(**rest)
 
-        def index_set(self):
-            return self._index_set
+        @validator
+        def validate_positions(self) -> None:
+            r"""Check that the drawing positions place every vertex at one point of the plane."""
+            if self._preferred_positions is not None and set(self._preferred_positions) != set(self.index_set()):
+                raise ValueError(
+                    f"the drawing positions {self._preferred_positions} do not place the vertices "
+                    f"{self.index_set()}: every vertex needs exactly one position"
+                )
 
-        def _cardinality_decision(self):
-            return self._index_set.cardinality()
+        def index_set(self):
+            r"""The vertex set \(V\), the vertices of the Coxeter graph."""
+            return self.vertices()
 
         def vertex(self, position):
             return self.index_set()[int(position)]
 
-        def vertices(self):
-            return self.index_set()
+        def is_rooted(self) -> bool:
+            r"""Whether this diagram was constructed with a realization by roots."""
+            return self in RootedCoxeterDiagrams()
 
-        def __contains__(self, vertex) -> bool:
-            return vertex in self.index_set()
+        def __eq__(self, other):
+            r"""Equality by defining data: the vertex set and \(m\), and the roots of a rooted diagram.
 
-        def _element_constructor_(self, vertex):
-            return self.index_set()(vertex)
-
-        def __iter__(self):
-            return iter(self.index_set())
-
-        def has_edge(self, left, right) -> bool:
-            return left != right and self.coxeter_entry(left, right) != 2
-
-        def edges(self):
-            edge_space = self.index_set()**2
-            return finite_ordered_set(
-                tuple(
-                    edge_space((left, right))
-                    for left, right in combinations(tuple(self.index_set()), 2)
-                    if self.has_edge(left, right)
-                )
-            )
-
-        def is_directed(self) -> bool:
-            return False
-
-        def is_symmetric(self) -> bool:
+            Two Coxeter matrices are equal exactly when their entries are
+            (Mathlib ``CoxeterMatrix``, ``@[ext]``).  A rooted and an unrooted
+            diagram are distinct objects.
+            """
+            if other is self:
+                return True
+            if other not in CoxeterDiagrams():
+                return False
+            if self.is_rooted() != other.is_rooted():
+                return False
+            if not self.index_set() == other.index_set():
+                return False
+            vertices = self.index_set()
+            if not all(
+                self.coxeter_entry(left, right) == other.coxeter_entry(left, right)
+                for left in vertices
+                for right in vertices
+            ):
+                return False
+            if self.is_rooted():
+                return all(self.root(vertex) == other.root(vertex) for vertex in vertices)
             return True
 
-        def vertex_label(self, vertex):
-            self.index_set()(vertex)
-            return "Coxeter vertex"
+        def __ne__(self, other):
+            return not self == other
 
-        def edge_label(self, left, right):
-            if not self.has_edge(left, right):
-                raise ValueError(
-                    f"the vertices {left} and {right} of {self} are not joined by an edge, so the "
-                    f"edge has no label"
+        def __hash__(self) -> int:
+            r"""Hash of the vertex set and the entries of \(m\), consistent with ``==``."""
+            vertices = self.index_set()
+            return hash(
+                (
+                    vertices,
+                    self.is_rooted(),
+                    tuple(self.coxeter_entry(left, right) for left in vertices for right in vertices),
                 )
-            return self.coxeter_entry(left, right)
+            )
 
         def num_vertices(self):
             return self.cardinality()
@@ -572,50 +534,35 @@ class CoxeterDiagrams(OwnedCategory):
         def coxeter_matrix(self):
             r"""Return the Coxeter matrix, the function \(m\colon V\times V\to\mathrm{Card}\).
 
-            \(m(v,w)\) is the order of \(s_v s_w\) in the Coxeter group, so the
-            matrix is the family over the pairs of vertices whose value at
-            \((v,w)\) is :meth:`coxeter_entry`; \(m(v,v)=1\), and an element of
-            infinite order has the value \(\aleph_0\).
-            """
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
-            return indexed_family(
-                self.index_set() ** 2,
-                lambda pair: self.coxeter_entry(pair[0], pair[1]),
-                name="Coxeter matrix",
-            )
-
-        def _engine_coxeter_matrix(self):
-            r"""Return the Sage ``CoxeterMatrix`` that is this diagram's defining datum.
-
-            Protected construction contract of ``CoxeterDiagrams`` (``OWN-05``).
-            The owner is ``CoxeterDiagrams``.  The one permitted caller outside
-            this module is ``SatakeDiagrams._call_``: a Satake diagram is a
-            Coxeter diagram constructed on the data of its Dynkin diagram
-            ``D``, so its constructor hands this datum of ``D`` unchanged to the
-            ``CoxeterDiagrams`` construction it threads through.  Input: none.
-            Output: a ``sage.combinat.root_system.coxeter_matrix.CoxeterMatrix``
-            whose index set is :meth:`index_set` and whose entry at
-            \((v,w)\) is \(m(v,w)\), with \(\aleph_0\) written ``-1``.  The
-            returned object is the stored datum; a caller does not mutate it.
-            The public :meth:`coxeter_matrix` cannot serve this purpose,
-            because the ``CoxeterDiagrams`` constructor takes the engine
-            matrix, and the owned function would be lowered entry by entry
-            only to be raised again.
+            \(m(v,w)\) is the order of \(s_v s_w\) in the Coxeter group;
+            \(m(v,v)=1\), and an element of infinite order has the value
+            \(\aleph_0\).  It is the defining datum the diagram was constructed
+            from.
             """
             return self._coxeter_matrix
+
+        @cached_method
+        def _engine_coxeter_matrix(self):
+            r"""Return the Sage ``CoxeterMatrix`` realizing :meth:`coxeter_matrix`.
+
+            Private adapter of ``CoxeterDiagrams`` (``OWN-05``, ``OWN-06``): it
+            lowers the owned matrix to Sage on request, with \(\aleph_0\)
+            written ``-1``, for the computations this module delegates to Sage
+            (Coxeter type recognition).  It is computed from the defining
+            datum, never stored as it; no caller outside this module uses it.
+            """
+            return _engine_coxeter_matrix_of(self._coxeter_matrix)
 
         def coxeter_entry(self, left, right):
             r"""Return \(m_{vw}\), the order of \(s_v s_w\) in the Coxeter group, as a cardinal.
 
             An order is a cardinality: a positive integer, or \(\aleph_0\) when
-            \(s_v s_w\) has infinite order, the bond Sage writes as ``-1``.
+            \(s_v s_w\) has infinite order.
             """
-            entry = self._coxeter_matrix[left, right]
-            return aleph0 if entry == -1 else cardinal(entry)
-
-        def is_rooted(self) -> bool:
-            return self._roots is not None
+            key = (left, right)
+            if key not in self._entries:
+                key = (self.index_set()(left), self.index_set()(right))
+            return self._entries[key]
 
         def preferred_positions(self):
             r"""Return stored presentation coordinates, or a computed graph layout."""
@@ -644,7 +591,7 @@ class CoxeterDiagrams(OwnedCategory):
             ]
             for vertex in self.index_set():
                 x, y = positions[vertex]
-                label = self.vertex_names()[ranking(vertex)]
+                label = self.vertex_names()[int(ranking(vertex))]
                 lines.append(
                     rf"  \node ({node_names[vertex]}) at ({float(x):.6g},{float(y):.6g}) {{$ {label} $}};"
                 )
@@ -709,11 +656,15 @@ class CoxeterDiagrams(OwnedCategory):
             return graph
 
         def connected_components(self):
-            r"""Return the connected components, as induced subdiagrams."""
+            r"""Return the connected components, as induced subdiagrams.
+
+            The vertex sets of the components are those of the Coxeter graph,
+            answered by its ``LabelledGraphs`` realization.
+            """
             return finite_ordered_set(
                 tuple(
                     self.induced_subdiagram(component)
-                    for component in self._engine_graph().connected_components(sort=False)
+                    for component in self.connected_component_vertex_sets()
                 )
             )
 
@@ -723,56 +674,64 @@ class CoxeterDiagrams(OwnedCategory):
             One component is the definition, so the diagram on no vertices is
             not connected: it has zero components, not one.
             """
-            return self._engine_graph().connected_components_number() == 1
+            return self.connected_component_vertex_sets().cardinality() == 1
 
         def induced_subdiagram(self, vertices):
-            vertices = tuple(vertices)
-            if not vertices:
-                return _coxeter_diagram(
-                    CoxeterMatrix(engine_matrix(SageZZ, 0, 0), index_set=()),
-                    names=(),
-                    roots=() if self.is_rooted() else None,
-                    root_gram=(
-                        tensor(self._root_gram.base_ring(), (), (0, 0), [])
-                        if self.is_rooted()
-                        else None
-                    ),
-                    positions=None if self._preferred_positions is None else {},
-                )
-            if any(vertex not in self.index_set() for vertex in vertices):
+            r"""The subdiagram induced on ``vertices``, as a subobject of this diagram.
+
+            Its Coxeter matrix is the restriction of \(m\) to the selected
+            vertices, taken in the order of :meth:`index_set`; a rooted
+            diagram restricts its roots too.  The result is the pair
+            \((A, f)\) of the restricted diagram \(A\) and its vertex
+            inclusion \(f\colon A\to D\), an object of the slice
+            ``CoxeterDiagrams().SliceOver(D)``; \(f\) is its ``arrow()``,
+            constructed with it and not checked (``OWN-22``), and
+            ``arrow().codomain()`` is this diagram.
+            """
+            selected = set(vertices)
+            if any(vertex not in self.index_set() for vertex in selected):
                 raise ValueError(
                     f"cannot form the subdiagram of {self} induced on {vertices}: some of them are "
                     f"not vertices of {self}, whose vertices are {self.index_set()}"
                 )
-            matrix_ = self._coxeter_matrix
-            entries = [[matrix_[left, right] for right in vertices] for left in vertices]
             ranking = self.index_set().ranking_map()
-            names = tuple(self._names[ranking(vertex)] for vertex in vertices)
-            preferred_positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in vertices}
+            positions = tuple(
+                int(ranking(vertex)) for vertex in self.index_set() if vertex in selected
+            )
+            chosen = finite_ordered_set(tuple(self.index_set()[position] for position in positions))
+            restricted = _owned_coxeter_matrix(
+                chosen,
+                {(left, right): self.coxeter_entry(left, right) for left in chosen for right in chosen},
+            )
+            names = finite_ordered_set(tuple(self.vertex_names()[position] for position in positions))
+            preferred_positions = (
+                None
+                if self._preferred_positions is None
+                else {vertex: self._preferred_positions[vertex] for vertex in chosen}
+            )
             if self.is_rooted():
-                selected = finite_ordered_set(
-                    tuple(self.index_set().ranking_map()(vertex) for vertex in vertices)
-                )
-                roots = tuple(self._roots[position] for position in selected)
+                root_gram = self.root_gram_tensor()
+                roots = indexed_family(chosen, self.root, name="Roots")
                 gram = tensor(
-                    self._root_gram.base_ring(),
+                    root_gram.base_ring(),
                     (),
-                    (selected.cardinality(), selected.cardinality()),
-                    [
-                        [self._root_gram[i, j] for j in selected]
-                        for i in selected
-                    ],
+                    (chosen.cardinality(), chosen.cardinality()),
+                    [[root_gram[i, j] for j in positions] for i in positions],
                 )
+                extra = (RootedCoxeterDiagrams(),)
             else:
                 roots = None
                 gram = None
-            return _coxeter_diagram(
-                CoxeterMatrix(entries, index_set=vertices),
+                extra = ()
+            restricted_diagram = _coxeter_diagram(
+                restricted,
                 names=names,
                 roots=roots,
                 root_gram=gram,
                 positions=preferred_positions,
             )
+            inclusion = restricted_diagram.Mor(self)(lambda vertex: vertex)
+            return CoxeterDiagrams().SliceOver(self).object(inclusion, categories=extra)
 
         def schlafli_tensor(self):
             r"""Return the normalized reflection Gram tensor ``S_ii=1``.
@@ -858,20 +817,32 @@ class CoxeterDiagrams(OwnedCategory):
         def is_hyperbolic(self) -> bool:
             return self.negative_inertia_index() == 1
 
-        def _induced_subdiagrams(self, predicate, *, connected):
-            r"""Return the induced subdiagrams satisfying ``predicate``.
+        @cached_method
+        def induced_subdiagrams(self):
+            r"""The owned finite ordered set of all induced subdiagrams, one per vertex subset.
 
-            The vertex subsets of a finite diagram are finite in number, so the
-            enumeration terminates by the finiteness of the index set.
+            Ordered by the number of vertices and then lexicographically in
+            vertex order; its ``ranking_map`` indexes the subdiagrams by an
+            owned finite ordinal, on which :meth:`Aut` acts.
             """
             vertices = tuple(self.index_set())
-            selected = []
-            for size in range(len(vertices) + 1):
-                for subset in combinations(vertices, size):
-                    diagram = self.induced_subdiagram(subset)
-                    if predicate(diagram) and (not connected or diagram.is_connected()):
-                        selected.append(diagram)
-            return finite_ordered_set(tuple(selected))
+            return finite_ordered_set(
+                tuple(
+                    self.induced_subdiagram(subset)
+                    for size in range(int(self.cardinality()) + 1)
+                    for subset in combinations(vertices, size)
+                )
+            )
+
+        def _induced_subdiagrams(self, predicate, *, connected):
+            r"""Return the induced subdiagrams satisfying ``predicate``, in the order of :meth:`induced_subdiagrams`."""
+            return finite_ordered_set(
+                tuple(
+                    diagram
+                    for diagram in self.induced_subdiagrams()
+                    if predicate(diagram) and (not connected or diagram.is_connected())
+                )
+            )
 
         def elliptic_subdiagrams(self, *, connected=False):
             r"""Return the elliptic induced subdiagrams.
@@ -932,7 +903,7 @@ class CoxeterDiagrams(OwnedCategory):
             """
             from dzack_research.preamble.categories.group.groups import Groups
 
-            return Groups.Coxeter(self._coxeter_matrix)
+            return Groups.Coxeter(self.coxeter_matrix())
 
         def finitely_presented_coxeter_group(self):
             r"""Return the same owned Coxeter group, which retains its defining presentation."""
@@ -942,7 +913,8 @@ class CoxeterDiagrams(OwnedCategory):
         def _bond_preserving_permutation_group(self):
             r"""Return the owned automorphism group of the labelled Coxeter graph.
 
-            NetworkX enumerates graph automorphisms on the finite ordinal of
+            Private adapter of ``CoxeterDiagrams`` (``OWN-06``); its one
+            consumer is :meth:`Aut`, and it returns an owned group.  NetworkX enumerates graph automorphisms on the finite ordinal of
             vertex positions.  The public group is then the corresponding
             subgroup of the owned symmetric group.  This avoids Sage's current
             ``Graph.automorphism_group`` crash while keeping the maintained
@@ -957,7 +929,7 @@ class CoxeterDiagrams(OwnedCategory):
             for position in range(len(vertices)):
                 attributes = {}
                 if self.is_rooted():
-                    attributes["root_square"] = self._root_gram[position, position]
+                    attributes["root_square"] = self.root_gram_tensor()[position, position]
                 graph.add_node(position, **attributes)
             for left_position, right_position in combinations(range(len(vertices)), 2):
                 bond = self.coxeter_entry(
@@ -988,6 +960,18 @@ class CoxeterDiagrams(OwnedCategory):
             )
             return symmetric.subgroup(automorphisms)
 
+        def _aut_vertex_map(self, automorphism):
+            r"""The permutation of the vertices that the element ``automorphism`` of :meth:`Aut` is.
+
+            Part of the private adapter of :meth:`_bond_preserving_permutation_group`:
+            that group is a subgroup of the symmetric group on the vertex
+            positions numbered from one, and this reads its elements back as
+            maps of vertices.
+            """
+            ranking = self.index_set().ranking_map()
+            vertices = tuple(self.index_set())
+            return lambda vertex: vertices[int(automorphism(int(ranking(vertex)) + 1)) - 1]
+
         def Aut(self):
             r"""Return the group of diagram automorphisms.
 
@@ -998,49 +982,57 @@ class CoxeterDiagrams(OwnedCategory):
             """
             return self._bond_preserving_permutation_group()
 
-        def _orbit_vertex_sets(self, diagram):
-            r"""Return the vertex sets of the :meth:`Aut`-orbit of ``diagram``."""
-            vertices = tuple(diagram.index_set())
-            if not vertices:
-                # The empty vertex set is fixed by every permutation.
-                return (frozenset(),)
-            ranking = self.index_set().ranking_map()
-            unranking = ranking.inverse()
-            positions = tuple(int(ranking(vertex)) for vertex in vertices)
-            group = self._bond_preserving_permutation_group()
-            images = {
-                frozenset(int(automorphism(position + 1)) - 1 for position in positions)
-                for automorphism in group
-            }
-            return tuple(
-                frozenset(unranking(position) for position in image)
-                for image in images
+        @cached_method
+        def _subdiagram_vertex_sets(self):
+            r"""The vertex set of each induced subdiagram, indexed by its rank in :meth:`induced_subdiagrams`."""
+            return tuple(frozenset(diagram.index_set()) for diagram in self.induced_subdiagrams())
+
+        def _subdiagram_g_set(self, predicate, *, connected):
+            r"""The finite :meth:`Aut`-set of the ranks of the induced subdiagrams satisfying ``predicate``.
+
+            The points are owned ranks: elements of the finite ordinal that
+            :meth:`induced_subdiagrams` is enumerated by.  An automorphism
+            \(\sigma\) sends the rank of the subdiagram on \(S\) to the rank of
+            the subdiagram on \(\sigma(S)\).  Ellipticity, parabolicity and
+            connectedness are invariants of the subdiagram, so the selected
+            ranks form a stable set.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            subdiagrams = self.induced_subdiagrams()
+            ordinal = finite_ordinal_set(int(subdiagrams.cardinality()))
+            vertex_sets = self._subdiagram_vertex_sets()
+            rank_of = {vertices: ordinal(position) for position, vertices in enumerate(vertex_sets)}
+            points = finite_ordered_set(
+                tuple(
+                    ordinal(position)
+                    for position, diagram in enumerate(subdiagrams)
+                    if predicate(diagram) and (not connected or diagram.is_connected())
+                )
             )
 
-        def _vertex_set_orbits(self, subdiagrams):
-            r"""Return one representative subdiagram per :meth:`Aut`-orbit."""
-            seen = set()
-            representatives = []
-            for diagram in subdiagrams:
-                if frozenset(diagram.index_set()) in seen:
-                    continue
-                seen.update(self._orbit_vertex_sets(diagram))
-                representatives.append(diagram)
-            return finite_ordered_set(tuple(representatives))
+            def act(automorphism, rank):
+                vertex_map = self._aut_vertex_map(automorphism)
+                return rank_of[frozenset(vertex_map(vertex) for vertex in vertex_sets[int(rank)])]
+
+            return FiniteGSets(self.Aut())(points, act)
 
         def subdiagram_orbits(self):
-            r"""Return one induced subdiagram per :meth:`Aut`-orbit."""
-            return self._vertex_set_orbits(
-                self._induced_subdiagrams(lambda diagram: True, connected=False)
-            )
+            r"""The orbit set of :meth:`Aut` acting on the ranks of the induced subdiagrams.
+
+            A point is the rank of a subdiagram in :meth:`induced_subdiagrams`;
+            ``induced_subdiagrams().ranking_map().inverse()`` reads it as the
+            subdiagram.
+            """
+            return self._subdiagram_g_set(lambda diagram: True, connected=False).orbits()
 
         def elliptic_subdiagram_orbits(self, *, connected=False):
-            r"""Return one elliptic induced subdiagram per :meth:`Aut`-orbit."""
-            return self._vertex_set_orbits(self.elliptic_subdiagrams(connected=connected))
+            r"""Return the orbit set of :meth:`Aut` acting on the elliptic induced subdiagrams."""
+            return self._subdiagram_g_set(lambda diagram: diagram.is_elliptic(), connected=connected).orbits()
 
         def parabolic_subdiagram_orbits(self, *, connected=False):
-            r"""Return one parabolic induced subdiagram per :meth:`Aut`-orbit."""
-            return self._vertex_set_orbits(self.parabolic_subdiagrams(connected=connected))
+            r"""Return the orbit set of :meth:`Aut` acting on the parabolic induced subdiagrams."""
+            return self._subdiagram_g_set(lambda diagram: diagram.is_parabolic(), connected=connected).orbits()
 
         def _maximal_by_vertex_inclusion(self, subdiagrams):
             r"""Return the members maximal for inclusion of vertex sets."""
@@ -1068,16 +1060,12 @@ class CoxeterDiagrams(OwnedCategory):
             )
 
         def _subdiagram_poset_on(self, subdiagrams):
-            r"""Return ``subdiagrams`` ordered by inclusion of their vertex sets."""
-            members = tuple(subdiagrams)
-            vertices_of = {
-                id(diagram): frozenset(diagram.index_set()) for diagram in members
-            }
+            r"""The poset of ``subdiagrams`` ordered by inclusion of their vertex sets."""
 
             def below(left, right) -> bool:
-                return vertices_of[id(left)] <= vertices_of[id(right)]
+                return all(vertex in right.index_set() for vertex in left.index_set())
 
-            return Poset((members, below))
+            return PartiallyOrderedSets()(subdiagrams, below)
 
         def subdiagram_poset(self):
             r"""Return every induced subdiagram, ordered by inclusion of vertices.
@@ -1101,53 +1089,45 @@ class CoxeterDiagrams(OwnedCategory):
                 self.parabolic_subdiagrams(connected=connected)
             )
 
-        def _subdiagram_orbit_poset_on(self, representatives):
-            r"""Return the order that inclusion induces on the :meth:`Aut`-orbits, one representative per orbit.
+        def subdiagram_orbit_poset(self, orbits):
+            r"""The orbit set ``orbits`` of :meth:`Aut` on induced subdiagrams, under the order inclusion induces.
 
-            The order on orbits, not on the representatives:
             \([H]\leq[K]\) when some member of \([H]\) is an induced
             subdiagram of some member of \([K]\).  :meth:`Aut` is transitive
-            on each orbit, so an automorphism carrying that member of \([K]\)
-            to the representative of \([K]\) carries the member of \([H]\)
-            along, and the relation holds exactly when some member of
-            \([H]\) has its vertices inside the representative of \([K]\),
-            which is what is asked here.
+            on each orbit and carries inclusions to inclusions, so the relation
+            holds exactly when some member of \([H]\) has its vertices inside
+            one chosen member of \([K]\), which is what is asked here.
 
-            It is a partial order.  Reflexive, because a representative is a
-            member of its own orbit.  Antisymmetric, because every member of
-            an orbit has the same number of vertices, so two containments
-            force equality and hence one orbit.  Transitive, by the same
-            transport of the containment along an automorphism.
+            It is a partial order.  Reflexive, because an orbit meets itself.
+            Antisymmetric, because every member of an orbit has the same number
+            of vertices, so two containments force equality and hence one
+            orbit.  Transitive, by the same transport of the containment along
+            an automorphism.  ``orbits`` is an orbit set returned by
+            :meth:`subdiagram_orbits` or its elliptic and parabolic variants.
             """
-            members = tuple(representatives)
-            orbit_vertex_sets = {
-                id(diagram): self._orbit_vertex_sets(diagram) for diagram in members
-            }
+            assert all(orbit.acting_group() is self.Aut() for orbit in orbits), (
+                f"{orbits} is not an orbit set of the automorphism group of {self}"
+            )
+
+            vertex_sets = self._subdiagram_vertex_sets()
 
             def below(left, right) -> bool:
-                target = frozenset(right.index_set())
-                return any(
-                    vertices <= target for vertices in orbit_vertex_sets[id(left)]
-                )
+                target = vertex_sets[int(right.representative())]
+                return any(vertex_sets[int(rank)] <= target for rank in left.points())
 
-            return Poset((members, below))
-
-        def subdiagram_orbit_poset(self, orbits):
-            r"""Return the orbit-inclusion poset on the supplied representatives."""
-            return self._subdiagram_orbit_poset_on(tuple(orbits))
+            return PartiallyOrderedSets()(orbits, below)
 
         def elliptic_subdiagram_orbit_poset(self, *, connected=False):
             r"""Return the :meth:`Aut`-orbits of elliptic subdiagrams, ordered by the order inclusion induces on orbits."""
-            return self._subdiagram_orbit_poset_on(
+            return self.subdiagram_orbit_poset(
                 self.elliptic_subdiagram_orbits(connected=connected)
             )
 
         def parabolic_subdiagram_orbit_poset(self, *, connected=False):
             r"""Return the :meth:`Aut`-orbits of parabolic subdiagrams, ordered by the order inclusion induces on orbits."""
-            return self._subdiagram_orbit_poset_on(
+            return self.subdiagram_orbit_poset(
                 self.parabolic_subdiagram_orbits(connected=connected)
             )
-
 
         @cached_method
         def scaled_cartan_type(self):
@@ -1175,8 +1155,9 @@ class CoxeterDiagrams(OwnedCategory):
                 f"{self} has no type: only a connected elliptic Coxeter diagram is the diagram "
                 f"of a finite irreducible Coxeter group"
             )
-            coxeter_type = self._coxeter_matrix.coxeter_type()
-            assert coxeter_type is not self._coxeter_matrix, (
+            engine_matrix_ = self._engine_coxeter_matrix()
+            coxeter_type = engine_matrix_.coxeter_type()
+            assert coxeter_type is not engine_matrix_, (
                 f"{self} is elliptic, but its Coxeter matrix {self.coxeter_matrix()} was not "
                 f"recognized as a finite Coxeter type"
             )
@@ -1330,6 +1311,13 @@ class CoxeterDiagrams(OwnedCategory):
             return self.induced_subdiagram(vertices)
 
         def plot(self, **options):
+            r"""Draw the Coxeter graph.
+
+            A drawing is a display artifact, not a mathematical value, like the
+            string :meth:`tikz_picture` returns; so it is Sage's ``Graphics``
+            of the graph, and ``OWN-04`` does not apply to it (ruled
+            2026-10-14).
+            """
             return self._engine_graph().plot(**options)
 
         def tikz(self, **_options):
@@ -1344,108 +1332,104 @@ class CoxeterDiagrams(OwnedCategory):
 
         An entry \(m_{vw}\) is the order of \(s_v s_w\): a positive integer, or the
         cardinal \(\aleph_0\) (``aleph0``) for an element of infinite order.
-        The matrix is the function \(m\colon V\times V\to\mathrm{Card}\) that
-        :meth:`coxeter_matrix` returns, whose diagram has vertex set \(V\), or
-        its rows, whose diagram has the row positions as vertices.
+        The matrix is the owned function \(m\colon V\times V\to\mathrm{Card}\)
+        that :meth:`coxeter_matrix` returns, whose diagram has vertex set
+        \(V\), or its rows, whose diagram has the row positions as vertices.
         """
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
         match coxeter_matrix:
             case IndexedFamily():
-                coxeter_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
+                pass
             case list() | tuple():
-                entries = tuple(
-                    tuple(_engine_coxeter_matrix_entry(entry) for entry in row) for row in coxeter_matrix
-                )
-                coxeter_matrix = CoxeterMatrix(
-                    entries,
-                    index_set=tuple(position for position, _row in enumerate(entries)),
+                coxeter_matrix = _coxeter_matrix_of_rows(coxeter_matrix)
+            case _:
+                raise TypeError(
+                    f"{coxeter_matrix!r} is not a Coxeter matrix: give the owned function "
+                    f"m: V x V -> Card or the rows of its entries"
                 )
         return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
     def from_cartan_type(self, cartan_type, names=None, *, rooted=False, scale=None, positions=None):
-        cartan_type = CartanType(_engine_cartan_type_data(cartan_type))
+        r"""Return the diagram of the Cartan type named by the plain label ``[letter, rank(, affine)]``.
+
+        With ``rooted=True`` or a ``scale`` the diagram is rooted by the simple
+        roots of the root lattice of the type, twisted by ``scale``.
+        """
+        match cartan_type:
+            case [str(), *_] | (str(), *_):
+                label = list(cartan_type)
+            case _:
+                raise TypeError(
+                    f"{cartan_type!r} is not a Cartan type label: write it as [letter, rank] or "
+                    f"[letter, rank, 1]"
+                )
         if scale is not None:
             scale = _own_ring(SageZZ)(scale)
             if scale < 1:
                 raise ValueError(
-                    f"cannot scale the root lattice of type {cartan_type} by {scale}: the scale "
+                    f"cannot scale the root lattice of type {label} by {scale}: the scale "
                     f"must be a positive integer"
                 )
             rooted = True
+        coxeter_matrix = _coxeter_matrix_of_cartan_label(label)
         if not rooted:
-            return _coxeter_diagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
+            return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
-        if str(cartan_type[0]) == "H":
-            lattice = Lattices.root_lattice("H", int(cartan_type[1]))
-            if scale is not None and scale != 1:
-                lattice = lattice.twist(scale)
-            roots = tuple(lattice.module_generators())
-            mirrors = finite_ordered_set(tuple(CoxeterMatrix(cartan_type).index_set()))
-            gram = tensor(
-                lattice.base_ring(),
-                (),
-                (mirrors.cardinality(), mirrors.cardinality()),
-                [[left.b(right) for right in roots] for left in roots],
-            )
-            return _coxeter_diagram(
-                CoxeterMatrix(cartan_type),
-                names=names,
-                roots=roots,
-                root_gram=gram,
-                positions=positions,
-            )
-        lattice = Lattices(_own_ring(SageZZ))(cartan_type)
+        match label:
+            case [letter, rank]:
+                lattice = Lattices.root_lattice(letter, rank)
+            case _:
+                raise ValueError(
+                    f"{label} is an affine Cartan type: a rooted diagram is the diagram of the simple "
+                    f"roots of a finite root lattice"
+                )
         if scale is not None and scale != 1:
             lattice = lattice.twist(scale)
-        return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
+        return self.from_roots(lattice.module_generators(), names=names, positions=positions)
 
-    def from_roots(self, roots, names=None, index_set=None, positions=None):
-        return _root_basis_diagram(roots, names=names, index_set=index_set, positions=positions)
+    def from_roots(self, roots, names=None, positions=None):
+        r"""Return the rooted diagram of the owned family ``roots`` of roots of one lattice.
+
+        The vertices are the labels of the family, and \(m_{vw}\) is read off
+        the pairing of \(r_v\) and \(r_w\).  This is the one construction of
+        a rooted diagram, crystallographic or not.
+        """
+        return _root_basis_diagram(roots, names=names, positions=positions)
 
 
-def _root_basis_diagram(roots, names=None, index_set=None, positions=None, type_label=None):
-    r"""Return the rooted diagram of ``roots``, named ``type_label`` when it is the diagram of a type."""
-    roots = tuple(roots)
-    if not roots:
-        raise ValueError(
-            "cannot form a Coxeter diagram from roots: no roots were given, and the "
-            "diagram needs at least one to determine its lattice"
-        )
-    realization = roots[0].parent()
-    if any(root.parent() is not realization for root in roots):
-        raise ValueError(
-            f"the roots {roots} do not all lie in one lattice: the first lies in "
-            f"{realization}, and a Coxeter diagram of roots needs a single lattice"
-        )
-    # The roots carry their own enumeration; the vertices are indexed by it
-    # unless the caller names them otherwise.
-    root_positions = finite_ordered_set(
-        tuple(position for position, _root in enumerate(roots))
+def _root_basis_diagram(roots, names=None, positions=None, type_label=None):
+    r"""Return the rooted diagram of the owned family ``roots``, named ``type_label`` when it is the diagram of a type."""
+    roots = finite_indexed_family_from_values(None, roots)
+    assert roots.cardinality() != 0, (
+        "cannot form a Coxeter diagram from roots: no roots were given, and the "
+        "diagram needs at least one to determine its lattice"
     )
-    mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
-    if mirrors.cardinality() != root_positions.cardinality():
-        raise ValueError(
-            f"the index set {index_set} does not label the {len(roots)} roots: it has "
-            f"{mirrors.cardinality()} elements, and there must be one per root"
-        )
+    mirrors = roots.index_set()
+    realization = next(iter(roots.values())).parent()
+    assert all(root.parent() is realization for root in roots.values()), (
+        f"the roots {roots} do not all lie in one lattice: the first lies in "
+        f"{realization}, and a Coxeter diagram of roots needs a single lattice"
+    )
+    ring = realization.base_ring()
     gram = tensor(
-        realization.base_ring(),
+        ring,
         (),
         (mirrors.cardinality(), mirrors.cardinality()),
-        [[left.b(right) for right in roots] for left in roots],
+        [[roots.value(left).b(roots.value(right)) for right in mirrors] for left in mirrors],
     )
-    entries = [
-        [
-            SageZZ.one()
-            if i == j
-            else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j])
-            for j, _right in enumerate(roots)
-        ]
-        for i, _left in enumerate(roots)
-    ]
+    entries = {
+        (left, right): cardinal(1)
+        if left == right
+        else _coxeter_entry(
+            ring,
+            roots.value(left).q(),
+            roots.value(right).q(),
+            roots.value(left).b(roots.value(right)),
+        )
+        for left in mirrors
+        for right in mirrors
+    }
     return _coxeter_diagram(
-        CoxeterMatrix(entries, index_set=tuple(mirrors)),
+        _owned_coxeter_matrix(mirrors, entries),
         names=names,
         roots=roots,
         root_gram=gram,
@@ -1461,13 +1445,12 @@ def _coxeter_diagram_of_type(letter, index):
     ``index`` is the rank, except for the dihedral type \(I_2(p)\), whose index
     is \(p\).  The diagram is labelled ``I2(p)`` or by letter and rank.
     """
-    cartan_type = CartanType([letter, index])
     match letter:
         case "I":
             type_label = f"I2({index})"
         case _:
             type_label = f"{letter}{index}"
-    return _coxeter_diagram(CoxeterMatrix(cartan_type), type_label=type_label)
+    return _coxeter_diagram(_coxeter_matrix_of_cartan_label([letter, index]), type_label=type_label)
 
 
 @cached_function
@@ -1492,19 +1475,173 @@ def _simple_root_diagram_of_type(letter, rank, engine_scale):
                 int(denominator)
             )
     reference = reference.twist(factor)
-    return _root_basis_diagram(
-        tuple(reference.module_generators()), type_label=f"{letter}{rank}"
+    return _root_basis_diagram(reference.module_generators(), type_label=f"{letter}{rank}")
+
+
+
+class RootedCoxeterDiagrams(OwnedCategory):
+    r"""Coxeter diagrams with a chosen realization of their mirrors by roots of one lattice.
+
+    A family of roots \(r_v\) of a lattice determines the Coxeter matrix by
+    \(4\cos^2(\pi/m_{vw}) = 4b(r_v,r_w)^2/(q(r_v)q(r_w))\), and retains more:
+    at \(m=\infty\) the roots tell parallel mirrors from divergent ones.
+    The roots are a chosen datum on the diagram, so this is a data category,
+    not an axiom (``CAT-17``, ``CAT-29``); its objects are constructed with
+    their roots.  ``lean-categories`` does not yet formalize rooted diagrams;
+    the request is recorded in ``COMPLAINTS.md``.
+    """
+
+    def super_categories(self):
+        return [CoxeterDiagrams()]
+
+    def an_object(self):
+        return CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "rooted Coxeter diagrams"
+
+    class ParentMethods:
+        def __init__(self, roots, root_gram, **rest) -> None:
+            self._roots = roots
+            self._root_gram = root_gram
+            super().__init__(**rest)
+
+        def roots(self):
+            r"""The chosen roots, the owned family \(v\mapsto r_v\) over the vertices."""
+            return self._roots
+
+        def root_gram_tensor(self):
+            return self._root_gram
+
+        def root_realization(self):
+            r"""Return the lattice in which the diagram roots are realized."""
+            roots = self.roots()
+            assert roots.cardinality() != 0, (
+                f"{self} has no vertices, so it has no roots and no lattice in which they lie"
+            )
+            return next(iter(roots.values())).parent()
+
+        def root_lattice(self):
+            r"""Return the abstract lattice presented by the root Gram."""
+            return Lattices(self.root_realization().base_ring())(
+                self.root_gram_tensor()
+            )
+
+        def root_morphism(self):
+            r"""Return the form morphism carrying each formal root to its realization."""
+            return self.root_lattice().Mor(self.root_realization())(
+                {position: root for position, root in enumerate(self.roots().values())}
+            )
+
+        def root(self, vertex):
+            r"""Return the selected realizing root attached to ``vertex``."""
+            return self.roots().value(vertex)
+
+        def _engine_root_squares(self):
+            gram = self.root_gram_tensor()
+            return tuple(
+                QQ(_engine_element(gram.base_ring(), gram[index, index]))
+                for index in range(int(self.cardinality()))
+            )
+
+        def _engine_root_scale(self):
+            squares = self._engine_root_squares()
+            assert squares and (
+                all(square > 0 for square in squares)
+                or all(square < 0 for square in squares)
+            ), (
+                f"{self} has no root scale: its root squares {squares} must be nonempty and of "
+                "one sign, as the squares of a root basis are"
+            )
+            return min(squares, key=abs) / 2
+
+        def root_scale(self):
+            r"""Return ``q(r)/2`` for a shortest root of this rooted diagram."""
+            return _cross_engine_ring_value(self._engine_root_scale())
+
+        def node_color(self, vertex):
+            r"""Return the archived rooted-diagram fill convention determined by root square."""
+            square = self.root(vertex).q()
+            colors = {-4: "#F8F9FE", -2: "#BFC9CA"}
+            square_key = int(square)
+            if square_key not in colors:
+                raise ValueError(
+                    f"cannot draw the vertex {vertex} of {self}: node colors are defined for "
+                    f"roots of square -2 and -4, and this root has square {square}"
+                )
+            return colors[square_key]
+
+        def root_intersection_graph(self):
+            r"""Return the root Gram matrix as a labelled graph."""
+            gram = self.root_gram_tensor()
+            positioned = tuple(enumerate(self.index_set()))
+            edges = {
+                (left, right): gram[i, j]
+                for (i, left), (j, right) in combinations(positioned, 2)
+                if gram[i, j] != 0
+            }
+            return LabelledGraphs().from_labels(
+                tuple(self.index_set()),
+                tuple(edges),
+                {vertex: gram[position, position] for position, vertex in positioned},
+                edges,
+            )
+
+        def _engine_root_intersection_graph(self):
+            gram = self.root_gram_tensor()
+            graph = Graph(multiedges=False, loops=True)
+            graph.add_vertices(tuple(self.index_set()))
+            for position, vertex in enumerate(self.index_set()):
+                graph.add_edge(vertex, vertex, gram[position, position])
+            for (i, left), (j, right) in combinations(enumerate(self.index_set()), 2):
+                if gram[i, j] != 0:
+                    graph.add_edge(left, right, gram[i, j])
+            return graph
+
+        def _root_pair_discriminant(self, left, right):
+            gram = self.root_gram_tensor()
+            ranking = self.index_set().ranking_map()
+            i = ranking(left)
+            j = ranking(right)
+            return gram[i, j] ** 2 - gram[i, i] * gram[j, j]
+
+        def mirrors_are_parallel(self, left, right) -> bool:
+            return self._root_pair_discriminant(left, right) == 0
+
+        def mirrors_are_divergent(self, left, right) -> bool:
+            return self._root_pair_discriminant(left, right) > 0
+
+
+__all__ = ["CoxeterDiagrams", "RootedCoxeterDiagrams"]
+
+
+def _coxeter_diagram(coxeter_matrix, *, category=None, roots=None, root_gram=None, **data):
+    r"""Construct the diagram of the owned Coxeter matrix ``coxeter_matrix`` through ``LabelledGraphs``.
+
+    The Coxeter graph of \(m\) (vertices \(V\), an edge where
+    \(m_{vw}\neq 2\), labelled \(m_{vw}\)) is constructed by
+    ``LabelledGraphs().object``, which owns the finite-graph realization; the
+    diagram adds the matrix and, for a rooted diagram, its roots
+    (``OWN-14``).  ``category`` is ``RootedCoxeterDiagrams()`` when roots are
+    supplied and ``CoxeterDiagrams()`` otherwise, unless a subcategory
+    (such as Satake diagrams) constructs through here with its own data.
+    """
+    entries = _coxeter_entries_of(coxeter_matrix)
+    vertices = tuple(dict.fromkeys(left for left, _right in entries))
+    edges = tuple(
+        (left, right) for left, right in combinations(vertices, 2) if entries[left, right] != 2
     )
-
-
-__all__ = ["CoxeterDiagrams"]
-
-
-def _coxeter_diagram(coxeter_matrix, **data):
-    r"""Return the diagram its category generates from this matrix."""
-    category = (
-        CoxeterDiagrams().Rooted()
-        if data.get("roots") is not None
-        else CoxeterDiagrams()
+    construction_data = dict(data, coxeter_matrix=coxeter_matrix)
+    if roots is not None:
+        construction_data.update(roots=roots, root_gram=root_gram)
+    if category is None:
+        category = RootedCoxeterDiagrams() if roots is not None else CoxeterDiagrams()
+    return LabelledGraphs().object(
+        vertices,
+        edges,
+        {vertex: "Coxeter vertex" for vertex in vertices},
+        {edge: entries[edge] for edge in edges},
+        categories=(category,),
+        construction_data=construction_data,
     )
-    return _object_of(category, coxeter_matrix=coxeter_matrix, **data)
