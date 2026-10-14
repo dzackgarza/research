@@ -68,8 +68,8 @@ def test_triality_fuses_the_sixteen_subdiagrams_of_d4_into_eight_orbits_ordered_
         return next(
             member
             for member in poset
-            if (centre in member.index_set()) == holds_centre
-            and member.cardinality() == outer_count + (1 if holds_centre else 0)
+            if (centre in member.representative().index_set()) == holds_centre
+            and member.representative().cardinality() == outer_count + (1 if holds_centre else 0)
         )
 
     assert diagram.Aut().cardinality() == 6
@@ -77,11 +77,11 @@ def test_triality_fuses_the_sixteen_subdiagrams_of_d4_into_eight_orbits_ordered_
     assert poset.cardinality() == 8
 
     three_outer = orbit(False, 3)
-    assert not poset.is_lequal(orbit(True, 0), three_outer)
-    assert not poset.is_lequal(orbit(True, 1), three_outer)
-    assert poset.is_lequal(orbit(False, 1), three_outer)
-    assert poset.is_lequal(orbit(False, 2), three_outer)
-    assert poset.is_lequal(orbit(False, 2), orbit(True, 2))
+    assert not poset.le(orbit(True, 0), three_outer)
+    assert not poset.le(orbit(True, 1), three_outer)
+    assert poset.le(orbit(False, 1), three_outer)
+    assert poset.le(orbit(False, 2), three_outer)
+    assert poset.le(orbit(False, 2), orbit(True, 2))
 
 
 def test_root_pairings_separate_parallel_divergent_and_meeting_mirrors() -> None:

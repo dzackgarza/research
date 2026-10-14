@@ -6,12 +6,16 @@ def diagram():
 
 
 def test_the_category_applied_to_the_cartan_type_agrees() -> None:
-    assert CoxeterDiagrams()(CartanType(["A", 2])) == diagram()
+    r"""The unrooted diagram of the label, compared with the unrooted diagram of its own Coxeter matrix."""
+    unrooted = CoxeterDiagrams()(["A", 2])
+    assert unrooted == CoxeterDiagrams()(unrooted.coxeter_matrix())
+    assert unrooted != diagram()
 
 
-def test_the_category_applied_to_the_coxeter_matrix_agrees() -> None:
-    r"""$A_2$: two nodes with $m_{12} = 3$."""
-    assert CoxeterDiagrams()(matrix([[1, 3], [3, 1]])) == diagram()
+def test_the_category_applied_to_the_roots_agrees() -> None:
+    r"""$A_2$: two nodes with $m_{12} = 3$; the rooted diagram of its simple roots."""
+    roots = Lattices(ZZ)("A2").module_generators()
+    assert CoxeterDiagrams()(roots) == CoxeterDiagrams().from_roots(tuple(roots.values()))
 
 
 def test_the_categories_of_the_diagram() -> None:
