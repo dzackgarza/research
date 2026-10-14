@@ -5608,9 +5608,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.qqbar import QQbar as SageQQbar
     from sage.sets.cartesian_product import CartesianProduct
 
-    from dzack_research.preamble.categories.rings.number_fields import (
-        OrdersWithChosenIntegralBasis,
-    )
     from dzack_research.preamble.owned_category import owned_category_join
 
     domain = OwnedIntegralDomains()
@@ -5624,14 +5621,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # An algebraic closure of F_p is a field, and it is the union of
             # the finite fields F_{p^n}, so countably infinite.
             placements = (*field, owned_sets.CountablyInfiniteSets())
-        case SageNumberFieldOrder():
-            # An order is a subring of a number field, free of finite rank
-            # over ZZ, so a Noetherian domain; its basis is a construction
-            # datum.
-            placements = (
-                domain, noetherian, owned_sets.CountablyInfiniteSets(),
-                OrdersWithChosenIntegralBasis(),
-            )
         case (
             RealDoubleField() | RealBallField() | RealIntervalField()
             | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
@@ -5806,12 +5795,7 @@ def _owned_ring_category(
             extra.append(native_free)
         case _:
             pass
-    joined = owned_category_join((presented, *extra))
-    if isinstance(engine, SageNumberFieldOrder) and (
-        scalar_base is None or _engine_ring(scalar_base) is SageZZ
-    ):
-        return owned_category_join((joined, OwnedOrders()))
-    return joined
+    return owned_category_join((presented, *extra))
 
 
 def _install_engine_selected_ring_data(ring, engine) -> None:
@@ -5888,6 +5872,13 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
         case IntegerModRing_generic():
             # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
             return Zmod(int(engine.order()))
+        case SageNumberFieldOrder():
+            # An order engine is raised through the order of its number field.
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _order_from_engine,
+            )
+
+            return _order_from_engine(engine)
         case _ if engine in SageNumberFields():
             # A number-field engine is raised through the number field of
             # its defining polynomial (relative: over its raised base).

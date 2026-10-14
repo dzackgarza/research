@@ -144,6 +144,59 @@ def _number_field_from_engine(engine):
     return _number_field_extension(base, polynomial)
 
 
+def _order_placements():
+    r"""An order of a number field: a Noetherian domain, free of finite rank over ``ZZ``, countably infinite.
+
+    Its integral basis is the one its construction selects (``OrdersWithChosenIntegralBasis``).
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedIntegralDomains
+    from dzack_research.preamble.categories.sets.set_categories import CountablyInfiniteSets
+
+    return (
+        OwnedIntegralDomains(),
+        OwnedRings().Noetherian(),
+        CountablyInfiniteSets(),
+        OrdersWithChosenIntegralBasis(),
+        OwnedOrders(),
+    )
+
+
+@cached_function(key=lambda field, engine_order: (id(field), engine_order))
+def _order_in(field, engine_order):
+    r"""The order of the number field ``K`` whose underlying lattice ``engine_order`` presents.
+
+    An order of ``K`` is a subring that is a full ``ZZ``-lattice in ``K``; it
+    is determined by ``K`` and that lattice, so equal lattices give one order
+    (``OWN-02``).  The key compares the presented lattices (Sage compares orders
+    by their ``ZZ``-modules in ``K``).  Its integral basis is the Hermite basis
+    of that lattice in the power basis of ``K``'s primitive element, the
+    basis the realization holds.  ``ZZ`` is the order of ``QQ``.
+    """
+    if field is _owned_rationals():
+        return _owned_integers()
+    assert _engine_ring(field) is engine_order.number_field(), (
+        f"{engine_order} is not an order of {field}"
+    )
+    return _OwnedRingParent(engine_order, named_placement=_order_placements)
+
+
+def _order_from_engine(engine_order):
+    r"""The owned order a Sage order engine presents, raised through its number field.
+
+    When the engine's field is another realization of the same field (an
+    embedded one, say), the lattice is carried to the field's own
+    realization along the isomorphism sending primitive element to primitive
+    element, both defined by the same polynomial.
+    """
+    field = _owned_engine_ring(engine_order.number_field())
+    canonical = _engine_ring(field)
+    source = engine_order.number_field()
+    if source is not canonical and field is not _owned_rationals():
+        transport = source.hom([canonical.gen()], canonical)
+        engine_order = canonical.order([transport(element) for element in engine_order.basis()])
+    return _order_in(field, engine_order)
+
+
 def CyclotomicField(order, name=None):
     r"""``QQ(zeta_n) = QQ[name]/(Phi_n)``, ``n`` the order; the specification's name for that number field."""
     integers = _owned_integers()
@@ -287,12 +340,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def ring_of_integers(self):
             r"""Return the maximal order ``O_K`` as an owned ring."""
 
+            # O_K is the integral closure of ZZ in K, determined by K.
             engine = _engine_ring(self)
-            match engine is SageQQ:
-                case True:
-                    return _owned_engine_ring(SageZZ)
-                case False:
-                    return _owned_engine_ring(engine.ring_of_integers())
+            if engine is SageQQ:
+                return _owned_integers()
+            return _order_in(self, engine.ring_of_integers())
 
         maximal_order = ring_of_integers
 
@@ -312,7 +364,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 if len(backend_generators) == 1
                 else list(backend_generators)
             )
-            return _owned_engine_ring(engine.order(datum))
+            return _order_in(self, engine.order(datum))
 
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
