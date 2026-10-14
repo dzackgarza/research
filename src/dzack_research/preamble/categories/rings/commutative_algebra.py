@@ -3794,7 +3794,11 @@ def _nonzero_element_submonoid(source):
 
 
 def _fraction_field_localization(source, submonoid):
-    r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
+    r"""``(R-{0})^-1 R``, the fraction field of the domain ``R``, retaining its localization datum.
+
+    The localization is itself the field; Sage's fraction field of the
+    source's realization is selected privately as its realization (``CON-12``).
+    """
     if source not in OwnedIntegralDomains():
         raise ValueError(
             f"the fraction field (R - {{0}})^-1 R needs R an integral domain, but {source} is not known to be one"
@@ -3824,7 +3828,6 @@ def _fraction_field_localization(source, submonoid):
             fraction_engine = SageFractionField(engine)
         case _:
             fraction_engine = engine.fraction_field()
-    field = _own_ring(fraction_engine)
     placements = [OwnedIntegralDomains(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -3848,7 +3851,6 @@ def _fraction_field_localization(source, submonoid):
         submonoid=submonoid,
         _engine_ring=fraction_engine,
         algebra_source=algebra_source,
-        fraction_field_realization=field,
     )
 
 

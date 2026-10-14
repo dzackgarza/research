@@ -1123,14 +1123,12 @@ class LocalizationRings(OwnedCategory):
             _engine_source_encoder=None,
             *,
             algebra_source=None,
-            fraction_field_realization=None,
             **rest,
         ) -> None:
             self._localization_source = source
             self._localization_submonoid = submonoid
             self._localization_engine_source_decoder = _engine_source_decoder
             self._localization_engine_source_encoder = _engine_source_encoder
-            self._fraction_field_realization = fraction_field_realization
             self._preamble_engine_ring = _engine_ring
             from dzack_research.preamble.categories.algebras.algebras import Algebras
             from dzack_research.preamble.owned_category import owned_category_join
@@ -1582,6 +1580,11 @@ class LocalizationRings(OwnedCategory):
             difference = source(left_product + (-right_product))
             if (difference == source.zero()) is True:
                 return True
+            if source in OwnedIntegralDomains() and self._has_selected_nonzero_element_submonoid():
+                # In a domain, a/s = b/t exactly when at = bs: u(at - bs) = 0
+                # with u in S nonzero forces at - bs = 0 (Mathlib
+                # IsLocalization.eq_iff_exists, Localization/Defs.lean).
+                return difference == source.zero()
             regular = source.regular_module()
             (label,) = tuple(regular.module_generating_set())
             generator = regular.module_generator(label)
@@ -1665,58 +1668,6 @@ class LocalizationRings(OwnedCategory):
             return (
                 self.localization_submonoid()._structure_data().get("kind")
                 == "nonzero_elements"
-            )
-
-        def fraction_field_realization(self):
-            r"""Return the canonical owned field privately realizing this localization."""
-            if not self._has_selected_nonzero_element_submonoid():
-                raise ValueError(
-                    f"the selected fraction-field realization for {self} requires the "
-                    "nonzero-element localization presentation"
-                )
-            field = self._fraction_field_realization
-            if field is None:
-                raise ArithmeticError(
-                    f"{self} inverts all nonzero elements of {self.localization_source()}, but its fraction field "
-                    "was not constructed"
-                )
-            return field
-
-        @cached_method
-        def fraction_field_comparison(self):
-            r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
-            if not self._has_selected_nonzero_element_submonoid():
-                raise ValueError(
-                    f"the selected comparison from {self} to its fraction-field realization "
-                    "requires the nonzero-element localization presentation"
-                )
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _canonical_map,
-            )
-
-            source_to_field = _canonical_map(
-                self.localization_source(), self.fraction_field_realization()
-            )
-
-            def image(element):
-                fraction = self(element)
-                numerator = source_to_field(fraction.numerator())
-                denominator = source_to_field(fraction.denominator())
-                return numerator * denominator.inverse_of_unit()
-
-            return OwnedRings().Mor(self, self.fraction_field_realization())(image)
-
-        @cached_method
-        def fraction_field_comparison_inverse(self):
-            r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
-            if not self._has_selected_nonzero_element_submonoid():
-                raise ValueError(
-                    f"the selected inverse comparison into {self} from its fraction-field realization "
-                    "requires the nonzero-element localization presentation"
-                )
-            field = self.fraction_field_realization()
-            return OwnedRings().Mor(field, self)(
-                lambda element: self._from_engine_element(_engine_element(field, element)),
             )
 
         def inverted_elements(self):
@@ -2670,8 +2621,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         r"""Return the target of the localization ``(R-{0})^-1 R``.
 
                         For a field the target is this same field. Otherwise
-                        the existing localization owner retains the source,
-                        nonzero submonoid and selected field realization.
+                        the localization owner retains the source and the
+                        nonzero submonoid; the localization is a field.
                         """
                         from dzack_research.preamble.categories.rings.commutative_algebra import (
                             _localization_at_submonoid,
@@ -2696,17 +2647,42 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         """
                         if self in OwnedRings().Division().Commutative():
                             return OwnedRings().Mor(self, self).identity()
+                        field = self.fraction_field()
                         localization = self.fraction_field_localization()
-                        return (
-                            localization.fraction_field_comparison()
-                            * localization.localization_map()
+                        if field is localization:
+                            return localization.localization_map()
+                        from dzack_research.preamble.categories.rings.commutative_algebra import (
+                            _canonical_map,
                         )
 
+                        return _canonical_map(self, field)
+
                     def fraction_field(self):
-                        r"""Return the fraction field through its nonzero-element localization."""
+                        r"""``Frac(D)``: the localization ``(D-{0})^{-1} D``, one field per ``D``.
+
+                        Where the construction of ``D`` already holds the field it
+                        generates, that field is ``Frac(D)`` (``ARC-10``):
+
+                        - ``ZZ``: ``QQ``, the named construction ``Frac(ZZ)``;
+                        - an order ``O`` of a number field ``K``: ``K = O (x) QQ``
+                          (Neukirch I §12, ``OwnedOrders``);
+                        - a localization ``S^{-1} R`` of a domain ``R``:
+                          ``Frac(R)`` (Mathlib
+                          ``IsFractionRing.isFractionRing_of_isDomain_of_isLocalization``).
+
+                        Otherwise it is :meth:`fraction_field_localization`.
+                        """
                         if self in OwnedRings().Division().Commutative():
                             return self
-                        return self.fraction_field_localization().fraction_field_realization()
+                        match self:
+                            case _ if self is _owned_integers():
+                                return _owned_rationals()
+                            case _ if self in OwnedOrders():
+                                return _owned_engine_ring(_engine_ring(self).number_field())
+                            case _ if self in LocalizationRings():
+                                return self.localization_source().fraction_field()
+                            case _:
+                                return self.fraction_field_localization()
 
     class Noetherian(CategoryWithAxiom):
         r"""Rings satisfying the ascending chain condition on left ideals.
@@ -5600,7 +5576,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     )
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.rings.finite_rings.finite_field_base import FiniteField
-    from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
     from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
@@ -5660,11 +5635,6 @@ def _presented_ring_category(engine: Ring) -> Category:
                 *_inherited_ring_placements(coefficients, univariate_over_field_is_principal=False),
                 _size_of_all_coefficient_families(coefficients),
             )
-        case FractionField_generic():
-            # |Frac(D)| = |D|: a fraction is a pair of elements of D, and D
-            # embeds in Frac(D).
-            source = _own_ring(engine.ring())
-            placements = (*field, _placed_size(source))
         case QuotientRing_generic():
             # R/I is commutative, Noetherian or finite when R is.  Whether
             # I is prime or maximal is computed, never a datum of R/I, so
@@ -5842,6 +5812,7 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     from sage.rings.abc import RealField as SageRealFieldClass
     from sage.rings.abc import pAdicField as SagePadicFieldClass
     from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
+    from sage.rings.fraction_field import FractionField_generic
     from sage.rings.real_double import RDF as SageRDF
 
     match engine:
@@ -5869,6 +5840,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             # A finite-field engine is raised through ``GF``'s construction
             # on its order and generator label; a prime field is ``ZZ/(p)``.
             return GF(int(engine.order()), engine.variable_name())
+        case FractionField_generic():
+            # A fraction-field engine is raised through Frac of the domain it
+            # is the fraction field of.
+            return _own_ring(engine.ring()).fraction_field()
         case IntegerModRing_generic():
             # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
             return Zmod(int(engine.order()))
