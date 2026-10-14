@@ -948,13 +948,12 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     )
 
 
-def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
+def _engine_quotient_by_relators(group, relators, *, constructing_category=None):
     r"""Return ``G / <<relators>>`` with its actual quotient presentation.
 
-    A selected free-quotient category is passed into the *same* owned
-    construction that receives the quotient engine. Re-wrapping an already
-    owned group is not a change of its category, so that intermediate
-    owned realization must not replace the selected quotient constructor.
+    A quotient of a free group ``F`` is ``F/<<R>>`` with its presentation
+    ``(F, R)``, an object of :class:`FreeGroupQuotients`; the category
+    whose constructor asked for it is recorded as its constructing category.
     """
     # The normal closure is taken inside this group, not in an unrelated
     # group whose elements happen to admit backend coercion to words.
@@ -965,12 +964,14 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
     match engine:
         case FreeGroup_class():
             quotient = engine.quotient([group._to_engine(group(relator)) for relator in relators])
-            if quotient_category is None:
-                return _own_group(quotient)
             return _own_group(
                 quotient,
-                refinements=(quotient_category,),
-                chosen_presentation=(group, quotient_category.relators()),
+                refinements=(
+                    FreeGroupQuotients(),
+                    *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
+                ),
+                chosen_presentation=(group, tuple(group(relator) for relator in relators)),
+                constructing_category=constructing_category,
             )
         case FinitelyPresentedGroup():
             # G = F/R and G/<<S>> = F/<<R, S>>, with S lifted to words in F.
@@ -4797,9 +4798,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             match self:
                 case _ if isinstance(_engine_group(self), FreeGroup_class):
                     # The free source and the caller's chosen relators
-                    # define this quotient. Preserve them at the family
-                    # constructor rather than discarding them on ingress.
-                    quotient = FreeGroupQuotients(self, relators)()
+                    # define this quotient F/<<R>>, an object of
+                    # FreeGroupQuotients() constructed here in the groups.
+                    quotient = _free_group_quotient(self, relators, constructing_category=OwnedGroups())
                 case _ if self in GroupsWithChosenFinitePresentation():
                     quotient = _engine_quotient_by_relators(self, relators)
                 case _:
@@ -6351,60 +6352,158 @@ class CoxeterGroups(OwnedCategory):
             return self._selected_coxeter_matrix
 
 
+class _InducedPresentationMap:
+    r"""The map ``F/<<R>> -> F'/<<R'>>`` of a free-group map ``f: F -> F'`` with ``f(R) subset R'``.
+
+    Mathlib ``PresentedGroup.map`` (``Mathlib/GroupTheory/PresentedGroup.lean:63``):
+    ``f`` composed with the projection ``F' -> F'/<<R'>>`` kills ``R``, so it
+    descends through ``F -> F/<<R>>`` (``PresentedGroup.toGroup``, line 135).
+    The descent is computed on the first evaluation and kept.
+    """
+
+    def __init__(self, free_map, domain, codomain) -> None:
+        self._free_map = free_map
+        self._domain = domain
+        self._codomain = codomain
+        self._descended = None
+
+    def __call__(self, element):
+        if self._descended is None:
+            self._descended = self._domain.descend_homomorphism(
+                self._codomain.quotient_projection() * self._free_map
+            )
+        return self._descended(element)
+
+
+class FreeGroupQuotientMor(GroupMor):
+    r"""``Mor(F/<<R>>, F'/<<R'>>)`` in ``FreeGroupQuotients()``: the maps of presentations.
+
+    An arrow is induced by a group map ``f: F -> F'`` of the presenting free
+    groups with ``f(R) subset R'`` (Mathlib ``PresentedGroup.map``); it is
+    constructed from ``f``, an arrow of ``F.Mor(F')``.  Distinct maps of
+    presentations can induce the same group map.  These arrows are group
+    homomorphisms, so this Mor lies under the group Mor; it carries no
+    pointwise enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        source_free = self.domain().presenting_free_group()
+        target_free = self.codomain().presenting_free_group()
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in source_free.Mor(target_free):
+                if check:
+                    target_relators = self.codomain().defining_relations()
+                    unmapped = [
+                        relator for relator in self.domain().defining_relations()
+                        if datum(relator) not in target_relators
+                    ]
+                    if unmapped:
+                        raise ValueError(
+                            f"{datum} is not a map of presentations {self.domain()} -> {self.codomain()}: "
+                            f"it sends the relators {unmapped} outside the relators {target_relators}"
+                        )
+                return self._from_elementwise_rule(
+                    _InducedPresentationMap(datum, self.domain(), self.codomain())
+                )
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of presented groups is induced by a map "
+                    f"{source_free} -> {target_free} of the presenting free groups, but got {datum!r}"
+                )
+
+    def _cardinality_decision(self):
+        r"""Not decided here: distinct maps of presentations can induce one group map."""
+        return None
+
+    def _repr_(self):
+        return f"Mor_FreeGroupQuotients({self.domain()}, {self.codomain()})"
+
+
+class FreeGroupQuotientMorCategoryConstruction(MorCategoryConstruction):
+    r"""The family ``(F/<<R>>, F'/<<R'>>) |-> `` the maps induced by maps of presentations."""
+
+    def Of(self, domain, codomain=None):
+        codomain = domain if codomain is None else codomain
+        assert domain in self.base_category() and codomain in self.base_category(), (
+            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
+            f"presented groups F/<<R>>, but they lie in {domain.category()} and {codomain.category()}"
+        )
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
+            return cached
+        return self._remember_between(domain, codomain, FreeGroupQuotientMor(self, domain, codomain))
+
+
+def _free_group_quotient(free_group, relators, *, constructing_category):
+    r"""``F/<<R>>`` for a free group ``F`` and a set ``R`` of elements of ``F``.
+
+    The datum is ``(F, R)`` with ``R`` an arbitrary subset of ``F`` (Mathlib
+    ``PresentedGroup``, ``Mathlib/GroupTheory/PresentedGroup.lean:39``).  The
+    group is computed here only through Sage's finitely presented groups,
+    which need a finite free basis and finitely many relators; any other
+    presentation is outside the computed cases.
+    """
+    free_group = _owned_group(free_group)
+    assert free_group in GroupsWithChosenFreeBasis(), (
+        f"F/<<R>> is a quotient of a free group, but {free_group} is not constructed as the free group "
+        f"on a chosen set (it lies in {free_group.category()})"
+    )
+    assert free_group.free_basis() in FiniteSets(), (
+        f"F/<<R>> is a group for every free group F, but it is computed here only for a finite free basis, "
+        f"and the basis {free_group.free_basis()} of {free_group} is not known to be finite"
+    )
+    match relators:
+        case _ if relators in Sets():
+            assert relators in FiniteSets(), (
+                f"F/<<R>> is a group for every set R of relators, but it is computed here only for finitely "
+                f"many relators, and {relators} is not known to be finite"
+            )
+    relators = tuple(relators)
+    if any(relator not in free_group for relator in relators):
+        raise ValueError(
+            f"the relators {relators} of a presentation must be elements of the presenting free group {free_group}"
+        )
+    return _engine_quotient_by_relators(free_group, relators, constructing_category=constructing_category)
+
+
 class FreeGroupQuotients(OwnedCategory):
-    r"""Groups presented by a chosen free group and finite relators."""
+    r"""The presented groups ``F/<<R>>``, with the maps induced by maps of presentations.
 
-    def __init__(self, free_group, relators):
-        self._free_group = _owned_group(free_group)
-        # Check the mathematical finite-generation requirement before
-        # requiring Sage's finite-rank FreeGroup_class engine. Indexed free
-        # groups on infinite bases use a different backend representation.
-        if self._free_group in GroupsWithChosenFreeBasis():
-            if self._free_group.free_basis() not in FiniteSets():
-                raise ValueError("a finite group presentation requires a finite free basis")
-        assert isinstance(_engine_group(self._free_group), FreeGroup_class), (
-            "a free-group quotient requires an actual free group, not merely "
-            "a group equipped with a chosen generating set"
-        )
-        assert self._free_group in GroupsWithChosenFreeBasis(), (
-            "the free source must retain its chosen free basis"
-        )
-        # A finite relator family alone does not give a finite presentation:
-        # the free generating set must also be finite. In particular a
-        # quotient of F(NN) by finitely many relations is not thereby an
-        # object of GroupsWithChosenFinitePresentation().
-        # An explicitly infinite selected relator *set* also cannot define
-        # an object of this finite-presentation category. Reject it before
-        # attempting to exhaust its iterator into a Python tuple.
-        if relators in Sets() and cardinal(relators.cardinality()).is_finite() is False:
-            raise ValueError("a finite group presentation requires a finite relator family")
-        selected_relators = tuple(relators)
-        if any(relator not in self._free_group for relator in selected_relators):
-            raise ValueError("each defining relator must belong to the selected presenting free group")
-        self._relators = tuple(self._free_group(relator) for relator in selected_relators)
-        super().__init__()
+    An object is ``F/<<R>>`` for a free group ``F`` and a set ``R`` of its
+    elements, built by ``FreeGroupQuotients()(F, R)`` and retaining the
+    presentation ``(F, R)``; an arrow ``F/<<R>> -> F'/<<R'>>`` is induced by
+    a group map ``f: F -> F'`` with ``f(R) subset R'`` (Mathlib
+    ``PresentedGroup`` and ``PresentedGroup.map``).  An object constructed
+    here answers ``Mor`` with these arrows.  When ``F`` has a finite basis
+    and ``R`` is finite the presentation is a chosen finite presentation, and
+    the group is also placed in :class:`GroupsWithChosenFinitePresentation`;
+    how the two relate to the resolution category of ``CAT-29`` is recorded
+    in ``COMPLAINTS.md``.
+    """
 
-    def free_group(self):
-        return self._free_group
-
-    def relators(self):
-        return self._relators
+    _MorCategory = FreeGroupQuotientMorCategoryConstruction
 
     def super_categories(self):
-        # Every quotient of an abelian group remains abelian. In particular
-        # quotients of free groups of rank zero or one retain this property
-        # from the chosen source, independently of engine classification.
-        return [
-            GroupsWithChosenFinitePresentation(),
-            *((OwnedAbelianGroups(),) if self.free_group() in OwnedAbelianGroups() else ()),
-        ]
+        return [OwnedGroups()]
 
     def an_object(self):
-        return self()
+        r"""``<a | a^2>``, the cyclic group of order two."""
+        free = Groups.Free(1)
+        generator = next(iter(free.group_generators()))
+        return self(free, (generator * generator,))
 
-    def _call_(self):
-        source = self.free_group()
-        return _engine_quotient_by_relators(source, self.relators(), quotient_category=self)
+    @classmethod
+    def _repr_object_names(cls):
+        return "presented groups"
+
+    def _call_(self, free_group, relators):
+        return _free_group_quotient(free_group, relators, constructing_category=self)
+
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
@@ -6499,7 +6598,9 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             # its chosen free-source presentation. Validate the induced
             # images against the former as well: a mere dictionary of
             # images does not by itself establish a group homomorphism.
-            descended = self.Mor(target)(
+            # The descended map is a group homomorphism (PresentedGroup.toGroup),
+            # asked in the groups whatever category constructed this quotient.
+            descended = self.Mor(target, category=OwnedGroups())(
                 generator_images, check=True
             )
             # The factorization equation is a statement about actual Mor

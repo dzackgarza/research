@@ -483,11 +483,9 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())
     relators = (a**2, b**3, (a*b)**2)
-    theory = FreeGroupQuotients(free, relators)
-    quotient = theory()
-    assert theory.free_group() is free
-    assert theory.relators() == relators
-    assert quotient in theory
+    quotient = FreeGroupQuotients()(free, relators)
+    assert quotient in FreeGroupQuotients()
+    assert quotient.ambient_category() is FreeGroupQuotients()
     assert quotient.order() == 6
     assert quotient.presenting_free_group() is free
     assert tuple(quotient.defining_relations()) == relators
@@ -517,7 +515,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # not only in the convenience descent operation: b^3 is nontrivial.
     quotient_a, quotient_b = tuple(quotient.group_generators())
     try:
-        quotient.Mor(cyclic)(
+        quotient.Mor(cyclic, category=OwnedGroups())(
             {quotient_a: cyclic.one(), quotient_b: cyclic.group_generators()[0]},
             check=True,
         )
@@ -536,7 +534,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # The ordinary quotient operation is another entry into the same
     # mathematical construction, not a weaker anonymous presentation.
     from_operation = free.quotient_by_relators(relators)
-    assert from_operation in theory
+    assert from_operation in FreeGroupQuotients()
     assert from_operation.presenting_free_group() is free
     assert tuple(from_operation.defining_relations()) == relators
     free_quotient, free_projection = free.quotient_by_relators(
@@ -561,10 +559,10 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # killing b factors through q, including on non-generator words.
     target_c2 = Groups.C(2)
     target_involution = tuple(target_c2.group_generators())[0]
-    source_to_c2 = quotient.Mor(target_c2)(
+    source_to_c2 = quotient.Mor(target_c2, category=OwnedGroups())(
         (target_involution, target_c2.one()), check=True
     )
-    factored = second_quotient.Mor(target_c2)(
+    factored = second_quotient.Mor(target_c2, category=OwnedGroups())(
         (target_involution, target_c2.one()), check=True
     )
     descended_quotient = second_quotient.descend_homomorphism(
@@ -580,7 +578,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     )
     # Identity on S_3 does not descend through S_3 / <<b>>: the
     # quotient kills b, whereas identity preserves its nontrivial image.
-    identity_on_source = quotient.Mor(quotient)(
+    identity_on_source = quotient.Mor(quotient, category=OwnedGroups())(
         tuple(quotient.group_generators()), check=True
     )
     assert identity_on_source(projection(b)) != quotient.one()
@@ -628,29 +626,32 @@ def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
     cyclic = Groups.C(3)
     assert cyclic.has_selected_group_resolution()
     try:
-        FreeGroupQuotients(cyclic, (cyclic.one(),))
+        FreeGroupQuotients()(cyclic, (cyclic.one(),))
     except AssertionError as error:
-        assert "actual free group" in str(error)
+        assert "free group on a chosen set" in str(error)
     else:
         assert False, "a nonfree cyclic group was admitted as a free source"
 
 
-def test_finitely_many_relators_require_a_finite_free_basis() -> None:
+def test_presentations_outside_the_computed_cases_and_foreign_relators() -> None:
+    r"""``F/<<R>>`` is defined for every free group and every relator set (Mathlib
+    ``PresentedGroup``); it is computed for a finite basis and finitely many relators.
+    """
     infinite_free = Groups.Free(index_set=NN)
     try:
-        FreeGroupQuotients(infinite_free, ())
-    except ValueError as error:
+        FreeGroupQuotients()(infinite_free, ())
+    except AssertionError as error:
         assert "finite free basis" in str(error)
     else:
-        assert False, "an infinite-rank free group was assigned a finite presentation"
+        assert False, "an infinite-rank free group was handed to a finitely presented engine"
 
     finite_free = Groups.Free(1)
     try:
-        FreeGroupQuotients(finite_free, NN)
-    except ValueError as error:
-        assert "finite relator family" in str(error)
+        FreeGroupQuotients()(finite_free, NN)
+    except AssertionError as error:
+        assert "finitely many relators" in str(error)
     else:
-        assert False, "an infinite set of relators was assigned a finite presentation"
+        assert False, "an infinite set of relators was handed to a finitely presented engine"
 
     # Relations from another presented group are not words in this
     # selected free source, even if both have one chosen generator.
@@ -658,17 +659,42 @@ def test_finitely_many_relators_require_a_finite_free_basis() -> None:
     other_free = Groups.Free(index_set=finite_ordered_set(("z",)))
     other_generator = other_free.group_generators()[0]
     try:
-        FreeGroupQuotients(finite_free, (other_generator,))
+        FreeGroupQuotients()(finite_free, (other_generator,))
     except ValueError as error:
-        assert "selected presenting free group" in str(error)
+        assert "presenting free group" in str(error)
     else:
         assert False, "a relator from another free group changed the selected presentation"
+
+
+def test_presented_group_arrows_are_induced_by_maps_of_presentations() -> None:
+    r"""An arrow of ``FreeGroupQuotients()`` is induced by ``f: F -> F'`` with ``f(R) subset R'``.
+
+    Mathlib ``PresentedGroup.map``.  On ``F(a, b)``, the swap ``a <-> b``
+    sends ``{a^2, b^2, (ab)^3}`` into itself, so it induces an automorphism
+    of ``<a, b | a^2, b^2, (ab)^3> = S_3``, exchanging the two generators.
+    """
+    free = Groups.Free(2)
+    a, b = tuple(free.group_generators())
+    relators = (a**2, b**2, (a*b)**3)
+    quotient = FreeGroupQuotients()(free, relators)
+    swap = free.Mor(free)({a: b, b: a})
+    induced = quotient.Mor(quotient)(swap, check=True)
+    projection = quotient.quotient_projection()
+    assert induced(projection(a)) == projection(b)
+    assert induced(projection(b)) == projection(a)
+    collapse = free.Mor(free)({a: a, b: a})
+    try:
+        quotient.Mor(quotient)(collapse, check=True)
+    except ValueError as error:
+        assert "not a map of presentations" in str(error)
+    else:
+        assert False, "a free-group map sending (ab)^3 to a^6, not a relator, was admitted"
 
 
 def test_quotient_descent_with_identified_presenting_generators() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())
-    quotient = FreeGroupQuotients(free, (a * ~b, a**2))()
+    quotient = FreeGroupQuotients()(free, (a * ~b, a**2))
     projection = quotient.quotient_projection()
     assert projection(a) == projection(b)
 
@@ -679,7 +705,7 @@ def test_quotient_descent_with_identified_presenting_generators() -> None:
     assert descended.domain() is quotient
     assert descended.codomain() is cyclic
     assert descended(projection(a)) == descended(projection(b)) == involution
-    checked = quotient.Mor(cyclic)(
+    checked = quotient.Mor(cyclic, category=OwnedGroups())(
         {projection(a): involution}, check=True
     )
     assert checked(projection(a)) == checked(projection(b)) == involution
@@ -698,7 +724,7 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
     free = Groups.Free(index_set=labels)
     a = free.free_generator(labels(0))
     b = free.free_generator(labels(1))
-    quotient = FreeGroupQuotients(free, (a**2, b**3, (a*b)**2))()
+    quotient = FreeGroupQuotients()(free, (a**2, b**3, (a*b)**2))
     projection = quotient.quotient_projection()
     via_operation, operation_projection = free.quotient_by_relators(
         (a**2, b**3, (a*b)**2), return_projection=True
