@@ -5128,7 +5128,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lorentzian_reduction_complex(self, marked_vectors=marked_vectors)
 
-        def vector_configuration(self, module_generating_set, colouring=None):
+        def vector_configuration(self, family: IndexedFamily, colouring=None):
             r"""Return the sublattice framed by the stated vector family, with its colouring.
 
             The family ``I -> L`` is the framing: the configuration's positions
@@ -5136,12 +5136,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             must be a basis of the sublattice it spans (a redundant spanning
             family is compared through ``VectorConfigurations.spanning_isometry``).
             ``colouring`` is a set map ``I -> C`` out of the index set of the
-            caller's family: pass the family as an ``IndexedFamily`` and the
-            colouring as an element of ``Sets().Mor(family.index_set(), C)``.
+            caller's family: the family is the caller's ``IndexedFamily``, taken
+            as the datum without re-wrapping, and the colouring an element of
+            ``Sets().Mor(family.index_set(), C)``.
             Omitted, it is the map to the one-point set ``Sets.Δ[0]``, under
             which every pairing-preserving permutation preserves colours.
             """
-            family = finite_indexed_family_from_values(None, module_generating_set)
             index_set = family.index_set()
             match colouring:
                 case None:
@@ -5152,7 +5152,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     assert colouring.domain() is index_set, (
                         f"a colouring of the configuration on {family} is a map out of its "
                         f"index set {index_set}, but {colouring} is a map out of {colouring.domain()}; "
-                        f"pass the family as an indexed family on the colouring's domain"
+                        f"pass a colouring out of the family's own index set"
                     )
             return _lattice_subobject_on_basis(
                 self,

@@ -64,7 +64,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         root_lattice = Lattices(self.base_ring())("A2")
-        return root_lattice.vector_configuration(root_lattice.module_generators())
+        return root_lattice.vector_configuration(
+            finite_indexed_family_from_values(None, root_lattice.module_generators())
+        )
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
