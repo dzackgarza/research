@@ -13,7 +13,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     Modules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -39,7 +42,7 @@ class PicardGroups(Category):
         return "Picard groups"
 
     def super_categories(self):
-        return [Modules(_own_ring(SageZZ))]
+        return [Modules(_owned_integers())]
 
     def _call_(self, scheme, principal_divisors):
         r"""\(\operatorname{CDiv}/\operatorname{im}(\rho)\) for the principal Cartier divisor morphism ``principal_divisors`` \(\rho\)."""

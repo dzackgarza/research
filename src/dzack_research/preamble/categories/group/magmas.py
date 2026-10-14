@@ -172,9 +172,12 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
         r"""The owned integers under multiplication."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -625,9 +628,12 @@ class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
         r"""The owned integers under addition."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -748,9 +754,12 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
         r"""The additive group of the owned integers."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [AdditiveMonoids()]

@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -1167,7 +1168,7 @@ def _module_generating_set(labels):
     family of labels names the ordered set of them; an owned set is its own
     label set.
     """
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     match labels:
         case int() | Integer():
             rank = int(labels)
@@ -1199,7 +1200,7 @@ def _owned_free_module_on(ring, module_generating_set):
 def _matrix_space(base_ring, nrows, ncols=None):
     r"""Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``."""
     ring = _owned_ring(base_ring)
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
 
     def dimension(value):
         result = int(integers(value))

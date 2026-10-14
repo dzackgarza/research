@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedRings,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.logic import AtomicProposition
@@ -273,7 +274,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
-        names = "graded algebras" if monoid is _own_ring(SageZZ) else f"algebras graded by {monoid}"
+        names = "graded algebras" if monoid is _owned_integers() else f"algebras graded by {monoid}"
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):

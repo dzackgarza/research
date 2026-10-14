@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules, Mod
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -506,7 +507,7 @@ class _SpanningConfiguration:
 
     def _assert_spanning_nondegenerate(self):
         lattice = self._lattice
-        assert lattice.base_ring() is _own_ring(SageZZ), (
+        assert lattice.base_ring() is _owned_integers(), (
             f"integral configuration isometries are computed for lattices over ZZ, but {lattice} "
             f"is over {lattice.base_ring()}"
         )

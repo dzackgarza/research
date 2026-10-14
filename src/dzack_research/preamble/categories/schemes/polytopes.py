@@ -15,7 +15,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_integers,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.sets.finite_families import (
     finite_family,
 )
@@ -46,7 +51,7 @@ def _owned_rational(coordinate):
     """
     if engine_parent(coordinate) in (SageZZ, SageQQ):
         return _owned_engine_element(SageQQ, SageQQ(coordinate))
-    return _own_ring(SageQQ)(coordinate)
+    return _owned_rationals()(coordinate)
 
 
 class RegularPolytopes(OwnedCategory):
@@ -123,7 +128,7 @@ class RegularPolytopes(OwnedCategory):
             return self._schlafli_bonds
 
         def dimension(self):
-            return _own_ring(SageZZ)(self.schlafli_symbol().cardinality() + 1)
+            return _owned_integers()(self.schlafli_symbol().cardinality() + 1)
 
         def symmetry_coxeter_diagram(self):
             return self._symmetry_coxeter_diagram
@@ -149,14 +154,14 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             FramedFreeModules,
         )
 
-        return FramedFreeModules(_own_ring(SageZZ))
+        return FramedFreeModules(_owned_integers())
 
     def ambient_lattice(self):
         return self.base()
 
     @cached_method
     def ambient_space(self):
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         return rationals.free_module(self.ambient_lattice().module_generating_set())
 
     def an_object(self):
@@ -186,7 +191,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         truncated.  Passing from this description to the vertices is the
         private polyhedral computation.
         """
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         engine_rows = [
             [
                 _engine_element(rationals, _owned_rational(constant)),
@@ -266,11 +271,11 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             return rich.html.get_str()
 
         def _owned_rational_coordinate(self, coordinate):
-            rationals = _own_ring(SageQQ)
+            rationals = _owned_rationals()
             return _owned_engine_element(rationals, SageQQ(coordinate))
 
         def _owned_integral_coordinate(self, coordinate):
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(coordinate))
 
         def rational_point(self, point):
@@ -283,7 +288,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             lattice = self.ambient_lattice()
             match point.parent():
                 case parent if parent is lattice:
-                    rationals = _own_ring(SageQQ)
+                    rationals = _owned_rationals()
                     coordinates = point.to_vector()
                     return ambient.linear_combination(
                         {
@@ -295,7 +300,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                     return ambient(point)
 
         def _engine_coordinates(self, point):
-            rationals = _own_ring(SageQQ)
+            rationals = _owned_rationals()
             ambient = self.ambient_space()
             point = self.rational_point(point)
             coordinates = point.to_vector()
@@ -313,7 +318,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             return self.codomain()
 
         def dimension(self):
-            return _own_ring(SageZZ)(int(self._engine_polyhedron().dim()))
+            return _owned_integers()(int(self._engine_polyhedron().dim()))
 
         def vertices(self):
             if self.is_lattice_polytope():
@@ -328,7 +333,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                         for vertex in self._engine_polyhedron().vertices()
                     )
                 )
-            rationals = _own_ring(SageQQ)
+            rationals = _owned_rationals()
             return finite_ordered_set(
                 tuple(
                     self.ambient_space()(
@@ -342,7 +347,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             )
 
         def n_vertices(self):
-            return _own_ring(SageZZ)(int(self._engine_polyhedron().n_vertices()))
+            return _owned_integers()(int(self._engine_polyhedron().n_vertices()))
 
         def facets(self):
             r"""Return the codimension-one faces as owned polytopes."""
@@ -387,7 +392,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             )
 
         def volume(self):
-            rationals = _own_ring(SageQQ)
+            rationals = _owned_rationals()
             return _owned_engine_element(rationals,
                 SageQQ(self._engine_polyhedron().volume())
             )
@@ -480,7 +485,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             polytope interface: consumers that need a supporting face do not
             need either the Sage polyhedron or its coordinate tuples.
             """
-            rationals = _own_ring(SageQQ)
+            rationals = _owned_rationals()
             dual = self.ambient_lattice().dual_module()
             point = self.rational_point(point)
             normal = dual(normal)
@@ -617,7 +622,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 )
 
             def _dilate(self, scalar):
-                integers = _own_ring(SageZZ)
+                integers = _owned_integers()
                 scalar = integers(scalar)
                 assert scalar >= integers.zero(), (
                     f"the dilate k P of {self} is taken here only for k >= 0, but k = {scalar}"
@@ -628,8 +633,8 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
             def ehrhart_polynomial(self, variable="t"):
                 r"""Return the exact owned Ehrhart polynomial by interpolation."""
-                rationals = _own_ring(SageQQ)
-                integers = _own_ring(SageZZ)
+                rationals = _owned_rationals()
+                integers = _owned_integers()
                 polynomial_ring = rationals.polynomial_ring(variable)
                 t = polynomial_ring.algebra_generator(variable)
                 d = int(self.dimension())
@@ -653,7 +658,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 r"""Return the owned Ehrhart ``h*`` vector ``(h*_0,...,h*_d)``."""
                 from math import comb
 
-                integers = _own_ring(SageZZ)
+                integers = _owned_integers()
                 d = int(self.dimension())
                 counts = [
                     integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
@@ -866,8 +871,8 @@ def _convex_polytope(
     two are the two axioms the finer categories state, so they are decided on
     the polyhedron and the object is constructed in the category they select.
     """
-    integers = _own_ring(SageZZ)
-    rationals = _own_ring(SageQQ)
+    integers = _owned_integers()
+    rationals = _owned_rationals()
     if engine_polyhedron is not None:
         polyhedron = engine_polyhedron
     else:

@@ -54,9 +54,12 @@ def _is_session_integer(value) -> bool:
     """
     if value in ZZ:
         return True
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        _own_ring,
+        _owned_integers,
+    )
 
-    return value in _own_ring(ZZ)
+    return value in _owned_integers()
 
 
 class _CardinalExpression(ABC):

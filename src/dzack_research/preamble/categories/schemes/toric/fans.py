@@ -25,7 +25,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -36,7 +39,7 @@ from dzack_research.preamble.owned_category import _object_of
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _engine_lattice(module):

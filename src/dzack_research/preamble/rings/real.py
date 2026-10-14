@@ -53,6 +53,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
@@ -432,7 +433,7 @@ class ExactRealNumber(FieldElement):
 
     def sgn(self):
         r"""The sign of this real number, in the integers: \(1\), \(0\) or \(-1\)."""
-        integers = _own_ring(ZZ)
+        integers = _owned_integers()
         if self.is_zero() is True:
             return integers(0)
         positive = self.is_positive()
@@ -624,7 +625,7 @@ class ExactRealField(UniqueRepresentation, Field):
         return self(ZZ.one())
 
     def _characteristic_decision(self):
-        return _own_ring(ZZ).zero()
+        return _owned_integers().zero()
 
     def is_exact(self) -> bool:
         return True

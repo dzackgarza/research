@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -520,7 +521,7 @@ def _torsion_form_all_subobjects(form, *, quadratic: bool):
     subgroup lattice to GAP.  We cross only its returned generators through
     the invariant-factor normalization.
     """
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     assert form.base_ring() is integers, (
         f"the submodules of the torsion form {form} are enumerated only over ZZ, "
         f"but {form} is over {form.base_ring()}"

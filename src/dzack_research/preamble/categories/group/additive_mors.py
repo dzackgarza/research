@@ -227,10 +227,13 @@ class AdditiveMorGroups(OwnedCategory):
 
     def an_object(self):
         r"""The additive endomorphism group of the rank-one integer module."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        module = _own_ring(SageZZ).regular_module()
+        module = _owned_integers().regular_module()
         return module.Mor(module)
 
     def super_categories(self):
@@ -487,9 +490,12 @@ class AdditiveMorphism:
         if left is not None and right is not None and (left == right) is True:
             return op == op_EQ
         domain = self.domain()
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        if domain is _own_ring(SageZZ):
+        if domain is _owned_integers():
             # A homomorphism from (ZZ,+) is determined by the image of 1.
             # The target equality may still be an undecided proposition.
             equal = self(domain.one()) == other(domain.one())
@@ -506,12 +512,15 @@ class AdditiveMor(CategoricalMor):
     ElementMethods = AdditiveMorphism
 
     def __init__(self, family, domain, codomain) -> None:
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
         # The integer scalar ring is the datum ``Modules.ParentMethods`` reads
         # through ``_preamble_base_ring``; that category method precedes this
         # class in the refined MRO, and the Sage Homset base stays unset.
-        self._preamble_base_ring = _own_ring(SageZZ)
+        self._preamble_base_ring = _owned_integers()
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
         category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveMorGroups()
         super().__init__(family, domain, codomain, category=category)

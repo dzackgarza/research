@@ -1,93 +1,103 @@
-r"""Function spaces: \(C^k(X,Y)\), and \(L^p\), \(\ell^p\) as \(\mathbb R\)-modules of maps.
+r"""Function spaces \(C^k(X,Y)\), \(L^p(X,Y)\) and \(\ell^p(X,Y)\) as submodules of \(Y^X\).
 
-A function space is a set of maps \(X\to Y\) singled out by a condition on
-the maps.  Function spaces form no category of their own: each is an object
-of the category its structure places it in, realized by an engine class of
-this module and built by one construction route.
+A function space is the set of maps \(X\to Y\) cut out of
+\(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\) by a condition on the maps, with
+the pointwise structure of \(Y\) (``CON-17``; owner statement 2026-10-14:
+\(L^p(X,Y) := \{f\colon X\to Y \mid p\text{-integrable}\}\subseteq
+\operatorname{Hom}_{\mathbf C}(X,Y)\)).  Each constructor takes both
+endpoints and is spelled out every time (``OWN-02``):
 
-- ``C``: the differentiability class \(C^k(X,Y)\) of maps \(X\to Y\) of
-  class \(C^k\), a subset of \(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\).
-  ``C(k, X, Y)`` and ``(C^k)(X, Y)`` are the same space; ``C(k, X)`` is
-  \(C^k(X,X)\).  The regularity \(k\) is the object's datum; \(\infty\) is a
-  value of \(k\).  It is a set; when \(Y\) is an \(\mathbb R\)-vector space,
-  pointwise operations make it an object of ``VectorSpaces(RR)``; when
-  \(Y=\mathbb R\), pointwise product makes it a commutative unital
-  \(\mathbb R\)-algebra.
-- ``Lp``: \(\mathcal L^p(\mathbb R)\), the \(\mathbb R\)-vector space of
-  \(p\)-integrable maps on \(\mathbb R\), whose quotient by the null maps is
-  \(L^p(\mathbb R)\).
-- ``ell``: \(\ell^p(\mathbb R)\), the \(\mathbb R\)-vector space of
-  \(p\)-summable real sequences on \(\mathbb N\).
+- ``C(k, X, Y)``: maps of class \(C^k\), \(k\in\mathbb N\cup\{\infty\}\),
+  on a \(C^k\) manifold \(X\); for \(Y=\mathbb R\) the pointwise product
+  makes it a commutative unital \(\mathbb R\)-algebra.  The condition and
+  the calculus are computed from a formula in one real variable, which is the
+  case \(X=\mathbb R\).
+- ``Lp(p, X, Y)``: the \(p\)-integrable maps \(\mathcal L^p(X,Y)\), whose
+  quotient by the null maps is \(L^p\); implemented for Lebesgue measure on
+  \(X=\mathbb R\) and \(Y=\mathbb R\).  For \(p=2\) it is the formed module
+  with \(b(f,g)=\int fg\) on functions; the radical of \(b\) is exactly the
+  null functions, and the Hilbert space \(L^2\) is the quotient by them
+  (``quotient_by_null_functions``).
+- ``ell(p, X, Y)``: the \(p\)-summable maps \(X\to\mathbb R\) for an
+  arbitrary set \(X\) (\(\sum_{x\in X}|a(x)|^p<\infty\), counting measure;
+  bounded for \(p=\infty\)); for \(p=2\) the formed module with
+  \(b(a,c)=\sum_{x\in X}a(x)c(x)\).  The summation and the summability
+  theorems are computed from a formula in one variable read as
+  \(n\in\mathbb N\), which is the case \(X=\mathbb N\).
 
-A map is constructed from the inductive class of formulas — polynomials,
-named transcendentals, Laurent and power series, indefinite integrals, and
-the pointwise operations and composition — when \(X=Y=\mathbb R\), or by
-placing a callable.  Placement is the membership claim.
+Each space is ``Y.function_module(X).condition_submodule(P)``: its
+underlying set is a subset of ``Sets().Mor(X, Y)``, and a map enters
+through that Mor's element constructor -- a callable, or a formula binding
+its own variable (``f(t) = exp(-t^2)``).  No space stores a variable or
+supplies a point of its domain.  Construction does not ask the condition
+(``OWN-22``): ``f in space`` asks it, and the element validator
+``validate_condition_membership`` raises when it is false.  The condition
+is decided by theorems on a map given by a formula (the ladder below) and
+is otherwise the proposition that states it.
 
-An admitted polynomial or formal power-series expression supplies a formula on \(\mathbb R\) in \(C^k\)
-and \(L^p\), and is its coefficient sequence in \(\ell^p\).  A map in
-\(C^\infty(\mathbb R)\) has a Maclaurin series and a Taylor series at any
-point, as formal power series; a map in finite \(C^k\) has the jet of order
-\(k\).  Hölder pairs \(L^p\) with \(L^{p'}\) and \(\ell^p\) with
-\(\ell^{p'}\) when \(1/p+1/p'=1\); that pairing is the product of the two
-spaces.  On the diagonal \(p=p'=2\), \(L^2\) and \(\ell^2\) are the formed
-modules on the vector spaces \(L^2\) and \(\ell^2\), with
-\(b(f,g)=\int_{\mathbb R}fg\) and \(b(a,c)=\sum_{n\in\mathbb N}a_n c_n\)
-respectively.
+Operations that need the formula of a map -- derivatives, integrals,
+Taylor series, the forms \(\int fg\) and \(\sum a_n b_n\) -- read it through
+the private formula adapter ``_map_formula``; a map given by an opaque
+callable reaches the named computation assertion there.
 """
 
-from functools import partial
-
-from sage.categories.category import Category
+from sage.functions.error import erf
+from sage.functions.hyperbolic import cosh, sech, sinh, tanh
 from sage.functions.log import exp
-from sage.functions.trig import cos, sin
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.functions.other import abs_symbolic
+from sage.functions.trig import arctan, cos, sin
+from sage.calculus.calculus import limit
+from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
-from sage.rings.fraction_field import FractionField_generic
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
-from sage.rings.laurent_series_ring_element import LaurentSeries
-from sage.rings.lazy_series import LazyPowerSeries
 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
-from sage.rings.polynomial.laurent_polynomial import LaurentPolynomial
-from sage.rings.polynomial.polynomial_element import Polynomial
-from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.power_series_ring import PowerSeriesRing
-from sage.rings.power_series_ring_element import PowerSeries
 from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ
-from sage.rings.semirings.non_negative_integer_semiring import NN
-from sage.structure.element import Element, ModuleElement
-from sage.structure.element import parent as element_parent
-from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
-from sage.symbolic.function import Function as SymbolicMap
 from sage.symbolic.integration.integral import integrate
 from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
-)
+import functools
+import operator as _operator
+
+from dzack_research.preamble.categories.algebras.algebras import Algebras, _algebra_on_module
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    FormModules,
     PairedModules,
     SymmetricBilinearFormModules,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
+from dzack_research.preamble.categories.modules.general_modules import (
+    _ConditionSubmodule,
+    _ConditionSubmoduleElement,
+    _FunctionModuleElement,
+    _PointwiseValues,
+    _condition_submodule,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
+    VectorSpaces,
+    _pointwise_negative,
+    _pointwise_scalar_multiple,
+    _pointwise_sum,
+    _pointwise_zero,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import continuum
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.rings.real import RR, ExactRealNumber
+from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.rings.real import RR
 
 
 def _regularity(k):
     if k is Infinity or k == Infinity:
         return Infinity
-    integers = _own_ring(ZZ)
+    integers = _owned_integers()
     k = integers(k)
     if k < integers.zero():
         raise ValueError(f"C^k is defined for k >= 0, but k = {k}")
@@ -111,7 +121,7 @@ def _integrability(p):
             expression = real.expression()
             if expression in QQ:
                 rational = _owned_engine_element(QQ, QQ(expression))
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 return integers(rational) if rational in integers else rational
             return real
         case False:
@@ -316,8 +326,54 @@ def _l2_symbolic_verdict(expression, variable):
                 if _l2_symbolic_verdict(factor, variable) is True:
                     return True
 
+    if _tail_vanishes(expression, variable):
+        return True
     return _engine_square_integral_verdict(expression, variable)
 
+
+
+# The generators of the two classes of functions recognized structurally,
+# each closed under the operations of _is_built_from: the first three are
+# C^infinity, and all are continuous on the whole line.
+_SMOOTH_FUNCTIONS = (exp, sin, cos)
+_CONTINUOUS_FUNCTIONS = _SMOOTH_FUNCTIONS + (sinh, cosh, tanh, sech, arctan, erf, abs_symbolic)
+
+
+def _is_built_from(expression, functions) -> bool:
+    r"""Is expression a polynomial in functions and their compositions?
+
+    Sums, products, nonnegative integer powers and compositions of
+    polynomials and of the given functions preserve both \(C^\infty\) and
+    continuity on \(\mathbb R\), so recognizing the class proves the
+    property.  A power is admitted only for a nonnegative integer exponent.
+    """
+    operation = expression.operator()
+    if operation is None:
+        return True
+    if operation in (add_vararg, mul_vararg):
+        return all(_is_built_from(operand, functions) for operand in expression.operands())
+    if operation is _operator.pow:
+        base, exponent = expression.operands()
+        return _is_built_from(base, functions) and exponent in ZZ and bool(exponent >= 0)
+    if operation in functions:
+        return all(_is_built_from(operand, functions) for operand in expression.operands())
+    return False
+
+
+def _tail_vanishes(expression, variable) -> bool:
+    r"""Certify \(f\in L^2(\mathbb R)\) from \(|x|f(x)	o0\) at both ends, for continuous \(f\).
+
+    Then \(f^2\le x^{-2}\) on both tails (the \(p\)-test) and continuity
+    bounds the middle.  The limit goes to giac, which answers undef for
+    an oscillating tail; a nonzero or undefined limit proves nothing.
+    """
+    if not _is_built_from(expression, _CONTINUOUS_FUNCTIONS):
+        return False
+    tails = [
+        limit(abs(variable) * expression, algorithm="giac", **{str(variable): direction})
+        for direction in (Infinity, -Infinity)
+    ]
+    return all(bool(tail == 0) for tail in tails)
 
 def _parameter_name(value) -> str:
     if value is Infinity:
@@ -346,7 +402,7 @@ def _space_latex(space) -> str:
 def _conjugate_exponent(p):
     r"""The Hölder conjugate: \(1/p + 1/p' = 1\)."""
     if p is Infinity:
-        return _own_ring(ZZ).one()
+        return _owned_integers().one()
     if p == 1:
         return Infinity
     return _integrability(p / (p - 1))
@@ -356,742 +412,341 @@ def _are_holder_conjugates(p, q) -> bool:
     return _conjugate_exponent(p) == q
 
 
-@cached_function
-def _lebesgue_pairing_module(left, right):
-    r"""The pairing \(\int fg\colon L^p\otimes L^{p'}\to\mathbb R\)."""
-    if left is right:
-        return left
-    return PairedModules(RR)(left.pairings_with(right, RR)(_l2_pairing))
+
+# ---------------------------------------------------------------------------
+# The formula adapter.
+# ---------------------------------------------------------------------------
 
 
-def _l2_pairing(left, right):
-    r"""The pairing \(\int_{\mathbb R} fg\) on formulas in \(L^2(\mathbb R)\)."""
-    formula = left.expression() * right.expression()
-    return formula.integrate(left.parent().indeterminate(), -Infinity, Infinity)
+def _function_formula(function):
+    r"""The symbolic formula ``(body, variable)`` of a defining function, or ``None``.
 
-
-@cached_function
-def _sequence_pairing_module(left, right):
-    r"""The pairing \(\sum a_n b_n\colon \ell^p\otimes\ell^{p'}\to\mathbb R\)."""
-    if left is right:
-        return left
-    return PairedModules(RR)(left.pairings_with(right, RR)(_ell2_pairing))
-
-
-def _ell2_pairing(left, right):
-    r"""The pairing \(\sum_{n\in\mathbb N} a_n b_n\) on sequences in \(\ell^p\)."""
-    left_family = left._coefficient_family()
-    right_family = right._coefficient_family()
-    if left_family is not None and right_family is not None:
-        indices = left_family.keys() | right_family.keys()
-        return RR(
-            sum(
-                left_family.get(index, 0) * right_family.get(index, 0) for index in indices
-            )
-        )
-    if left_family is not None:
-        return RR(
-            sum(
-                coefficient * right.evaluate_at(index)
-                for index, coefficient in left_family.items()
-            )
-        )
-    if right_family is not None:
-        return RR(
-            sum(
-                coefficient * left.evaluate_at(index)
-                for index, coefficient in right_family.items()
-            )
-        )
-    formula = left.expression() * right.expression()
-    return RR(formula.sum(left.parent().indeterminate(), ZZ.zero(), Infinity))
-
-
-def _univariate_coefficient_family(value):
-    r"""Coefficients of a univariate polynomial or truncated formal series, or none.
-
-    Element-constructor ingress (`OWN-06`): called only by
-    ``_FunctionSpace._element_constructor_``, it inspects the
-    foreign Sage representation of the supplied datum and returns its
-    coefficients as a finite family on \(\mathbb N\).
+    Private computation adapter (``OWN-06``) of this module.  Its datum is
+    the function a map of ``Sets().Mor(X, Y)`` was constructed from
+    (``OwnedSetMorphism._defining_function``).  A Sage callable symbolic
+    expression in one argument (``f(t) = exp(-t^2)``) is its own formula in
+    the variable it binds.  A map assembled by the pointwise module law
+    (``_PointwiseValues``) has the formula of that operation applied to its
+    operands' formulas, each read in a common variable.  A map built on an
+    element of a module of maps is read through that element.  Any other
+    callable has no formula: ``None`` here, and the operation that needs
+    one states that frontier.
     """
-    if isinstance(value, Polynomial):
-        if value.parent().ngens() != 1:
+    match function:
+        case Expression() if len(function.arguments()) == 1:
+            variable = function.arguments()[0]
+            return function(variable), variable
+        case _FunctionModuleElement():
+            return _function_formula(function.underlying_element()._defining_function())
+        case _PointwiseValues():
+            operands = [
+                _function_formula(operand._defining_function()) for operand in function.operands()
+            ]
+            if any(formula is None for formula in operands):
+                return None
+            variable = operands[0][1] if operands else SR.var("t")
+            bodies = [body.subs({own: variable}) for body, own in operands]
+            operation = function.operation()
+            match operation:
+                case _ if operation is _pointwise_sum:
+                    return bodies[0] + bodies[1], variable
+                case _ if operation is _pointwise_negative:
+                    return -bodies[0], variable
+                case _ if operation is _pointwise_zero:
+                    return SR.zero(), variable
+                case functools.partial() if operation.func is _pointwise_scalar_multiple:
+                    return SR(operation.args[0]) * bodies[0], variable
+                case _:
+                    return None
+        case _:
             return None
-        return {ZZ(exponent): coefficient for exponent, coefficient in value.dict().items()}
-    if isinstance(value, PowerSeries):
-        return {ZZ(exponent): coefficient for exponent, coefficient in value.dict().items()}
-    if isinstance(value, LaurentPolynomial):
-        family = {
-            ZZ(exponent): coefficient for exponent, coefficient in value.dict().items()
-        }
-        if any(exponent < 0 for exponent in family):
-            raise TypeError(
-                f"{value} has terms of negative degree, but a sequence in ell^p is indexed by NN"
-            )
-        return family
-    if isinstance(value, LaurentSeries):
-        return _univariate_coefficient_family(value.laurent_polynomial())
-    return None
 
 
-def _is_placed_callable(value) -> bool:
-    r"""Whether ``value`` is a bare callable placed as a map.
+def _map_formula(element):
+    r"""The formula ``(body, variable)`` of an element of a function space, or ``None``."""
+    return _function_formula(element.underlying_element().underlying_element()._defining_function())
 
-    Element-constructor ingress (`OWN-06`): called only by
-    ``_FunctionSpace._element_constructor_``.  A parent, an
-    element, a type, a symbolic function or a category is callable without
-    being a map to place.
+
+def _required_formula(element, operation):
+    formula = _map_formula(element)
+    assert formula is not None, (
+        f"cannot compute {operation} of {element}: the map was given by a callable, not by a "
+        "symbolic formula, and no other algorithm computes it"
+    )
+    return formula
+
+
+def _formula_map(body, variable):
+    r"""The callable symbolic expression ``variable |--> body``: a map given by its formula."""
+    return SR(body).function(variable)
+
+
+def _pointwise_product(left, right):
+    r"""The defining function of ``t |-> left(t) right(t)``, keeping a formula when both have one."""
+    left_formula, right_formula = _map_formula(left), _map_formula(right)
+    if left_formula is not None and right_formula is not None:
+        variable = left_formula[1]
+        return _formula_map(left_formula[0] * right_formula[0].subs({right_formula[1]: variable}), variable)
+    return lambda point: left(point) * right(point)
+
+
+def _constant_map(value):
+    r"""The defining function of the constant map with value ``value``."""
+    return _formula_map(SR(value), SR.var("t"))
+
+
+# ---------------------------------------------------------------------------
+# Conditions.
+# ---------------------------------------------------------------------------
+
+
+def _differentiability_condition(regularity, domain):
+    r"""The condition ``f`` is of class \(C^k\) on the manifold ``domain``.
+
+    Decided for a formula in one real variable built from polynomials, exp,
+    sin and cos: such a formula is \(C^\infty\) on \(\mathbb R\).  The
+    formula's variable is a point of \(\mathbb R\), so the decision applies
+    to ``domain`` \(=\mathbb R\) only; on any other domain the condition is
+    the proposition that states it.
     """
-    if isinstance(value, (Parent, Element, type, SymbolicMap, Category)):
-        return False
-    return callable(value)
+
+    def condition(point):
+        undecided = AtomicProposition(f"is_of_class_C^{_parameter_name(regularity)}", point)
+        if domain is not RR:
+            return undecided
+        formula = _function_formula(point.underlying_element()._defining_function())
+        if formula is not None and _is_built_from(formula[0], _SMOOTH_FUNCTIONS):
+            return True
+        return undecided
+
+    return condition
 
 
-def _univariate_expression(formula, indeterminate):
-    expression = SR(formula)
-    variables = expression.variables()
-    if not variables:
-        return expression
-    if len(variables) != 1:
-        raise TypeError(f"{formula} is not a univariate formula")
-    return expression.subs({variables[0]: indeterminate})
+def _lebesgue_condition(exponent):
+    r"""The condition ``f`` is ``p``-integrable on \(\mathbb R\), decided by the theorem ladder on formulas."""
+
+    def condition(point):
+        formula = _function_formula(point.underlying_element()._defining_function())
+        undecided = AtomicProposition(f"is_{_parameter_name(exponent)}_integrable", point)
+        if formula is None:
+            return undecided
+        body, variable = formula
+        if not body.variables() and exponent is not Infinity and _decided_nonzero(body):
+            return False
+        if _lebesgue_nonmembership_reason(body, variable, exponent) is not None:
+            return False
+        if (exponent == 2) is True:
+            verdict = _l2_symbolic_verdict(body, variable)
+            return undecided if verdict is None else verdict
+        return undecided
+
+    return condition
 
 
-def _expression_from_value(value, indeterminate):
-    r"""Return an \(\mathrm{SR}\) formula for a recognized primitive, if any.
+def _summability_condition(exponent, domain):
+    r"""The condition ``a`` is ``p``-summable on the set ``domain`` (bounded for \(p=\infty\)).
 
-    Element-constructor ingress (`OWN-06`): called only by
-    ``_FunctionSpace._element_constructor_`` (and by itself on a
-    Laurent series), it inspects the foreign Sage representation of the
-    supplied datum and crosses it into one symbolic formula.
+    The nonmembership theorems below are about sequences: a formula in one
+    variable read as \(n\in\mathbb N\).  They decide the condition for
+    ``domain`` \(=\mathbb N\) only; on any other set the condition is the
+    proposition that states it.
     """
-    if isinstance(value, Expression):
-        return _univariate_expression(value, indeterminate)
-    if isinstance(value, SymbolicMap):
-        return value(indeterminate)
-    if isinstance(value, ExactRealNumber):
-        return value.expression()
-    if isinstance(value, Polynomial):
-        return _univariate_expression(value, indeterminate)
-    if isinstance(value, LaurentPolynomial):
-        return sum(
-            coefficient * indeterminate**exponent
-            for exponent, coefficient in value.dict().items()
-        )
-    if isinstance(value, PowerSeries):
-        return _univariate_expression(value.polynomial(), indeterminate)
-    if isinstance(value, LaurentSeries):
-        return _expression_from_value(value.laurent_polynomial(), indeterminate)
-    value_parent = element_parent(value)
-    if isinstance(value_parent, FractionField_generic) and isinstance(
-        value_parent.base(), PolynomialRing_generic
-    ):
-        return _univariate_expression(value.numerator(), indeterminate) / _univariate_expression(
-            value.denominator(), indeterminate
-        )
-    if value in RR:
-        return RR(value).expression()
-    return None
+
+    def condition(point):
+        undecided = AtomicProposition(f"is_{_parameter_name(exponent)}_summable", point)
+        if domain is not NN:
+            return undecided
+        formula = _function_formula(point.underlying_element()._defining_function())
+        if formula is None:
+            return undecided
+        if _sequence_nonmembership_reason(formula[0], formula[1], exponent) is not None:
+            return False
+        return undecided
+
+    return condition
 
 
-class _RealMap(ModuleElement):
-    r"""A map \(X\to Y\), as an element of a function space."""
+# ---------------------------------------------------------------------------
+# The function-space computation classes.
+# ---------------------------------------------------------------------------
 
-    def __init__(self, parent, evaluate, expression=None, coefficients=None) -> None:
-        ModuleElement.__init__(self, parent)
-        self._evaluate = evaluate
-        self._expression = expression
-        self._coefficients = coefficients
 
-    def expression(self):
-        r"""Return the symbolic formula from which this map was constructed."""
-        if self._expression is None:
-            raise ValueError(f"{self} was given as a function on points, not as a formula, so it has no symbolic formula")
-        return self._expression
+class _FunctionSpaceMap(_ConditionSubmoduleElement):
+    r"""A map ``X -> Y`` in a function space: an element of ``Y^X`` admitted by the space's condition."""
 
-    def _formula(self):
-        r"""The formula this map was constructed from, or ``None`` for a placed callable.
-
-        Protected contract of the function-space element: the pointwise
-        operations and the calculus of maps of class \(C^k\) read it to
-        decide whether a result is computed on formulas or pointwise.
-        """
-        return self._expression
-
-    def _coefficient_family(self):
-        return self._coefficients
-
-    def generating_series(self, series_ring=None):
-        r"""The ordinary generating series \(\sum a_n t^n\).
-
-        A finitely supported sequence, constructed from a polynomial or
-        truncated series, returns a truncated power series.  A formula
-        in the index returns the closed sum \(\sum a_n t^n\) when Sage
-        can evaluate it.
-        """
-        family = self._coefficient_family()
-        if family is not None:
-            if series_ring is None:
-                series_ring = PowerSeriesRing(QQ, "t")
-            if not family:
-                return series_ring.zero()
-            degree = max(family)
-            terms = [family.get(ZZ(index), 0) for index in range(degree + 1)]
-            return series_ring(terms)
-        formula = self.expression()
-        index = self.parent().indeterminate()
-        indeterminate = series_ring.gen() if series_ring is not None else SR.var("t")
-        return (formula * indeterminate**index).sum(index, ZZ.zero(), Infinity)
+    def __call__(self, point):
+        r"""The value at ``point``."""
+        return self.underlying_element()(point)
 
     def evaluate_at(self, point):
-        r"""Evaluate this map at a point of its domain."""
-        value = self._evaluate(self.parent().domain()(point))
-        return self.parent().codomain()(value)
+        r"""The value at ``point``."""
+        return self(point)
 
-    def as_set_morphism(self):
-        r"""This map as an element of \(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
-        return self.parent().set_mor()(self.evaluate_at)
 
-    def __call__(self, argument):
-        r"""Evaluate at a point, or compose with a map landing in the domain.
+class _FunctionSpace(_ConditionSubmodule):
+    r"""Private computation class (``OWN-06``) of a space of maps ``X -> Y`` cut out of ``Y^X``."""
 
-        Composition is the operation of differentiability classes: a map
-        of class \(C^k\) applied to a map of class \(C^\ell\) into its
-        domain is their composite.
+    def domain(self):
+        r"""The set ``X`` the maps start at: the domain of the maps of ``Y^X``, the codomain of the inclusion."""
+        return self.unformed_module().inclusion().codomain().domain()
+
+    def codomain(self):
+        r"""The module ``Y`` the maps take values in."""
+        return self.unformed_module().inclusion().codomain().codomain()
+
+    def __contains__(self, value) -> bool:
+        r"""Whether ``value`` is a map ``X -> Y`` in this space.
+
+        The argument is arbitrary.  A map of another space or of ``Y^X``,
+        or a function on points (a callable, or a formula binding its own
+        variable), is read by ``Sets().Mor(X, Y)`` and asked the condition.
         """
-        source = element_parent(argument)
-        space = self.parent()
-        match source:
-            case _ if (
-                _is_differentiability_class(source)
-                and _is_differentiability_class(space)
-                and source.codomain() is space.domain()
-            ):
-                return self.compose(argument)
-            case _:
-                return self.evaluate_at(argument)
+        from sage.structure.element import parent as element_parent
+        from sage.structure.parent import Parent
 
-    def _add_(self, other):
-        left_family = self._coefficient_family()
-        right_family = other._coefficient_family()
-        if left_family is not None and right_family is not None:
-            family = dict(left_family)
-            for index, coefficient in right_family.items():
-                family[index] = family.get(index, 0) + coefficient
-            return self.parent()._sequence_from_coefficients(family)
-        if self._formula() is None or other._formula() is None:
-            return self.parent()._placed(
-                lambda point: self.evaluate_at(point) + other.evaluate_at(point)
-            )
-        return self.parent()(self._formula() + other._formula())
+        if element_parent(value) is self:
+            return True
+        if callable(value) and not isinstance(value, Parent):
+            value = self.unformed_module().inclusion().codomain()(value)
+        return super().__contains__(value)
 
-    def _neg_(self):
-        family = self._coefficient_family()
-        if family is not None:
-            return self.parent()._sequence_from_coefficients(
-                {index: -coefficient for index, coefficient in family.items()}
-            )
-        if self._formula() is None:
-            return self.parent()._placed(lambda point: -self.evaluate_at(point))
-        return self.parent()(-self._formula())
-
-    def _lmul_(self, scalar):
-        coefficient = RR(scalar)
-        family = self._coefficient_family()
-        if family is not None:
-            return self.parent()._sequence_from_coefficients(
-                {index: coefficient * value for index, value in family.items()}
-            )
-        if self._formula() is None:
-            return self.parent()._placed(lambda point: coefficient * self.evaluate_at(point))
-        return self.parent()(coefficient.expression() * self._formula())
-
-    def _mul_(self, other):
-        left_family = self._coefficient_family()
-        right_family = other._coefficient_family()
-        if left_family is not None and right_family is not None:
-            return self.parent()._sequence_from_coefficients(
-                {
-                    index: left_family[index] * right_family[index]
-                    for index in left_family.keys() & right_family.keys()
-                }
-            )
-        if self._formula() is None or other._formula() is None:
-            return self.parent()._placed(
-                lambda point: self.evaluate_at(point) * other.evaluate_at(point)
-            )
-        return self.parent()(self._formula() * other._formula())
-
-    def _div_(self, other):
-        if self._formula() is None or other._formula() is None:
-            return self.parent()._placed(
-                lambda point: self.evaluate_at(point) / other.evaluate_at(point)
-            )
-        return self.parent()(self._formula() / other._formula())
-
-    def __mul__(self, other):
-        other = self.parent()(other)
-        return self._mul_(other)
-
-    def __truediv__(self, other):
-        other = self.parent()(other)
-        return self._div_(other)
-
-    def _repr_(self) -> str:
-        if self._expression is not None:
-            return repr(self._expression)
-        if self._coefficients is not None:
-            return repr(self.generating_series())
-        return f"Map {self.parent().domain()} -> {self.parent().codomain()} defined pointwise"
-
-    def _latex_(self) -> str:
-        if self._expression is not None:
-            return str(latex(self._expression))
-        if self._coefficients is not None:
-            return str(latex(self.generating_series()))
-        return (
-            r"\text{pointwise-defined map }"
-            + str(latex(self.parent().domain()))
-            + r"\to "
-            + str(latex(self.parent().codomain()))
-        )
+    def one(self):
+        r"""The constant map with value one."""
+        return self(_constant_map(self.codomain().one()))
 
 
-class _DifferentiableMap(_RealMap):
-    r"""A map of class \(C^k\), with its calculus."""
+class _DifferentiableMap(_FunctionSpaceMap):
+    r"""A map of class \(C^k\), with its calculus on formulas."""
 
     def compose(self, other):
         r"""Return \(f\circ g\), in \(C^{\min(k,\ell)}(W,Y)\)."""
         outer = self.parent()
-        if not _is_differentiability_class(element_parent(other)):
-            other = outer(other)
         inner = other.parent()
-        if inner.codomain() is not outer.domain():
-            raise TypeError(
-                f"cannot compose {self} after {other}: "
-                f"codomain {inner.codomain()} is not domain {outer.domain()}"
-            )
+        assert inner.codomain() is outer.domain(), (
+            f"cannot compose {self} after {other}: {other} takes values in {inner.codomain()}, "
+            f"not in {outer.domain()}"
+        )
         k = min(outer.differentiability(), inner.differentiability())
         target = C(k, inner.domain(), outer.codomain())
-        if self._formula() is None or other._formula() is None:
-            return target._placed(lambda point: self.evaluate_at(other.evaluate_at(point)))
-        return target(self._formula().subs({outer.indeterminate(): other._formula()}))
+        outer_formula, inner_formula = _map_formula(self), _map_formula(other)
+        if outer_formula is None or inner_formula is None:
+            return target(lambda point: self(other(point)))
+        return target(_formula_map(outer_formula[0].subs({outer_formula[1]: inner_formula[0]}), inner_formula[1]))
 
     def derivative(self):
         r"""Return \(f'\), in \(C^{k-1}(X,Y)\) when \(k\) is finite."""
         space = self.parent()
         k = space.differentiability()
-        if k == 0:
-            raise ValueError(f"{self} is merely continuous; it has no C^k derivative")
+        assert k != 0, f"{self} is only of class C^0, so it has no C^k derivative"
+        assert space.domain() is RR, (
+            f"cannot differentiate {self}: the derivative is computed from a formula in one real "
+            f"variable, which is the derivative on the domain RR, but {space} has domain {space.domain()}"
+        )
+        body, variable = _required_formula(self, "the derivative")
         target = space if k is Infinity else C(k - 1, space.domain(), space.codomain())
-        return target(self.expression().diff(space.indeterminate()))
+        return target(_formula_map(body.diff(variable), variable))
 
     def integral_from(self, lower):
         r"""Return \(x\mapsto\int_a^x f\), in \(C^{k+1}(\mathbb R,\mathbb R)\) when \(k\) is finite."""
         space = self.parent()
-        a = RR(lower)
-        x = space.indeterminate()
-        antiderivative = self.expression().integral(x)
+        assert space.domain() is RR, (
+            f"cannot integrate {self}: the antiderivative is computed from a formula in one real "
+            f"variable, which is the antiderivative on the domain RR, but {space} has domain {space.domain()}"
+        )
+        body, variable = _required_formula(self, "an antiderivative")
+        antiderivative = body.integral(variable)
         k = space.differentiability()
         target = space if k is Infinity else C(k + 1, space.domain(), space.codomain())
-        return target(antiderivative - antiderivative.subs({x: a.expression()}))
+        return target(_formula_map(antiderivative - antiderivative.subs({variable: SR(RR(lower))}), variable))
 
     def taylor_series(self, centre):
-        r"""The Taylor series of this map at ``centre``, as a formal power series in \(t = x - a\).
-
-        For \(C^\infty(\mathbb R)\) this is the untruncated series
-        \(\sum_{n\ge 0} f^{(n)}(a)\, t^n / n!\).  For finite regularity
-        \(k\) it is the jet of order \(k\).
-        """
+        r"""The Taylor series at ``centre`` in \(t=x-a\): untruncated for \(C^\infty\), the jet of order \(k\) otherwise."""
         space = self.parent()
+        assert space.domain() is RR and space.codomain() is RR, (
+            f"the Taylor series is defined here for maps RR -> RR, not for {space}"
+        )
+        body, variable = _required_formula(self, "the Taylor series")
+        shifted = body.subs({variable: SR(RR(centre)) + variable})
         k = space.differentiability()
-        if space.domain() is not RR or space.codomain() is not RR:
-            raise TypeError(f"Taylor series is defined for maps RR -> RR, not {space}")
-        formula = self.expression()
-        x = space.indeterminate()
-        shifted = formula.subs({x: RR(centre).expression() + x})
         if k is Infinity:
             return LazyPowerSeriesRing(SR, "t").taylor(shifted)
-        jet = shifted.taylor(x, ZZ.zero(), k)
-        t = SR.var("t")
-        return PowerSeriesRing(SR, "t")(jet.subs({x: t}))
+        jet = shifted.taylor(variable, ZZ.zero(), k)
+        return PowerSeriesRing(SR, "t")(jet.subs({variable: SR.var("t")}))
 
     def maclaurin_series(self):
-        r"""The Maclaurin series of this map: the Taylor series at \(0\)."""
+        r"""The Taylor series at \(0\)."""
         return self.taylor_series(ZZ.zero())
 
 
-class _FunctionSpace:
-    r"""A function space: a set of maps \(X\to Y\) between two fixed sets.
-
-    An engine realizing objects of ``Sets()``, and the shared construction of
-    the differentiability classes, Lebesgue spaces and sequence spaces below.
-    A function space is singled out inside the exponential
-    \(Y^X=\operatorname{Hom}_{\mathbf{Set}}(X,Y)\) by a condition on its maps
-    -- a differentiability class, an integrability exponent, a summability
-    exponent -- so it is a subset of that exponential and not the exponential
-    itself.
-
-    The datum is the domain \(X\), the codomain \(Y\), and the indeterminate
-    in which a map given by a formula is written.  An element is a map, given
-    by a formula, by a finitely supported coefficient family on
-    \(\mathbb N\), or by a placed callable; the pointwise operations are
-    computed on formulas and families where both operands have them, and
-    pointwise otherwise.
-    """
-
-    Element = _RealMap
-
-    def __init__(self, domain, codomain, indeterminate, **rest) -> None:
-        self._map_domain = domain
-        self._map_codomain = codomain
-        self._indeterminate = SR(indeterminate)
-        super().__init__(**rest)
-
-    def __call__(self, value):
-        r"""Admit a formula or placed map at the function-space engine boundary."""
-        return self._element_constructor_(value)
-
-    def _element_of_unformed_module(self, element):
-        return self.unformed_module()._reparent(element)
-
-    def _element_from_unformed_module(self, element):
-        return self._reparent(element)
-
-    def domain(self):
-        return self._map_domain
-
-    def codomain(self):
-        return self._map_codomain
-
-    def indeterminate(self):
-        return self._indeterminate
-
-    def set_mor(self):
-        r"""\(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
-        return Sets().Mor(self.domain(), self.codomain())
-
-    def zero(self):
-        return self._element_constructor_(ZZ.zero())
-
-    def one(self):
-        return self._element_constructor_(ZZ.one())
-
-    def _an_element_(self):
-        return self.zero()
-
-    def _placed(self, evaluate):
-        return self.element_class(self, evaluate=evaluate)
-
-    def _map_from_expression(self, expression):
-        formula = _univariate_expression(expression, self.indeterminate())
-        on_reals = self.domain() is RR
-
-        def evaluate(point, formula=formula, on_reals=on_reals):
-            variables = formula.variables()
-            if not variables:
-                return RR(formula)
-            symbol = point.expression() if on_reals else SR(point)
-            return RR(formula.subs({variables[0]: symbol}))
-
-        return self.element_class(self, evaluate=evaluate, expression=formula)
-
-    def _map_from_callable(self, placed):
-        def evaluate(point, placed=placed):
-            return placed(point)
-
-        return self.element_class(self, evaluate=evaluate)
-
-    def _reparent(self, value):
-        r"""The map ``value`` of another space on the same domain and codomain, read here."""
-        coefficients = value._coefficient_family()
-        if coefficients is not None:
-            return self._sequence_from_coefficients(coefficients)
-        formula = value._formula()
-        if formula is None:
-            return self.element_class(
-                self,
-                evaluate=lambda point, source=value: source.evaluate_at(point),
-            )
-        return self._map_from_expression(formula)
-
-    def _sequence_from_coefficients(self, coefficients):
-        r"""The sequence whose ordinary generating series has these coefficients."""
-        family = {
-            ZZ(index): self.codomain()(coefficient)
-            for index, coefficient in coefficients.items()
-            if coefficient
-        }
-        zero = self.codomain().zero()
-
-        def evaluate(point, family=family, zero=zero):
-            return family.get(ZZ(point), zero)
-
-        return self.element_class(self, evaluate=evaluate, coefficients=family)
-
-    def _sequence_from_lazy_series(self, series):
-        r"""The coefficient sequence of an untruncated formal power series."""
-
-        def evaluate(point, series=series):
-            return self.codomain()(series[ZZ(point)])
-
-        return self.element_class(self, evaluate=evaluate)
-
-    def _element_constructor_(self, value):
-        source = element_parent(value)
-        if source is self:
-            return value
-        if self.codomain() is RR and source in Modules(RR) and source.unformed_module() is self:
-            return source._element_of_unformed_module(value)
-        if (
-            _is_function_space(source)
-            and source.domain() is self.domain()
-            and source.codomain() is self.codomain()
-        ):
-            return self._reparent(value)
-        if self.domain() is NN:
-            if isinstance(value, LazyPowerSeries):
-                return self._sequence_from_lazy_series(value)
-            family = _univariate_coefficient_family(value)
-            if family is not None:
-                return self._sequence_from_coefficients(family)
-        if self.codomain() is RR:
-            formula = _expression_from_value(value, self.indeterminate())
-            if formula is not None:
-                return self._map_from_expression(formula)
-        if _is_placed_callable(value):
-            return self._map_from_callable(value)
-        raise TypeError(f"{value!r} does not name a map {self.domain()} -> {self.codomain()}")
-
-
-def _is_function_space(space) -> bool:
-    r"""Whether ``space`` is a function space realized by :class:`_FunctionSpace`.
-
-    Declared engine adapter (`OWN-06`).  Function spaces form no category of
-    their own: each is an object of ``Sets()`` or of a vector-space or algebra
-    category, realized by the engine classes of this module.  Recognizing a
-    space that engine realized is a question about the engine, and this is
-    its one site.  Its callers are the element constructor, which reparents a
-    map of another function space, and :func:`_is_differentiability_class`,
-    :func:`_is_lebesgue_space` and :func:`_is_sequence_space`.
-    """
-    return isinstance(space, _FunctionSpace)
-
-
-def _is_differentiability_class(space) -> bool:
-    r"""Whether ``space`` is a differentiability class \(C^k(X,Y)\) realized by :class:`_DifferentiabilityClass`.
-
-    Declared engine adapter (`OWN-06`), for the reason
-    :func:`_is_function_space` states: composition, coercion and membership
-    between differentiability classes recognize one here.
-    """
-    return isinstance(space, _DifferentiabilityClass)
-
-
-def _is_lebesgue_space(space) -> bool:
-    r"""Whether ``space`` is a Lebesgue space \(\mathcal L^p(\mathbb R)\) realized by :class:`_LebesgueSpace`.
-
-    Declared engine adapter (`OWN-06`), for the reason
-    :func:`_is_function_space` states: the Hölder product and the graded
-    Lebesgue modules recognize one here.
-    """
-    return isinstance(space, _LebesgueSpace)
-
-
-def _is_sequence_space(space) -> bool:
-    r"""Whether ``space`` is a sequence space \(\ell^p(\mathbb R)\) realized by :class:`_SequenceSpace`.
-
-    Declared engine adapter (`OWN-06`), for the reason
-    :func:`_is_function_space` states: the Hölder product recognizes one here.
-    """
-    return isinstance(space, _SequenceSpace)
-
-
 class _DifferentiabilityClass(_FunctionSpace):
-    r"""The differentiability class \(C^k(X,Y)\) of maps \(X\to Y\) of class \(C^k\).
-
-    An engine realizing objects of ``Sets()``; the datum this level adds is
-    the regularity \(k\in\mathbb N\cup\{\infty\}\).  The placement of an
-    object is a theorem about its codomain: pointwise operations make
-    \(C^k(X,Y)\) an \(\mathbb R\)-vector space when \(Y\) is one, realized by
-    :class:`_VectorSpaceDifferentiabilityClass`, and when \(Y=\mathbb R\)
-    pointwise product makes it a commutative unital \(\mathbb R\)-algebra,
-    realized by :class:`_FunctionAlgebraDifferentiabilityClass`.
-    ``C(k, X, Y)`` is the construction route.
-    """
-
-    Element = _DifferentiableMap
-
-    def __init__(self, regularity, **rest) -> None:
-        self._regularity = regularity
-        super().__init__(**rest)
+    r"""The differentiability class \(C^k(X,Y)\); the datum this level adds is \(k\)."""
 
     def differentiability(self):
-        return self._regularity
+        return self._condition_engine_data["regularity"]
 
-    def cardinality(self):
-        r"""\(|C^k(\mathbb R,\mathbb R)| = 2^{\aleph_0}\); any other space answers as a set.
-
-        The theorem: a continuous map \(\mathbb R\to\mathbb R\) is
-        determined by its values on \(\mathbb Q\), so
-        \(|C^k(\mathbb R,\mathbb R)|\le|\mathbb R^{\mathbb Q}|
-        =(2^{\aleph_0})^{\aleph_0}=2^{\aleph_0}\), and the constant maps
-        give the reverse inequality.  Every other represented space has
-        the cardinality its underlying set supplies.
-        """
+    def _cardinality_decision(self):
+        r"""\(|C^k(\mathbb R,\mathbb R)|=2^{\aleph_0}\): a continuous map is fixed by its values on \(\mathbb Q\), and the constants give at least that many."""
         if self.domain() is RR and self.codomain() is RR:
             return continuum
-        return super().cardinality()
-
-    def is_integral_domain(self, proof=True):
-        r"""Pointwise product has zero-divisors: bump functions."""
-        return False
-
-    def is_field(self, proof=True):
-        return False
-
-    def fraction_field(self):
-        raise TypeError(f"{self} is not an integral domain")
-
-    def coordinate(self):
-        r"""The identity map, an element of \(C^k(X,X)\)."""
-        if self.domain() is not self.codomain():
-            raise TypeError(
-                f"the identity map lies in C^k(X, X), but this is a space of maps {self.domain()} -> {self.codomain()}"
-            )
-        if self.domain() is RR:
-            return self(self.indeterminate())
-        return self._placed(lambda point: point)
+        return super()._cardinality_decision()
 
     def integral(self, integrand, lower):
         r"""The map \(x\mapsto\int_a^x f(t)\,dt\)."""
-        return integrand.integral_from(lower)
-
-    def _coerce_map_from_(self, source):
-        r"""Sage's coercion hook: the constants, and \(C^\ell(X,Y)\to C^k(X,Y)\) for \(\ell\ge k\)."""
-        if source is RR or source is ZZ or source is QQ:
-            return True
-        if not _is_differentiability_class(source):
-            return None
-        if source.domain() is not self.domain() or source.codomain() is not self.codomain():
-            return None
-        if source.differentiability() >= self.differentiability():
-            return True
-        return None
-
-    def __contains__(self, value) -> bool:
-        source = element_parent(value)
-        if source is self:
-            return True
-        if not _is_differentiability_class(source):
-            return False
-        return (
-            source.domain() is self.domain()
-            and source.codomain() is self.codomain()
-            and source.differentiability() >= self.differentiability()
-        )
+        return self(integrand).integral_from(lower)
 
     def _repr_(self) -> str:
-        k = _parameter_name(self.differentiability())
-        source = _space_name(self.domain())
-        if self.domain() is self.codomain():
-            return f"C({k}, {source})"
-        return f"C({k}, {source}, {_space_name(self.codomain())})"
+        return f"C({_parameter_name(self.differentiability())}, {_space_name(self.domain())}, {_space_name(self.codomain())})"
 
     def _latex_(self) -> str:
-        k = _parameter_latex(self.differentiability())
-        source = _space_latex(self.domain())
-        if self.domain() is self.codomain():
-            return rf"C^{{{k}}}({source})"
-        return rf"C^{{{k}}}({source}, {_space_latex(self.codomain())})"
+        return rf"C^{{{_parameter_latex(self.differentiability())}}}({_space_latex(self.domain())}, {_space_latex(self.codomain())})"
 
 
-class _VectorSpaceDifferentiabilityClass(_DifferentiabilityClass):
-    r"""\(C^k(X,Y)\) for a real vector space \(Y\): an object of ``VectorSpaces(RR)`` under pointwise operations."""
-
-
-class _FunctionAlgebraDifferentiabilityClass(_DifferentiabilityClass):
-    r"""\(C^k(X,\mathbb R)\): a commutative unital \(\mathbb R\)-algebra under pointwise operations."""
-
-
-@cached_function
+@cached_function(key=lambda regularity, domain, codomain: (_exponent_key(regularity), id(domain), id(codomain)))
 def _differentiability_class(regularity, domain, codomain):
-    r"""Build \(C^k(X,Y)\) in the category its codomain places it in."""
-    data = {
-        "regularity": regularity,
-        "domain": domain,
-        "codomain": codomain,
-        "indeterminate": SR.var("x"),
-    }
-    match codomain:
-        case _ if codomain is RR:
-            algebras = Algebras(RR).Associative().Unital().Commutative()
-            return _object_of(
-                Cat().meet((VectorSpaces(RR), algebras)),
-                _engine=(Algebras(RR), _FunctionAlgebraDifferentiabilityClass, _DifferentiableMap),
-                base_ring=RR,
-                _engine_product=lambda left, right: _RealMap._mul_(left, right),
-                _engine_scalar_action=lambda scalar, element: _RealMap._lmul_(element, scalar),
-                _engine_unit=lambda algebra: algebra._element_constructor_(1),
-                **data,
-            )
-        case _ if codomain in VectorSpaces(RR):
-            modules = VectorSpaces(RR)
-            return _object_of(
-                modules,
-                _engine=(modules, _VectorSpaceDifferentiabilityClass, _DifferentiableMap),
-                base_ring=RR,
-                **data,
-            )
-        case _:
-            return _object_of(
-                Sets(), _engine=(Sets(), _DifferentiabilityClass, _DifferentiableMap), **data
-            )
+    r"""Build \(C^k(X,Y)\) as a condition submodule of \(Y^X\); for \(Y=\mathbb R\), the algebra on it."""
+    assert codomain in VectorSpaces(RR), (
+        f"C^k(X, Y) is a real vector space of maps, so Y must be a real vector space, but {codomain} is not"
+    )
+    module = _condition_submodule(
+        codomain.function_module(domain),
+        _differentiability_condition(regularity, domain),
+        engine=(_DifferentiabilityClass, _DifferentiableMap),
+        engine_data={"regularity": regularity},
+        categories=(VectorSpaces(RR),),
+    )
+    if codomain is not RR:
+        return module
+    # C^k(X, RR) is closed under the pointwise product, which is bilinear,
+    # associative and commutative with the constant one as unit.
+    tensor = Modules(RR).tensor_product((module, module))
+    multiplication = tensor.from_bilinear_map(
+        module, lambda left, right: module(_pointwise_product(left, right))
+    )
+    return _algebra_on_module(
+        module,
+        multiplication,
+        placement=(Algebras(RR).Associative().Unital().Commutative(),),
+        unit=module.one(),
+        law_decisions={"associativity": True, "unit": True, "commutativity": True},
+    )
 
 
 class _DifferentiabilityClassNotation:
-    r"""The notation ``C`` for differentiability classes.
-
-    ``C(k, X, Y)`` and ``(C^k)(X, Y)`` are \(C^k(X,Y)\), and ``C(k, X)`` is
-    \(C^k(X,X)\).  The regularity \(k\) is a parameter; \(\infty\) is a value
-    of \(k\), not a separate constructor.
+    r"""The notation ``C(k, X, Y)`` for \(C^k(X,Y)\); \(\infty\) is a value of \(k\).
 
     EXAMPLES::
 
         sage: from dzack_research.preamble.all import Algebras, C, RR, VectorSpaces, exp
-        sage: (C^Infinity)(RR) is C(Infinity, RR, RR)
+        sage: maps = C(Infinity, RR, RR)
+        sage: maps in VectorSpaces(RR) and maps in Algebras(RR)
         True
-        sage: (C^2)(RR, RR) is C(2, RR)
-        True
-        sage: (C^Infinity)(RR) in VectorSpaces(RR)
-        True
-        sage: (C^Infinity)(RR) in Algebras(RR)
-        True
-        sage: x = (C^Infinity)(RR).coordinate()
-        sage: x(3)
-        3
-        sage: f = (C^Infinity)(RR)(exp)
-        sage: f(0)
+        sage: g(t) = exp(-t^2)
+        sage: maps(g)(0)
         1
-        sage: (f * x)(0)
-        0
-        sage: f(x * x)(0)
-        1
-        sage: (C^Infinity)(RR).integral(x, 0)(2)
-        2
     """
 
-    def __call__(self, k, domain, codomain=None):
-        return _differentiability_class(
-            _regularity(k), domain, domain if codomain is None else codomain
-        )
-
-    def __pow__(self, k):
-        r"""``C^k``: the construction \((X, Y)\mapsto C^k(X,Y)\) for one regularity."""
-        return partial(self, _regularity(k))
-
-    __xor__ = __pow__
+    def __call__(self, k, domain, codomain):
+        return _differentiability_class(_regularity(k), domain, codomain)
 
     def __repr__(self) -> str:
         return "C"
@@ -1103,89 +758,67 @@ class _DifferentiabilityClassNotation:
 C = _DifferentiabilityClassNotation()
 
 
+def _l2_pairing(left, right):
+    r"""\(\int_{\mathbb R} fg\) on maps given by formulas."""
+    left_body, variable = _required_formula(left, "the integral of a product")
+    right_body, right_variable = _required_formula(right, "the integral of a product")
+    product = left_body * right_body.subs({right_variable: variable})
+    return RR(product.integrate(variable, -Infinity, Infinity))
+
+
+def _ell2_pairing(left, right):
+    r"""\(\sum_{x\in X} a(x)b(x)\), computed as \(\sum_{n=0}^\infty a_n b_n\) on formulas.
+
+    The sum runs over \(n=0,1,2,\dots\) in the formula's variable, which is
+    the sum over \(X\) exactly when \(X=\mathbb N\); that is this
+    computation's hypothesis, asserted here and not at the space.
+    """
+    domain = left.parent().domain()
+    assert domain is NN, (
+        f"cannot sum a({domain}) b({domain}) over {domain}: the sum is computed as sum_(n=0)^oo in the "
+        f"formula's variable, which is the sum over the domain only when the domain is NN"
+    )
+    left_body, variable = _required_formula(left, "the sum of a product")
+    right_body, right_variable = _required_formula(right, "the sum of a product")
+    product = left_body * right_body.subs({right_variable: variable})
+    return RR(product.sum(variable, ZZ.zero(), Infinity))
+
+
+@cached_function
+def _lebesgue_pairing_module(left, right):
+    r"""The pairing \(\int fg\colon L^p\otimes L^{p'}\to\mathbb R\)."""
+    if left is right:
+        return left
+    return PairedModules(RR)(left.pairings_with(right, RR)(_l2_pairing))
+
+
+@cached_function
+def _sequence_pairing_module(left, right):
+    r"""The pairing \(\sum a_n b_n\colon \ell^p\otimes\ell^{p'}\to\mathbb R\)."""
+    if left is right:
+        return left
+    return PairedModules(RR)(left.pairings_with(right, RR)(_ell2_pairing))
+
+
 class _LebesgueSpace(_FunctionSpace):
-    r"""The space \(\mathcal L^p(\mathbb R)\) of \(p\)-integrable maps \(\mathbb R\to\mathbb R\).
+    r"""\(\mathcal L^p(\mathbb R,\mathbb R)\); the datum this level adds is \(p\in(0,\infty]\).
 
-    An engine realizing objects of ``VectorSpaces(RR)``: pointwise operations
-    make the \(p\)-integrable maps a real vector space.  The datum this level
-    adds is the exponent \(p\in(0,\infty]\).  The Lebesgue space
-    \(L^p(\mathbb R)\) proper is the quotient of \(\mathcal L^p(\mathbb R)\)
-    by the maps vanishing almost everywhere; its elements are classes, not
-    maps; ``quotient_by_null_functions`` constructs that quotient.
-
-    \(\mathcal L^2(\mathbb R)\) is the formed module on the vector space
-    \(\mathcal L^2\) with the symmetric bilinear form
-    \(b(f,g)=\int_{\mathbb R}fg\), which vanishes on the null maps, realized by
-    :class:`_SquareIntegrableFormedSpace`.  A general \(\mathcal L^p\) is not:
-    Hölder pairs it with \(\mathcal L^{p'}\) as ``Lp(p) * Lp(p')``.
-    ``Lp(p)`` is the construction route.
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.all import (
-        ....:     C, FormModules, Lp, PairedModules, RR,
-        ....:     SymmetricBilinearFormModules, VectorSpaces, exp,
-        ....: )
-        sage: L = Lp(2)
-        sage: L
-        L^2(RR)
-        sage: L in VectorSpaces(RR)
-        True
-        sage: L in SymmetricBilinearFormModules(RR)
-        True
-        sage: L in FormModules(RR)
-        True
-        sage: Lp(1) in FormModules(RR)
-        False
-        sage: Maps = C(Infinity, RR)
-        sage: gaussian = Maps(exp(-Maps.indeterminate() ** 2))
-        sage: L(gaussian)(0)
-        1
-        sage: L.b(L(gaussian), L(gaussian))
-        1/2*sqrt(2)*sqrt(pi)
-        sage: L.q(L(gaussian))
-        1/2*sqrt(2)*sqrt(pi)
-        sage: L.pairing_module() is L
-        True
-        sage: Lp(1) * Lp(Infinity) in PairedModules(RR)
-        True
-        sage: Lp(1) * Lp(Infinity) in FormModules(RR)
-        False
+    Its quotient by the maps vanishing almost everywhere is \(L^p\)
+    (``quotient_by_null_functions``).  For \(p=2\) the object is the formed
+    module with \(b(f,g)=\int fg\).  The form lives on functions, not on
+    classes: \(b(f,f)=\int f^2\) vanishes exactly when \(f\) is null, so the
+    radical of \(b\) is exactly the null functions and \(b\) is degenerate on
+    \(\mathcal L^2\).  The Hilbert space \(L^2\) is the quotient of this
+    formed module by its null functions, ``quotient_by_null_functions()``.
+    A general \(\mathcal L^p\) is paired with \(\mathcal L^{p'}\) by Hölder,
+    ``Lp(p, RR, RR) * Lp(p', RR, RR)``.
     """
 
-    def __init__(self, exponent, **rest) -> None:
-        self._exponent = exponent
-        super().__init__(**rest)
-
-    def _element_constructor_(self, value):
-        element = super()._element_constructor_(value)
-        exponent = self.integrability_exponent()
-        formula = element._formula()
-        if formula is not None and not formula.variables() and exponent is not Infinity:
-            from dzack_research.preamble.logic import ask
-
-            if ask(RR(formula) != RR.zero()) is True:
-                raise ValueError(
-                    f"the nonzero constant {formula} is not in {self}: its p-th power has infinite integral over RR"
-                )
-        if formula is not None:
-            reason = _lebesgue_nonmembership_reason(
-                formula, self.indeterminate(), exponent
-            )
-            if reason is not None:
-                raise ValueError(f"{formula} is not in {self}: {reason}")
-        if (exponent == 2) is not True:
-            return element
-        formula = element._formula()
-        if formula is None:
-            return element
-        verdict = _l2_symbolic_verdict(formula, self.indeterminate())
-        if verdict is False:
-            raise ValueError(f"{formula} is not square-integrable on RR")
-        return element
+    def integrability_exponent(self):
+        return self._condition_engine_data["exponent"]
 
     def quotient_by_null_functions(self):
-        r"""The actual Lebesgue space, quotienting these maps by a.e. equality."""
+        r"""The Lebesgue space proper: these maps modulo equality almost everywhere."""
         from dzack_research.preamble.categories.functions.lebesgue_quotients import _lebesgue_quotient
 
         return _lebesgue_quotient(self)
@@ -1196,228 +829,129 @@ class _LebesgueSpace(_FunctionSpace):
 
         return AlmostEverywhereEquality(self(left), self(right))
 
-    def integrability_exponent(self):
-        return self._exponent
-
     def conjugate_lebesgue_space(self):
-        r"""The space \(L^{p'}\) with \(1/p+1/p'=1\)."""
-        return Lp(_conjugate_exponent(self.integrability_exponent()))
+        r"""\(L^{p'}\) with \(1/p+1/p'=1\)."""
+        return Lp(_conjugate_exponent(self.integrability_exponent()), self.domain(), self.codomain())
 
     def integration_morphism(self):
-        r"""Integration \(\iota:L^1(\mathbb R)\to\mathbb R\)."""
+        r"""Integration \(L^1(\mathbb R)\to\mathbb R\), linear by the linearity of the Lebesgue integral."""
         if self.integrability_exponent() != 1:
             raise TypeError(
-                f"integration is a bounded linear functional only on L^1(RR), but {self} has p = "
-                f"{self.integrability_exponent()}"
+                f"integration is a linear functional on L^1(RR), but {self} has p = {self.integrability_exponent()}"
             )
 
         def evaluate(function, space=self):
-            function = space(function)
-            if function == space.zero():
-                return RR.zero()
-            return RR(function.expression().integrate(space.indeterminate(), -Infinity, Infinity))
+            body, variable = _required_formula(space(function), "the integral")
+            return RR(body.integrate(variable, -Infinity, Infinity))
 
-        # Additivity and scalar compatibility are the linearity theorem for the
-        # Lebesgue integral on integrable real-valued functions.
         return Modules(RR).Mor(self, RR)._from_constructed_element_map(evaluate)
 
-    @cached_method
     def pairing_module(self):
-        r"""The Hölder pairing module \(L^p\otimes L^{p'}\to\mathbb R\).
-
-        When \(p=2\) this is \(L^2\) itself, as a formed module.
-        """
+        r"""The Hölder pairing module \(L^p\otimes L^{p'}\to\mathbb R\); for \(p=2\), \(L^2\) itself."""
         return self * self.conjugate_lebesgue_space()
 
     def __mul__(self, other):
-        if not _is_lebesgue_space(other):
-            raise TypeError(
-                f"{self} * {other} is a pairing only when both factors are Lebesgue spaces, but {other} is not one"
-            )
-        if not _are_holder_conjugates(
+        if not (_is_lebesgue_space(other) and _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
-        ):
+        )):
             raise TypeError(
-                f"{self} (x) {other} -> RR is a pairing only when 1/p + 1/q = 1, but p = "
-                f"{self.integrability_exponent()} and q = {other.integrability_exponent()}"
+                f"{self} (x) {other} -> RR is a pairing only of Lebesgue spaces with 1/p + 1/q = 1"
             )
         return _lebesgue_pairing_module(self, other)
 
     def _repr_(self) -> str:
-        return f"L^{_parameter_name(self.integrability_exponent())}(RR)"
+        return f"L^{_parameter_name(self.integrability_exponent())}(RR, RR)"
 
     def _latex_(self) -> str:
-        return rf"L^{{{_parameter_latex(self.integrability_exponent())}}}(\mathbb{{R}})"
+        return rf"L^{{{_parameter_latex(self.integrability_exponent())}}}(\mathbb{{R}}, \mathbb{{R}})"
 
 
-class _SquareIntegrableFormedSpace(_LebesgueSpace):
-    r"""\(\mathcal L^2(\mathbb R)\) with \(b(f,g)=\int_{\mathbb R}fg\): the formed module on the vector space \(\mathcal L^2\)."""
+@cached_function(key=lambda exponent, domain, codomain: (_exponent_key(exponent), id(domain), id(codomain)))
+def _lebesgue_space(exponent, domain, codomain):
+    r"""Build \(\mathcal L^p(\mathbb R,\mathbb R)\) in \(\mathbb R^{\mathbb R}\); for \(p=2\), equipped with \(\int fg\).
 
-
-@cached_function(key=_exponent_key)
-def _lebesgue_space(exponent):
-    r"""Build \(L^p(\mathbb R)\); for \(p=2\), the formed module on the vector space \(L^2\).
-
-    The form \(\int fg\) is a morphism out of the vector space, so the vector
-    space is built first and retained as the formed module's unformed module
-    (`CON-16`).
+    The \(p=2\) form is on functions; its radical is the null functions,
+    and \(L^2\) is ``quotient_by_null_functions()`` of the result.
     """
-    modules = VectorSpaces(RR)
-    data = dict(exponent=exponent, base_ring=RR, domain=RR, codomain=RR, indeterminate=SR.var("x"))
-    module = _object_of(modules, _engine=(modules, _LebesgueSpace, _RealMap), **data)
+    assert domain is RR and codomain is RR, (
+        f"L^p(X, Y) is implemented for Lebesgue measure on X = RR and Y = RR, not for X = {domain}, Y = {codomain}"
+    )
+    module = _condition_submodule(
+        RR.function_module(RR),
+        _lebesgue_condition(exponent),
+        engine=(_LebesgueSpace, _FunctionSpaceMap),
+        engine_data={"exponent": exponent},
+        categories=(VectorSpaces(RR),),
+    )
     if (exponent == 2) is not True:
         return module
-    formed = SymmetricBilinearFormModules(RR)
-    return _object_of(
-        Cat().meet((modules, formed)),
-        _engine=(FormModules(RR), _SquareIntegrableFormedSpace, _RealMap),
-        source_form=module.bilinear_forms(RR)(_l2_pairing),
-        **data,
-    )
+    return SymmetricBilinearFormModules(RR)(module.bilinear_forms(RR)(_l2_pairing))
 
 
-def Lp(p):
-    r"""The real Lebesgue space \(L^p(\mathbb R)\), represented by its \(p\)-integrable maps."""
-    return _lebesgue_space(_integrability(p))
+def Lp(p, domain, codomain):
+    r"""The space \(\mathcal L^p(X,Y)\) of \(p\)-integrable maps \(X\to Y\)."""
+    return _lebesgue_space(_integrability(p), domain, codomain)
 
 
 class _SequenceSpace(_FunctionSpace):
-    r"""The real sequence space \(\ell^p(\mathbb R)\) of \(p\)-summable maps \(\mathbb N\to\mathbb R\).
+    r"""\(\ell^p(X,\mathbb R)\) for a set \(X\); the datum this level adds is \(p\in(0,\infty]\).
 
-    An engine realizing objects of ``VectorSpaces(RR)``: pointwise operations
-    make the \(p\)-summable sequences (the bounded ones for \(p=\infty\)) a
-    real vector space.  The datum this level adds is the exponent
-    \(p\in(0,\infty]\).  \(\ell^2(\mathbb R)\) is the formed module on the
-    vector space \(\ell^2\) with \(b(a,c)=\sum_{n\in\mathbb N}a_n c_n\),
-    realized by :class:`_SquareSummableFormedSpace`.  ``ell(p)`` is the
-    construction route.
+    The \(p\)-summable maps for counting measure on \(X\): \(\sum_{x\in X}|a(x)|^p<\infty\),
+    bounded maps for \(p=\infty\).  For \(p=2\) the object is the formed
+    module with \(b(a,c)=\sum_{x\in X}a(x)c(x)\) on functions.  Counting
+    measure has no nonempty null set, so \(b(a,a)=\sum_x a(x)^2\) vanishes
+    only at \(a=0\): the radical of \(b\) is zero, and no quotient is taken.
     """
 
-    def __init__(self, exponent, **rest) -> None:
-        self._exponent = exponent
-        super().__init__(**rest)
-
-    def _element_constructor_(self, value):
-        element = super()._element_constructor_(value)
-        formula = element._formula()
-        if formula is None:
-            return element
-        reason = _sequence_nonmembership_reason(
-            formula, self.indeterminate(), self.integrability_exponent()
-        )
-        if reason is not None:
-            raise ValueError(f"{formula} is not in {self}: {reason}")
-        return element
-
     def integrability_exponent(self):
-        return self._exponent
+        return self._condition_engine_data["exponent"]
 
     def conjugate_sequence_space(self):
-        r"""The space \(\ell^{p'}\) with \(1/p+1/p'=1\)."""
-        return ell(_conjugate_exponent(self.integrability_exponent()))
+        r"""\(\ell^{p'}\) with \(1/p+1/p'=1\)."""
+        return ell(_conjugate_exponent(self.integrability_exponent()), self.domain(), self.codomain())
 
-    @cached_method
     def pairing_module(self):
-        r"""The Hölder pairing module \(\ell^p\otimes\ell^{p'}\to\mathbb R\).
-
-        When \(p=2\) this is \(\ell^2\) itself, as a formed module.
-        """
         return self * self.conjugate_sequence_space()
 
     def __mul__(self, other):
-        if not _is_sequence_space(other):
-            raise TypeError(
-                f"{self} * {other} is a pairing only when both factors are sequence spaces, but {other} is not one"
-            )
-        if not _are_holder_conjugates(
+        if not (_is_sequence_space(other) and _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
-        ):
+        )):
             raise TypeError(
-                f"{self} (x) {other} -> RR is a pairing only when 1/p + 1/q = 1, but p = "
-                f"{self.integrability_exponent()} and q = {other.integrability_exponent()}"
+                f"{self} (x) {other} -> RR is a pairing only of sequence spaces with 1/p + 1/q = 1"
             )
         return _sequence_pairing_module(self, other)
 
     def _repr_(self) -> str:
-        return f"ell^{_parameter_name(self.integrability_exponent())}(RR)"
+        return f"ell^{_parameter_name(self.integrability_exponent())}({_space_name(self.domain())}, RR)"
 
     def _latex_(self) -> str:
-        return rf"\ell^{{{_parameter_latex(self.integrability_exponent())}}}(\mathbb{{R}})"
+        return rf"\ell^{{{_parameter_latex(self.integrability_exponent())}}}({_space_latex(self.domain())}, \mathbb{{R}})"
 
 
-class _SquareSummableFormedSpace(_SequenceSpace):
-    r"""\(\ell^2(\mathbb R)\) with \(b(a,c)=\sum_n a_n c_n\): the formed module on the vector space \(\ell^2\)."""
-
-
-@cached_function(key=_exponent_key)
-def _sequence_space(exponent):
-    r"""Build \(\ell^p(\mathbb R)\); for \(p=2\), the formed module on the vector space \(\ell^2\).
-
-    The form \(\sum a_nb_n\) is a morphism out of the vector space, so the
-    vector space is built first and retained as the formed module's unformed
-    module (`CON-16`).
-    """
-    modules = VectorSpaces(RR)
-    data = dict(exponent=exponent, base_ring=RR, domain=NN, codomain=RR, indeterminate=SR.var("n"))
-    module = _object_of(modules, _engine=(modules, _SequenceSpace, _RealMap), **data)
+@cached_function(key=lambda exponent, domain, codomain: (_exponent_key(exponent), id(domain), id(codomain)))
+def _sequence_space(exponent, domain, codomain):
+    r"""Build \(\ell^p(X,\mathbb R)\) in \(\mathbb R^X\) for a set \(X\); for \(p=2\), equipped with \(\sum_x a(x)c(x)\)."""
+    assert codomain is RR, (
+        f"ell^p(X, Y) is implemented for real-valued sequences, Y = RR, not for Y = {codomain}"
+    )
+    module = _condition_submodule(
+        RR.function_module(domain),
+        _summability_condition(exponent, domain),
+        engine=(_SequenceSpace, _FunctionSpaceMap),
+        engine_data={"exponent": exponent},
+        categories=(VectorSpaces(RR),),
+    )
     if (exponent == 2) is not True:
         return module
-    formed = SymmetricBilinearFormModules(RR)
-    return _object_of(
-        Cat().meet((modules, formed)),
-        _engine=(FormModules(RR), _SquareSummableFormedSpace, _RealMap),
-        source_form=module.bilinear_forms(RR)(_ell2_pairing),
-        **data,
-    )
+    return SymmetricBilinearFormModules(RR)(module.bilinear_forms(RR)(_ell2_pairing))
 
 
 class _SequenceSpaceNotation:
-    r"""The notation ``ell`` for sequence spaces.
+    r"""The notation ``ell(p, X, Y)`` for \(\ell^p(X,Y)\), \(X\) any set."""
 
-    ``ell(p)``, ``ell(p, RR)`` and ``(ell^p)(RR)`` are \(\ell^p(\mathbb R)\).
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.all import (
-        ....:     FormModules, PairedModules, QQ, RR, VectorSpaces, ell,
-        ....: )
-        sage: ell(2) is ell(2, RR)
-        True
-        sage: ell(2) in FormModules(RR)
-        True
-        sage: ell(1) in FormModules(RR)
-        False
-        sage: n = ell(2).indeterminate()
-        sage: geometric = ell(2)(2 ** (-n))
-        sage: geometric(3)
-        1/8
-        sage: ell(2).b(geometric, geometric)
-        4/3
-        sage: t = QQ.polynomial_ring("t").gen()
-        sage: truncated = ell(2)(1 + t + t**2)
-        sage: truncated(3)
-        0
-        sage: ell(2).b(truncated, truncated)
-        3
-        sage: ell(2) * ell(2) is ell(2)
-        True
-        sage: ell(1) * ell(Infinity) in PairedModules(RR)
-        True
-        sage: ell(1) * ell(Infinity) in FormModules(RR)
-        False
-    """
-
-    def __call__(self, p, values=None):
-        assert values is None or values is RR, (
-            f"ell^p is a space of sequences of real numbers, so its values lie in RR, not in {values}"
-        )
-        return _sequence_space(_integrability(p))
-
-    def __pow__(self, p):
-        r"""``ell^p``: the construction of \(\ell^p(\mathbb R)\) for one exponent."""
-        return partial(self, _integrability(p))
-
-    __xor__ = __pow__
+    def __call__(self, p, domain, codomain):
+        return _sequence_space(_integrability(p), domain, codomain)
 
     def __repr__(self) -> str:
         return "ell"
@@ -1427,3 +961,26 @@ class _SequenceSpaceNotation:
 
 
 ell = _SequenceSpaceNotation()
+
+
+def _is_function_space(space) -> bool:
+    r"""Declared engine adapter (``OWN-06``): whether ``space`` is realized by :class:`_FunctionSpace`."""
+    return isinstance(space, _FunctionSpace)
+
+
+def _is_differentiability_class(space) -> bool:
+    r"""Declared engine adapter (``OWN-06``): whether ``space`` is a \(C^k(X,Y)\) realized here."""
+    return isinstance(space, _DifferentiabilityClass)
+
+
+def _is_lebesgue_space(space) -> bool:
+    r"""Declared engine adapter (``OWN-06``): whether ``space`` is an \(\mathcal L^p\) realized here.
+
+    Its callers are the Hölder product and the graded Lebesgue modules.
+    """
+    return isinstance(space, _LebesgueSpace)
+
+
+def _is_sequence_space(space) -> bool:
+    r"""Declared engine adapter (``OWN-06``): whether ``space`` is an \(\ell^p\) realized here."""
+    return isinstance(space, _SequenceSpace)

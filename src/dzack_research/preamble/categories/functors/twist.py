@@ -12,7 +12,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 
 
 class TwistFunctor(Functor):
@@ -35,7 +38,7 @@ class TwistFunctor(Functor):
     _faithful = True
 
     def __init__(self, scale) -> None:
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         self._scale = integers(scale)
         if self._scale == integers.zero():
             raise ValueError(

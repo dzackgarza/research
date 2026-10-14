@@ -101,6 +101,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _ring_morphisms_equal,
     _selected_engine_ring_morphism,
     _proper_restriction_base_ring,
+    _owned_integers,
+    _owned_rationals,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
@@ -1992,7 +1995,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 _scheme_base_change_functor,
             )
 
-            assert _own_ring(ring_map.domain()) is self.base_ring(), (
+            assert _owned_ring(ring_map.domain()) is self.base_ring(), (
                 f"cannot form the base change of {self} along {ring_map}: the ring map must start at the "
                 f"base ring {self.base_ring()}, but it starts at {ring_map.domain()}"
             )
@@ -4330,7 +4333,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
     def analytification(self, scalar_embedding):
         r"""Return affine-space analytification along this base embedding."""
-        assert _own_ring(scalar_embedding.domain()) is self.base_ring(), (
+        assert _owned_ring(scalar_embedding.domain()) is self.base_ring(), (
             f"cannot analytify the affine spaces over {self.base_ring()} along {scalar_embedding}: the "
             f"embedding must start at {self.base_ring()}, but it starts at {scalar_embedding.domain()}"
         )
@@ -4400,7 +4403,7 @@ def _rational_functions_in_T():
     r"""The owned rational function field ``QQ(T)`` and its variable ``T``."""
     from sage.rings.rational_field import QQ as SageQQ
 
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     polynomial = rationals.polynomial_ring("T")
     rational_functions = _commutative_algebra_with_structure(polynomial.fraction_field(), rationals, ("T",))
     return rational_functions, rational_functions.algebra_generator("T")
@@ -4475,7 +4478,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Return the owned standard fan of ``P^n``."""
             from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 
-            lattice = _own_ring(SageZZ).free_module(int(self.relative_dimension()))
+            lattice = _owned_integers().free_module(int(self.relative_dimension()))
             return RationalPolyhedralFans(lattice).projective_space_fan()
 
         @cached_method
@@ -4554,7 +4557,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 f"Pic(P^2) over a field should have one generator [O(1)], but {picard} has "
                 f"{labels.cardinality()} generators"
             )
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return BilinearMap(
                 picard,
                 picard,
@@ -4568,7 +4571,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 f"the projective-space Del Pezzo degree applies to P^2, but {self} has relative "
                 f"dimension {self.relative_dimension()}"
             )
-            return _own_ring(SageZZ)(9)
+            return _owned_integers()(9)
 
         def _is_del_pezzo(self) -> bool:
             r"""``P^2`` is Del Pezzo because ``-K = O(3)`` is ample."""

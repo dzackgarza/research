@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _OwnedIntegerElement,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     Set as owned_set,
@@ -35,7 +36,7 @@ def Integer(value: int | str | _OwnedIntegerElement = 0) -> _OwnedIntegerElement
     from sage.rings.integer_ring import ZZ as SageZZ
 
     # The ZZ parent selects _OwnedIntegerElement as its Element class.
-    return cast(_OwnedIntegerElement, _own_ring(SageZZ)(value))
+    return cast(_OwnedIntegerElement, _owned_integers()(value))
 
 
 def RealNumber(value: int | str | _OwnedIntegerElement | ExactRealNumber) -> ExactRealNumber:
@@ -85,7 +86,7 @@ def matrix(rows):
         if ring is not None:
             break
     if ring is None:
-        ring = _own_ring(SageZZ)
+        ring = _owned_integers()
     matrix_space = ring.matrix_space(len(rows), width)
     return matrix_space.from_rows(rows)
 

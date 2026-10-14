@@ -4,7 +4,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
-    polynomial = QQ.polynomial_ring("x", "y")
+    polynomial = QQ.polynomial_ring(("x", "y"))
     x, y = tuple(polynomial.algebra_generators())
     node = polynomial.quotient_ring(polynomial.ideal(x * y))
 
@@ -34,7 +34,7 @@ def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
 
 
 def test_total_quotient_ring_of_reduced_node_is_product_of_component_fields() -> None:
-    polynomial = QQ.polynomial_ring("x", "y")
+    polynomial = QQ.polynomial_ring(("x", "y"))
     x, y = tuple(polynomial.algebra_generators())
     node = polynomial.quotient_ring(polynomial.ideal(x * y))
 

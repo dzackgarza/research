@@ -12,11 +12,11 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
+from sage.rings.finite_rings.finite_field_constructor import GF as _SageGF
 from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
-from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.fraction_field import FractionField_generic as SageFractionField
 from sage.rings.ideal import Ideal_generic as SageIdeal
 from sage.rings.infinity import Infinity
@@ -53,8 +53,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
+    OwnedOrders,
     OwnedPrincipalIdealDomains,
     OwnedRings,
+    PrimeFields,
     _engine_element,
     _engine_krull_dimension,
     _krull_dimension_of_engine,
@@ -65,6 +67,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _ring_morphism_with_engine,
     _ring_morphisms_equal,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -127,9 +130,12 @@ class PrimeSpectra(OwnedCategory):
         r"""\(\operatorname{Spec}\mathbb{Z}\)."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ).spectrum()
+        return _owned_integers().spectrum()
 
     def super_categories(self):
         return [PartiallyOrderedSets(), TopologicalSpaces()]
@@ -185,7 +191,7 @@ class PrimeSpectra(OwnedCategory):
             if ring in QuotientRings():
                 point_engine = _engine_quotient_cover_ideal(ring, point_engine)
             degree = int(point_engine.vector_space_dimension())
-            return _own_ring(SageZZ)(degree)
+            return _owned_integers()(degree)
 
         @cached_method
         def closure_dimension(self):
@@ -256,7 +262,7 @@ class PrimeSpectra(OwnedCategory):
                         f"divisible by the degree {denominator} of {self.ideal()}, so length_(R_p)(R_p/Q_p) is not an integer"
                     )
                 total += numerator // denominator
-            return _own_ring(SageZZ)(total)
+            return _owned_integers()(total)
 
         def local_length(self, ideal):
             r"""Return ``length_{R_p}((R/I)_p)`` for a finite local quotient.
@@ -283,7 +289,7 @@ class PrimeSpectra(OwnedCategory):
                 if component.radical() == point_engine
             )
             if not matching:
-                return _own_ring(SageZZ).zero()
+                return _owned_integers().zero()
             total_dimension = 0
             for component in matching:
                 dimension = component.vector_space_dimension()
@@ -299,7 +305,7 @@ class PrimeSpectra(OwnedCategory):
                     f"the local dimension {total_dimension} at {self} is not divisible by the residue degree "
                     f"{residue_degree}, so the local length is not an integer"
                 )
-            return _own_ring(SageZZ)(total_dimension // residue_degree)
+            return _owned_integers()(total_dimension // residue_degree)
 
         @cached_method
         def height(self):
@@ -434,17 +440,17 @@ class PrimeSpectra(OwnedCategory):
         def cardinality(self):
             r"""Return the exact number of prime points in supported finite spectra."""
             ring = self.ring()
-            engine = _engine_ring(ring)
-            assert (
-                ring in OwnedRings().Division().Commutative()
-                or isinstance(engine, IntegerModRing_generic)
-            ), (
-                f"cannot count the prime ideals of {ring}: the number of points of Spec(R) is computed here "
-                "only for R a field or Z/nZ"
-            )
             if ring in OwnedRings().Division().Commutative():
                 return cardinal(1)
-            modulus = SageZZ(engine.characteristic())
+            assert ring in QuotientRings() and ring.quotient_source() is _owned_integers(), (
+                f"cannot count the prime ideals of {ring}: the number of points of Spec(R) is computed here "
+                "only for R a field or ZZ/(n)"
+            )
+            # The primes of ZZ/(n) are the (p)/(n) for the primes p dividing n.
+            modulus = SageZZ(_engine_ideal(_owned_integers(), ring.defining_ideal()).gen())
+            assert modulus != 0, (
+                f"cannot count the prime ideals of {ring}: ZZ/(0) is ZZ, which has infinitely many"
+            )
             return cardinal(len(tuple(modulus.prime_divisors())))
 
         def ringed_space(self):
@@ -497,7 +503,7 @@ class IntegralPrimeSpectra(OwnedCategory):
         return [PrimeSpectra()]
 
     def an_object(self):
-        return _own_ring(SageZZ).spectrum()
+        return _owned_integers().spectrum()
 
     class ParentMethods:
         def generic_point(self):
@@ -661,11 +667,31 @@ def _distinguished_open_subobject(spectrum, function):
 
 
 
+def _engine_quotient_representative(quotient_engine, backend_value):
+    r"""A source-engine representative of a class held by a quotient's selected realization.
+
+    Private adapter of :class:`QuotientRings` (``OWN-06``), called only by its
+    element constructor after the realization is selected.  Sage quotient
+    rings and ``ZZ/nZZ`` lift a class by ``lift()``.  The realization of
+    ``F_p[t]/(m)`` is a Sage finite field of degree ``deg m`` over its prime
+    field, whose elements have no ``lift()``; ``polynomial()`` returns the
+    reduced representative in ``F_p[t]`` (``element_givaro.pyx``,
+    ``element_pari_ffelt.pyx``, ``element_ntl_gf2e.pyx``).
+    """
+    from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
+
+    match quotient_engine:
+        case SageFiniteFieldClass() if quotient_engine.degree() > 1:
+            return backend_value.polynomial()
+        case _:
+            return backend_value.lift()
+
+
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
     def an_object(self):
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return integers.quotient_ring(integers.ideal(integers(2)))
 
     class ElementMethods(Element):
@@ -766,7 +792,7 @@ class QuotientRings(OwnedCategory):
                 backend_value = quotient_engine(value)
                 value = _owned_engine_element(
                     quotient_source,
-                    source_engine(backend_value.lift()),
+                    source_engine(_engine_quotient_representative(quotient_engine, backend_value)),
                 )
             elif value_parent in OwnedRings():
                 value_engine = _engine_ring(value_parent)
@@ -778,7 +804,7 @@ class QuotientRings(OwnedCategory):
                     backend_value = quotient_engine(_engine_element(value_parent, value))
                     value = _owned_engine_element(
                         quotient_source,
-                        source_engine(backend_value.lift()),
+                        source_engine(_engine_quotient_representative(quotient_engine, backend_value)),
                     )
             elif value_parent is source_engine:
                 value = _owned_engine_element(quotient_source, source_engine(value))
@@ -1002,7 +1028,7 @@ class QuotientRings(OwnedCategory):
             a larger computation field of a localization does not.
             """
             source = self.quotient_source()
-            if source is _own_ring(SageZZ):
+            if source is _owned_integers():
                 return True
             base = source.base_ring()
             return (
@@ -1099,7 +1125,7 @@ class QuotientRings(OwnedCategory):
 
         def _characteristic_decision(self):
             source = self.quotient_source()
-            if source is _own_ring(SageZZ):
+            if source is _owned_integers():
                 # The selected integer ideal is canonicalized by Sage from
                 # its entire generating family, not its first written entry.
                 generator = abs(_engine_ideal(source, self.defining_ideal()).gen())
@@ -1246,7 +1272,7 @@ class QuotientRings(OwnedCategory):
                 field_map * component.quotient_map()
                 for component, field_map in zip(components, field_maps, strict=True)
             )
-            target = _finite_product_ring(fields)
+            target = OwnedRings().product(fields)
             target_engine = _engine_ring(target)
 
             def image(element):
@@ -1398,18 +1424,6 @@ def _identity_affine_normalization_data(algebra, coefficient_map, components):
     )
 
 
-def _finite_product_ring(factors):
-    factors = tuple(factors)
-    if not factors:
-        raise ValueError(
-            "a finite product ring R_1 x ... x R_n needs at least one factor, but none was given"
-        )
-    if len(factors) == 1:
-        return factors[0]
-    engines = tuple(_engine_ring(factor) for factor in factors)
-    return _own_ring(engines[0].cartesian_product(*engines[1:]))
-
-
 def _localized_affine_normalization_data(localization, source_data):
     r"""Localize a retained finite normalization along finitely many elements.
 
@@ -1477,9 +1491,9 @@ def _localized_affine_normalization_data(localization, source_data):
 
     # If every minimal component is killed, a power of an element of S is
     # zero in A. Thus L itself is the zero ring and represents the empty
-    # product; _finite_product_ring deliberately requires a nonempty family.
+    # product; the product of rings is represented for a nonempty family.
     component_values = tuple(localized_components[index] for index in indices)
-    normalization = _finite_product_ring(component_values) if component_values else localization
+    normalization = OwnedRings().product(component_values) if component_values else localization
     normalization_engine = _engine_ring(normalization)
 
     def in_product(values):
@@ -1936,7 +1950,7 @@ def _affine_quotient_normalization_data(quotient):
         normalizations = tuple(normalizations)
         normalization_maps = tuple(normalization_maps)
         component_primes = tuple(component_primes)
-        normalization = _finite_product_ring(normalizations)
+        normalization = OwnedRings().product(normalizations)
         if len(normalizations) == 1:
             normalization_map = normalization_maps[0]
         else:
@@ -2201,7 +2215,7 @@ class PrimeLocalizations(OwnedCategory):
     r"""Prime local rings ``R_p`` represented by fractions with denominator outside ``p``."""
 
     def an_object(self):
-        return _own_ring(SageZZ).localize_at_prime(2)
+        return _owned_integers().localize_at_prime(2)
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
@@ -2372,7 +2386,7 @@ class AdicCompletions(Category):
         r"""The 2-adic completion of the owned integers."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return self(integers, integers.ideal(integers(2)), precision=4)
 
     def super_categories(self):
@@ -2399,7 +2413,7 @@ class AdicCompletions(Category):
 
         def an_object(self):
             r"""The 2-adic completion of the integers."""
-            return _own_ring(SageZZ).adic_completion(2)
+            return _owned_integers().adic_completion(2)
 
         class ParentMethods:
             @cached_method
@@ -3327,7 +3341,6 @@ def _quotient_ring(source, defining_ideal):
     actual classes. This includes a further quotient of an engine-free
     quotient; neither its source nor its defining ideal is flattened away.
     """
-    finite_order_quotient = False
     exact_source_quotient = (
         source in LocalizationRings() or _engine_ring(source) is source
     )
@@ -3341,10 +3354,8 @@ def _quotient_ring(source, defining_ideal):
                 # Sage's generic QuotientRing order branch attempts to replace an
                 # order ideal I by K.ideal(I), treating the ideal itself as a field
                 # element.  The owned quotient already has the exact class model:
-                # equality is membership modulo I and a nonzero ideal of an order
-                # has finite index equal to its ideal norm.
+                # equality is membership modulo I.
                 quotient_engine = None
-                finite_order_quotient = not defining.is_zero()
             case QuotientRing_generic():
                 lifted = _engine_quotient_cover_ideal(source, defining)
                 quotient_engine = lifted.ring().quotient(lifted)
@@ -3357,6 +3368,20 @@ def _quotient_ring(source, defining_ideal):
             case _:
                 quotient_engine = engine.quotient(defining)
 
+    # O/I is finite for an order O and a nonzero ideal I, placed by that
+    # construction: O is a free ZZ-module of finite rank, so a nonzero ideal
+    # has full rank and finite index (Mathlib
+    # ``Ideal.finiteQuotientOfFreeOfNeBot``,
+    # Mathlib/LinearAlgebra/FreeModule/IdealQuotient.lean).  ZZ is the order
+    # of QQ: ZZ/(n) is ``ZMod n`` (``Int.quotientSpanNatEquivZMod``), finite
+    # for n != 0 (``ZMod.fintype``, Mathlib/Data/ZMod/Defs.lean).  The
+    # placement reads the source's construction and the ideal's generators,
+    # never the class of a realization (ARC-08).
+    finite_order_quotient = (
+        not exact_source_quotient
+        and source in OwnedOrders()
+        and not defining.is_zero()
+    )
     dimension = None
     # R/R has dimension -infinity, outside this finite-integer datum.
     if finite_order_quotient and not defining.is_one():
@@ -3371,21 +3396,58 @@ def _quotient_ring(source, defining_ideal):
         quotient_is_domain = quotient_is_field or defining_ideal.is_prime() is True
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
+    # ZZ/(p) for a maximal (p) is the prime field F_p, one object for every
+    # route (``GF(p)``, ``PrimeFields()(p)``, ``Zmod(p)``).  It has no proper
+    # subfield: every ring map into ZZ/(p) is onto (Mathlib
+    # ``ZMod.ringHom_surjective``, Mathlib/Data/ZMod/Basic.lean:1135, with
+    # ``Int.quotientSpanNatEquivZMod``), so a subfield, containing the image
+    # of ZZ, is all of it.  Sage's prime field ``GF(p)`` is selected as the
+    # private realization of this quotient (CON-12).
+    prime_field = (
+        quotient_is_field
+        and not exact_source_quotient
+        and source is _owned_integers()
+    )
+    if prime_field:
+        quotient_engine = _SageGF(abs(defining.gen()))
+    # F_p[t]/(m) for a maximal (m) is the field F_q, q = p^(deg m): the
+    # classes of 1, t, ..., t^(deg m - 1) are an F_p-basis (Mathlib
+    # ``AdjoinRoot.powerBasis``, Mathlib/RingTheory/AdjoinRoot.lean), so it
+    # has p^(deg m) elements.  This is the construction of ``GF(q, label)``.
+    # Sage's finite field with modulus exactly m is selected as its private
+    # realization (CON-12); the modulus is the caller's (OWN-22), so Sage
+    # does not re-test irreducibility.
+    finite_extension_field = (
+        quotient_is_field
+        and not exact_source_quotient
+        and not prime_field
+        and source.base_ring() in PrimeFields()
+        and source in SymmetricAlgebras(source.base_ring())
+        and source.algebra_generating_set().is_finite() is True
+        and (source.algebra_generating_set().cardinality() == cardinal(1)) is True
+    )
+    if finite_extension_field:
+        modulus = defining.gen()
+        characteristic = int(_engine_ring(source.base_ring()).characteristic())
+        quotient_engine = _SageGF(
+            characteristic ** int(modulus.degree()),
+            _engine_ring(source).variable_name(),
+            modulus=modulus,
+            check_irreducible=False,
+        )
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
+    if prime_field:
+        placements.append(PrimeFields())
     if quotient_is_field:
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
         # A prime ideal is proper, so this quotient is also nontrivial.
         placements.append(OwnedIntegralDomains())
-    if (
-        source in FiniteSets()
-        or isinstance(quotient_engine, IntegerModRing_generic)
-        or finite_order_quotient
-    ):
+    if source in FiniteSets() or finite_order_quotient or finite_extension_field:
         placements.append(FiniteSets())
-    if dimension == 0:
+    if dimension == 0 or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
     return _object_of(
@@ -3772,7 +3834,11 @@ def _nonzero_element_submonoid(source):
 
 
 def _fraction_field_localization(source, submonoid):
-    r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
+    r"""``(R-{0})^-1 R``, the fraction field of the domain ``R``, retaining its localization datum.
+
+    The localization is itself the field; Sage's fraction field of the
+    source's realization is selected privately as its realization (``CON-12``).
+    """
     if source not in OwnedIntegralDomains():
         raise ValueError(
             f"the fraction field (R - {{0}})^-1 R needs R an integral domain, but {source} is not known to be one"
@@ -3802,7 +3868,6 @@ def _fraction_field_localization(source, submonoid):
             fraction_engine = SageFractionField(engine)
         case _:
             fraction_engine = engine.fraction_field()
-    field = _own_ring(fraction_engine)
     placements = [OwnedIntegralDomains(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -3826,7 +3891,6 @@ def _fraction_field_localization(source, submonoid):
         submonoid=submonoid,
         _engine_ring=fraction_engine,
         algebra_source=algebra_source,
-        fraction_field_realization=field,
     )
 
 
@@ -4645,7 +4709,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
 
 def Zp(*args, **kwargs):
-    source = _own_ring(SageZZ)
+    source = _owned_integers()
     prime_value = args[0] if args else kwargs.get("p")
     owned_prime = source(prime_value)
     prime = SageZZ(_engine_element(source, owned_prime))

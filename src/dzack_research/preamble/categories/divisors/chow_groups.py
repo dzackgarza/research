@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedNoetherianRings,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
@@ -58,7 +59,7 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(self, cycle_scheme, cycle_dimension, **rest) -> None:
             self._cycle_scheme = cycle_scheme
-            self._cycle_dimension = _own_ring(SageZZ)(cycle_dimension)
+            self._cycle_dimension = _owned_integers()(cycle_dimension)
             super().__init__(**rest)
 
         def cycle_scheme(self):
@@ -180,7 +181,7 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(self, chow_scheme, cycle_dimension, **rest) -> None:
             self._chow_scheme = chow_scheme
-            self._cycle_dimension = _own_ring(SageZZ)(cycle_dimension)
+            self._cycle_dimension = _owned_integers()(cycle_dimension)
             super().__init__(**rest)
 
         def chow_scheme(self):
@@ -255,7 +256,7 @@ def _affine_cycle_group(scheme, cycle_dimension):
         f"cannot form the cycle group Z_{cycle_dimension}({scheme}): the cycle dimension must "
         f"lie between 0 and dim {scheme} = {scheme.dimension()}"
     )
-    return AlgebraicCycleGroups(_own_ring(SageZZ))(
+    return AlgebraicCycleGroups(_owned_integers())(
         scheme,
         cycle_dimension,
         ring.spectrum().condition_set(lambda point: point.closure_dimension() == cycle_dimension),
@@ -326,7 +327,7 @@ def _serre_intersection_multiplicity(left, right, point):
     r"""Serre's multiplicity \(\sum_i (-1)^i \operatorname{length} \operatorname{Tor}_i(\mathcal{O}_Y, \mathcal{O}_Z)_p\)."""
     tor_modules = _serre_intersection(left, right, point)
     point = left.inclusion().codomain().underlying_space()(point)
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     return sum(
         (
             integers(-1) ** int(degree) * _length_at_closed_point(tor_modules[degree], point)
@@ -339,7 +340,7 @@ def _serre_intersection_multiplicity(left, right, point):
 def _length_at_closed_point(module, point):
     r"""The length of a module supported at the closed point ``point``; the zero module has length zero."""
     if module.is_zero():
-        return _own_ring(SageZZ).zero()
+        return _owned_integers().zero()
     return module.finite_length_at_closed_point(point)
 
 
@@ -351,7 +352,7 @@ def _closed_immersion_cycle_pushforward(closed_subscheme, cycle):
     hence the coefficient is unchanged.
     """
     source = cycle.parent()
-    assert source in AlgebraicCycleGroups(_own_ring(SageZZ)), (
+    assert source in AlgebraicCycleGroups(_owned_integers()), (
         f"cannot push {cycle} forward along the closed immersion {closed_subscheme}: "
         f"it is not an algebraic cycle, its parent is {source}"
     )
@@ -382,7 +383,7 @@ def _distinguished_open_cycle_pullback(open_subscheme, cycle):
     localization and its multiplicity is unchanged.
     """
     source = cycle.parent()
-    assert source in AlgebraicCycleGroups(_own_ring(SageZZ)), (
+    assert source in AlgebraicCycleGroups(_owned_integers()), (
         f"cannot pull {cycle} back to the open subscheme {open_subscheme}: it is not an "
         f"algebraic cycle, its parent is {source}"
     )

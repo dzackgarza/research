@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
@@ -113,8 +114,8 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
         return self
 
     def reynolds_hypothesis_holds(self) -> bool:
-        source = _own_ring(self.ring_map().domain())
-        target = _own_ring(self.ring_map().codomain())
+        source = _owned_ring(self.ring_map().domain())
+        target = _owned_ring(self.ring_map().codomain())
         match source in OwnedFields() and target in OwnedFields():
             case False:
                 return False
@@ -217,7 +218,7 @@ def AffineInvariantQuotientBaseChangeComparison(
         )
     action = category._scheme_action_functor(acted_scheme)
     source = category.underlying_category().base_ring()
-    target = _own_ring(ring_map.codomain())
+    target = _owned_ring(ring_map.codomain())
     if ring_map.domain() is not source:
         raise ValueError(
             f"cannot base change the quotient of {acted_scheme} along {ring_map}: the map "

@@ -1329,10 +1329,13 @@ class ModuleMorphismMethods:
         """
         from sage.rings.integer_ring import ZZ as SageZZ
         from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
         ring = source.base_ring()
-        if ring is not _own_ring(SageZZ) or target.base_ring() is not ring:
+        if ring is not _owned_integers() or target.base_ring() is not ring:
             raise TypeError("the normalized denominator ideal requires integral modules over ZZ")
         field_map = ring.fraction_field_map()
         if self.domain() is not source.base_change(field_map) or self.codomain() is not target.base_change(field_map):
@@ -2376,6 +2379,38 @@ class ModuleEmbeddingMor(CategoricalMor):
         ``f``, since localization is exact.  ``lift_is_section`` states that
         the construction's selected lift returns a preimage exactly on the
         image.
+
+        Protected construction contract (``OWN-05``).  Owner: this Mono
+        category, ``ModuleEmbeddingMor``.  Purpose: admit the monomorphism
+        that a construction defines, with its linearity and injectivity
+        carried by the construction (``premises``) rather than computed,
+        since the public element constructor admits a map by the caller's
+        claim and leaves both to its validators (``OWN-22``).  Input: the
+        defining map on elements (or generator images), the premise
+        monomorphisms, an optional selected lift.  Output: an element of
+        this Mono category with exactly these endpoints.  Invariant: the
+        caller's construction makes the map linear and injective whenever
+        the premises are.  Permitted callers, each the owner of the
+        construction whose structure map it is:
+
+        - ``_subobject_inclusion`` here, the inclusion of a module subobject
+          given by generator images;
+        - ``Modules.ParentMethods.sub_framing_morphism``
+          (``modules/pure/modules.py``), the free functor on an injection of
+          framings;
+        - the condition-submodule construction ``_condition_submodule_object``
+          (``modules/general_modules.py``), the inclusion of
+          ``{x in M : P(x)}`` into ``M``, which is the inclusion of a subset
+          of the underlying set of ``M`` and so injective;
+        - the homogeneous-piece inclusion of ``modules/powers.py``;
+        - the fractional-ideal inclusion into ``Frac(R)`` of
+          ``modules/fractional_ideals.py``;
+        - the nondegenerate correlation of ``modules/hodge.py``;
+        - module localization, ``functors/module_localization.py``, with the
+          localized monomorphism as premise.
+
+        A new caller is added to this list at the same time, with the
+        construction that makes its map a monomorphism.
         """
         return self.element_class(
             self,

@@ -79,6 +79,14 @@ def install_implicit_typesetting(shell: InteractiveShell) -> None:
 # the sequence that would drift from it.
 from dzack_research.preamble.all import *
 
+# The star import adds names; it cannot remove the ones ``sage.all`` already
+# bound here.  Sage's second spellings of the session's ring constructors
+# (FiniteField, IntegerModRing, Integers) are removed from this scope by
+# their owner, which cites the rule (dzack_research.preamble.rings).
+from dzack_research.preamble.all import _restore_session_ring_bindings
+
+_restore_session_ring_bindings(globals())
+
 Σ = sum
 Π = prod
 

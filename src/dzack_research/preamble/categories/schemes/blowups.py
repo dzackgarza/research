@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
@@ -48,7 +49,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 class Blowups(OwnedCategoryOverBaseRing):

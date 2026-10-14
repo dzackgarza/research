@@ -35,6 +35,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_numeral,
     _own_ring,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPairs
 from dzack_research.preamble.categories.schemes.polytopes import (
@@ -82,7 +84,7 @@ class SideDecoration:
 
 
 def _rationals():
-    return _own_ring(SageQQ)
+    return _owned_rationals()
 
 
 def _rational_point(polygon, coordinates):
@@ -310,7 +312,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             variant,
             bool(affine),
         )
-        polygon_lattice = _own_ring(SageZZ).free_module(2)
+        polygon_lattice = _owned_integers().free_module(2)
         polygon = LatticePolygons(polygon_lattice)(vertices)
         toric_base = polygon.toric_variety(self.base_ring())
         from dzack_research.preamble.categories.schemes.schemes import _scheme_with_structure
@@ -361,7 +363,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         pair = self(letter, rank, variant=low_variant, affine=affine)
         surface = pair.log_scheme()
         branch_class = surface.polarizing_divisor()
-        expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
+        expected = _owned_integers()(2) * pair.complementary_divisor()
         # Lemma 3.4 is an identity of divisor classes: L and 2C' differ by the
         # divisor of a character, so they are compared in Cl(Y).
         if surface.divisor_class(branch_class) != surface.divisor_class(expected):
@@ -426,7 +428,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             return self._dynkin_letter
 
         def dynkin_rank(self):
-            return _own_ring(SageZZ)(self._dynkin_rank)
+            return _owned_integers()(self._dynkin_rank)
 
         def letter(self) -> str:
             r"""Return the ADE letter; archived synonym for :meth:`dynkin_letter`."""
@@ -629,7 +631,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             group = self.log_scheme().torus_invariant_divisor_group()
             blue = self._blue_rays()
             return group.linear_combination(
-                {ray: _own_ring(SageZZ).one() for ray in blue}
+                {ray: _owned_integers().one() for ray in blue}
             )
 
         def blue_line_divisor(self):
@@ -658,7 +660,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                 *tuple(self.distinguished_point()),
                 rationals(2),
             )
-            pyramid_lattice = _own_ring(SageZZ).free_module(3)
+            pyramid_lattice = _owned_integers().free_module(3)
             return ConvexPolytopes(pyramid_lattice)((*base, apex))
 
         def cover_toric_threefold(self):
@@ -828,7 +830,7 @@ class _AT21ToricADEPairEngine:
                 f"the section has only {len(support)} monomials"
             )
         polygon = LatticePolygons(self.scheme().character_lattice())(tuple(support))
-        if polygon.dimension() != _own_ring(SageZZ)(2):
+        if polygon.dimension() != _owned_integers()(2):
             raise ValueError("the nonzero branch characters are collinear, so their hull is not a polygon")
         return polygon
 
