@@ -81,7 +81,7 @@ def test_a_rooted_diagram_from_a_root_lattice() -> None:
 
 def test_smooth_functions_on_the_real_line() -> None:
     smooth = C(Infinity, RR, RR)
-    x = RR.coordinate()
+    x = var("x")
     f = smooth(x**2 + 1)
     assert smooth in Algebras(RR)
     assert smooth in Modules(RR)
