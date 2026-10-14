@@ -2002,22 +2002,26 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             supplies none, and ``is_empty`` then returns the proposition.
             The cases decided here:
 
-            - an enumerated set is empty exactly when its enumeration has no
-              first point;
+            - a set whose construction decides its cardinality is empty
+              exactly when that cardinal is ``0`` (``_cardinality_decision``,
+              which already counts enumerated, finite-ordered, power, product
+              and coproduct sets);
             - an infinite set is not empty.
 
-            A realization whose construction decides more supplies this hook
-            on its own class: a subset holding an admitted member is not empty,
-            and a torsor is not empty by definition (its owner, ``Torsors``,
-            supplies that case).
+            A realization or category whose construction decides more supplies
+            this hook on its own class: a subset holding an admitted member is
+            not empty, and a monoid is not empty because it has a unit.  A
+            torsor is not empty by definition; ``Torsors`` supplies that case
+            in its own file.
             """
             match self:
-                case _ if self in EnumeratedSets():
-                    return not any(True for _point in self)
                 case _ if self in Sets().Infinite():
                     return False
                 case _:
-                    return None
+                    count = self._cardinality_decision()
+                    if count is None:
+                        return None
+                    return cardinal(count) == cardinal(0)
 
         def is_empty(self) -> bool | Predicate:
             r"""Whether this set has no points, ``X = ∅``.
@@ -3427,13 +3431,16 @@ class _ConditionSetEngine:
         """
         if self._admitted_members:
             return self._admitted_members[0]
-        assert self._cardinality_decision() is not None, (
+        count = self._cardinality_decision()
+        assert count is not None, (
             f"cannot select a point of {self}: no point has been admitted to it and its "
             f"membership predicate {self.predicate()} is not decided on an enumerated universe"
         )
-        for point in self:
-            return point
-        raise ValueError(f"{self} is empty, so it has no point to select")
+        assert cardinal(count) != cardinal(0), (
+            f"{self} has no point to select: it is the empty subset of {self.universe()} "
+            f"cut out by {self.predicate()}"
+        )
+        return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""
