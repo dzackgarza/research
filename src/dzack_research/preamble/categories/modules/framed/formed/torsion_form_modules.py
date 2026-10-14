@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
-    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _module_invariant_factor_form,
@@ -1122,7 +1121,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             category=OwnedFiniteGroups(),
         )
         realize_owned_category(self)
-        _fix_selected_group_resolution_on(self, self._computed_group_generators)
+        self.select_group_generators(self._computed_group_generators)
 
     @cached_method
     def _computed_group_generators(self):

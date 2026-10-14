@@ -14,10 +14,6 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### A torsor does not decide its own nonemptiness
-
-A torsor under a group is nonempty by definition. `Sets()` owns `is_empty()` with the protected `_emptiness_decision` hook (decided cardinality, infinite sets, monoids, images, products, G-sets on points, condition subsets with an admitted member), but `Torsors` (`categories/group/g_sets.py`) supplies no hook, so `TrivializedTorsors.is_empty()` is the proposition. Evidence: `IsotropicReductionLiftTorsors.integral_torsor()`; `integral_members()` itself is decided. Remediation: `port-configurations-cones-and-integral-lifts`. Source inspection only (DEV-58).
-
 ### Labelled graphs present no isomorphisms or automorphism groups
 
 `LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group. Configuration equivalence (#399) needs both, so `_SpanningConfiguration` (`categories/vector_configurations.py`) keeps a Sage `Graph` inside a declared private adapter for bliss/nauty. Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism. Source inspection only.
@@ -2378,8 +2374,16 @@ Foundational mathematical gaps belong above even when first noticed as an inconv
 
 ## O(U) is finite but is not placed as a finite group
 
-**Desired mathematics.** For the hyperbolic plane U, O(U) = {±1, ±swap} has order 4; more generally O(L) is finite for an anisotropic or definite L, and for U.
+**Desired mathematics.** Let L be a nondegenerate ZZ-lattice of finite rank. O(L) is finite when L is definite. It is also finite when L has rank 2, is indefinite, and L tensor QQ is isotropic (equivalently -det L is a nonzero square): then SO(L) = {+1, -1} and O(L) has order at most 4. For the hyperbolic plane U, O(U) = {+1, -1, +swap, -swap}. Placement must cite this as a theorem about L, decided from the rank, the signature and whether -det L is a square, and must never compute the group. The earlier statement here that O(L) is finite for every anisotropic L was false: an anisotropic indefinite binary form has infinite SO(L) (the norm-one units of a real quadratic order act), and so does an anisotropic indefinite lattice of rank 3 or 4.
 
-**Dependency path.** `port-group-primitives-with-generators` acceptance (2U parabolic, K = e^perp/e ≅ U) -> `levi_action(): P -> O(K)` -> `PreimageSubgroups` -> the Schreier route needs Q = O(K) in `OwnedFiniteGroups`, or a finite realization of O(K)/levi(P).
+Candidate converse cases, for the same request: O(L) is infinite for a nondegenerate indefinite L of rank 2 with -det L not a square, and for a nondegenerate indefinite L of rank at least 3. Degenerate L with nonzero radical R and nonzero L/R has the infinite subgroup Hom(L/R, R).
 
-**Evidence (source).** `LatticeIsometryMor.__init__` (`lattice_morphisms.py:1835-1850`) places Aut(L) in `OwnedFiniteGroups` only when L is definite over ZZ or QQ, so O(U) is not placed finite and the 2U specimen reaches the infinite-codomain route, which needs the caller's three data. Not executed. Request to `lean-categories` if absent: finiteness of O(U) (or of O(L) for L of rank two with isotropic vectors), so that placement can cite it.
+**Sources.** Not opened: neither `references/pdfs` nor the local Zotero library holds them (2026-10-14). Unopened candidates: D. Buell, *Binary Quadratic Forms* (automorphs of forms of square discriminant; units of norm one for nonsquare discriminant), and J. W. S. Cassels, *Rational Quadratic Forms*. No statement may be cited from them until it is opened and transcribed (`FSA-06`).
+
+**Formal corpus.** `lean-categories` proves finiteness only for positive-definite lattices: `LeanCategories/Lattices/Valued/Mass.lean:41`, `orthogonalGroup_finite`. Queries of the formalization corpus remote API for finiteness of an orthogonal group of an isotropic binary form found nothing (2026-10-14; queries by keyword, not by type pattern; forum not searched).
+
+**Request to `lean-categories`.** Formalize: for a nondegenerate ZZ-lattice L of rank 2 with L tensor QQ isotropic, O(L) is finite (and SO(L) = {+1, -1}); optionally the converse cases above. Sources to be supplied from an opened text.
+
+**Dependency path.** `port-group-primitives-with-generators` acceptance (2U parabolic, K = e^perp/e, isometric to U) -> `levi_action(): P -> O(K)` -> `PreimageSubgroups` -> the Schreier route needs Q = O(K) in `OwnedFiniteGroups`, or a finite realization of O(K)/levi(P). Node: `isotropic-binary-orthogonal-groups-are-finite`.
+
+**Evidence (source).** `LatticeIsometryMor.__init__` (`lattice_morphisms.py:1835-1850`) places Aut(L) in `OwnedFiniteGroups` only when L is definite over ZZ or QQ, so O(U) is not placed finite and the 2U specimen reaches the infinite-codomain route, which needs the caller's three data. Not executed.

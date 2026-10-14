@@ -7701,12 +7701,23 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
         @cached_method
         def levi_action(self):
-            r"""Return \(P_I\to O(K_I)\), \(g\mapsto\bar g\), the action on \(I^\perp/I\).
+            r"""Return \(\rho:P_I\to O(K_I)\), \(g\mapsto\bar g\), the action on \(I^\perp/I\).
 
             An isometry stabilizing \(I\) stabilizes \(I^\perp\), so it
             descends to the quotient.  The descended map is read on the
             chosen lifts.
+
+            For a line \(I\) the owner selects two choices on the
+            morphism, both computed only on first request: the set section
+            :meth:`_levi_section` on the image (``select_section``; the image is
+            the subset of \(O(K_I)\) cut out by :meth:`_levi_image_contains`),
+            and generators of ``kernel()`` from :meth:`_levi_kernel_generators`
+            (its selected generating resolution).  For a higher-rank \(I\) with
+            \(O(K_I)\) not placed finite, the selected section is the one that
+            asserts (port #18 owns those extension equations).
             """
+            from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
+
             perpendicular = self.orthogonal_complement()
             perpendicular_inclusion = perpendicular.inclusion()
             lifts = self.reduction_lifts()
@@ -7722,29 +7733,126 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                     )
                 )
 
-            return self.parabolic_subgroup().Mor(automorphisms)(descend)
+            levi = self.parabolic_subgroup().Mor(automorphisms)(descend)
+            reduces_a_line = self.isotropic_sublattice().module_rank() == NN(1)
+            finite_reduction_group = automorphisms in OwnedFiniteGroups()
+            # When I has rank >= 2 and O(K_I) is placed finite, ``lift``'s own
+            # finite-image word section applies and nothing is selected.
+            if reduces_a_line or not finite_reduction_group:
+                image = automorphisms.condition_set(self._levi_image_contains)
+                levi.select_section(Sets().Mor(image, levi.domain())(self._levi_section))
+            if reduces_a_line:
+                kernel = levi.kernel()
+                kernel.select_group_generators(
+                    lambda: finite_ordered_set(
+                        tuple(kernel(generator) for generator in self._levi_kernel_generators())
+                    )
+                )
+            return levi
 
         @cached_method
-        def isotropic_action(self):
-            r"""Return \(\rho_I:P_I\to GL(I)\), \(g\mapsto g|_I\), the action on the isotropic sublattice.
+        def _levi_fibres(self, isometry):
+            r"""The two lift torsors over ``isometry``: \(F^+(\gamma)\), then \(F^-(\gamma)\).
 
-            An isometry stabilizing \(\iota(I)\) restricts along the
-            monomorphism \(\iota\) to an automorphism of the underlying
-            module of \(I\), an element of ``I.general_linear_group()``
-            (``Aut_R(I)``).  The kernel is the pointwise parabolic \(P_I^1\).
+            For a primitive isotropic line \(I=\mathbf Z e\) every \(g\in P_I\)
+            sends \(e\) to \(\pm e\), so \(\rho^{-1}(\gamma)\) is the union of the
+            integral loci of the marked-line lift torsor ``rational_lifts(self,
+            gamma)`` (lifts fixing \(e\)) and of the torsor to the reduction of
+            the same line marked by \(-e\) (Gritsenko--Hulek--Sankaran,
+            arXiv:0810.1614, section 3.1, (4)--(5), as cited in
+            ``isotropic_lifts.py``).  Each integral locus is empty exactly when
+            its finite residue locus is.
+
+            For \(I\) of rank at least 2, a lift must also choose the action on
+            \(I\) and solve the extension equations \(B = XA + A^tX^t\); those
+            are the specialized extension equations of port #18, and research
+            has no route here.
             """
-            embedding = self.isotropic_embedding()
-            sublattice = embedding.domain()
-            automorphisms = sublattice.general_linear_group()
-            endomorphisms = sublattice.module_category().Mor(sublattice, sublattice)
+            rank = self.isotropic_sublattice().module_rank()
+            assert rank == NN(1), (
+                f"cannot lift {isometry!r} from O(K_I) to P_I for K_I = {self!r}: I has rank {rank}, "
+                f"and O(K_I) is not placed finite, so a lift solves the extension equations of an "
+                f"isotropic sublattice of rank at least 2, which are sage-indefinite-port #18's "
+                f"computation"
+            )
+            opposite, identification = self._opposite_marking()
+            return (
+                self.rational_lifts(self, isometry),
+                self.rational_lifts(opposite, identification * isometry),
+            )
 
-            def restrict(isometry):
-                return automorphisms(endomorphisms({
-                    label: embedding.lift(isometry(embedding(sublattice.module_generator(label))))
-                    for label in sublattice.module_generating_set()
-                }))
+        def _levi_image_contains(self, isometry):
+            r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
+            return any(
+                fibre.integral_members().is_empty() is False for fibre in self._levi_fibres(isometry)
+            )
 
-            return self.parabolic_subgroup().Mor(automorphisms)(restrict)
+        def _levi_section(self, isometry):
+            r"""One point of \(\rho^{-1}(\gamma)\): the integral base point of the first nonempty fibre of :meth:`_levi_fibres`.
+
+            A set-theoretic section of \(\rho\) on its image, not a
+            homomorphic splitting.  Its domain, the subset of \(O(K_I)\) cut
+            out by :meth:`_levi_image_contains`, has already decided that a
+            fibre is nonempty.
+            """
+            lattice = self.isotropic_embedding().codomain()
+            fibre = next(
+                fibre
+                for fibre in self._levi_fibres(isometry)
+                if fibre.integral_members().is_empty() is False
+            )
+            return self.parabolic_subgroup()(lattice.integral_isometry(fibre.integral_base_point()))
+
+        def _levi_kernel_generators(self):
+            r"""A generating family of \(\ker\rho\) for an isotropic line \(I=\mathbf Z e\).
+
+            \(\ker\rho=F^+(1)\cup F^-(1)\).  \(F^+(1)\) is the integral
+            Eichler transvection kernel \(K_{\mathbf Z}\), generated by
+            ``integral_kernel_group_generators`` of the identity marking;
+            \(F^-(1)\) is empty or a coset \(\tau K_{\mathbf Z}\), so one point
+            \(\tau\) of it is added when it is nonempty.
+            """
+            lattice = self.isotropic_embedding().codomain()
+            parabolic = self.parabolic_subgroup()
+            fixing, reversing = self._levi_fibres(self.Aut().one())
+            transvections = (
+                parabolic(lattice.integral_isometry(transvection))
+                for transvection in fixing.integral_kernel_group_generators()
+            )
+            reversal = (
+                ()
+                if reversing.integral_members().is_empty() is True
+                else (parabolic(lattice.integral_isometry(reversing.integral_base_point())),)
+            )
+            return finite_ordered_set((*transvections, *reversal))
+
+        @cached_method
+        def _opposite_marking(self):
+            r"""The reduction of the same line marked by \(-e\), with \(K_I\to K_I'\) induced by \(\mathrm{id}_{I^\perp}\).
+
+            Both reductions are quotients of the same \(I^\perp\subseteq L\)
+            by the same line, so the identity of \(I^\perp\) induces an
+            isometry between them; it is read on the chosen lifts.  The
+            marked vector \(e\) is the image of the single module generator
+            of the line \(I\).
+            """
+            lattice = self.isotropic_embedding().codomain()
+            line = self.isotropic_sublattice()
+            labels = line.module_generating_set()
+            assert labels.cardinality() == NN(1), (
+                f"the opposite marking of {self!r} reverses a marked isotropic line, but I = {line!r} "
+                f"has {labels.cardinality()} module generators"
+            )
+            marked = self.isotropic_embedding()(line.module_generator(labels.an_element()))
+            opposite = lattice.primitive_isotropic_subobject(-marked).isotropic_reduction()
+            own = self.orthogonal_complement().inclusion()
+            theirs = opposite.orthogonal_complement().inclusion()
+            lifts = self.reduction_lifts()
+            projection = opposite.projection()
+            identification = self.Isom(opposite)(
+                lambda label: projection(theirs.lift(own(lifts(label))))
+            )
+            return opposite, identification
 
         def levi_image(self):
             r"""Return \(\operatorname{im}(P_I\to O(K_I))\), the image of :meth:`levi_action`.
@@ -7765,11 +7873,11 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def levi_lift(self, isometry):
             r"""Return a lift of ``isometry`` to \(P_I\) when it lies in :meth:`levi_image`, else ``None``.
 
-            The lift is the word section of the finite image computed from
-            the selected generators of \(P_I\)
-            (``levi_action().lift``); it is not a homomorphic splitting.
-            The finite-image hypothesis is that \(O(K_I)\) is finite, as
-            when \(K_I\) is definite.
+            The lift is ``levi_action().lift``, a set-theoretic section, not
+            a homomorphic splitting: for a line \(I\) the torsor section
+            :meth:`_levi_section`, otherwise the word section of the finite
+            image computed from the selected generators of \(P_I\), which
+            needs \(O(K_I)\) finite, as when \(K_I\) is definite.
             """
             if isometry.parent() is not self.Aut():
                 raise ValueError(

@@ -2360,9 +2360,10 @@ class GroupMorphism:
         determining generators (a selected finite generating family, its
         subgroup generators, or its finitely many elements), the lift is the
         word section of the finite image (``finite_image_lifts``); it is a
-        set section, not a homomorphic splitting.  An infinite image, or a
-        source with no determining generators, is outside these cases and
-        reaches the GAP computation, which states that hypothesis.
+        set section, not a homomorphic splitting.  A section selected with
+        :meth:`select_section` answers before those cases.  An infinite
+        image, or a source with no determining generators, is outside these
+        cases and reaches the GAP computation, which states that hypothesis.
         """
         if self._subgroup_premise:
             assert element in self.domain(), f"{element} is not in the image of {self}"
@@ -2371,6 +2372,9 @@ class GroupMorphism:
         codomain = self.codomain()
         if (element == codomain.one()) is True:
             return source.one()
+        if self.has_selected_section():
+            section = self.selected_section()
+            return section(section.domain()(element))
         if codomain in OwnedFiniteGroups() and (
             source.has_selected_finite_group_generating_set()
             or source in GeneratedSubgroups(source.supergroup())
@@ -2429,6 +2433,47 @@ class GroupMorphism:
             character_data_complete=character_data_complete,
             generating_morphism=generating_morphism,
         )
+
+    _SECTION_ON_IMAGE = "set section on the image"
+
+    @cached_method
+    def _selected_data_registry(self):
+        r"""The data selected on this arrow, by key, as objects hold theirs (``select_left_cosets``)."""
+        return {}
+
+    def has_selected_section(self) -> bool:
+        r"""Whether a set section of this arrow on its image was selected with :meth:`select_section`."""
+        return self._SECTION_ON_IMAGE in self._selected_data_registry()
+
+    def selected_section(self):
+        r"""The set map ``s: f(G) -> G`` selected with :meth:`select_section`."""
+        assert self.has_selected_section(), (
+            f"{self} has no selected section on its image: select one with select_section"
+        )
+        return self._selected_data_registry()[self._SECTION_ON_IMAGE]
+
+    def select_section(self, section):
+        r"""Select a set section ``s: f(G) -> G`` of this arrow on its image, and return the arrow.
+
+        ``section`` is a morphism of ``Sets`` whose domain is a subset of
+        the codomain presenting the image of ``f`` (its admission decides
+        membership in the image) and whose codomain is the source ``G``, with
+        ``f(s(h)) = h``.  It is a chosen datum (``CON-08``): a set-theoretic
+        section, not a homomorphic splitting, stored in this arrow's registry
+        of selected data under the key ``"set section on the image"`` and
+        trusted (``OWN-22``).  Afterwards :meth:`lift` answers from it.
+        Selecting computes nothing.
+        """
+        assert section.codomain() is self.domain(), (
+            f"a section of {self} lands in its source {self.domain()}, but {section} lands in "
+            f"{section.codomain()}"
+        )
+        assert not self.has_selected_section(), (
+            f"{self} already has a selected section on its image, {self.selected_section()}; "
+            f"a second choice would make lift() depend on the order of selection"
+        )
+        self._selected_data_registry()[self._SECTION_ON_IMAGE] = section
+        return self
 
     @cached_method
     def kernel(self):
@@ -4358,7 +4403,23 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 f"is not one"
             )
             selected = finite_ordered_set(tuple(self(generator) for generator in generators))
-            _fix_selected_group_resolution_on(self, lambda: selected)
+            return self.select_group_generators(lambda: selected)
+
+        def select_group_generators(self, deferred_generators):
+            r"""Select ``F(S) ->> G`` on a generating family computed at first request, and return ``G``.
+
+            ``deferred_generators`` is a function of no arguments returning
+            an owned set of elements of ``G`` that generates ``G``; that it
+            generates is the caller's claim, trusted (``OWN-22``).  It is the
+            lazy form of :meth:`select_group_resolution`: selecting computes
+            nothing, and the function is called when ``group_generators()``
+            or the selected resolution is first read.
+            """
+            assert not self.has_selected_group_resolution(), (
+                f"{self} already has a selected generating resolution; a second generating family "
+                f"would make its group generators depend on the order of selection"
+            )
+            _fix_selected_group_resolution_on(self, deferred_generators)
             return self
 
         def invariant_overlattice(self, lattice):
@@ -5012,7 +5073,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
 
             if self.has_selected_left_cosets(subgroup):
-                return self._selected_resolution_registry()[LeftCosetGSets(subgroup)]
+                return self._selected_data_registry()[LeftCosetGSets(subgroup)]
             return self._left_coset_construction(subgroup)
 
         @cached_method
@@ -5024,7 +5085,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             r"""Whether a realization of ``G/H`` was selected with ``select_left_cosets``."""
             from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
 
-            return LeftCosetGSets(subgroup) in self._selected_resolution_registry()
+            return LeftCosetGSets(subgroup) in self._selected_data_registry()
 
         def select_left_cosets(self, coset_space):
             r"""Select a supplied finite realization of ``G/H`` as ``left_cosets(H)``, and return ``G``.
@@ -5054,7 +5115,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
             if self.has_selected_left_cosets(subgroup):
                 raise ValueError(f"{self}/{subgroup} already has a selected realization")
-            self._selected_resolution_registry()[LeftCosetGSets(subgroup)] = coset_space
+            self._selected_data_registry()[LeftCosetGSets(subgroup)] = coset_space
             return self
 
         def right_cosets(self, subgroup):

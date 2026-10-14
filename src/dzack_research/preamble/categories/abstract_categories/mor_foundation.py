@@ -29,7 +29,7 @@ class OwnedMor(SageHomset):
     """
 
     @cached_method
-    def _selected_resolution_registry(self):
+    def _selected_data_registry(self):
         r"""The chosen resolutions of this Mor object, by ambient category.
 
         A Mor object fixes such data before its category is set, so the
