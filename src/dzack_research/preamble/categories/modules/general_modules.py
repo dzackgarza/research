@@ -660,10 +660,19 @@ class _ConditionSubmodule:
         return element
 
     def __contains__(self, value) -> bool:
-        r"""Whether ``value`` lies in this submodule; a point of ``M`` is asked ``P``."""
-        if element_parent(value) is self._condition_ambient:
-            return self.underlying_set().is_parent_of(value)
-        return super().__contains__(value)
+        r"""Whether ``value`` lies in this submodule; a point of ``M`` is asked ``P``.
+
+        The argument is arbitrary.  An element of this submodule is in it;
+        a point of ``M``, or a value ``M`` contains, is read in ``M`` and
+        asked ``P``; nothing else is in it.
+        """
+        if element_parent(value) is self:
+            return True
+        if element_parent(value) is not self._condition_ambient:
+            if value not in self._condition_ambient:
+                return False
+            value = self._condition_ambient(value)
+        return self.underlying_set().is_parent_of(value)
 
     def _module_with_structure(self, categories, construction_data):
         r"""Build further structure (an algebra, a form) on the data of this submodule.

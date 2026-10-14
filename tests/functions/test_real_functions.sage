@@ -63,7 +63,7 @@ def test_the_holder_conjugate_of_ell_p_is_ell_q_with_one_over_p_plus_one_over_q_
     a(k) = 2^(-k)
     holder = ell(1, NN, RR) * ell(oo, NN, RR)
 
-    assert holder.pairing(ell(1, NN, RR)(a), ell(oo, NN, RR)(1)) == RR(2)
+    assert holder.pairing(ell(1, NN, RR)(a), ell(oo, NN, RR).one()) == RR(2)
     assert ell(2, NN, RR).pairing_module().right_module().integrability_exponent() == 2
     assert ell(3, NN, RR).pairing_module().right_module().integrability_exponent() == QQ(3) / 2
 
@@ -94,4 +94,4 @@ def test_ell2_pairings_sum_classical_series() -> None:
     assert ell(2, NN, RR).b(geometric, harmonic) == RR(2 * log(2))
     assert ell(2, NN, RR).b(harmonic, alternating) == RR(pi**2 / 12)
     assert ell(2, NN, RR).b(exponential, geometric) == RR(exp(QQ(1) / 2))
-    assert (ell(1, NN, RR) * ell(oo, NN, RR)).pairing(ell(1, NN, RR)(e), ell(oo, NN, RR)(1)) == RR(exp(1))
+    assert (ell(1, NN, RR) * ell(oo, NN, RR)).pairing(ell(1, NN, RR)(e), ell(oo, NN, RR).one()) == RR(exp(1))

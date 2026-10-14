@@ -564,6 +564,22 @@ class _FunctionSpace(_ConditionSubmodule):
         r"""The module ``Y`` the maps take values in."""
         return self.condition_ambient_module().codomain()
 
+    def __contains__(self, value) -> bool:
+        r"""Whether ``value`` is a map ``X -> Y`` in this space.
+
+        The argument is arbitrary.  A map of another space or of ``Y^X``,
+        or a function on points (a callable, or a formula binding its own
+        variable), is read by ``Sets().Mor(X, Y)`` and asked the condition.
+        """
+        from sage.structure.element import parent as element_parent
+        from sage.structure.parent import Parent
+
+        if element_parent(value) is self:
+            return True
+        if callable(value) and not isinstance(value, Parent):
+            value = self.condition_ambient_module()(value)
+        return super().__contains__(value)
+
     def one(self):
         r"""The constant map with value one."""
         return self(_constant_map(self.codomain().one()))
@@ -766,9 +782,10 @@ class _LebesgueSpace(_FunctionSpace):
 
     def integration_morphism(self):
         r"""Integration \(L^1(\mathbb R)\to\mathbb R\), linear by the linearity of the Lebesgue integral."""
-        assert self.integrability_exponent() == 1, (
-            f"integration is a linear functional on L^1(RR), but {self} has p = {self.integrability_exponent()}"
-        )
+        if self.integrability_exponent() != 1:
+            raise TypeError(
+                f"integration is a linear functional on L^1(RR), but {self} has p = {self.integrability_exponent()}"
+            )
 
         def evaluate(function, space=self):
             body, variable = _required_formula(space(function), "the integral")
@@ -781,11 +798,12 @@ class _LebesgueSpace(_FunctionSpace):
         return self * self.conjugate_lebesgue_space()
 
     def __mul__(self, other):
-        assert _is_lebesgue_space(other) and _are_holder_conjugates(
+        if not (_is_lebesgue_space(other) and _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
-        ), (
-            f"{self} (x) {other} -> RR is a pairing only of Lebesgue spaces with 1/p + 1/q = 1"
-        )
+        )):
+            raise TypeError(
+                f"{self} (x) {other} -> RR is a pairing only of Lebesgue spaces with 1/p + 1/q = 1"
+            )
         return _lebesgue_pairing_module(self, other)
 
     def _repr_(self) -> str:
@@ -835,11 +853,12 @@ class _SequenceSpace(_FunctionSpace):
         return self * self.conjugate_sequence_space()
 
     def __mul__(self, other):
-        assert _is_sequence_space(other) and _are_holder_conjugates(
+        if not (_is_sequence_space(other) and _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
-        ), (
-            f"{self} (x) {other} -> RR is a pairing only of sequence spaces with 1/p + 1/q = 1"
-        )
+        )):
+            raise TypeError(
+                f"{self} (x) {other} -> RR is a pairing only of sequence spaces with 1/p + 1/q = 1"
+            )
         return _sequence_pairing_module(self, other)
 
     def _repr_(self) -> str:

@@ -16,72 +16,73 @@ import pytest
 
 def test_gaussians_times_bounded_maps_are_square_integrable() -> None:
     r"""``x^2 e^{-x^2}``, ``sin(x) e^{-x^2}``, ``e^{-x^4}`` and ``e^{-x^2} + e^{-|x|}`` are in ``L^2(RR)``."""
-    space = Lp(2)
-    x = space.indeterminate()
+    space = Lp(2, RR, RR)
+    f1(x) = x * x * exp(-x * x)
+    f2(x) = sin(x) * exp(-x * x)
+    f3(x) = exp(-x * x * x * x)
+    f4(x) = exp(-x * x) + exp(-abs(x))
 
-    assert space(x * x * exp(-x * x))(1) == exp(-1)
-    assert space(sin(x) * exp(-x * x))(0) == 0
-    assert space(exp(-x * x * x * x))(1) == exp(-1)
-    assert space(exp(-x * x) + exp(-abs(x)))(0) == 2
+    assert space(f1)(1) == exp(-1)
+    assert space(f2)(0) == 0
+    assert space(f3)(1) == exp(-1)
+    assert space(f4)(0) == 2
 
 
 def test_the_second_moment_of_the_gaussian() -> None:
     r"""``int x^2 e^{-x^2} dx = sqrt(pi) / 2``."""
-    space = Lp(1)
-    x = space.indeterminate()
+    space = Lp(1, RR, RR)
+    f1(x) = x * x * exp(-x * x)
 
-    assert space.integration_morphism()(space(x * x * exp(-x * x))) == sqrt(pi) / 2
+    assert space.integration_morphism()(space(f1)) == sqrt(pi) / 2
 
 
 def test_nonzero_polynomials_are_not_square_integrable() -> None:
     r"""``int x^2 = int x^4 = oo``."""
-    space = Lp(2)
-    x = space.indeterminate()
+    space = Lp(2, RR, RR)
+    f1(x) = x
+    f2(x) = x * x
 
+    assert f1 not in space
     with pytest.raises(ValueError):
-        space(x)
-    with pytest.raises(ValueError):
-        space(x * x)
+        space(f2)
 
 
 def test_cosine_is_not_square_integrable() -> None:
     r"""``int_0^{2 pi N} cos^2 = pi N`` grows without bound."""
-    space = Lp(2)
-    x = space.indeterminate()
+    space = Lp(2, RR, RR)
+    f1(x) = cos(x)
 
-    with pytest.raises(ValueError):
-        space(cos(x))
+    assert f1 not in space
 
 
 def test_a_square_integrable_map_plus_sine_is_not_square_integrable() -> None:
     r"""If ``e^{-x^2} + sin x`` were in ``L^2`` then so would ``sin x`` be, since ``L^2`` is a vector space."""
-    space = Lp(2)
-    x = space.indeterminate()
+    space = Lp(2, RR, RR)
+    f1(x) = exp(-x * x) + sin(x)
 
-    with pytest.raises(ValueError):
-        space(exp(-x * x) + sin(x))
+    assert f1 not in space
 
 
 def test_the_gaussian_is_in_every_Lp() -> None:
     r"""``e^{-x^2}`` is bounded and integrable, hence in ``L^p`` for every ``p >= 1``; its value at 0 is 1."""
-    x = Lp(3).indeterminate()
+    f1(x) = exp(-x * x)
+    f2(x) = exp(-x * x)
 
-    assert Lp(3)(exp(-x * x))(0) == 1
-    assert Lp(oo)(exp(-x * x))(0) == 1
+    assert Lp(3, RR, RR)(f1)(0) == 1
+    assert Lp(oo, RR, RR)(f2)(0) == 1
 
 
 def test_a_rational_function_without_real_poles_decaying_like_one_over_x_is_square_integrable() -> None:
     r"""``x / (x^2 + pi)`` has no real pole and ``deg q = deg p + 1``: it is in ``L^2`` and not ``L^1``."""
-    x = Lp(2).indeterminate()
+    f1(x) = x / (x * x + pi)
+    f2(x) = x / (x * x + pi)
 
-    assert Lp(2)(x / (x * x + pi))(0) == 0
-    with pytest.raises(ValueError):
-        Lp(1)(x / (x * x + pi))
+    assert Lp(2, RR, RR)(f1)(0) == 0
+    assert f2 not in Lp(1, RR, RR)
 
 
 def test_sine_of_a_multiple_of_x_is_not_square_integrable() -> None:
     r"""``int sin(2x)^2 = oo``."""
-    x = Lp(2).indeterminate()
+    f1(x) = sin(2 * x)
 
-    with pytest.raises(ValueError):
-        Lp(2)(sin(2 * x))
+    assert f1 not in Lp(2, RR, RR)
