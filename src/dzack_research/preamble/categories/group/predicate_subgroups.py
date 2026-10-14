@@ -136,6 +136,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         r"""Construct the predicate subgroup of this category's ambient group."""
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=self.base(),
             predicate=predicate,
             description=description,
@@ -547,6 +548,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         identity = morphism.codomain().one()
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
             description=f"{morphism}(g)=1",
@@ -666,6 +668,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             description = f"{morphism}(g) lies in {subgroup}"
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=predicate,
             description=description,
@@ -842,6 +845,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             description = f"g stabilizes {stabilized_object} {action}"
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=predicate,
             description=description,
@@ -913,6 +917,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
             )
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
             description=f"g commutes with {element}",
@@ -956,6 +961,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             )
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: conjunction(subgroup.is_parent_of(element) for subgroup in subgroups),
             description="g lies in every selected subgroup",

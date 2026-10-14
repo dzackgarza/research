@@ -2104,13 +2104,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         # Recorded by the construction that builds the object (``_object_of``
         # through the root ``OwnedParent``, or the ring route); ``None`` for an
         # object no category's constructor built.
-        _defining_construction = None
+        _constructing_category = None
 
         def ambient_category(self) -> Category:
             r"""The category whose constructor built this object, without its property axioms.
 
             The constructing category is defining construction data, recorded
-            once by the construction (``_defining_construction``, ``OWN-15``);
+            once by the construction (``_constructing_category``, ``OWN-15``);
             this accessor exposes it and computes nothing after the fact
             (``OWN-17``).  Refinement into a property subcategory changes
             ``category()`` and leaves this unchanged.  An axiom is removed
@@ -2118,12 +2118,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             data subcategories, and axiom subcategories that are not full,
             keep their arrows (``_ambient_of``).
             """
-            construction = self._defining_construction
-            assert construction is not None, (
+            constructing = self._constructing_category
+            assert constructing is not None, (
                 f"{self} has no ambient category: it was not built by a category's constructor, "
                 f"so nothing recorded which category it is an object of (it is placed in {self.category()})"
             )
-            return _ambient_of(construction[0])
+            return _ambient_of(constructing)
 
         def Mor(
             self,

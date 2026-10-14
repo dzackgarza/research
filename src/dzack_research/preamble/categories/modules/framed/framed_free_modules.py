@@ -805,6 +805,10 @@ def _new_sparse_free_module(
 ):
     r"""Build a sparse free module through the category constructor chain."""
     categories = _finitely_generated_free_placement(ring, labels)
+    # A submodule is a module with an inclusion as additional data: the
+    # categories of its objects are those of the free module, without the
+    # subobject placements appended below (ARC-07, AGENTS subobjects).
+    module_categories = list(categories)
     data = {
         "base_ring": ring,
         "module_generating_set": labels,
@@ -823,10 +827,14 @@ def _new_sparse_free_module(
         categories.append(BiproductModules(ring))
         data["biproduct_factors"] = biproduct_factors
     categories.extend(extra_categories)
+    module_categories.extend(extra_categories)
+    if biproduct_factors is not None:
+        module_categories.append(BiproductModules(ring))
     if extra_construction_data is not None:
         data.update(extra_construction_data)
     return _object_of(
         Cat().meet(tuple(categories)),
+        _ambient=Cat().meet(tuple(module_categories)),
         _engine=(FramedFreeModules(ring), _SparseFreeModuleParent, _SparseFreeModuleElement),
         **data,
     )

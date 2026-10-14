@@ -1448,6 +1448,7 @@ def _object_of(
     category: Category,
     *,
     _engine: tuple[Category, type, type | None] | None = None,
+    _ambient: Category | None = None,
     **data: ConstructionData,
 ) -> ObjectOfCategory:
     r"""The object of ``category`` built from the data its levels declare.
@@ -1494,6 +1495,7 @@ def _object_of(
     return implementation(
         category=category,
         _defining_construction=(category, _engine, data),
+        _constructing_category=category if _ambient is None else _ambient,
         **data,
     )
 
@@ -1529,7 +1531,9 @@ class OwnedParent:
     enters such a parent's MRO and cannot shadow it.
     """
 
-    def __init__(self, category=None, _defining_construction=None, **rest) -> None:
+    def __init__(
+        self, category=None, _defining_construction=None, _constructing_category=None, **rest
+    ) -> None:
         r"""Initialize the host shell without a second class rewrite.
 
         ``_defining_construction`` is the category, private computation class
@@ -1538,6 +1542,12 @@ class OwnedParent:
         structure on the data of this exact object (``OWN-16``,
         ``Objects.ParentMethods._with_structure``).  It is ``None`` for an
         object that its category's constructor did not build.
+
+        ``_constructing_category`` is the category of whose objects this is
+        one, the ambient category of ``ARC-07``.  It is the placement
+        category unless the construction places the object further, as a
+        subobject placed in ``Subgroups(G)`` is an object of the groups with
+        an inclusion as additional data.
 
         A chain-built parent already *is* ``category.ObjectType``, which is the
         category's ``parent_class``.  ``Parent.__init__`` would rewrite
@@ -1557,6 +1567,7 @@ class OwnedParent:
         )
 
         self._defining_construction = _defining_construction
+        self._constructing_category = _constructing_category
         with construction_scope(self) as reached:
             SageParent.__init__(self, category=category, **rest)
             realize_owned_category(self)

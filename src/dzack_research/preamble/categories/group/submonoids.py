@@ -164,8 +164,11 @@ def _additive_submonoid(ambient, *, generators=None, predicate=None, description
     ):
         placements.append(FiniteSets())
     category = owned_category_join(tuple(placements))
+    # A submonoid is a monoid with an inclusion as additional data: the
+    # category of its objects is the additive monoids (ARC-07).
     return _object_of(
         category,
+        _ambient=owned_category_join((AdditiveMonoids(), *placements[1:])),
         _engine=(category, _AdditiveSubmonoidEngine, None),
         ambient=ambient,
         zero=zero,
@@ -349,6 +352,7 @@ def _generated_submonoid(ambient, generators, *, description=None, structure_dat
     category = Monoids().Subobjects(ambient)
     return _object_of(
         category,
+        _ambient=Monoids(),
         _engine=(category, _SubmonoidEngine, None),
         ambient=ambient,
         generators=normalized,
@@ -376,6 +380,7 @@ def _predicate_submonoid(
     category = owned_category_join((Monoids().Subobjects(ambient), *placements))
     return _object_of(
         category,
+        _ambient=owned_category_join((Monoids(), *placements)),
         _engine=(category, _SubmonoidEngine, None),
         ambient=ambient,
         predicate=predicate,

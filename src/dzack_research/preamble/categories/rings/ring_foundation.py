@@ -2129,13 +2129,9 @@ class _PredicateSubringParent(Parent):
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
         ambient_ring = _own_ring(ambient_ring)
-        # The constructing category: ``_predicate_subring`` builds in
-        # ``PredicateSubrings()``, joined with the caller's category (OWN-15).
-        self._defining_construction = (
-            category,
-            None,
-            {"ambient_ring": ambient_ring, "predicate": predicate},
-        )
+        # A subring is a ring with an inclusion as additional data: the
+        # category of its objects is the rings (OWN-15, ARC-07).
+        self._constructing_category = OwnedRings()
         self._ambient_ring = ambient_ring
         self._predicate = predicate
         self._description = description
@@ -4892,10 +4888,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         # from its engine by ``_own_ring`` is adopted into ``OwnedRings()``.
         # Its placement below is still read off the engine (ARC-08); the
         # constructing category is not.
-        self._defining_construction = (
-            OwnedRings() if constructing_category is None else constructing_category,
-            None,
-            {"engine": engine},
+        self._constructing_category = (
+            OwnedRings() if constructing_category is None else constructing_category
         )
         self._engine = engine
         self._preamble_ring_display = None
