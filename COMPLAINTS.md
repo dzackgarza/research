@@ -14,10 +14,6 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### A torsor does not decide its own nonemptiness
-
-A torsor under a group is nonempty by definition. `Sets()` owns `is_empty()` with the protected `_emptiness_decision` hook (decided cardinality, infinite sets, monoids, images, products, G-sets on points, condition subsets with an admitted member), but `Torsors` (`categories/group/g_sets.py`) supplies no hook, so `TrivializedTorsors.is_empty()` is the proposition. Evidence: `IsotropicReductionLiftTorsors.integral_torsor()`; `integral_members()` itself is decided. Remediation: `port-configurations-cones-and-integral-lifts`. Source inspection only (DEV-58).
-
 ### Labelled graphs present no isomorphisms or automorphism groups
 
 `LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group. Configuration equivalence (#399) needs both, so `_SpanningConfiguration` (`categories/vector_configurations.py`) keeps a Sage `Graph` inside a declared private adapter for bliss/nauty. Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism. Source inspection only.
