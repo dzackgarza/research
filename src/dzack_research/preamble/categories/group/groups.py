@@ -4415,7 +4415,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             nothing, and the function is called when ``group_generators()``
             or the selected resolution is first read.
             """
-            assert not self.has_selected_group_resolution(), (
+            # A finite group answers has_selected_group_resolution() with its
+            # canonical cover before any selection; the registry records an
+            # actual selection.
+            assert not self.has_selected_resolution(OwnedGroups()), (
                 f"{self} already has a selected generating resolution; a second generating family "
                 f"would make its group generators depend on the order of selection"
             )
