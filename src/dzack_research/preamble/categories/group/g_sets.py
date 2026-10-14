@@ -818,6 +818,10 @@ class _GSetOnPoints:
     def point_set(self):
         return self._point_set
 
+    def _emptiness_decision(self):
+        r"""``Sets``' emptiness hook: a ``G``-set on points has the points of its point set."""
+        return self.point_set()._emptiness_decision()
+
     def __contains__(self, point) -> bool:
         return point in self.point_set()
 

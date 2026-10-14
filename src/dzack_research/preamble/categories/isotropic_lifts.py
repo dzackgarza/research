@@ -9,6 +9,7 @@ combinations of matrices (Gritsenko--Hulek--Sankaran, section 3.1, (4)--(5)).
 
 from sage.misc.cachefunc import cached_method
 
+from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
@@ -184,44 +185,72 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _integral_lift_locus(self):
-            r"""The integral kernel and the defining locus of integral lifts."""
-            source = self.source_reduction().isotropic_embedding().codomain()
+            r"""The integral kernel ``K_Z`` and the integral lift locus ``T_Z`` as a subset of ``T``.
+
+            Write ``r: P -> P/mP`` for the residue map of
+            :meth:`integral_parameter_quotient`, ``C`` for the finite residue
+            locus :meth:`integral_parameter_classes`, and ``phi`` for the
+            parameterization ``V -> T``. Every integral lift has its parameter
+            in ``P``, and integrality is constant on the cosets of ``mP = ker r``
+            (the Eichler formula and its inverse are integral on ``mP``; see
+            :meth:`integral_parameter_quotient`). Hence
+
+                ``T_Z = phi(r^{-1}(C))``,  ``r^{-1}(C) = { s(c) + k : c in C, k in mP }``
+
+            for the section ``s`` of ``r`` selected by the cokernel. ``T_Z`` is
+            constructed as the image of ``C x ker(r)`` under
+            ``(c, k) |-> phi(s(c) + k)``, a bijection onto ``T_Z`` with its inverse
+            ``lift |-> (r(x), x - s(r(x)))``, ``x = phi^{-1}(lift)`` read in ``P``.
+            """
             target = self.target_reduction().isotropic_embedding().codomain()
-            points = self.point_set().condition_set(
-                lambda lift: lift.integral_restriction(source, target) is not None
-            )
             integral_kernel = self.acting_group().predicate_subgroup(
                 lambda g: g.integral_restriction(target, target) is not None,
                 "integral automorphisms in the marked-line reduction kernel",
             )
-            return integral_kernel, points
+            residue = self.integral_parameter_quotient()
+            lattice_inclusion = residue.domain().inclusion()
+            period = residue.kernel()
+            period_inclusion = period.inclusion()
+            classes = self.integral_parameter_classes()
+            pairs = classes.product_with(period.inclusion().domain())
+            first, second = tuple(pairs.index_set())
+            parameterization = self.parameterization()
+            coordinates = parameterization.inverse()
+
+            def lift_of(pair):
+                parameter_point = (
+                    residue.preimage(pairs.projection(first)(pair))
+                    + period_inclusion(pairs.projection(second)(pair))
+                )
+                return parameterization(lattice_inclusion(parameter_point).underlying_element())
+
+            def pair_of(lift):
+                parameter_point = lattice_inclusion.lift(
+                    lattice_inclusion.codomain().wrap(coordinates(lift))
+                )
+                residue_class = residue(parameter_point)
+                return pairs((
+                    residue_class,
+                    period_inclusion.lift(parameter_point - residue.preimage(residue_class)),
+                ))
+
+            locus = Sets().image_set(Sets().Mor(pairs, self)(lift_of), pairs, inverse=pair_of)
+            return integral_kernel, locus
 
         @cached_method
         def integral_members(self):
-            r"""The integral lift locus, a subset of the lifts, with its emptiness decided.
+            r"""The integral lift locus ``T_Z = phi(r^{-1}(C))`` with its ``K_Z``-action.
 
-            Every integral lift has its parameter in the lattice ``P`` of
-            :meth:`integral_parameter_quotient`, and integrality is constant
-            on the cosets of the period sublattice ``mP``. So the locus is
-            empty exactly when the finite residue locus
-            :meth:`integral_parameter_classes` is empty. When it is not, the
-            locus holds :meth:`integral_base_point`, admitted as a member, so
-            ``is_empty()`` and ``an_element()`` are answered; the locus is then
-            the point set of :meth:`integral_torsor`, the torsor under the
-            integral kernel. When it is empty, the locus is the image of the
-            empty set in the lifts. Emptiness is never inferred from one chosen
+            ``T_Z`` is constructed in :meth:`_integral_lift_locus` from the finite
+            residue locus ``C``; it is empty exactly when ``C`` is, which the
+            image and product constructions decide from ``C`` (finite, decided)
+            and ``ker r`` (a module, nonempty). The integral kernel ``K_Z`` acts
+            by composition. Emptiness is never inferred from one chosen
             rational lift.
             """
-            _integral_kernel, points = self._integral_lift_locus()
-            for _residue in self.integral_parameter_classes():
-                points(self.integral_base_point())
-                return points
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-            empty = finite_ordered_set(())
-            lifts = self.point_set()
-            return Sets().image_set(
-                Sets().Mor(empty, lifts)(lambda lift: lift), empty, inverse=lambda lift: lift
+            integral_kernel, locus = self._integral_lift_locus()
+            return GObjects(integral_kernel, Sets()).on_set(
+                locus, lambda g, lift: g * lift, orbit_relation=lambda left, right: True
             )
 
         @cached_method

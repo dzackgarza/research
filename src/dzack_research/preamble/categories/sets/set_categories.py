@@ -3602,6 +3602,10 @@ class _ImageSetEngine:
         r"""The set \(A\) of which this set is the image \(f(A)\)."""
         return self._source
 
+    def _emptiness_decision(self) -> bool | None:
+        r"""Realization of ``Sets``' emptiness hook: ``f(A)`` is empty exactly when ``A`` is."""
+        return self.source_set()._emptiness_decision()
+
     def image_map(self) -> Callable[[SourcePointT], TargetPointT]:
         r"""The map \(f\) of which this set is the image \(f(A)\)."""
         return self._image_map
@@ -4054,6 +4058,22 @@ class CartesianProductsOfSets(OwnedCategory):
 
         def family(self) -> IndexedFamily[IndexT, Sets().ObjectType]:
             return self._family
+
+        def _emptiness_decision(self) -> bool | None:
+            r"""``Sets``' emptiness hook: a product is empty exactly when some factor is.
+
+            Decided over a finite enumerated index set when a factor is decided
+            empty, or every factor is decided nonempty.
+            """
+            indices = self.index_set()
+            if not self.has_finite_index_set() or indices not in EnumeratedSets():
+                return None
+            decisions = tuple(self.factor(index)._emptiness_decision() for index in indices)
+            if any(decision is True for decision in decisions):
+                return True
+            if all(decision is False for decision in decisions):
+                return False
+            return None
 
         def has_finite_index_set(self) -> bool:
             index = self.index_set()
