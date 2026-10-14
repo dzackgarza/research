@@ -1802,6 +1802,50 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
 
 
+def _orthogonal_group_is_finite_by_theorem(lattice) -> bool:
+    r"""Whether a cited theorem places ``O(L) = Aut(L)`` among the finite groups (``CON-07``).
+
+    The decision reads the base ring, the rank, the signature and the square
+    class of the determinant; it never computes the group.  The routed cases:
+
+    - ``L`` a definite lattice of finite rank over ``ZZ``.  For positive
+      definite ``L`` this is ``lean-categories``
+      ``LeanCategories/Lattices/Valued/Mass.lean:41``, ``orthogonalGroup_finite``.
+      A negative definite ``L`` has the positive definite sign twist ``L(-1)``,
+      the same module with form ``-b``; an automorphism preserves ``b`` exactly
+      when it preserves ``-b``, so ``O(L) = O(L(-1))`` is the same group.
+    - ``L`` of rank 2 over ``ZZ`` with ``-det G`` a nonzero square in ``QQ``.
+      C. O'Sullivan, *Topographs for binary quadratic forms and class numbers*,
+      arXiv:2408.14405v3, Section 8.1, Corollary 8.2 (p. 29), with
+      ``Aut(q) := {M in SL(2, Z) : q|M = q}`` for ``q = [a, b, c]`` of
+      discriminant ``D = b^2 - 4ac``: "Let q be a primitive form of
+      discriminant D. Then Aut(q) = {±I} for D a nonzero square or D < -4."
+      The same section notes ``Aut(lambda q) = Aut(q)``, so primitivity is no
+      restriction.  The form of ``L`` is ``q = [g_11, 2 g_12, g_22]``, so
+      ``D = -4 det G``, and ``D`` is a nonzero square exactly when ``-det G``
+      is one.  Hence ``SO(L) = Aut(q) = {1, -1}``.  The determinant
+      ``O(L) -> {1, -1}`` is a group morphism with kernel ``SO(L)``, so
+      ``[O(L) : SO(L)] <= 2`` and ``O(L)`` has order at most 4; for the
+      hyperbolic plane ``U``, ``O(U) = {1, -1, swap, -swap}``.  The
+      ``lean-categories`` statement is requested (COMPLAINTS.md, *Finiteness
+      of O(L) for split binary lattices is not formalized*).
+
+    Definite lattices over ``QQ`` are not routed: ``O(x^2 + y^2)`` over ``QQ``
+    contains the rotation with cosine ``3/5`` and sine ``4/5``, of infinite
+    order.  A rank-2 indefinite ``ZZ``-lattice with ``-det G`` not a square is
+    not routed either; its group is infinite by Pell's equation, whose
+    solvability has no opened source here.
+    """
+    if _engine_ring(lattice.base_ring()) is not SageZZ or not lattice.module_rank().is_finite():
+        return False
+    if lattice.is_definite():
+        return True
+    if lattice.module_rank() != 2:
+        return False
+    minus_determinant = lattice_engines._binary_form_discriminant(lattice)
+    return bool(minus_determinant != 0 and minus_determinant.is_square())
+
+
 class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
     r"""``Isom(L, M)``: the core Mor of ``Lattices(R)``, its isomorphisms being the isometries.
 
@@ -1834,13 +1878,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
     def __init__(self, mor_family, domain, codomain) -> None:
         group = CoreMor._vertex_group_placement(domain, codomain)
         categories = [] if group is None else [group]
-        if domain is codomain:
-            if (
-                _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
-                and domain.module_rank().is_finite()
-                and domain.is_definite()
-            ):
-                categories.append(OwnedFiniteGroups())
+        if domain is codomain and _orthogonal_group_is_finite_by_theorem(domain):
+            categories.append(OwnedFiniteGroups())
         LatticeEmbeddingMor.__init__(
             self,
             mor_family,
@@ -2340,7 +2379,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         owned layer depends on it.
         """
         lattice = self.domain()
-        assert lattice.is_definite(), f"O({lattice}) has a structure description only when it is finite, i.e. when {lattice} is definite, and {lattice} is indefinite"
+        assert lattice.is_definite(), f"O({lattice}) has a structure description here only when {lattice} is definite, and {lattice} is indefinite"
         return str(self._engine_group().structure_description())
 
     def __iter__(self):
