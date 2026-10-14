@@ -17,7 +17,6 @@ from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
-from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.fraction_field import FractionField_generic as SageFractionField
 from sage.rings.ideal import Ideal_generic as SageIdeal
 from sage.rings.infinity import Infinity
@@ -54,6 +53,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
+    OwnedOrders,
     OwnedPrincipalIdealDomains,
     OwnedRings,
     PrimeFields,
@@ -440,17 +440,17 @@ class PrimeSpectra(OwnedCategory):
         def cardinality(self):
             r"""Return the exact number of prime points in supported finite spectra."""
             ring = self.ring()
-            engine = _engine_ring(ring)
-            assert (
-                ring in OwnedRings().Division().Commutative()
-                or isinstance(engine, IntegerModRing_generic)
-            ), (
-                f"cannot count the prime ideals of {ring}: the number of points of Spec(R) is computed here "
-                "only for R a field or Z/nZ"
-            )
             if ring in OwnedRings().Division().Commutative():
                 return cardinal(1)
-            modulus = SageZZ(engine.characteristic())
+            assert ring in QuotientRings() and ring.quotient_source() is _owned_integers(), (
+                f"cannot count the prime ideals of {ring}: the number of points of Spec(R) is computed here "
+                "only for R a field or ZZ/(n)"
+            )
+            # The primes of ZZ/(n) are the (p)/(n) for the primes p dividing n.
+            modulus = SageZZ(_engine_ideal(_owned_integers(), ring.defining_ideal()).gen())
+            assert modulus != 0, (
+                f"cannot count the prime ideals of {ring}: ZZ/(0) is ZZ, which has infinitely many"
+            )
             return cardinal(len(tuple(modulus.prime_divisors())))
 
         def ringed_space(self):
@@ -3341,7 +3341,6 @@ def _quotient_ring(source, defining_ideal):
     actual classes. This includes a further quotient of an engine-free
     quotient; neither its source nor its defining ideal is flattened away.
     """
-    finite_order_quotient = False
     exact_source_quotient = (
         source in LocalizationRings() or _engine_ring(source) is source
     )
@@ -3355,10 +3354,8 @@ def _quotient_ring(source, defining_ideal):
                 # Sage's generic QuotientRing order branch attempts to replace an
                 # order ideal I by K.ideal(I), treating the ideal itself as a field
                 # element.  The owned quotient already has the exact class model:
-                # equality is membership modulo I and a nonzero ideal of an order
-                # has finite index equal to its ideal norm.
+                # equality is membership modulo I.
                 quotient_engine = None
-                finite_order_quotient = not defining.is_zero()
             case QuotientRing_generic():
                 lifted = _engine_quotient_cover_ideal(source, defining)
                 quotient_engine = lifted.ring().quotient(lifted)
@@ -3371,6 +3368,20 @@ def _quotient_ring(source, defining_ideal):
             case _:
                 quotient_engine = engine.quotient(defining)
 
+    # O/I is finite for an order O and a nonzero ideal I, placed by that
+    # construction: O is a free ZZ-module of finite rank, so a nonzero ideal
+    # has full rank and finite index (Mathlib
+    # ``Ideal.finiteQuotientOfFreeOfNeBot``,
+    # Mathlib/LinearAlgebra/FreeModule/IdealQuotient.lean).  ZZ is the order
+    # of QQ: ZZ/(n) is ``ZMod n`` (``Int.quotientSpanNatEquivZMod``), finite
+    # for n != 0 (``ZMod.fintype``, Mathlib/Data/ZMod/Defs.lean).  The
+    # placement reads the source's construction and the ideal's generators,
+    # never the class of a realization (ARC-08).
+    finite_order_quotient = (
+        not exact_source_quotient
+        and source in OwnedOrders()
+        and not defining.is_zero()
+    )
     dimension = None
     # R/R has dimension -infinity, outside this finite-integer datum.
     if finite_order_quotient and not defining.is_one():
@@ -3434,12 +3445,7 @@ def _quotient_ring(source, defining_ideal):
     elif quotient_is_domain:
         # A prime ideal is proper, so this quotient is also nontrivial.
         placements.append(OwnedIntegralDomains())
-    if (
-        source in FiniteSets()
-        or isinstance(quotient_engine, IntegerModRing_generic)
-        or finite_order_quotient
-        or finite_extension_field
-    ):
+    if source in FiniteSets() or finite_order_quotient or finite_extension_field:
         placements.append(FiniteSets())
     if dimension == 0 or finite_extension_field:
         placements.append(OwnedRings().Artinian())

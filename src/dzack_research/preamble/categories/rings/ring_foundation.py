@@ -5208,7 +5208,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine.is_finite()
 
     def _preamble_is_number_field_order(self):
-        return self._engine is SageZZ or isinstance(self._engine, SageNumberFieldOrder)
+        r"""Whether this ring was constructed as an order (``ZZ`` or ``_order_in``), read from its placement."""
+        return self in OwnedOrders()
 
     def is_projective(self) -> bool:
         r"""Projectivity as a module over the base ring.
@@ -5715,7 +5716,6 @@ def _presented_ring_category(engine: Ring) -> Category:
         RealDoubleField,
         RealField,
         RealIntervalField,
-        pAdicField,
         pAdicRing,
     )
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
@@ -5744,9 +5744,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
         ):
             # These constructors present RR or CC, uncountable fields.
-            placements = (*field, owned_sets.UncountableSets())
-        case pAdicField():
-            # Q_p and its finite extensions are uncountable fields.
             placements = (*field, owned_sets.UncountableSets())
         case pAdicRing():
             # Z_p and the rings of integers of its finite extensions are
@@ -5874,8 +5871,9 @@ def _owned_ring_category(
 
 def _install_engine_selected_ring_data(ring, engine) -> None:
     r"""Fix constructor data required by exact initial ring placement."""
-    match engine:
-        case SageNumberFieldOrder() if engine is not SageZZ:
+    match ring:
+        case _ if ring in OwnedOrders() and ring is not _owned_integers():
+            # An order of a number field, by its construction (_order_in).
             from dzack_research.preamble.categories.modules.pure.modules import (
                 _fix_selected_module_resolution,
             )
@@ -5941,6 +5939,13 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             return _owned_complex_field_of_precision(int(engine.precision()))
         case SagePadicFieldClass() if engine is _SageQp(engine.prime(), engine.precision_cap()):
             return _owned_padic_field(int(engine.prime()), int(engine.precision_cap()))
+        case SagePadicFieldClass():
+            # Q_p is constructed only by Qp(p, precision); no other p-adic
+            # field engine has an owned construction to be raised through.
+            assert False, (
+                f"{engine} is a p-adic field with no owned construction: Q_p is constructed by "
+                "Qp(p, precision), and a finite extension of Q_p is not yet constructed"
+            )
         case SageFiniteFieldClass() if engine.degree() == 1:
             # A prime-field engine is ZZ/(p).
             return Zmod(int(engine.characteristic()))
