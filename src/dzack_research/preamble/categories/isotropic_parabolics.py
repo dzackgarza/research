@@ -143,28 +143,13 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
                 for label in self.module_generating_set()
             )
 
-        @cached_method
         def parabolic_subgroup(self):
-            r"""Return ``P_I = Stab_{O(L)}(I)`` as a predicate subgroup of ``O(L)``."""
-
-            return self.ambient_lattice().Aut().predicate_subgroup(self.stabilizes, f"g maps {self} onto itself")
+            r"""Return ``P_I = Stab_{O(L)}(I)``, the one parabolic of the isotropic reduction of ``I``."""
+            return self.isotropic_reduction().parabolic_subgroup()
 
         def levi_restriction(self, automorphism):
-            r"""Return ``g|_I`` in ``GL(I)`` for ``g`` in the parabolic subgroup."""
-            assert self.stabilizes(automorphism), (
-                f"cannot restrict {automorphism} to the isotropic sublattice {self}: "
-                f"restriction is defined only for an isometry g with g(I) = I, and "
-                f"this isometry does not map {self} onto itself"
-            )
-            inclusion = self.inclusion()
-            return self.module_category().Mor(self, self)(
-                {
-                    label: inclusion.lift(
-                        automorphism(inclusion(self.module_generator(label)))
-                    )
-                    for label in self.module_generating_set()
-                }
-            )
+            r"""Return ``g|_I`` in ``GL(I)`` for ``g`` in the parabolic subgroup: the isotropic action of ``g``."""
+            return self.isotropic_reduction().isotropic_action()(automorphism)
 
         def levi_quotient_action(self, automorphism):
             r"""Return the descent of ``g`` to ``I^perp/I`` for ``g`` in ``P_I``."""

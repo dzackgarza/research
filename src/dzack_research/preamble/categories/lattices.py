@@ -114,6 +114,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeIsometryMethods,
     LatticeIsometryMor,
     LatticeMor,
+    _LatticeCore,
     _lattice_embedding_mor,
     _lattice_isometry_mor,
     _lattice_mor,
@@ -1480,6 +1481,62 @@ class Lattices(OwnedCategoryOverBaseRing):
         return super().__classcall__(cls, ring)
 
     @cached_method
+    def Core(self):
+        r"""The core groupoid of lattices: the isometry Mors ``Isom(L, M)``, with ``O(L)`` its vertex groups."""
+        return _LatticeCore(self)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for lattices: one isometry, or ``None``."""
+        return None if core_mor.is_empty() is True else core_mor.an_element()
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for lattices: generators of ``O(L)``.
+
+        ``CoreMor.group_generators`` reads a selected resolution first and
+        asks this only without one.  The generators are those of the
+        lattice realization: Sage's for definite ``L``, and for indefinite
+        ``L`` the port's ``automorphism_group_generators`` (#403), the
+        port's own algorithm for ``O(L)`` (``_computed_group_generators``).
+        """
+        lattice = core_mor.domain()
+        assert lattice.module_rank().is_finite(), (
+            f"generators of O({lattice}) are computed only for a lattice of finite rank, and {lattice} has "
+            f"rank {lattice.module_rank()}"
+        )
+        return core_mor._computed_group_generators()
+
+    def _marked_isometry(self, diagram_category, source, target):
+        r"""Implementer side of ``_FunctorCategory``'s protected marked-diagram contract.
+
+        The apex isometry of an isomorphism of marked lattices, or ``None``,
+        from ``sage-indefinite-port``'s marked-lattice entry (#403).  The
+        answer is untrusted engine output.
+        """
+        from sage_indefinite_port.indefinite.marked_lattices import isometry
+
+        return isometry(diagram_category, source, target)
+
+    def _marked_automorphism_generators(self, diagram_category, marked):
+        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403)."""
+        from sage_indefinite_port.indefinite.marked_lattices import (
+            automorphism_group_generators,
+        )
+
+        return automorphism_group_generators(diagram_category, marked)
+
+    def _marking_component(self, source_marking, target_marking, apex):
+        r"""Implementer side of the marked-diagram contract: ``alpha`` with ``kappa alpha = g iota``.
+
+        ``iota = source_marking`` and ``kappa = target_marking`` are
+        embeddings and ``g = apex`` an isometry carrying ``iota`` onto
+        ``kappa``; ``alpha`` is read on the generators of the source of
+        ``iota`` by lifting along the monomorphism ``kappa``.
+        """
+        domain = source_marking.domain()
+        return domain.Isom(target_marking.domain())(
+            lambda label: target_marking.lift(apex(source_marking(domain.module_generator(label))))
+        )
+
     def twist_functor(self, scale):
         r"""Return the integral-lattice endofunctor ``L |-> L(scale)``."""
         if _engine_ring(self.base_ring()) is not SageZZ:
@@ -3943,8 +4000,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``rad(L)=id_L(L)^perp`` as a subobject of ``L``."""
             return self.identity_morphism().orthogonal_complement()
 
+        @cached_method
         def isotropic_reduction(self):
-            r"""Return ``S^perp/S`` when this lattice is represented as a subobject."""
+            r"""Return ``S^perp/S`` when this lattice is represented as a subobject.
+
+            One reduction per subobject, so its parabolic subgroup, the
+            generators selected on it and the actions out of it persist.
+            """
 
             if self not in ModuleSubobjects(self.base_ring()):
                 raise TypeError(
@@ -5326,13 +5388,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _stable_complement_root_reflections(self, element)
 
+        @cached_method
         def primitive_isotropic_subobject(self, *basis):
             r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
 
             Admission checks saturation and vanishing of the restricted form
             before refining the represented subobject, so a refused span leaves
             no wrongly placed object behind.  The stated family must also be
-            nonempty and independent.
+            nonempty and independent.  One subobject per spanning family, so
+            its cached isotropic reduction (and parabolic) is shared.
             """
             from dzack_research.preamble.categories.isotropic_parabolics import (
                 PrimitiveIsotropicSubobjects,
@@ -6365,7 +6429,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise NotPrimitiveError(
                     f"cannot form the lattice v^perp/Rv for {self!r}: the vector is not primitive; use isotropic_quotient() to retain the torsion quotient"
                 )
-            return self.sublattice().inclusion().isotropic_reduction()
+            return self.parent().primitive_isotropic_subobject(self).isotropic_reduction()
 
         def isotropic_quotient(self):
             r"""Return the formed module \(v^\perp/Rv\), retaining torsion.
@@ -7661,147 +7725,51 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return self.parabolic_subgroup().Mor(automorphisms)(descend)
 
         @cached_method
-        def _parabolic_levi_generator_pairs(self):
-            r"""Return paired generators ``(g, gbar)`` for ``P_I -> O(K_I)``."""
-            if not self.is_definite():
-                raise ValueError(
-                    f"cannot compute the image of P_I -> O(K_I) for K_I = {self!r}: it is computed only when K_I is definite, so that O(K_I) is finite, and {self!r} is indefinite"
-                )
-            embedding = self.isotropic_embedding()
-            source = embedding.domain()
-            ambient = embedding.codomain()
-            levi = self.levi_action()
-            return tuple(
-                (generator, levi(generator))
-                for generator in ambient.O().isotropic_stabilizer_generators(source)
-            )
+        def isotropic_action(self):
+            r"""Return \(\rho_I:P_I\to GL(I)\), \(g\mapsto g|_I\), the action on the isotropic sublattice.
 
-        @cached_method
-        def levi_image_generators(self):
-            r"""Return exact generators of the image of ``P_I -> O(K_I)`` when ``K_I`` is definite.
-
-            The exact indefinite stabilizer computation supplies generators of the full stabilizer
-            ``P_I = Stab_{O(L)}(I)``.  Descending those generators through
-            :meth:`levi_action` therefore generates the exact Levi image.  The
-            target is required to be definite so that its owned orthogonal
-            group is a finite represented group in which the image subgroup
-            can be materialized exactly.
+            An isometry stabilizing \(\iota(I)\) restricts along the
+            monomorphism \(\iota\) to an automorphism of the underlying
+            module of \(I\), an element of ``I.general_linear_group()``
+            (``Aut_R(I)``).  The kernel is the pointwise parabolic \(P_I^1\).
             """
-            return finite_ordered_set(
-                tuple(
-                    image
-                    for _generator, image in self._parabolic_levi_generator_pairs()
-                )
-            )
-
-        @cached_method
-        def levi_image(self):
-            r"""Return the exact subgroup ``im(P_I -> O(K_I))`` for definite ``K_I``."""
-            return self.Aut().subgroup_on(tuple(self.levi_image_generators()))
-
-        @cached_method
-        def _rank_one_combined_levi_lift_table(self):
-            r"""Return lifts indexed by ``(action on I, action on K_I)`` for rank one."""
-            line = self.isotropic_sublattice()
-            if int(line.module_rank()) != 1:
-                raise ValueError(
-                    f"cannot tabulate the lifts to P_I for K_I = {self!r}: this is implemented for an isotropic sublattice I of rank 1, and I = {line!r} has rank {line.module_rank()}"
-                )
             embedding = self.isotropic_embedding()
-            line_label = line.module_generating_set()[0]
-            embedded = embedding(line.module_generator(line_label))
-            ring = embedding.codomain().base_ring()
+            sublattice = embedding.domain()
+            automorphisms = sublattice.general_linear_group()
+            endomorphisms = sublattice.module_category().Mor(sublattice, sublattice)
 
-            def line_scalar(isometry):
-                preimage = embedding.lift(isometry(embedded))
-                scalar = preimage.to_vector()(line_label)
-                if scalar not in (ring.one(), -ring.one()):
-                    raise ArithmeticError(
-                        f"the parabolic isometry {isometry!r} of {embedding.codomain()!r} acts on the isotropic line I by {scalar}, but an isometry stabilizing I acts on it by a unit +1 or -1"
-                    )
-                return scalar
+            def restrict(isometry):
+                return automorphisms(endomorphisms({
+                    label: embedding.lift(isometry(embedding(sublattice.module_generator(label))))
+                    for label in sublattice.module_generating_set()
+                }))
 
-            levi = self.levi_action()
-            generators = tuple(
-                ambient_generator
-                for ambient_generator, _target_generator in self._parabolic_levi_generator_pairs()
-            )
+            return self.parabolic_subgroup().Mor(automorphisms)(restrict)
 
-            def combined_image(isometry):
-                return (line_scalar(isometry), levi(isometry))
+        def levi_image(self):
+            r"""Return \(\operatorname{im}(P_I\to O(K_I))\), the image of :meth:`levi_action`.
 
-            def multiply(left, right):
-                return (left[0] * right[0], left[1] * right[1])
+            The image is generated by the images of the generators the caller
+            selected on ``parabolic_subgroup()``
+            (``select_group_resolution``); no generators of \(P_I\) are
+            computed here, and none is requested from the indefinite
+            stabilizer computation, which is what consumes this image.  The
+            image in a trivial \(O(K_I)\) is trivial without any.
+            """
+            return self.levi_action().image()
 
-            return self.parabolic_subgroup().finite_image_lifts(
-                combined_image,
-                generators=generators,
-                multiply=multiply,
-                image_bound=2 * int(self.Aut().cardinality()),
-            )
-
-        @cached_method
-        def pointwise_levi_image(self):
-            r"""Return the image of ``P_I^1`` in ``O(K_I)`` for a rank-one definite reduction."""
-            ring = self.isotropic_embedding().codomain().base_ring()
-            targets = tuple(
-                target
-                for (scalar, target) in self._rank_one_combined_levi_lift_table()
-                if scalar == ring.one()
-            )
-            return self.Aut().subgroup_on(targets)
-
-        def pointwise_levi_lift(self, isometry):
-            r"""Return a lift in ``P_I^1`` exactly when ``isometry`` lies in its Levi image."""
-            if isometry.parent() is not self.Aut():
-                raise ValueError(
-                    f"cannot lift {isometry!r} to P_I^1: it lies in {isometry.parent()!r}, not in O(K_I) for K_I = {self!r}"
-                )
-            if isometry not in self.pointwise_levi_image():
-                return None
-            ring = self.isotropic_embedding().codomain().base_ring()
-            lifted = self._rank_one_combined_levi_lift_table()[ring.one(), isometry]
-            if lifted not in self.pointwise_parabolic_subgroup():
-                raise ArithmeticError(
-                    f"the lift {lifted!r} of {isometry!r} from O(K_I) to P_I^1, K_I = {self!r}, does not fix I pointwise"
-                )
-            if self.levi_action()(lifted) != isometry:
-                raise ArithmeticError(
-                    f"the lift {lifted!r} of {isometry!r} to P_I^1 descends to {self.levi_action()(lifted)!r} in O(K_I), K_I = {self!r}, not to {isometry!r}"
-                )
-            return lifted
-
-        @cached_method
-        def parabolic_levi_exact_sequence(self):
-            r"""Return ``1 -> U_I -> P_I^1 -> M_I^1 -> 1`` in the represented rank-one regime."""
-            return RankOneParabolicLeviExactSequence(self)
-
-        @cached_method
-        def _levi_lift_table(self):
-            r"""Return one actual parabolic lift of every element of the finite Levi image."""
-            image = self.levi_image()
-            generators = tuple(
-                ambient_generator
-                for ambient_generator, _target_generator in self._parabolic_levi_generator_pairs()
-            )
-            witnesses = self.parabolic_subgroup().finite_image_lifts(
-                self.levi_action(),
-                generators=generators,
-                image_bound=int(image.cardinality()),
-            )
-            if len(witnesses) != int(image.cardinality()):
-                raise ArithmeticError(
-                    f"the generators of P_I lift only {len(witnesses)} elements of the image of P_I -> O(K_I) for K_I = {self!r}, but the image has order {image.cardinality()}"
-                )
-            return witnesses
+        def levi_image_generators(self):
+            r"""Return the generators of :meth:`levi_image`: the images of the selected generators of \(P_I\)."""
+            return self.levi_image().selected_subgroup_generators()
 
         def levi_lift(self, isometry):
-            r"""Return a parabolic lift of ``isometry`` exactly when the gluing permits one.
+            r"""Return a lift of ``isometry`` to \(P_I\) when it lies in :meth:`levi_image`, else ``None``.
 
-            For definite ``K_I`` the represented Levi image is finite, so this
-            returns an actual witness in ``P_I`` rather than only a membership
-            decision.  An element of ``O(K_I)`` outside that image has no lift
-            through the retained arithmetic parabolic and returns ``None``.
+            The lift is the word section of the finite image computed from
+            the selected generators of \(P_I\)
+            (``levi_action().lift``); it is not a homomorphic splitting.
+            The finite-image hypothesis is that \(O(K_I)\) is finite, as
+            when \(K_I\) is definite.
             """
             if isometry.parent() is not self.Aut():
                 raise ValueError(
@@ -7809,16 +7777,72 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 )
             if isometry not in self.levi_image():
                 return None
-            lifted = self._levi_lift_table()[isometry]
-            if lifted not in self.parabolic_subgroup():
-                raise ArithmeticError(
-                    f"the lift {lifted!r} of {isometry!r} from O(K_I) to P_I, K_I = {self!r}, does not stabilize I"
+            return self.levi_action().lift(isometry)
+
+        @cached_method
+        def _rank_one_combined_levi_lift_table(self):
+            r"""Lifts in \(P_I\) indexed by the joint image in \(GL(I)\times O(K_I)\), for rank one.
+
+            Computed from the generators selected on ``parabolic_subgroup()``
+            by the finite-image traversal of \(g\mapsto(\rho_I(g),\bar g)\);
+            \(GL(I)=\{\pm1\}\) for a line, so the image has at most
+            \(2|O(K_I)|\) elements.
+            """
+            line = self.isotropic_sublattice()
+            if int(line.module_rank()) != 1:
+                raise ValueError(
+                    f"cannot tabulate the lifts to P_I for K_I = {self!r}: this is implemented for an isotropic sublattice I of rank 1, and I = {line!r} has rank {line.module_rank()}"
                 )
-            if self.levi_action()(lifted) != isometry:
-                raise ArithmeticError(
-                    f"the lift {lifted!r} of {isometry!r} to P_I descends to {self.levi_action()(lifted)!r} in O(K_I), K_I = {self!r}, not to {isometry!r}"
+            action = self.isotropic_action()
+            levi = self.levi_action()
+
+            def joint_image(isometry):
+                return (action(isometry), levi(isometry))
+
+            def multiply(left, right):
+                return (left[0] * right[0], left[1] * right[1])
+
+            return self.parabolic_subgroup().finite_image_lifts(
+                joint_image,
+                multiply=multiply,
+                image_bound=2 * int(self.Aut().cardinality()),
+            )
+
+        @cached_method
+        def pointwise_levi_image(self):
+            r"""Return the image of ``P_I^1`` in ``O(K_I)`` for a rank-one reduction.
+
+            ``P_I^1`` is the kernel of :meth:`isotropic_action`, so its image
+            is the second component of the joint image over the identity of
+            \(GL(I)\).  The image in a trivial \(O(K_I)\) is trivial.
+            """
+            automorphisms = self.Aut()
+            if automorphisms.is_trivial() is True:
+                return automorphisms.trivial_subgroup()
+            identity_on_line = self.isotropic_action().codomain().one()
+            return automorphisms.subgroup(
+                target
+                for (on_line, target) in self._rank_one_combined_levi_lift_table()
+                if (on_line == identity_on_line) is True
+            )
+
+        def pointwise_levi_lift(self, isometry):
+            r"""Return a lift in ``P_I^1`` exactly when ``isometry`` lies in its Levi image."""
+            if isometry.parent() is not self.Aut():
+                raise ValueError(
+                    f"cannot lift {isometry!r} to P_I^1: it lies in {isometry.parent()!r}, not in O(K_I) for K_I = {self!r}"
                 )
-            return lifted
+            if (isometry == self.Aut().one()) is True:
+                return self.pointwise_parabolic_subgroup().one()
+            if isometry not in self.pointwise_levi_image():
+                return None
+            identity_on_line = self.isotropic_action().codomain().one()
+            return self._rank_one_combined_levi_lift_table()[identity_on_line, isometry]
+
+        @cached_method
+        def parabolic_levi_exact_sequence(self):
+            r"""Return ``1 -> U_I -> P_I^1 -> M_I^1 -> 1`` in the represented rank-one regime."""
+            return RankOneParabolicLeviExactSequence(self)
 
         @cached_method
         def unipotent_kernel(self):

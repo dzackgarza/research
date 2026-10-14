@@ -265,6 +265,23 @@ class Modules(OwnedCategoryOverBaseRing):
                 pass
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
+    def Core(self):
+        r"""The core groupoid of modules; at ``(M, M)`` its Mor is ``Aut_R(M)`` (``_ModuleCore``)."""
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _ModuleCore
+
+        return _ModuleCore(self)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for modules: the identity of ``Aut_R(M)``."""
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"whether {core_mor.domain()} and {core_mor.codomain()} are isomorphic modules is not decided here"
+        )
+        return core_mor.identity()
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Implementer side of the core contract: generators of ``GL(M)`` from Sage's ``GL(n, R)`` on the selected basis."""
+        return core_mor._basis_general_linear_generators()
+
     def free_module(self, labels):
         r"""``F_R(S)``, the free object of this category on the set ``S`` of labels.
 
@@ -1054,7 +1071,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
                 if coequalizer_transport is None:
                     return raw_factor
-                return raw_factor * coequalizer_transport.inverse()
+                return raw_factor * coequalizer_transport.inverse().forward()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
@@ -1455,6 +1472,14 @@ class Modules(OwnedCategoryOverBaseRing):
         def End(self):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
             return Modules(self.base_ring()).End(self)
+
+        def general_linear_group(self):
+            r"""``GL(M) = Aut_R(M)``: the automorphism group of the underlying module, one object with ``Modules(R).Aut(M)``.
+
+            For a lattice this is the group of the underlying module, of
+            which ``O(L)`` is a subgroup; it is not ``L.Aut()``.
+            """
+            return self.module_category().Aut(self)
 
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
@@ -5942,7 +5967,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             # For a square in Arr(Mod_R), right * original = diagonal * left.
             # Thus D = right * A * left^{-1} in matrix notation.
             left_change = normalization.forward().right()
-            right_change = normalization.inverse().left()
+            right_change = normalization.inverse().forward().left()
             labels = finite_ordered_set((
                 "diagonal",
                 "left_change",

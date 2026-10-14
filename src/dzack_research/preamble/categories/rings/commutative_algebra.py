@@ -1579,7 +1579,7 @@ def _localized_affine_normalization_data(localization, source_data):
         {regular_label: localized_regular.module_generator(source_label)}
     )
     regular_comparison = _isomorphism_from_known_inverse_pair(to_regular, from_regular)
-    unit_map = localized_unit * regular_comparison.inverse()
+    unit_map = localized_unit * regular_comparison.inverse().forward()
 
     # The square changes only the actual rank-one source of the unit map.
     # The existing cokernel functor supplies its induced isomorphism, which
@@ -1595,7 +1595,7 @@ def _localized_affine_normalization_data(localization, source_data):
         regular_comparison.forward(), module_identity
     )
     inverse_square = arrows.Mor(regular_arrow, localized_arrow)._from_commuting_edges(
-        regular_comparison.inverse(), module_identity
+        regular_comparison.inverse().forward(), module_identity
     )
     localized_cokernel_comparison = functor.cokernel_comparison(
         source_data.normalization_unit_map

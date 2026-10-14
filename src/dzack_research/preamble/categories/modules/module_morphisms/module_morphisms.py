@@ -16,6 +16,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _distinct_supercategories,
     _precomposable,
 )
+from sage.misc.lazy_attribute import lazy_attribute
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import CoreMor, _CoreCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -3243,6 +3246,67 @@ class ModuleAutomorphism(ModuleAutomorphismMethods, ModuleMorphism):
     r"""Compatibility shell for private module-automorphism realizations."""
 
 
+def _flag_stabilizer_engine_data(automorphisms, terms):
+    r"""Private engine adapter of ``ModuleAutomorphismGroup`` (``OWN-05``, ``OWN-06``).
+
+    Owner: the module automorphism group; only caller:
+    ``ModuleAutomorphismGroup.flag_stabilizer``.  It lowers the flag's
+    embedded generators to coordinate rows once, asks the tensor package
+    for a basis adapted to the chain and for the block ``GL(n_i, R)``
+    generators, and raises the results: the automorphism ``P`` of ``M``
+    with ``P(e_j) = b_j``, the block sizes, and the block generators as
+    elements of ``GL(M)`` in the coordinates of ``e``.  It asserts that
+    every step of the flag is saturated in the next.
+    """
+    from dzack_research.preamble.tensors.tensor import (
+        _engine_block_general_linear_row_actions,
+        _engine_flag_adapted_rows,
+    )
+
+    module = automorphisms.domain()
+    ring = module.base_ring()
+    engine_ring = _engine_ring(ring)
+    labels = module.module_generating_set()
+
+    def row(vector):
+        coordinates = vector.to_vector()
+        return [_engine_element(ring, coordinates(label)) for label in labels]
+
+    spans = [[row(vector) for vector in term.embedded_module_generators()] for term in terms]
+    spans.append([row(module.module_generator(label)) for label in labels])
+    rows, sizes, unsaturated = _engine_flag_adapted_rows(spans, engine_ring)
+    assert unsaturated is None, (
+        f"{terms} is not a flag of saturated submodules of {module}: step {unsaturated} does not contain "
+        f"the previous term as a saturated submodule (its quotient has torsion), so no basis of {module} is "
+        f"adapted to it"
+    )
+    generators = tuple(module.module_generators())
+    vectors = tuple(
+        sum(
+            (module.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
+             for coefficient, generator in zip(adapted, generators, strict=True) if coefficient),
+            module.zero(),
+        )
+        for adapted in rows
+    )
+    endomorphisms = module.module_category().Mor(module, module)
+    change = automorphisms(endomorphisms(dict(zip(labels, vectors, strict=True))))
+    block_generators = tuple(
+        automorphisms._from_backend_row_action(action)
+        for action in _engine_block_general_linear_row_actions(sizes, engine_ring)
+    )
+    return change, sizes, block_generators
+
+
+class _ModuleCore(_CoreCategory):
+    r"""The core of ``Modules(R)``: at ``(M, M)`` its Mor is ``Aut_R(M)``, the one module automorphism group."""
+
+    def Mor(self, domain, codomain):
+        if domain is codomain:
+            return self.base_category().Aut(domain)
+        return super().Mor(domain, codomain)
+
+
 class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
     r"""The groups ``Aut_R(M)`` of invertible module endomorphisms."""
 
@@ -3273,8 +3337,14 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
             return self.identity(*args, **kwargs)
 
 
-class ModuleAutomorphismGroup(CategoricalMor):
-    r"""The unit group of ``End_R(M)``, retaining its actual module maps.
+class ModuleAutomorphismGroup(CoreMor):
+    r"""``Aut_R(M) = Core(Mod_R)(M, M)``: the unit group of ``End_R(M)``, retaining its actual module maps.
+
+    It is the core Mor of ``Modules(R)`` at ``(M, M)`` (``_ModuleCore``), so
+    ``Modules(R).Core().Mor(M, M) is Modules(R).Aut(M)``; its group
+    placement comes from ``CoreMor._vertex_group_placement``, refined to
+    ``ModuleAutomorphismGroups(R)``, and its elements are the module
+    automorphisms of ``ModuleAutomorphismMethods``.
 
     The inherited Mor containment distinguishes group elements from the
     categorical objects constructed on them. Both retain their construction
@@ -3286,13 +3356,21 @@ class ModuleAutomorphismGroup(CategoricalMor):
 
     def __init__(self, mor_family, module) -> None:
         self._base_ring = _owned_ring(module.base_ring())
-        CategoricalMor.__init__(
-            self,
-            mor_family,
-            module,
-            module,
-            category=ModuleAutomorphismGroups(self._base_ring),
+        CoreMor.__init__(
+            self, mor_family, module, module, category=ModuleAutomorphismGroups(self._base_ring)
         )
+
+    @lazy_attribute
+    def element_class(self) -> type:
+        r"""The module automorphism arrow type generated from ``ModuleAutomorphismMethods``, not ``CoreMor``'s pair."""
+        return self._generated_arrow_type()
+
+    @property
+    def ElementType(self) -> type:
+        return self._generated_arrow_type()
+
+    def core_category(self):
+        return self.domain().module_category().Core()
 
     def base_ring(self):
         return self._base_ring
@@ -3304,8 +3382,14 @@ class ModuleAutomorphismGroup(CategoricalMor):
         r"""The automorphism ``forward``, whose inverse ``inverse_computation()`` is asked on first request."""
         return self.element_class(self, forward, inverse_computation)
 
-    def __call__(self, datum):
-        r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
+    def __call__(self, datum, inverse=None):
+        r"""Construct an automorphism-group element rather than preserving a bare Iso arrow.
+
+        As the core Mor it also takes the inverse pair ``(forward, inverse)``
+        of module endomorphisms, as ``CoreMor`` does.
+        """
+        if inverse is not None:
+            return self._from_known_inverse_pair(datum, inverse)
         return self._element_constructor_(datum)
 
     def _element_constructor_(self, datum):
@@ -3314,7 +3398,7 @@ class ModuleAutomorphismGroup(CategoricalMor):
                 return datum
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
-            return self._from_inverse_computation(datum.forward(), datum.inverse)
+            return self._from_inverse_computation(datum.forward(), lambda: datum.inverse().forward())
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)
@@ -3332,6 +3416,160 @@ class ModuleAutomorphismGroup(CategoricalMor):
 
     def module(self):
         return self.domain()
+
+    # Private engine realization (OWN-06, OWN-24): for a module with a finite
+    # selected basis, GL(M) = Aut_R(M) is realized by Sage's GL(n, R) through
+    # that basis.  The coordinate convention is crossed once, by the tensor
+    # package's row-action lowering and raising.  These are the group
+    # realization hooks of OwnedGroups; ordinary callers use subgroup,
+    # image, cosets and group_generators.
+
+    def _framed_rank(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+
+        module = self.domain()
+        assert (
+            module in FramedFreeModules(module.base_ring())
+            and module.module_generating_set().cardinality().is_finite()
+        ), (
+            f"GL({module}) is realized as a matrix group only for a free module with a finite selected "
+            f"basis, but {module} is in {module.category()}"
+        )
+        return int(module.module_generating_set().cardinality())
+
+    @cached_method
+    def _engine_group(self):
+        r"""Sage's ``GL(n, R)`` on the selected basis of the module."""
+        from sage.groups.matrix_gps.linear import GL
+
+        return GL(self._framed_rank(), _engine_ring(self.domain().base_ring()))
+
+    def _row_action_matrix(self, automorphism):
+        from dzack_research.preamble.tensors.tensor import _engine_row_action_matrix
+
+        assert element_parent(automorphism) is self, (
+            f"{automorphism} has no matrix in {self}: it lies in {element_parent(automorphism)}"
+        )
+        return _engine_row_action_matrix(automorphism.forward())
+
+    def _from_backend_row_action(self, row_action_matrix):
+        r"""Raise a row-action matrix on the selected basis to an automorphism of the module."""
+        from dzack_research.preamble.tensors.tensor import _engine_column_matrix_from_row_action
+
+        module = self.domain()
+        ring = module.base_ring()
+        generators = tuple(module.module_generators())
+        images = tuple(
+            sum(
+                (
+                    module.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
+                    for coefficient, generator in zip(column, generators, strict=True)
+                    if coefficient
+                ),
+                module.zero(),
+            )
+            for column in _engine_column_matrix_from_row_action(row_action_matrix).columns()
+        )
+        return self(module.module_category().Mor(module, module)(images))
+
+    def _to_engine(self, automorphism):
+        return self._engine_group()(self._row_action_matrix(automorphism))
+
+    def _from_engine(self, engine_element):
+        return self._from_backend_row_action(self._engine_group()(engine_element).matrix())
+
+    def _engine_subgroup_from_generators(self, generators):
+        r"""The matrix group generated by the selected automorphisms, without a presentation of GL."""
+        from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
+        matrices = tuple(self._row_action_matrix(generator) for generator in generators)
+        if not matrices:
+            return self._engine_group().subgroup(())
+        return MatrixGroup(matrices)
+
+    def _to_subgroup_engine(self, automorphism, engine_subgroup):
+        return engine_subgroup(self._row_action_matrix(automorphism))
+
+    def _engine_subgroup_contains(self, automorphism, engine_subgroup):
+        return self._row_action_matrix(automorphism) in engine_subgroup
+
+    def _from_subgroup_engine(self, engine_element):
+        return self._from_backend_row_action(engine_element.matrix())
+
+    def natural_module_action_functor(self):
+        r"""The action functor ``B GL(M) -> Mod_R`` on ``M`` itself."""
+        from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+
+        module = self.domain()
+        modules = module.module_category()
+        return GroupActionFunctor(
+            self, modules, module, lambda automorphism: modules.Mor(module, module)(automorphism.forward())
+        )
+
+    def flag_stabilizer(self, flag):
+        r"""``B = {g in GL(M) : g(T_i) = T_i for all i}`` for a chain ``T_1 < ... < T_k`` of saturated submodules.
+
+        ``flag`` is the ordered family of subobjects of ``M``.  In a basis of
+        ``M`` adapted to the flag (``P: e_j |-> b_j``, retained as
+        ``basis_change()``), ``B`` is block upper triangular; it is generated
+        by the block ``GL(n_i, R)`` (Sage's generators) and the elementary
+        automorphisms ``b_k |-> b_k + b_j`` for ``j`` in an earlier block
+        than ``k`` (Levi decomposition ``B = L U``; unverified: no source was
+        opened, recorded in COMPLAINTS.md, *Generators of parabolic subgroups
+        of GL(M) over a PID*; untrusted computation).  The result is the
+        stabilizer subgroup of the flag under the natural module action,
+        with that generating morphism.
+        """
+        from dzack_research.preamble.categories.group.predicate_subgroups import StabilizerSubgroups
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        module = self.domain()
+        match flag:
+            case _ if flag in Sets():
+                terms = flag
+            case _:
+                terms = finite_ordered_set(tuple(flag))
+        assert all(term.inclusion().codomain() is module for term in terms), (
+            f"a flag of {module} is a chain of its subobjects, but {terms} are not all subobjects of {module}"
+        )
+        change, sizes, block_generators = _flag_stabilizer_engine_data(self, terms)
+        labels = module.module_generating_set()
+        endomorphisms = module.module_category().Mor(module, module)
+        block_of = dict(zip(labels, (index for index, size in enumerate(sizes) for _ in range(size)), strict=True))
+        elementary = tuple(
+            self(endomorphisms({
+                label: module.module_generator(label) + (module.module_generator(j_label) if label == k_label else module.zero())
+                for label in labels
+            }))
+            for k_label in labels
+            for j_label in labels
+            if block_of[j_label] < block_of[k_label]
+        )
+        generators = finite_ordered_set(tuple(change * generator * ~change for generator in (*block_generators, *elementary)))
+
+        def preserves_flag(automorphism):
+            inverse = ~automorphism
+            return all(
+                term.inclusion().is_in_image(automorphism(vector)) and term.inclusion().is_in_image(inverse(vector))
+                for term in terms
+                for vector in term.embedded_module_generators()
+            )
+
+        return StabilizerSubgroups(self)(
+            terms,
+            self.natural_module_action_functor(),
+            preserves_flag,
+            description=f"g preserves the flag {terms} of {module}",
+            generating_morphism=self.free_cover(generators),
+            basis_change=change,
+        )
+
+    def _basis_general_linear_generators(self):
+        r"""Generators of ``GL(M)``: Sage's generators of ``GL(n, R)``, raised through the basis."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+        return finite_ordered_set(tuple(self._from_engine(generator) for generator in self._engine_group().gens()))
 
     def _finiteness_decision(self):
         r"""A finite module has finitely many automorphisms; otherwise answer the proposition ``is_finite``.

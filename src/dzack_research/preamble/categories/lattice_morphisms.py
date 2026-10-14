@@ -16,6 +16,12 @@ from sage.structure.element import parent as element_parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from sage.misc.lazy_attribute import lazy_attribute
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    CoreMor,
+    _CoreCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
     CategoricalMor,
@@ -45,6 +51,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleAutomorphismMethods,
     ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
@@ -556,7 +563,9 @@ class LatticeIsometryMethods:
 
     def __init__(self, parent, images) -> None:
         match images:
-            case CategoricalIsomorphism():
+            # A module isomorphism of the underlying modules: an inverse pair,
+            # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
+            case CategoricalIsomorphism() | ModuleAutomorphismMethods():
                 domain = parent.domain()
                 codomain = parent.codomain()
                 forward = domain.module_category().Mor(domain, codomain)(images.forward())
@@ -994,7 +1003,7 @@ class LatticeIsometryMethods:
                 codomain,
                 self.domain(),
             )._from_known_inverse_pair(
-                module_isomorphism.inverse(),
+                module_isomorphism.inverse().forward(),
                 module_isomorphism.forward(),
             )
             return target.element_class(target, reverse)
@@ -1793,13 +1802,39 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
 
 
-class LatticeIsometryMor(LatticeEmbeddingMor):
+class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
+    r"""``Isom(L, M)``: the core Mor of ``Lattices(R)``, its isomorphisms being the isometries.
+
+    It is ``Lattices(R).Core().Mor(L, M)`` (``_LatticeCore``), so
+    ``O(L) = Aut(L)`` takes its group placement from the core owner
+    (``CoreMor._vertex_group_placement``).  Its elements remain the lattice
+    isometries (``LatticeIsometryMethods``), and its group computations are
+    realized by Sage matrix groups.
+    """
+
     ElementMethods = LatticeIsometryMethods
 
+    @lazy_attribute
+    def element_class(self) -> type:
+        r"""The lattice isometry arrow type generated from ``LatticeIsometryMethods``, not ``CoreMor``'s isomorphism pair."""
+        return self._generated_arrow_type()
+
+    @property
+    def ElementType(self) -> type:
+        return self._generated_arrow_type()
+
+    def core_category(self):
+        return self.domain().lattice_category().Core()
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        r"""The isometry whose forward arrow is ``forward``; its inverse is that of the isometry."""
+        domain = self.domain()
+        return self(lambda label: forward(domain.module_generator(label)))
+
     def __init__(self, mor_family, domain, codomain) -> None:
-        categories = []
+        group = CoreMor._vertex_group_placement(domain, codomain)
+        categories = [] if group is None else [group]
         if domain is codomain:
-            categories.append(OwnedGroups())
             if (
                 _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
                 and domain.module_rank().is_finite()
@@ -2244,6 +2279,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     @cached_method
     def _computed_group_generators(self):
         r"""Return generators of ``O(L)``, computed by a backend, as a finite ordered set of ``O(L)``.
+
+        Protected realization hook (``OWN-05``): owner ``LatticeIsometryMor``;
+        callers ``select_group_resolution`` and ``Lattices._core_automorphism_generators``
+        (the lattice implementer of ``CoreMor``'s core contract).
 
         For definite ``L``, Sage's ``GroupOfIsometries`` computes the
         generators of the finite group ``O(L)``. For indefinite ``L``,
@@ -2716,6 +2755,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         if self.domain() is self.codomain():
             return f"Orthogonal group O({self.domain()})"
         return f"Isom({self.domain()}, {self.codomain()})"
+
+
+class _LatticeCore(_CoreCategory):
+    r"""The core of ``Lattices(R)``: its Mor objects are the isometry Mors ``Isom(L, M)``."""
+
+    def Mor(self, domain, codomain) -> LatticeIsometryMor:
+        return _lattice_isometry_mor(domain, codomain)
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))

@@ -626,9 +626,34 @@ class LeftCosetGSets(OwnedParameterizedCategory):
                 if left_subgroup is group
                 else left_subgroup.inclusion()
             )
-            return FiniteGSets(left_subgroup)(
+            acted = FiniteGSets(left_subgroup)(
                 self, lambda element, point: self.act(inclusion(element), point)
-            ).orbits()
+            )
+            return _double_coset_set(acted, self, _DoubleCosetSet)
+
+        def inverted_double_cosets(self, right_subgroup):
+            r"""``Q \ G / H`` for this ``G/Q``, read through inversion ``x |-> x^-1``.
+
+            ``H`` acts on ``G/Q``; inversion carries ``QxH`` to ``H x^-1 Q``,
+            so the ``H``-orbit of ``tQ`` is the double coset ``Q t^-1 H``.
+            The result's projection from ``G`` is ``g |-> H-orbit of g^-1 Q``
+            and its section sends an orbit to ``t^-1``; the inversion is
+            retained as the set map ``G -> G`` it is.
+            """
+            group = self.acting_group()
+            assert right_subgroup is group or right_subgroup.supergroup() is group, (
+                f"the double cosets {self.subgroup()} \\ {group} / {right_subgroup} need a subgroup of "
+                f"{group}, but {right_subgroup} is a subgroup of {right_subgroup.supergroup()}"
+            )
+            inclusion = (
+                OwnedGroups().Mor(group, group).identity()
+                if right_subgroup is group
+                else right_subgroup.inclusion()
+            )
+            acted = FiniteGSets(right_subgroup)(
+                self, lambda element, point: self.act(inclusion(element), point)
+            )
+            return _double_coset_set(acted, self, _InvertedDoubleCosetSet)
 
         def subgroup(self):
             r"""Return ``H <= G`` for this represented left-coset ``G/H``."""
@@ -875,6 +900,78 @@ class _OrbitSet:
 
     def _repr_(self) -> str:
         return f"Orbit set of {self.g_set()}"
+
+
+class _DoubleCosetSet(_OrbitSet):
+    r"""``Q \\ G / H`` as the ``Q``-orbits on the coset space ``G/H``.
+
+    The data are the orbit ``Q``-set on ``G/H`` and the pointed coset space
+    ``G/H`` with its section.  The projection ``G -> Q \\ G / H`` is
+    ``g |-> Q-orbit of gH``; the section sends an orbit to the coset
+    representative of its named point.
+    """
+
+    def __init__(self, g_set, coset_space, **rest) -> None:
+        self._coset_space = coset_space
+        super().__init__(g_set, **rest)
+
+    def coset_space(self):
+        return self._coset_space
+
+    def group(self):
+        return self._coset_space.acting_group()
+
+    def _coset_of(self, element):
+        return self._coset_space.coset_of(element)
+
+    def _representative_of(self, orbit):
+        return self._coset_space.representative_map()(orbit.representative())
+
+    @cached_method
+    def double_coset_projection(self):
+        r"""``G -> Q \\ G / H``, ``g |-> QgH``."""
+        return Sets().Mor(self.group(), self)(lambda element: self.orbit_of(self._coset_of(element)))
+
+    @cached_method
+    def double_coset_section(self):
+        r"""``Q \\ G / H -> G``, one representative of each double coset."""
+        return Sets().Mor(self, self.group())(self._representative_of)
+
+    def _repr_(self) -> str:
+        return f"Double cosets presented as the orbit set of {self.g_set()}"
+
+
+class _InvertedDoubleCosetSet(_DoubleCosetSet):
+    r"""``Q \\ G / H`` as the ``H``-orbits on ``G/Q``, through inversion.
+
+    ``QxH`` corresponds to the ``H``-orbit of ``x^-1 Q``: the projection is
+    ``g |-> H-orbit of g^-1 Q`` and the section ``t^-1`` for the
+    representative ``t`` of an orbit, both through the retained inversion.
+    """
+
+    @cached_method
+    def inversion(self):
+        r"""The set map ``G -> G``, ``g |-> g^-1``."""
+        group = self.group()
+        return Sets().Mor(group, group)(lambda element: ~element)
+
+    def _coset_of(self, element):
+        return self._coset_space.coset_of(self.inversion()(element))
+
+    def _representative_of(self, orbit):
+        return self.inversion()(self._coset_space.representative_map()(orbit.representative()))
+
+
+def _double_coset_set(g_set, coset_space, engine):
+    r"""Construct a double-coset set on the orbit set of ``g_set``, placed as ``_orbit_set`` places it."""
+    match g_set:
+        case _ if g_set in FiniteSets() and g_set in EnumeratedSets():
+            category = owned_category_join((FiniteSets(), EnumeratedSets()))
+        case _ if g_set in FiniteSets():
+            category = FiniteSets()
+        case _:
+            category = Sets()
+    return _object_of(category, _engine=(category, engine, _Orbit), g_set=g_set, coset_space=coset_space)
 
 
 class _TransversalOrbitSet(_OrbitSet):

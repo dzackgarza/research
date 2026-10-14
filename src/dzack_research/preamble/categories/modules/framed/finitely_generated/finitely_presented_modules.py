@@ -1603,7 +1603,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             trivialization = self.finite_free_trivialization()
             localization = point.local_ring().localization_functor()
             localized_forward = localization(trivialization.forward())
-            localized_inverse = localization(trivialization.inverse())
+            localized_inverse = localization(trivialization.inverse().forward())
             return localized_forward.domain().module_category().Core().Mor(
                 localized_forward.domain(),
                 localized_forward.codomain(),
@@ -1780,7 +1780,7 @@ def _module_invariant_factor_form(module):
         for position in reduced_labels
     ):
         target_forward = presentation_iso.forward().right()
-        target_inverse = presentation_iso.inverse().right()
+        target_inverse = presentation_iso.inverse().forward().right()
         original_target = module.presentation().codomain()
         normalized_target = diagonal_presentation.codomain()
         normalized_labels = tuple(normalized_target.module_generating_set())
@@ -1842,7 +1842,7 @@ def _module_invariant_factor_form(module):
     )._from_known_inverse_pair(full_to_reduced, reduced_to_full)
 
     target_forward = presentation_iso.forward().right()
-    target_inverse = presentation_iso.inverse().right()
+    target_inverse = presentation_iso.inverse().forward().right()
     full_projection = full_normalized.presentation_projection()
     original_projection = module.presentation_projection()
     original_to_full = module.module_category().Mor(module, full_normalized)(

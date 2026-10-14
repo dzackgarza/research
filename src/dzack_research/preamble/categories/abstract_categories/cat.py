@@ -1521,6 +1521,121 @@ class _FunctorCategory(FixedMorCategory):
     def super_categories(self):
         return [Objects()]
 
+    # Protected contract (OWN-05): isomorphisms of marked diagrams.
+    #
+    # Purpose: the core groupoid of ``[J, D]`` for ``J = FiniteOrdinalCategory(n)``
+    # whose every arrow into the apex ``n-1`` is a monomorphism of ``D`` (a
+    # marking: a sublattice, a flag).  A natural isomorphism ``F => G`` of such
+    # diagrams is then determined by its apex component ``g: F(n-1) -> G(n-1)``:
+    # the component over ``j`` is the unique ``alpha_j`` with
+    # ``G(j -> n-1) alpha_j = g F(j -> n-1)``.  No public operation of ``D``
+    # decides which apex isomorphisms carry one marking onto another, so ``D``
+    # supplies that decision.
+    # Owner: ``_FunctorCategory``, which builds the natural isomorphisms.
+    # Caller: ``CoreMor`` (``is_empty``, ``an_element``, ``group_generators``,
+    # ``an_element_in``) through ``_CoreCategory.base_category()``; no other.
+    # Implementer: the codomain category ``D``, through
+    #   ``D._marked_isometry(diagram_category, source, target)`` -> apex
+    #   isomorphism ``F(n-1) -> G(n-1)`` of ``D``, or ``None`` when none exists;
+    #   ``D._marked_automorphism_generators(diagram_category, marked)`` -> a set
+    #   of apex automorphisms generating ``Aut`` of the marking;
+    #   ``D._marking_component(source_marking, target_marking, apex)`` -> the
+    #   component over a marking, as a morphism of ``D``.
+    # All values are preamble objects.  A codomain category supplying no such
+    # decision fails at the call.
+
+    def _marking_shape(self):
+        r"""``J = FiniteOrdinalCategory(n)`` and its apex ``n-1`` (protected contract above)."""
+        from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
+
+        shape = self.domain_category()
+        size = int(shape.object_set().cardinality())
+        assert size >= 1 and shape is FiniteOrdinalCategory(size), (
+            f"an isomorphism of {self} is read off its apex component only for diagrams on a finite "
+            f"ordinal [n] with n >= 1, but the shape is {shape}"
+        )
+        return shape, shape(size - 1)
+
+    def _natural_transformation_from_apex(self, source, target, apex):
+        r"""The natural transformation ``F => G`` with apex component ``apex`` (protected contract above)."""
+        shape, top = self._marking_shape()
+        first, second = source.functor(), target.functor()
+        codomain = self.codomain_category()
+        components = {
+            obj.position(): (
+                apex
+                if obj is top
+                else codomain._marking_component(
+                    first(shape.Mor(obj, top).unique()),
+                    second(shape.Mor(obj, top).unique()),
+                    apex,
+                )
+            )
+            for obj in shape.objects()
+        }
+        return NaturalTransformation(first, second, lambda obj: components[obj.position()])
+
+    def _core_isomorphism_from_apex(self, core_mor, apex):
+        r"""The isomorphism of ``core_mor`` whose apex component is ``apex`` (protected contract above)."""
+        source, target = core_mor.domain(), core_mor.codomain()
+        forward = self.Mor(source, target)(self._natural_transformation_from_apex(source, target, apex))
+        inverse = self.Mor(target, source)(self._natural_transformation_from_apex(target, source, ~apex))
+        return core_mor(forward, inverse)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""One isomorphism of ``core_mor``, or ``None`` when the codomain decides there is none."""
+        apex = self.codomain_category()._marked_isometry(self, core_mor.domain(), core_mor.codomain())
+        return None if apex is None else self._core_isomorphism_from_apex(core_mor, apex)
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Automorphisms of the marked diagram generating its automorphism group."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"group generators belong to Aut(X) = Iso(X, X), but {core_mor} has distinct endpoints"
+        )
+        apexes = self.codomain_category()._marked_automorphism_generators(self, core_mor.domain())
+        return finite_ordered_set(tuple(self._core_isomorphism_from_apex(core_mor, apex) for apex in apexes))
+
+    def _core_isomorphism_in(self, core_mor, subgroup):
+        r"""An isomorphism of ``core_mor`` whose apex component lies in ``subgroup``, or ``None``.
+
+        ``H = subgroup`` is a subgroup of ``G = Aut(A)``, ``A`` the common apex.
+        The apex components of the isomorphisms form the coset ``w S``, with
+        ``w`` one of them and ``S`` the apex image of the automorphisms of the
+        source marking.  ``w s`` lies in ``H`` exactly when ``s^-1`` carries
+        the point ``w^-1 H`` of ``G/H`` to the base point ``H``, so the search
+        is a transporter in the finite ``S``-set ``G/H``.  The hypothesis is
+        that ``G/H`` is realized as a finite ``G``-set (``H`` of finite index,
+        realized as a kernel or preimage, or ``G`` finite).
+        """
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+        source, target = core_mor.domain(), core_mor.codomain()
+        codomain = self.codomain_category()
+        if core_mor.is_empty():
+            return None
+        isomorphism = core_mor.an_element()
+        _shape, top = self._marking_shape()
+        witness = isomorphism.forward().component(top)
+        group = subgroup.supergroup()
+        assert witness.domain() is witness.codomain() and witness.parent() is group, (
+            f"{subgroup} is a subgroup of {group}, but the isomorphisms {source} -> {target} have apex "
+            f"components {witness.domain()} -> {witness.codomain()}, which do not lie in it"
+        )
+        cosets = group.left_cosets(subgroup)
+        assert cosets in FiniteGSets(group), (
+            f"the isomorphisms {source} -> {target} with apex component in {subgroup} are found in the "
+            f"finite coset space {group}/{subgroup}, which is not realized as a finite {group}-set"
+        )
+        stabilizer = group.subgroup(codomain._marked_automorphism_generators(self, source))
+        inclusion = stabilizer.inclusion()
+        action = FiniteGSets(stabilizer)(cosets, lambda element, point: cosets.act(inclusion(element), point))
+        transporter = action.transporter_witness(cosets.coset_of(~witness), cosets.base_point())
+        if transporter is None:
+            return None
+        return self._core_isomorphism_from_apex(core_mor, witness * ~inclusion(transporter))
+
     class ParentMethods:
         r"""A functor ``F: C -> D`` as an object of ``[C, D]``.
 
