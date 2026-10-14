@@ -976,10 +976,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         )
 
         assert group_morphism.codomain() is self.acting_group(), f"{group_morphism} does not land in {self.acting_group()}, so it restricts no action of that group"
-        return RestrictionOfGroupActionFunctor(
-            group_morphism,
-            self.underlying_category(),
-        )
+        return RestrictionOfGroupActionFunctor(group_morphism, self.underlying_category())
 
     def _scheme_action_functor(self, acted):
         r"""Read the retained BG -> Sch_R datum of an admitted scheme action.
@@ -1353,6 +1350,50 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
 
+        def orbits_presented_by(self, covering):
+            r"""The orbit set ``X/G`` presented by a finite set of points meeting every orbit.
+
+            ``covering`` is a finite set of points meeting every orbit, stated
+            by the caller's construction.  The result is the coequalizer of the
+            action and the projection, with its projection ``X -> X/G`` and a
+            section ``X/G -> X`` with image in ``covering``; the orbits are the
+            distinct orbits of its points, so this object's orbit relation must
+            be decided (``in_same_orbit``).
+            """
+            from dzack_research.preamble.categories.group.g_sets import _orbit_set_presented_by
+
+            assert self.underlying_category() is Sets(), (
+                f"the orbit object of {self} under {self.acting_group()} is a colimit in "
+                f"{self.underlying_category()}, and the preamble constructs it only for G-sets"
+            )
+            return _orbit_set_presented_by(self, covering)
+
+        def restrict_action(self, group_morphism, *, orbit_relation=None):
+            r"""Return this object acted on by ``H`` through ``phi: H -> G``.
+
+            Without ``orbit_relation`` this is the image under the restriction
+            functor :meth:`GObjects.restriction`.  ``orbit_relation``, when
+            supplied, is the procedure deciding the orbit relation of the
+            restricted ``H``-set (``y ~_H x``): it is data of that object, so
+            the restricted ``H``-set is constructed on the same points with
+            the action through ``phi`` and that decision.  The functor stays
+            independent of any one object.
+            """
+            category = GObjects(self.acting_group(), self.underlying_category())
+            if orbit_relation is None:
+                return category.restriction(group_morphism)(self)
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            assert self.underlying_category() is Sets(), (
+                f"an orbit-relation decision is data of an H-set; {self} is an object of "
+                f"{self.underlying_category()}"
+            )
+            return GObjects(group_morphism.domain(), Sets()).on_set(
+                self,
+                lambda group_element, point: self.act(group_morphism(group_element), point),
+                orbit_relation=orbit_relation,
+            )
+
         def orbit_representatives(self, points):
             r"""Retain selected representatives together with their orbit projection."""
             from dzack_research.preamble.categories.group.g_sets import OrbitRepresentativeSets
@@ -1412,11 +1453,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 description=f"stabilizer of {point} in {self}",
                 generating_morphism=self._stabilizer_generating_morphism(point),
             )
-
-        def restrict_action(self, group_morphism):
-            r"""Return this object acted on by ``H`` through ``phi: H -> G``."""
-            category = GObjects(self.acting_group(), self.underlying_category())
-            return category.restriction(group_morphism)(self)
 
         def _cyclic_restriction(self, group_element):
             r"""Return this object acted on by the cyclic subgroup ``<g> <= G``."""

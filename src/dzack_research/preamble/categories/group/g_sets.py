@@ -877,6 +877,81 @@ class _OrbitSet:
         return f"Orbit set of {self.g_set()}"
 
 
+class _TransversalOrbitSet(_OrbitSet):
+    r"""The orbit set ``X/G`` presented by a finite set ``S subset X`` meeting every orbit.
+
+    The datum adds to ``X`` a finite set ``S`` of points meeting every orbit;
+    the caller's construction states this (``OWN-22``), as a theorem on the
+    action does (a finiteness theorem for the orbits and an algorithm listing
+    points of each).  ``X`` may be infinite.  The orbits are the distinct
+    orbits of the points of ``S`` under the orbit relation of ``X``, which
+    must be decided; :meth:`section` is the set map ``X/G -> X`` choosing the
+    first point of ``S`` in an orbit, a section of :meth:`projection`.
+    """
+
+    def __init__(self, g_set, orbit_covering, **rest) -> None:
+        self._orbit_covering = orbit_covering
+        super().__init__(g_set, **rest)
+
+    def orbit_covering(self):
+        r"""The finite set ``S`` of points meeting every orbit."""
+        return self._orbit_covering
+
+    @cached_method
+    def _representatives(self):
+        r"""The points of ``S`` that are first in their orbit, each decided once.
+
+        Each point of ``S`` is decided against the representatives already
+        recorded, by orbit membership (the G-set's decided orbit relation); a decided relation
+        on a general ``X`` has no canonical form to key by, so the record is
+        keyed by representative point and grows by one per new orbit.  The
+        decisions made are at most ``|S|`` times the number of orbits.
+        """
+        record = {}
+        for point in self.orbit_covering():
+            if not any(point in self.orbit_of(chosen) for chosen in record):
+                record[point] = point
+        return record
+
+    @cached_method
+    def _orbits(self):
+        r"""One orbit per recorded representative, in the order of ``S``."""
+        return tuple(self.orbit_of(point) for point in self._representatives())
+
+    @cached_method
+    def section(self):
+        r"""The section ``s: X/G -> X`` of the projection, choosing the first point of ``S``.
+
+        The orbit of a point ``x`` is sent to the recorded representative
+        related to ``x``; every orbit has one because ``S`` meets it.
+        """
+        g_set = self.g_set()
+        representatives = self._representatives()
+
+        def chosen_point(orbit):
+            point = orbit.representative()
+            for chosen in representatives:
+                if point in self.orbit_of(chosen):
+                    return chosen
+            assert False, (
+                f"{orbit} meets no point of {self.orbit_covering()}, so that set does not meet "
+                f"every orbit of {g_set}"
+            )
+
+        return Sets().Mor(self, g_set)(chosen_point)
+
+
+def _orbit_set_presented_by(g_set, covering):
+    r"""The orbit set ``X/G`` of ``X``, finite and enumerated through a finite set meeting every orbit."""
+    category = owned_category_join((FiniteSets(), EnumeratedSets()))
+    return _object_of(
+        category,
+        _engine=(category, _TransversalOrbitSet, _Orbit),
+        g_set=g_set,
+        orbit_covering=covering,
+    )
+
+
 def _orbit_set(g_set):
     r"""The orbit set ``X/G`` of the ``G``-set ``X``, finite and enumerated with ``X``."""
     match g_set:
@@ -906,6 +981,10 @@ class _GSetOnPoints:
 
     def point_set(self):
         return self._point_set
+
+    def _emptiness_decision(self):
+        r"""``Sets``' emptiness hook: a ``G``-set on points has the points of its point set."""
+        return self.point_set()._emptiness_decision()
 
     def __contains__(self, point) -> bool:
         return point in self.point_set()

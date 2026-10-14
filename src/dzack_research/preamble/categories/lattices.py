@@ -174,6 +174,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
+    finite_indexed_family_from_values,
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -329,6 +330,22 @@ def _lattice_subobject_spanning(module, basis, root_system_type_name=None):
     it in ``RootLattices`` with that name of the type of the root system as its
     datum.
     """
+    match root_system_type_name:
+        case None:
+            return _lattice_subobject_on_basis(module, basis, (), {})
+        case _:
+            return _lattice_subobject_on_basis(
+                module, basis, (RootLattices(),), {"root_system_type_name": root_system_type_name}
+            )
+
+
+def _lattice_subobject_on_basis(module, basis, extra_categories, construction_data):
+    r"""The lattice subobject framed by ``basis``, placed also in ``extra_categories``.
+
+    ``construction_data`` is the datum each extra category introduces, passed
+    to its constructor: a root-system type name for ``RootLattices``, a
+    colouring for ``VectorConfigurations``.
+    """
     ring = module.base_ring()
     basis_elements = tuple(basis)
     rank = len(basis_elements)
@@ -353,14 +370,6 @@ def _lattice_subobject_spanning(module, basis, root_system_type_name=None):
         module_inclusion = source.Mono(module)(embedded)
         return source.Emb(module)(module_inclusion)
 
-    extra_categories = ()
-    construction_data = {}
-    match root_system_type_name:
-        case None:
-            pass
-        case _:
-            extra_categories = (RootLattices(),)
-            construction_data = {"root_system_type_name": root_system_type_name}
     return _lattice_object(
         Lattices(ring),
         source_module,
@@ -4979,7 +4988,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the complete square fibre with its lattice inclusion.
 
             Definite fibres and nonzero split binary fibres are finite and
-            enumerated. Other fibres retain the complete defining locus.
+            enumerated. Other fibres retain the complete defining locus; the
+            orbits of a nonsplit binary fibre under ``O(L)`` or ``SO(L)`` are
+            :meth:`binary_fixed_norm_representatives`.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
@@ -5122,10 +5133,38 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lorentzian_reduction_complex(self, marked_vectors=marked_vectors)
 
-        def vector_configuration(self, module_generating_set):
-            r"""Return the sublattice framed by the stated ordered vector family."""
-            subobject = self.subobject_on(module_generating_set)
-            return refine(subobject, VectorConfigurations(self.base_ring()))
+        def vector_configuration(self, family: IndexedFamily, colouring=None):
+            r"""Return the sublattice framed by the stated vector family, with its colouring.
+
+            The family ``I -> L`` is the framing: the configuration's positions
+            correspond to ``I`` by ``configuration_indexing()``, and the family
+            must be a basis of the sublattice it spans (a redundant spanning
+            family is compared through ``VectorConfigurations.spanning_isometry``).
+            ``colouring`` is a set map ``I -> C`` out of the index set of the
+            caller's family: the family is the caller's ``IndexedFamily``, taken
+            as the datum without re-wrapping, and the colouring an element of
+            ``Sets().Mor(family.index_set(), C)``.
+            Omitted, it is the map to the one-point set ``Sets.Δ[0]``, under
+            which every pairing-preserving permutation preserves colours.
+            """
+            index_set = family.index_set()
+            match colouring:
+                case None:
+                    point_set = Sets.Δ[0]
+                    point = next(iter(point_set))
+                    colouring = Sets().Mor(index_set, point_set)(lambda _position: point)
+                case _:
+                    assert colouring.domain() is index_set, (
+                        f"a colouring of the configuration on {family} is a map out of its "
+                        f"index set {index_set}, but {colouring} is a map out of {colouring.domain()}; "
+                        f"pass a colouring out of the family's own index set"
+                    )
+            return _lattice_subobject_on_basis(
+                self,
+                tuple(family),
+                (VectorConfigurations(self.base_ring()),),
+                {"configuration_colouring": colouring},
+            )
 
         def integral_structure(self, vectors: IndexedFamily):
             r"""The ``ZZ``-lattice spanned by a finite family of vectors of this ``QQ``-space, as ``L -> Res(V)``.
@@ -5167,40 +5206,58 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _definite_complement_extensions(self, left, right)
 
-        def binary_fixed_norm_representatives(self, square):
-            r"""Return a selected transversal of the binary square-fibre action.
+        def binary_fixed_norm_representatives(self, square, acting_group=None):
+            r"""Return the orbit set ``X/G`` of the square fibre ``X = q^{-1}(square)``.
 
+            ``G`` is ``acting_group``, which is ``O(self)`` (the default) or
+            ``SO(self)``; the ``SO(self)``-set is the restriction of the
+            ``O(self)``-action along the inclusion ``SO(self) -> O(self)``.
             The lattice must be nondegenerate of rank two over ``ZZ``.
-            PARI enumerates nonsplit indefinite representations, including
-            imprimitive ones, modulo ``SO(self)``. Finite fibres are enumerated
-            in full by their square-fibre owner.
-            The rank-one perpendicular extension decides which classes merge
-            under ``O(self)``. The returned finite set retains the action,
-            quotient, projection and representative section. At square zero
-            a split form has infinitely many content classes.
+            The result is the orbit set with its projection ``X -> X/G`` and
+            its section ``X/G -> X``, presented by a finite transversal.
+
+            The orbit relation of the fibre is decided by the rank-one
+            perpendicular extension: two vectors of equal content are in one
+            ``O(self)``-orbit exactly when an isometry carries one primitive
+            part to the other (``definite_complement_extensions``), and in one
+            ``SO(self)``-orbit exactly when such an isometry has determinant
+            one. The transversal is PARI's list of classes modulo ``SO(self)``
+            for a nonsplit indefinite form (``qfbsolve`` flag 3, imprimitive
+            classes included), merged by that relation, and the finite fibre
+            otherwise. That the nonsplit fibre has finitely many orbits is
+            Cassels, *Rational Quadratic Forms*, Ch. 9, Lemma 6.1. At square
+            zero a split form has infinitely many content classes.
 
             EXAMPLES::
 
                 sage: L = Lattices(ZZ)([[1, 0], [0, -2]])
-                sage: representatives = L.binary_fixed_norm_representatives(1)
-                sage: representatives.cardinality() == NN(1)
+                sage: orbits = L.binary_fixed_norm_representatives(1)
+                sage: orbits.cardinality() == NN(1)
                 True
-                sage: all(v.q() == ZZ(1) for v in representatives)
+                sage: all(orbits.section()(orbit).q() == ZZ(1) for orbit in orbits)
                 True
                 sage: L.binary_fixed_norm_representatives(3).cardinality() == NN(0)
                 True
-                sage: tuple(L.binary_fixed_norm_representatives(0)) == (L.zero(),)
-                True
             """
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
             square = self.base_ring()(square)
+            orthogonal = self.orthogonal_group()
+            special = self.special_orthogonal_group()
+            group = orthogonal if acting_group is None else acting_group
+            restricted = group == special
+            assert restricted or group == orthogonal, (
+                f"the orbits of the square fibre of {self} are computed under O(L) or SO(L), "
+                f"but {group} is neither"
+            )
             discriminant = lattice_engines._binary_form_discriminant(self)
             if not discriminant:
                 raise ValueError(
                     "binary orbit representatives require a nondegenerate form"
                 )
             if discriminant > 0 and not discriminant.is_square():
-                candidates = lattice_engines._binary_special_orthogonal_representatives(
-                    self, square
+                candidates = finite_ordered_set(
+                    lattice_engines._binary_special_orthogonal_representatives(self, square)
                 )
             elif not square and discriminant > 0:
                 raise ValueError(
@@ -5209,29 +5266,29 @@ class Lattices(OwnedCategoryOverBaseRing):
             else:
                 candidates = self.vectors_of_square(square)
 
-            def same_orbit(left, right):
+            def same_orbit(left, right, *, special_only):
                 if left == right:
                     return True
                 if left.content() != right.content():
                     return False
                 if not square:
                     return False
-                return bool(
-                    self.definite_complement_extensions(
-                        left.primitive_part(), right.primitive_part()
-                    )
+                extensions = self.definite_complement_extensions(
+                    left.primitive_part(), right.primitive_part()
                 )
+                if special_only:
+                    return any(extension.determinant() == 1 for extension in extensions)
+                return bool(extensions)
 
-            action = self.square_fibre_action(square, orbit_relation=same_orbit)
-            representatives = []
-            for candidate in candidates:
-                if any(
-                    same_orbit(candidate, representative)
-                    for representative in representatives
-                ):
-                    continue
-                representatives.append(candidate)
-            return action.orbit_representatives(representatives)
+            action = self.square_fibre_action(
+                square, orbit_relation=lambda left, right: same_orbit(left, right, special_only=False)
+            )
+            if restricted:
+                action = action.restrict_action(
+                    special.inclusion(),
+                    orbit_relation=lambda left, right: same_orbit(left, right, special_only=True),
+                )
+            return action.orbits_presented_by(candidates)
 
         def reduction_cycle(self, bound, start):
             r"""Return the binary period automorph and bounded vectors, or ``None``.
