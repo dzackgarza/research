@@ -1017,14 +1017,19 @@ workaround preserves the misunderstanding that created the work.
 
 # Search the formalization corpus first (always-on)
 
-`lean-reference-corpus` — checked out here as `~/gitclones/formalization-corpus` — checks out and
+`lean-reference-corpus` (source at `~/gitclones/formalization-corpus`, served as a remote API) checks out and
 indexes the pinned Mathlib, every registered Lean formalization repository, the Reservoir packages,
 and the Rocq and Agda port sources as one searchable tree. One query asks the whole formal
 literature: *has this been stated, and where?*
 
 ```sh
-just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
+curl -s https://formalization-corpus.dzackgarza.com/api/search \
+  -H 'Content-Type: application/json' \
+  -d '{"Q": "IsometryEquiv file:\\.lean$", "Opts": {"MaxDocDisplayCount": 20, "ChunkMatches": true}}' \
+  | jq -r '.Result.Files[] | "\(.Repository)  \(.FileName)"'
 ```
+
+The keys are capitalized (`Q`, `Opts`). `NumContextLines` and `Whole` return context or whole files; `/api/list` lists the indexed sources. There is no local index on this host: `just search` in the checkout queries a `.zoekt` directory that does not exist and always fails, and its failure is never evidence that the corpus lacks a statement.
 
 **It is the first approximation for mathematical work of every kind here, not only Lean.** Sage
 code, preamble categories, notebooks and prose all state mathematics that somebody has probably
