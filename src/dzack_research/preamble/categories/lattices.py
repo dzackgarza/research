@@ -5121,17 +5121,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             subobject = self.subobject_on(module_generating_set)
             return refine(subobject, VectorConfigurations(self.base_ring()))
 
-        @cached_method
-        def _integral_scalar_restriction(self):
-            r"""``Res(V)``, this space read over ``ZZ`` along ``ZZ -> QQ``; one object per space."""
-            integers = _own_ring(SageZZ)
-            field_map = integers.fraction_field_map()
-            assert field_map.codomain() is self.base_ring(), (
-                f"an integral structure of {self} is a ZZ-lattice in a rational space, but "
-                f"{self} is over {self.base_ring()}, not over {field_map.codomain()}"
-            )
-            return Modules(self.base_ring()).restriction_of_scalars(field_map)(self)
-
         def integral_structure(self, vectors):
             r"""The ``ZZ``-lattice spanned by ``vectors`` in this rational space, as ``L -> Res(V)``.
 
@@ -5139,10 +5128,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             finite family is a subobject of one ``ZZ``-module and its
             inclusion is the monomorphism on which
             ``IntegralStructureAction(G, inclusion)`` acts.  Repeated calls
-            on one space land in the same ``Res(V)``, so two integral
+            on one space land in the same ``Res(V)``, the image of ``V`` under
+            the one restriction functor along ``ZZ -> QQ``, so two integral
             structures are compared as subobjects of one object.
             """
-            restricted = self._integral_scalar_restriction()
+            field_map = _own_ring(SageZZ).fraction_field_map()
+            assert field_map.codomain() is self.base_ring(), (
+                f"an integral structure of {self} is a ZZ-lattice in a rational space, but "
+                f"{self} is over {self.base_ring()}, not over {field_map.codomain()}"
+            )
+            restricted = Modules(self.base_ring()).restriction_of_scalars(field_map)(self)
             return restricted.subobject_on(
                 tuple(restricted(self(vector)) for vector in vectors)
             ).inclusion()

@@ -2378,8 +2378,14 @@ class GroupMorphism:
         description=None,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Return the inverse image of ``subgroup`` under this group morphism."""
+        r"""Return the inverse image of ``subgroup`` under this group morphism.
+
+        ``generating_morphism`` supplies, when the caller's construction has
+        one, the free generating morphism onto the preimage; otherwise the
+        preimage owner selects its Schreier family when that applies.
+        """
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             PreimageSubgroups,
         )
@@ -2391,9 +2397,12 @@ class GroupMorphism:
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
+            generating_morphism=generating_morphism,
         )
 
+    @cached_method
     def kernel(self):
+        r"""``ker(f)``, one subgroup per morphism, so its selected generators persist."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             KernelSubgroups,
         )

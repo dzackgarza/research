@@ -92,9 +92,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
-from dzack_research.preamble.categories.group.predicate_subgroups import (
-    _fix_selected_generating_morphism,
-)
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _fix_selected_group_resolution_data,
@@ -256,18 +253,23 @@ class _FiniteIntegralRepresentation(SageObject):
         without selected generators uses the preimage's Schreier morphism on
         its listed elements.
         """
-        preimage = self.permutation_representation().preimage_subgroup(self.finite_stabilizer())
         group = self.action().rational_group()
         if group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set():
-            g_set = self.g_set()
-            selected = self._selected_point()
+            # G_L is the point stabilizer of the lattice orbit; its
+            # orbit-Schreier generating morphism, composed with the
+            # stabilizer's inclusion into G, generates the literal preimage.
+            orbit_stabilizer = self.g_set().stabilizer(self._selected_point())
 
-            def generating_morphism():
-                schreier = g_set.point_stabilizer_schreier_map(selected)
-                return schreier.domain().Mor(preimage)._from_elementwise_rule(schreier)
+            def generating_morphism(preimage):
+                augmentation = orbit_stabilizer.selected_group_resolution().augmentation()
+                return augmentation.domain().Mor(preimage).elementwise(
+                    orbit_stabilizer.inclusion() * augmentation
+                )
 
-            _fix_selected_generating_morphism(preimage, generating_morphism)
-            return preimage
+            return self.permutation_representation().preimage_subgroup(
+                self.finite_stabilizer(), generating_morphism=generating_morphism
+            )
+        preimage = self.permutation_representation().preimage_subgroup(self.finite_stabilizer())
         augmentation = preimage.schreier_generating_morphism(
             generators=self.action()._group_generators()
         )

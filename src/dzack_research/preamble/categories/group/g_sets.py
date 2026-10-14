@@ -353,38 +353,44 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             return self.is_transitive_action()
 
         @cached_method
-        def _transporter_generator_actions(self):
-            r"""Evaluate each supplied generator's finite permutation once."""
-            return tuple(
-                (generator, self.action_of(generator))
-                for generator in self.acting_group().group_generators()
+        def _free_generator_actions(self):
+            r"""The selected augmentation ``pi: F -> G`` and the permutation of each free generator.
+
+            Each generator's finite permutation is evaluated once; words in
+            ``F`` then record how a point was reached without readmitting a
+            product in ``G`` through a membership question.
+            """
+            resolution = self.acting_group().selected_group_resolution()
+            augmentation = resolution.augmentation()
+            return augmentation, tuple(
+                (word, self.action_of(augmentation(word)))
+                for word in resolution.level(0).group_generators()
             )
 
         @cached_method
-        def _transporter_word_tables(self):
-            r"""Per-source Schreier trees, retaining points by semantic equality."""
+        def _orbit_transversal_tables(self):
+            r"""Per-source orbit transversals, retaining points by semantic equality."""
             return []
 
         def _orbit_transversal(self, source):
-            r"""The orbit of ``source`` with one generator word carrying ``source`` to each point.
+            r"""The orbit of ``source`` with a word ``t_y`` in ``F`` carrying ``source`` to each ``y``.
 
-            Breadth-first search over the selected group generators: each new
-            point ``s.y`` is reached by the word of ``y`` followed by ``s``.  A
-            word is the tuple of generator positions in the order they act.
+            Breadth-first search over the selected free generators: a new
+            point ``s.y`` is reached by the word ``s t_y``.
             """
-            actions = self._transporter_generator_actions()
-            tables = self._transporter_word_tables()
+            augmentation, steps = self._free_generator_actions()
+            tables = self._orbit_transversal_tables()
             table = next((table for table in tables if table[0][0] == source), None)
             if table is None:
                 points = [source]
-                words = [()]
+                words = [augmentation.domain().one()]
                 position = 0
                 while position < len(points):
-                    for index, (_generator, action) in enumerate(actions):
+                    for word, action in steps:
                         image = action(points[position])
                         if image not in points:
                             points.append(image)
-                            words.append((*words[position], index))
+                            words.append(word * words[position])
                     position += 1
                 table = (points, words)
                 tables.append(table)
@@ -393,8 +399,8 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         def transporter_witness(self, source, target):
             r"""Return one ``g`` with ``g.source = target``, or ``None`` when they lie in different orbits.
 
-            The witness is the product of the selected generators along the
-            orbit transversal, so a group given by generators needs no
+            The witness is the image under the selected augmentation of the
+            orbit-transversal word, so a group given by generators needs no
             enumeration; distinct orbits are decided by the finite orbit.
             """
             if source not in self or target not in self:
@@ -402,92 +408,47 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                     f"no transporter from {source} to {target} in {self}: both must be "
                     f"points of {self.point_set()}"
                 )
-            actions = self._transporter_generator_actions()
+            augmentation, _steps = self._free_generator_actions()
             points, words = self._orbit_transversal(source)
             if target not in points:
                 return None
-            witness = self.acting_group().one()
-            for index in words[points.index(target)]:
-                witness = actions[index][0] * witness
-            return witness
+            return augmentation(words[points.index(target)])
 
-        def point_stabilizer_schreier_map(self, point):
-            r"""The map ``E -> G`` from a free group onto ``G_point`` given by Schreier's lemma.
+        def _stabilizer_generating_morphism(self, point):
+            r"""Protected value hook: Schreier's lemma on the finite orbit of ``point``.
 
-            Let ``pi: F -> G`` be the selected augmentation on generators
-            ``s``, and ``t_y`` a word carrying ``point`` to ``y`` for each
-            ``y`` in the orbit.  Schreier's lemma: the elements
-            ``t_(s.y)^-1 s t_y`` generate ``G_point``.  They are formed as
-            words in ``F`` and evaluated through ``pi``, so no element of
-            ``G`` is readmitted through a membership question; the cost is
-            the orbit length times the number of generators, not the order
-            of the image of ``G``.  The returned map has codomain ``G``;
-            every value lies in ``G_point``.
+            Owner ``FiniteGSets``; its only caller is ``GObjects.stabilizer``,
+            which passes the result to the stabilizer constructor as that
+            subgroup's selected generating morphism.  With ``pi: F -> G`` the
+            selected augmentation and ``t_y`` the transversal word of ``y``,
+            the words ``t_(s.y)^-1 s t_y`` generate the stabilizer of
+            ``F`` at ``point``, and their images under ``pi`` generate
+            ``G_point``.  The cost is the orbit length times the number of
+            generators, not the order of the image of ``G``.  Without a
+            selected resolution of ``G`` no value is supplied (``None``).
             """
-            from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
             group = self.acting_group()
-            assert group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set(), (
-                f"Schreier generators of a stabilizer in {group} need a selected finite generating set of {group}"
-            )
-            resolution = group.selected_group_resolution()
-            free = resolution.level(0)
-            augmentation = resolution.augmentation()
-            steps = tuple(
-                (word, self.action_of(augmentation(word)))
-                for word in free.group_generators()
-            )
-            points = [self(point)]
-            words = [free.one()]
-            position = 0
-            while position < len(points):
-                for word, action in steps:
-                    image = action(points[position])
-                    if image not in points:
-                        points.append(image)
-                        words.append(word * words[position])
-                position += 1
-            schreier = tuple(
-                (~words[points.index(action(current))]) * word * words[index]
-                for index, current in enumerate(points)
-                for word, action in steps
-            )
-            labels = finite_ordinal_set(len(schreier))
-            source = OwnedGroups.Free(index_set=labels)
-            word_map = source.Mor(free)(
-                Sets().Mor(labels, free)(lambda label: schreier[int(label)])
-            )
-            return augmentation * word_map
+            if not group.has_selected_resolution(OwnedGroups()):
+                return None
 
-        def stabilizer(self, point):
-            r"""``G_point``, carrying its Schreier generators when ``G`` has selected finite generators.
+            def generating_morphism(stabilizer):
+                from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
-            The subgroup is the one the action owner constructs; its
-            generating morphism is fixed unrealized and computed from the
-            finite orbit at the first request of its generators.
-            """
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                StabilizerSubgroups,
-                _fix_selected_generating_morphism,
-                _has_selected_finite_group_generators,
-            )
+                augmentation, steps = self._free_generator_actions()
+                points, words = self._orbit_transversal(self(point))
+                schreier = tuple(
+                    (~words[points.index(action(current))]) * word * words[index]
+                    for index, current in enumerate(points)
+                    for word, action in steps
+                )
+                labels = finite_ordinal_set(len(schreier))
+                source = OwnedGroups.Free(index_set=labels)
+                word_map = source.Mor(augmentation.domain())(
+                    Sets().Mor(labels, augmentation.domain())(lambda label: schreier[int(label)])
+                )
+                return source.Mor(stabilizer).elementwise(augmentation * word_map)
 
-            stabilizer = super().stabilizer(point)
-            group = self.acting_group()
-            match stabilizer:
-                case _ if (
-                    stabilizer in StabilizerSubgroups(group)
-                    and not stabilizer.has_selected_resolution(OwnedGroups())
-                    and _has_selected_finite_group_generators(group)
-                ):
-                    def generating_morphism():
-                        schreier = self.point_stabilizer_schreier_map(point)
-                        return schreier.domain().Mor(stabilizer)._from_elementwise_rule(schreier)
-
-                    _fix_selected_generating_morphism(stabilizer, generating_morphism)
-                case _:
-                    pass
-            return stabilizer
+            return generating_morphism
 
         def transporter(self, source, target):
             r"""Return the unique transporter between two points of a torsor.
