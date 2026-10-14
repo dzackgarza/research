@@ -21,6 +21,8 @@ from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
+from sage.symbolic.expression import Expression
+from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
@@ -566,6 +568,19 @@ class OwnedSetMorphism(SetMorphism):
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
+    def _defining_function(self):
+        r"""The function on points this map was constructed from.
+
+        Protected contract of the set-map owner (``OWN-05``): the datum the
+        Mor's element constructor received (a callable, or a formula binding
+        its own variable).  Its readers are computation adapters that need
+        the datum itself rather than its values -- the function-space
+        formula adapter of ``categories/functions/real_functions.py``, which
+        differentiates, integrates and sums a map given by a symbolic
+        formula.  Evaluation goes through ``__call__``, never through this.
+        """
+        return self._owned_function
+
     def __call__(self, element: SourcePointT, *args, **kwargs) -> TargetPointT:
         r"""Send a point of the source to its point of the target.
 
@@ -938,12 +953,18 @@ class SetMorCategory(CategoricalMor):
         return self
 
     def _element_constructor_(self, datum):
-        r"""Admit an arrow: a set map between these endpoints, or a callable.
+        r"""Admit an arrow: a set map between these endpoints, a callable, or a formula.
 
         The element constructor is the one boundary that reads foreign data,
-        so it is where the datum's shape is inspected.  An injection or a
-        surjection ``X -> Y`` is an arrow of a full subcategory of this Mor,
-        so it is a map ``X -> Y`` and is admitted as itself.
+        so it is where the datum's shape is inspected (``CON-17``).  An
+        injection or a surjection ``X -> Y`` is an arrow of a full
+        subcategory of this Mor, so it is a map ``X -> Y`` and is admitted
+        as itself.  A symbolic expression with exactly one free variable, in
+        a variable the caller introduced (``x = var("x")``, then
+        ``x**2 + 1``), is a formula binding that variable: the map
+        ``x |-> x**2 + 1``, admitted as the callable expression that binds
+        it.  An expression with no free variable or with several is not a
+        map of one argument, and is rejected naming its variables.
         """
         if isinstance(datum, Morphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
@@ -954,6 +975,11 @@ class SetMorCategory(CategoricalMor):
             arrows = datum.parent()
             if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
+        match datum:
+            case Expression() if element_parent(datum) is SR:
+                datum = _formula_binding_its_variable(datum, self.domain(), self.codomain())
+            case _:
+                pass
         if not callable(datum):
             raise TypeError(
                 f"a map of sets {self.domain()} -> {self.codomain()} needs a function on points, but "
@@ -975,6 +1001,23 @@ class SetMorCategory(CategoricalMor):
 
     def _repr_(self):
         return f"Mor_Set({self.domain()}, {self.codomain()})"
+
+
+def _formula_binding_its_variable(formula, domain, codomain):
+    r"""The callable symbolic expression ``x |-> formula`` binding the one free variable ``x`` of ``formula``.
+
+    Private intake adapter of :meth:`SetMorCategory._element_constructor_`:
+    a plain symbolic expression in a variable the caller introduced is the
+    map given by that formula.  Sage's callable expression ``formula.function(x)``
+    is the realization the map stores, and the formula adapters of the
+    function spaces read it back as ``(formula, x)``.
+    """
+    variables = formula.variables()
+    assert len(variables) == 1, (
+        f"cannot read {formula} as a map {domain} -> {codomain}: a formula is a map of one argument "
+        f"when it has exactly one free variable, which it binds, but its free variables are {variables}"
+    )
+    return formula.function(variables[0])
 
 
 class SetMorCategoryConstruction(MorCategoryConstruction):

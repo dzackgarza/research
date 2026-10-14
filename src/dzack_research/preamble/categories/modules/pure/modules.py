@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import itertools
 import operator
 from dataclasses import dataclass
@@ -1625,6 +1626,45 @@ class Modules(OwnedCategoryOverBaseRing):
                     return modules.biproduct((self, other))
                 case False:
                     return NotImplemented
+
+        def function_module(self, domain):
+            r"""Return ``B^A``: the ``R``-module of all maps ``domain -> self``, pointwise.
+
+            Its underlying set is ``Sets().Mor(domain, self)``, so a map is
+            constructed by that Mor's element constructor (a callable, or a
+            formula binding its own variable), and ``(f + g)(a) = f(a) + g(a)``,
+            ``(r f)(a) = r f(a)``.  This is Mathlib's ``Function.module``
+            (``Mathlib/Algebra/Module/Pi.lean:52``), the product
+            ``prod_{a in A} B`` in ``Mod_R``; its law is the one the module
+            product uses (``_pointwise_module_operations``).  A space of maps
+            ``A -> B`` cut out by a condition is a submodule of it
+            (``CON-17``): ``self.function_module(A).condition_submodule(P)``.
+            """
+            from dzack_research.preamble.categories.modules.general_modules import (
+                _function_module,
+            )
+
+            return _function_module(self, domain)
+
+        def condition_submodule(self, predicate):
+            r"""Return the submodule ``{x in M : P(x)}`` of this module, with its inclusion.
+
+            ``predicate`` answers ``True``, ``False`` or a proposition on
+            elements of ``M``.  Its extension contains zero and is closed
+            under addition and scalar multiplication: that is the caller's
+            hypothesis, stated by asking for this construction, and not
+            checked.  The result is an object of ``ModuleSubobjects(R)`` built
+            on the condition set of ``P`` in ``M`` (``Sets().condition_set``),
+            with ``M``'s operations; its inclusion is the inclusion of that
+            set.  Constructing an element does not ask ``P`` (``OWN-22``):
+            ``x in N`` asks it, and an element's
+            ``validate_condition_membership`` raises when ``P(x)`` is false.
+            """
+            from dzack_research.preamble.categories.modules.general_modules import (
+                _condition_submodule,
+            )
+
+            return _condition_submodule(self, predicate)
 
         def pairings_with(self, right_module, value_module):
             r"""Return bilinear pairings ``self x right_module -> value_module``."""
@@ -4966,26 +5006,63 @@ def _module_product_created_by_underlying_sets(base_ring, factors):
     )
     underlying_product = Sets().product(underlying_factors)
 
+    def combine(operation, operands):
+        return underlying_product(
+            lambda index: operation(
+                factors.value(index),
+                *(operand.component(index) for operand in operands),
+            )
+        )
+
     return GeneralModules(ring).from_operations(
         underlying_product,
-        addition=lambda left, right: underlying_product(
-            lambda index: factors.value(index)(
-                left.component(index) + right.component(index)
-            )
-        ),
-        zero=underlying_product(
-            lambda index: factors.value(index).zero()
-        ),
-        negation=lambda element: underlying_product(
-            lambda index: -element.component(index)
-        ),
-        scalar_action=lambda scalar, element: underlying_product(
-            lambda index: factors.value(index).scalar_multiple(
-                scalar,
-                element.component(index),
-            )
-        ),
+        **_pointwise_module_operations(combine),
     )
+
+
+def _pointwise_sum(module, left, right):
+    r"""``f(i) + g(i)`` in the module at ``i``."""
+    return module(left + right)
+
+
+def _pointwise_zero(module):
+    r"""The zero of the module at ``i``."""
+    return module.zero()
+
+
+def _pointwise_negative(module, value):
+    r"""``-f(i)`` in the module at ``i``."""
+    return -value
+
+
+def _pointwise_scalar_multiple(scalar, module, value):
+    r"""``r f(i)`` in the module at ``i``."""
+    return module.scalar_multiple(scalar, value)
+
+
+def _pointwise_module_operations(combine):
+    r"""The pointwise ``R``-module law on functions ``i |-> f(i) in M_i``.
+
+    This is the one statement of the law for every module of functions with
+    values in modules: the product ``prod_i M_i`` (whose points are families
+    of components) and the module ``B^A`` of all maps ``A -> B``
+    (``_function_module`` in ``general_modules.py``, Mathlib
+    ``Function.module``, ``Mathlib/Algebra/Module/Pi.lean:52``) differ only in
+    how a function is read at an index and assembled from its values, which
+    ``combine`` supplies: ``combine(operation, operands)`` is the function
+    whose value at ``i`` is ``operation(M_i, f_1(i), ..., f_k(i))``.  The
+    operations are the four module-level functions above, so a consumer that
+    reads an assembled function back (the function-space formula adapter)
+    can recognize which operation built it.
+    """
+    return {
+        "addition": lambda left, right: combine(_pointwise_sum, (left, right)),
+        "zero": combine(_pointwise_zero, ()),
+        "negation": lambda element: combine(_pointwise_negative, (element,)),
+        "scalar_action": lambda scalar, element: combine(
+            functools.partial(_pointwise_scalar_multiple, scalar), (element,)
+        ),
+    }
 
 
 def _module_product_projection(product, factors, index):

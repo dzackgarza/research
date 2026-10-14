@@ -2376,6 +2376,38 @@ class ModuleEmbeddingMor(CategoricalMor):
         ``f``, since localization is exact.  ``lift_is_section`` states that
         the construction's selected lift returns a preimage exactly on the
         image.
+
+        Protected construction contract (``OWN-05``).  Owner: this Mono
+        category, ``ModuleEmbeddingMor``.  Purpose: admit the monomorphism
+        that a construction defines, with its linearity and injectivity
+        carried by the construction (``premises``) rather than computed,
+        since the public element constructor admits a map by the caller's
+        claim and leaves both to its validators (``OWN-22``).  Input: the
+        defining map on elements (or generator images), the premise
+        monomorphisms, an optional selected lift.  Output: an element of
+        this Mono category with exactly these endpoints.  Invariant: the
+        caller's construction makes the map linear and injective whenever
+        the premises are.  Permitted callers, each the owner of the
+        construction whose structure map it is:
+
+        - ``_subobject_inclusion`` here, the inclusion of a module subobject
+          given by generator images;
+        - ``Modules.ParentMethods.sub_framing_morphism``
+          (``modules/pure/modules.py``), the free functor on an injection of
+          framings;
+        - the condition-submodule construction ``_condition_submodule_object``
+          (``modules/general_modules.py``), the inclusion of
+          ``{x in M : P(x)}`` into ``M``, which is the inclusion of a subset
+          of the underlying set of ``M`` and so injective;
+        - the homogeneous-piece inclusion of ``modules/powers.py``;
+        - the fractional-ideal inclusion into ``Frac(R)`` of
+          ``modules/fractional_ideals.py``;
+        - the nondegenerate correlation of ``modules/hodge.py``;
+        - module localization, ``functors/module_localization.py``, with the
+          localized monomorphism as premise.
+
+        A new caller is added to this list at the same time, with the
+        construction that makes its map a monomorphism.
         """
         return self.element_class(
             self,

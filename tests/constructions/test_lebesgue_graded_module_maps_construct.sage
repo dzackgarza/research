@@ -5,20 +5,20 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def test_degree_and_unit_piece_projections() -> None:
     algebra = GradedLebesgueAlgebra
-    square_integrable = Lp(2)
-    x = square_integrable.indeterminate()
-    gaussian = algebra(square_integrable(exp(-x * x)))
+    square_integrable = Lp(2, RR, RR)
+    g(t) = exp(-t^2)
+    gaussian = algebra(square_integrable(g))
 
     assert algebra.degree_projection(QQ(1) / 2)(gaussian)(0) == 1
-    assert algebra.degree_projection(1)(gaussian) == Lp(1).zero()
+    assert algebra.degree_projection(1)(gaussian) == Lp(1, RR, RR).zero()
     assert algebra.unit_piece_projection()(algebra.one())(5) == 1
 
 
 def test_integral_form_and_pairing_on_gaussian() -> None:
     algebra = GradedLebesgueAlgebra
-    square_integrable = Lp(2)
-    x = square_integrable.indeterminate()
-    gaussian = algebra(square_integrable(exp(-x * x)))
+    square_integrable = Lp(2, RR, RR)
+    g(t) = exp(-t^2)
+    gaussian = algebra(square_integrable(g))
     pairing_morphism = algebra.integral_pairing_morphism()
     pairing = algebra.integral_pairing()
 
@@ -33,5 +33,5 @@ def test_null_function_quotient_is_graded_by_quotient_lebesgue_spaces() -> None:
     quotient = GradedLebesgueAlgebra.quotient_by_null_functions()
 
     assert quotient in LebesgueGradedModules(RR)
-    assert quotient.graded_piece(QQ(1) / 2) is Lp(2).quotient_by_null_functions()
-    assert quotient.graded_piece(1) is Lp(1).quotient_by_null_functions()
+    assert quotient.graded_piece(QQ(1) / 2) is Lp(2, RR, RR).quotient_by_null_functions()
+    assert quotient.graded_piece(1) is Lp(1, RR, RR).quotient_by_null_functions()

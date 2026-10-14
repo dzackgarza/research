@@ -2250,6 +2250,63 @@ the maps of presentations.
 **Request:** `lean-categories` formalizes morphisms of Coxeter matrices or systems and the
 induced group maps, citing Mathlib's `CoxeterSystem`.
 
+### Maps of a set into a module are not presented as a module
+
+For a set `A` and an `R`-module `B`, the set `Hom_Set(A, U(B))` of all maps
+is an `R`-module under pointwise addition and scaling, and it is the product
+`prod_{a in A} B` in `Mod_R`. Every space of maps `A -> B` cut out by a
+condition (continuity, smoothness, integrability, summability) is a submodule
+of it (`CON-17`). Mathlib states the module as `Function.module`
+(`Mathlib/Algebra/Module/Pi.lean:52`), the special case of `Pi.module`
+(`:37`); formalization corpus API, 2026-10-14.
+**Dependency path:** set `A`, module `B` -> `Sets().Mor(A, B)` -> pointwise
+`R`-module on that set -> its submodules cut out by a predicate -> the
+function spaces `C^k(A, B)`, `L^p(A, B)`, `ell^p(A, B)`.
+**Existing capability:** `B.function_module(A)` and `M.condition_submodule(P)` (`modules/general_modules.py`) now present the module on `Sets().Mor(A, B)` and its condition submodules, sharing the pointwise law with the module product (`_pointwise_module_operations`); source only, unexecuted.
+**Consumers:** `categories/functions/real_functions.py`,
+`modules/pure/function_modules.py`, `lebesgue_quotients.py`, `convolution.py`.
+**Coverage boundary:** `lean-categories` at `e1d422eb` was searched with
+`rg -i "Pi\.module|Function\.module|cotensor"` over `LeanCategories/` and
+`FOUNDATIONS.md`: no statement of this module or of its identification with
+the product was found; the forum, Loogle and LeanSearch were not searched.
+The identity of the two sets `Hom_Set(A, U(B))` and `prod_{a in A} U(B)`,
+which `STY-148` asks for, is not addressed by this entry.
+**Request (not yet filed):** `lean-categories` states, for a set `A` and an
+`R`-module `B`, the `R`-module of maps `A -> U(B)` with pointwise operations
+and its isomorphism with the product `prod_{a in A} B` in `ModuleCat R`,
+citing Mathlib `Function.module` and `Pi.module`.
+What remains is the `lean-categories` request; it runs beside the computation and parks no node.
+
+### The real line is placed in no manifold category
+
+`C(k, X, Y)`, the maps `X -> Y` of class `C^k`, is defined for `X` a `C^k`
+manifold, so its constructor owes the assertion `X in` the manifold category
+of class `k` (`STY-49`), and the calculus it computes (derivative,
+antiderivative, Taylor series) is the calculus of the manifold `RR`.
+Mathlib makes every topological space a charted space over itself
+(`chartedSpaceSelf`, `Mathlib/Geometry/Manifold/ChartedSpace.lean:341`) and
+defines `C^n` manifolds modelled on a normed space with the self model
+`modelWithCornersSelf` (`Mathlib/Geometry/Manifold/IsManifold/Basic.lean`,
+module docstring); formalization-corpus API, 2026-10-14. The instance making
+the model space a `C^n` manifold over itself was not located by line.
+**Dependency path:** `RR` as a topological space -> the charted space `RR`
+over itself -> a smooth manifold of dimension 1 -> `C(k, RR, Y)` with its
+hypothesis asserted.
+**Evidence (source, 2026-10-14):** `rg -n "SmoothManifolds|DifferentiableManifolds|TopologicalManifolds" src` finds them only in
+`categories/manifolds.py`; `ExactRealField.__init__` (`rings/real.py`)
+places `RR` in the meet of `OwnedFields()`, `UncountableSets()`, its regular
+algebra and `FinitelyGeneratedFreeModules(RR)`, and no topology. The
+manifold categories construct their objects from a dimension and a name
+through a SageManifolds engine (`SmoothManifolds()(1, "M")`), which is a new
+manifold, not `RR`.
+**Consequence:** `_differentiability_class` asserts nothing about `X`, and
+the formula decisions of `real_functions.py` are routed on `domain is RR`
+instead of on manifold membership.
+**Consumers:** `C(k, X, Y)` and every operation of `_DifferentiableMap`.
+**Coverage boundary:** `lean-categories` was not searched for the real line
+as a manifold. Remediation: `the-real-line-is-a-smooth-manifold` in
+[TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite

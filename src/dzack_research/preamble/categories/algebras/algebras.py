@@ -2703,6 +2703,29 @@ class Algebras(OwnedCategoryOverBaseRing):
                 """
                 return _unit_morphism_from_element(self, self.one(), self.algebra_base_ring())
 
+            def _element_constructor_(self, value):
+                r"""Read a scalar ``r`` of the coefficient ring ``R`` as ``eta(r) = r * 1``.
+
+                In a unital ``R``-algebra ``A`` a scalar names the image of
+                ``r`` under the structure map, ``unit_morphism``
+                ``r |-> rho(r)(1)``: in ``C(k, X, RR)`` the real ``2`` is the
+                constant map with value ``2``.  An element of a ring that is
+                contained in ``R`` and is not an ``R``-module (the integers
+                inside ``RR``) is that element of ``R``.  Everything else,
+                including the module ``A`` is built on, is read by the
+                realization below; so is a scalar when ``A`` is built on
+                ``R`` itself, where ``r`` already is the element ``r * 1``.
+                """
+                ring = self.algebra_base_ring()
+                source = element_parent(value)
+                match source:
+                    case _ if source is ring and self.unformed_module() is not ring:
+                        return self.unit_morphism()(value)
+                    case _ if source not in Modules(ring) and source in OwnedRings() and value in ring:
+                        return self.unit_morphism()(ring(value))
+                    case _:
+                        return super()._element_constructor_(value)
+
             def _algebra_mor_class(self):
                 r"""Choose generator-image morphisms exactly when selected algebra resolution data exists."""
                 match self.is_framed_algebra():

@@ -30,7 +30,7 @@ def _holder_degree(space):
 def _space_at_degree(degree):
     value = degree.as_extended_real()
     exponent = Infinity if (value == RR.zero()) is True else RR.one() / value
-    return Lp(exponent).quotient_by_null_functions()
+    return Lp(exponent, RR, RR).quotient_by_null_functions()
 
 
 @cached_function(key=lambda left, right: (id(left), id(right)))
@@ -49,13 +49,15 @@ def _symbolic_convolution(left, right):
     """
     import sympy
 
-    f, g = left._formula(), right._formula()
-    if f is None or g is None:
+    from dzack_research.preamble.categories.functions.real_functions import _map_formula
+
+    left_formula, right_formula = _map_formula(left), _map_formula(right)
+    if left_formula is None or right_formula is None:
         return None
     x = sympy.Symbol("x", real=True)
     t = sympy.Dummy("t", real=True)
-    f = f._sympy_().subs(left.parent().indeterminate()._sympy_(), t)
-    g = g._sympy_().subs(right.parent().indeterminate()._sympy_(), x - t)
+    f = left_formula[0]._sympy_().subs(left_formula[1]._sympy_(), t)
+    g = right_formula[0]._sympy_().subs(right_formula[1]._sympy_(), x - t)
     integrand = sympy.piecewise_fold((f * g).rewrite(sympy.Piecewise))
     try:
         expression = sympy.integrate(integrand, (t, -sympy.oo, sympy.oo))
@@ -107,7 +109,8 @@ def _convolution_representative(space, left, right):
             "the integrability hypotheses of Young's inequality"
         )
         if _engine_global_continuous_formula(expression, variable):
-            formula = SR(expression).subs({SR(str(variable)): space.indeterminate()})
+            point = SR.var("x")
+            formula = SR(expression).subs({SR(str(variable)): point}).function(point)
 
     def evaluate(point):
         assert symbolic is not None, (
@@ -124,7 +127,7 @@ def _convolution_representative(space, left, right):
         )
         return _owned_real_from_engine_expression(SR(value))
 
-    return space.element_class(space, evaluate=evaluate, expression=formula)
+    return space(evaluate if formula is None else formula)
 
 
 @cached_function(key=lambda left, right: (id(left), id(right)))
@@ -157,7 +160,7 @@ def _convolution_algebra():
     Substitution gives commutativity. The family for other exponents remains
     separately available; L-infinity is not silently included in this algebra.
     """
-    module = Lp(1).quotient_by_null_functions()
+    module = Lp(1, RR, RR).quotient_by_null_functions()
     multiplication = module.convolution_pairing(module)
     return _algebra_on_module(
         module,

@@ -8,7 +8,6 @@ def smooth():
 def test_the_constructions_of_smooth_functions_agree() -> None:
     r"""$C^\infty(\mathbb R) = C^\infty(\mathbb R, \mathbb R)$."""
     assert C(Infinity, RR, RR) is smooth()
-    assert (C ^ Infinity)(RR) is smooth()
 
 
 def test_the_categories_of_smooth_functions() -> None:

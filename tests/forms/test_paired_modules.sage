@@ -30,5 +30,5 @@ def test_the_holder_pairing_of_a_geometric_sequence_with_the_constant_one_is_two
     holder = ell(1, NN, RR) * ell(oo, NN, RR)
     geometric = ell(2, NN, RR)(a)
 
-    assert holder.pairing(ell(1, NN, RR)(a), ell(oo, NN, RR)(1)) == RR(2)
+    assert holder.pairing(ell(1, NN, RR)(a), ell(oo, NN, RR).one()) == RR(2)
     assert ell(2, NN, RR).q(geometric) == RR(QQ(4) / 3)
