@@ -1371,6 +1371,19 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             """
             return None
 
+        @RealizationHook
+        def _stabilizer_generating_morphism(self, point):
+            r"""Protected value hook: the stabilizer's free generating morphism, when the action supplies one.
+
+            ``stabilizer`` is the only caller; it passes the value to the
+            stabilizer constructor as that subgroup's selected generating
+            datum.  The value maps the constructed stabilizer to a group
+            morphism from a free group onto it.  A finite action of a group
+            with selected generators supplies it by Schreier's lemma on the
+            orbit; ``None`` here states that this action supplies none.
+            """
+            return None
+
         def stabilizer(self, point):
             r"""The subgroup ``G_point = {g in G : g.point = point}``.
 
@@ -1397,6 +1410,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 self.action_functor(),
                 lambda group_element: self.act(group_element, point) == point,
                 description=f"stabilizer of {point} in {self}",
+                generating_morphism=self._stabilizer_generating_morphism(point),
             )
 
         def restrict_action(self, group_morphism):

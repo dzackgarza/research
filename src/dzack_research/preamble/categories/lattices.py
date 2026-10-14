@@ -172,6 +172,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
     finite_indexed_family,
     indexed_family,
 )
@@ -5120,6 +5121,36 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the sublattice framed by the stated ordered vector family."""
             subobject = self.subobject_on(module_generating_set)
             return refine(subobject, VectorConfigurations(self.base_ring()))
+
+        def integral_structure(self, vectors: IndexedFamily):
+            r"""The ``ZZ``-lattice spanned by a finite family of vectors of this ``QQ``-space, as ``L -> Res(V)``.
+
+            This is the case ``ZZ`` in ``QQ``: ``V`` is over ``QQ`` and the lattice
+            is a ``ZZ``-module.  ``Res`` restricts scalars along ``ZZ -> QQ``.  A
+            finite sequence of vectors enters as the family over its positions
+            (``finite_family``).  The lattice is the
+            image of the module map from the free module on the family to
+            ``Res(V)``, a subobject of one ``ZZ``-module, and its
+            inclusion is the monomorphism on which
+            ``IntegralStructureAction(G, inclusion)`` acts.  Repeated calls
+            on one space land in the same ``Res(V)``, the image of ``V`` under
+            the one restriction functor along ``ZZ -> QQ``, so two integral
+            structures are compared as subobjects of one object.
+            """
+            integers = _own_ring(SageZZ)
+            field_map = integers.fraction_field_map()
+            assert field_map.codomain() is self.base_ring(), (
+                f"an integral structure of {self} is a ZZ-lattice in a QQ-space, but {self} is over "
+                f"{self.base_ring()}, not QQ"
+            )
+            restricted = Modules(self.base_ring()).restriction_of_scalars(field_map)(self)
+            family = finite_family(
+                (restricted(self(vector)) for vector in vectors),
+                name="Spanning family of an integral structure",
+            )
+            free = integers.free_module(family.index_set())
+            span = free.module_category().Mor(free, restricted)(family.value)
+            return span.image().inclusion()
 
         def vector_primitive_extension(self, element):
             r"""Return the primitive-extension/gluing datum cut out by ``element``."""

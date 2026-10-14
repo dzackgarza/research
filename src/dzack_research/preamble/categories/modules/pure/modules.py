@@ -351,10 +351,14 @@ class Modules(OwnedCategoryOverBaseRing):
         assert _owned_ring(ring_map.domain()) is self.base_ring()
         return _ScalarExtensionFunctor(ring_map)
 
+    @cached_method
     def restriction_of_scalars(self, ring_map):
         r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``.
 
         Along the augmentation ``R[G] -> R`` this is the trivial action.
+        One functor per ring map (the cache key is the ring map itself), so
+        the forward image ``Res_f(M)`` of a module is one object, cached by
+        that functor.
         """
         from dzack_research.preamble.categories.functors.group_actions import (
             _TrivialActionFunctor,
