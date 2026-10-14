@@ -898,29 +898,47 @@ class _TransversalOrbitSet(_OrbitSet):
         return self._orbit_covering
 
     @cached_method
-    def _orbits(self):
-        found = []
+    def _representatives(self):
+        r"""The points of ``S`` that are first in their orbit, each decided once.
+
+        Each point of ``S`` is decided against the representatives already
+        recorded, by orbit membership (the G-set's decided orbit relation); a decided relation
+        on a general ``X`` has no canonical form to key by, so the record is
+        keyed by representative point and grows by one per new orbit.  The
+        decisions made are at most ``|S|`` times the number of orbits.
+        """
+        record = {}
         for point in self.orbit_covering():
-            orbit = self.orbit_of(point)
-            if orbit not in found:
-                found.append(orbit)
-        return tuple(found)
+            if not any(point in self.orbit_of(chosen) for chosen in record):
+                record[point] = point
+        return record
+
+    @cached_method
+    def _orbits(self):
+        r"""One orbit per recorded representative, in the order of ``S``."""
+        return tuple(self.orbit_of(point) for point in self._representatives())
 
     @cached_method
     def section(self):
-        r"""The section ``s: X/G -> X`` of the projection, choosing the first point of ``S``."""
-        covering = self.orbit_covering()
+        r"""The section ``s: X/G -> X`` of the projection, choosing the first point of ``S``.
+
+        The orbit of a point ``x`` is sent to the recorded representative
+        related to ``x``; every orbit has one because ``S`` meets it.
+        """
+        g_set = self.g_set()
+        representatives = self._representatives()
 
         def chosen_point(orbit):
-            for point in covering:
-                if self.orbit_of(point) == orbit:
-                    return point
+            point = orbit.representative()
+            for chosen in representatives:
+                if point in self.orbit_of(chosen):
+                    return chosen
             assert False, (
-                f"{orbit} meets no point of {covering}, so that set does not meet every "
-                f"orbit of {self.g_set()}"
+                f"{orbit} meets no point of {self.orbit_covering()}, so that set does not meet "
+                f"every orbit of {g_set}"
             )
 
-        return Sets().Mor(self, self.g_set())(chosen_point)
+        return Sets().Mor(self, g_set)(chosen_point)
 
 
 def _orbit_set_presented_by(g_set, covering):
