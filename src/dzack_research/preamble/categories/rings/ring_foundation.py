@@ -2129,6 +2129,13 @@ class _PredicateSubringParent(Parent):
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
         ambient_ring = _own_ring(ambient_ring)
+        # The constructing category: ``_predicate_subring`` builds in
+        # ``PredicateSubrings()``, joined with the caller's category (OWN-15).
+        self._defining_construction = (
+            category,
+            None,
+            {"ambient_ring": ambient_ring, "predicate": predicate},
+        )
         self._ambient_ring = ambient_ring
         self._predicate = predicate
         self._description = description
@@ -4858,7 +4865,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             case _:
                 return _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None, constructing_category=None) -> None:
         r"""Construct over the scalar ring the level above declares.
 
         ``base`` is that ring.  A level sitting over a ring states its own base
@@ -4877,6 +4884,16 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         """
         SageObject.__init__(self)
         canonical_native = base is None and category is None
+        # The constructing category is defining construction data (OWN-15):
+        # a level above names the category it builds in; a ring adopted
+        # from its engine by ``_own_ring`` is adopted into ``OwnedRings()``.
+        # Its placement below is still read off the engine (ARC-08); the
+        # constructing category is not.
+        self._defining_construction = (
+            OwnedRings() if constructing_category is None else constructing_category,
+            None,
+            {"engine": engine},
+        )
         self._engine = engine
         self._preamble_ring_display = None
         self._preamble_ring_display_kind = None

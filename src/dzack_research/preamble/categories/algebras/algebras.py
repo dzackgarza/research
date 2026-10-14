@@ -4260,6 +4260,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         construction_data=(),
         law_decisions=(),
         algebra_framing_source=None,
+        constructing_category=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -4293,11 +4294,16 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if framing_owner is not associative:
             retained_laws["commutativity"] = True
         retained_laws.update(dict(law_decisions))
+        # The algebra is built in the algebra category it is realized as,
+        # unless the construction names a stronger one (OWN-15).
         _OwnedRingParent.__init__(
             self,
             engine,
             base=base,
             category=Cat().meet(tuple(placement)),
+            constructing_category=(
+                framing_owner if constructing_category is None else constructing_category
+            ),
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws
