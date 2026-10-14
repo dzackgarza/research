@@ -243,14 +243,6 @@ class Digraphs(OwnedCategory):
 
     _MorCategory = DigraphMorCategoryConstruction
 
-    class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Return the adjacency-preserving Mor into ``codomain``."""
-            digraphs = Digraphs()
-            if category is None or category.is_subcategory(digraphs):
-                return digraphs.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
-
     def super_categories(self):
         return [Sets().Finite()]
 
@@ -322,14 +314,6 @@ class LabelledDigraphs(OwnedCategory):
     r"""Finite digraphs with selected vertex and edge labels."""
 
     _MorCategory = LabelledDigraphMorCategoryConstruction
-
-    class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Return the label-preserving graph Mor into ``codomain``."""
-            labelled = LabelledDigraphs()
-            if category is None or category.is_subcategory(labelled):
-                return labelled.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
     def super_categories(self):
         return [Digraphs()]

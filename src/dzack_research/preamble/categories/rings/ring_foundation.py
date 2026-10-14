@@ -2129,6 +2129,9 @@ class _PredicateSubringParent(Parent):
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
         ambient_ring = _own_ring(ambient_ring)
+        # A subring is a ring with an inclusion as additional data: the
+        # category of its objects is the rings (OWN-15, ARC-07).
+        self._constructing_category = OwnedRings()
         self._ambient_ring = ambient_ring
         self._predicate = predicate
         self._description = description
@@ -3685,7 +3688,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def Mor(self, codomain, category=None):
             rings = OwnedRings()
-            if category is None or (isinstance(category, OwnedCategory) and category.is_subcategory(rings)):
+            if category is None:
+                # ``A.Mor(B) := A.ambient_category().Mor(A, B)`` (``ARC-07``).
+                return super().Mor(codomain)
+            if isinstance(category, OwnedCategory) and category.is_subcategory(rings):
                 return rings.Mor(self, codomain)
             # A Sage category here is not a mathematical request: it is Sage's
             # coercion machinery asking for somewhere to keep a conversion map,
@@ -4858,7 +4864,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             case _:
                 return _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None, constructing_category=None) -> None:
         r"""Construct over the scalar ring the level above declares.
 
         ``base`` is that ring.  A level sitting over a ring states its own base
@@ -4877,6 +4883,14 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         """
         SageObject.__init__(self)
         canonical_native = base is None and category is None
+        # The constructing category is defining construction data (OWN-15):
+        # a level above names the category it builds in; a ring adopted
+        # from its engine by ``_own_ring`` is adopted into ``OwnedRings()``.
+        # Its placement below is still read off the engine (ARC-08); the
+        # constructing category is not.
+        self._constructing_category = (
+            OwnedRings() if constructing_category is None else constructing_category
+        )
         self._engine = engine
         self._preamble_ring_display = None
         self._preamble_ring_display_kind = None

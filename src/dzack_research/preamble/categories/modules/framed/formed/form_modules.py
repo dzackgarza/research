@@ -1690,10 +1690,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case False:
                     return self.left_curry().is_injective() and self.right_curry().is_injective()
 
-        def Mor(self, codomain, category=None):
-            if category is None and codomain in FormModules(self.base_ring()):
-                return FormModules(self.base_ring()).Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
@@ -3544,8 +3540,13 @@ def _form_module(
         case (None, None):
             pass
         case _:
+            from dzack_research.preamble.categories.abstract_categories.cat import Cat
             from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
+            # A formed submodule is a formed module with an inclusion as
+            # additional data: its ambient category (ARC-07) is that of the
+            # formed modules, without the subobject placements below.
+            construction_data["_constructing_category"] = Cat().meet(tuple(categories))
             categories.append(ModuleSubobjects(base_ring))
             match _subobject_ambient:
                 case None:

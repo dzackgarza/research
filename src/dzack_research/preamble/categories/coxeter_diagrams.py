@@ -511,16 +511,6 @@ class CoxeterDiagrams(OwnedCategory):
         def num_vertices(self):
             return self.cardinality()
 
-        def Mor(self, codomain, category=None):
-            r"""Return the Coxeter-entry-preserving Mor into ``codomain``.
-
-            Naming a coarser category is the explicit request to forget the
-            complete Coxeter matrix, as in ``D.Mor(E, category=LabelledGraphs())``.
-            """
-            diagrams = CoxeterDiagrams()
-            if category is None or category.is_subcategory(diagrams):
-                return diagrams.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
         def vertex_weight(self, vertex):
             r"""Return the Vinberg invariant \([4:1]\) of the mirror ``vertex`` with itself."""

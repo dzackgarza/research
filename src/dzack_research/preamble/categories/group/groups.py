@@ -1515,6 +1515,7 @@ def _transported_subgroup(group, engine_subgroup):
                 *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
+        _ambient=OwnedGroups(),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
@@ -1535,6 +1536,7 @@ def _generated_subgroup(group, engine_subgroup, generators):
                 *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
+        _ambient=OwnedGroups(),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
@@ -4533,11 +4535,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return ClassifyingCategory(self)
 
-        def Mor(self, codomain, category=None):
-            groups = OwnedGroups()
-            if category is None or category.is_subcategory(groups):
-                return groups.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()

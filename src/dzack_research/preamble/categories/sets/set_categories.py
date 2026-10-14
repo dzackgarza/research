@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MonoCategoryConstruction,
     MorCategories,
     MorCategoryConstruction,
+    _ambient_of,
     _category_accepts_morphism,
     _category_mor,
 )
@@ -2100,14 +2101,52 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
 
+        # Recorded by the construction that builds the object (``_object_of``
+        # through the root ``OwnedParent``, or the ring route); ``None`` for an
+        # object no category's constructor built.
+        _constructing_category = None
+
+        def ambient_category(self) -> Category:
+            r"""The category whose constructor built this object, without its property axioms.
+
+            The constructing category is defining construction data, recorded
+            once by the construction (``_constructing_category``, ``OWN-15``);
+            this accessor exposes it and computes nothing after the fact
+            (``OWN-17``).  Refinement into a property subcategory changes
+            ``category()`` and leaves this unchanged.  An axiom is removed
+            when its subcategory is full, with the same arrows as its base;
+            data subcategories, and axiom subcategories that are not full,
+            keep their arrows (``_ambient_of``).
+            """
+            constructing = self._constructing_category
+            assert constructing is not None, (
+                f"{self} has no ambient category: it was not built by a category's constructor, "
+                f"so nothing recorded which category it is an object of (it is placed in {self.category()})"
+            )
+            return _ambient_of(constructing)
+
         def Mor(
             self,
             codomain: Parent,
             category: Category | None = None,
         ) -> Category:
-            if category is None:
-                return Sets().Mor(self, codomain)
-            return _category_mor(category, self, codomain)
+            r"""``A.Mor(B) := A.ambient_category().Mor(A, B)``.
+
+            Owner ruling 2026-10-14 (``ARC-07``): the morphisms of a category
+            are determined by the mathematics, and ``Mor(A, B)`` makes no
+            sense when ``A`` and ``B`` share no ambient category.  A named
+            ``category`` is the explicit request for the arrows of that
+            category (``X.Mor(Y, category=Sets())`` forgets structure).
+            """
+            if category is not None:
+                return _category_mor(category, self, codomain)
+            ambient = self.ambient_category()
+            assert codomain in ambient, (
+                f"Mor({self}, {codomain}) is asked in the ambient category {ambient} of {self}, "
+                f"but {codomain} is not an object of it (it lies in {codomain.category()}); "
+                f"name the category whose arrows are meant"
+            )
+            return ambient.Mor(self, codomain)
 
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""

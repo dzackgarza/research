@@ -1813,40 +1813,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         "functor currently computes associative-unital algebras"
                     )
 
-        @RealizationHook
-        def _default_algebra_mor_category(self, codomain):
-            r"""Supply the construction's selected category for default arrows.
 
-            A supplying construction checks both endpoints and returns its
-            actual retained category. None leaves the ordinary algebra
-            default in force.
-            """
-            return None
-
-        def Mor(self, codomain, category=None):
-            r"""Select the algebra arrow laws requested by the two endpoints.
-
-            A default between unital algebras preserves the unit even when
-            their product is not associative. An explicit root category
-            still asks only for a linear multiplicative map.
-            """
-            base = self.algebra_base_ring()
-            if category is None:
-                selected = self._default_algebra_mor_category(codomain)
-                if selected is not None:
-                    return _category_mor_parent(selected, self, codomain)
-            if category is None and base is self and self in OwnedRings():
-                return OwnedRings.ParentMethods.Mor(self, codomain)
-            algebras = Algebras(base)
-            ordinary = algebras.Associative().Unital()
-            unital = algebras.Unital()
-            if category is None:
-                if self in ordinary and codomain in ordinary:
-                    return ordinary.Mor(self, codomain)
-                if self in unital and codomain in unital:
-                    return unital.Mor(self, codomain)
-                return algebras.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         @cached_method
         @RealizationHook
@@ -2311,18 +2278,6 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             _MorCategory = UnitalAlgebraMorCategoryConstruction
 
-            class ParentMethods:
-                def Mor(self, codomain, category=None):
-                    r"""Ask the algebra owner for the arrows, not the ring route.
-
-                    This category declares both ``Algebras(R).Unital()`` and
-                    ``OwnedRings()`` (``CAT-21``), and Sage's linearization
-                    puts ``OwnedRings`` first, so the ring ``Mor`` would
-                    answer for every object here.  The algebra owner selects
-                    the unital algebra maps, and sends a ring over itself to
-                    the ring ``Mor`` (``ARC-07``).
-                    """
-                    return Algebras.ParentMethods.Mor(self, codomain, category=category)
 
             @property
             def _SliceCategory(self):
@@ -2508,9 +2463,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
 
             class Commutative(CategoryWithAxiom):
-                r"""Commutative associative unital ``R``-algebras."""
+                r"""Commutative associative unital ``R``-algebras.
 
-                _MorCategory = UnitalAlgebraMorCategoryConstruction
+                A full subcategory: its arrows are the unital algebra maps,
+                so it declares no Mor family of its own and inherits that of
+                ``Algebras(R).Associative().Unital()``.
+                """
+
                 SubcategoryMethods = _CommutativeUnitalAlgebraSubcategoryMethods
                 ParentMethods = _CommutativeUnitalAlgebraParentMethods
 
@@ -3090,6 +3049,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             _extra_categories=tuple(extra_categories),
             _extra_construction_data=extra_construction_data,
             _generating_module=generating_module,
+            _constructing_category=self,
         )
 
     class ParentMethods:
@@ -4260,6 +4220,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         construction_data=(),
         law_decisions=(),
         algebra_framing_source=None,
+        constructing_category=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -4293,11 +4254,18 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if framing_owner is not associative:
             retained_laws["commutativity"] = True
         retained_laws.update(dict(law_decisions))
+        # The algebra is an object of the category its public constructor
+        # was asked for (OWN-15).  A route that names none is an algebra of
+        # ``Algebras(R).Associative().Unital()``; commutativity, read off the
+        # engine above, is a full axiom and is not recorded (ARC-08).
         _OwnedRingParent.__init__(
             self,
             engine,
             base=base,
             category=Cat().meet(tuple(placement)),
+            constructing_category=(
+                associative if constructing_category is None else constructing_category
+            ),
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws

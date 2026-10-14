@@ -1210,6 +1210,10 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             Mor of the underlying endpoints.
             """
             acted = GObjects(self.acting_group(), self.underlying_category())
+            # ``acted`` is the category whose constructor builds a G-object,
+            # so it is the ambient category of ``ARC-07``; a G-object of a
+            # category that is not one of sets (schemes) is not reached by
+            # the root of ``Sets``, so the rule is stated here.
             if category is None or category.is_subcategory(acted):
                 return acted.Mor(self, codomain)
             forget = acted.forgetful_functor()
