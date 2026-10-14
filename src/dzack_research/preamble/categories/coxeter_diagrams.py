@@ -1238,27 +1238,17 @@ class CoxeterDiagrams(OwnedCategory):
             }
 
         def equivariant_positions(self, automorphism):
-            r"""Return exact planar positions intertwining a finite diagram automorphism."""
-            from sage.rings.qqbar import QQbar
+            r"""Return exact planar positions intertwining a finite diagram automorphism.
 
-            from dzack_research.preamble.categories.rings.number_fields import CyclotomicField
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                _engine_element,
-                _owned_algebraic_numbers,
-                _owned_engine_element,
-            )
-
-            def root_of_unity(order):
-                r"""``e^{2 pi i/order}``: the image of ``zeta`` under the chosen embedding ``QQ(zeta) -> QQbar``.
-
-                The embedding is an element of ``Mor(QQ(zeta), QQbar)``, chosen
-                as the one sending ``zeta`` to ``e^{2 pi i/order}``; no
-                embedding is read off the field.
-                """
-                field = CyclotomicField(order)
-                algebraic = _owned_algebraic_numbers()
-                embedding = field.Mor(algebraic)(_owned_engine_element(algebraic, QQbar.zeta(order)))
-                return _engine_element(algebraic, embedding(field.primitive_element()))
+            A position is a point ``(x, y)`` of the real plane with exact real
+            coordinates.  An automorphism of order ``n >= 3`` acts as the
+            rotation by ``2 pi/n``: the ``k``-th vertex of an orbit of length
+            ``n`` on the circle of radius ``r`` sits at
+            ``(r cos(2 pi k/n), r sin(2 pi k/n))``, and a fixed vertex at the
+            origin.  An involution acts as the reflection ``y -> -y``: a fixed
+            vertex sits at ``(c, 0)`` and a 2-cycle at ``(c, 1)``, ``(c, -1)``.
+            """
+            from dzack_research.preamble.rings.real import RR
 
             order = int(automorphism.order())
             if order < 2:
@@ -1282,17 +1272,15 @@ class CoxeterDiagrams(OwnedCategory):
                         f"from {start} does not return to {start}"
                     )
                 orbits.append(tuple(orbit))
-            zeta = root_of_unity(order)
             positions = {}
             if order == 2:
-                imaginary = root_of_unity(4)
                 place = 0
                 for orbit in sorted(orbits, key=len):
                     if len(orbit) == 1:
-                        positions[orbit[0]] = QQbar(place)
+                        positions[orbit[0]] = (RR(place), RR(0))
                     elif len(orbit) == 2:
-                        positions[orbit[0]] = QQbar(place) + imaginary
-                        positions[orbit[1]] = QQbar(place) - imaginary
+                        positions[orbit[0]] = (RR(place), RR(1))
+                        positions[orbit[1]] = (RR(place), RR(-1))
                     else:
                         raise ValueError(
                             f"{automorphism} has order 2 but an orbit {orbit} of length {len(orbit)}: "
@@ -1310,14 +1298,13 @@ class CoxeterDiagrams(OwnedCategory):
                 radius = 1
                 for orbit in orbits:
                     if len(orbit) == 1:
-                        positions[orbit[0]] = QQbar.zero()
+                        positions[orbit[0]] = (RR(0), RR(0))
                         continue
                     for exponent, vertex in enumerate(orbit):
-                        positions[vertex] = QQbar(radius) * zeta**exponent
+                        angle = 2 * RR.pi() * exponent / order
+                        positions[vertex] = (RR(radius) * angle.cos(), RR(radius) * angle.sin())
                     radius += 1
-            return {
-                vertex: (value.real(), value.imag()) for vertex, value in positions.items()
-            }
+            return positions
 
         def subdiagram(self, vertices):
             return self.induced_subdiagram(vertices)
