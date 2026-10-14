@@ -1268,11 +1268,21 @@ def _engine_general_linear_two_coset_permutations(generator_row_actions, index):
         < s_2, s_3, e | s_2^4, s_2^2 s_3^-3, e^2, e s_2 e^-1 = w(e s_2 e),
                         e s_3 e^-1 = w(e s_3 e) >,
 
-    a presentation of ``GL_2(ZZ)``: generation is Mathlib's
-    ``Matrix.SpecialLinearGroup.SL2Z_generators``, the relation
-    ``(TS)^3 = -1`` TauCeti's ``T_mul_S_pow_three``; that these relations
-    present the group is not formalized (COMPLAINTS.md, *A finite
-    presentation of GL_2(ZZ)*).  Enumeration terminates exactly when the
+    taken to present ``GL_2(ZZ)``.  ``s_2 = S`` and ``s_3 = S^-1 T^-1 =
+    (TS)^-1`` for ``S = [[0,-1],[1,0]]``, ``T = [[1,1],[0,1]]`` (hand
+    computation).  Generation is Mathlib's
+    ``Matrix.SpecialLinearGroup.SL2Z_generators`` and Conrad, *SL_2(ZZ)*
+    (kconrad.math.uconn.edu), Cor. 2.3.  The relators hold:
+    ``s_2^2 = -1`` and ``s_3^3 = ((TS)^3)^-1 = -1`` by TauCeti's
+    ``T_mul_S_pow_three``; the last two relators hold because ``w`` is the
+    word Sage's ``sl2z_word_problem`` returns for the matrix ``e s_i e``.  UNSOURCED: that these relations
+    present the group.  Conrad, Thm. C.1 (proved), and Milne, *Modular
+    Functions and Modular Forms* v1.31, Remark 2.14 (stated without proof),
+    give only ``PSL_2(ZZ) = ZZ/2 * ZZ/3``; no opened source states the
+    presentation of ``SL_2(ZZ)`` or of its extension by ``e = diag(1,-1)``
+    (COMPLAINTS.md, *A finite presentation of GL_2(ZZ)*).  The index
+    assertion below detects a wrong presentation only when it changes the
+    coset count.  Enumeration terminates exactly when the
     index is finite (TauCeti's ``CosetTable.index_le`` bounds the index by a
     table's size).  Returns, for ``s_2, s_3, e``, the right action on the
     coset numbers ``0, ..., index - 1`` (``0`` is ``H``) as tuples.
