@@ -155,20 +155,25 @@ def _additive_submonoid(ambient, *, generators=None, predicate=None, description
         supplied = finite_indexed_family_from_values(labels, generators)
         values = tuple(ambient(generator) for generator in supplied)
         generators = finite_indexed_family_from_values(supplied.index_set(), values)
-    placements = [SubobjectCategory(AdditiveMonoids(), ambient)]
+    # The categories of the submonoid as an additive monoid; the subobject
+    # placement is added separately, so the ambient category below is
+    # selected by name rather than by position.
+    property_placements = []
     if ambient in AdditiveMagmas().AdditiveCommutative():
-        placements.append(AdditiveMonoids().AdditiveCommutative())
+        property_placements.append(AdditiveMonoids().AdditiveCommutative())
     if Sets().is_provably_finite(ambient) or (
         generators is not None
         and all(generator is zero or (generator == zero) is True for generator in generators)
     ):
-        placements.append(FiniteSets())
-    category = owned_category_join(tuple(placements))
+        property_placements.append(FiniteSets())
+    category = owned_category_join(
+        (SubobjectCategory(AdditiveMonoids(), ambient), *property_placements)
+    )
     # A submonoid is a monoid with an inclusion as additional data: the
     # category of its objects is the additive monoids (ARC-07).
     return _object_of(
         category,
-        _ambient=owned_category_join((AdditiveMonoids(), *placements[1:])),
+        _ambient=owned_category_join((AdditiveMonoids(), *property_placements)),
         _engine=(category, _AdditiveSubmonoidEngine, None),
         ambient=ambient,
         zero=zero,
@@ -377,7 +382,15 @@ def _predicate_submonoid(
     The result is the existing facade submonoid with its actual inclusion;
     an undecided predicate value is retained, not treated as nonmembership.
     """
-    category = owned_category_join((Monoids().Subobjects(ambient), *placements))
+    subobjects = Monoids().Subobjects(ambient)
+    # ``placements`` are categories of the submonoid as a monoid (the unit
+    # group passes ``OwnedGroups()`` or ``AbelianGroups()``); a subobject
+    # placement would make the inclusion part of its ambient category.
+    assert not any(placement.is_subcategory(subobjects) for placement in placements), (
+        f"the predicate submonoid of {ambient} takes placements of its objects as monoids, "
+        f"but {placements} contains a category of subobjects of {ambient}"
+    )
+    category = owned_category_join((subobjects, *placements))
     return _object_of(
         category,
         _ambient=owned_category_join((Monoids(), *placements)),
