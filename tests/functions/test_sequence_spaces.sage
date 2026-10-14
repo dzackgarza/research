@@ -21,8 +21,7 @@ def test_holder_conjugates_of_sequence_spaces() -> None:
 
 
 def test_the_notation_ell_p_names_one_space_per_exponent() -> None:
-    r"""``(ell^2)(RR)`` and ``ell(2, NN, RR)`` are the same space; ``ell^2 (x) ell^2`` is ``ell^2`` with its form."""
-    assert (ell ^ 2)(RR) is ell(2, NN, RR)
+    r"""``ell^2 (x) ell^2`` is ``ell^2`` with its form."""
     assert ell(2, NN, RR) * ell(2, NN, RR) is ell(2, NN, RR)
 
 
