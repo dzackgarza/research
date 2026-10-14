@@ -1831,16 +1831,43 @@ def _SmallGroup(order, index):
     return _own_group(PermutationGroup(gap_group=model))
 
 
-def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
-    from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
+def _coxeter_group_of_owned_data(data, implementation="reflection", base_ring=None, index_set=None):
+    r"""``Groups.Coxeter``: the Coxeter group of owned data (``API-05``).
 
-    from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+    The admitted data are the owned Coxeter matrix
+    \(m\colon V\times V\to\mathrm{Card}\) (an indexed family) and a Cartan
+    type given as the plain label ``[letter, rank]`` or
+    ``[letter, rank, 1]``.  No Sage object is admitted; the private
+    ``_Coxeter`` lowers the datum to Sage's ``CoxeterGroup``.
+    """
+    from dzack_research.preamble.categories.coxeter_diagrams import (
+        _engine_cartan_type_data,
+        _engine_coxeter_matrix_of,
+    )
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
     match data:
         case IndexedFamily():
-            # The owned Coxeter matrix m: V x V -> Card, lowered to Sage's matrix on V.
-            data = _engine_coxeter_matrix_of(data)
+            engine_data = _engine_coxeter_matrix_of(data)
+        case [str(), *_] | (str(), *_):
+            engine_data = _engine_cartan_type_data(list(data))
+        case _:
+            raise TypeError(
+                f"{data!r} does not define a Coxeter group: give the owned Coxeter matrix "
+                f"m: V x V -> Card or a Cartan type label [letter, rank]"
+            )
+    return _Coxeter(
+        engine_data,
+        implementation=implementation,
+        base_ring=base_ring,
+        index_set=index_set,
+    )
+
+
+def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
+    r"""Private: the owned Coxeter group of Sage Coxeter data already lowered by its caller."""
+    from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
+
     scalar_ring = None if base_ring is None else _engine_ring(base_ring)
     return _own_group(
         CoxeterGroup(
@@ -3639,7 +3666,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     Braid = _owned_group_constructor(_SageBraid)
     Cactus = _owned_group_constructor(_SageCactus)
     PureCactus = _owned_group_constructor(_SagePureCactus)
-    Coxeter = staticmethod(_Coxeter)
+    Coxeter = staticmethod(_coxeter_group_of_owned_data)
     Weyl = _owned_group_constructor(_SageWeyl)
     Reflection = _owned_group_constructor(_SageReflection)
     RightAngledArtin = _owned_group_constructor(_SageRightAngledArtin)
