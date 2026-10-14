@@ -1831,14 +1831,14 @@ def _SmallGroup(order, index):
     return _own_group(PermutationGroup(gap_group=model))
 
 
-def _coxeter_group_of_owned_data(data, implementation="reflection", base_ring=None, index_set=None):
+def _coxeter_group_of_owned_data(data, base_ring=None):
     r"""``Groups.Coxeter``: the Coxeter group of owned data (``API-05``).
 
-    The admitted data are the owned Coxeter matrix
-    \(m\colon V\times V\to\mathrm{Card}\) (an indexed family) and a Cartan
-    type given as the plain label ``[letter, rank]`` or
-    ``[letter, rank, 1]``.  No Sage object is admitted; the private
-    ``_Coxeter`` lowers the datum to Sage's ``CoxeterGroup``.
+    ``data`` is the owned Coxeter matrix \(m\colon V\times V\to\mathrm{Card}\)
+    (an indexed family) or a Cartan type given as the plain label
+    ``[letter, rank]`` or ``[letter, rank, 1]``; ``base_ring`` is an owned
+    ring over which the reflection representation is realized.  The engine's
+    implementation and index-set options are private to ``_Coxeter``.
     """
     from dzack_research.preamble.categories.coxeter_diagrams import (
         _engine_cartan_type_data,
@@ -1852,16 +1852,14 @@ def _coxeter_group_of_owned_data(data, implementation="reflection", base_ring=No
         case [str(), *_] | (str(), *_):
             engine_data = _engine_cartan_type_data(list(data))
         case _:
-            raise TypeError(
+            assert False, (
                 f"{data!r} does not define a Coxeter group: give the owned Coxeter matrix "
                 f"m: V x V -> Card or a Cartan type label [letter, rank]"
             )
-    return _Coxeter(
-        engine_data,
-        implementation=implementation,
-        base_ring=base_ring,
-        index_set=index_set,
+    assert base_ring is None or base_ring in OwnedRings(), (
+        f"the Coxeter group is realized over a ring, but {base_ring} is not a ring"
     )
+    return _Coxeter(engine_data, base_ring=base_ring)
 
 
 def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
