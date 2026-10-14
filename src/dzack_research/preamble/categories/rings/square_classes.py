@@ -54,9 +54,12 @@ class SquareClass(MultiplicativeGroupElement):
 
     def order(self):
         r"""The order of \([u]\): one when \(u\) is a square, two otherwise."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         decision = self.is_one()
         if decision is True:
             return integers.one()

@@ -75,7 +75,10 @@ def _divided_to_symmetric(module):
     both algebras consist only of scalars and no factorial inversion is needed.
     """
     from sage.rings.rational_field import QQ as SageQQ
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        _own_ring,
+        _owned_rationals,
+    )
 
     ring = module.base_ring()
     zero_module = (
@@ -84,7 +87,7 @@ def _divided_to_symmetric(module):
     )
     rational_structure = None
     if not zero_module:
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         try:
             rational_algebra = ring.as_algebra_over(rationals)
         except (AssertionError, ValueError) as error:

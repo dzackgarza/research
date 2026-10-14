@@ -65,6 +65,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _ring_morphism_with_engine,
     _ring_morphisms_equal,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -127,9 +128,12 @@ class PrimeSpectra(OwnedCategory):
         r"""\(\operatorname{Spec}\mathbb{Z}\)."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ).spectrum()
+        return _owned_integers().spectrum()
 
     def super_categories(self):
         return [PartiallyOrderedSets(), TopologicalSpaces()]
@@ -185,7 +189,7 @@ class PrimeSpectra(OwnedCategory):
             if ring in QuotientRings():
                 point_engine = _engine_quotient_cover_ideal(ring, point_engine)
             degree = int(point_engine.vector_space_dimension())
-            return _own_ring(SageZZ)(degree)
+            return _owned_integers()(degree)
 
         @cached_method
         def closure_dimension(self):
@@ -256,7 +260,7 @@ class PrimeSpectra(OwnedCategory):
                         f"divisible by the degree {denominator} of {self.ideal()}, so length_(R_p)(R_p/Q_p) is not an integer"
                     )
                 total += numerator // denominator
-            return _own_ring(SageZZ)(total)
+            return _owned_integers()(total)
 
         def local_length(self, ideal):
             r"""Return ``length_{R_p}((R/I)_p)`` for a finite local quotient.
@@ -283,7 +287,7 @@ class PrimeSpectra(OwnedCategory):
                 if component.radical() == point_engine
             )
             if not matching:
-                return _own_ring(SageZZ).zero()
+                return _owned_integers().zero()
             total_dimension = 0
             for component in matching:
                 dimension = component.vector_space_dimension()
@@ -299,7 +303,7 @@ class PrimeSpectra(OwnedCategory):
                     f"the local dimension {total_dimension} at {self} is not divisible by the residue degree "
                     f"{residue_degree}, so the local length is not an integer"
                 )
-            return _own_ring(SageZZ)(total_dimension // residue_degree)
+            return _owned_integers()(total_dimension // residue_degree)
 
         @cached_method
         def height(self):
@@ -497,7 +501,7 @@ class IntegralPrimeSpectra(OwnedCategory):
         return [PrimeSpectra()]
 
     def an_object(self):
-        return _own_ring(SageZZ).spectrum()
+        return _owned_integers().spectrum()
 
     class ParentMethods:
         def generic_point(self):
@@ -665,7 +669,7 @@ class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
     def an_object(self):
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return integers.quotient_ring(integers.ideal(integers(2)))
 
     class ElementMethods(Element):
@@ -1002,7 +1006,7 @@ class QuotientRings(OwnedCategory):
             a larger computation field of a localization does not.
             """
             source = self.quotient_source()
-            if source is _own_ring(SageZZ):
+            if source is _owned_integers():
                 return True
             base = source.base_ring()
             return (
@@ -1099,7 +1103,7 @@ class QuotientRings(OwnedCategory):
 
         def _characteristic_decision(self):
             source = self.quotient_source()
-            if source is _own_ring(SageZZ):
+            if source is _owned_integers():
                 # The selected integer ideal is canonicalized by Sage from
                 # its entire generating family, not its first written entry.
                 generator = abs(_engine_ideal(source, self.defining_ideal()).gen())
@@ -2201,7 +2205,7 @@ class PrimeLocalizations(OwnedCategory):
     r"""Prime local rings ``R_p`` represented by fractions with denominator outside ``p``."""
 
     def an_object(self):
-        return _own_ring(SageZZ).localize_at_prime(2)
+        return _owned_integers().localize_at_prime(2)
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
@@ -2372,7 +2376,7 @@ class AdicCompletions(Category):
         r"""The 2-adic completion of the owned integers."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return self(integers, integers.ideal(integers(2)), precision=4)
 
     def super_categories(self):
@@ -2399,7 +2403,7 @@ class AdicCompletions(Category):
 
         def an_object(self):
             r"""The 2-adic completion of the integers."""
-            return _own_ring(SageZZ).adic_completion(2)
+            return _owned_integers().adic_completion(2)
 
         class ParentMethods:
             @cached_method
@@ -4645,7 +4649,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
 
 def Zp(*args, **kwargs):
-    source = _own_ring(SageZZ)
+    source = _owned_integers()
     prime_value = args[0] if args else kwargs.get("p")
     owned_prime = source(prime_value)
     prime = SageZZ(_engine_element(source, owned_prime))

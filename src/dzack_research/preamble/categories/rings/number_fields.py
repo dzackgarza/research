@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_ring,
     _set_owned_ring_display,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -100,7 +101,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def degree(self):
             r"""Return ``[K:QQ]`` as an owned integer."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = (
                 SageZZ.one()
@@ -116,7 +117,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def discriminant(self):
             r"""Return the discriminant of the ring of integers of ``K``."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.discriminant())
             return _owned_engine_element(integers, value)
@@ -133,7 +134,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def class_number(self):
             r"""Return the class number of the ring of integers."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.class_number())
             return _owned_engine_element(integers, value)
@@ -324,7 +325,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             maximal order.  Over ``QQ`` the selected finite algebra presentation
             is :meth:`as_algebra` itself.
             """
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             rationals = _own_number_field(SageQQ)
             match base_ring:
                 case None:
@@ -356,7 +357,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 Algebras,
             )
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             rationals = _own_number_field(SageQQ)
             match base_ring:
                 case None:
@@ -604,7 +605,7 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
 
     def super_categories(self):
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return [
             OwnedOrders(),
             FinitelyGeneratedFreeModules(integers),
@@ -613,7 +614,7 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
     class ParentMethods:
         def base_ring(self):
 
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
         algebra_base_ring = base_ring
 

@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
     _owned_engine_element,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -26,7 +27,7 @@ from dzack_research.preamble.owned_category import _object_of, owned_category_jo
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _symbolic_ring():

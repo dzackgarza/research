@@ -67,6 +67,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     Rings,
     _own_ring,
     _set_owned_ring_display,
+    _owned_algebraic_numbers,
+    _owned_complex_double_field,
+    _owned_complex_field,
+    _owned_integers,
+    _owned_rationals,
+    _owned_real_algebraic_numbers,
+    _owned_real_double_field,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     ComplexField as _ComplexField,
@@ -163,19 +170,19 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import ZZ as SageZZ
     from sage.all import QQbar as SageQQbar
 
-    integers = _own_ring(SageZZ)
-    rationals = _own_ring(SageQQ)
+    integers = _owned_integers()
+    rationals = _owned_rationals()
     _set_owned_ring_display(integers, "Integer Ring")
     _set_owned_ring_display(rationals, "Rational Field")
-    aa = _public_commutative_ring(_own_ring(SageAA))
+    aa = _public_commutative_ring(_owned_real_algebraic_numbers())
     _set_owned_ring_display(aa, "Real Algebraic Field")
-    qqbar = _public_commutative_ring(_own_ring(SageQQbar))
+    qqbar = _public_commutative_ring(_owned_algebraic_numbers())
     _set_owned_ring_display(qqbar, "Algebraic Closure of Rational Field")
-    rdf = _public_commutative_ring(_own_ring(SageRDF))
+    rdf = _public_commutative_ring(_owned_real_double_field())
     _set_owned_ring_display(rdf, "Real double field", kind="real")
-    cdf = _public_commutative_ring(_own_ring(SageCDF))
+    cdf = _public_commutative_ring(_owned_complex_double_field())
     _set_owned_ring_display(cdf, "Complex double field", kind="complex")
-    cc = _public_commutative_ring(_own_ring(SageCC))
+    cc = _public_commutative_ring(_owned_complex_field())
     _set_owned_ring_display(
         cc,
         f"Complex field with {SageCC.precision()} bits precision",
