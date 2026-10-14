@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MonoCategoryConstruction,
     MorCategories,
     MorCategoryConstruction,
+    _ambient_of,
     _category_accepts_morphism,
     _category_mor,
 )
@@ -2099,6 +2100,26 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         def finite_multisets(self):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
+
+        def ambient_category(self) -> Category:
+            r"""The category whose constructor built this object, without its property axioms.
+
+            The constructing category is defining construction data, recorded
+            once by the construction (``_defining_construction``, ``OWN-15``);
+            this accessor exposes it and computes nothing after the fact
+            (``OWN-17``).  Refinement into a property subcategory changes
+            ``category()`` and leaves this unchanged.  Property axioms are
+            removed because an axiom subcategory is a full subcategory, so its
+            Mor equals the Mor of its base; data subcategories carry chosen
+            structure and have their own arrows, so they stay
+            (``_ambient_of``).
+            """
+            construction = self._defining_construction
+            assert construction is not None, (
+                f"{self} has no ambient category: it was not built by a category's constructor, "
+                f"so nothing recorded which category it is an object of (it is placed in {self.category()})"
+            )
+            return _ambient_of(construction[0])
 
         def Mor(
             self,
