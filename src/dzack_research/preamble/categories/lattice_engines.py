@@ -826,6 +826,14 @@ class _OscarLatticeAdapter:
         improperly automorphous (Conway and Sloane, *Sphere Packings, Lattices
         and Groups*, chapter 15, Theorem 15, as Hecke's
         ``improper_spinor_generators`` cites it).
+
+        The one private adapter of the several-spinor-genera regime of
+        ``LatticeIsometryMor._isometry_decision`` (``lattice_morphisms.py``).
+        Owed at T (`ENG-07`): a measurement of this route against Sage's
+        improper spinor kernel (``Genus._improper_spinor_kernel`` with the
+        spinor operator of the index of a rational equivalence), as wall time
+        against the determinant at more than one size, recorded in
+        ``TRAPS.md`` before either route is fixed as the delegation.
         """
         answer = SageZZ(
             self._bridge().call(
@@ -856,6 +864,24 @@ class _OscarLatticeAdapter:
 
 
 _oscar_lattices = _OscarLatticeAdapter()
+
+
+def isometric_within_genus(domain, codomain):
+    r"""Decide whether two lattices over ``ZZ`` of one genus, indefinite of rank at least 3, are isometric.
+
+    Protected adapter contract (`OWN-05`).  Owner: this module.  Caller:
+    ``LatticeIsometryMor._isometry_decision`` (``lattice_morphisms.py``), and
+    only in the regime of several improper spinor genera, where membership in
+    one spinor genus decides isometry [CS99, Ch. 15, Thms 14-15].  Input: two
+    preamble lattices over ``ZZ``, nondegenerate, of finite rank at least 3,
+    already established to lie in one genus.  Output: a Python ``bool``, the
+    untrusted Hecke answer; no engine object crosses back.  It lowers the Gram
+    tensors and calls :meth:`_OscarLatticeAdapter.integer_lattices_are_isometric`.
+    """
+    return _oscar_lattices.integer_lattices_are_isometric(
+        _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ),
+        _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ),
+    )
 
 __all__: list[str] = []
 

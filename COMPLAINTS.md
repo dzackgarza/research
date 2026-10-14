@@ -1537,6 +1537,53 @@ formalization slice at `29ff4ad` supplies genus classes and positive-definite
 finiteness. Further classification and finiteness coverage remains with this
 existing foundation owner.
 
+### The class theorems that decide isometry are not formalized
+
+`LatticeIsometryMor._isometry_decision` (`categories/lattice_morphisms.py`)
+decides whether two nondegenerate integral lattices `L`, `M` of one genus are
+isometric by routing on theorems that `lean-categories` does not state. The
+routing cites them from Conway--Sloane, *SPLAG*, Ch. 15 (extraction
+`references/literature/lattice-research/conway1999sphere.md`) and Conway--Sloane,
+*Low-dimensional lattices IV* (`references/literature/lattice-research/conway1988mass.md`):
+
+- indefinite, rank at least 3: a spinor genus is one isometry class [CS99,
+  Ch. 15, Thm 14 (Eichler), l.12511];
+- the spinor genera of a genus are a power of 2 in number, permuted
+  transitively by spinor operators, and `L`, `M` in one genus lie in one
+  spinor genus exactly when the index `r` of a rational equivalence with
+  denominator prime to `2d` is automorphous [CS99, Ch. 15, §9.2, Thm 15,
+  l.12517-12529];
+- an indefinite unimodular genus of rank at least 3 is one class (proof of
+  Thm 21, l.12743), and indefinite even unimodular lattices of one signature
+  are isometric (Serre V.2.2, not opened; TauCetiRoadmap Layer 6 states it
+  only as a `sorry` target);
+- indefinite binary forms are classified by cycles of reduced forms [CS99,
+  Ch. 15, §3.1-§3.3, Thm 1, l.11482-11600];
+- the mass of a definite genus is `sum_i 1/|O(L_i)|` over its classes
+  [`conway1988mass.md` l.13-16], so a genus of mass `1/|O(L)|` is one class.
+
+**Searched** (2026-10-14): `lean-categories` `origin/main` `fd2cd45f` by
+`git grep` for `eichler`, `kneser`, `strong approximation`, spinor-genus class
+statements, `unimodular` with `indefinite`, and `Nikulin`; the formalization
+corpus API for `spinor genus`, `SpinorGenus`, `SameGenus`,
+`strong approximation spin` and `class number one indefinite`. **Found:**
+`SameGenus`, `genusClassSet`, `classNumber`, `genusClassSet_finite` (positive
+definite only, `Mass.lean:111`), `SameSpinorGenus` and `SpinorGenusCat`
+(`SpinorGenusAdelic.lean:345-606`), `IndefiniteLatticeCat`; TauCeti
+`SameGenus`; TauCetiRoadmap `sorry` targets. **Conclusion:** none of the five
+statements is formalized. **Gaps:** the Lean forum, Loogle and LeanSearch were
+not searched.
+
+**Consumers:** `Isom(L, M).is_empty()`, `L.is_isometric(M)`,
+`Lattices(ZZ).isometry_classes`, lattice-db duplicate detection.
+**Request (not yet filed):** `lean-categories` formalizes the five statements
+above from the cited sources. They do not park the computation (AGENTS.md,
+*`lean-categories` is Lean, not implementation code*); the routing cites CS99
+until they are released. Related: [Genera of integral lattices are formalized
+without finiteness, parity or classification](#genera-of-integral-lattices-are-formalized-without-finiteness-parity-or-classification).
+Execution of the specimens in `tests/lattices/test_isometry_decision.sage`
+remains with terminal T.
+
 ### Dynamic peeking stands in for category membership across the preamble
 
 `AGENTS.md`, *Dynamic peeking is prohibited; the category is the type*, bans
@@ -1594,56 +1641,66 @@ Magma's documented real-reflection/reflection-subgroup APIs were inspected.
 No exact backend was found for either missing construction. Repair requires
 the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
-### A Vinberg invariant is not yet a point of the projective line
+### `lean-categories` does not formalize the Vinberg invariant or the PID description of P^1(R)
 
-The invariant of two mirrors is the point `[4 b(r,s)^2 : q(r) q(s)]` of
-`P^1`; for normals of positive square it dehomogenizes to `4 g^2`, where `g`
-is the entry of the Gram matrix of the unit normals (Vinberg, *Hyperbolic
-reflection groups*, 1985, section 1). An `R`-point of `P^1_R` is a morphism
-`Spec R -> P^1_R`. `VinbergInvariantMatrices.vinberg_invariant`
-(`categories/vinberg_invariants.py`) asks the owned scheme
-`ProjectiveSpaces(R)(1)` to accept the pair `[numerator, denominator]`, and
-that scheme has no element constructor: the call raises `AttributeError`
-for `_element_constructor_`. So `vinberg_invariant`, `vertex_label`,
-`edge_label` and `weighted_graph` fail on every invariant matrix, while
-`vinberg_ratio` (the dehomogenized value) works.
-**Dependency path:** owned `ProjectiveSpaces(R)(n)` -> its `R`-points as
-`Mor(Spec R, P^n_R)` -> the Vinberg invariant -> the labelled graph of
-mirrors. `Schemes(R).projective_morphism_from_coordinates` builds such a
-morphism from a basepoint-free coordinate family; over `ZZ` the pair
-`(4 b^2, q(r) q(s))` need not generate the unit ideal (`(4, 4)` for two
-roots of square `-2` with product `1`), so the point is that of the
-primitive pair, which exists because `P^1(ZZ) = P^1(QQ)`.
-**Consumers:** `VinbergInvariantMatrices.vinberg_invariant`, its graph
-labels and `weighted_graph`; the lattice-db graph cards that read them.
-**Coverage boundary:** the scheme route was not executed on 2026-10-07:
-`Spec ZZ.projective_morphism_from_coordinates` failed earlier, in
-`_restriction_to_base`, with `RngMorphism.__init__() got an unexpected
-keyword argument 'evaluator'` from the module-morphism construction.
-Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
+The invariant of two mirrors with normals `r, s` of a nondegenerate formed
+module is the point `[4 b(r,s)^2 : b(r,r) b(s,s)]` of `P^1`, an `R`-point
+`Spec R -> P^1_R`; for normals of positive norm it dehomogenizes to `4 g^2`,
+`g` the Gram entry of the unit normals. The preamble presents it
+(`VinbergInvariantMatrices.vinberg_invariant`, `categories/vinberg_invariants.py`)
+through `point_morphism` on a pair generating `R`.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`
+(`rg -i 'vinberg|coxeter|ProjectiveSpace'`): `Schemes/Varieties.lean:50`
+defines `ProjectiveSpace k n` as `Proj` of the graded polynomial ring, with
+its structure morphism to `Spec` of the degree-zero part (`:54`); no
+Vinberg invariant, no statement describing `P^1(R)` by pairs. Mathlib
+(corpus API): `AlgebraicGeometry/ValuativeCriterion.lean`,
+`ProjectiveSpectrum/Proper.lean` (`IsProper (Proj.toSpecZero 𝒜)`).
+**Requests (not yet filed):**
+1. The Vinberg invariant of a pair of non-isotropic vectors as a point of
+   `P^1`, its invariance under rescaling either vector, and `t = 4 cos^2(pi/m)`
+   for mirrors meeting at angle `pi/m`. Source: Vinberg, *Hyperbolic
+   reflection groups*, Russian Math. Surveys 40 (1985), section 1; not
+   opened for this entry (not in `references/pdfs`), so open it before
+   filing (`FSA-06`).
+2. For a PID `R`, an `R`-point of `P^1_R` is a pair `(a, b)` generating `R`,
+   up to a unit; equivalently `P^1(R) = P^1(Frac R)`. Sources, opened
+   2026-10-14: Stacks Lemma 27.13.1 (tag 01NE), Definition 27.13.2 (01NF),
+   Lemma 15.22.11 (0AUW).
+**Consumers:** `vinberg_invariant`, its graph labels, `weighted_graph`,
+`CoxeterDiagrams.vertex_weight`/`edge_weight`, and the lattice-db graph
+cards. The requests run beside the computation and park no node.
 
 ### A Coxeter diagram is not constructed by its category
 
 An object of a category is constructed by the category applied to its
 defining data. A Coxeter diagram on a finite set `V` is determined by its
-Coxeter matrix `m: V x V -> Card`, and a finite family of roots of a
-lattice determines one through the pairings of its roots. `CoxeterDiagrams`
-(`categories/coxeter_diagrams.py`) constructs diagrams only through
-`from_coxeter_matrix`, `from_roots` and `from_cartan_type`; the category has
-no element constructor, so `CoxeterDiagrams()(datum)` raises
-`NotImplementedError` from Sage's `Category.__call__` (observed 2026-10-07).
-**Dependency path:** the Coxeter matrix as the owned function
-`m: V x V -> Card` -> the category applied to `m`, or to a family of roots
--> the diagram, equal to the one the `from_*` route builds.
-**Partial capability:** `from_coxeter_matrix` and `from_roots` build the
-diagram; their Coxeter matrices compare equal on equal data.
-**Consumers:** `tests/lattices/test_coxeter.sage` (4 failures),
-`test_coxeter_subdiagrams.sage` (5 failures), `test_vinberg_invariants.sage`
-(through `rooted_diagram` and the Cartan-type and matrix calls),
-`test_coxeter_gram_archive.sage` and `tests/objects/test_coxeter_diagram_a2.sage`.
-**Coverage boundary:** the Cartan-type datum enters as a Sage `CartanType`,
-which *Coxeter diagrams answer subdiagram orders and drawings as Sage
-objects* already records as engine input.
+Coxeter matrix `m: V x V -> Card` (Mathlib `CoxeterMatrix B`, which is
+`@[ext]`: equal exactly when the entries are), and a finite family of roots
+of a lattice determines a rooted one through the pairings of its roots.
+Since 2026-10-09 (`705b32702c`..`98560817af`) `CoxeterDiagrams._call_`
+routes owned data, so the category call no longer raises. What remains
+(observed by source reading 2026-10-14):
+- `_call_`, `from_coxeter_matrix` and `from_cartan_type` admit a Sage
+  `CoxeterMatrix` and a Sage `CartanType` (`API-05`, `OWN-04`).
+- The stored defining datum is a Sage `CoxeterMatrix`, not the owned `m`
+  (`STY-174`); `coxeter_matrix()` rebuilds `m` from it.
+- Diagrams have no equality by defining data: two constructions of one
+  diagram are two parents compared by identity, so `C(m) == C.from_coxeter_matrix(m)`
+  is false.
+- `Rooted` is a `CategoryWithAxiom`, but a realization by roots is a chosen
+  datum, never an axiom (`CAT-17`, `CAT-29`).
+- The diagram recomputes its vertices, edges and labels instead of
+  constructing through `LabelledGraphs.object(...)` (`OWN-14`).
+**lean-categories requests:** the category of Coxeter diagrams (objects
+`(V, m)`, morphisms the vertex maps preserving every entry) and rooted
+Coxeter diagrams (a diagram with a chosen realization by roots of a
+lattice). Neither is in `lean-categories` (`e1d422eb`), Mathlib, Atlas,
+TauCeti or lean-pool by corpus search on 2026-10-14 (`CoxeterDiagram`: 0
+matches); Mathlib has only `CoxeterMatrix` and `CoxeterMatrix.reindex`.
+**Recorded, not reworked:** `CoxeterGroups(coxeter_matrix)`
+(`categories/group/groups.py`) is one category per matrix whose single
+object is the group, a class of objects declared a category (`CAT-28`).
 Repair: `coxeter-diagrams-construct-from-their-data` in TODO.
 
 ### Free session functions construct objects
@@ -1665,34 +1722,33 @@ Repair: `session-objects-are-built-by-their-parents` in TODO.
 
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 
-The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
-their vertex sets, form a finite partially ordered set, and so do the
-`Aut`-orbits of subdiagrams under the order that inclusion induces on orbits. `CoxeterDiagrams`
-(`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
-through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
-public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
-`parabolic_subdiagram_poset`, `subdiagram_orbit_poset`,
-`elliptic_subdiagram_orbit_poset` and `parabolic_subdiagram_orbit_poset`
-put a raw engine object on the public surface (`OWN-03`). The owned
-`PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
-constructor of a finite poset from its underlying set and its order
-relation, so no owned object can be returned today. `plot()` returns a
-Sage `Graphics`.
-The same category still admits engine input: `from_coxeter_matrix`
-accepts a Sage `CoxeterMatrix`, `from_cartan_type` a Sage `CartanType`,
-and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
-other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
-(`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+The induced subdiagrams of a Coxeter diagram `D` on `V` correspond to
+`P(V)` ordered by inclusion (Mathlib's partial order on `Set V`, an object of
+`PartOrd`, which `lean-categories` re-exports in `Orders.lean`), and the
+`Aut(D)`-orbits carry the order `[H] <= [K]` when some member of `[H]` lies in
+some member of `[K]`. `CoxeterDiagrams` returns both as Sage `Poset` objects
+through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on` (`OWN-04`).
+Its members are fresh subdiagrams that keep no inclusion into `D`, compared
+by `id` (`ARC-02`, `STY-132`); orbits are computed by iterating `Aut(D)` by
+hand (`STY-40`) and represented by one representative diagram each; and
+`subdiagram_orbit_poset(orbits)` takes caller-supplied representatives. The
+owned `PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
+constructor of a finite poset from its set and its order relation, and no
+Mor category of monotone maps. `RegularPolytopes`
+(`categories/schemes/polytopes.py`) declares `PartiallyOrderedSets()` but
+supplies no `le` (`CAT-15`). `Groups.Coxeter` passes any argument to Sage's
+`CoxeterGroup`, and `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+`plot()` returns a Sage `Graphics`; ruled 2026-10-14 to be a display
+artifact, not a mathematical value, so it stays.
+**lean-categories request:** the order induced on the orbits of a group
+acting on a poset (no corpus match on 2026-10-14).
 **Dependency path:** finite posets in `PartiallyOrderedSets()` from
 `(X, <=)` -> inclusion of subdiagrams and the order it induces on
 `Aut`-orbits -> the public poset methods.
-**Partial capability:** the Coxeter matrix is the owned function
-`m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
-intersection graph are objects of `LabelledGraphs()`.
-**Consumers:** the six poset methods, their callers in
-`tests/lattices/test_coxeter_subdiagrams.sage`, and the expectation files
-under `tests/constructions/` that ask for their cardinalities.
-Repair: `coxeter-diagram-orders-are-owned-posets` in TODO.
+**Consumers:** the six poset methods; `tests/lattices/test_coxeter_subdiagrams.sage`;
+the expectation files under `tests/constructions/` that ask for their cardinalities.
+Repair: `coxeter-diagram-orders-are-owned-posets` in TODO; monotone maps:
+`partially-ordered-sets-have-monotone-maps` in TODO.
 
 **Observed 2026-10-07:** `Groups.Coxeter(["A", 2])` and
 `Groups.Coxeter(D.coxeter_matrix())` both raise `NotImplementedError`.

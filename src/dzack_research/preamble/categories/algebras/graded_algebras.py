@@ -377,9 +377,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             return _graded_derivations(self, target=target, shift=shift)
 
         def _Hom_(self, codomain, category=None):
-            # Object-level Mor defaults to the underlying algebra category.
-            # Degree-preserving maps are selected explicitly through
-            # ``GradedAlgebras(...).Mor``.
+            # ``A.Mor(B)`` is ``A.ambient_category().Mor(A, B)`` (``ARC-07``,
+            # owner ruling 2026-10-14): for an algebra built by
+            # ``GradedAlgebras(R, M, parity)`` that is the degree-preserving
+            # algebra maps.  This hook only answers Sage's own ``Hom`` calls.
             return super()._Hom_(codomain, category=category)
 
     def Mor(self, domain, codomain):

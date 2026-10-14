@@ -1459,11 +1459,6 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             _register_module_scalar_action(self)
 
-        def Mor(self, codomain, category=None):
-            modules = Modules(self.base_ring())
-            if category is None:
-                return modules.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the declared injective linear maps into ``codomain``."""

@@ -518,15 +518,6 @@ class GradedModules(OwnedCategoryOverBaseRing):
     _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Degree-preserving maps in this module's selected grading category.
-
-            An explicitly coarser category still selects its own Mor; in
-            particular ``Modules(R).Mor(M,N)`` forgets the grading.
-            """
-            if category is None:
-                return self._graded_module_placement().Mor(self, codomain)
-            return super().Mor(codomain, category)
 
         def End(self):
             r"""Endomorphisms preserving the chosen degree decomposition."""

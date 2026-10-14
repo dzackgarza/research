@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MonoCategoryConstruction,
     MorCategories,
     MorCategoryConstruction,
+    _ambient_of,
     _category_accepts_morphism,
     _category_mor,
 )
@@ -2100,14 +2101,52 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
 
+        # Recorded by the construction that builds the object (``_object_of``
+        # through the root ``OwnedParent``, or the ring route); ``None`` for an
+        # object no category's constructor built.
+        _constructing_category = None
+
+        def ambient_category(self) -> Category:
+            r"""The category whose constructor built this object, without its property axioms.
+
+            The constructing category is defining construction data, recorded
+            once by the construction (``_constructing_category``, ``OWN-15``);
+            this accessor exposes it and computes nothing after the fact
+            (``OWN-17``).  Refinement into a property subcategory changes
+            ``category()`` and leaves this unchanged.  An axiom is removed
+            when its subcategory is full, with the same arrows as its base;
+            data subcategories, and axiom subcategories that are not full,
+            keep their arrows (``_ambient_of``).
+            """
+            constructing = self._constructing_category
+            assert constructing is not None, (
+                f"{self} has no ambient category: it was not built by a category's constructor, "
+                f"so nothing recorded which category it is an object of (it is placed in {self.category()})"
+            )
+            return _ambient_of(constructing)
+
         def Mor(
             self,
             codomain: Parent,
             category: Category | None = None,
         ) -> Category:
-            if category is None:
-                return Sets().Mor(self, codomain)
-            return _category_mor(category, self, codomain)
+            r"""``A.Mor(B) := A.ambient_category().Mor(A, B)``.
+
+            Owner ruling 2026-10-14 (``ARC-07``): the morphisms of a category
+            are determined by the mathematics, and ``Mor(A, B)`` makes no
+            sense when ``A`` and ``B`` share no ambient category.  A named
+            ``category`` is the explicit request for the arrows of that
+            category (``X.Mor(Y, category=Sets())`` forgets structure).
+            """
+            if category is not None:
+                return _category_mor(category, self, codomain)
+            ambient = self.ambient_category()
+            assert codomain in ambient, (
+                f"Mor({self}, {codomain}) is asked in the ambient category {ambient} of {self}, "
+                f"but {codomain} is not an object of it (it lies in {codomain.category()}); "
+                f"name the category whose arrows are meant"
+            )
+            return ambient.Mor(self, codomain)
 
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
@@ -5419,12 +5458,54 @@ class Mors(OwnedCategory):
         return [Sets()]
 
 
+class _PosetOnOrderRelation:
+    r"""Private realization of the poset \((X,\le)\) given by its set and its order relation.
+
+    Owner: ``PartiallyOrderedSets.__call__``, its one constructor.  The
+    defining data are the owned set ``X`` and the relation ``le``; the points
+    of the poset are the points of ``X``, and its cardinality is that of
+    ``X``, read off the retained set.
+    """
+
+    def __init__(self, underlying_set, order_relation, **rest) -> None:
+        self._underlying_set = underlying_set
+        self._order_relation = order_relation
+        super().__init__(**rest)
+
+    def underlying_set(self):
+        r"""The set ``X`` the order is on."""
+        return self._underlying_set
+
+    def le(self, left, right) -> bool:
+        return self._order_relation(left, right)
+
+    def __iter__(self):
+        return iter(self._underlying_set)
+
+    def __contains__(self, point) -> bool:
+        return point in self._underlying_set
+
+    def _element_constructor_(self, point):
+        assert point in self._underlying_set, f"{point} is not a point of the poset {self}"
+        return point
+
+    def _cardinality_decision(self):
+        r"""The cardinality of the set ``X``, asked of ``X``."""
+        return self._underlying_set.cardinality()
+
+    def _repr_(self) -> str:
+        return f"Partial order on {self._underlying_set}"
+
+
 class PartiallyOrderedSets(OwnedCategory):
-    r"""Sets equipped with a partial order.
+    r"""Sets equipped with a partial order (Mathlib ``PartOrd``, re-exported by ``lean-categories`` ``Orders.lean``).
 
     The relation ``le`` is the defining operation supplied by each represented
     partial order.  The four element comparisons are derived from that one
-    relation, rather than reimplemented by particular ordered sets.
+    relation, rather than reimplemented by particular ordered sets.  The order
+    is a chosen datum on the set, so this is a data category, not an axiom on
+    ``Sets()`` (``CAT-17``).  Its morphisms, the monotone maps, are not yet
+    presented (TODO ``partially-ordered-sets-have-monotone-maps``).
     """
 
     def an_object(self) -> ObjectOfCategory:
@@ -5434,10 +5515,58 @@ class PartiallyOrderedSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    def __call__(self, *data):
+        r"""``P(x)`` is Sage's membership and conversion; ``P(X, le)`` constructs the poset \((X,\le)\).
+
+        With one argument this is ``Category.__call__``: an object already in
+        the category is returned.  With two, ``X`` is an owned set and
+        ``le(x, y)`` its order relation; the caller is trusted that it is
+        reflexive, antisymmetric and transitive (``OWN-22``).
+        """
+        match data:
+            case (underlying_set, le):
+                assert underlying_set in Sets(), (
+                    f"a partial order is a relation on a set, but {underlying_set} is not a set: "
+                    f"it is in {underlying_set.category()}"
+                )
+                return _object_of(
+                    self,
+                    _engine=(self, _PosetOnOrderRelation, None),
+                    underlying_set=underlying_set,
+                    order_relation=le,
+                )
+            case _:
+                return super().__call__(*data)
+
     class ParentMethods:
         @abstract_method
         def le(self, left, right) -> bool:
             r"""Return whether ``left <= right`` in the selected partial order."""
+
+        def maximum(self):
+            r"""The point above every point, which a partial order has at most one of.
+
+            Decided here on a finite poset, by comparing against every point.
+            """
+            assert self.cardinality().is_finite() is True, (
+                f"the maximum of {self} is found here only on a finite poset, and {self} is "
+                f"not known to be finite"
+            )
+            top = next((m for m in self if all(self.le(x, m) for x in self)), None)
+            if top is None:
+                raise ValueError(f"{self} has no maximum: no point lies above every point")
+            return top
+
+        def minimum(self):
+            r"""The point below every point, which a partial order has at most one of."""
+            assert self.cardinality().is_finite() is True, (
+                f"the minimum of {self} is found here only on a finite poset, and {self} is "
+                f"not known to be finite"
+            )
+            bottom = next((m for m in self if all(self.le(m, x) for x in self)), None)
+            if bottom is None:
+                raise ValueError(f"{self} has no minimum: no point lies below every point")
+            return bottom
 
     class ElementMethods:
         def __le__(self, other):

@@ -266,6 +266,7 @@ def AbsoluteDecompositionGroup(supergroup, prime, prolongation):
     r"""Construct the profinite subgroup ``D_pbar <= G_K`` from its finite images."""
     return _object_of(
         Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _ambient=ProfiniteGroups(),
         _engine=(OwnedGroups(), _AbsoluteDecompositionGroupEngine, None),
         supergroup=supergroup,
         prime=prime,
@@ -338,6 +339,7 @@ def AbsoluteInertiaGroup(supergroup, prime, prolongation):
     r"""Construct the profinite subgroup ``I_pbar <= G_K`` from its finite images."""
     return _object_of(
         Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _ambient=ProfiniteGroups(),
         _engine=(OwnedGroups(), _AbsoluteInertiaGroupEngine, None),
         supergroup=supergroup,
         prime=prime,

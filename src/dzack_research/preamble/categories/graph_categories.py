@@ -66,6 +66,25 @@ class _FiniteDigraphEngine:
     def _cardinality_decision(self):
         return self.vertices().cardinality()
 
+    def connected_component_vertex_sets(self):
+        r"""The vertex sets of the connected components of the underlying undirected graph.
+
+        An owned finite ordered set of owned finite ordered sets of vertices,
+        each in vertex order.  Private computation of the graph owner: Sage's
+        ``Graph`` computes the components on the vertex positions.
+        """
+        from sage.graphs.graph import Graph
+
+        vertices = tuple(self.vertices())
+        rank = self.vertices().ranking_map()
+        graph = Graph([range(len(vertices)), [(int(rank(edge[0])), int(rank(edge[1]))) for edge in self.edges()]], format="vertices_and_edges")
+        return finite_ordered_set(
+            tuple(
+                finite_ordered_set(tuple(vertices[position] for position in sorted(component)))
+                for component in graph.connected_components(sort=False)
+            )
+        )
+
     def has_edge(self, left, right) -> bool:
         edge = self.edge_space()((left, right))
         reverse = self.edge_space()((right, left))
@@ -224,14 +243,6 @@ class Digraphs(OwnedCategory):
 
     _MorCategory = DigraphMorCategoryConstruction
 
-    class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Return the adjacency-preserving Mor into ``codomain``."""
-            digraphs = Digraphs()
-            if category is None or category.is_subcategory(digraphs):
-                return digraphs.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
-
     def super_categories(self):
         return [Sets().Finite()]
 
@@ -303,14 +314,6 @@ class LabelledDigraphs(OwnedCategory):
     r"""Finite digraphs with selected vertex and edge labels."""
 
     _MorCategory = LabelledDigraphMorCategoryConstruction
-
-    class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Return the label-preserving graph Mor into ``codomain``."""
-            labelled = LabelledDigraphs()
-            if category is None or category.is_subcategory(labelled):
-                return labelled.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
     def super_categories(self):
         return [Digraphs()]

@@ -21,7 +21,7 @@ from dzack_research.preamble.all import *
 
 def test_the_diagram_of_the_simple_roots_of_d4() -> None:
     lattice = Lattices(ZZ)("D4")
-    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.is_elliptic()
     assert not diagram.is_parabolic()
@@ -36,7 +36,7 @@ def test_the_diagram_of_the_simple_roots_of_d4() -> None:
 
 
 def test_the_schlaeflian_and_inertia_of_the_d4_diagram() -> None:
-    diagram = CoxeterDiagrams().from_roots(tuple(Lattices(ZZ)("D4").module_generators()))
+    diagram = CoxeterDiagrams().from_roots(Lattices(ZZ)("D4").module_generators())
 
     assert diagram.schlaflian() == 4
     assert diagram.positive_inertia_index() == 4
@@ -45,14 +45,14 @@ def test_the_schlaeflian_and_inertia_of_the_d4_diagram() -> None:
 
 
 def test_the_automorphisms_of_the_d4_diagram_permute_its_three_outer_nodes() -> None:
-    diagram = CoxeterDiagrams().from_roots(tuple(Lattices(ZZ)("D4").module_generators()))
+    diagram = CoxeterDiagrams().from_roots(Lattices(ZZ)("D4").module_generators())
 
     assert diagram.Aut().order() == 6
 
 
 def test_three_mutually_bonded_roots_give_the_affine_triangle() -> None:
     lattice = Lattices(ZZ)([[-2, 1, 1], [1, -2, 1], [1, 1, -2]])
-    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.is_parabolic()
     assert not diagram.is_elliptic()
@@ -63,7 +63,7 @@ def test_three_mutually_bonded_roots_give_the_affine_triangle() -> None:
 
 def test_the_schlaeflian_and_inertia_of_the_affine_triangle() -> None:
     lattice = Lattices(ZZ)([[-2, 1, 1], [1, -2, 1], [1, 1, -2]])
-    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.schlaflian() == 0
     assert diagram.positive_inertia_index() == 2
@@ -74,7 +74,7 @@ def test_the_schlaeflian_and_inertia_of_the_affine_triangle() -> None:
 
 def test_two_roots_with_divergent_mirrors_give_a_hyperbolic_bond() -> None:
     lattice = Lattices(ZZ)([[-2, 3], [3, -2]])
-    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.is_hyperbolic()
     assert not diagram.is_elliptic()
@@ -85,7 +85,7 @@ def test_two_roots_with_divergent_mirrors_give_a_hyperbolic_bond() -> None:
 
 
 def test_the_inertia_of_two_roots_with_divergent_mirrors() -> None:
-    diagram = CoxeterDiagrams().from_roots(tuple(Lattices(ZZ)([[-2, 3], [3, -2]]).module_generators()))
+    diagram = CoxeterDiagrams().from_roots(Lattices(ZZ)([[-2, 3], [3, -2]]).module_generators())
 
     assert diagram.positive_inertia_index() == 1
     assert diagram.negative_inertia_index() == 1
@@ -97,7 +97,7 @@ def test_a_b3_root_basis_of_scale_one_half_has_the_b3_type_diagram() -> None:
     # have squares 2, 2, 1, so the root scale is 1/2 and the diagram of the type
     # is the B3 root basis twisted to shortest square 1.
     lattice = Lattices(ZZ)([[2, -1, 0], [-1, 2, -1], [0, -1, 1]])
-    diagram = CoxeterDiagrams().from_roots(tuple(lattice.module_generators()))
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.root_scale() == 1 / 2
     assert diagram.label() == "B3"

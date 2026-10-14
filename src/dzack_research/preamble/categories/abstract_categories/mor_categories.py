@@ -46,7 +46,8 @@ def _compose_operation_preserving_mor(left, right, fallback):
 
 from typing import TYPE_CHECKING, Any
 
-from sage.categories.category import Category
+from sage.categories.category import Category, JoinCategory as SageJoinCategory
+from sage.categories.category_with_axiom import CategoryWithAxiom as SageCategoryWithAxiom
 from sage.categories.homset import Hom as SageHom, Homset as SageHomset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
@@ -1621,6 +1622,32 @@ def _declared_construction(category, declaration_name):
         if isinstance(construction, type):
             return construction
     return None
+
+
+def _ambient_of(category: Category) -> Category:
+    r"""Remove the axioms of ``category`` whose subcategories are full.
+
+    An axiom is removed exactly when its subcategory is full, with the same
+    arrows as its base: finite sets have the set maps, commutative algebras
+    the algebra maps.  A data subcategory carries chosen structure and keeps
+    its arrows, and so does an axiom subcategory that is not full (unital
+    algebras, whose arrows preserve the unit).  An axiom class marks itself
+    non-full by declaring its own ``_MorCategory``.  A join is taken
+    component by component.
+
+    ``OWN-06`` adapter of Sage's category runtime: a join is the class Sage
+    builds for a meet of components, read here through its ``super_categories``,
+    and an axiom category is read through ``base_category``.
+    """
+    match category:
+        case SageJoinCategory():
+            return owned_category_join(
+                tuple(_ambient_of(component) for component in category.super_categories())
+            )
+        case SageCategoryWithAxiom() if _declared_construction(category, "_MorCategory") is None:
+            return _ambient_of(category.base_category())
+        case _:
+            return category
 
 
 def _declared_family(category, declaration_name, default):

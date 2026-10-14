@@ -190,13 +190,6 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         def group_algebra(self):
             return self.source_group_module().group_algebra()
 
-        def Mor(self, codomain, category=None):
-            group_lattices = Lattices(self.group_algebra())
-            if codomain in group_lattices and (
-                category is None or category.is_subcategory(group_lattices)
-            ):
-                return group_lattices.Mor(self, codomain)
-            return super().Mor(codomain, category)
 
         def _Hom_(self, codomain, category=None):
             group_lattices = Lattices(self.group_algebra())

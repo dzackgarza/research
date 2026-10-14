@@ -422,7 +422,7 @@ def _power_algebra_of(source, flavor):
     augmentation = _constructed_algebra_morphism(
         algebra, _scalar_module(ring), augmentation_value,
     )
-    return _augmented_algebra(augmentation, default_mor_category=category)
+    return _augmented_algebra(augmentation, constructing_category=category)
 
 
 def _alternating_algebra_of(module):

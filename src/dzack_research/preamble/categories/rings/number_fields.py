@@ -96,17 +96,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         return [OwnedRings().Division().Commutative()]
 
     class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""The ring ``Mor``, unless another category is requested.
-
-            A number field is also placed among the ``QQ``-algebras, whose
-            ``Mor`` would otherwise be found first; every ring map between
-            fields of characteristic zero is ``QQ``-linear, so the ring maps
-            are the maps of number fields.
-            """
-            if category is None or category.is_subcategory(OwnedNumberFields()):
-                return OwnedRings.ParentMethods.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
         def degree(self):
             r"""Return ``[K:QQ]`` as an owned integer."""
