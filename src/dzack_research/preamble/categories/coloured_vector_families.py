@@ -1,7 +1,7 @@
 r"""Stabilizers and transporters of coloured families of lattice vectors in ``O(L)``.
 
 A family of vectors of a lattice ``L`` is a set map ``v: I -> U(L)`` from a
-finite set ``I`` (an ``IndexedFamily``).  A colouring is a set map
+finite set ``I``, an element of ``Sets().Mor(I, L)``.  A colouring is a set map
 ``c: I -> C``; a coloured family is the family of pairs ``(v_i, c_i)``, a map
 ``I -> U(L) x C`` that need not be injective (a Lorentzian perfect cell has
 more rays than its rank, and a vector may repeat).  ``O(L)`` acts on these
@@ -25,9 +25,8 @@ with ``Sym_C(I)`` is not represented (COMPLAINTS.md, *Products of infinite
 groups are not represented*), so pairs ``(g, sigma)`` are not built and
 ``K_v`` is stated, not constructed.
 
-A family enters either as an ``IndexedFamily`` of vectors of ``L`` (one
-colour) or as an ``IndexedFamily`` of points of a product ``L x C``
-(``Sets().product((L, C))``).
+A family enters as the set map it is: an element of ``Sets().Mor(I, L)`` (one
+colour) or of ``Sets().Mor(I, Sets().product((L, C)))`` (a coloured family).
 
 The computation (Indefinite.jl@374a5ebb/indef/lib/AutomorphismPolytope.g,
 KernelLinPolytopeIntegral_Automorphism_Subspaces :366-412 and
@@ -152,31 +151,25 @@ class _ColouredFamilyRealization:
     def __init__(self, lattice, family):
         self._lattice = lattice
         self._family = family
-        self._indices = family.index_set()
+        self._indices = family.domain()
         assert self._indices.cardinality().is_finite() is True, (
             f"stabilizers of families in O({lattice}) are computed for finite index sets, but {family} is "
-            f"indexed by {self._indices}"
+            f"a map out of {self._indices}"
         )
-        first = next(iter(self._indices), None)
-        match first:
-            case None:
-                coloured = False
-            case _:
-                coloured = family.value(first) not in lattice
-        if coloured:
-            product = family.value(first).parent()
-            assert product.factor(0) is lattice, (
-                f"{family} is neither a family of vectors of {lattice} nor of points of {lattice} x C: its "
-                f"values lie in {product}"
-            )
-            self._colours = product.factor(1)
-            self._vector = lambda index: product.projection(0)(family.value(index))
-            self._colour = lambda index: product.projection(1)(family.value(index))
-        else:
+        values = family.codomain()
+        if values is lattice:
             self._colours = Sets.Δ[0]
             point = next(iter(self._colours))
-            self._vector = lambda index: lattice(family.value(index))
+            self._vector = family
             self._colour = lambda _index: point
+        else:
+            assert values.factor(0) is lattice, (
+                f"{family} is neither a family of vectors of {lattice} nor of points of {lattice} x C: it is a "
+                f"map into {values}"
+            )
+            self._colours = values.factor(1)
+            self._vector = lambda index: values.projection(0)(family(index))
+            self._colour = lambda index: values.projection(1)(family(index))
 
     def indices(self):
         return self._indices

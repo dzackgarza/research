@@ -18,7 +18,6 @@ order six where the ``A3`` chain on three vectors admits only the reversal.
 import pytest
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 # Cartan type: (order of the diagram automorphism group, |O(L)|, |W(L)|)
 ROOT_BASES = {
@@ -30,7 +29,7 @@ ROOT_BASES = {
 
 
 def _simple_roots(lattice):
-    return indexed_family(lattice.module_generating_set(), lattice.module_generator)
+    return Sets().Mor(lattice.module_generating_set(), lattice)(lattice.module_generator)
 
 
 @pytest.mark.parametrize("name", ROOT_BASES)
@@ -75,8 +74,7 @@ def test_colouring_the_two_A2_roots_differently_kills_the_swap() -> None:
     positions = lattice.module_generating_set()
     colours = Sets.Δ[1]
     points = Sets().product((lattice, colours))
-    coloured = indexed_family(
-        positions,
+    coloured = Sets().Mor(positions, points)(
         lambda position: points((lattice.module_generator(position), colours[int(positions.ranking_map()(position))])),
     )
 
@@ -93,8 +91,8 @@ def test_a_redundant_family_in_an_indefinite_lattice_has_the_swap_of_its_two_pos
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, -1]])
     e = lattice.module_generators()
     vectors = (e[0], e[1], e[2], e[0] + e[1])
-    family = indexed_family(Sets.Δ[3], lambda position: vectors[int(position)])
-    reversed_family = indexed_family(Sets.Δ[3], lambda position: vectors[3 - int(position)])
+    family = Sets().Mor(Sets.Δ[3], lattice)(lambda position: vectors[int(position)])
+    reversed_family = Sets().Mor(Sets.Δ[3], lattice)(lambda position: vectors[3 - int(position)])
     stabilizer = lattice.O().stabilizer(family)
     swap = lattice.Aut()({label: e[1 - int(label)] if int(label) < 2 else e[2] for label in lattice.module_generating_set()})
 

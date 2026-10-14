@@ -1999,8 +1999,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         For lattice vectors this is an exact orbit witness ``g(source)=target``.
         For two isometries in ``Isom(L,M)`` it retains the torsor operation
         ``g ∘ source = target``.  For two finite families of vectors of ``L``
-        (``IndexedFamily`` of vectors, or of points of ``L x C`` for coloured
-        families) it is one ``g`` in ``O(L)`` with ``g o v = w o sigma`` for
+        (elements of ``Sets().Mor(I, L)``, or of ``Sets().Mor(I, L x C)`` for
+        coloured families) it is one ``g`` in ``O(L)`` with ``g o v = w o sigma`` for
         some colour-preserving bijection ``sigma`` of the index sets, or
         ``None`` when there is none; see ``coloured_vector_families`` for the
         computation and its spanning hypothesis.
@@ -2139,8 +2139,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         A lattice vector is fixed pointwise.  A represented lattice subobject
         accepts ``action='setwise'`` or ``action='pointwise'`` and delegates to
         the existing inclusion-based subgroup constructions.  A finite family
-        ``(v_i)_{i in I}`` of vectors of ``L`` (``IndexedFamily``), or a
-        coloured family of points ``(v_i, c_i)`` of ``L x C``, has the stabilizer
+        ``v: I -> L`` (an element of ``Sets().Mor(I, L)``), or a coloured family
+        ``i |-> (v_i, c_i)`` in ``Sets().Mor(I, L x C)``, has the stabilizer
         ``O(L)_[v] = {g : g o v = v o sigma for some colour-preserving bijection sigma of I}``,
         the image in ``O(L)`` of its stabilizer under ``O(L) x Sym_C(I)``; the
         kernel of that projection, ``K_v``, is trivial exactly when the coloured

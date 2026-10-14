@@ -1,9 +1,8 @@
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _simple_roots(lattice):
-    return indexed_family(lattice.module_generating_set(), lattice.module_generator)
+    return Sets().Mor(lattice.module_generating_set(), lattice)(lattice.module_generator)
 
 
 def test_the_two_automorphisms_of_the_a2_diagram_are_two_distinct_isometries() -> None:
