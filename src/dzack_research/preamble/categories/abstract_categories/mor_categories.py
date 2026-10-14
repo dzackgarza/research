@@ -1307,6 +1307,9 @@ class CategoricalIsomorphism(Morphism):
 
         return _isomorphism_from_known_inverse_pair(self._inverse, self._forward)
 
+    def __invert__(self) -> CategoricalIsomorphism:
+        return self.inverse()
+
     def left_inverse_decision(self):
         composite = self._inverse * self.forward()
         return composite == composite.parent().identity()

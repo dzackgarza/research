@@ -2231,9 +2231,20 @@ class CoreMor(CategoricalMor):
         domain: Parent,
         codomain: Parent,
     ) -> None:
+        # Aut_C(X) = Core(C)(X, X) is the vertex group of the core groupoid:
+        # composition, identity and inverse are those of the groupoid.
+        placement = None
+        if domain is codomain:
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            placement = OwnedGroups()
         CategoricalMor.__init__(
-            self, family, domain, codomain
+            self, family, domain, codomain, category=placement
         )
+
+    def one(self) -> CategoricalIsomorphism:
+        r"""The identity of ``Aut(X)``: the identity isomorphism of ``X``."""
+        return self.identity()
 
     def core_category(self) -> _CoreCategory:
         return self.base_category()
