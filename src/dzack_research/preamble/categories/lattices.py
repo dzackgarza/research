@@ -4810,6 +4810,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"cannot reflect {self!r} in {root!r}: the vector lies in {root.parent()!r}, not in this lattice"
                 )
+            assert root.q() != self.base_ring().zero(), (
+                f"there is no reflection of {self!r} in {root}: s_r is defined only for b(r, r) != 0"
+            )
             if not root.is_integral_reflection_vector():
                 raise ValueError(
                     f"the reflection of {self!r} in {root} is not an isometry of the lattice: 2 b(x, r)/b(r, r) is not in {self.base_ring()} for every x, so {root} is not an integral reflection vector"
@@ -5096,12 +5099,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             The condition is ``2 b(v,L) / b(v,v)`` integral; the locus can
             be infinite for an indefinite lattice.
             """
-            ring = self.base_ring()
 
-            def reflective(vector):
-                return vector.q() != ring.zero() and vector.is_root()
-
-            return self.condition_set(reflective)
+            return self.condition_set(lambda vector: vector.is_root())
 
         @cached_method
         def root_module_generating_set(self):
@@ -6506,9 +6505,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"cannot decide whether {self!r} is an integral reflection vector: the reflection is defined here for lattices over an integral domain, and {ring} is not one"
             )
             norm = ring(self.q())
-            assert norm != ring.zero(), (
-                f"{self!r} has square zero, so there is no reflection in it: s_r is defined only for b(r, r) != 0"
-            )
+            if norm == ring.zero():
+                # s_r exists only for b(r, r) != 0, so a vector of square zero is not one.
+                return False
             fraction_field = ring if ring.is_field() else ring.fraction_field()
             norm_in_fraction_field = fraction_field(norm)
             return all(
