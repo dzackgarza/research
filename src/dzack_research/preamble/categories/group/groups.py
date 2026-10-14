@@ -2355,12 +2355,36 @@ class GroupMorphism:
         r"""Return one preimage of ``element``.
 
         The inclusion of a subgroup ``H`` sends ``h`` to ``h``, so the
-        preimage of an element of ``H`` is that element.
+        preimage of an element of ``H`` is that element.  The identity lifts
+        to the identity.  When the codomain is finite and the source has
+        determining generators (a selected finite generating family, its
+        subgroup generators, or its finitely many elements), the lift is the
+        word section of the finite image (``finite_image_lifts``); it is a
+        set section, not a homomorphic splitting.  An infinite image, or a
+        source with no determining generators, is outside these cases and
+        reaches the GAP computation, which states that hypothesis.
         """
         if self._subgroup_premise:
             assert element in self.domain(), f"{element} is not in the image of {self}"
             return self.domain()(element)
-        engine_element = _element_to_engine(self.codomain(), element)
+        source = self.domain()
+        codomain = self.codomain()
+        if (element == codomain.one()) is True:
+            return source.one()
+        if codomain in OwnedFiniteGroups() and (
+            source.has_selected_finite_group_generating_set()
+            or source in GeneratedSubgroups(source.supergroup())
+            or source in OwnedFiniteGroups()
+        ):
+            # Finite image, determining source generators: the lift is the
+            # word section of the image read off the Cayley traversal.
+            witnesses = self._finite_image_lift_table()
+            assert element in witnesses, (
+                f"{element} is not in the image of {self}: the images of the selected "
+                f"generators of {source} generate a subgroup of {codomain} not containing it"
+            )
+            return witnesses[element]
+        engine_element = _element_to_engine(codomain, element)
         gap_morphism = self._gap_morphism_crossing()
         assert engine_element in gap_morphism.Image(), (
             f"{element} is not in the image of {self}"
@@ -2433,10 +2457,26 @@ class GroupMorphism:
             return self.codomain().subgroup(
                 self(element) for element in source
             )
+        codomain = self.codomain()
+        if codomain in OwnedFiniteGroups() and codomain.cardinality() == 1:
+            # The image of any group in the trivial group is that group.
+            return codomain.subgroup(())
         return _subgroup_from_gap(
-            self.codomain(),
+            codomain,
             self._gap_morphism_crossing().Image(),
         )
+
+    @cached_method
+    def _finite_image_lift_table(self):
+        r"""One source witness above every element of the finite image (``finite_image_lifts``).
+
+        The determining generators are the source's selected finite
+        generating family (or its subgroup generators, or its elements when
+        it is finite); the termination bound is the order of the finite
+        codomain.  This is the word section of ``G ->> f(G)`` on the
+        image of those generators.
+        """
+        return self.domain().finite_image_lifts(self)
 
     @cached_method
     def image_factorization(self):
@@ -4250,6 +4290,24 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return self.selected_group_resolution().generators(
                 name="Group generators"
             )
+
+        def select_group_resolution(self, *, generators):
+            r"""Select the generating epimorphism ``F(S) ->> G`` on a supplied family ``S``, and return ``G``.
+
+            It is the degree-zero truncation of a free-group resolution of
+            ``G`` (``CAT-29``): the caller supplies a family that generates
+            this group, and is trusted to have established that it does
+            (``OWN-22``).  Afterwards ``group_generators()`` answers, and
+            group morphisms out of ``G`` compute images and finite-image
+            word sections from it.  Selecting computes nothing.  A group
+            whose generators a realization computes selects them itself, as
+            ``O(L)`` does.
+            """
+            if self.has_selected_group_resolution():
+                raise ValueError(f"{self} already has a selected generating resolution")
+            selected = finite_ordered_set(tuple(self(generator) for generator in generators))
+            _fix_selected_group_resolution_on(self, lambda: selected)
+            return self
 
         def invariant_overlattice(self, lattice):
             r"""Return the least integral invariant overlattice for this rational orthogonal action.
