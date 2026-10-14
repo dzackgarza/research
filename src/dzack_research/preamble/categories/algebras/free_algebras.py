@@ -378,21 +378,34 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
 
 
 def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
+    r"""``Sym_R(F_R(S))`` on the free module ``F_R(S)`` (or the given ``source_module`` on ``S``)."""
     base = _owned_ring(base_ring)
+    infinite = algebra_generating_set in Sets() and algebra_generating_set.is_finite() is not True
+    labels = algebra_generating_set if infinite else _finite_labels(algebra_generating_set)
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _symmetric_algebra_of_free_module(generating)
+
+
+@cached_function
+def _symmetric_algebra_of_free_module(generating):
+    r"""``Sym_R(F)`` for the free module ``F = F_R(S)``: one object per ``F``, which is the cache key.
+
+    ``F_R(S)`` is one object per ``(R, S)`` (``_owned_free_module_on``), so
+    ``R[S]`` is one object per ``(R, S)`` on every route, never keyed on its
+    realization.  The realization is selected here, privately: Sage's
+    polynomial ring on the names of ``S`` (:func:`_polynomial_engine`), or the
+    sparse construction when ``S`` is not finite or ``R`` has no Sage ring
+    realization.
+    """
+    base = generating.base_ring()
+    labels = generating.module_generating_set()
     engine_base = _engine_ring(base)
-    if (
-        algebra_generating_set in Sets()
-        and algebra_generating_set.is_finite() is not True
-    ) or engine_base not in SageRings():
+    if labels.is_finite() is not True or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
         )
 
-        return _sparse_symmetric_algebra_of(
-            base.free_module(algebra_generating_set) if source_module is None else source_module
-        )
-    labels = _finite_labels(algebra_generating_set)
-    generating = base.free_module(labels) if source_module is None else source_module
+        return _sparse_symmetric_algebra_of(generating)
     names = _variable_names(labels)
     algebra = _native_free_algebra(
         _polynomial_engine(engine_base, names), generating, "symmetric",

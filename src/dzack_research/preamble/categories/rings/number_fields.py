@@ -194,16 +194,30 @@ def _order_placements():
     )
 
 
-@cached_function(key=lambda field, engine_order: (id(field), engine_order))
+def _power_basis_lattice(engine_order):
+    r"""The ``ZZ``-lattice of an order in ``K``'s power basis: its echelonized basis rows over ``QQ``.
+
+    Private key of :func:`_order_in`.  Sage's ``Order.free_module()`` is the
+    ``ZZ``-span of the order in ``K.vector_space()``, the coordinates in the
+    power basis ``1, theta, ..., theta^{n-1}``; its echelonized basis matrix
+    is determined by the lattice alone, so equal lattices give equal rows.
+    """
+    return tuple(
+        tuple(row) for row in engine_order.free_module().echelonized_basis_matrix().rows()
+    )
+
+
+@cached_function(key=lambda field, engine_order: (field, _power_basis_lattice(engine_order)))
 def _order_in(field, engine_order):
     r"""The order of the number field ``K`` whose underlying lattice ``engine_order`` presents.
 
     An order of ``K`` is a subring that is a full ``ZZ``-lattice in ``K``; it
     is determined by ``K`` and that lattice, so equal lattices give one order
-    (``OWN-02``).  The key compares the presented lattices (Sage compares orders
-    by their ``ZZ``-modules in ``K``).  Its integral basis is the Hermite basis
-    of that lattice in the power basis of ``K``'s primitive element, the
-    basis the realization holds.  ``ZZ`` is the order of ``QQ``.
+    (``OWN-02``).  The cache key is ``(K, the lattice in K's power basis)``
+    (:func:`_power_basis_lattice`), never the realization: two Sage orders
+    with one lattice are one order.  Its integral basis is the basis the
+    realization holds.  ``ZZ`` is the order of ``QQ``, and is not reached
+    here (``K.ring_of_integers()`` answers it for ``QQ``).
     """
     if field is _owned_rationals():
         return _owned_integers()
@@ -370,10 +384,9 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 ideals.append(order.ideal(*generators))
             return finite_ordered_set(ideals)
 
+        @cached_method
         def ring_of_integers(self):
-            r"""Return the maximal order ``O_K`` as an owned ring."""
-
-            # O_K is the integral closure of ZZ in K, determined by K.
+            r"""``O_K``, the integral closure of ``ZZ`` in ``K``: determined by ``K``, so cached on ``K``."""
             engine = _engine_ring(self)
             if engine is SageQQ:
                 return _owned_integers()
