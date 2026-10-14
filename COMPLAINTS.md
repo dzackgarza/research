@@ -2358,3 +2358,10 @@ Foundational mathematical gaps belong above even when first noticed as an inconv
 
 **Evidence.** The generators are computed from that statement, which is stated in the docstring without a source. Searched: the formalization corpus (`~/gitclones/formalization-corpus`, `just search 'Parabolic'` and `'transvection'`), which failed because its zoekt index `.zoekt` does not exist in that checkout (papercut: the corpus search recipe exits 1 with no index); no text was opened. Not found, confidence low, gaps: Mathlib and standard texts unsearched. Request to `lean-categories`: the parabolic subgroup of a flag of saturated submodules of a finite free module over a PID, its Levi decomposition, and generation of its unipotent radical by elementary maps.
 
+## Double cosets in GL(J) for the lines of an isotropic plane
+
+**Desired mathematics.** For a primitive totally isotropic plane J of L, the Aut((L, J))-orbits of the lines of J are the double cosets H \ GL(J) / B, with H = image of the isotropic action Aut((L, J)) -> GL(J) ≅ GL_2(ZZ) (computed from supplied generators of P_J) and B the stabilizer of a line (upper triangular in an adapted basis).
+
+**Dependency path.** `isotropic_induction.py:128` (`plane_lines`) -> `OwnedGroups.double_cosets(H, B)` (`group/groups.py`) -> orbits on a finite coset space.
+
+**Evidence (source).** `double_cosets` computes Q-orbits on G/H when G/H is a finite G-set, or H-orbits on G/Q when G/Q is (Q a kernel or preimage along a map to a finite group); otherwise it asserts. Here B \ GL_2(ZZ) ≅ P^1(QQ) is infinite, and H is a generated subgroup whose finite index in GL_2(ZZ) is not established, so neither side is realized as finite. Not executed (DEV-58). Who must establish finite index: either port #18, by supplying H as a preimage along a map to a finite group (or with its index), or research, by a primitive for the orbits of a finite-index subgroup of GL_2(ZZ) on P^1(QQ) (cusps of a finite-index subgroup), whose mathematics must first be requested from `lean-categories`. TODO: `finite-index-orbits-on-projective-line`.

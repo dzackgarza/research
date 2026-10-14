@@ -84,7 +84,12 @@ Repair these existing research computations and dispatch contracts before select
   **Cited violation:** `AGENTS.md`, *Concrete boundary with sage-indefinite-port*, assigns research "group products and finite-index extensions" (#397) and preimages from supplied generators (#396).
   **Acceptance:** for (1), the 2U parabolic specimen of `port-isotropic-action-maps`; for (2), U + U with G_i = <swap> and its factor inclusions and projections; for (3), M = 2U' <= U of index 2 with H = <swap>. Retain execution under T.
 
-- [ ] **`port-isotropic-action-maps`**. **Needs:** `port-group-primitives-with-generators`.
+- [ ] **`finite-index-orbits-on-projective-line`**. **Needs:** none.
+  **Owner and delta:** `group/groups.py` (`OwnedGroups.double_cosets`). Orbits of a subgroup H of finite index in GL_2(ZZ), given by supplied generators, on P^1(QQ) = B \ GL_2(ZZ), with representatives and their section, so that H \ GL(J) / B is computed when neither coset space is realized as finite; the finite-index hypothesis and its witness are supplied by the caller (port #18) or computed. Request the mathematics (cusps of finite-index subgroups of GL_2(ZZ)) from `lean-categories` first. See COMPLAINTS.md, *Double cosets in GL(J) for the lines of an isotropic plane*.
+  **Cited violation:** `AGENTS.md`, *Concrete boundary with sage-indefinite-port* (#396 cosets and double cosets from supplied generators); port call `isotropic_induction.py:128` asserts today.
+  **Acceptance:** for H = Gamma_0(2) inside SL_2(ZZ) < GL_2(ZZ), the H-orbits on P^1(QQ) are its cusps, with the expected count taken from a source opened when the assertion is written. Retain execution under T.
+
+- [ ] **`port-isotropic-action-maps`**. **Needs:** `port-group-primitives-with-generators`, `finite-index-orbits-on-projective-line`.
   **Owner and delta:** remaining: the radical extension Hom(M/R, R) by (O(M/R) x GL(R)) from supplied factor groups. No port call site; needs a represented semidirect product (check `lean-categories` for semidirect products of groups, request if absent) and the infinite-products prerequisite of `port-group-primitives-with-generators` (2).
   **Cited violation:** `AGENTS.md`, *Concrete boundary with sage-indefinite-port* (#398, "radical extensions from supplied factors").
   **Acceptance:** for a degenerate M = R + M' with M' nondegenerate, the extension generated from supplied generators of O(M') and GL(R) and the basis of Hom(M', R) preserves the form and maps onto O(M') x GL(R). Retain execution under T.
