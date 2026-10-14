@@ -735,13 +735,15 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             asserted by name.  The family is computed on first request and
             retained (``OWN-22``).
             """
-            if (
-                not _retains_group_resolution(self)
-                and self.preimage_morphism().codomain() not in OwnedFiniteGroups()
-            ):
-                _fix_selected_generating_morphism(
-                    self, lambda preimage: preimage.kernel_image_generating_morphism()
-                )
+            match self.preimage_morphism().codomain():
+                case _ if _retains_group_resolution(self):
+                    pass
+                case codomain if codomain in OwnedFiniteGroups():
+                    pass
+                case _:
+                    _fix_selected_generating_morphism(
+                        self, lambda preimage: preimage.kernel_image_generating_morphism()
+                    )
             return super().selected_group_resolution()
 
         def kernel_image_generating_morphism(self):
