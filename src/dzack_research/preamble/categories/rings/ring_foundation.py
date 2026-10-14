@@ -5603,16 +5603,13 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
     from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
-    from sage.rings.number_field.number_field_base import NumberField
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
     from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
     from sage.sets.cartesian_product import CartesianProduct
 
     from dzack_research.preamble.categories.rings.number_fields import (
-        NumberFieldsWithChosenPrimitiveElement,
         OrdersWithChosenIntegralBasis,
-        OwnedNumberFields,
     )
     from dzack_research.preamble.owned_category import owned_category_join
 
@@ -5627,13 +5624,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # An algebraic closure of F_p is a field, and it is the union of
             # the finite fields F_{p^n}, so countably infinite.
             placements = (*field, owned_sets.CountablyInfiniteSets())
-        case NumberField():
-            # A number field K = QQ[x]/(f) with f irreducible, presented by
-            # its chosen generator.
-            placements = (
-                *field, OwnedNumberFields(), NumberFieldsWithChosenPrimitiveElement(),
-                owned_sets.CountablyInfiniteSets(),
-            )
         case SageNumberFieldOrder():
             # An order is a subring of a number field, free of finite rank
             # over ZZ, so a Noetherian domain; its basis is a construction
@@ -5898,6 +5888,14 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
         case IntegerModRing_generic():
             # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
             return Zmod(int(engine.order()))
+        case _ if engine in SageNumberFields():
+            # A number-field engine is raised through the number field of
+            # its defining polynomial (relative: over its raised base).
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _number_field_from_engine,
+            )
+
+            return _number_field_from_engine(engine)
         case PolynomialRing_generic() | MPolynomialRing_base():
             # A polynomial engine met in an adapter is raised through the
             # one polynomial ring on its variables (OWN-02); its elements

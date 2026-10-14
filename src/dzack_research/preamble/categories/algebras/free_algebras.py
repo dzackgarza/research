@@ -1700,13 +1700,13 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         def homogeneous_component(self, degree):
             return self.parent().homogeneous_component(self, degree)
 
-        def number_field(self, *args, **kwargs):
-            r"""Return the number field defined by this polynomial."""
+        def number_field(self, name):
+            r"""The number field ``K[name]/(f)`` of this irreducible polynomial ``f`` over ``QQ`` or a number field ``K``."""
             from dzack_research.preamble.categories.rings.number_fields import (
                 _number_field,
             )
 
-            return _number_field(self, *args, **kwargs)
+            return _number_field(self, name)
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):

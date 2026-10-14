@@ -151,12 +151,12 @@ def ComplexField(precision=53):
     return _public_commutative_ring(_ComplexField(precision))
 
 
-def CyclotomicField(*args, **kwargs):
-    return _CyclotomicField(*args, **kwargs)
+def CyclotomicField(order, name=None):
+    return _CyclotomicField(order, name)
 
 
-def QuadraticField(*args, **kwargs):
-    return _QuadraticField(*args, **kwargs)
+def QuadraticField(discriminant, name="a"):
+    return _QuadraticField(discriminant, name)
 
 
 @cached_function

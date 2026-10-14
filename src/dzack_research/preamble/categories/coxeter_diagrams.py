@@ -1239,8 +1239,26 @@ class CoxeterDiagrams(OwnedCategory):
 
         def equivariant_positions(self, automorphism):
             r"""Return exact planar positions intertwining a finite diagram automorphism."""
-            from sage.rings.number_field.number_field import CyclotomicField
             from sage.rings.qqbar import QQbar
+
+            from dzack_research.preamble.categories.rings.number_fields import CyclotomicField
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _engine_element,
+                _owned_algebraic_numbers,
+                _owned_engine_element,
+            )
+
+            def root_of_unity(order):
+                r"""``e^{2 pi i/order}``: the image of ``zeta`` under the chosen embedding ``QQ(zeta) -> QQbar``.
+
+                The embedding is an element of ``Mor(QQ(zeta), QQbar)``, chosen
+                as the one sending ``zeta`` to ``e^{2 pi i/order}``; no
+                embedding is read off the field.
+                """
+                field = CyclotomicField(order)
+                algebraic = _owned_algebraic_numbers()
+                embedding = field.Mor(algebraic)(_owned_engine_element(algebraic, QQbar.zeta(order)))
+                return _engine_element(algebraic, embedding(field.primitive_element()))
 
             order = int(automorphism.order())
             if order < 2:
@@ -1264,10 +1282,10 @@ class CoxeterDiagrams(OwnedCategory):
                         f"from {start} does not return to {start}"
                     )
                 orbits.append(tuple(orbit))
-            zeta = QQbar(CyclotomicField(order).gen())
+            zeta = root_of_unity(order)
             positions = {}
             if order == 2:
-                imaginary = QQbar(CyclotomicField(4).gen())
+                imaginary = root_of_unity(4)
                 place = 0
                 for orbit in sorted(orbits, key=len):
                     if len(orbit) == 1:
