@@ -2009,8 +2009,9 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             - an infinite set is not empty.
 
             A realization or category whose construction decides more supplies
-            this hook on its own class: a subset holding an admitted member is
-            not empty, and a monoid is not empty because it has a unit.  A
+            this hook on its own class: a monoid is not empty because it has a
+            unit, an image is empty exactly when its source is, a product
+            exactly when some factor is.  A
             torsor is not empty by definition; ``Torsors`` supplies that case
             in its own file.
             """
@@ -3409,32 +3410,17 @@ class _ConditionSetEngine:
             self._admitted_member_ids.add(id(point))
         return point
 
-    def _emptiness_decision(self) -> bool | None:
-        r"""Realization of ``Sets``' protected emptiness hook for ``{x in X : P(x)}``.
-
-        A member admitted by construction is a point, so the subset is not
-        empty. Otherwise a decided finite count of the subset decides it.
-        Neither supplied leaves the question to the proposition.
-        """
-        if self._admitted_members:
-            return False
-        count = self._cardinality_decision()
-        if count is None:
-            return None
-        return cardinal(count) == cardinal(0)
-
     def _an_element_(self):
-        r"""Sage's element-selection protocol: a point admitted by construction.
+        r"""Sage's element-selection protocol: the first point of a decided finite enumeration.
 
-        Without an admitted member, a decided finite enumeration supplies its
-        first point. A subset with neither has no selected point here.
+        Emptiness and the count are asked of the owned cardinality
+        (``_cardinality_decision``); a subset whose count is not decided has no
+        selected point here.
         """
-        if self._admitted_members:
-            return self._admitted_members[0]
         count = self._cardinality_decision()
         assert count is not None, (
-            f"cannot select a point of {self}: no point has been admitted to it and its "
-            f"membership predicate {self.predicate()} is not decided on an enumerated universe"
+            f"cannot select a point of {self}: its membership predicate {self.predicate()} "
+            f"is not decided on an enumerated universe"
         )
         assert cardinal(count) != cardinal(0), (
             f"{self} has no point to select: it is the empty subset of {self.universe()} "
