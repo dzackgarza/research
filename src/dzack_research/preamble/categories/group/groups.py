@@ -4291,6 +4291,17 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 name="Group generators"
             )
 
+        def free_cover(self, generators):
+            r"""The group morphism ``F(S) -> G`` from the free group on a family ``S`` of elements, ``s |-> s``.
+
+            Its image is the subgroup ``S`` generates; it is onto ``G``
+            exactly when ``S`` generates ``G``, which the caller states.
+            """
+            elements = tuple(self(generator) for generator in generators)
+            labels = finite_ordinal_set(len(elements))
+            free = OwnedGroups.Free(index_set=labels)
+            return free.Mor(self)(Sets().Mor(labels, self)(lambda label: elements[int(label)]))
+
         def select_group_resolution(self, *, generators):
             r"""Select the generating epimorphism ``F(S) ->> G`` on a supplied family ``S``, and return ``G``.
 

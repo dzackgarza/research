@@ -1124,6 +1124,61 @@ def _engine_component_matrix(value):
     )
 
 
+# Protected engine-adapter contract (OWN-05, OWN-06, OWN-24): the
+# ``_engine_*`` row-action functions below are the one place where Sage's
+# row-action convention and coordinate matrices are handled.  Owner: this
+# tensor package.  Permitted callers: the group-realization adapters of the
+# automorphism groups that lower an element to a row action and raise one
+# back (``LatticeIsometryMor``, ``ModuleAutomorphismGroup`` and the module
+# engine adapter ``_flag_stabilizer_engine_data``).  Inputs are owned
+# morphisms or raw engine matrices produced by these functions; outputs are
+# raw engine matrices that the caller raises immediately.  Mathematical
+# code never receives them.
+
+
+def _engine_flag_adapted_rows(spans, engine_ring):
+    r"""Private engine adapter: coordinate rows of a basis adapted to a chain of row spans over a PID.
+
+    ``spans`` lists coordinate-row bases of ``T_1 < ... < T_k < M``.  For the
+    adapted rows ``A`` of ``T_(i-1)`` and a basis ``S`` of ``T_i``, write
+    ``A = C S``; the Smith form ``U C V = D`` gives the basis ``V^-1 S`` of
+    ``T_i`` whose first rows span ``T_(i-1)`` exactly when every diagonal
+    entry of ``D`` is a unit, i.e. ``T_(i-1)`` is saturated in ``T_i``.
+    Returns the adapted rows, the block sizes and the first step that is
+    not saturated (``None`` when all are).
+    """
+    adapted = None
+    sizes = []
+    for step, span in enumerate(spans):
+        rows = _sage_matrix(engine_ring, span)
+        if adapted is None:
+            adapted = rows
+            sizes.append(rows.nrows())
+            continue
+        coefficients = rows.solve_left(adapted)
+        diagonal, _left, right = coefficients.smith_form()
+        if not all(diagonal[i, i].is_unit() for i in range(adapted.nrows())):
+            return None, None, step
+        rebased = right.inverse() * rows
+        adapted = adapted.stack(rebased.matrix_from_rows(range(adapted.nrows(), rebased.nrows())))
+        sizes.append(rebased.nrows() - sum(sizes))
+    return adapted.rows(), tuple(size for size in sizes if size), None
+
+
+def _engine_block_general_linear_row_actions(sizes, engine_ring):
+    r"""Private engine adapter: Sage's generators of each ``GL(n_i, R)``, embedded block-diagonally as row actions."""
+    from sage.groups.matrix_gps.linear import GL
+    from sage.matrix.constructor import block_diagonal_matrix
+
+    actions = []
+    for index, size in enumerate(sizes):
+        for generator in GL(size, engine_ring).gens():
+            blocks = [_sage_matrix.identity(engine_ring, other) for other in sizes]
+            blocks[index] = generator.matrix()
+            actions.append(block_diagonal_matrix(blocks))
+    return tuple(actions)
+
+
 def _engine_row_action_matrix(morphism):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): a morphism as Sage's row action.
 

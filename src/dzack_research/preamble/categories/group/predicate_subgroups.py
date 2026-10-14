@@ -58,16 +58,9 @@ def _fix_selected_generating_morphism(subgroup, generating_morphism) -> None:
 
 def _free_cover(ambient, generators):
     r"""``pi: F ->> G``: the selected free cover, or the free group on supplied generators of ``G``."""
-    from dzack_research.preamble.categories.sets.set_categories import Sets, finite_ordinal_set
-
     if generators is None:
         return ambient.selected_group_resolution().augmentation()
-    source_generators = tuple(generators)
-    labels = finite_ordinal_set(len(source_generators))
-    free = OwnedGroups.Free(index_set=labels)
-    return free.Mor(ambient)(
-        Sets().Mor(labels, ambient)(lambda label: source_generators[int(label)])
-    )
+    return ambient.free_cover(generators)
 
 
 def _preimage_coset_space(subgroup, morphism, target, generators):

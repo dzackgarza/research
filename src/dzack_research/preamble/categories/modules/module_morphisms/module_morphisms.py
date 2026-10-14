@@ -3246,6 +3246,58 @@ class ModuleAutomorphism(ModuleAutomorphismMethods, ModuleMorphism):
     r"""Compatibility shell for private module-automorphism realizations."""
 
 
+def _flag_stabilizer_engine_data(automorphisms, terms):
+    r"""Private engine adapter of ``ModuleAutomorphismGroup`` (``OWN-05``, ``OWN-06``).
+
+    Owner: the module automorphism group; only caller:
+    ``ModuleAutomorphismGroup.flag_stabilizer``.  It lowers the flag's
+    embedded generators to coordinate rows once, asks the tensor package
+    for a basis adapted to the chain and for the block ``GL(n_i, R)``
+    generators, and raises the results: the automorphism ``P`` of ``M``
+    with ``P(e_j) = b_j``, the block sizes, and the block generators as
+    elements of ``GL(M)`` in the coordinates of ``e``.  It asserts that
+    every step of the flag is saturated in the next.
+    """
+    from dzack_research.preamble.tensors.tensor import (
+        _engine_block_general_linear_row_actions,
+        _engine_flag_adapted_rows,
+    )
+
+    module = automorphisms.domain()
+    ring = module.base_ring()
+    engine_ring = _engine_ring(ring)
+    labels = module.module_generating_set()
+
+    def row(vector):
+        coordinates = vector.to_vector()
+        return [_engine_element(ring, coordinates(label)) for label in labels]
+
+    spans = [[row(vector) for vector in term.embedded_module_generators()] for term in terms]
+    spans.append([row(module.module_generator(label)) for label in labels])
+    rows, sizes, unsaturated = _engine_flag_adapted_rows(spans, engine_ring)
+    assert unsaturated is None, (
+        f"{terms} is not a flag of saturated submodules of {module}: step {unsaturated} does not contain "
+        f"the previous term as a saturated submodule (its quotient has torsion), so no basis of {module} is "
+        f"adapted to it"
+    )
+    generators = tuple(module.module_generators())
+    vectors = tuple(
+        sum(
+            (module.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
+             for coefficient, generator in zip(adapted, generators, strict=True) if coefficient),
+            module.zero(),
+        )
+        for adapted in rows
+    )
+    endomorphisms = module.module_category().Mor(module, module)
+    change = automorphisms(endomorphisms(dict(zip(labels, vectors, strict=True))))
+    block_generators = tuple(
+        automorphisms._from_backend_row_action(action)
+        for action in _engine_block_general_linear_row_actions(sizes, engine_ring)
+    )
+    return change, sizes, block_generators
+
+
 class _ModuleCore(_CoreCategory):
     r"""The core of ``Modules(R)``: at ``(M, M)`` its Mor is ``Aut_R(M)``, the one module automorphism group."""
 
@@ -3382,10 +3434,13 @@ class ModuleAutomorphismGroup(CoreMor):
     # image, cosets and group_generators.
 
     def _framed_rank(self):
-        from dzack_research.preamble.categories.modules.pure.modules import _coordinate_framed_free_module
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
         module = self.domain()
-        assert _coordinate_framed_free_module(module, module.base_ring()), (
+        assert (
+            module in FramedFreeModules(module.base_ring())
+            and module.module_generating_set().cardinality().is_finite()
+        ), (
             f"GL({module}) is realized as a matrix group only for a free module with a finite selected "
             f"basis, but {module} is in {module.category()}"
         )
@@ -3460,107 +3515,54 @@ class ModuleAutomorphismGroup(CoreMor):
             self, modules, module, lambda automorphism: modules.Mor(module, module)(automorphism.forward())
         )
 
-    def _flag_adapted_basis(self, terms):
-        r"""Private engine adapter (``OWN-06``): a basis of ``M`` adapted to a chain of saturated submodules.
-
-        For ``T_1 < ... < T_k < M``, each ``T_i`` saturated in ``T_(i+1)``:
-        with ``A`` the rows of the adapted basis of ``T_(i-1)`` written in a
-        basis ``S`` of ``T_i`` (``A = C S``), the Smith form ``U C V = [I 0]``
-        gives the basis ``V^-1 S`` of ``T_i`` whose first rows span
-        ``T_(i-1)``.  Returns the adapted vectors of ``M`` in order and the
-        block sizes.  Raw rows stay inside this adapter.
-        """
-        from sage.matrix.constructor import matrix as engine_matrix
-
-        module = self.domain()
-        ring = module.base_ring()
-        engine_ring = _engine_ring(ring)
-        labels = tuple(module.module_generating_set())
-
-        def row(vector):
-            coordinates = vector.to_vector()
-            return [_engine_element(ring, coordinates(label)) for label in labels]
-
-        spans = [
-            [row(term.inclusion()(term.module_generator(label))) for label in term.module_generating_set()]
-            for term in terms
-        ]
-        spans.append([row(module.module_generator(label)) for label in labels])
-        adapted = engine_matrix(engine_ring, 0, len(labels), [])
-        sizes = []
-        for span in spans:
-            S = engine_matrix(engine_ring, span)
-            if adapted.nrows() == 0:
-                adapted = S
-                sizes.append(S.nrows())
-                continue
-            C = S.solve_left(adapted)
-            _D, _U, V = C.smith_form()
-            rebased = V.inverse() * S
-            assert rebased.nrows() >= adapted.nrows(), "the flag is not increasing"
-            adapted = adapted.stack(rebased.matrix_from_rows(range(adapted.nrows(), rebased.nrows())))
-            sizes.append(rebased.nrows() - sum(sizes))
-        generators = tuple(module.module_generators())
-        vectors = tuple(
-            sum(
-                (module.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
-                 for coefficient, generator in zip(adapted_row, generators, strict=True) if coefficient),
-                module.zero(),
-            )
-            for adapted_row in adapted.rows()
-        )
-        return vectors, tuple(size for size in sizes if size)
-
     def flag_stabilizer(self, flag):
         r"""``B = {g in GL(M) : g(T_i) = T_i for all i}`` for a chain ``T_1 < ... < T_k`` of saturated submodules.
 
         ``flag`` is the ordered family of subobjects of ``M``.  In a basis of
-        ``M`` adapted to the flag (``P: e_j |-> b_j``), ``B`` is block upper
-        triangular; it is generated by the block ``GL(n_i, R)`` (Sage's
-        generators) and the elementary automorphisms ``b_k |-> b_k + b_j``
-        for ``j`` in an earlier block than ``k`` (Levi decomposition
-        ``B = L U``; unverified: no source was opened, recorded in COMPLAINTS.md,
-        *Generators of parabolic subgroups of GL(M) over a PID*; untrusted computation).  The
-        result is the stabilizer subgroup of the flag under the natural
-        action, with that generating morphism and ``P`` retained as its
-        ``basis_change()``.
+        ``M`` adapted to the flag (``P: e_j |-> b_j``, retained as
+        ``basis_change()``), ``B`` is block upper triangular; it is generated
+        by the block ``GL(n_i, R)`` (Sage's generators) and the elementary
+        automorphisms ``b_k |-> b_k + b_j`` for ``j`` in an earlier block
+        than ``k`` (Levi decomposition ``B = L U``; unverified: no source was
+        opened, recorded in COMPLAINTS.md, *Generators of parabolic subgroups
+        of GL(M) over a PID*; untrusted computation).  The result is the
+        stabilizer subgroup of the flag under the natural module action,
+        with that generating morphism.
         """
-        from dzack_research.preamble.categories.group.predicate_subgroups import StabilizerSubgroups, _free_cover
-        from sage.groups.matrix_gps.linear import GL
-        from sage.matrix.constructor import block_diagonal_matrix, matrix as engine_matrix
+        from dzack_research.preamble.categories.group.predicate_subgroups import StabilizerSubgroups
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         module = self.domain()
-        terms = tuple(flag)
+        match flag:
+            case _ if flag in Sets():
+                terms = flag
+            case _:
+                terms = finite_ordered_set(tuple(flag))
         assert all(term.inclusion().codomain() is module for term in terms), (
             f"a flag of {module} is a chain of its subobjects, but {terms} are not all subobjects of {module}"
         )
-        vectors, sizes = self._flag_adapted_basis(terms)
-        labels = tuple(module.module_generating_set())
+        change, sizes, block_generators = _flag_stabilizer_engine_data(self, terms)
+        labels = module.module_generating_set()
         endomorphisms = module.module_category().Mor(module, module)
-        change = self(endomorphisms({label: vector for label, vector in zip(labels, vectors, strict=True)}))
-        engine_ring = _engine_ring(module.base_ring())
-        block_of = [index for index, size in enumerate(sizes) for _ in range(size)]
-        standard = []
-        for index, size in enumerate(sizes):
-            for generator in GL(size, engine_ring).gens():
-                blocks = [engine_matrix.identity(engine_ring, other) for other in sizes]
-                blocks[index] = generator.matrix()
-                standard.append(self._from_backend_row_action(block_diagonal_matrix(blocks)))
-        for k, k_label in enumerate(labels):
-            for j, j_label in enumerate(labels):
-                if block_of[j] < block_of[k]:
-                    standard.append(self(endomorphisms({
-                        label: module.module_generator(label) + (module.module_generator(j_label) if label == k_label else module.zero())
-                        for label in labels
-                    })))
-        generators = tuple(change * generator * ~change for generator in standard)
+        block_of = dict(zip(labels, (index for index, size in enumerate(sizes) for _ in range(size)), strict=True))
+        elementary = tuple(
+            self(endomorphisms({
+                label: module.module_generator(label) + (module.module_generator(j_label) if label == k_label else module.zero())
+                for label in labels
+            }))
+            for k_label in labels
+            for j_label in labels
+            if block_of[j_label] < block_of[k_label]
+        )
+        generators = finite_ordered_set(tuple(change * generator * ~change for generator in (*block_generators, *elementary)))
 
         def preserves_flag(automorphism):
             inverse = ~automorphism
             return all(
                 term.inclusion().is_in_image(automorphism(vector)) and term.inclusion().is_in_image(inverse(vector))
                 for term in terms
-                for vector in (term.inclusion()(term.module_generator(label)) for label in term.module_generating_set())
+                for vector in term.embedded_module_generators()
             )
 
         return StabilizerSubgroups(self)(
@@ -3568,7 +3570,7 @@ class ModuleAutomorphismGroup(CoreMor):
             self.natural_module_action_functor(),
             preserves_flag,
             description=f"g preserves the flag {terms} of {module}",
-            generating_morphism=_free_cover(self, generators),
+            generating_morphism=self.free_cover(generators),
             basis_change=change,
         )
 
