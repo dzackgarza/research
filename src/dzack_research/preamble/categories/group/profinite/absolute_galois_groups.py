@@ -191,10 +191,19 @@ class AbsoluteGaloisGroups(OwnedCategory):
             The stage ``K -> L`` is the base map the splitting-field
             construction returns.
             """
-            splitting_field, base_backend = polynomial.splitting_field(
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _engine_number_field_isomorphism,
+            )
+
+            splitting_engine, base_backend = polynomial.splitting_field(
                 "s", map=True
             )
-            splitting_field = _own_ring(splitting_field)
+            splitting_field = _own_ring(splitting_engine)
+            # K -> L on L's own realization (generator to generator).
+            base_backend = (
+                _engine_number_field_isomorphism(splitting_engine, _engine_ring(splitting_field))
+                * base_backend
+            )
             base_embedding = self.base_field().Mor(splitting_field)(base_backend)
             stage = self.extension_data(
                 splitting_field, base_embedding=base_embedding

@@ -4,7 +4,6 @@ from math import gcd
 
 from sage.groups.generic import discrete_log
 from sage.misc.classcall_metaclass import ClasscallMetaclass
-from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.integer_ring import ZZ
 
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
@@ -16,7 +15,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
-    _own_ring,
     _owned_engine_element,
     _owned_integers,
 )
@@ -153,11 +151,12 @@ def _cyclotomic_stage(domain, n):
             return owned_root, base_field(-1), domain.extension_data(base_field)
         case _ if base_field in OwnedNumberFields() and base_field in PrimeFields():
             # Phi_n is irreducible over QQ (Gauss), so QQ[x]/(Phi_n) is the
-            # field QQ(zeta_n), embedded by x -> zeta_n.
-            base = _engine_ring(base_field)
-            polynomial = cyclotomic_polynomial(int(n)).change_ring(base)
-            field = base.extension(polynomial, f"zeta_{n}")
-            owned_field = _own_ring(field)
+            # field QQ(zeta_n), embedded by x -> zeta_n.  The embedding and
+            # the generator are built on the owned field's own realization.
+            from dzack_research.preamble.categories.rings.number_fields import CyclotomicField
+
+            owned_field = CyclotomicField(int(n), f"zeta_{n}")
+            field = _engine_ring(owned_field)
             embedding = owned_field.Mor(domain.algebraic_closure())(field.hom([root], closure))
             stage = domain.extension_data(owned_field, embedding=embedding)
             return owned_root, _owned_engine_element(owned_field, field.gen()), stage
@@ -320,10 +319,12 @@ class QuadraticCharacter(ProfiniteCharacter):
             stage = domain.finite_extension(2)
             root_at_stage = _finite_root_at_stage(root, stage)
         else:
-            polynomial_ring = base["t"]
-            t = polynomial_ring.gen()
-            field = base.extension(t**2 - backend_a, "sqrt_a")
-            owned_field = _own_ring(field)
+            # K(sqrt a) = K[t]/(t^2 - a), a not a square in K; the embedding
+            # and the generator are built on its own realization.
+            polynomial_ring = base_field.polynomial_ring("t")
+            t = polynomial_ring.algebra_generator("t")
+            owned_field = (t**2 - polynomial_ring(owned_a)).number_field("sqrt_a")
+            field = _engine_ring(owned_field)
             backend = field.hom([root], closure)
             embedding = owned_field.Mor(domain.algebraic_closure())(backend)
             stage = domain.extension_data(owned_field, embedding=embedding)

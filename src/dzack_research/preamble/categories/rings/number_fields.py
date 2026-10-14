@@ -88,8 +88,41 @@ def _number_field_engine(polynomial):
     if all(coefficient in SageZZ for coefficient in engine_polynomial.list()):
         order = engine_polynomial.change_ring(SageZZ).is_cyclotomic(certificate=True)
         if order:
-            return _SageCyclotomicField(int(order), label)
+            # No embedding (CON-08): Sage's default cyclotomic field carries
+            # zeta_n -> e^{2 pi i/n}; embedding=None is accepted by
+            # CyclotomicFieldFactory.create_key (number_field.py:1122).
+            # GAP conversion does not read the embedding: _coerce_from_gap
+            # writes CoeffsCyc in self.gen(), and a UCF element converts
+            # through _coerce_from_other_cyclotomic_field's
+            # _lift_cyclotomic_element (number_field.py:11376, 11431;
+            # universal_cyclotomic_field.py to_cyclotomic_field).
+            return _SageCyclotomicField(int(order), label, embedding=None)
     return _SageNumberField(engine_polynomial, label)
+
+
+def _engine_number_field_isomorphism(source, target):
+    r"""The Sage isomorphism ``source -> target`` of two realizations of one number field, generator to generator.
+
+    Private number-field adapter (``OWN-06``).  Both engines realize
+    ``QQ[t]/(f)`` (or ``K[t]/(g)`` over realizations of one ``K``) for the
+    same polynomial, so sending the class of ``t`` to the class of ``t`` is an
+    isomorphism, determined by that polynomial.  Callers: the raising of a
+    number-field engine's orders and maps into the owned field
+    (:func:`_order_from_engine`, the Galois action in ``groups.py``, the
+    splitting-field base maps in ``absolute_galois_group(s).py``).  The
+    identity when the engines are one parent.
+    """
+    if source is target:
+        return source.Hom(source).identity()
+    if source.is_absolute():
+        assert target.is_absolute() and source.defining_polynomial().list() == target.defining_polynomial().list(), (
+            f"{source} and {target} are not realizations of one number field: their defining "
+            "polynomials differ"
+        )
+        return source.hom([target.gen()], target)
+    base = _engine_number_field_isomorphism(source.base_field(), target.base_field())
+    inclusion = target.coerce_map_from(target.base_field())
+    return source.hom([target.gen()], target, base_map=inclusion * base)
 
 
 @cached_function(key=lambda polynomial: (id(element_parent(polynomial)), polynomial))
@@ -192,7 +225,7 @@ def _order_from_engine(engine_order):
     canonical = _engine_ring(field)
     source = engine_order.number_field()
     if source is not canonical and field is not _owned_rationals():
-        transport = source.hom([canonical.gen()], canonical)
+        transport = _engine_number_field_isomorphism(source, canonical)
         engine_order = canonical.order([transport(element) for element in engine_order.basis()])
     return _order_in(field, engine_order)
 

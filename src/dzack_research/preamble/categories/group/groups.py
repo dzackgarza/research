@@ -689,9 +689,21 @@ def _engine_element_action(group, backend_element, point):
     engine = _engine_group(group)
     match engine:
         case SageGaloisGroup():
-            field = _own_ring(engine.number_field())
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _engine_number_field_isomorphism,
+            )
+
+            source = engine.number_field()
+            field = _own_ring(source)
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
-            return _owned_engine_element(field, backend_element.as_hom()(_engine_element(field, point)))
+            # The automorphism on the owned field's own realization: the
+            # Galois group's engine field is carried there generator to
+            # generator, and sigma is conjugated by that isomorphism.
+            canonical = _engine_ring(field)
+            into_source = _engine_number_field_isomorphism(canonical, source)
+            out_of_source = _engine_number_field_isomorphism(source, canonical)
+            value = out_of_source(backend_element.as_hom()(into_source(_engine_element(field, point))))
+            return _owned_engine_element(field, value)
         case PermutationGroup_generic():
             return group._permutation_point_action(backend_element, point)
         case _:
