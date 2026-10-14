@@ -964,7 +964,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         )
         return TransportGroupActionFunctor(self.acting_group(), functor)
 
-    def restriction(self, group_morphism, *, orbit_relation=None):
+    def restriction(self, group_morphism):
         r"""Return ``phi^*: GObjects(G, C) -> GObjects(H, C)`` for ``phi: H -> G``.
 
         Restriction along a group morphism is the reindexing functor
@@ -976,11 +976,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         )
 
         assert group_morphism.codomain() is self.acting_group(), f"{group_morphism} does not land in {self.acting_group()}, so it restricts no action of that group"
-        return RestrictionOfGroupActionFunctor(
-            group_morphism,
-            self.underlying_category(),
-            orbit_relation=orbit_relation,
-        )
+        return RestrictionOfGroupActionFunctor(group_morphism, self.underlying_category())
 
     def _scheme_action_functor(self, acted):
         r"""Read the retained BG -> Sch_R datum of an admitted scheme action.
@@ -1375,12 +1371,28 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         def restrict_action(self, group_morphism, *, orbit_relation=None):
             r"""Return this object acted on by ``H`` through ``phi: H -> G``.
 
-            ``orbit_relation``, when supplied, is the procedure deciding the
-            orbit relation of the restricted ``H``-object (``y ~_H x``); the
-            restriction carries it as its decision.
+            Without ``orbit_relation`` this is the image under the restriction
+            functor :meth:`GObjects.restriction`.  ``orbit_relation``, when
+            supplied, is the procedure deciding the orbit relation of the
+            restricted ``H``-set (``y ~_H x``): it is data of that object, so
+            the restricted ``H``-set is constructed on the same points with
+            the action through ``phi`` and that decision.  The functor stays
+            independent of any one object.
             """
             category = GObjects(self.acting_group(), self.underlying_category())
-            return category.restriction(group_morphism, orbit_relation=orbit_relation)(self)
+            if orbit_relation is None:
+                return category.restriction(group_morphism)(self)
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            assert self.underlying_category() is Sets(), (
+                f"an orbit-relation decision is data of an H-set; {self} is an object of "
+                f"{self.underlying_category()}"
+            )
+            return GObjects(group_morphism.domain(), Sets()).on_set(
+                self,
+                lambda group_element, point: self.act(group_morphism(group_element), point),
+                orbit_relation=orbit_relation,
+            )
 
         def orbit_representatives(self, points):
             r"""Retain selected representatives together with their orbit projection."""
