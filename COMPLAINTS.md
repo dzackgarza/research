@@ -2159,6 +2159,65 @@ A prime of `Kbar = QQbar` above a rational prime `p` is a coherent family of pri
 **Searched (2026-10-14, source only):** the owned closure `QQbar` is Sage's `AlgebraicField`. Sage's `Qp(p)` is a complete field, and its algebraic extensions are finite extensions built by `Qp(p).extension(f)`. Sage presents no algebraic closure of `Qp`, so it presents no map `QQbar -> Qbar_p`. A finite `iota_L: L -> K_w` exists stage by stage, but compatible choices across all stages are the same coherence problem. **Conclusion:** no stateless prolongation is constructed here. The rejected query-order-dependent default is recorded in the commit that removed it.
 **Consumers:** `AbsoluteGaloisGroup.frobenius`, `FrobeniusConjugacyClass.representative`, and the restrictions of a bare `frobenius(p)` to non-abelian stages, which assert. Remediation: `prime-prolongations-from-p-adic-embeddings` in [TODO.md](TODO.md).
 
+### Maps of a set into a module are not presented as a module
+
+For a set `A` and an `R`-module `B`, the set `Hom_Set(A, U(B))` of all maps
+is an `R`-module under pointwise addition and scaling, and it is the product
+`prod_{a in A} B` in `Mod_R`. Every space of maps `A -> B` cut out by a
+condition (continuity, smoothness, integrability, summability) is a submodule
+of it (`CON-17`). Mathlib states the module as `Function.module`
+(`Mathlib/Algebra/Module/Pi.lean:52`), the special case of `Pi.module`
+(`:37`); formalization corpus API, 2026-10-14.
+**Dependency path:** set `A`, module `B` -> `Sets().Mor(A, B)` -> pointwise
+`R`-module on that set -> its submodules cut out by a predicate -> the
+function spaces `C^k(A, B)`, `L^p(A, B)`, `ell^p(A, B)`.
+**Existing capability:** `_module_product_created_by_underlying_sets`
+(`modules/pure/modules.py`) builds the product module, with the same
+pointwise law, on `Sets().product(...)`, which is a different set from
+`Sets().Mor(A, B)`; `SetMorCategory` is placed in `FunctionSets` only.
+**Consumers:** `categories/functions/real_functions.py`,
+`modules/pure/function_modules.py`, `lebesgue_quotients.py`, `convolution.py`.
+**Coverage boundary:** `lean-categories` at `e1d422eb` was searched with
+`rg -i "Pi\.module|Function\.module|cotensor"` over `LeanCategories/` and
+`FOUNDATIONS.md`: no statement of this module or of its identification with
+the product was found; the forum, Loogle and LeanSearch were not searched.
+The identity of the two sets `Hom_Set(A, U(B))` and `prod_{a in A} U(B)`,
+which `STY-148` asks for, is not addressed by this entry.
+**Request (not yet filed):** `lean-categories` states, for a set `A` and an
+`R`-module `B`, the `R`-module of maps `A -> U(B)` with pointwise operations
+and its isomorphism with the product `prod_{a in A} B` in `ModuleCat R`,
+citing Mathlib `Function.module` and `Pi.module`.
+Repair: `set-maps-into-a-module-form-a-module` and `condition-submodules` in
+[TODO.md](TODO.md).
+
+### Protected function-space expectations use spellings that CON-17 removes
+
+`CON-17` makes every function-space constructor take both endpoints, removes
+the stored variable `indeterminate()`, and states that a coordinate of `A` is
+supplied by `A`, never by the space. The protected expectations still use the
+removed spellings:
+- `tests/constructions/test_lebesgue_graded_module_maps_construct.sage:9,20`:
+  `x = Lp(2).indeterminate()`, then `Lp(2)(exp(-x * x))`;
+- `tests/constructions/test_lebesgue_graded_modules_construct.sage:10-13`,
+  `test_paired_modules_construct.sage:11-12` and
+  `test_pairing_objects_construct.sage:7-8`: one-argument `Lp(p)` and `ell(p)`;
+- unprotected: `tests/objects/test_smooth_functions_on_the_line.sage:11`,
+  `(C ^ Infinity)(RR)`, with the codomain left implicit.
+`tests/constructions/test_geometry_and_analysis_construct.sage:84` writes
+`x = RR.coordinate()` and then `smooth(x**2 + 1)`. The owned `RR` has no
+`coordinate`, and its elements are closed exact reals
+(`rings/real.py:_closed_exact_real_expression` refuses an expression with a
+variable), so a general element of `RR` is not an element of `RR` as the field
+is presented. Which object a coordinate of `RR` is (an element of an owned
+ring of expressions in one real variable, or of another object) is not
+stated by `CON-17`, and the owned `SR` is no ring (`symbolic-expressions-are-no-owned-ring`).
+**Owner ruling needed:** whether these expectation lines are corrected
+mathematically, or `CON-17` admits the one-argument shorthand, and what the
+coordinate of `RR` is. Until then the one-argument `Lp(p)` and `ell(p)`
+remain thin routes to `Lp(p, RR, RR)` and `ell(p, NN, RR)`; `Lp(2).indeterminate()`
+and `RR.coordinate()` are not implemented, and the expectations naming them
+fail. Node: `function-spaces-are-subobjects-of-mor`.
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
