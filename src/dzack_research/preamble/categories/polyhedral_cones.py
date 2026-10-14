@@ -5,6 +5,7 @@ from sage.arith.misc import gcd
 from sage.geometry.cone import Cone as SageCone
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
+from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
@@ -663,6 +664,99 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 return False
             pairings = tuple(lattice.b(ray, timelike) for ray in rays)
             return all(value >= 0 for value in pairings)
+
+        @cached_method
+        def vectors_of_square(self, square):
+            r"""Return the finite set of lattice vectors of this cone with ``q = square``.
+
+            Hypothesis: the cone is pointed and its primitive rays pair with
+            one weak sign, isotropic rays strictly with every other ray, as
+            for a cone in the closed positive cone of a Lorentzian lattice;
+            ``square`` is nonzero of that sign.  (The zero fibre contains
+            every multiple of an isotropic ray and is infinite.)
+
+            Finiteness (research#401).  Triangulate the cone by its rays.
+            A lattice vector of a simplicial piece ``S`` is ``sum c_i r_i``
+            with ``c_i`` in ``(1/D) ZZ_{>=0}``, ``D`` the index of ``ZZ S``
+            in its saturation.  Every term of ``q = sum c_i c_j b(r_i, r_j)``
+            has the sign of ``square``, so ``c_i^2 q(r_i) <= |square|``
+            bounds a timelike ray, and for an isotropic ray some other
+            ``c_j >= 1/D`` gives ``2 c_i b(r_i, r_j) / D <= |square|``.
+            The lattice points of each bounded parallelotope are
+            enumerated and kept when their square is ``square``.
+            """
+            from sage.geometry.triangulation.point_configuration import PointConfiguration
+            from sage.matrix.constructor import matrix
+
+            from dzack_research.preamble.categories.lattices import Lattices
+            from dzack_research.preamble.tensors.tensor import (
+                _engine_component_matrix,
+                _engine_row_family_gram,
+            )
+
+            lattice = self.ambient_lattice()
+            ring = lattice.base_ring()
+            assert lattice in Lattices(ring) and ring is _own_ring(SageZZ), (
+                f"cannot enumerate vectors of square {square} in {self}: the cone must lie in a "
+                f"ZZ-lattice, but it lies in {lattice}, in {lattice.category()}"
+            )
+            assert self.is_pointed(), (
+                f"cannot enumerate vectors of square {square} in {self}: the cone contains the "
+                f"lines {self.lineality_generators()}"
+            )
+            square = ring(square)
+            labels = tuple(lattice.module_generating_set())
+            rays = tuple(self.primitive_rays())
+            gram = _engine_component_matrix(lattice.gram_tensor())
+            rows = matrix(SageZZ, [[int(ray.to_vector()(label)) for label in labels] for ray in rays])
+            pairings = _engine_row_family_gram(gram, rows)
+            sign = SageZZ(1) if sum(pairings.list()) > 0 else SageZZ(-1)
+            signed = sign * pairings
+            target = sign * SageZZ(int(square))
+            assert target > 0 and all(entry >= 0 for entry in signed.list()), (
+                f"cannot enumerate vectors of square {square} in {self}: the rays must pair with "
+                f"one sign and the square must be nonzero of that sign, but the ray pairings are "
+                f"{pairings}"
+            )
+            found = {}
+            for simplex in PointConfiguration(rows.rows(), projective=True).triangulate():
+                positions = tuple(simplex)
+                piece = rows.matrix_from_rows(positions)
+                index = prod(SageZZ(entry) for entry in piece.elementary_divisors() if entry)
+                bounds = []
+                for position in positions:
+                    if signed[position, position] > 0:
+                        bound = SageZZ((target * index**2 / signed[position, position]).floor()).isqrt()
+                    else:
+                        partners = tuple(signed[position, other] for other in positions if other != position)
+                        if not partners:
+                            continue
+                        assert min(partners) > 0, (
+                            f"cannot enumerate vectors of square {square} in {self}: the isotropic "
+                            f"ray {rays[position]} is orthogonal to another ray of its piece"
+                        )
+                        bound = SageZZ((target * index**2 / (2 * min(partners))).floor())
+                    bounds.append((position, bound))
+                if not bounds:
+                    continue
+                zero = (SageQQ.zero(),) * len(labels)
+                parallelotope = Polyhedron(vertices=[zero], base_ring=SageQQ)
+                for position, bound in bounds:
+                    parallelotope += Polyhedron(
+                        vertices=[zero, tuple((SageQQ(bound) / index) * entry for entry in rows.row(position))],
+                        base_ring=SageQQ,
+                    )
+                points = tuple(parallelotope.integral_points())
+                if not points:
+                    continue
+                coordinates = matrix(SageZZ, points)
+                norms = (coordinates * gram).elementwise_product(coordinates) * matrix(SageZZ, len(labels), 1, [1] * len(labels))
+                for point, norm in zip(points, norms.column(0), strict=True):
+                    if norm == int(square):
+                        found[tuple(int(entry) for entry in point)] = point
+            return lattice.finite_subsets()(tuple(
+                _owned_vector(lattice, point) for point in found.values()
+            ))
 
         def _repr_(self):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
