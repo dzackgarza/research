@@ -555,7 +555,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     OwnedRngs,
     OwnedSemirings,
     PredicateSubrings,
-    PrimeField,
     PrimeFields,
     PrimeSpectra,
     PrincipalIdealDomains,

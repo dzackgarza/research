@@ -6263,11 +6263,6 @@ def _finite_field_with_modulus(characteristic: int, label: str, coefficients: tu
     return polynomials.quotient_ring(CommutativeIdeals(polynomials).Maximal()(modulus))
 
 
-def PrimeField(characteristic):
-    r"""Return the prime field of the given characteristic through its category owner."""
-    return PrimeFields()(characteristic)
-
-
 def Zmod(modulus):
     r"""``ZZ/(n)``: the quotient of ``ZZ`` by the ideal ``(n)``, ``n`` the modulus.
 

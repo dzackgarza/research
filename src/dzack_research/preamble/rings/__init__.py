@@ -124,10 +124,6 @@ def GF(order, name=None):
     return _public_commutative_ring(_GF(order, name))
 
 
-def PrimeField(characteristic):
-    return PrimeFields()(characteristic)
-
-
 def Zmod(modulus):
     return _public_commutative_ring(_Zmod(modulus))
 
@@ -197,7 +193,6 @@ def ring_constructor_surface() -> dict[str, object]:
     r"""Return the constructors exported into a preamble session."""
     return {
         "GF": GF,
-        "PrimeField": PrimeField,
         "Zmod": Zmod,
         "Zp": Zp,
         "Qp": Qp,
@@ -216,6 +211,18 @@ def _restore_session_ring_bindings(scope: dict) -> None:
     """
     scope.update(session_ring_objects())
     scope.update(ring_constructor_surface())
+    for name in _REMOVED_ENGINE_SPELLINGS:
+        scope.pop(name, None)
+
+
+# AGENTS.md, *The preamble is a universe over Sage*: "where Sage spells one
+# mathematical operation several ways, the preamble picks one spelling and the
+# others do not exist in the session".  The session spells F_q and ZZ/(n) as
+# GF and Zmod (and the category constructor PrimeFields()(p)); Sage's other
+# spellings of the same constructors -- IntegerModRing and Integers
+# (sage/rings/all.py), FiniteField (sage/rings/finite_rings/all.py) -- are
+# removed from a session scope that sage.all populated, not rebound to stubs.
+_REMOVED_ENGINE_SPELLINGS = ("FiniteField", "IntegerModRing", "Integers")
 
 
 __all__ = [
@@ -261,7 +268,6 @@ __all__ = [
     "OwnedRngs",
     "OwnedSemirings",
     "PredicateSubrings",
-    "PrimeField",
     "PrimeFields",
     "PrimeLocalizations",
     "PrimeSpectra",
