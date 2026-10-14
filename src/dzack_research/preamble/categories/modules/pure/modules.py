@@ -265,6 +265,23 @@ class Modules(OwnedCategoryOverBaseRing):
                 pass
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
+    def Core(self):
+        r"""The core groupoid of modules; at ``(M, M)`` its Mor is ``Aut_R(M)`` (``_ModuleCore``)."""
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _ModuleCore
+
+        return _ModuleCore(self)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for modules: the identity of ``Aut_R(M)``."""
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"whether {core_mor.domain()} and {core_mor.codomain()} are isomorphic modules is not decided here"
+        )
+        return core_mor.identity()
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Implementer side of the core contract: generators of ``GL(M)`` from Sage's ``GL(n, R)`` on the selected basis."""
+        return core_mor._basis_general_linear_generators()
+
     def free_module(self, labels):
         r"""``F_R(S)``, the free object of this category on the set ``S`` of labels.
 

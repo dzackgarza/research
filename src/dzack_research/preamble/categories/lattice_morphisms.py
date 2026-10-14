@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleAutomorphismMethods,
     ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
@@ -562,7 +563,9 @@ class LatticeIsometryMethods:
 
     def __init__(self, parent, images) -> None:
         match images:
-            case CategoricalIsomorphism():
+            # A module isomorphism of the underlying modules: an inverse pair,
+            # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
+            case CategoricalIsomorphism() | ModuleAutomorphismMethods():
                 domain = parent.domain()
                 codomain = parent.codomain()
                 forward = domain.module_category().Mor(domain, codomain)(images.forward())
