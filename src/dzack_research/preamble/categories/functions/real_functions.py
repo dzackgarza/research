@@ -582,12 +582,12 @@ class _FunctionSpace(_ConditionSubmodule):
     r"""Private computation class (``OWN-06``) of a space of maps ``X -> Y`` cut out of ``Y^X``."""
 
     def domain(self):
-        r"""The set ``X`` the maps start at."""
-        return self.condition_ambient_module().domain()
+        r"""The set ``X`` the maps start at: the domain of the maps of ``Y^X``, the codomain of the inclusion."""
+        return self.unformed_module().inclusion().codomain().domain()
 
     def codomain(self):
         r"""The module ``Y`` the maps take values in."""
-        return self.condition_ambient_module().codomain()
+        return self.unformed_module().inclusion().codomain().codomain()
 
     def __contains__(self, value) -> bool:
         r"""Whether ``value`` is a map ``X -> Y`` in this space.
@@ -602,7 +602,7 @@ class _FunctionSpace(_ConditionSubmodule):
         if element_parent(value) is self:
             return True
         if callable(value) and not isinstance(value, Parent):
-            value = self.condition_ambient_module()(value)
+            value = self.unformed_module().inclusion().codomain()(value)
         return super().__contains__(value)
 
     def one(self):

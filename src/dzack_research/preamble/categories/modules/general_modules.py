@@ -593,14 +593,18 @@ class _ConditionSubmoduleElement:
         submodule = self.parent()
         point = self.underlying_element()
         decision = submodule.condition_predicate()(point)
+        # The module the condition is stated on is the codomain of the
+        # submodule's inclusion; a structured object on the submodule's data
+        # reaches the submodule as its unformed module.
+        module = submodule.unformed_module().inclusion().codomain()
         if decision is False:
             raise ValueError(
                 f"{point} is not in {submodule}: it fails the condition {submodule.condition_predicate()} "
-                f"that cuts the submodule out of {submodule.condition_ambient_module()}"
+                f"that cuts the submodule out of {module}"
             )
         assert decision is True, (
             f"cannot decide whether {point} satisfies the condition {submodule.condition_predicate()} "
-            f"cutting {submodule} out of {submodule.condition_ambient_module()}: the condition answers {decision}"
+            f"cutting {submodule} out of {module}: the condition answers {decision}"
         )
 
 
@@ -620,23 +624,19 @@ class _ConditionSubmodule:
 
     def __init__(
         self,
-        condition_ambient,
+        condition_module,
         condition_predicate,
         condition_categories,
         condition_engine,
         condition_engine_data,
         **rest,
     ) -> None:
-        self._condition_ambient = condition_ambient
+        self._condition_module = condition_module
         self._condition_engine_data = condition_engine_data
         self._condition_predicate = condition_predicate
         self._condition_categories = condition_categories
         self._condition_engine = condition_engine
         super().__init__(**rest)
-
-    def condition_ambient_module(self):
-        r"""The module ``M`` the condition cuts this submodule out of."""
-        return self._condition_ambient
 
     def condition_predicate(self):
         r"""The predicate ``P`` with ``self = {x in M : P(x)}``."""
@@ -652,7 +652,7 @@ class _ConditionSubmodule:
         caller is admitted by the caller's claim, checked by
         ``validate_condition_membership`` when that is asked (``OWN-22``).
         """
-        return self.element_class(self, self._condition_ambient(value))
+        return self.element_class(self, self._condition_module(value))
 
     def _element_constructor_(self, value):
         element = super()._element_constructor_(value)
@@ -668,23 +668,23 @@ class _ConditionSubmodule:
         """
         if element_parent(value) is self:
             return True
-        if element_parent(value) is not self._condition_ambient:
-            if value not in self._condition_ambient:
+        if element_parent(value) is not self._condition_module:
+            if value not in self._condition_module:
                 return False
-            value = self._condition_ambient(value)
+            value = self._condition_module(value)
         return self.underlying_set().is_parent_of(value)
 
     def _module_with_structure(self, categories, construction_data):
         r"""Build further structure (an algebra, a form) on the data of this submodule.
 
         The structured object is realized by the same class on the same
-        ambient module, predicate and condition set, so its elements are
+        module ``M``, predicate and condition set, so its elements are
         the points of ``M`` that this submodule's are.  It is not itself a
         subobject: its ``unformed_module()`` is this submodule, which carries
         the inclusion.
         """
         return _condition_submodule_object(
-            self._condition_ambient,
+            self._condition_module,
             self._condition_predicate,
             self.underlying_set(),
             engine=self._condition_engine,
@@ -695,11 +695,11 @@ class _ConditionSubmodule:
         )
 
     def _repr_(self):
-        return f"Submodule of {self._condition_ambient} cut out by {self._condition_predicate}"
+        return f"Submodule of {self._condition_module} cut out by {self._condition_predicate}"
 
 
 def _condition_submodule_object(
-    ambient,
+    module,
     predicate,
     points,
     *,
@@ -711,7 +711,7 @@ def _condition_submodule_object(
 ):
     r"""Construct a condition submodule, or a structured object on its data.
 
-    ``points`` is the condition set of ``predicate`` in ``ambient``;
+    ``points`` is the condition set of ``predicate`` in ``module``;
     ``engine`` is the pair of computation classes realizing the objects and
     elements (this module's, or a specialization of them such as a function
     space), and ``engine_data`` the data those classes add (a regularity,
@@ -723,17 +723,17 @@ def _condition_submodule_object(
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
     from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
-    ring = ambient.base_ring()
+    ring = module.base_ring()
     general = GeneralModules(ring)
     placement = [general, *categories]
     data = {
         "base_ring": ring,
         "underlying_set": points,
         "addition": operator.add,
-        "zero": ambient.zero(),
+        "zero": module.zero(),
         "negation": operator.neg,
-        "scalar_action": lambda scalar, value: ambient.scalar_multiple(scalar, value),
-        "condition_ambient": ambient,
+        "scalar_action": lambda scalar, value: module.scalar_multiple(scalar, value),
+        "condition_module": module,
         "condition_predicate": predicate,
         "condition_categories": tuple(categories),
         "condition_engine": engine,
@@ -741,8 +741,8 @@ def _condition_submodule_object(
     }
     if subobject:
         placement.append(ModuleSubobjects(ring))
-        data["subobject_inclusion_factory"] = lambda submodule: submodule.Mono(ambient)._from_constructed_embedding(
-            lambda element: ambient(submodule(element).underlying_element())
+        data["subobject_inclusion_factory"] = lambda submodule: submodule.Mono(module)._from_constructed_embedding(
+            lambda element: module(submodule(element).underlying_element())
         )
     object_engine, element_engine = engine
     return _object_of(
