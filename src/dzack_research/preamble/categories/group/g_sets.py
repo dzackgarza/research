@@ -103,6 +103,31 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
+    def _orbit_words(self, seeds, action, augmentation):
+        r"""The one orbit search: the points of the orbits of ``seeds``, each with a word.
+
+        ``augmentation`` is a free cover ``pi: F ->> G``.  Breadth-first search
+        over the free generators reaches each new point ``s.y`` by the word
+        ``s t_y``, so ``pi(t_p)`` carries the seed of the orbit of ``p`` to
+        ``p``.  The caller supplies an effective action and the hypothesis
+        that these orbits are finite; the search terminates at exactly their
+        union.  The two Python lists are private search state, returned in
+        the order the points were found.
+        """
+        free = augmentation.domain()
+        steps = tuple((word, augmentation(word)) for word in free.group_generators())
+        points = list(finite_ordered_set(tuple(seeds)))
+        words = [free.one() for _point in points]
+        position = 0
+        while position < len(points):
+            for word, element in steps:
+                image = action(element, points[position])
+                if image not in points:
+                    points.append(image)
+                    words.append(word * words[position])
+            position += 1
+        return points, words
+
     def from_finite_orbits(self, seeds, action):
         r"""The union of the finite orbits of supplied points under a given action.
 
@@ -110,16 +135,38 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         orbits are finite. Enumerating generator images then terminates at
         exactly their union; no search bound is a finiteness certificate.
         """
-        points = list(finite_ordered_set(tuple(seeds)))
-        generators = tuple(self.group().group_generators())
-        position = 0
-        while position < len(points):
-            for generator in generators:
-                image = action(generator, points[position])
-                if image not in points:
-                    points.append(image)
-            position += 1
+        points, _words = self._orbit_words(
+            seeds, action, self.group().selected_group_resolution().augmentation()
+        )
         return self(finite_ordered_set(tuple(points)), action)
+
+    def pointed_orbit(self, subgroup, base, action, augmentation=None):
+        r"""``G/H`` realized as the orbit of ``base``, for ``H`` the stabilizer of ``base``.
+
+        The defining hypothesis is the caller's: ``H`` is the stabilizer of
+        ``base`` and the orbit is finite.  Then ``gH |-> g.base`` identifies
+        ``G/H`` with the orbit, and the orbit search supplies the section
+        ``p |-> t_p``: a word section ``orbit -> F`` composed with the free
+        cover ``pi: F ->> G`` (by default the selected one).  The result is the
+        ``LeftCosetGSets(H)`` object retaining the orbit action, the base
+        point, the section and its word factor; Schreier generators of ``H``
+        and transporter witnesses are read from it.
+        """
+        if augmentation is None:
+            augmentation = self.group().selected_group_resolution().augmentation()
+        points, words = self._orbit_words((base,), action, augmentation)
+        orbit = self(finite_ordered_set(tuple(points)), action)
+        ranking = orbit.ranking_map()
+        word_section = Sets().Mor(orbit, augmentation.domain())(
+            lambda point: words[int(ranking(point))]
+        )
+        return LeftCosetGSets(subgroup).from_transitive_action(
+            orbit,
+            base,
+            augmentation * word_section,
+            word_section=word_section,
+            augmentation=augmentation,
+        )
 
     def underlying_category(self):
         r"""``FinSet``, the codomain of the forgetful functor."""
@@ -352,103 +399,45 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return free
             return self.is_transitive_action()
 
-        @cached_method
-        def _free_generator_actions(self):
-            r"""The selected augmentation ``pi: F -> G`` and the permutation of each free generator.
-
-            Each generator's finite permutation is evaluated once; words in
-            ``F`` then record how a point was reached without readmitting a
-            product in ``G`` through a membership question.
-            """
-            resolution = self.acting_group().selected_group_resolution()
-            augmentation = resolution.augmentation()
-            return augmentation, tuple(
-                (word, self.action_of(augmentation(word)))
-                for word in resolution.level(0).group_generators()
+        @cached_method(key=lambda self, point: self.ranking_map()(point))
+        def orbit_as_coset_space(self, point):
+            r"""The orbit of ``point`` as ``G/G_point``, with the section of ``G -> G/G_point``."""
+            return FiniteGSets(self.acting_group()).pointed_orbit(
+                self.stabilizer(point), point, self.act
             )
-
-        @cached_method
-        def _orbit_transversal_tables(self):
-            r"""Per-source orbit transversals, retaining points by semantic equality."""
-            return []
-
-        def _orbit_transversal(self, source):
-            r"""The orbit of ``source`` with a word ``t_y`` in ``F`` carrying ``source`` to each ``y``.
-
-            Breadth-first search over the selected free generators: a new
-            point ``s.y`` is reached by the word ``s t_y``.
-            """
-            augmentation, steps = self._free_generator_actions()
-            tables = self._orbit_transversal_tables()
-            table = next((table for table in tables if table[0][0] == source), None)
-            if table is None:
-                points = [source]
-                words = [augmentation.domain().one()]
-                position = 0
-                while position < len(points):
-                    for word, action in steps:
-                        image = action(points[position])
-                        if image not in points:
-                            points.append(image)
-                            words.append(word * words[position])
-                    position += 1
-                table = (points, words)
-                tables.append(table)
-            return table
 
         def transporter_witness(self, source, target):
             r"""Return one ``g`` with ``g.source = target``, or ``None`` when they lie in different orbits.
 
-            The witness is the image under the selected augmentation of the
-            orbit-transversal word, so a group given by generators needs no
-            enumeration; distinct orbits are decided by the finite orbit.
+            The witness is the section of the pointed orbit ``G.source`` at
+            ``target``; ``target`` outside that finite orbit has none.
             """
             if source not in self or target not in self:
                 raise ValueError(
                     f"no transporter from {source} to {target} in {self}: both must be "
                     f"points of {self.point_set()}"
                 )
-            augmentation, _steps = self._free_generator_actions()
-            points, words = self._orbit_transversal(source)
-            if target not in points:
+            cosets = self.orbit_as_coset_space(source)
+            if target not in cosets:
                 return None
-            return augmentation(words[points.index(target)])
+            return cosets.representative_map()(cosets(target))
 
         def _stabilizer_generating_morphism(self, point):
-            r"""Protected value hook: Schreier's lemma on the finite orbit of ``point``.
+            r"""Protected value hook: Schreier's lemma on the pointed orbit of ``point``.
 
-            Owner ``FiniteGSets``; its only caller is ``GObjects.stabilizer``,
-            which passes the result to the stabilizer constructor as that
-            subgroup's selected generating morphism.  With ``pi: F -> G`` the
-            selected augmentation and ``t_y`` the transversal word of ``y``,
-            the words ``t_(s.y)^-1 s t_y`` generate the stabilizer of
-            ``F`` at ``point``, and their images under ``pi`` generate
-            ``G_point``.  The cost is the orbit length times the number of
-            generators, not the order of the image of ``G``.  Without a
-            selected resolution of ``G`` no value is supplied (``None``).
+            Owner ``GObjects``, supplied here by ``FiniteGSets``; its only
+            caller is ``GObjects.stabilizer``, which passes the value to the
+            stabilizer constructor as that subgroup's generating datum.  The
+            value builds ``G/G_point`` as the pointed orbit and reads its
+            Schreier generating morphism.  Without a selected resolution of
+            ``G`` no value is supplied (``None``).
             """
             group = self.acting_group()
             if not group.has_selected_resolution(OwnedGroups()):
                 return None
-
-            def generating_morphism(stabilizer):
-                from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-                augmentation, steps = self._free_generator_actions()
-                points, words = self._orbit_transversal(self(point))
-                schreier = tuple(
-                    (~words[points.index(action(current))]) * word * words[index]
-                    for index, current in enumerate(points)
-                    for word, action in steps
-                )
-                labels = finite_ordinal_set(len(schreier))
-                source = OwnedGroups.Free(index_set=labels)
-                word_map = source.Mor(augmentation.domain())(
-                    Sets().Mor(labels, augmentation.domain())(lambda label: schreier[int(label)])
-                )
-                return source.Mor(stabilizer).elementwise(augmentation * word_map)
-
-            return generating_morphism
+            return lambda stabilizer: FiniteGSets(group).pointed_orbit(
+                stabilizer, point, self.act
+            ).schreier_generating_morphism()
 
         def transporter(self, source, target):
             r"""Return the unique transporter between two points of a torsor.
@@ -499,7 +488,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         subgroup = self.subgroup()
         return _left_coset_g_set(subgroup.supergroup(), subgroup)
 
-    def from_transitive_action(self, action, base_point, representative_map):
+    def from_transitive_action(self, action, base_point, representative_map, *, word_section=None, augmentation=None):
         r"""Realize ``G/H`` by a finite pointed transitive ``G``-set.
 
         The construction data are an actual finite action ``X``, a point
@@ -510,7 +499,9 @@ class LeftCosetGSets(OwnedParameterizedCategory):
 
         This realization does not require ``G`` to be finite or compute a
         presentation of it. Its representative map may be the composite of
-        an actual free-word section with the selected augmentation to ``G``.
+        an actual free-word section with a free cover ``pi: F ->> G``; the
+        caller then also supplies those two factors, which the Schreier
+        generating morphism of ``H`` reads.
         """
         subgroup = self.subgroup()
         group = subgroup.supergroup()
@@ -526,18 +517,87 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             coset_action=action,
             coset_base_point=action(base_point),
             coset_representative_map=representative_map,
+            coset_word_section=word_section,
+            coset_augmentation=augmentation,
         )
 
     class ParentMethods:
         def __init__(
             self, coset_subgroup, coset_action=None, coset_base_point=None,
-            coset_representative_map=None, **rest,
+            coset_representative_map=None, coset_word_section=None,
+            coset_augmentation=None, **rest,
         ) -> None:
             self._coset_subgroup = coset_subgroup
             self._coset_action = coset_action
             self._coset_base_point = coset_base_point
             self._coset_representative_map = coset_representative_map
+            self._coset_word_section = coset_word_section
+            self._coset_augmentation = coset_augmentation
             super().__init__(**rest)
+
+        def schreier_generating_morphism(self):
+            r"""Schreier's lemma: ``E ->> H`` from the section of ``G -> G/H``.
+
+            With ``pi: F ->> G`` the retained free cover and ``t_p`` the
+            retained word section, the words ``t_(s.p)^-1 s t_p`` for points
+            ``p`` and free generators ``s`` generate ``pi^-1(H)``; their
+            images generate ``H``.  The family is indexed by the actual pairs
+            ``(p, s)`` and repeats are retained.  The cost is the number of
+            cosets times the number of generators.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+            assert self._coset_word_section is not None, (
+                f"Schreier generators of {self.subgroup()} are read from a pointed coset space "
+                f"with a word section through a free cover, which {self} was not built with"
+            )
+            augmentation = self._coset_augmentation
+            word_section = self._coset_word_section
+            free = augmentation.domain()
+            words = tuple(
+                (~word_section(self.act(augmentation(generator), point))) * generator * word_section(point)
+                for point in self
+                for generator in free.group_generators()
+            )
+            labels = finite_ordinal_set(len(words))
+            source = OwnedGroups.Free(index_set=labels)
+            word_map = source.Mor(free)(
+                Sets().Mor(labels, free)(lambda label: words[int(label)])
+            )
+            return source.Mor(self.subgroup()).elementwise(augmentation * word_map)
+
+        @cached_method
+        def right_coset_projection(self):
+            r"""``G -> H\\G``, presented on ``G/H`` by ``Hx |-> x^-1 H``: the set map ``x |-> x^-1 H``."""
+            group = self.acting_group()
+            return Sets().Mor(group, self)(lambda element: self.coset_of(~element))
+
+        @cached_method
+        def right_coset_section(self):
+            r"""The right-coset transversal ``p |-> t_p^-1``: ``H t_p^-1`` is the right coset presented by ``p``."""
+            section = self.representative_map()
+            return Sets().Mor(self, self.acting_group())(lambda point: ~section(point))
+
+        def double_cosets(self, left_subgroup):
+            r"""``Q \\ G / H``: the orbit set of ``Q`` acting on ``G/H`` through its inclusion.
+
+            The double coset of an orbit is ``Q t_p H`` for any point ``p`` of
+            it; the orbit set retains this coset space, its projection from
+            ``G`` and its section.  ``Q`` is a subgroup of ``G`` itself.
+            """
+            group = self.acting_group()
+            if left_subgroup is group:
+                inclusion = OwnedGroups().Mor(group, group).identity()
+            elif left_subgroup.supergroup() is group:
+                inclusion = left_subgroup.inclusion()
+            else:
+                raise ValueError(
+                    f"cannot form the double cosets {left_subgroup} \\ {group} / {self.subgroup()}: "
+                    f"{left_subgroup} is a subgroup of {left_subgroup.supergroup()}, not of {group}"
+                )
+            return FiniteGSets(left_subgroup)(
+                self, lambda element, point: self.act(inclusion(element), point)
+            ).orbits()
 
         def subgroup(self):
             r"""Return ``H <= G`` for this represented left-coset ``G/H``."""
@@ -1012,6 +1072,21 @@ def _left_coset_g_set(group, subgroup):
         raise ValueError(
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
         )
+    from dzack_research.preamble.categories.group.predicate_subgroups import (
+        KernelSubgroups,
+        PreimageSubgroups,
+    )
+
+    # A kernel or preimage along a map to a finite group is realized as the
+    # finite orbit of the target's coset, with its section, for finite and
+    # infinite G alike.
+    match subgroup:
+        case _ if subgroup in KernelSubgroups(group) and subgroup.has_finite_coset_space():
+            return subgroup.coset_space()
+        case _ if subgroup in PreimageSubgroups(group) and subgroup.has_finite_coset_space():
+            return subgroup.coset_space()
+        case _:
+            pass
     if group.is_finite() is not True:
         points = _LeftCosetPointSet(group, subgroup)
         category = LeftCosetGSets(subgroup)

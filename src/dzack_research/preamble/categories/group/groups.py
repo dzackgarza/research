@@ -4889,21 +4889,33 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 self.normalizer,
             )
 
+        @cached_method(key=lambda self, subgroup: id(subgroup))
         def left_cosets(self, subgroup):
-            r"""Return the represented left-coset space ``G/H``."""
+            r"""Return the represented left-coset space ``G/H``.
+
+            The result is the pointed transitive left ``G``-set ``G/H`` with
+            the projection ``G -> G/H`` and its section, the representative
+            map ``G/H -> G`` (a transversal).  For infinite ``G`` and
+            ``H = f^-1(K)`` along a map to a finite group, ``G/H`` is
+            realized as the finite orbit of ``K`` in ``F/K``.
+            """
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
 
         def right_cosets(self, subgroup):
-            r"""Return the represented right-coset space ``H\\G``."""
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return _engine_cosets(self, subgroup, "right")
-                case _:
-                    assert False, (
-                        f"the right cosets of {subgroup} in {self} are defined, but the current "
-                        "preamble materializes coset spaces only for finite represented groups"
-                    )
+            r"""Return ``H\\G``, presented as ``G/H`` through ``Hx |-> x^-1 H``.
+
+            One result type for finite and infinite ``G``: the pointed
+            ``G``-set ``G/H``, with ``g.(Hx) = H x g^-1``.  The actual set maps
+            ``right_coset_projection: G -> G/H`` (``x |-> x^-1 H``) and
+            ``right_coset_section`` (``p |-> t_p^-1``) present the right cosets
+            and their transversal.
+            """
+            return self.left_cosets(subgroup)
+
+        def double_cosets(self, left_subgroup, right_subgroup):
+            r"""Return ``Q \\ G / H``, the ``Q``-orbits on ``G/H`` (``LeftCosetGSets.double_cosets``)."""
+            return self.left_cosets(right_subgroup).double_cosets(left_subgroup)
 
         @cached_method
         @RealizationHook

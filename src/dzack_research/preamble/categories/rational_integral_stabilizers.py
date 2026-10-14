@@ -94,7 +94,6 @@ from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
-    _fix_selected_group_resolution_data,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -269,18 +268,20 @@ class _FiniteIntegralRepresentation(SageObject):
             return self.permutation_representation().preimage_subgroup(
                 self.finite_stabilizer(), generating_morphism=generating_morphism
             )
-        preimage = self.permutation_representation().preimage_subgroup(self.finite_stabilizer())
-        augmentation = preimage.schreier_generating_morphism(
-            generators=self.action()._group_generators()
+        # A represented finite group without selected generators: its listed
+        # elements generate it, and the lattice orbit is again the coset space.
+        g_set = self.g_set()
+        listed = self.generating_augmentation()
+        selected = self._selected_point()
+
+        def listed_generating_morphism(preimage):
+            return FiniteGSets(group).pointed_orbit(
+                preimage, selected, g_set.act, listed
+            ).schreier_generating_morphism()
+
+        return self.permutation_representation().preimage_subgroup(
+            self.finite_stabilizer(), generating_morphism=listed_generating_morphism
         )
-        free = augmentation.domain()
-        _fix_selected_group_resolution_data(
-            preimage,
-            free,
-            free.free_basis(),
-            augmentation * free.group_generator_morphism(),
-        )
-        return preimage
 
     @cached_method
     def word_lifts(self):
@@ -300,19 +301,8 @@ class _FiniteIntegralRepresentation(SageObject):
         )
 
     def double_cosets(self, left_subgroup):
-        group = self.action().rational_group()
-        if left_subgroup is group:
-            inclusion = OwnedGroups().Mor(group, group).identity()
-        else:
-            if left_subgroup.supergroup() is not group:
-                raise ValueError(f"the left subgroup {left_subgroup} lies in {left_subgroup.supergroup()}, not in {group}")
-            inclusion = left_subgroup.inclusion()
-        cosets = self.right_cosets()
-        # Retain the owned G/G_L object itself as the point set, so the
-        # orbit quotient retains H, G, G_L and both quotient maps.
-        return FiniteGSets(left_subgroup)(
-            cosets, lambda element, point: cosets.act(inclusion(element), point)
-        ).orbits()
+        r"""``Q \\ G / G_L`` through the one double-coset owner on ``G/G_L``."""
+        return self.right_cosets().double_cosets(left_subgroup)
 
 
 class IntegralStructureAction(SageObject):
