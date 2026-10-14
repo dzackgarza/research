@@ -289,9 +289,10 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
         super().__init__(ring_map)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
         self._right_cosets = self._supergroup.right_cosets(self._subgroup)
+        right_section = self._right_cosets.right_coset_section()
         self._representatives = FiniteOrderedSets().from_indexed(
             self._right_cosets,
-            lambda coset: coset[0],
+            lambda point: right_section(point),
             name="Right-coset representatives",
         )
 
@@ -308,27 +309,14 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
         return self._representatives
 
     def identity_representative(self):
-        identity = self.supergroup().one()
-        for representative in self.representatives():
-            if identity in next(
-                coset for coset in self._right_cosets if coset[0] == representative
-            ):
-                return representative
-        raise AssertionError(
-            "no right coset of the subgroup contains the identity, so the cosets were computed wrongly"
-        )
+        r"""The representative of the right coset ``H``, the image of the base point."""
+        return self._right_cosets.right_coset_section()(self._right_cosets.base_point())
 
     def _decompose_right(self, group_element):
-        for coset in self._right_cosets:
-            if group_element in coset:
-                representative = coset[0]
-                subgroup_element = self.subgroup()(
-                    group_element * representative**-1
-                )
-                return subgroup_element, representative
-        raise AssertionError(
-            f"{group_element} lies in no right coset of the subgroup, so the cosets do not partition the group"
-        )
+        r"""``g = h r`` with ``r`` the representative of ``Hg``: ``h = g t_p`` for ``p = g^-1 H``."""
+        point = self._right_cosets.right_coset_projection()(group_element)
+        representative = self._right_cosets.right_coset_section()(point)
+        return self.subgroup()(group_element * ~representative), representative
 
     def _apply_object(self, group_module):
         module = _finite_coset_sum(group_module, self.representatives())

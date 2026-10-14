@@ -2378,8 +2378,14 @@ class GroupMorphism:
         description=None,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Return the inverse image of ``subgroup`` under this group morphism."""
+        r"""Return the inverse image of ``subgroup`` under this group morphism.
+
+        ``generating_morphism`` supplies, when the caller's construction has
+        one, the free generating morphism onto the preimage; otherwise the
+        preimage owner selects its Schreier family when that applies.
+        """
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             PreimageSubgroups,
         )
@@ -2391,9 +2397,12 @@ class GroupMorphism:
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
+            generating_morphism=generating_morphism,
         )
 
+    @cached_method
     def kernel(self):
+        r"""``ker(f)``, one subgroup per morphism, so its selected generators persist."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             KernelSubgroups,
         )
@@ -4880,21 +4889,33 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 self.normalizer,
             )
 
+        @cached_method
         def left_cosets(self, subgroup):
-            r"""Return the represented left-coset space ``G/H``."""
+            r"""Return the represented left-coset space ``G/H``.
+
+            The result is the pointed transitive left ``G``-set ``G/H`` with
+            the projection ``G -> G/H`` and its section, the representative
+            map ``G/H -> G`` (a transversal).  For infinite ``G`` and
+            ``H = f^-1(K)`` along a map to a finite group, ``G/H`` is
+            realized as the finite orbit of ``K`` in ``F/K``.
+            """
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
 
         def right_cosets(self, subgroup):
-            r"""Return the represented right-coset space ``H\\G``."""
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return _engine_cosets(self, subgroup, "right")
-                case _:
-                    assert False, (
-                        f"the right cosets of {subgroup} in {self} are defined, but the current "
-                        "preamble materializes coset spaces only for finite represented groups"
-                    )
+            r"""Return ``H\\G``, presented as ``G/H`` through ``Hx |-> x^-1 H``.
+
+            One result type for finite and infinite ``G``: the pointed
+            ``G``-set ``G/H``, with ``g.(Hx) = H x g^-1``.  The actual set maps
+            ``right_coset_projection: G -> G/H`` (``x |-> x^-1 H``) and
+            ``right_coset_section`` (``p |-> t_p^-1``) present the right cosets
+            and their transversal.
+            """
+            return self.left_cosets(subgroup)
+
+        def double_cosets(self, left_subgroup, right_subgroup):
+            r"""Return ``Q \\ G / H``, the ``Q``-orbits on ``G/H`` (``LeftCosetGSets.double_cosets``)."""
+            return self.left_cosets(right_subgroup).double_cosets(left_subgroup)
 
         @cached_method
         @RealizationHook
@@ -5018,6 +5039,21 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def has_selected_group_resolution(self) -> bool:
+                r"""A finite group has its canonical free cover ``F(U(G)) ->> G``, so this is ``True``."""
+                return True
+
+            def selected_group_resolution(self):
+                r"""The selected free cover, or the canonical one ``F(U(G)) ->> G``, ``g |-> g``.
+
+                The free group on the finite underlying set of ``G``, each
+                letter sent to itself, is determined by ``G`` and involves no
+                choice; it is fixed here when no other cover was selected.
+                """
+                if not self.has_selected_resolution(OwnedGroups()):
+                    _fix_selected_group_resolution_on(self, lambda: self)
+                return self.selected_resolution(OwnedGroups())
+
             def conjugate_subgroup(self, group_element, subgroup):
                 r"""Return ``g H g^-1``; GAP's ``ConjugateSubgroup(H, x)`` is ``x^-1 H x``."""
                 assert group_element in self, f"{group_element} is not an element of {self}"
@@ -6214,8 +6250,8 @@ class Subgroups(OwnedParameterizedCategory):
                     generators = self.selected_subgroup_generators()
                 case _ if self in OwnedFiniteGroups():
                     generators = tuple(self)
-                case _ if hasattr(self, "schreier_generators"):
-                    generators = self.schreier_generators(generators=ambient_generators)
+                case _ if self.has_selected_group_resolution():
+                    generators = self.group_generators()
                 case _ if index_bound is not None and hasattr(self, "finite_index_schreier_generators"):
                     generators = self.finite_index_schreier_generators(index_bound=index_bound, generators=ambient_generators)
                 case _:
