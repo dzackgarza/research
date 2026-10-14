@@ -190,10 +190,15 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             Write ``r: P -> P/mP`` for the residue map of
             :meth:`integral_parameter_quotient`, ``C`` for the finite residue
             locus :meth:`integral_parameter_classes`, and ``phi`` for the
-            parameterization ``V -> T``. Every integral lift has its parameter
-            in ``P``, and integrality is constant on the cosets of ``mP = ker r``
-            (the Eichler formula and its inverse are integral on ``mP``; see
-            :meth:`integral_parameter_quotient`). Hence
+            parameterization ``V -> T``.  Theorem used (established in
+            :meth:`integral_parameter_quotient`, from the Eichler transvection
+            formula of Gritsenko--Hulek--Sankaran, arXiv:0810.1614, section 3.1,
+            (4)--(5), cited in this module's docstring): every integral lift has
+            its parameter in ``P``; for ``m = 2AB`` (``A`` the denominator of the
+            isotropic vector, ``B`` that of the section of ``P``) the
+            transvection of a parameter in ``mP`` and its inverse are integral,
+            and ``phi(x + y) = E(y) phi(x)``, so integrality of ``phi(x)`` depends
+            only on the class of ``x`` in ``P/mP``.  Hence
 
                 ``T_Z = phi(r^{-1}(C))``,  ``r^{-1}(C) = { s(c) + k : c in C, k in mP }``
 
@@ -212,8 +217,17 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             period = residue.kernel()
             period_inclusion = period.inclusion()
             classes = self.integral_parameter_classes()
-            pairs = classes.product_with(period.inclusion().domain())
-            first, second = tuple(pairs.index_set())
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            # C x ker(r), indexed by the named factors of the decomposition
+            # r^{-1}(C) = { s(c) + k }.
+            first, second = "residue class", "period"
+            factors = finite_ordered_set((first, second))
+            period_set = period.inclusion().domain()
+            pairs = Sets().product(
+                indexed_family(factors, lambda factor: classes if factor == first else period_set)
+            )
             parameterization = self.parameterization()
             coordinates = parameterization.inverse()
 
@@ -229,10 +243,8 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                     lattice_inclusion.codomain().wrap(coordinates(lift))
                 )
                 residue_class = residue(parameter_point)
-                return pairs((
-                    residue_class,
-                    period_inclusion.lift(parameter_point - residue.preimage(residue_class)),
-                ))
+                period_point = period_inclusion.lift(parameter_point - residue.preimage(residue_class))
+                return pairs(lambda factor: residue_class if factor == first else period_point)
 
             locus = Sets().image_set(Sets().Mor(pairs, self)(lift_of), pairs, inverse=pair_of)
             return integral_kernel, locus
