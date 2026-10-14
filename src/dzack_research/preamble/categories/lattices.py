@@ -1480,6 +1480,38 @@ class Lattices(OwnedCategoryOverBaseRing):
         return super().__classcall__(cls, ring)
 
     @cached_method
+    def _marked_isometry(self, diagram_category, source, target):
+        r"""Implementer side of ``_FunctorCategory``'s protected marked-diagram contract.
+
+        The apex isometry of an isomorphism of marked lattices, or ``None``,
+        from ``sage-indefinite-port``'s marked-lattice entry (#403).  The
+        answer is untrusted engine output.
+        """
+        from sage_indefinite_port.indefinite.marked_lattices import isometry
+
+        return isometry(diagram_category, source, target)
+
+    def _marked_automorphism_generators(self, diagram_category, marked):
+        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403)."""
+        from sage_indefinite_port.indefinite.marked_lattices import (
+            automorphism_group_generators,
+        )
+
+        return automorphism_group_generators(diagram_category, marked)
+
+    def _marking_component(self, source_marking, target_marking, apex):
+        r"""Implementer side of the marked-diagram contract: ``alpha`` with ``kappa alpha = g iota``.
+
+        ``iota = source_marking`` and ``kappa = target_marking`` are
+        embeddings and ``g = apex`` an isometry carrying ``iota`` onto
+        ``kappa``; ``alpha`` is read on the generators of the source of
+        ``iota`` by lifting along the monomorphism ``kappa``.
+        """
+        domain = source_marking.domain()
+        return domain.Isom(target_marking.domain())(
+            lambda label: target_marking.lift(apex(source_marking(domain.module_generator(label))))
+        )
+
     def twist_functor(self, scale):
         r"""Return the integral-lattice endofunctor ``L |-> L(scale)``."""
         if _engine_ring(self.base_ring()) is not SageZZ:

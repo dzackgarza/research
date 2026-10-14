@@ -2238,6 +2238,34 @@ class CoreMor(CategoricalMor):
     def core_category(self) -> _CoreCategory:
         return self.base_category()
 
+    @cached_method
+    def _isomorphism_witness(self):
+        r"""One isomorphism, or ``None``: the base category's decision (its protected core contract)."""
+        return self.core_category().base_category()._core_isomorphism_witness(self)
+
+    def is_empty(self) -> bool:
+        r"""Whether there is no isomorphism between the endpoints, as the base category decides."""
+        return self._isomorphism_witness() is None
+
+    def an_element(self) -> CategoricalIsomorphism:
+        r"""One isomorphism between the endpoints; an empty core Mor has none."""
+        witness = self._isomorphism_witness()
+        if witness is None:
+            raise ValueError(f"there is no isomorphism {self.domain()} -> {self.codomain()}")
+        return witness
+
+    def an_element_in(self, subgroup) -> CategoricalIsomorphism | None:
+        r"""An isomorphism whose apex component lies in ``subgroup``, or ``None``.
+
+        For marked diagrams, ``subgroup`` is a subgroup of the automorphism
+        group of the common apex; the base category owns the search.
+        """
+        return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
+
+    def group_generators(self):
+        r"""Generators of ``Aut(X) = Iso(X, X)``, as the base category computes them."""
+        return self.core_category().base_category()._core_automorphism_generators(self)
+
     def _element_constructor_(self, forward, inverse=None):
         match forward:
             case CategoricalIsomorphism() if inverse is None:
