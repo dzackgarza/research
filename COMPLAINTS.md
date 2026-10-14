@@ -2186,34 +2186,6 @@ and its isomorphism with the product `prod_{a in A} B` in `ModuleCat R`,
 citing Mathlib `Function.module` and `Pi.module`.
 What remains is the `lean-categories` request; it runs beside the computation and parks no node.
 
-### Protected function-space expectations use spellings that CON-17 removes
-
-`CON-17` makes every function-space constructor take both endpoints, removes
-the stored variable `indeterminate()`, and states that a coordinate of `A` is
-supplied by `A`, never by the space. The protected expectations still use the
-removed spellings:
-- `tests/constructions/test_lebesgue_graded_module_maps_construct.sage:9,20`:
-  `x = Lp(2).indeterminate()`, then `Lp(2)(exp(-x * x))`;
-- `tests/constructions/test_lebesgue_graded_modules_construct.sage:10-13`,
-  `test_paired_modules_construct.sage:11-12` and
-  `test_pairing_objects_construct.sage:7-8`: one-argument `Lp(p)` and `ell(p)`;
-- unprotected: `tests/objects/test_smooth_functions_on_the_line.sage:11`,
-  `(C ^ Infinity)(RR)`, with the codomain left implicit.
-`tests/constructions/test_geometry_and_analysis_construct.sage:84` writes
-`x = RR.coordinate()` and then `smooth(x**2 + 1)`. The owned `RR` has no
-`coordinate`, and its elements are closed exact reals
-(`rings/real.py:_closed_exact_real_expression` refuses an expression with a
-variable), so a general element of `RR` is not an element of `RR` as the field
-is presented. Which object a coordinate of `RR` is (an element of an owned
-ring of expressions in one real variable, or of another object) is not
-stated by `CON-17`, and the owned `SR` is no ring (`symbolic-expressions-are-no-owned-ring`).
-**Owner ruling needed:** whether these expectation lines are corrected
-mathematically, or `CON-17` admits the one-argument shorthand, and what the
-coordinate of `RR` is. Until then the one-argument `Lp(p)` and `ell(p)`
-remain thin routes to `Lp(p, RR, RR)` and `ell(p, NN, RR)`; `Lp(2).indeterminate()`
-and `RR.coordinate()` are not implemented, and the expectations naming them
-fail. Node: `function-spaces-are-subobjects-of-mor`.
-
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite

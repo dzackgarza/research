@@ -4,8 +4,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_non_diagonal_pairing_uses_the_common_pairing_owner() -> None:
-    left = ell(1)
-    right = ell(oo)
+    left = ell(1, NN, RR)
+    right = ell(oo, NN, RR)
     paired = left * right
 
     assert paired in PairingObjects(RR)
