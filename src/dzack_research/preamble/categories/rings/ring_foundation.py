@@ -5682,10 +5682,11 @@ def _presented_ring_category(engine: Ring) -> Category:
     r"""The owned ring placement given by the construction that presents ``engine``.
 
     Each case names one ring constructor and reads only the data that
-    constructor received: the modulus ``n`` of ``ZZ/nZZ``, the degree of ``F_q``, the coefficient
-    ring and the number of indeterminates of a polynomial, Laurent, power
-    series or free algebra, the cover of a quotient, the ring of a fraction
-    field, the factors of a finite product, the size and entries of a matrix ring.  A constituent ring the
+    constructor received: the coefficient ring and the number of
+    indeterminates of a Laurent or power-series ring, the cover of a
+    quotient.  Polynomial and free associative
+    algebras, number fields, orders, fraction fields, finite products and
+    matrix rings are placed by their own constructions.  A constituent ring the
     preamble already owns is read by its placement.  The theorem that places
     the result is stated in the case.  No answer the engine computes about the
     ring itself -- ``is_field``, ``is_commutative``, ``is_noetherian``, its
@@ -5696,7 +5697,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     The case is selected by the Sage parent class of ``engine``.
     """
     from sage.algebras.free_algebra import FreeAlgebra_generic
-    from sage.matrix.matrix_space import MatrixSpace
     from sage.rings.abc import (
         ComplexBallField,
         ComplexDoubleField,
@@ -5778,19 +5778,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
             finite = (owned_sets.FiniteSets(),) if cover in owned_sets.FiniteSets() else ()
             placements = (*commutative, *cover_noetherian, *finite)
-        case MatrixSpace():
-            # M_n(R) is commutative exactly when n <= 1 and R is; it is a
-            # finitely generated R-module, so Noetherian when R is; it is
-            # R^{n^2} as a set.
-            coefficients = _own_ring(engine.base_ring())
-            commutative = (
-                (OwnedRings().Commutative(),)
-                if engine.nrows() <= 1 and coefficients in OwnedRings().Commutative()
-                else ()
-            )
-            matrix_noetherian = (noetherian,) if coefficients in OwnedRings().Noetherian() else ()
-            finite = (owned_sets.FiniteSets(),) if coefficients in owned_sets.FiniteSets() else ()
-            placements = (*commutative, *matrix_noetherian, *finite)
         case _:
             placements = ()
     joined = owned_category_join((OwnedRings(), *placements))
@@ -5920,6 +5907,7 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     from sage.rings.abc import RealField as SageRealFieldClass
     from sage.rings.abc import pAdicField as SagePadicFieldClass
     from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
+    from sage.matrix.matrix_space import MatrixSpace as SageMatrixSpaceClass
     from sage.rings.fraction_field import FractionField_generic
     from sage.rings.real_double import RDF as SageRDF
 
@@ -5948,6 +5936,13 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             # A finite-field engine is raised through ``GF``'s construction
             # on its order and generator label; a prime field is ``ZZ/(p)``.
             return GF(int(engine.order()), engine.variable_name())
+        case SageMatrixSpaceClass():
+            # M_n(R) is End_R(F_R([n])), the matrix ring R.matrix_space(n)
+            # (ARC-09, ARC-10); a rectangular matrix space is no ring.
+            assert engine.nrows() == engine.ncols(), (
+                f"{engine} is not a ring: its matrices are not square"
+            )
+            return _own_ring(engine.base_ring()).matrix_space(int(engine.nrows()))
         case FractionField_generic():
             # A fraction-field engine is raised through Frac of the domain it
             # is the fraction field of.
