@@ -3509,13 +3509,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 _module_generating_set(rank_or_index_set),
             )
 
-        def polynomial_ring(self, *args, **kwargs):
-            r"""Return the polynomial ring over this ring with the stated variables."""
+        def polynomial_ring(self, variables):
+            r"""``R[S]``, the polynomial ring over this ring on the set ``S`` of variables.
+
+            ``variables`` is a string of comma-separated names, a tuple of
+            names, or a set; ``R[S]`` is ``Sym_R(F_R(S))``, one object for
+            ``(R, S)``.
+            """
             from dzack_research.preamble.categories.algebras.free_algebras import (
                 _polynomial_ring,
             )
 
-            return _polynomial_ring(self, *args, **kwargs)
+            return _polynomial_ring(self, variables)
 
         @RealizationHook
         def _quotient_ring_construction(self, ideal):
@@ -5466,6 +5471,46 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
     return tuple(placements)
 
 
+def _polynomial_ring_placements(coefficients, indeterminates: int) -> tuple[Category, ...]:
+    r"""The placement of ``R[x_1, ..., x_n]``, read from the placement of ``R`` and ``n``.
+
+    The theorems are those of :func:`_inherited_ring_placements`; the size is
+    that of the finitely supported coefficient families on the monomials.
+    ``R[]`` is ``R`` and is Artinian when ``R`` is.
+    """
+    artinian = (
+        (OwnedRings().Artinian(),)
+        if indeterminates == 0 and coefficients in OwnedRings().Artinian()
+        else ()
+    )
+    return (
+        *_inherited_ring_placements(
+            coefficients, univariate_over_field_is_principal=indeterminates == 1,
+        ),
+        _size_of_finitely_supported_families(coefficients, indeterminates),
+        *artinian,
+    )
+
+
+def _free_associative_algebra_placements(coefficients, indeterminates: int) -> tuple[Category, ...]:
+    r"""The placement of ``R<x_1, ..., x_n>``, read from the placement of ``R`` and ``n``.
+
+    For ``n <= 1`` it is ``R[x]`` (or ``R``).  For ``n >= 2`` the generators
+    ``x, y`` have ``xy != yx`` and the two-sided ideals ``(x y^k x)`` do not
+    stabilize; constants embed, and the greatest words in two nonzero finite
+    supports have a unique greatest product, whose coefficient is the product
+    of their coefficients.
+    """
+    if indeterminates <= 1:
+        return _polynomial_ring_placements(coefficients, indeterminates)
+    inherited = tuple(
+        placement
+        for placement in (OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial())
+        if coefficients in placement
+    )
+    return (*inherited, _size_of_finitely_supported_families(coefficients, indeterminates))
+
+
 def _field_placements() -> tuple[Category, ...]:
     r"""A field is a commutative division ring; its only ideals are 0 and
     itself, so it is a principal ideal domain and Noetherian."""
@@ -5610,14 +5655,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # Z_p and the rings of integers of its finite extensions are
             # discrete valuation rings, uncountable.
             placements = (principal, noetherian, owned_sets.UncountableSets())
-        case PolynomialRing_generic() | MPolynomialRing_base():
-            coefficients = _own_ring(engine.base_ring())
-            placements = (
-                *_inherited_ring_placements(
-                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
-                ),
-                _size_of_finitely_supported_families(coefficients, engine.ngens()),
-            )
         case LaurentPolynomialRing_generic():
             coefficients = _own_ring(engine.base_ring())
             placements = (
@@ -5658,30 +5695,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
             finite = (owned_sets.FiniteSets(),) if cover in owned_sets.FiniteSets() else ()
             placements = (*commutative, *cover_noetherian, *finite)
-        case FreeAlgebra_generic():
-            # T(R^S) on |S| = n generators.  For n <= 1 it is R[x] (or R);
-            # for n >= 2 the generators x, y have xy != yx, and the
-            # two-sided ideals (x y^k x) do not stabilize.
-            coefficients = _own_ring(engine.base_ring())
-            match engine.ngens() <= 1:
-                case True:
-                    inherited = _inherited_ring_placements(
-                        coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
-                    )
-                case False:
-                    # Constants embed. The greatest words in two nonzero
-                    # finite supports have a unique greatest product, whose
-                    # coefficient is the product of their coefficients.
-                    # These facts do not make the variables commute.
-                    inherited = tuple(
-                        placement
-                        for placement in (
-                            OwnedRings().NoZeroDivisors(),
-                            OwnedRings().Nontrivial(),
-                        )
-                        if coefficients in placement
-                    )
-            placements = (*inherited, _size_of_finitely_supported_families(coefficients, engine.ngens()))
         case CartesianProduct():
             # Finite products use coordinatewise ring operations. Commutative,
             # Noetherian and Artinian factors give the corresponding product;
@@ -5886,19 +5899,26 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
             return Zmod(int(engine.order()))
         case PolynomialRing_generic() | MPolynomialRing_base():
-            flavor = "symmetric"
+            # A polynomial engine met in an adapter is raised through the
+            # one polynomial ring on its variables (OWN-02); its elements
+            # convert by variable name into that ring's realization.
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _symmetric_algebra_on,
+            )
+
+            return _symmetric_algebra_on(
+                _own_ring(engine.base_ring()), tuple(engine.variable_names())
+            )
         case FreeAlgebra_generic():
-            flavor = "tensor"
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _tensor_algebra_on,
+            )
+
+            return _tensor_algebra_on(
+                _own_ring(engine.base_ring()), tuple(engine.variable_names())
+            )
         case _:
             return _OwnedRingParent(engine)
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        _native_free_algebra,
-    )
-
-    base = _own_ring(engine.base_ring())
-    return _native_free_algebra(
-        engine, base.free_module(tuple(engine.variable_names())), flavor,
-    )
 
 
 def _own_ring(ring):
