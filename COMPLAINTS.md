@@ -2328,3 +2328,11 @@ on the original lattice. The twelve closure groups are retained under T.
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
+
+## Module automorphism objects are not groups
+
+**Desired mathematics.** For a module M over a commutative ring R, GL(M) = Aut_R(M), the automorphism group of M in Mod_R (Mathlib `CategoryTheory.Aut`, which carries a `Group` instance), with subgroups, stabilizers of flags and generators selected from a chosen basis.
+
+**Dependency path.** `port-isotropic-action-maps` -> `M.general_linear_group().flag_stabilizer(flag)` -> double cosets in GL(J) of the image of Aut((L, J)) -> GL(J) -> GL(J) as an `OwnedGroups` object.
+
+**Evidence (source).** `_AutCategoryOf.Of` (`abstract_categories/mor_categories.py`) returns the diagonal Iso Mor; `_initialize_module_mor_parent` (`modules/module_morphisms/module_morphisms.py`) places module Mor parents in `InternalMorModules`/`MatrixSpaces`/`AdditiveEndomorphismRings`, never `OwnedGroups`. `LatticeIsometryMor.__init__` (`lattice_morphisms.py`) adds `OwnedGroups()` for lattices only. Hence `Modules(R).Aut(M)` has no `subgroup`, `one`, `select_group_resolution` or `double_cosets`. Partial capability: for a lattice with zero form, `J.Aut()` = O(J) = GL(J) is a group, which `isotropic_action` uses. Not executed (DEV-58). Searched: `mor_categories.py`, `mor_foundation.py`, `modules/pure/modules.py`, `module_morphisms.py`, `group/magmas.py` (`unit_group` of a monoid exists, unverified whether `End_R(M)` reaches it). TODO: `module-automorphism-groups`.
