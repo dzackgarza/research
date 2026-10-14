@@ -43,16 +43,19 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
+    finite_indexed_family_from_values,
 )
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_basis_positions, _engine_row_family_gram
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
-    r"""Sublattices with a chosen ordered framing, regarded as vector configurations.
+    r"""Sublattices with a chosen ordered framing and a colouring of it.
 
-    Membership adds no property to the sublattice: it selects the framing as
-    the datum the operations below consume, which is what distinguishes a
-    configuration from the sublattice it spans.
+    The data are the framing, which is the configuration's family of vectors,
+    and the colouring, a map from its positions to a set of colours (the
+    constant colouring when none is stated). An automorphism of the coloured
+    configuration is a framing permutation preserving every pairing and every
+    colour; the pairing graph records both.
     """
 
     @classmethod
@@ -165,9 +168,31 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         return target.integral_isometry(composite, source=source)
 
     class ParentMethods:
+        def __init__(self, configuration_colouring, **rest) -> None:
+            self._configuration_colouring = configuration_colouring
+            super().__init__(**rest)
+
         def configuration_positions(self):
             r"""Return the ordered index set framing this configuration."""
             return self.module_generating_set()
+
+        def configuration_colouring(self):
+            r"""Return the colouring: the family assigning each framing position its colour.
+
+            Its index set is the ordinal of the supplied family, in the order
+            of :meth:`configuration_positions`.
+            """
+            return self._configuration_colouring
+
+        def preserves_colouring(self, position_map) -> bool:
+            r"""Return whether a framing permutation carries each position to one of its colour."""
+            positions = self.configuration_positions()
+            colours = tuple(self.configuration_colouring())
+            ranking = positions.ranking_map()
+            return all(
+                colours[int(ranking(position))] == colours[int(ranking(position_map(position)))]
+                for position in positions
+            )
 
         def _pairing_graph(self):
             r"""Return the private labelled graph encoding every pairing.
@@ -180,12 +205,13 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             lattice = self.inclusion().codomain()
             positions = self.configuration_positions()
             vectors = self.embedded_module_generators()
+            colours = tuple(self.configuration_colouring())
             size = int(positions.cardinality())
             graph = Graph(loops=True, multiedges=False)
             graph.add_vertices(range(1, size + 1))
             for left in range(size):
                 left_vector = vectors[positions[left]]
-                graph.add_edge(left + 1, left + 1, int(lattice.q(left_vector)))
+                graph.add_edge(left + 1, left + 1, (colours[left], int(lattice.q(left_vector))))
                 for right in range(left + 1, size):
                     pairing = int(
                         lattice.b(left_vector, vectors[positions[right]])
@@ -278,6 +304,10 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                 f"{position_map} does not define an isometry of {self}: a permutation of "
                 f"the basis vectors is an isometry only if it preserves every square and "
                 f"every pairing, and this one does not"
+            )
+            assert self.preserves_colouring(position_map), (
+                f"{position_map} is not an automorphism of the coloured configuration {self}: "
+                f"it carries a position to one of a different colour"
             )
             return self.Aut()(
                 {
@@ -376,7 +406,10 @@ class _SpanningConfiguration:
             raise TypeError("integral ambient configuration isometries require a lattice over ZZ")
         self.lattice = lattice
         self.vectors = tuple(lattice(point) for point in vectors)
-        colours = tuple(colours)
+        # The colouring is the family positions -> colours, read at its owner;
+        # its values are serialized once here as the graph's vertex labels.
+        colouring = finite_indexed_family_from_values(None, colours)
+        colours = tuple(colouring)
         if len(colours) != len(self.vectors):
             raise ValueError("each configuration position requires one colour")
         if not lattice.is_nondegenerate():
@@ -446,7 +479,7 @@ class _SpanningConfiguration:
         the family, so ``K`` and ``K/e`` are stable, and ``eL`` lies in ``K``.
         """
         lattice = self.lattice
-        generated = lattice.vector_configuration(self.vectors)
+        generated = lattice.subobject_on(self.vectors)
         exponent = generated.inclusion().cokernel().exponent()
         if exponent <= lattice.base_ring().zero():
             raise ArithmeticError("a spanning vector configuration must generate a finite-index integral sublattice")

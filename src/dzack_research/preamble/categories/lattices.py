@@ -173,6 +173,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
+    finite_indexed_family_from_values,
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -328,6 +329,22 @@ def _lattice_subobject_spanning(module, basis, root_system_type_name=None):
     it in ``RootLattices`` with that name of the type of the root system as its
     datum.
     """
+    match root_system_type_name:
+        case None:
+            return _lattice_subobject_on_basis(module, basis, (), {})
+        case _:
+            return _lattice_subobject_on_basis(
+                module, basis, (RootLattices(),), {"root_system_type_name": root_system_type_name}
+            )
+
+
+def _lattice_subobject_on_basis(module, basis, extra_categories, construction_data):
+    r"""The lattice subobject framed by ``basis``, placed also in ``extra_categories``.
+
+    ``construction_data`` is the datum each extra category introduces, passed
+    to its constructor: a root-system type name for ``RootLattices``, a
+    colouring for ``VectorConfigurations``.
+    """
     ring = module.base_ring()
     basis_elements = tuple(basis)
     rank = len(basis_elements)
@@ -352,14 +369,6 @@ def _lattice_subobject_spanning(module, basis, root_system_type_name=None):
         module_inclusion = source.Mono(module)(embedded)
         return source.Emb(module)(module_inclusion)
 
-    extra_categories = ()
-    construction_data = {}
-    match root_system_type_name:
-        case None:
-            pass
-        case _:
-            extra_categories = (RootLattices(),)
-            construction_data = {"root_system_type_name": root_system_type_name}
     return _lattice_object(
         Lattices(ring),
         source_module,
@@ -5134,10 +5143,26 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lorentzian_reduction_complex(self, marked_vectors=marked_vectors)
 
-        def vector_configuration(self, module_generating_set):
-            r"""Return the sublattice framed by the stated ordered vector family."""
-            subobject = self.subobject_on(module_generating_set)
-            return refine(subobject, VectorConfigurations(self.base_ring()))
+        def vector_configuration(self, module_generating_set, colouring=None):
+            r"""Return the sublattice framed by the stated vector family, with its colouring.
+
+            The family is the framing: the configuration's positions are its
+            positions, and it must be a basis of the sublattice it spans (a
+            redundant spanning family is compared through
+            ``VectorConfigurations.spanning_isometry``). ``colouring`` is the
+            map from those positions to a set of colours, given as an indexed
+            family or a finite literal family read at its owner; omitted, it is
+            the constant colouring, under which every pairing-preserving
+            permutation preserves colours.
+            """
+            family = tuple(module_generating_set)
+            colours = (0,) * len(family) if colouring is None else colouring
+            return _lattice_subobject_on_basis(
+                self,
+                family,
+                (VectorConfigurations(self.base_ring()),),
+                {"configuration_colouring": finite_indexed_family_from_values(None, colours)},
+            )
 
         def vector_primitive_extension(self, element):
             r"""Return the primitive-extension/gluing datum cut out by ``element``."""
