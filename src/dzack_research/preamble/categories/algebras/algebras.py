@@ -2463,9 +2463,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
 
             class Commutative(CategoryWithAxiom):
-                r"""Commutative associative unital ``R``-algebras."""
+                r"""Commutative associative unital ``R``-algebras.
 
-                _MorCategory = UnitalAlgebraMorCategoryConstruction
+                A full subcategory: its arrows are the unital algebra maps,
+                so it declares no Mor family of its own and inherits that of
+                ``Algebras(R).Associative().Unital()``.
+                """
+
                 SubcategoryMethods = _CommutativeUnitalAlgebraSubcategoryMethods
                 ParentMethods = _CommutativeUnitalAlgebraParentMethods
 
