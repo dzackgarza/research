@@ -4864,7 +4864,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             case _:
                 return _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, base=None, category=None, constructing_category=None) -> None:
+    def __init__(
+        self, engine: Ring, *, base=None, category=None, constructing_category=None,
+        named_placement=None,
+    ) -> None:
         r"""Construct over the scalar ring the level above declares.
 
         ``base`` is that ring.  A level sitting over a ring states its own base
@@ -4912,10 +4915,18 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             else:
                 base = _own_ring(base)
                 category_base = base
+            from dzack_research.preamble.owned_category import owned_category_join
+
+            # A named construction (``ZZ``, ``QQ``, ...) states its placement;
+            # it is not read off the engine (ARC-08).
             placement = _owned_ring_category(
                 engine,
                 scalar_base=category_base,
                 owned_ring=self,
+                presented=(
+                    None if named_placement is None
+                    else owned_category_join((OwnedRings(), *named_placement()))
+                ),
             )
             if category is not None:
                 from dzack_research.preamble.owned_category import owned_category_join
@@ -5414,6 +5425,62 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
     return tuple(placements)
 
 
+def _field_placements() -> tuple[Category, ...]:
+    r"""A field is a commutative division ring; its only ideals are 0 and
+    itself, so it is a principal ideal domain and Noetherian."""
+    return (
+        OwnedRings().Division().Commutative(),
+        OwnedIntegralDomains().PrincipalIdeals(),
+        OwnedRings().Noetherian(),
+    )
+
+
+def _integer_placements() -> tuple[Category, ...]:
+    r"""The placement of the named construction ``ZZ``.
+
+    ``ZZ`` has distinct 0 and 1; it is Euclidean, ordered, countable, and
+    its own ring of integers with the integral basis (1), hence an order.
+    """
+    from dzack_research.preamble.categories.rings.number_fields import (
+        OrdersWithChosenIntegralBasis,
+    )
+
+    return (
+        OwnedIntegralDomains().PrincipalIdeals(), OwnedRings().Noetherian(),
+        OwnedRings().Nontrivial(), OwnedOrderedRings(),
+        owned_sets.CountablyInfiniteSets(), OrdersWithChosenIntegralBasis(),
+        OwnedOrders(),
+    )
+
+
+def _rational_placements() -> tuple[Category, ...]:
+    r"""The placement of the named construction ``QQ = Frac(ZZ)``: the prime
+    field of characteristic 0, ordered, and the number field of degree 1."""
+    from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
+
+    return (
+        *_field_placements(), PrimeFields(), OwnedOrderedRings(), OwnedNumberFields(),
+        owned_sets.CountablyInfiniteSets(),
+    )
+
+
+def _real_algebraic_placements() -> tuple[Category, ...]:
+    r"""The placement of ``AA``: the real algebraic numbers form an ordered,
+    countable field."""
+    return (*_field_placements(), OwnedOrderedRings(), owned_sets.CountablyInfiniteSets())
+
+
+def _algebraic_number_placements() -> tuple[Category, ...]:
+    r"""The placement of ``QQbar``: a countable field."""
+    return (*_field_placements(), owned_sets.CountablyInfiniteSets())
+
+
+def _real_or_complex_field_placements() -> tuple[Category, ...]:
+    r"""The placement of ``RDF``, ``CDF`` and ``CC``: they present ``RR`` or
+    ``CC``, uncountable fields."""
+    return (*_field_placements(), owned_sets.UncountableSets())
+
+
 def _presented_ring_category(engine: Ring) -> Category:
     r"""The owned ring placement given by the construction that presents ``engine``.
 
@@ -5470,25 +5537,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     # itself, so it is a principal ideal domain and Noetherian.
     field = (OwnedRings().Division().Commutative(), principal, noetherian)
     match engine:
-        case _ if engine is SageZZ:
-            # ZZ has distinct 0 and 1; it is Euclidean, ordered, countable,
-            # and its own ring of integers with the integral basis (1).
-            placements = (
-                principal, noetherian, OwnedRings().Nontrivial(), OwnedOrderedRings(),
-                owned_sets.CountablyInfiniteSets(), OrdersWithChosenIntegralBasis(),
-            )
-        case _ if engine is SageQQ:
-            # QQ = Frac(ZZ) is the prime field of characteristic 0, ordered,
-            # and the number field of degree 1.
-            placements = (
-                *field, PrimeFields(), OwnedOrderedRings(), OwnedNumberFields(),
-                owned_sets.CountablyInfiniteSets(),
-            )
-        case _ if engine is SageAA:
-            # The real algebraic numbers form an ordered, countable field.
-            placements = (*field, OwnedOrderedRings(), owned_sets.CountablyInfiniteSets())
-        case _ if engine is SageQQbar:
-            placements = (*field, owned_sets.CountablyInfiniteSets())
         case FiniteField():
             # F_q is a finite field; it is the prime field F_p exactly when
             # its degree over F_p, a datum of GF(p^k), is k = 1.
@@ -5662,7 +5710,9 @@ def _presented_ring_category(engine: Ring) -> Category:
             return joined
 
 
-def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
+def _owned_ring_category(
+    engine: Ring, *, scalar_base=None, owned_ring=None, presented: Category | None = None,
+) -> Category:
     r"""Return the owned ring category the construction of ``engine`` places it in.
 
     The ring placement is :func:`_presented_ring_category`.  To it this adds
@@ -5678,7 +5728,8 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
     """
     from dzack_research.preamble.owned_category import owned_category_join
 
-    presented = _presented_ring_category(engine)
+    if presented is None:
+        presented = _presented_ring_category(engine)
     extra = []
     match owned_ring:
         case None:
@@ -5731,9 +5782,8 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
         case _:
             pass
     joined = owned_category_join((presented, *extra))
-    if engine is SageZZ or (
-        isinstance(engine, SageNumberFieldOrder)
-        and (scalar_base is None or _engine_ring(scalar_base) is SageZZ)
+    if isinstance(engine, SageNumberFieldOrder) and (
+        scalar_base is None or _engine_ring(scalar_base) is SageZZ
     ):
         return owned_category_join((joined, OwnedOrders()))
     return joined
@@ -5777,8 +5827,28 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     rather than a bare native ring later labelled as a free algebra.
     """
     from sage.algebras.free_algebra import FreeAlgebra_generic
+    from sage.rings.cc import CC as SageCC
+    from sage.rings.complex_double import CDF as SageCDF
+    from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.rings.real_double import RDF as SageRDF
 
     match engine:
+        # An engine that is a named session ring is raised through that
+        # ring's named construction, so every route meets one object.
+        case _ if engine is SageZZ:
+            return _owned_integers()
+        case _ if engine is SageQQ:
+            return _owned_rationals()
+        case _ if engine is SageAA:
+            return _owned_real_algebraic_numbers()
+        case _ if engine is SageQQbar:
+            return _owned_algebraic_numbers()
+        case _ if engine is SageRDF:
+            return _owned_real_double_field()
+        case _ if engine is SageCDF:
+            return _owned_complex_double_field()
+        case _ if engine is SageCC:
+            return _owned_complex_field()
         case PolynomialRing_generic() | MPolynomialRing_base():
             flavor = "symmetric"
         case FreeAlgebra_generic():
@@ -5832,7 +5902,7 @@ def _set_owned_ring_display(ring, display, *, kind=None):
 @cached_function
 def _owned_integers() -> _OwnedRingParent:
     r"""The canonical owned integers, including their initial order placement."""
-    return _owned_engine_ring(SageZZ)
+    return _OwnedRingParent(SageZZ, named_placement=_integer_placements)
 
 
 # The named session rings.  Each is the one owned object of its name; a
@@ -5841,40 +5911,40 @@ def _owned_integers() -> _OwnedRingParent:
 
 def _owned_rationals() -> _OwnedRingParent:
     r"""The canonical owned rational numbers ``QQ``."""
-    return _owned_engine_ring(SageQQ)
+    return _OwnedRingParent(SageQQ, named_placement=_rational_placements)
 
 
 def _owned_real_algebraic_numbers() -> _OwnedRingParent:
     r"""The canonical owned real algebraic numbers ``AA``."""
-    return _owned_engine_ring(SageAA)
+    return _OwnedRingParent(SageAA, named_placement=_real_algebraic_placements)
 
 
 def _owned_algebraic_numbers() -> _OwnedRingParent:
     r"""The canonical owned algebraic numbers ``QQbar``."""
     from sage.rings.qqbar import QQbar as SageQQbar
 
-    return _owned_engine_ring(SageQQbar)
+    return _OwnedRingParent(SageQQbar, named_placement=_algebraic_number_placements)
 
 
 def _owned_real_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision real field ``RDF``."""
     from sage.rings.real_double import RDF as SageRDF
 
-    return _owned_engine_ring(SageRDF)
+    return _OwnedRingParent(SageRDF, named_placement=_real_or_complex_field_placements)
 
 
 def _owned_complex_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision complex field ``CDF``."""
     from sage.rings.complex_double import CDF as SageCDF
 
-    return _owned_engine_ring(SageCDF)
+    return _OwnedRingParent(SageCDF, named_placement=_real_or_complex_field_placements)
 
 
 def _owned_complex_field() -> _OwnedRingParent:
     r"""The canonical owned 53-bit complex field ``CC``."""
     from sage.rings.cc import CC as SageCC
 
-    return _owned_engine_ring(SageCC)
+    return _OwnedRingParent(SageCC, named_placement=_real_or_complex_field_placements)
 
 
 def _owned_ring(ring):
