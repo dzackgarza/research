@@ -2364,4 +2364,22 @@ Foundational mathematical gaps belong above even when first noticed as an inconv
 
 **Dependency path.** `isotropic_induction.py:128` (`plane_lines`) -> `OwnedGroups.double_cosets(H, B)` (`group/groups.py`) -> orbits on a finite coset space.
 
-**Evidence (source).** `double_cosets` computes Q-orbits on G/H when G/H is a finite G-set, or H-orbits on G/Q when G/Q is (Q a kernel or preimage along a map to a finite group); otherwise it asserts. Here B \ GL_2(ZZ) ≅ P^1(QQ) is infinite, and H is a generated subgroup whose finite index in GL_2(ZZ) is not established, so neither side is realized as finite. Not executed (DEV-58). Who must establish finite index: either port #18, by supplying H as a preimage along a map to a finite group (or with its index), or research, by a primitive for the orbits of a finite-index subgroup of GL_2(ZZ) on P^1(QQ) (cusps of a finite-index subgroup), whose mathematics must first be requested from `lean-categories`. TODO: `finite-index-orbits-on-projective-line`.
+**Evidence (source).** `double_cosets` computes Q-orbits on G/H when G/H is a finite G-set, or H-orbits on G/Q when G/Q is; otherwise it asserts. B \ GL_2(ZZ) ≅ P^1(QQ) is infinite. `GL(M).finite_index_left_cosets(H, n)` (`modules/module_morphisms/module_morphisms.py`) now realizes G/H by Todd--Coxeter for a generated H of stated finite index n, and `G.select_left_cosets(X)` (`group/groups.py`) makes it `G.left_cosets(H)`, after which the inverted double-coset route answers. Remaining: the port call at `isotropic_induction.py:128` does not state the finite index, so it still asserts; port #18 owns establishing it (port-design, *Operations and implementation owners*, finite G-sets row). Not executed (DEV-58).
+
+**Requests to `lean-categories`** (searched: `rg -i 'double ?coset|cusp|schreier'` over `~/gitclones/lean-categories` `*.lean`/`*.md`, 2026-10-14; only Artin--Schreier hits; the formalization corpus search exits 1 because its zoekt index is missing; Mathlib not searched): double cosets H \ G / K and their identification with H-orbits on G/K; Schreier's lemma (generators of a finite-index subgroup from a transversal); the identification P^1(QQ) ≅ B \ GL_2(ZZ) and the cusps of a finite-index subgroup as its orbits there; correctness of coset enumeration (Todd--Coxeter) for a finitely presented group and a subgroup of finite index. Sources not opened.
+
+## A finite presentation of GL_2(ZZ)
+
+**Desired mathematics.** GL_2(ZZ) = SL_2(ZZ) ⋊ <e>, e = diag(1,-1), with SL_2(ZZ) = < s_2, s_3 | s_2^4, s_2^2 = s_3^3 > (the amalgam Z/4 *_{Z/2} Z/6), and the extension presented by adjoining e with e^2 = 1 and e s_i e^-1 written as words in s_2, s_3.
+
+**Dependency path.** `ModuleAutomorphismGroup.finite_index_left_cosets` -> `_finite_index_coset_engine_action` -> GAP `CosetTable` on that presentation.
+
+**Evidence.** Opened: Sage's `sage/modular/arithgroup/arithgroup_perm.py` module docstring (lines 9-28: SL_2(ZZ) "a central extension of a free product of cyclic groups", s_2^2 = s_3^3 = -1), which does not state that these relations present SL_2(ZZ). The presentation's completeness (Serre, *Trees*, I.4.2) and the presentation of a split extension were not opened: no copy in `references/pdfs` or Zotero (searched 2026-10-14). The relations l = s_3^-1 s_2^-1 and r = s_3 s_2 used to translate Sage's `sl2z_word_problem` were checked by hand on the matrices. Confidence: the adapter is correct only if the presentation is. Request to `lean-categories`: the presentation of SL_2(ZZ) as Z/4 *_{Z/2} Z/6 and of GL_2(ZZ) as its extension by diag(1,-1).
+
+## O(U) is finite but is not placed as a finite group
+
+**Desired mathematics.** For the hyperbolic plane U, O(U) = {±1, ±swap} has order 4; more generally O(L) is finite for an anisotropic or definite L, and for U.
+
+**Dependency path.** `port-group-primitives-with-generators` acceptance (2U parabolic, K = e^perp/e ≅ U) -> `levi_action(): P -> O(K)` -> `PreimageSubgroups` -> the Schreier route needs Q = O(K) in `OwnedFiniteGroups`, or a finite realization of O(K)/levi(P).
+
+**Evidence (source).** `LatticeIsometryMor.__init__` (`lattice_morphisms.py:1835-1850`) places Aut(L) in `OwnedFiniteGroups` only when L is definite over ZZ or QQ, so O(U) is not placed finite and the 2U specimen reaches the infinite-codomain route, which needs the caller's three data. Not executed. Request to `lean-categories` if absent: finiteness of O(U) (or of O(L) for L of rank two with isotropic vectors), so that placement can cite it.
