@@ -289,44 +289,6 @@ class _AugmentedAlgebraSlice(SliceCategory):
         return self(polynomials.Mor(self.base_object())({label: self.base_object().zero()}))
 
     class ParentMethods:
-        def __init__(self, algebra_default_mor_category=None, **rest):
-            r"""Retain the producing construction's selected default arrow theory.
-
-            The canonical power producer supplies its actual power category.
-            An ordinary augmentation entry leaves this datum empty and uses
-            the scalar slice, together with a common retained grading when
-            both endpoints have it. Explicit category requests are unchanged.
-            """
-            self._algebra_default_mor_category = algebra_default_mor_category
-            super().__init__(**rest)
-
-        def _default_algebra_mor_category(self, codomain):
-            r"""Select the theory retained by both augmented endpoints.
-
-            Power-construction maps are the default only when both endpoints
-            retain that same producer choice. A new augmentation on the same
-            power algebra may differ, so its default instead states the
-            actual augmentation triangle, and the grading when shared.
-            """
-            category = AugmentedAlgebras(self.algebra_base_ring())
-            if codomain not in category:
-                return None
-            selected = self._algebra_default_mor_category
-            if (
-                selected is not None
-                and codomain._algebra_default_mor_category is selected
-                and self in selected and codomain in selected
-            ):
-                return selected
-            graded = _declared_graded_algebra_category(self)
-            if graded is not None:
-                common = GradedAugmentedAlgebras(
-                    self.algebra_base_ring(), graded.grading_monoid(),
-                )
-                if self in common and codomain in common:
-                    return common
-            return category
-
         def is_augmented(self):
             r"""This object retains a chosen augmentation, its scalar-slice datum."""
             return True
@@ -463,7 +425,7 @@ def _graded_algebra_placement(domain, base):
 
 def _augmented_algebra(
     augmentation, *, category=None, categories=(), construction_data=None, engine=None,
-    default_mor_category=None,
+    constructing_category=None,
 ):
     r"""Return the domain of ``augmentation``, as an augmented algebra.
 
@@ -472,8 +434,9 @@ def _augmented_algebra(
     grading, when present, is independent data; it supplies no map to ``A_u``.
     The module owner selects the actual finite, free or general realization;
     its existing same-data construction has no additional engine parameter.
-    A canonical power producer may retain its actual default Mor category;
-    an ordinary augmentation entry selects the common augmentation theory.
+    The result is an object of ``category``, its ambient category
+    (``ARC-07``), unless a canonical power producer names its power
+    category as ``constructing_category``.
     """
     match isinstance(augmentation, Map):
         case True:
@@ -517,7 +480,9 @@ def _augmented_algebra(
     if _declared_graded_algebra_category(domain) is not None:
         law_decisions["grading"] = domain.grading_compatibility_decision()
     data = dict(construction_data or {})
-    data["algebra_default_mor_category"] = default_mor_category
+    data["_constructing_category"] = (
+        category if constructing_category is None else constructing_category
+    )
     arrows = dict(data.pop("slice_arrows", {}))
     if category in arrows and arrows[category] is not selected:
         raise ValueError("one scalar slice cannot retain two different augmentations")

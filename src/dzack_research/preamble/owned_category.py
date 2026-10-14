@@ -1489,13 +1489,18 @@ def _object_of(
                 category.ObjectType, owner.ObjectType, object_engine,
                 category.ElementType, owner.ElementType, element_engine,
             )
+    # The ambient category (ARC-07) is the placement category unless the
+    # construction names the category of whose objects this is one, either
+    # here or, for a route that reaches this entry through
+    # ``_with_structure``, as the construction datum ``_constructing_category``.
+    ambient = data.pop("_constructing_category", _ambient)
     _construction_contract_from_type(
         category, implementation, owned_object_chain=True
     ).validate(data)
     return implementation(
         category=category,
         _defining_construction=(category, _engine, data),
-        _constructing_category=category if _ambient is None else _ambient,
+        _constructing_category=category if ambient is None else ambient,
         **data,
     )
 

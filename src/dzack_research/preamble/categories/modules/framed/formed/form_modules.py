@@ -3540,8 +3540,13 @@ def _form_module(
         case (None, None):
             pass
         case _:
+            from dzack_research.preamble.categories.abstract_categories.cat import Cat
             from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
+            # A formed submodule is a formed module with an inclusion as
+            # additional data: its ambient category (ARC-07) is that of the
+            # formed modules, without the subobject placements below.
+            construction_data["_constructing_category"] = Cat().meet(tuple(categories))
             categories.append(ModuleSubobjects(base_ring))
             match _subobject_ambient:
                 case None:
