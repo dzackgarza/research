@@ -2231,16 +2231,23 @@ class CoreMor(CategoricalMor):
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        # Aut_C(X) = Core(C)(X, X) is the vertex group of the core groupoid:
-        # composition, identity and inverse are those of the groupoid.
-        placement = None
-        if domain is codomain:
-            from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-            placement = OwnedGroups()
         CategoricalMor.__init__(
-            self, family, domain, codomain, category=placement
+            self, family, domain, codomain, category=self._vertex_group_placement(domain, codomain)
         )
+
+    @staticmethod
+    def _vertex_group_placement(domain: Parent, codomain: Parent) -> Category | None:
+        r"""``Aut_C(X) = Core(C)(X, X)`` is the vertex group of the core groupoid.
+
+        Composition, identity and inverse are those of the groupoid.  A
+        specialized core Mor (lattice isometries) takes its group placement
+        from here and refines it.
+        """
+        if domain is not codomain:
+            return None
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return OwnedGroups()
 
     def one(self) -> CategoricalIsomorphism:
         r"""The identity of ``Aut(X)``: the identity isomorphism of ``X``."""
@@ -2274,8 +2281,16 @@ class CoreMor(CategoricalMor):
         return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
 
     def group_generators(self):
-        r"""Generators of ``Aut(X) = Iso(X, X)``, as the base category computes them."""
-        return self.core_category().base_category()._core_automorphism_generators(self)
+        r"""Generators of ``Aut(X) = Iso(X, X)``: the selected free cover, else the base category's computation.
+
+        Without a selected resolution, the base category supplies the
+        generating family (its protected core contract) and it is selected.
+        """
+        if not self.has_selected_group_resolution():
+            self.select_group_resolution(
+                generators=self.core_category().base_category()._core_automorphism_generators(self)
+            )
+        return self.selected_group_resolution().generators(name="Group generators")
 
     def _element_constructor_(self, forward, inverse=None):
         match forward:

@@ -114,6 +114,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeIsometryMethods,
     LatticeIsometryMor,
     LatticeMor,
+    _LatticeCore,
     _lattice_embedding_mor,
     _lattice_isometry_mor,
     _lattice_mor,
@@ -1480,6 +1481,27 @@ class Lattices(OwnedCategoryOverBaseRing):
         return super().__classcall__(cls, ring)
 
     @cached_method
+    def Core(self):
+        r"""The core groupoid of lattices: the isometry Mors ``Isom(L, M)``, with ``O(L)`` its vertex groups."""
+        return _LatticeCore(self)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for lattices: one isometry, or ``None``."""
+        return None if core_mor.is_empty() is True else core_mor.an_element()
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for lattices: generators of ``O(L)``.
+
+        ``O(L)`` answers ``group_generators()`` from its selected resolution:
+        definite ``O(L)`` selects its computed generators at construction,
+        and an indefinite one after ``select_group_resolution()``.  No
+        generators are computed implicitly here.
+        """
+        assert False, (
+            f"{core_mor} has no selected generating resolution: call select_group_resolution() "
+            f"to select the computed generators of {core_mor}, or supply a generating family"
+        )
+
     def _marked_isometry(self, diagram_category, source, target):
         r"""Implementer side of ``_FunctorCategory``'s protected marked-diagram contract.
 
