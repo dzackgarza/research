@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.sets.finite_families import finite_famil
 
 
 def test_dickson_ross_ternary_forms_are_isometric() -> None:
-    # CS99 Ch. 15 §11 (l.12895-12925): one genus, one spinor genus, and the
+    # CS99 Ch. 15 §11 (l.12903-12929): one genus, one spinor genus, and the
     # unimodular matrix M of (50) transforms the first form into the second.
     first = Lattices(ZZ)([[3, 1, 0], [1, 23, 0], [0, 0, -1]])
     second = Lattices(ZZ)([[7, 3, 0], [3, 11, 0], [0, 0, -1]])
