@@ -15,7 +15,9 @@ endpoints and is spelled out every time (``OWN-02``):
 - ``Lp(p, X, Y)``: the \(p\)-integrable maps \(\mathcal L^p(X,Y)\), whose
   quotient by the null maps is \(L^p\); implemented for Lebesgue measure on
   \(X=\mathbb R\) and \(Y=\mathbb R\).  For \(p=2\) it is the formed module
-  with \(b(f,g)=\int fg\).
+  with \(b(f,g)=\int fg\) on functions; the radical of \(b\) is exactly the
+  null functions, and the Hilbert space \(L^2\) is the quotient by them
+  (``quotient_by_null_functions``).
 - ``ell(p, X, Y)``: the \(p\)-summable maps \(X\to\mathbb R\) for an
   arbitrary set \(X\) (\(\sum_{x\in X}|a(x)|^p<\infty\), counting measure;
   bounded for \(p=\infty\)); for \(p=2\) the formed module with
@@ -800,8 +802,13 @@ class _LebesgueSpace(_FunctionSpace):
 
     Its quotient by the maps vanishing almost everywhere is \(L^p\)
     (``quotient_by_null_functions``).  For \(p=2\) the object is the formed
-    module with \(b(f,g)=\int fg\); a general \(\mathcal L^p\) is paired with
-    \(\mathcal L^{p'}\) by Hölder, ``Lp(p, RR, RR) * Lp(p', RR, RR)``.
+    module with \(b(f,g)=\int fg\).  The form lives on functions, not on
+    classes: \(b(f,f)=\int f^2\) vanishes exactly when \(f\) is null, so the
+    radical of \(b\) is exactly the null functions and \(b\) is degenerate on
+    \(\mathcal L^2\).  The Hilbert space \(L^2\) is the quotient of this
+    formed module by its null functions, ``quotient_by_null_functions()``.
+    A general \(\mathcal L^p\) is paired with \(\mathcal L^{p'}\) by Hölder,
+    ``Lp(p, RR, RR) * Lp(p', RR, RR)``.
     """
 
     def integrability_exponent(self):
@@ -858,7 +865,11 @@ class _LebesgueSpace(_FunctionSpace):
 
 @cached_function(key=lambda exponent, domain, codomain: (_exponent_key(exponent), id(domain), id(codomain)))
 def _lebesgue_space(exponent, domain, codomain):
-    r"""Build \(\mathcal L^p(\mathbb R,\mathbb R)\) in \(\mathbb R^{\mathbb R}\); for \(p=2\), equipped with \(\int fg\)."""
+    r"""Build \(\mathcal L^p(\mathbb R,\mathbb R)\) in \(\mathbb R^{\mathbb R}\); for \(p=2\), equipped with \(\int fg\).
+
+    The \(p=2\) form is on functions; its radical is the null functions,
+    and \(L^2\) is ``quotient_by_null_functions()`` of the result.
+    """
     assert domain is RR and codomain is RR, (
         f"L^p(X, Y) is implemented for Lebesgue measure on X = RR and Y = RR, not for X = {domain}, Y = {codomain}"
     )
@@ -884,7 +895,9 @@ class _SequenceSpace(_FunctionSpace):
 
     The \(p\)-summable maps for counting measure on \(X\): \(\sum_{x\in X}|a(x)|^p<\infty\),
     bounded maps for \(p=\infty\).  For \(p=2\) the object is the formed
-    module with \(b(a,c)=\sum_{x\in X}a(x)c(x)\).
+    module with \(b(a,c)=\sum_{x\in X}a(x)c(x)\) on functions.  Counting
+    measure has no nonempty null set, so \(b(a,a)=\sum_x a(x)^2\) vanishes
+    only at \(a=0\): the radical of \(b\) is zero, and no quotient is taken.
     """
 
     def integrability_exponent(self):
