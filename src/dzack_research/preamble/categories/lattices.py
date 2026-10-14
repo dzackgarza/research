@@ -4979,17 +4979,12 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def vectors_of_square(self, square):
-            r"""Return the square fibre, enumerated where it is finite.
+            r"""Return the complete square fibre with its lattice inclusion.
 
             Definite fibres and nonzero split binary fibres are finite and
-            enumerated. A nonzero fibre of a nonsplit indefinite binary form
-            is infinite: the automorph generates an infinite subgroup of
-            ``SO(L)`` acting on it with finitely many orbits. Its result is
-            the selected transversal modulo ``SO(L)`` (PARI ``qfbsolve`` flag
-            3), retaining the action on the complete fibre, the orbit
-            projection and the representative section; iteration runs over
-            the representatives only. Other fibres retain the complete
-            defining locus.
+            enumerated. Other fibres retain the complete defining locus; the
+            orbits of a nonsplit binary fibre under ``O(L)`` or ``SO(L)`` are
+            :meth:`binary_fixed_norm_representatives`.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
@@ -5005,17 +5000,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 if discriminant > 0 and discriminant.is_square():
                     return self.finite_subsets()(
                         lattice_engines._split_binary_vectors_of_square(self, square)
-                    )
-                if discriminant > 0:
-                    from dzack_research.preamble.categories.group.g_objects import GObjects
-                    from dzack_research.preamble.categories.sets.set_categories import Sets
-
-                    action = GObjects(self.special_orthogonal_group(), Sets()).on_set(
-                        self.square_fibre(square).object(),
-                        lambda isometry, vector: isometry(vector),
-                    )
-                    return action.orbit_representatives(
-                        lattice_engines._binary_special_orthogonal_representatives(self, square)
                     )
             return self.square_fibre(square).object()
 
@@ -5174,32 +5158,51 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _definite_complement_extensions(self, left, right)
 
-        def binary_fixed_norm_representatives(self, square):
-            r"""Return a selected transversal of the binary square-fibre action.
+        def binary_fixed_norm_representatives(self, square, acting_group=None):
+            r"""Return the orbit set ``X/G`` of the square fibre ``X = q^{-1}(square)``.
 
+            ``G`` is ``acting_group``, which is ``O(self)`` (the default) or
+            ``SO(self)``; the ``SO(self)``-set is the restriction of the
+            ``O(self)``-action along the inclusion ``SO(self) -> O(self)``.
             The lattice must be nondegenerate of rank two over ``ZZ``.
-            PARI enumerates nonsplit indefinite representations, including
-            imprimitive ones, modulo ``SO(self)``. Finite fibres are enumerated
-            in full by their square-fibre owner.
-            The rank-one perpendicular extension decides which classes merge
-            under ``O(self)``. The returned finite set retains the action,
-            quotient, projection and representative section. At square zero
-            a split form has infinitely many content classes.
+            The result is the orbit set with its projection ``X -> X/G`` and
+            its section ``X/G -> X``, presented by a finite transversal.
+
+            The orbit relation of the fibre is decided by the rank-one
+            perpendicular extension: two vectors of equal content are in one
+            ``O(self)``-orbit exactly when an isometry carries one primitive
+            part to the other (``definite_complement_extensions``), and in one
+            ``SO(self)``-orbit exactly when such an isometry has determinant
+            one. The transversal is PARI's list of classes modulo ``SO(self)``
+            for a nonsplit indefinite form (``qfbsolve`` flag 3, imprimitive
+            classes included), merged by that relation, and the finite fibre
+            otherwise. That the nonsplit fibre has finitely many orbits is
+            Cassels, *Rational Quadratic Forms*, Ch. 9, Lemma 6.1. At square
+            zero a split form has infinitely many content classes.
 
             EXAMPLES::
 
                 sage: L = Lattices(ZZ)([[1, 0], [0, -2]])
-                sage: representatives = L.binary_fixed_norm_representatives(1)
-                sage: representatives.cardinality() == NN(1)
+                sage: orbits = L.binary_fixed_norm_representatives(1)
+                sage: orbits.cardinality() == NN(1)
                 True
-                sage: all(v.q() == ZZ(1) for v in representatives)
+                sage: all(orbits.section()(orbit).q() == ZZ(1) for orbit in orbits)
                 True
                 sage: L.binary_fixed_norm_representatives(3).cardinality() == NN(0)
                 True
-                sage: tuple(L.binary_fixed_norm_representatives(0)) == (L.zero(),)
-                True
             """
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
+
             square = self.base_ring()(square)
+            orthogonal = self.orthogonal_group()
+            special = self.special_orthogonal_group()
+            group = orthogonal if acting_group is None else acting_group
+            assert group is orthogonal or group is special, (
+                f"the orbits of the square fibre of {self} are computed under O(L) or SO(L), "
+                f"but {group} is neither"
+            )
             discriminant = lattice_engines._binary_form_discriminant(self)
             if not discriminant:
                 raise ValueError(
@@ -5223,13 +5226,26 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return False
                 if not square:
                     return False
-                return bool(
-                    self.definite_complement_extensions(
-                        left.primitive_part(), right.primitive_part()
-                    )
+                extensions = self.definite_complement_extensions(
+                    left.primitive_part(), right.primitive_part()
                 )
+                if group is orthogonal:
+                    return bool(extensions)
+                return any(extension.determinant() == 1 for extension in extensions)
 
-            action = self.square_fibre_action(square, orbit_relation=same_orbit)
+            fibre = self.square_fibre(square).object()
+            match group:
+                case _ if group is orthogonal:
+                    action = self.square_fibre_action(square, orbit_relation=same_orbit)
+                case _:
+                    # The restriction along SO(L) -> O(L) acts by the same
+                    # isometries; the restriction functor retains no orbit
+                    # relation, so the decided one is supplied here.
+                    action = GObjects(special, OwnedSets()).on_set(
+                        fibre,
+                        lambda isometry, vector: special.inclusion()(isometry)(vector),
+                        orbit_relation=same_orbit,
+                    )
             representatives = []
             for candidate in candidates:
                 if any(
@@ -5238,7 +5254,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ):
                     continue
                 representatives.append(candidate)
-            return action.orbit_representatives(representatives)
+            return action.orbits_presented_by(finite_ordered_set(tuple(representatives)))
 
         def reduction_cycle(self, bound, start):
             r"""Return the binary period automorph and bounded vectors, or ``None``.

@@ -1353,6 +1353,25 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
 
+        def orbits_presented_by(self, transversal):
+            r"""The orbit set ``X/G`` presented by a finite transversal of the orbits.
+
+            ``transversal`` is a finite set of points meeting every orbit
+            exactly once, stated by the caller's construction.  The result is
+            the coequalizer of the action and the projection, with its
+            projection ``X -> X/G`` and the section ``X/G -> X`` with image
+            ``transversal``; its orbits are equal exactly when the orbit
+            relation of this object relates their points, so that relation
+            must be decided (``in_same_orbit``).
+            """
+            from dzack_research.preamble.categories.group.g_sets import _orbit_set_presented_by
+
+            assert self.underlying_category() is Sets(), (
+                f"the orbit object of {self} under {self.acting_group()} is a colimit in "
+                f"{self.underlying_category()}, and the preamble constructs it only for G-sets"
+            )
+            return _orbit_set_presented_by(self, transversal)
+
         def orbit_representatives(self, points):
             r"""Retain selected representatives together with their orbit projection."""
             from dzack_research.preamble.categories.group.g_sets import OrbitRepresentativeSets
