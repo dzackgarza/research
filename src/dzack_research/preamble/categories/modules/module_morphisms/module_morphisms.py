@@ -3521,7 +3521,8 @@ class ModuleAutomorphismGroup(CoreMor):
         for ``j`` in an earlier block than ``k`` (Levi decomposition
         ``B = L U``; unverified citation, untrusted computation).  The
         result is the stabilizer subgroup of the flag under the natural
-        action, with that generating morphism; ``P`` is its basis change.
+        action, with that generating morphism and ``P`` retained as its
+        ``basis_change()``.
         """
         from dzack_research.preamble.categories.group.predicate_subgroups import StabilizerSubgroups, _free_cover
         from sage.groups.matrix_gps.linear import GL
@@ -3567,6 +3568,7 @@ class ModuleAutomorphismGroup(CoreMor):
             preserves_flag,
             description=f"g preserves the flag {terms} of {module}",
             generating_morphism=_free_cover(self, generators),
+            basis_change=change,
         )
 
     def _basis_general_linear_generators(self):

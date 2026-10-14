@@ -746,11 +746,15 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         *,
         description=None,
         generating_morphism=None,
+        basis_change=None,
     ):
         r"""Construct the stabilizer retaining the stabilized object and action.
 
         ``generating_morphism`` is the action owner's free generating
         morphism onto the stabilizer, when its action supplies one.
+        ``basis_change`` is the automorphism of the acted-on object through
+        which that owner computed the generators (the basis adapted to a
+        flag), when it used one.
         """
         from dzack_research.preamble.categories.functors.core import Functor
 
@@ -770,6 +774,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             stabilized_object=stabilized_object,
             stabilizer_action=action,
             generating_morphism=generating_morphism,
+            basis_change=basis_change,
         )
 
     @classmethod
@@ -777,10 +782,18 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         return "stabilizer subgroups"
 
     class ParentMethods:
-        def __init__(self, stabilized_object, stabilizer_action, **rest) -> None:
+        def __init__(self, stabilized_object, stabilizer_action, basis_change=None, **rest) -> None:
             self._stabilized_object = stabilized_object
             self._stabilizer_action = stabilizer_action
+            self._basis_change = basis_change
             super().__init__(**rest)
+
+        def basis_change(self):
+            r"""The automorphism ``P`` the generators were computed through: ``P(e_j) = b_j``, ``b`` adapted to the stabilized flag."""
+            assert self._basis_change is not None, (
+                f"{self} was not constructed through an adapted basis"
+            )
+            return self._basis_change
 
         def stabilized_object(self):
             return self._stabilized_object
