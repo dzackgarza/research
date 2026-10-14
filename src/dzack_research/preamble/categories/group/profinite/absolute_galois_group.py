@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     AbsoluteGaloisGroups,
+    AbsoluteGaloisGroupsOfFiniteFields,
     OpenAbsoluteGaloisSubgroups,
     _absolute_galois_group_category,
 )
@@ -29,6 +30,8 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     DecompositionGroupConjugacyClass,
     FrobeniusConjugacyClass,
     InertiaGroupConjugacyClass,
+    _chosen_rational_prolongation,
+    _finite_frobenius_element,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteExtensionAutomorphismGroup,
@@ -60,6 +63,9 @@ class AbsoluteGaloisGroupElement(Element):
     A global exact map may be supplied directly.  A lift from a finite
     quotient instead starts with one exact finite coordinate; additional
     coordinates can be installed only after their compatibility is checked.
+    A third datum is a stage rule: a function sending each finite Galois
+    stage ``L`` on which it is defined to an element of ``Gal(L/K)``, with
+    coherence of its values under restriction a premise of its caller.
     """
 
     def __init__(
@@ -69,6 +75,7 @@ class AbsoluteGaloisGroupElement(Element):
         exact_action: RingMorphism | None = None,
         coordinates=(),
         frobenius_exponent=None,
+        stage_rule=None,
     ) -> None:
         Element.__init__(self, parent)
         self._exact_action = exact_action
@@ -76,10 +83,16 @@ class AbsoluteGaloisGroupElement(Element):
         self._frobenius_exponent = (
             None if frobenius_exponent is None else ZZ(frobenius_exponent)
         )
-        if self._exact_action is None and self._frobenius_exponent is None:
+        self._stage_rule = stage_rule
+        if (
+            self._exact_action is None
+            and self._frobenius_exponent is None
+            and self._stage_rule is None
+        ):
             raise TypeError(
-                f"an element of {parent} must be given either as an automorphism of the "
-                f"algebraic closure or as a power of Frobenius, but neither was given"
+                f"an element of {parent} must be given as an automorphism of the "
+                f"algebraic closure, as a power of Frobenius, or by its restrictions to "
+                f"the finite Galois stages, but none was given"
             )
         if self._exact_action is not None and element_parent(self._exact_action) is not parent.field_automorphism_mor():
             raise TypeError(
@@ -120,6 +133,8 @@ class AbsoluteGaloisGroupElement(Element):
         )
 
     def restriction_coordinate(self, stage):
+        if self._stage_rule is not None:
+            return self._stage_rule(self.parent().extension_data(stage))
         for known_stage, coordinate in self._coordinates:
             if known_stage is stage:
                 return coordinate
@@ -154,6 +169,14 @@ class AbsoluteGaloisGroupElement(Element):
             return None
         return _owned_engine_element(ZZ, self._frobenius_exponent)
 
+    def arithmetic_frobenius_prime(self):
+        r"""The prime at which this element is a retained arithmetic Frobenius, or ``None``."""
+        return None
+
+    def frobenius_prolongation(self):
+        r"""The chosen prolongation of :meth:`arithmetic_frobenius_prime`, or ``None``."""
+        return None
+
     def is_globally_evaluable(self) -> bool:
         return self._frobenius_exponent is not None or self._exact_action is not None
 
@@ -162,11 +185,23 @@ class AbsoluteGaloisGroupElement(Element):
         return self._call_(element)
 
     def _call_(self, element):
-        r"""Evaluate: a Frobenius power by its exponent, otherwise the exact action; construction supplies one of the two."""
+        r"""Evaluate: a Frobenius power by its exponent, otherwise the exact action.
+
+        An element given by its stage restrictions acts on ``Kbar`` through
+        the stage containing the argument; that stage is named by
+        ``restrict(stage)``, and evaluation away from a named stage is the
+        assertion below.
+        """
         if self._frobenius_exponent is not None:
             return self.parent()._finite_frobenius_image(
                 element, self._frobenius_exponent
             )
+        assert self._exact_action is not None, (
+            f"evaluating {self} at {element} needs a finite Galois stage of "
+            f"{self.parent().algebraic_closure()} containing {element}; this element is "
+            f"given by its restrictions to finite stages, so restrict it to such a stage "
+            f"first"
+        )
         return self._exact_action(element)
 
     def fixes_base_field(self) -> bool | Predicate:
@@ -178,6 +213,10 @@ class AbsoluteGaloisGroupElement(Element):
         remains an owned proposition. No finite generator family is
         required of an arbitrary base field.
         """
+        if self._stage_rule is not None:
+            # Each value of the stage rule is an element of Gal(L/K), which
+            # fixes K by construction of that quotient.
+            return True
         parent = cast("_AbsoluteGaloisGroupEngine", self.parent())
         embedding = parent.base_embedding()
         return self.as_morphism() * embedding == embedding
@@ -250,6 +289,18 @@ class AbsoluteGaloisGroupElement(Element):
             and other._frobenius_exponent is not None
         ):
             return self._frobenius_exponent == other._frobenius_exponent
+        if self._stage_rule is not None or other._stage_rule is not None:
+            # Agreement on finitely many stages does not decide equality in
+            # G_K; two Frobenius elements retaining the same prime and the
+            # same prolongation are the same element by construction.
+            prime = self.arithmetic_frobenius_prime()
+            if (
+                prime is not None
+                and prime == other.arithmetic_frobenius_prime()
+                and self.frobenius_prolongation() is other.frobenius_prolongation()
+            ):
+                return True
+            return AtomicProposition("equal_automorphisms", self, other)
         return self.as_morphism() == other.as_morphism()
 
     def __hash__(self) -> int:
@@ -263,6 +314,8 @@ class AbsoluteGaloisGroupElement(Element):
             return f"q-Frobenius^{self._frobenius_exponent} (q={q})"
         if self._exact_action is not None:
             return f"Element of {self.parent()} represented by {self._exact_action}"
+        if self._stage_rule is not None:
+            return f"Element of {self.parent()} given by its restrictions to finite Galois stages"
         fields = ", ".join(str(stage.field()) for stage, _ in self._coordinates)
         return f"Element of {self.parent()} realized on {fields}"
 
@@ -272,6 +325,45 @@ class FrobeniusElement(AbsoluteGaloisGroupElement):
 
     def __init__(self, parent, exponent=1) -> None:
         super().__init__(parent, frobenius_exponent=ZZ(exponent))
+
+
+class ArithmeticFrobeniusElement(AbsoluteGaloisGroupElement):
+    r"""A Frobenius element of ``G_K`` at a prime ``p`` of a number field ``K`` and a chosen prolongation ``pbar``.
+
+    Defining data: the base prime ``p`` and the prolongation ``pbar``, which
+    assigns to each finite Galois stage ``L`` a prime of ``O_L`` above ``p``.
+    At a stage unramified above ``p`` the restriction is the arithmetic
+    Frobenius at the chosen prime (Mathlib ``IsArithFrobAt``,
+    ``Mathlib/RingTheory/Frobenius.lean``; ``lean-categories``
+    ``serreFrobeniusSubstitution``, ``LeanCategories/Algebra/ArithmeticFrobeniusData.lean``),
+    which is unique there.  At a stage where ``p`` ramifies the restriction
+    is a choice of inertia lift that this element does not retain, and asking
+    for it asserts.
+    """
+
+    def __init__(self, parent, prime, prolongation) -> None:
+        self._base_prime = prime
+        self._prolongation = prolongation
+        super().__init__(parent, stage_rule=self._frobenius_at_stage)
+
+    def _frobenius_at_stage(self, stage):
+        quotient = self.parent().finite_quotient(stage)
+        return _finite_frobenius_element(
+            quotient, self._base_prime, self._prolongation.at(stage)
+        )
+
+    def arithmetic_frobenius_prime(self):
+        return self._base_prime
+
+    def frobenius_prolongation(self):
+        return self._prolongation
+
+    def conjugacy_class(self):
+        r"""The Frobenius class at ``p``: the Frobenius elements at all prolongations of ``p``."""
+        return FrobeniusConjugacyClass(self.parent(), self._base_prime)
+
+    def _repr_(self) -> str:
+        return f"Frobenius at {self._base_prime} in {self.parent()}, at {self._prolongation}"
 
 
 class _AbsoluteElementConjugacyClassEngine:
@@ -511,17 +603,42 @@ class _AbsoluteGaloisGroupEngine:
     def an_element(self):
         return self.frobenius() if self._is_finite_field() else self.one()
 
-    def frobenius(self, prime=None):
-        r"""Return (x\mapsto x^q) for finite fields, or a local class at ``prime``."""
-        if self._is_finite_field() and prime is None:
-            return FrobeniusElement(self, ZZ.one())
-        if prime is None:
-            raise TypeError(
-                f"the base field {self._field} of {self} is not finite, so a Frobenius "
-                f"class exists only at a prime; give `prime`"
-            )
+    def frobenius(self, prime=None, prolongation=None):
+        r"""Return ``x -> x^q`` over a finite field, or a Frobenius element at ``prime``.
 
-        return FrobeniusConjugacyClass(self, prime)
+        Over a number field ``K`` the result is an element of ``G_K`` that
+        retains ``prime`` and the prolongation ``prolongation`` (a
+        :func:`PrimeProlongation`); its class is :meth:`frobenius_class`.
+        Without a supplied prolongation of a rational prime, this group
+        constructs one coherent chosen prolongation per prime and retains it,
+        so repeated calls give equal elements.
+        """
+        from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
+
+        if prime is None:
+            assert self in AbsoluteGaloisGroupsOfFiniteFields(), (
+                f"the base field {self._field} of {self} is not finite, so a Frobenius "
+                f"element exists only at a prime; give `prime`"
+            )
+            return FrobeniusElement(self, ZZ.one())
+        assert self._field in OwnedNumberFields(), (
+            f"a Frobenius element at the prime {prime} is constructed here only over a "
+            f"number field, but the base field of {self} is {self._field}"
+        )
+        if prolongation is None:
+            prolongation = self._chosen_prolongation(prime)
+        return ArithmeticFrobeniusElement(self, prime, prolongation)
+
+    @cached_method(key=lambda group, prime: ZZ(int(prime)))
+    def _chosen_prolongation(self, prime):
+        r"""The prolongation of the rational prime ``prime`` that this group chooses and retains."""
+        from dzack_research.preamble.categories.rings.ring_foundation import PrimeFields
+
+        assert self._field in PrimeFields(), (
+            f"a prolongation of {prime} is chosen here only over QQ, where the prime is "
+            f"rational; over {self._field} supply a PrimeProlongation"
+        )
+        return _chosen_rational_prolongation(ZZ(int(prime)))
 
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():
@@ -549,6 +666,14 @@ class _AbsoluteGaloisGroupEngine:
             return FrobeniusElement(
                 self, left.frobenius_exponent() + right.frobenius_exponent()
             )
+        if not (left.is_globally_evaluable() and right.is_globally_evaluable()):
+            # Restriction to a finite Galois stage is a group morphism, so the
+            # composite restricts to the composite of the restrictions.
+            return AbsoluteGaloisGroupElement(
+                self,
+                stage_rule=lambda stage: self.restriction_map(stage)(left)
+                * self.restriction_map(stage)(right),
+            )
         if (left == self.one()) is True:
             return right
         if (right == self.one()) is True:
@@ -561,6 +686,11 @@ class _AbsoluteGaloisGroupEngine:
         r"""``sigma^-1``: the negated Frobenius exponent, else the inverse of the exact action."""
         if element.frobenius_exponent() is not None:
             return FrobeniusElement(self, -element.frobenius_exponent())
+        if not element.is_globally_evaluable():
+            return AbsoluteGaloisGroupElement(
+                self,
+                stage_rule=lambda stage: self.restriction_map(stage)(element).inverse(),
+            )
         if (element == self.one()) is True:
             return self.one()
         return self(element.exact_action().inverse())
@@ -1021,6 +1151,7 @@ def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
 __all__ = [
     "AbsoluteGaloisGroup",
     "AbsoluteGaloisGroupElement",
+    "ArithmeticFrobeniusElement",
     "ElementConjugacyClass",
     "FrobeniusElement",
     "OpenAbsoluteGaloisSubgroup",
