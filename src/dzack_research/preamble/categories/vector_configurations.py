@@ -28,8 +28,6 @@ of order six, and ``E8`` gives the trivial group.
 
 from sage.graphs.graph import Graph
 from sage.misc.cachefunc import cached_method
-from sage.matrix.constructor import matrix
-from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
@@ -45,7 +43,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     finite_indexed_family_from_values,
 )
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix, _engine_row_basis_positions, _engine_row_family_gram
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -126,7 +123,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         """
         left = _SpanningConfiguration(source, source_vectors, source_colours)
         right = _SpanningConfiguration(target, target_vectors, target_colours)
-        if len(left.vectors) != len(right.vectors) or left.rows.ncols() != right.rows.ncols():
+        if len(left.vectors) != len(right.vectors) or source.rank() != target.rank():
             return None
         equivalent, certificate = left.graph.is_isomorphic(right.graph, edge_labels=True, certificate=True)
         if not equivalent:
@@ -138,14 +135,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         right_exponent, containing = right.containing_bound()
         if left_exponent != right_exponent:
             return None
-        transformation = left.rational_transformation(right, certificate.__getitem__)
-        if transformation is None:
-            raise ArithmeticError(
-                "a pairing-preserving bijection of nondegenerate spanning families fails to preserve their linear relations"
-            )
         rational_source = left.rational_space()
         rational_target = right.rational_space()
-        equivalence = left.rational_morphism(rational_source.Isom(rational_target), right, transformation)
+        equivalence = left.rational_transformation(right, certificate.__getitem__)
         source_rationalization = left.rationalization()
         target_rationalization = right.rationalization()
         ambient_space = target_rationalization.codomain()
@@ -399,7 +391,19 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
 
 
 class _SpanningConfiguration:
-    """Private graph realization of a supplied finite spanning family."""
+    """Private adapter (OWN-06): a coloured spanning family and its labelled pairing graph.
+
+    Declared engine boundary: the labelled pairing graph is a Sage ``Graph``
+    used only for its isomorphism and automorphism computations (bliss/nauty),
+    because ``LabelledGraphs`` presents label-preserving ``Mor`` but no
+    computed isomorphism or automorphism group (recorded in COMPLAINTS).
+    Everything that leaves this adapter is a preamble object: the family is
+    the module morphism ``F(I) -> L`` from the free module on the positions,
+    its pairings are the pullback of the Gram tensor along it, a rational
+    equivalence is found by exact solving at the module owner (``lift`` of
+    the rational family morphism), and the configuration group is the image
+    of a constructed group morphism ``Aut(Gamma) -> O(L tensor Q)``.
+    """
 
     def __init__(self, lattice, vectors, colours):
         if lattice.base_ring() is not _own_ring(SageZZ):
@@ -414,19 +418,17 @@ class _SpanningConfiguration:
             raise ValueError("each configuration position requires one colour")
         if not lattice.is_nondegenerate():
             raise ValueError("the finite pairing action requires a nondegenerate ambient lattice")
-        labels = tuple(lattice.module_generating_set())
-        self.rows = matrix(SageQQ, [
-            [int(point.to_vector()(label)) for label in labels]
-            for point in self.vectors
-        ])
-        if self.rows.rank() != int(lattice.rank()):
+        if lattice.subobject_on(self.vectors).module_rank() != lattice.rank():
             raise ValueError("the finite pairing action requires a spanning configuration")
-        self.basis_positions = _engine_row_basis_positions(self.rows)
-        self.inverse_basis = self.rows.matrix_from_rows(self.basis_positions).inverse()
+        integral_positions = Modules(lattice.base_ring()).free_module(len(self.vectors))
+        self.positions = tuple(integral_positions.module_generating_set())
+        family = Modules(lattice.base_ring()).Mor(integral_positions, lattice)(
+            lambda label: self.vectors[self.positions.index(label)]
+        )
+        pairings = lattice.gram_tensor().pullback(family)
         self.graph = Graph(loops=True, multiedges=False)
         self.graph.add_vertices(range(len(self.vectors)))
-        pairings = _engine_row_family_gram(_engine_component_matrix(lattice.gram_tensor()), self.rows)
-        for left, point in enumerate(self.vectors):
+        for left in range(len(self.vectors)):
             self.graph.add_edge(left, left, ("vertex", colours[left], int(pairings[left, left])))
             for right in range(left):
                 self.graph.add_edge(left, right, ("pairing", int(pairings[left, right])))
@@ -438,39 +440,63 @@ class _SpanningConfiguration:
     def rational_space(self):
         return self.lattice.base_change(self.lattice.base_ring().fraction_field_map())
 
-    def rational_transformation(self, target, permutation):
-        r"""The coordinate matrix ``T`` with ``rows * T`` the permuted target rows, or None."""
-        image_rows = target.rows.matrix_from_rows([int(permutation(position)) for position in range(len(self.vectors))])
-        transformation = self.inverse_basis * image_rows.matrix_from_rows(self.basis_positions)
-        if self.rows * transformation != image_rows:
-            return None
-        return transformation
+    @cached_method
+    def rational_family(self):
+        r"""The family as the rational module morphism ``F_Q(I) -> L tensor Q``, surjective by spanning."""
+        rational = self.rational_space()
+        rationalization = self.rationalization()
+        positions = Modules(rational.base_ring()).free_module(len(self.vectors))
+        return Modules(rational.base_ring()).Mor(positions, rational)(
+            lambda label: rationalization(
+                self.vectors[tuple(positions.module_generating_set()).index(label)]
+            ).underlying_element()
+        )
 
-    def rational_morphism(self, homset, target, transformation):
-        r"""The element of ``homset`` sending basis vector ``i`` to row ``i`` of ``transformation``."""
-        codomain = homset.codomain()
-        rational_ring = codomain.base_ring()
-        labels = tuple(self.lattice.module_generating_set())
-        target_labels = tuple(target.lattice.module_generating_set())
-        images = {
-            label: codomain.linear_combination({
-                image_label: rational_ring(int(entry.numerator())) / rational_ring(int(entry.denominator()))
-                for image_label, entry in zip(target_labels, row, strict=True) if entry
-            })
-            for label, row in zip(labels, transformation.rows(), strict=True)
-        }
-        return homset(images)
+    def rational_transformation(self, target, permutation):
+        r"""The rational isometry ``T_sigma`` with ``T_sigma(v_i) = w_{sigma(i)}``.
+
+        For a pairing-preserving bijection of nondegenerate spanning families
+        ``T_sigma`` exists and is unique.  It is computed at the module owner:
+        a vector ``x`` is lifted along the surjective family morphism
+        ``F_Q(I) -> L_1 tensor Q`` (exact solving), its coefficients are
+        moved by ``sigma``, and the target family morphism is applied.
+        """
+        source_family = self.rational_family()
+        target_family = target.rational_family()
+        source_positions = source_family.domain()
+        target_positions = target_family.domain()
+        source_labels = tuple(source_positions.module_generating_set())
+        target_labels = tuple(target_positions.module_generating_set())
+        relabel = Modules(source_positions.base_ring()).Mor(source_positions, target_positions)(
+            lambda label: target_positions.module_generator(
+                target_labels[int(permutation(source_labels.index(label)))]
+            )
+        )
+        rational_source = self.rational_space()
+        rational_target = target.rational_space()
+        return rational_source.Isom(rational_target)(
+            lambda label: target_family(relabel(source_family.lift(rational_source.module_generator(label))))
+        )
 
     def rational_configuration_group(self, permutation_group):
-        r"""The subgroup of ``O(L tensor Q)`` realizing generators of the graph group."""
+        r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``.
+
+        ``rho`` is constructed from generator images, each the rational
+        isometry realizing a generating graph automorphism; ``G`` is its image.
+        """
+        from dzack_research.preamble.categories.group.groups import _own_group
+
         rational = self.rational_space()
-        generators = []
+        automorphisms = _own_group(permutation_group)
+        orthogonal = rational.O()
+        images = {}
         for permutation in permutation_group.gens():
-            transformation = self.rational_transformation(self, permutation)
-            if transformation is None:
-                raise ArithmeticError("a graph automorphism fails to preserve the configuration's linear relations")
-            generators.append(self.rational_morphism(rational.O(), self, transformation))
-        return rational.O().subgroup(tuple(generators))
+            isometry = self.rational_transformation(self, permutation)
+            images[automorphisms._from_engine(permutation)] = orthogonal(
+                {label: isometry(rational.module_generator(label)) for label in rational.module_generating_set()}
+            )
+        rho = automorphisms.Mor(orthogonal)(images)
+        return rho.image()
 
     def containing_bound(self):
         r"""The exponent ``e`` of ``L/K`` and the stable module ``K/e`` containing ``L``.
@@ -497,17 +523,8 @@ class _SpanningConfiguration:
         return exponent, containing
 
     def lift(self, target, permutation):
-        transformation = self.rational_transformation(target, permutation)
-        if transformation is None:
-            return None
-        if any(entry.denominator() != 1 for entry in transformation.list()) or abs(transformation.det()) != 1:
-            return None
-        ring = target.lattice.base_ring()
-        labels = tuple(target.lattice.module_generating_set())
-        images = tuple(target.lattice.linear_combination({
-            label: ring(int(entry)) for label, entry in zip(labels, row, strict=True)
-        }) for row in transformation.rows())
-        return self.lattice.Isom(target.lattice)(images)
+        r"""The integral isometry ``L_1 -> L_2`` restricting ``T_sigma``, or ``None`` when it is not integral."""
+        return self.rational_transformation(target, permutation).integral_restriction(self.lattice, target.lattice)
 
 
 __all__ = ["VectorConfigurations"]
