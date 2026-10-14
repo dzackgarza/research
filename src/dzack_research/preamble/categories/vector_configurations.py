@@ -167,21 +167,32 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             r"""Return the ordered index set framing this configuration."""
             return self.module_generating_set()
 
+        def configuration_indexing(self):
+            r"""Return the bijection ``positions -> I`` onto the supplied family's index set.
+
+            The configuration is framed through ``_lattice_subobject_on_basis``
+            on the family's values in the order of ``I``'s enumeration, and that
+            construction labels its framing by ``Sets.Δ[m-1]`` with the ``k``-th
+            label sent to the ``k``-th value (``_module_subobject_constructor_data``
+            in ``framed_free_modules.py``).  So the position of rank ``k`` is the
+            index of rank ``k``: this map is the composite of the two ranking
+            isomorphisms, stated here rather than assumed at each use.
+            """
+            positions = self.configuration_positions()
+            indices = self._configuration_colouring.domain()
+            to_index = indices.ranking_map().inverse()
+            return Sets().Mor(positions, indices)(
+                lambda position: to_index(positions.ranking_map()(position))
+            )
+
         def configuration_colouring(self):
             r"""Return the colouring as the set map ``positions -> C``.
 
-            The constructor received a map ``I -> C`` out of the index set of
-            the supplied family; the positions correspond to ``I`` in order, so
-            this is that map composed with the order isomorphism
-            ``positions -> I`` of the two ranking maps.
+            The constructor received the caller's map ``I -> C`` out of the
+            index set of the caller's family; this is that map composed with
+            :meth:`configuration_indexing`.
             """
-            supplied = self._configuration_colouring
-            positions = self.configuration_positions()
-            indices = supplied.domain()
-            to_index = indices.ranking_map().inverse()
-            return Sets().Mor(positions, supplied.codomain())(
-                lambda position: supplied(to_index(positions.ranking_map()(position)))
-            )
+            return self._configuration_colouring * self.configuration_indexing()
 
         def preserves_colouring(self, position_map) -> bool:
             r"""Return whether a framing permutation carries each position to one of its colour."""
@@ -280,9 +291,12 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def preserves_every_pairing(self, position_map) -> bool:
             r"""Return whether a framing permutation preserves the form: ``P^* b = b``.
 
-            ``P`` is the endomorphism of the framed sublattice moving each
-            framing vector to its image position; the claim is the equality of
-            the pulled-back Gram tensor with the Gram tensor (``OWN-24``).
+            ``position_map`` is a map of :meth:`configuration_positions` to
+            itself; those positions are the labels of this sublattice's module
+            generators (its framing), so ``P`` is the endomorphism sending the
+            generator at each position to the generator at its image.  The
+            claim is the equality of the pulled-back Gram tensor with the Gram
+            tensor (``OWN-24``).
             """
             permutation = Modules(self.base_ring()).Mor(self, self)(
                 lambda label: self.module_generator(position_map(label))
