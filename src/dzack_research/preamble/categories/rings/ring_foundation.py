@@ -2727,7 +2727,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                             case _ if self in OwnedOrders():
                                 return _owned_engine_ring(_engine_ring(self).number_field())
                             case _ if self in LocalizationRings():
-                                return self.localization_source().fraction_field()
+                                source = self.localization_source()
+                                assert source in OwnedIntegralDomains(), (
+                                    f"Frac({self}) is Frac({source}) only when {source} is an "
+                                    f"integral domain, but {source} is only known to be in "
+                                    f"{source.category()}"
+                                )
+                                return source.fraction_field()
                             case _:
                                 return self.fraction_field_localization()
 
