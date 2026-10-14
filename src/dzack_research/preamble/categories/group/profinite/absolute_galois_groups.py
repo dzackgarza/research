@@ -32,14 +32,12 @@ from dzack_research.preamble.logic import ask
 
 def _finite_field_absolute_galois_group():
     r"""Return the selected finite-field specimen used by these categories."""
-    from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
-
     from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
         AbsoluteGaloisGroup,
     )
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import GF
 
-    return AbsoluteGaloisGroup(_own_ring(SageGF(2)))
+    return AbsoluteGaloisGroup(GF(2))
 
 
 class AbsoluteGaloisGroups(OwnedCategory):

@@ -2469,6 +2469,47 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                                 "primality to be established"
                             )
 
+            class Finite(CategoryWithAxiom):
+                r"""Finite fields ``F_q``: a field whose underlying set is finite.
+
+                The element operations below are those of the cyclic group
+                ``F_q^x`` and of squares in ``F_q``; each is computed by the
+                field's private realization (``OWN-06``) and raised back.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "finite fields"
+
+                def an_object(self):
+                    r"""The field with four elements."""
+                    return GF(4)
+
+                class ElementMethods:
+                    def multiplicative_order(self):
+                        r"""The order of this nonzero element in the group ``F_q^x``."""
+                        field = self.parent()
+                        assert (self == field.zero()) is not True, (
+                            f"0 has no multiplicative order in {field}: it is not in the group of units"
+                        )
+                        return _owned_engine_element(
+                            _owned_integers(),
+                            SageZZ(_engine_element(field, self).multiplicative_order()),
+                        )
+
+                    @RealizationHook
+                    def _squareness_decision(self):
+                        r"""Whether ``y^2 = self`` for some ``y`` in ``F_q``, decided by the realization."""
+                        return bool(_engine_element(self.parent(), self).is_square())
+
+                    def sqrt(self):
+                        r"""A ``y`` in ``F_q`` with ``y^2 = self``, chosen by the realization."""
+                        field = self.parent()
+                        assert self.is_square() is True, (
+                            f"{self} has no square root in {field}: it is not a square there"
+                        )
+                        return _owned_engine_element(field, _engine_element(field, self).sqrt())
+
             class ParentMethods:
                 def _krull_dimension_decision(self):
                     r"""``0``: the only prime ideal of a field is ``(0)``."""
@@ -5839,8 +5880,8 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             return _owned_padic_field(int(engine.prime()), int(engine.precision_cap()))
         case SageFiniteFieldClass():
             # A finite-field engine is raised through ``GF``'s construction
-            # on its order and generator label.
-            return _owned_finite_field(int(engine.order()), engine.variable_name())
+            # on its order and generator label; a prime field is ``ZZ/(p)``.
+            return GF(int(engine.order()), engine.variable_name())
         case IntegerModRing_generic():
             # After the finite fields: ``ZZ/nZZ`` met in an adapter is the quotient ``ZZ/(n)``.
             return Zmod(int(engine.order()))
@@ -6058,18 +6099,17 @@ def GF(order, name=None):
 
     ``order`` is the defining datum, a prime power ``q``; ``name`` labels the
     generator of ``F_q`` over its prime field and is presentation data.  Equal
-    data give the same field (``OWN-02``).
+    data give the same field (``OWN-02``).  For a prime ``q = p`` the field is
+    ``ZZ/(p)``, the one object ``Zmod(p)`` also returns; ``F_p`` has no
+    generator over its prime field, so ``name`` names nothing there.
     """
     (order,) = _lowered_integer_arguments((order,))
+    if SageZZ(order).is_prime():
+        return Zmod(order)
     # An unnamed generator takes the default label, so ``GF(4)`` and
     # ``GF(4, "z2")`` state the same data and give one field.
     label = _SageGF(int(order)).variable_name() if name is None else str(name)
     return _owned_finite_field(int(order), label)
-
-
-def _prime_field_placements() -> tuple[Category, ...]:
-    r"""``F_p``: a finite field that is its own prime field."""
-    return (*_field_placements(), PrimeFields(), owned_sets.FiniteSets(), OwnedRings().Artinian())
 
 
 def _finite_field_placements() -> tuple[Category, ...]:
@@ -6079,17 +6119,16 @@ def _finite_field_placements() -> tuple[Category, ...]:
 
 @cached_function
 def _owned_finite_field(order: int, name: str) -> _OwnedRingParent:
-    r"""Construct ``F_q`` from its order and generator label.
+    r"""Construct ``F_q``, ``q = p^k`` with ``k > 1``, from its order and generator label.
 
-    ``F_q`` is the prime field exactly when ``q`` is prime (``q = p^k`` and the
-    prime field ``F_p`` has ``p`` elements), so the primality of the datum
-    ``q`` places it (``CON-07``).  The engine is selected privately.
+    The prime fields are the quotients ``ZZ/(p)`` (:func:`GF`).  The engine is
+    selected privately.
     """
-    engine = _SageGF(order, name)
-    placement = (
-        _prime_field_placements if SageZZ(order).is_prime() else _finite_field_placements
+    assert not SageZZ(order).is_prime(), (
+        f"the field with {order} elements is ZZ/({order}); it is constructed as that quotient"
     )
-    field = _OwnedRingParent(engine, named_placement=placement)
+    engine = _SageGF(order, name)
+    field = _OwnedRingParent(engine, named_placement=_finite_field_placements)
     _set_owned_ring_display(field, f"GF({order})", kind="finite_field")
     return field
 

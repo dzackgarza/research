@@ -12,6 +12,7 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
+from sage.rings.finite_rings.finite_field_constructor import GF as _SageGF
 from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -55,6 +56,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedPrincipalIdealDomains,
     OwnedRings,
+    PrimeFields,
     _engine_element,
     _engine_krull_dimension,
     _krull_dimension_of_engine,
@@ -3375,9 +3377,25 @@ def _quotient_ring(source, defining_ideal):
         quotient_is_domain = quotient_is_field or defining_ideal.is_prime() is True
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
+    # ZZ/(p) for a maximal (p) is the prime field F_p, one object for every
+    # route (``GF(p)``, ``PrimeFields()(p)``, ``Zmod(p)``).  It has no proper
+    # subfield: every ring map into ZZ/(p) is onto (Mathlib
+    # ``ZMod.ringHom_surjective``, Mathlib/Data/ZMod/Basic.lean:1135, with
+    # ``Int.quotientSpanNatEquivZMod``), so a subfield, containing the image
+    # of ZZ, is all of it.  Sage's prime field ``GF(p)`` is selected as the
+    # private realization of this quotient (CON-12).
+    prime_field = (
+        quotient_is_field
+        and not exact_source_quotient
+        and source is _owned_integers()
+    )
+    if prime_field:
+        quotient_engine = _SageGF(abs(defining.gen()))
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
+    if prime_field:
+        placements.append(PrimeFields())
     if quotient_is_field:
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
