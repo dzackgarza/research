@@ -2088,6 +2088,15 @@ re-derives `owned.delta()` and crashes the whole verification run on card
 `029K` (observed 2026-10-12, on a tree where the defect precedes the new
 cards). No TODO node yet.
 
+### `lean-categories` does not formalize absolute Galois groups, their Frobenius elements, or the cyclotomic character
+
+For a field `K` with a chosen closure `e: K -> Kbar`, `G_K = Aut_K(Kbar)` is a profinite group. For a prime `p` of a number field `K` and a chosen prime `pbar` of `Kbar` above it, a Frobenius element at `pbar` is an element of `G_K` whose restriction to every finite Galois stage `L` unramified above `p` is the arithmetic Frobenius at the prime `pbar` at `L`. For `n` prime to the characteristic, the mod-`n` cyclotomic character `chi_n: G_K -> (ZZ/n)^x` is defined by `sigma(zeta) = zeta^chi_n(sigma)` for every `zeta` in `mu_n(Kbar)`. A Frobenius at a prime with residue field of order `q`, `q` prime to `n`, has `chi_n` value `q mod n`.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`, `rg -i` over `LeanCategories/` for `cyclotomic`, `AbsoluteGalois`, `Gal(`, `ContinuousMonoidHom`, `rootsOfUnity` and `galois`. **Found:** `LeanCategories/Algebra/ArithmeticFrobeniusData.lean` names the Frobenius in a finite invariant action as `serreFrobeniusSubstitution`, which is Mathlib's `arithFrobAt`. `AbsoluteInertiaLimitData.lean` treats absolute abelian inertia from supplied finite quotients. `FOUNDATIONS.md` §12 states the unit group `R^x` through `U_x: Ring -> MulMon`, and `Catalogue/Semantics/Algebra/Units.lean` states the units functor `Mon -> Grp`. **Not found:** the absolute Galois group as a profinite group, a Frobenius element of `G_K` at a prolongation, or the cyclotomic character.
+**Formal statements outside `lean-categories`** (formalization-corpus API, 2026-10-14): Mathlib `IsArithFrobAt`, `AlgHom.IsArithFrobAt.apply_of_pow_eq_one` (`Mathlib/RingTheory/Frobenius.lean`, lines 26--44 and 107--110), and `modularCyclotomicCharacter : (L ≃+* L) →* (ZMod n)ˣ`, with `toFun_spec` and `toFun_unique` (`Mathlib/NumberTheory/Cyclotomic/CyclotomicCharacter.lean`). The mod-`n` character there is defined on all ring automorphisms of `L`, and continuity is not stated.
+**Dependency path:** fields and their algebraic closures -> `G_K` as a profinite group with its finite quotients -> prime prolongations -> Frobenius elements at unramified stages -> `chi_n` into the units of `ZZ/n` -> the value of `chi_n` at a Frobenius element.
+**Consumers:** `AbsoluteGaloisGroup.frobenius`, `CyclotomicCharacter` and `QuadraticCharacter` (`categories/group/profinite/`).
+**Request (not yet filed):** `lean-categories` formalizes `G_K` as a profinite group, Frobenius elements at a chosen prolongation, and `chi_n` as a continuous homomorphism into `(ZZ/n)^x`, citing the Mathlib statements above. The request runs beside the computation: the nodes `frobenius-elements-of-absolute-galois-groups` and `cyclotomic-characters-land-in-the-owned-unit-group` in [TODO.md](TODO.md) are not parked on it.
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
