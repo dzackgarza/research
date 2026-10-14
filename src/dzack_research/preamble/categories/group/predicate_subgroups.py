@@ -162,7 +162,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             **rest,
         ) -> None:
             self._predicate = predicate
-            self._admitted_members = []
+            self._admitted_members = {}
             self._description = description
             self._character_data = dict(character_data or {})
             self._character_data_complete = (

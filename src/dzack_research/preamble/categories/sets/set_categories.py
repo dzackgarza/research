@@ -3391,8 +3391,7 @@ class _ConditionSetEngine:
     def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
-        self._admitted_members = []
-        self._admitted_member_ids = set()
+        self._admitted_members = {}
         super().__init__(facade=True, **rest)
 
     def _retain_admitted_member(self, element):
@@ -3403,11 +3402,13 @@ class _ConditionSetEngine:
         zero or generators, and a protected subset inclusion applied to an
         admitted source point. This records that point, not a decision of
         the defining predicate and not a rule for admitting arbitrary data.
+        The record is read by ``__contains__``: an admitted point is a member
+        without asking the predicate again (which may be undecided on it).
+        It is keyed by the point's identity and holds the point, so the key
+        cannot be reused by another object while the record stands.
         """
         point = self.universe()(element)
-        if id(point) not in self._admitted_member_ids:
-            self._admitted_members.append(point)
-            self._admitted_member_ids.add(id(point))
+        self._admitted_members.setdefault(id(point), point)
         return point
 
     def _an_element_(self):
@@ -3485,7 +3486,7 @@ class _ConditionSetEngine:
                 return False
             case True:
                 point = universe(element)
-                if id(point) in self._admitted_member_ids:
+                if id(point) in self._admitted_members:
                     return True
                 member = self.predicate()(point)
                 if member is not True and member is not False and not isinstance(member, Predicate):
