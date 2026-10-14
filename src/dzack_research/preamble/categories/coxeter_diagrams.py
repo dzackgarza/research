@@ -25,6 +25,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _own_ring,
+    _owned_integers,
+    _owned_real_algebraic_numbers,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -52,7 +54,7 @@ def _engine_cartan_type_data(value):
             return tuple(_engine_cartan_type_data(entry) for entry in value)
     parent = element_parent(value)
     if parent is not None and parent in OwnedRings():
-        return _engine_numeral(_own_ring(SageZZ), value)
+        return _engine_numeral(_owned_integers(), value)
     return value
 
 
@@ -406,7 +408,7 @@ class CoxeterDiagrams(OwnedCategory):
             "parallel": ((-2, 2), (2, -2)),
             "ultraparallel": ((-2, 3), (3, -2)),
         }
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return indexed_family(
             labels,
             lambda label: Lattices(integers)(grams[str(label)], names=("r1", "r2")),
@@ -738,7 +740,7 @@ class CoxeterDiagrams(OwnedCategory):
             from sage.all import cos, pi
             from sage.rings.qqbar import AA as SageAA
 
-            real_algebraics = _own_ring(SageAA)
+            real_algebraics = _owned_real_algebraic_numbers()
             rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
             ranking = self.index_set().ranking_map()
             values = []
@@ -1236,9 +1238,17 @@ class CoxeterDiagrams(OwnedCategory):
             }
 
         def equivariant_positions(self, automorphism):
-            r"""Return exact planar positions intertwining a finite diagram automorphism."""
-            from sage.rings.number_field.number_field import CyclotomicField
-            from sage.rings.qqbar import QQbar
+            r"""Return exact planar positions intertwining a finite diagram automorphism.
+
+            A position is a point ``(x, y)`` of the real plane with exact real
+            coordinates.  An automorphism of order ``n >= 3`` acts as the
+            rotation by ``2 pi/n``: the ``k``-th vertex of an orbit of length
+            ``n`` on the circle of radius ``r`` sits at
+            ``(r cos(2 pi k/n), r sin(2 pi k/n))``, and a fixed vertex at the
+            origin.  An involution acts as the reflection ``y -> -y``: a fixed
+            vertex sits at ``(c, 0)`` and a 2-cycle at ``(c, 1)``, ``(c, -1)``.
+            """
+            from dzack_research.preamble.rings.real import RR
 
             order = int(automorphism.order())
             if order < 2:
@@ -1262,17 +1272,15 @@ class CoxeterDiagrams(OwnedCategory):
                         f"from {start} does not return to {start}"
                     )
                 orbits.append(tuple(orbit))
-            zeta = QQbar(CyclotomicField(order).gen())
             positions = {}
             if order == 2:
-                imaginary = QQbar(CyclotomicField(4).gen())
                 place = 0
                 for orbit in sorted(orbits, key=len):
                     if len(orbit) == 1:
-                        positions[orbit[0]] = QQbar(place)
+                        positions[orbit[0]] = (RR(place), RR(0))
                     elif len(orbit) == 2:
-                        positions[orbit[0]] = QQbar(place) + imaginary
-                        positions[orbit[1]] = QQbar(place) - imaginary
+                        positions[orbit[0]] = (RR(place), RR(1))
+                        positions[orbit[1]] = (RR(place), RR(-1))
                     else:
                         raise ValueError(
                             f"{automorphism} has order 2 but an orbit {orbit} of length {len(orbit)}: "
@@ -1290,14 +1298,13 @@ class CoxeterDiagrams(OwnedCategory):
                 radius = 1
                 for orbit in orbits:
                     if len(orbit) == 1:
-                        positions[orbit[0]] = QQbar.zero()
+                        positions[orbit[0]] = (RR(0), RR(0))
                         continue
                     for exponent, vertex in enumerate(orbit):
-                        positions[vertex] = QQbar(radius) * zeta**exponent
+                        angle = 2 * RR.pi() * exponent / order
+                        positions[vertex] = (RR(radius) * angle.cos(), RR(radius) * angle.sin())
                     radius += 1
-            return {
-                vertex: (value.real(), value.imag()) for vertex, value in positions.items()
-            }
+            return positions
 
         def subdiagram(self, vertices):
             return self.induced_subdiagram(vertices)
@@ -1355,7 +1362,7 @@ class CoxeterDiagrams(OwnedCategory):
                     f"[letter, rank, 1]"
                 )
         if scale is not None:
-            scale = _own_ring(SageZZ)(scale)
+            scale = _owned_integers()(scale)
             if scale < 1:
                 raise ValueError(
                     f"cannot scale the root lattice of type {label} by {scale}: the scale "

@@ -2,7 +2,7 @@ from dzack_research.preamble.all import *
 
 
 def f3():
-    return PrimeField(3)
+    return PrimeFields()(3)
 
 
 def test_the_finite_field_constructor_agrees() -> None:

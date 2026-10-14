@@ -41,14 +41,12 @@ class ProfiniteGroupIsAbelian(Predicate):
 class ProfiniteGroups(OwnedCategory):
     def an_object(self):
         r"""The procyclic absolute Galois group of ``GF(2)``."""
-        from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
-
         from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
             AbsoluteGaloisGroup,
         )
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import GF
 
-        return AbsoluteGaloisGroup(_own_ring(SageGF(2)))
+        return AbsoluteGaloisGroup(GF(2))
 
     @classmethod
     def _repr_object_names(cls):

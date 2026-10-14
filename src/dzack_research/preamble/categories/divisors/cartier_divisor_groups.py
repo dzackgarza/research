@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedNoetherianRings,
     OwnedRings,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
 from dzack_research.preamble.categories.schemes.ringed_spaces import SheafObjects
@@ -36,7 +37,7 @@ from dzack_research.preamble.owned_category_bases import Category
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 class _TotalQuotientSheafEngine:

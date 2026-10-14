@@ -50,6 +50,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -1478,7 +1479,7 @@ def _finite_crystallographic_cartan_type(data):
     ``CartanType`` reads all three, once the session's integers in a list form
     are lowered to the engine.
     """
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     match data:
         case list() | tuple():
             data = [int(entry) if entry in integers else entry for entry in data]
@@ -1593,7 +1594,7 @@ def _lattice_from_gram_tensor(
         if module_generators is None
         else ring._fresh_free_module_on(generating_set)
     )
-    root_label = root_system_type_name if ring is _own_ring(SageZZ) else None
+    root_label = root_system_type_name if ring is _owned_integers() else None
     return _lattice_on_gram(category, module, gram_tensor, selected_names, root_label)
 
 
@@ -1735,7 +1736,7 @@ def _lattice(
                 module_generators,
                 category,
             )
-        case _ if data in _own_ring(SageZZ) and int(data) >= 0:
+        case _ if data in _owned_integers() and int(data) >= 0:
             return _identity_lattice(
                 ring.free_module(int(data)),
                 ring,

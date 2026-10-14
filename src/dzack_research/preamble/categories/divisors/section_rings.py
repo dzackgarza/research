@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _engine_element,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
 
@@ -334,7 +335,7 @@ def _line_bundle_section_data(bundle):
         MultihomogeneousPolynomialSectionSpaces,
     )
 
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     sections = bundle.global_sections()
     ring = sections.base_ring()
     match sections:

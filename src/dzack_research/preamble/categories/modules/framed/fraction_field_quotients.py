@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -144,7 +145,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 case None:
                     match self == parent.zero():
                         case True:
-                            return _owned_engine_element(_own_ring(SageZZ), SageZZ.one())
+                            return _owned_engine_element(_owned_integers(), SageZZ.one())
                         case False:
                             raise TypeError(
                                 f"the additive order of {self} in {parent} has no selected computation over "
@@ -200,7 +201,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     super().__init__(base_ring=ring, **rest)
                 case _:
                     self._engine = engine
-                    ring = _own_ring(SageZZ)
+                    ring = _owned_integers()
                     field = ring.fraction_field()
                     self._fraction_field_modulus = _owned_engine_element(field, SageQQ(engine.n))
                     super().__init__(
@@ -465,7 +466,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
 @cached_function
 def _owned_fraction_field_quotient(engine: QmodnZ) -> ObjectOfCategory:
-    base_ring = _own_ring(SageZZ)
+    base_ring = _owned_integers()
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():
         placement.append(Modules(base_ring).Torsion())
@@ -494,7 +495,7 @@ def _owned_general_fraction_field_quotient(base_ring, modulus) -> ObjectOfCatego
 
 def _from_qmodnz_backend(quotient):
     r"""Return the owned ``QQ / n ZZ`` over the Sage parent ``quotient``."""
-    if quotient in FractionFieldQuotients(_own_ring(SageZZ)):
+    if quotient in FractionFieldQuotients(_owned_integers()):
         return quotient
     if not isinstance(quotient, QmodnZ):
         raise TypeError(f"{quotient!r} is not a quotient QQ/nZZ")

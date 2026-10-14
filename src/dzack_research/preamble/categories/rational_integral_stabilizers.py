@@ -100,7 +100,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     RestrictedScalarsModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import ask
@@ -128,7 +131,7 @@ class _FiniteIntegralRepresentation(SageObject):
         self._registering_orbit = True
         augmentation = self.generating_augmentation()
         free = augmentation.domain()
-        zero = _own_ring(SageZZ).zero()
+        zero = _owned_integers().zero()
         self._word_orbit = FiniteGSets(free).from_finite_orbits(
             (zero,),
             lambda word, position: self._act_on_position(augmentation(word), position),
@@ -200,7 +203,7 @@ class _FiniteIntegralRepresentation(SageObject):
             )
             self._position_by_key[key] = len(self._submodules)
             self._submodules.append(candidate)
-        return _own_ring(SageZZ)(self._position_by_key[key])
+        return _owned_integers()(self._position_by_key[key])
 
     def orbit_submodules(self):
         return tuple(self._submodules)
@@ -217,10 +220,10 @@ class _FiniteIntegralRepresentation(SageObject):
         position = self._position_by_key.get(self._submodule_key(submodule))
         if position is None:
             return None
-        return self.orbit_section()(self.g_set().point_set()(_own_ring(SageZZ)(position)))
+        return self.orbit_section()(self.g_set().point_set()(_owned_integers()(position)))
 
     def _selected_point(self):
-        return self.g_set().point_set()(_own_ring(SageZZ).zero())
+        return self.g_set().point_set()(_owned_integers().zero())
 
     @cached_method
     def finite_stabilizer(self):
@@ -717,7 +720,7 @@ def _full_orthogonal_integral_transporter(
     source = source_inclusion.domain()
     target = target_inclusion.domain()
     ring = source.base_ring()
-    assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
+    assert target.base_ring() is ring and ring is _owned_integers(), (
         f"cannot search for an isometry carrying {source} to {target}: the search works only for lattices over ZZ, and these are over {ring} and {target.base_ring()}"
     )
     if space not in RestrictedScalarsModules(ring):

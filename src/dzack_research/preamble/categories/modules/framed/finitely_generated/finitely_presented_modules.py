@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -887,7 +888,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             from sage.categories.fields import Fields as SageFields
 
             if self.is_zero():
-                return _own_ring(SageZZ).zero()
+                return _owned_integers().zero()
             ring = self.base_ring()
             spectrum = ring.spectrum()
             point = point if element_parent(point) is spectrum else spectrum(point)
@@ -925,7 +926,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"multiple of the residue degree {residue_degree} of {point}; a module supported "
                 "only at a point p has dimension a multiple of [kappa(p):k]"
             )
-            return _own_ring(SageZZ)(vector_dimension // residue_degree)
+            return _owned_integers()(vector_dimension // residue_degree)
 
         def minimal_module_generators(self):
             r"""Return a minimal selected generating set over a local base ring.
@@ -1682,7 +1683,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _repr_(self):
             described = f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()}"
             match self.base_ring():
-                case ring if ring is _own_ring(SageZZ):
+                case ring if ring is _owned_integers():
                     # Over the integers the invariant factors classify the module.
                     return f"{described} with invariant factors {self.invariant_factors()}"
                 case _:
@@ -2406,7 +2407,7 @@ def _selected_presentation_kernel(morphism):
         for label in labels
     ):
         return domain.whole_subobject()
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     match ring:
         case _ if ring in PrincipalIdealDomains():
             return _pid_presentation_kernel(morphism)
@@ -2435,7 +2436,7 @@ def _cap_presentation_kernel(morphism):
             f"over {codomain.base_ring()}, but a module morphism has one base ring"
         )
     variable_names = tuple(ring.variable_names())
-    assert variable_names and ring.base_ring() is _own_ring(SageZZ), (
+    assert variable_names and ring.base_ring() is _owned_integers(), (
         f"cannot compute the kernel of {morphism} with this algorithm: it needs a polynomial "
         f"ring over ZZ, and the base ring is {ring}"
     )

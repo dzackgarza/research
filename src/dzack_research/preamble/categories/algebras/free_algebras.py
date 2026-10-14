@@ -49,6 +49,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _free_associative_algebra_placements,
+    _polynomial_ring_placements,
     LocalizationRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -177,13 +179,20 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         self._generating_module = generating_module
         self._native_free_flavor = flavor
         labels = generating_module.module_generating_set()
+        indeterminates = int(cardinal(labels.cardinality()).finite_value())
         match flavor:
             case "tensor":
                 basis = labels.finite_words()
                 algebra_category = TensorAlgebras(base)
+
+                def ring_placement():
+                    return _free_associative_algebra_placements(base, indeterminates)
             case "symmetric":
                 basis = labels.finite_multisets()
                 algebra_category = SymmetricAlgebras(base)
+
+                def ring_placement():
+                    return _polynomial_ring_placements(base, indeterminates)
             case _:
                 raise ValueError(
                     f"a free algebra here is a tensor algebra or a symmetric algebra, but got flavor {flavor!r}"
@@ -241,6 +250,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             construction_data=construction_data,
             law_decisions=(("grading", True),),
             algebra_framing_source=self,
+            ring_placement=ring_placement,
         )
 
     def _specialized_algebra_with_structure(
@@ -308,16 +318,47 @@ def _variable_names(labels) -> tuple[str, ...]:
     return tuple(names)
 
 
-def _polynomial_ring(base_ring, *args, **kwargs):
-    base = _owned_ring(base_ring)
-    engine = _SagePolynomialRing(_engine_ring(base), *args, **kwargs)
-    labels = tuple(engine.variable_names())
-    algebra = _native_free_algebra(engine, base.free_module(labels), "symmetric")
-    _set_owned_ring_display(
-        algebra, f"{base}[{', '.join(labels)}]", kind="polynomial"
-    )
+def _polynomial_variables(variables):
+    r"""The set of variables a polynomial ring is constructed on.
 
-    return algebra
+    A string names its comma-separated variables, ``"x,y"``; a tuple or list
+    names its entries in order; an owned set is its own set of variables.
+    """
+    match variables:
+        case str():
+            return finite_ordered_set(tuple(name.strip() for name in variables.split(",")))
+        case tuple() | list():
+            return finite_ordered_set(tuple(variables))
+        case _:
+            assert variables in Sets(), (
+                f"cannot form a polynomial ring in {variables!r}: give the variables as a string, "
+                "a tuple of names or a set"
+            )
+            return variables
+
+
+def _polynomial_ring(base_ring, variables):
+    r"""``R[S] = Sym_R(F_R(S))``, the free commutative ``R``-algebra on the set ``S`` of variables.
+
+    One object for ``(R, S)``: every route (``R.polynomial_ring(S)``,
+    ``R[...]``, ``R.free_module(S).symmetric_algebra()``, an engine raised in
+    an adapter) reaches :func:`_symmetric_algebra_on` on the same free module
+    (``OWN-02``).
+    """
+    return _symmetric_algebra_on(_owned_ring(base_ring), _polynomial_variables(variables))
+
+
+def _polynomial_engine(engine_base, names):
+    r"""The private Sage realization of a polynomial ring on ``names``, one rule for every route.
+
+    Univariate for one variable, multivariate otherwise; Sage gives a
+    multivariate ring in one variable for a one-element tuple of names, so
+    the single name is passed alone.  The term order is a computational
+    choice and is Sage's default.
+    """
+    if len(names) == 1:
+        return _SagePolynomialRing(engine_base, names[0])
+    return _SagePolynomialRing(engine_base, names)
 
 
 def _laurent_polynomial_ring(base_ring, *args, **kwargs):
@@ -337,25 +378,40 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
 
 
 def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
+    r"""``Sym_R(F_R(S))`` on the free module ``F_R(S)`` (or the given ``source_module`` on ``S``)."""
     base = _owned_ring(base_ring)
+    infinite = algebra_generating_set in Sets() and algebra_generating_set.is_finite() is not True
+    labels = algebra_generating_set if infinite else _finite_labels(algebra_generating_set)
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _symmetric_algebra_of_free_module(generating)
+
+
+@cached_function
+def _symmetric_algebra_of_free_module(generating):
+    r"""``Sym_R(F)`` for the free module ``F = F_R(S)``: one object per ``F``, which is the cache key.
+
+    ``F_R(S)`` is one object per ``(R, S)`` (``_owned_free_module_on``), so
+    ``R[S]`` is one object per ``(R, S)`` on every route, never keyed on its
+    realization.  The realization is selected here, privately: Sage's
+    polynomial ring on the names of ``S`` (:func:`_polynomial_engine`), or the
+    sparse construction when ``S`` is not finite or ``R`` has no Sage ring
+    realization.
+    """
+    base = generating.base_ring()
+    labels = generating.module_generating_set()
     engine_base = _engine_ring(base)
-    if (
-        algebra_generating_set in Sets()
-        and algebra_generating_set.is_finite() is not True
-    ) or engine_base not in SageRings():
+    if labels.is_finite() is not True or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
         )
 
-        return _sparse_symmetric_algebra_of(
-            base.free_module(algebra_generating_set) if source_module is None else source_module
-        )
-    labels = _finite_labels(algebra_generating_set)
-    generating = base.free_module(labels) if source_module is None else source_module
-    return _native_free_algebra(
-        _SagePolynomialRing(engine_base, _variable_names(labels)),
-        generating, "symmetric",
+        return _sparse_symmetric_algebra_of(generating)
+    names = _variable_names(labels)
+    algebra = _native_free_algebra(
+        _polynomial_engine(engine_base, names), generating, "symmetric",
     )
+    _set_owned_ring_display(algebra, f"{base}[{', '.join(names)}]", kind="polynomial")
+    return algebra
 
 
 def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
@@ -1657,13 +1713,13 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         def homogeneous_component(self, degree):
             return self.parent().homogeneous_component(self, degree)
 
-        def number_field(self, *args, **kwargs):
-            r"""Return the number field defined by this polynomial."""
+        def number_field(self, name):
+            r"""The number field ``K[name]/(f)`` of this irreducible polynomial ``f`` over ``QQ`` or a number field ``K``."""
             from dzack_research.preamble.categories.rings.number_fields import (
                 _number_field,
             )
 
-            return _number_field(self, *args, **kwargs)
+            return _number_field(self, name)
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):

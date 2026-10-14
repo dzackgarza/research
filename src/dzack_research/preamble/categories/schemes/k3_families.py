@@ -38,7 +38,11 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_rationals,
+    _owned_ring,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -55,7 +59,7 @@ class HorikawaK3Family(SageObject):
     r"""Invariant ``(4,4)`` branch sections and their double covers."""
 
     def __init__(self, base_ring=None) -> None:
-        base = _own_ring(SageQQ) if base_ring is None else _own_ring(base_ring)
+        base = _owned_rationals() if base_ring is None else _own_ring(base_ring)
         assert int(base.characteristic()) == 0, (
             f"the Horikawa family of K3 double covers of P^1 x P^1 needs a base ring of "
             f"characteristic zero, but {base} has characteristic {base.characteristic()}"
@@ -388,7 +392,7 @@ class _HorikawaK3BaseChangeComparison(SageObject):
         changed_surface = changed_line.projective_product()
         group = source.family().acting_group()
         changed_action = changed_surface.c2_diagonal_sign_action(group)
-        target_base = _own_ring(ring_map.codomain())
+        target_base = _owned_ring(ring_map.codomain())
         trivial = lambda _element: target_base.one()
         sign = lambda element: (
             target_base.one()

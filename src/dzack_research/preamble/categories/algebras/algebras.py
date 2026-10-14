@@ -81,7 +81,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, OwnedSetMorphism, Sets
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction, negation
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook, refine
 from dzack_research.preamble.validation import validator
@@ -4244,6 +4244,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         law_decisions=(),
         algebra_framing_source=None,
         constructing_category=None,
+        ring_placement=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -4251,7 +4252,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         adopts from Sage.  ``scalar_structure`` is the ring map
         ``base_ring -> A``, ``r |-> r * 1``, that realizes the scalar action
         of the underlying module; without one it is the engine's own map from
-        its scalars.
+        its scalars.  ``ring_placement``, when the construction states one, is
+        the ring placement of its result (a function returning categories);
+        otherwise the placement of the engine's presenting constructor is read.
         """
         base = _owned_ring(base_ring)
         for name, value in construction_data:
@@ -4263,8 +4266,13 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         placement = [associative]
         # The ring constructor that presents ``engine``, or a category the
         # caller selected, places the product as commutative (ARC-08).
+        presented_ring = (
+            _presented_ring_category(engine)
+            if ring_placement is None
+            else owned_category_join((OwnedRings(), *ring_placement()))
+        )
         match (
-            _presented_ring_category(engine).is_subcategory(OwnedRings().Commutative())
+            presented_ring.is_subcategory(OwnedRings().Commutative())
             or any(category.is_subcategory(Magmas().Commutative()) for category in categories)
         ):
             case True:
@@ -4289,6 +4297,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             constructing_category=(
                 associative if constructing_category is None else constructing_category
             ),
+            named_placement=ring_placement,
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws
@@ -4534,7 +4543,7 @@ def _algebra_structure_on(
         f"the structure map R -> A of an algebra must end at A = {selected_ring}, but {structure_map} "
         f"ends at {structure_map.codomain()}"
     )
-    base = _own_ring(structure_map.domain())
+    base = _owned_ring(structure_map.domain())
     assert base in OwnedRings().Commutative(), (
         f"{selected_ring} is an algebra over {base} through {structure_map} only if {base} is "
         "commutative, and it is not known to be"

@@ -27,6 +27,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.gluing import SemilinearAlgebraMorphism
 from dzack_research.preamble.categories.schemes.k3_families import (
@@ -39,7 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 
 
 def _cyclic_two_module():
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     generators = integers.free_module(1)
     relations = integers.free_module(1)
     presentation = relations.Mor(generators)(

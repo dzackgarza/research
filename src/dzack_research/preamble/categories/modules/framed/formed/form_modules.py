@@ -87,9 +87,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
     OwnedRings,
-    Zmod,
     _engine_element,
     _engine_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -3144,7 +3144,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                         total += QQbar.zeta(2 * value.denominator()) ** value.numerator()
                     phase = total / QQbar(int(self.cardinality())).sqrt()
                     zeta8 = QQbar.zeta(8)
-                    return Zmod(8)(next(residue for residue in range(8) if phase == zeta8**residue))
+                    integers = _owned_integers()
+                    residues = integers.quotient_ring(integers.ideal(integers(8)))
+                    return residues(next(residue for residue in range(8) if phase == zeta8**residue))
 
                 def b(self, left, right):
                     r"""The bilinear form ``b: A x A -> K/R`` of ``q: A -> K/2R``.

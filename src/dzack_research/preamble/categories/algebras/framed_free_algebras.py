@@ -74,10 +74,13 @@ def _symmetric_algebra_of(module):
     # such as ``2*x`` is instead represented by Sage's one-variable
     # *multivariate* polynomial parent, whose ideal reduction is exact over ZZ.
     if len(labels) == 1:
-        presentation_engine = base.polynomial_ring(1, names=_variable_names(labels))
+        # A private presentation cover: this one-variable multivariate
+        # engine is not the engine of the polynomial ring on these labels.
+        from sage.all import PolynomialRing as _SagePolynomialRing
 
         presentation_ring = _native_free_algebra(
-            _engine_ring(presentation_engine), module.framing_source(), "symmetric",
+            _SagePolynomialRing(_engine_ring(base), 1, names=_variable_names(labels)),
+            module.framing_source(), "symmetric",
         )
     else:
         presentation_ring = _symmetric_algebra_on(

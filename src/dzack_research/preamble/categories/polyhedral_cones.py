@@ -11,7 +11,12 @@ from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_integers,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -50,7 +55,7 @@ def _integral_covector(lattice, coordinates):
 
 def _engine_rational_coordinates(coordinates):
     r"""Lower session rational coordinates of a wall to the engine, for :func:`_integral_covector`."""
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     return tuple(_engine_element(rationals, coordinate) for coordinate in coordinates)
 
 
@@ -136,14 +141,14 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             FramedFreeModules,
         )
 
-        return FramedFreeModules(_own_ring(SageZZ))
+        return FramedFreeModules(_owned_integers())
 
     def ambient_lattice(self):
         return self.base()
 
     @cached_method
     def ambient_space(self):
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         return rationals.free_module(self.ambient_lattice().module_generating_set())
 
     @classmethod

@@ -4,7 +4,6 @@ from math import gcd
 
 from sage.groups.generic import discrete_log
 from sage.misc.classcall_metaclass import ClasscallMetaclass
-from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.integer_ring import ZZ
 
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
@@ -14,11 +13,10 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    Zmod,
     _engine_element,
     _engine_ring,
-    _own_ring,
     _owned_engine_element,
+    _owned_integers,
 )
 
 
@@ -144,7 +142,8 @@ def _cyclotomic_stage(domain, n):
     base_field = domain.base_field()
     match domain:
         case _ if domain in AbsoluteGaloisGroupsOfFiniteFields():
-            residues = Zmod(n)
+            integers = _owned_integers()
+            residues = integers.quotient_ring(integers.ideal(integers(n)))
             q = residues.unit_group()(residues(int(domain.base_field_order())))
             stage = domain.finite_extension(q.multiplicative_order())
             return owned_root, _finite_root_at_stage(root, stage), stage
@@ -152,11 +151,12 @@ def _cyclotomic_stage(domain, n):
             return owned_root, base_field(-1), domain.extension_data(base_field)
         case _ if base_field in OwnedNumberFields() and base_field in PrimeFields():
             # Phi_n is irreducible over QQ (Gauss), so QQ[x]/(Phi_n) is the
-            # field QQ(zeta_n), embedded by x -> zeta_n.
-            base = _engine_ring(base_field)
-            polynomial = cyclotomic_polynomial(int(n)).change_ring(base)
-            field = base.extension(polynomial, f"zeta_{n}")
-            owned_field = _own_ring(field)
+            # field QQ(zeta_n), embedded by x -> zeta_n.  The embedding and
+            # the generator are built on the owned field's own realization.
+            from dzack_research.preamble.categories.rings.number_fields import CyclotomicField
+
+            owned_field = CyclotomicField(int(n), f"zeta_{n}")
+            field = _engine_ring(owned_field)
             embedding = owned_field.Mor(domain.algebraic_closure())(field.hom([root], closure))
             stage = domain.extension_data(owned_field, embedding=embedding)
             return owned_root, _owned_engine_element(owned_field, field.gen()), stage
@@ -190,7 +190,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
     ``chi_n(sigma)`` is the unit ``a`` with ``sigma(zeta) = zeta^a`` for every
     ``n``-th root of unity ``zeta`` (Mathlib ``modularCyclotomicCharacter``,
     ``Mathlib/NumberTheory/Cyclotomic/CyclotomicCharacter.lean``). Its codomain
-    is ``(ZZ/n)^x``, the unit group of the owned ring ``Zmod(n)``.
+    is ``(ZZ/n)^x``, the unit group of the owned ring ``ZZ/(n)``.
     """
 
     @staticmethod
@@ -206,7 +206,8 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 f"the cyclotomic character chi_{n} of {domain} needs n prime to the "
                 f"characteristic, but the base field has characteristic {characteristic}"
             )
-        residues = Zmod(n)
+        integers = _owned_integers()
+        residues = integers.quotient_ring(integers.ideal(integers(n)))
         target = residues.unit_group()
         owned_root, root_at_stage, stage = _cyclotomic_stage(domain, n)
         return domain.continuous_morphisms_to(target)._from_realization_engine(
@@ -318,16 +319,18 @@ class QuadraticCharacter(ProfiniteCharacter):
             stage = domain.finite_extension(2)
             root_at_stage = _finite_root_at_stage(root, stage)
         else:
-            polynomial_ring = base["t"]
-            t = polynomial_ring.gen()
-            field = base.extension(t**2 - backend_a, "sqrt_a")
-            owned_field = _own_ring(field)
+            # K(sqrt a) = K[t]/(t^2 - a), a not a square in K; the embedding
+            # and the generator are built on its own realization.
+            polynomial_ring = base_field.polynomial_ring("t")
+            t = polynomial_ring.algebra_generator("t")
+            owned_field = (t**2 - polynomial_ring(owned_a)).number_field("sqrt_a")
+            field = _engine_ring(owned_field)
             backend = field.hom([root], closure)
             embedding = owned_field.Mor(domain.algebraic_closure())(backend)
             stage = domain.extension_data(owned_field, embedding=embedding)
             root_at_stage = _owned_engine_element(owned_field, field.gen())
 
-        integers = _own_ring(ZZ)
+        integers = _owned_integers()
         return domain.continuous_morphisms_to(integers.unit_group())._from_realization_engine(
             cls, owned_a, owned_root, root_at_stage, stage
         )
@@ -336,7 +339,7 @@ class QuadraticCharacter(ProfiniteCharacter):
         self._square_class = square_class
         self._root = root
         self._root_at_stage = root_at_stage
-        self._integers = _own_ring(ZZ)
+        self._integers = _owned_integers()
         super().__init__(parent, extension)
 
     kernel = ProfiniteCharacter._root_generated_kernel

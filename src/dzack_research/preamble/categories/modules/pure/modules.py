@@ -69,6 +69,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_ring,
     RingMor,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
@@ -3815,7 +3816,7 @@ class FreeResolution:
 
     def length(self):
         r"""Return the largest degree carrying a nonzero term."""
-        return _own_ring(SageZZ)(int(max(self._degrees)))
+        return _owned_integers()(int(max(self._degrees)))
 
     def is_exact(self):
         r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
@@ -5659,7 +5660,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             )
 
         def matrix_shape(self):
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return Sets().product((integers, integers))((self.nrows(), self.ncols()))
 
         def matrix_unit(self, row_label, column_label):
@@ -5844,7 +5845,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         def matrix_rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(_engine_matrix(self).rank()))
 
         def solve_right(self, target):

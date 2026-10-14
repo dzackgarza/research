@@ -316,9 +316,12 @@ class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The integers, which are in particular a semiring."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [OwnedNonUnitalSemirings(), Monoids()]
@@ -381,10 +384,11 @@ class OwnedSemirings(CategoryPacketMethods, OwnedCategory):
             """
             from dzack_research.preamble.categories.rings.ring_foundation import (
                 _own_ring,
+                _owned_integers,
             )
 
             if (self.one() == self.zero()) is True:
-                return _own_ring(SageZZ).one()
+                return _owned_integers().one()
             characteristic = self._characteristic_decision()
             assert characteristic is not None, (
                 f"characteristic is defined for {self}, but no computation of its natural-number kernel is available"
@@ -431,9 +435,12 @@ class OwnedRngs(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The integers, which happen to be unital."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [OwnedNonUnitalSemirings(), AdditiveGroups().AdditiveCommutative()]

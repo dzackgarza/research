@@ -37,6 +37,8 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.validation import validator
@@ -50,7 +52,7 @@ def _engine_cartan_entry(diagram, left, right):
     ranking = diagram.index_set().ranking_map()
     i, j = ranking(left), ranking(right)
     gram = diagram.root_gram_tensor()
-    rationals = _own_ring(QQ)
+    rationals = _owned_rationals()
     return 2 * _engine_element(rationals, gram[i, j]) / _engine_element(rationals, gram[i, i])
 
 
@@ -124,7 +126,7 @@ class SatakeDiagrams(OwnedCategory):
 
     def an_object(self):
         r"""The Satake diagram of \(SU(2,1)\): \(A_2\), no black node, \(\tau\) the swap."""
-        diagram = Lattices(_own_ring(SageZZ))("A2").dynkin_diagram()
+        diagram = Lattices(_owned_integers())("A2").dynkin_diagram()
         first, second = diagram.vertices()
         return self(diagram, (), diagram.Mor(diagram)((second, first)))
 

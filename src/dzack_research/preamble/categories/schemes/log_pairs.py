@@ -26,12 +26,15 @@ class LogPairs(OwnedCategoryOverBaseRing):
         r"""The projective line with its toric boundary, the two torus-fixed points: a log Calabi--Yau pair."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
         from dzack_research.preamble.categories.schemes.toric.fans import (
             RationalPolyhedralFans,
         )
 
-        cocharacters = _own_ring(SageZZ).free_module(1)
+        cocharacters = _owned_integers().free_module(1)
         line = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
             self.base_ring()
         )
@@ -159,9 +162,12 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
             r"""Zero: this pair's scheme is its retained toric ambient scheme."""
             from sage.rings.integer_ring import ZZ as SageZZ
 
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+                _owned_integers,
+            )
 
-            return _own_ring(SageZZ).zero()
+            return _owned_integers().zero()
 
         def is_toric_boundary(self) -> bool:
             r"""Whether ``Delta`` is the full toric boundary ``sum_rho D_rho``."""

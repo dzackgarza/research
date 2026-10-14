@@ -1007,10 +1007,19 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         else:
             polynomial = field.defining_polynomial().change_ring(base)
 
-        normal_field, base_backend = polynomial.splitting_field(
+        from dzack_research.preamble.categories.rings.number_fields import (
+            _engine_number_field_isomorphism,
+        )
+
+        normal_engine, base_backend = polynomial.splitting_field(
             "normal_closure", map=True
         )
-        normal_field = _own_ring(normal_field)
+        normal_field = _own_ring(normal_engine)
+        # K -> N on N's own realization (generator to generator).
+        base_backend = (
+            _engine_number_field_isomorphism(normal_engine, _engine_ring(normal_field))
+            * base_backend
+        )
         base_embedding = self.supergroup().base_field().Mor(normal_field)(base_backend)
         # The embeddings N -> Kbar of the normal closure extending the chosen
         # E -> Kbar through some K-embedding E -> N.

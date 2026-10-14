@@ -67,6 +67,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     Rings,
     _own_ring,
     _set_owned_ring_display,
+    _owned_algebraic_numbers,
+    _owned_complex_double_field,
+    _owned_complex_field,
+    _owned_integers,
+    _owned_rationals,
+    _owned_real_algebraic_numbers,
+    _owned_real_double_field,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     ComplexField as _ComplexField,
@@ -113,43 +120,32 @@ def _public_commutative_ring(ring):
     return ring
 
 
-def GF(*args, **kwargs):
-    return _public_commutative_ring(_GF(*args, **kwargs))
+def GF(order, name=None):
+    return _public_commutative_ring(_GF(order, name))
 
 
-FiniteField = GF
+def Zmod(modulus):
+    return _public_commutative_ring(_Zmod(modulus))
 
 
-def PrimeField(characteristic):
-    return PrimeFields()(characteristic)
+def Qp(prime, precision=20):
+    return _public_commutative_ring(_Qp(prime, precision))
 
 
-def Zmod(*args, **kwargs):
-    return _public_commutative_ring(_Zmod(*args, **kwargs))
+def RealField(precision=53):
+    return _public_commutative_ring(_RealField(precision))
 
 
-IntegerModRing = Zmod
-Integers = Zmod
+def ComplexField(precision=53):
+    return _public_commutative_ring(_ComplexField(precision))
 
 
-def Qp(*args, **kwargs):
-    return _public_commutative_ring(_Qp(*args, **kwargs))
+def CyclotomicField(order, name=None):
+    return _CyclotomicField(order, name)
 
 
-def RealField(*args, **kwargs):
-    return _public_commutative_ring(_RealField(*args, **kwargs))
-
-
-def ComplexField(*args, **kwargs):
-    return _public_commutative_ring(_ComplexField(*args, **kwargs))
-
-
-def CyclotomicField(*args, **kwargs):
-    return _CyclotomicField(*args, **kwargs)
-
-
-def QuadraticField(*args, **kwargs):
-    return _QuadraticField(*args, **kwargs)
+def QuadraticField(discriminant, name="a"):
+    return _QuadraticField(discriminant, name)
 
 
 @cached_function
@@ -163,19 +159,19 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import ZZ as SageZZ
     from sage.all import QQbar as SageQQbar
 
-    integers = _own_ring(SageZZ)
-    rationals = _own_ring(SageQQ)
+    integers = _owned_integers()
+    rationals = _owned_rationals()
     _set_owned_ring_display(integers, "Integer Ring")
     _set_owned_ring_display(rationals, "Rational Field")
-    aa = _public_commutative_ring(_own_ring(SageAA))
+    aa = _public_commutative_ring(_owned_real_algebraic_numbers())
     _set_owned_ring_display(aa, "Real Algebraic Field")
-    qqbar = _public_commutative_ring(_own_ring(SageQQbar))
+    qqbar = _public_commutative_ring(_owned_algebraic_numbers())
     _set_owned_ring_display(qqbar, "Algebraic Closure of Rational Field")
-    rdf = _public_commutative_ring(_own_ring(SageRDF))
+    rdf = _public_commutative_ring(_owned_real_double_field())
     _set_owned_ring_display(rdf, "Real double field", kind="real")
-    cdf = _public_commutative_ring(_own_ring(SageCDF))
+    cdf = _public_commutative_ring(_owned_complex_double_field())
     _set_owned_ring_display(cdf, "Complex double field", kind="complex")
-    cc = _public_commutative_ring(_own_ring(SageCC))
+    cc = _public_commutative_ring(_owned_complex_field())
     _set_owned_ring_display(
         cc,
         f"Complex field with {SageCC.precision()} bits precision",
@@ -197,11 +193,7 @@ def ring_constructor_surface() -> dict[str, object]:
     r"""Return the constructors exported into a preamble session."""
     return {
         "GF": GF,
-        "FiniteField": FiniteField,
-        "PrimeField": PrimeField,
         "Zmod": Zmod,
-        "IntegerModRing": IntegerModRing,
-        "Integers": Integers,
         "Zp": Zp,
         "Qp": Qp,
         "RealField": RealField,
@@ -219,6 +211,18 @@ def _restore_session_ring_bindings(scope: dict) -> None:
     """
     scope.update(session_ring_objects())
     scope.update(ring_constructor_surface())
+    for name in _REMOVED_ENGINE_SPELLINGS:
+        scope.pop(name, None)
+
+
+# AGENTS.md, *The preamble is a universe over Sage*: "where Sage spells one
+# mathematical operation several ways, the preamble picks one spelling and the
+# others do not exist in the session".  The session spells F_q and ZZ/(n) as
+# GF and Zmod (and the category constructor PrimeFields()(p)); Sage's other
+# spellings of the same constructors -- IntegerModRing and Integers
+# (sage/rings/all.py), FiniteField (sage/rings/finite_rings/all.py) -- are
+# removed from a session scope that sage.all populated, not rebound to stubs.
+_REMOVED_ENGINE_SPELLINGS = ("FiniteField", "IntegerModRing", "Integers")
 
 
 __all__ = [
@@ -236,12 +240,9 @@ __all__ = [
     "ExactRealField",
     "ExactRealNumber",
     "Fields",
-    "FiniteField",
     "FormalPowerSeriesRings",
     "GF",
     "GeneratedIdealView",
-    "IntegerModRing",
-    "Integers",
     "IntegralDomains",
     "LocalizationRings",
     "LocalRings",
@@ -267,7 +268,6 @@ __all__ = [
     "OwnedRngs",
     "OwnedSemirings",
     "PredicateSubrings",
-    "PrimeField",
     "PrimeFields",
     "PrimeLocalizations",
     "PrimeSpectra",

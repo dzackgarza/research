@@ -3,17 +3,32 @@ r"""Fraction fields as localizations at the nonzero elements."""
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_localizing_the_integers_at_their_nonzero_elements_gives_the_rationals() -> None:
-    r"""(Z - 0)^{-1} Z = Q: the comparison sends the fraction 1/2 to 1/2 and 6/4 to 3/2,
-    and is bijective (Atiyah-Macdonald ch. 3)."""
+def test_the_fraction_field_of_the_integers_is_the_rationals() -> None:
+    r"""Frac(Z) = (Z - 0)^{-1} Z = Q, and the canonical map Z -> Q sends n to n
+    (Atiyah-Macdonald ch. 3); in (Z - 0)^{-1} Z, 6/4 = 3/2 because 6*2 = 3*4."""
+    to_rationals = ZZ.fraction_field_map()
     localization = ZZ.fraction_field_localization()
-    comparison = localization.fraction_field_comparison()
 
-    assert comparison(localization.fraction(ZZ(1), ZZ(2))) == QQ(1) / 2
-    assert comparison(localization.fraction(ZZ(6), ZZ(4))) == QQ(3) / 2
+    assert ZZ.fraction_field() is QQ
+    assert to_rationals.domain() is ZZ
+    assert to_rationals.codomain() is QQ
+    assert to_rationals(ZZ(6)) / to_rationals(ZZ(4)) == QQ(3) / 2
     assert localization.fraction(ZZ(6), ZZ(4)) == localization.fraction(ZZ(3), ZZ(2))
-    assert comparison.is_injective()
-    assert comparison.is_surjective()
+    assert localization.fraction(ZZ(1), ZZ(2)) != localization.fraction(ZZ(1), ZZ(3))
+
+
+def test_the_fraction_field_of_a_prime_localization_of_the_integers_is_the_rationals() -> None:
+    r"""Z_(3) = (Z - 3Z)^{-1} Z is a domain whose fraction field is Q, and the
+    canonical map Z_(3) -> Q sends the fraction 1/2 to 1/2 (Mathlib
+    IsFractionRing.isFractionRing_of_isDomain_of_isLocalization)."""
+    at_three = ZZ.spectrum()(3).local_ring()
+    to_rationals = at_three.fraction_field_map()
+
+    assert at_three.fraction_field() is QQ
+    assert to_rationals.domain() is at_three
+    assert to_rationals.codomain() is QQ
+    assert to_rationals(at_three.fraction(ZZ(1), ZZ(2))) == QQ(1) / 2
+    assert to_rationals(at_three.fraction(ZZ(6), ZZ(4))) == QQ(3) / 2
 
 
 def test_fraction_fields_of_countable_polynomial_domains_remain_countable() -> None:
@@ -32,14 +47,12 @@ def test_localizing_a_free_module_then_passing_to_q_is_the_base_change_to_q() ->
     r"""For M = Z^2 and S = Z - 0, S^{-1}M = M (x)_Z S^{-1}Z = M (x)_Z Q = Q^2
     (Atiyah-Macdonald 3.5)."""
     module = ZZ.free_module(2)
-    localization = ZZ.fraction_field_localization()
-    localized = localization.localization_functor()(module)
-    via_localization = Modules(localization).scalar_extension(localization.fraction_field_comparison())(localized)
+    localized = ZZ.fraction_field_localization().localization_functor()(module)
     direct = Modules(ZZ).scalar_extension(ZZ.fraction_field_map())(module)
 
-    assert via_localization in VectorSpaces(QQ)
+    assert ZZ.fraction_field() is QQ
+    assert localized.module_rank() == 2
     assert direct in VectorSpaces(QQ)
-    assert via_localization.module_rank() == 2
     assert direct.module_rank() == 2
     half_e = direct.scalar_multiple(QQ(1) / 2, direct.module_generator(0))
     assert 2 * half_e == direct.module_generator(0)
