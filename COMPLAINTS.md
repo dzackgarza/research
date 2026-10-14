@@ -1626,24 +1626,32 @@ Repair: `vinberg-invariants-are-points-of-the-projective-line` in TODO.
 
 An object of a category is constructed by the category applied to its
 defining data. A Coxeter diagram on a finite set `V` is determined by its
-Coxeter matrix `m: V x V -> Card`, and a finite family of roots of a
-lattice determines one through the pairings of its roots. `CoxeterDiagrams`
-(`categories/coxeter_diagrams.py`) constructs diagrams only through
-`from_coxeter_matrix`, `from_roots` and `from_cartan_type`; the category has
-no element constructor, so `CoxeterDiagrams()(datum)` raises
-`NotImplementedError` from Sage's `Category.__call__` (observed 2026-10-07).
-**Dependency path:** the Coxeter matrix as the owned function
-`m: V x V -> Card` -> the category applied to `m`, or to a family of roots
--> the diagram, equal to the one the `from_*` route builds.
-**Partial capability:** `from_coxeter_matrix` and `from_roots` build the
-diagram; their Coxeter matrices compare equal on equal data.
-**Consumers:** `tests/lattices/test_coxeter.sage` (4 failures),
-`test_coxeter_subdiagrams.sage` (5 failures), `test_vinberg_invariants.sage`
-(through `rooted_diagram` and the Cartan-type and matrix calls),
-`test_coxeter_gram_archive.sage` and `tests/objects/test_coxeter_diagram_a2.sage`.
-**Coverage boundary:** the Cartan-type datum enters as a Sage `CartanType`,
-which *Coxeter diagrams answer subdiagram orders and drawings as Sage
-objects* already records as engine input.
+Coxeter matrix `m: V x V -> Card` (Mathlib `CoxeterMatrix B`, which is
+`@[ext]`: equal exactly when the entries are), and a finite family of roots
+of a lattice determines a rooted one through the pairings of its roots.
+Since 2026-10-09 (`705b32702c`..`98560817af`) `CoxeterDiagrams._call_`
+routes owned data, so the category call no longer raises. What remains
+(observed by source reading 2026-10-14):
+- `_call_`, `from_coxeter_matrix` and `from_cartan_type` admit a Sage
+  `CoxeterMatrix` and a Sage `CartanType` (`API-05`, `OWN-04`).
+- The stored defining datum is a Sage `CoxeterMatrix`, not the owned `m`
+  (`STY-174`); `coxeter_matrix()` rebuilds `m` from it.
+- Diagrams have no equality by defining data: two constructions of one
+  diagram are two parents compared by identity, so `C(m) == C.from_coxeter_matrix(m)`
+  is false.
+- `Rooted` is a `CategoryWithAxiom`, but a realization by roots is a chosen
+  datum, never an axiom (`CAT-17`, `CAT-29`).
+- The diagram recomputes its vertices, edges and labels instead of
+  constructing through `LabelledGraphs.object(...)` (`OWN-14`).
+**lean-categories requests:** the category of Coxeter diagrams (objects
+`(V, m)`, morphisms the vertex maps preserving every entry) and rooted
+Coxeter diagrams (a diagram with a chosen realization by roots of a
+lattice). Neither is in `lean-categories` (`e1d422eb`), Mathlib, Atlas,
+TauCeti or lean-pool by corpus search on 2026-10-14 (`CoxeterDiagram`: 0
+matches); Mathlib has only `CoxeterMatrix` and `CoxeterMatrix.reindex`.
+**Recorded, not reworked:** `CoxeterGroups(coxeter_matrix)`
+(`categories/group/groups.py`) is one category per matrix whose single
+object is the group, a class of objects declared a category (`CAT-28`).
 Repair: `coxeter-diagrams-construct-from-their-data` in TODO.
 
 ### Free session functions construct objects
@@ -1665,34 +1673,33 @@ Repair: `session-objects-are-built-by-their-parents` in TODO.
 
 ### Coxeter diagrams answer subdiagram orders and drawings as Sage objects
 
-The induced subdiagrams of a Coxeter diagram, ordered by inclusion of
-their vertex sets, form a finite partially ordered set, and so do the
-`Aut`-orbits of subdiagrams under the order that inclusion induces on orbits. `CoxeterDiagrams`
-(`categories/coxeter_diagrams.py`) returns both as Sage `Poset` objects
-through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on`: the six
-public methods `subdiagram_poset`, `elliptic_subdiagram_poset`,
-`parabolic_subdiagram_poset`, `subdiagram_orbit_poset`,
-`elliptic_subdiagram_orbit_poset` and `parabolic_subdiagram_orbit_poset`
-put a raw engine object on the public surface (`OWN-03`). The owned
-`PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
-constructor of a finite poset from its underlying set and its order
-relation, so no owned object can be returned today. `plot()` returns a
-Sage `Graphics`.
-The same category still admits engine input: `from_coxeter_matrix`
-accepts a Sage `CoxeterMatrix`, `from_cartan_type` a Sage `CartanType`,
-and `Groups.Coxeter` (`categories/group/groups.py`) passes any argument
-other than the owned Coxeter matrix to Sage's `CoxeterGroup` unchanged
-(`OWN-04`). `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+The induced subdiagrams of a Coxeter diagram `D` on `V` correspond to
+`P(V)` ordered by inclusion (Mathlib's partial order on `Set V`, an object of
+`PartOrd`, which `lean-categories` re-exports in `Orders.lean`), and the
+`Aut(D)`-orbits carry the order `[H] <= [K]` when some member of `[H]` lies in
+some member of `[K]`. `CoxeterDiagrams` returns both as Sage `Poset` objects
+through `_subdiagram_poset_on` and `_subdiagram_orbit_poset_on` (`OWN-04`).
+Its members are fresh subdiagrams that keep no inclusion into `D`, compared
+by `id` (`ARC-02`, `STY-132`); orbits are computed by iterating `Aut(D)` by
+hand (`STY-40`) and represented by one representative diagram each; and
+`subdiagram_orbit_poset(orbits)` takes caller-supplied representatives. The
+owned `PartiallyOrderedSets()` (`categories/sets/set_categories.py`) has no
+constructor of a finite poset from its set and its order relation, and no
+Mor category of monotone maps. `RegularPolytopes`
+(`categories/schemes/polytopes.py`) declares `PartiallyOrderedSets()` but
+supplies no `le` (`CAT-15`). `Groups.Coxeter` passes any argument to Sage's
+`CoxeterGroup`, and `lexicon/geometry.py` exports Sage's `CoxeterMatrix`.
+`plot()` returns a Sage `Graphics`; ruled 2026-10-14 to be a display
+artifact, not a mathematical value, so it stays.
+**lean-categories request:** the order induced on the orbits of a group
+acting on a poset (no corpus match on 2026-10-14).
 **Dependency path:** finite posets in `PartiallyOrderedSets()` from
 `(X, <=)` -> inclusion of subdiagrams and the order it induces on
 `Aut`-orbits -> the public poset methods.
-**Partial capability:** the Coxeter matrix is the owned function
-`m: V x V -> Card` (`coxeter_matrix()`), and the Coxeter graph and the root
-intersection graph are objects of `LabelledGraphs()`.
-**Consumers:** the six poset methods, their callers in
-`tests/lattices/test_coxeter_subdiagrams.sage`, and the expectation files
-under `tests/constructions/` that ask for their cardinalities.
-Repair: `coxeter-diagram-orders-are-owned-posets` in TODO.
+**Consumers:** the six poset methods; `tests/lattices/test_coxeter_subdiagrams.sage`;
+the expectation files under `tests/constructions/` that ask for their cardinalities.
+Repair: `coxeter-diagram-orders-are-owned-posets` in TODO; monotone maps:
+`partially-ordered-sets-have-monotone-maps` in TODO.
 
 **Observed 2026-10-07:** `Groups.Coxeter(["A", 2])` and
 `Groups.Coxeter(D.coxeter_matrix())` both raise `NotImplementedError`.
