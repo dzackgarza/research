@@ -948,12 +948,12 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     )
 
 
-def _engine_quotient_by_relators(group, relators, *, constructing_category=None):
+def _engine_quotient_by_relators(group, relators):
     r"""Return ``G / <<relators>>`` with its actual quotient presentation.
 
     A quotient of a free group ``F`` is ``F/<<R>>`` with its presentation
-    ``(F, R)``, an object of :class:`FreeGroupQuotients`; the category
-    whose constructor asked for it is recorded as its constructing category.
+    ``(F, R)``, an object of :class:`FreeGroupQuotients` whose ambient
+    category is the groups.
     """
     # The normal closure is taken inside this group, not in an unrelated
     # group whose elements happen to admit backend coercion to words.
@@ -971,7 +971,7 @@ def _engine_quotient_by_relators(group, relators, *, constructing_category=None)
                     *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
                 ),
                 chosen_presentation=(group, tuple(group(relator) for relator in relators)),
-                constructing_category=constructing_category,
+                constructing_category=OwnedGroups(),
             )
         case FinitelyPresentedGroup():
             # G = F/R and G/<<S>> = F/<<R, S>>, with S lifted to words in F.
@@ -1440,11 +1440,12 @@ def _own_group(
     Its comparison images are derived from that source group's selected
     group resolution rather than retained a second time.
 
-    ``constructing_category`` is the category whose constructor builds the
-    group, recorded as its ambient category (``ARC-07``): a category applied
-    to data (``SymmetricGroups()(Omega)``) names itself, so the group's Mor is
-    the maps induced by morphisms of that data.  ``None`` keeps the placement
-    category, and a catalogue constructor of ``Groups`` names ``OwnedGroups()``.  Sage groups compare
+    ``constructing_category`` is recorded as the group's ambient category
+    (``ARC-07``).  The groups built from data (symmetric, general linear,
+    presented and Coxeter groups) name ``OwnedGroups()`` on every route, so
+    one datum gives one object whose ``Mor`` is all group homomorphisms; the
+    data-induced arrows are asked of the data category explicitly.  ``None``
+    keeps the placement category.  Sage groups compare
     structurally, so the engine enters the key by identity, and the cache keeps
     the engine alive while its owned group is.
     """
@@ -1762,7 +1763,7 @@ def _group_over_ring(constructor, degree, ring, *args, **kwargs):
     )
 
 
-def _symmetric_group(points, *, constructing_category, description=None):
+def _symmetric_group(points):
     r"""``Sym(points)``, built from its point set and placed by that set's cardinality.
 
     ``Sym(Omega)`` is finite when ``Omega`` is, and commutative when
@@ -1778,6 +1779,7 @@ def _symmetric_group(points, *, constructing_category, description=None):
         f"and {points} is not known to be finite (it lies in {points.category()})"
     )
     size = cardinal(points.cardinality()).finite_value()
+    standard = points is _standard_symmetric_points(int(size))
     refinements = (
         SymmetricGroups(),
         OwnedGroups().Finite(),
@@ -1786,9 +1788,9 @@ def _symmetric_group(points, *, constructing_category, description=None):
     return _own_group(
         SymmetricGroup(int(size)),
         refinements=refinements,
-        description=description,
+        description=f"Symmetric group S_{size}" if standard else None,
         symmetric_points=points,
-        constructing_category=constructing_category,
+        constructing_category=OwnedGroups(),
     )
 
 
@@ -1803,27 +1805,20 @@ def _S(points):
     r"""``Groups.S``: the symmetric group as an object of the groups.
 
     ``Groups.S(n)`` is ``Sym({1, ..., n})`` and ``Groups.S(Omega)`` is
-    ``Sym(Omega)``, built by the construction of :class:`SymmetricGroups`
-    and constructed in the groups, so its Mor is all group homomorphisms.
-    ``SymmetricGroups()(Omega)`` is the same group constructed in the
-    category of symmetric groups, whose arrows are the maps induced by
-    bijections.
+    ``Sym(Omega)``: the same object as ``SymmetricGroups()(Omega)`` for the
+    same ``Omega`` (``OWN-02``).
     """
     match points:
         case _ if points in Sets():
-            return _symmetric_group(points, constructing_category=OwnedGroups())
+            return _symmetric_group(points)
         case _:
             assert points in ZZ and points >= 0, (
                 f"Groups.S takes a finite set or a number n >= 0 of points, but got {points!r}"
             )
-            return _symmetric_group(
-                _standard_symmetric_points(int(points)),
-                constructing_category=OwnedGroups(),
-                description=f"Symmetric group S_{points}",
-            )
+            return _symmetric_group(_standard_symmetric_points(int(points)))
 
 
-def _general_linear_group(ring, degree, *, constructing_category, var="a"):
+def _general_linear_group(ring, degree, var="a"):
     r"""``GL_n(R)``, built from ``(R, n)`` and placed by ``R``'s placement.
 
     The placement is read from the category ``R`` was constructed in, never
@@ -1862,19 +1857,16 @@ def _general_linear_group(ring, degree, *, constructing_category, var="a"):
         GL(rank, _engine_ring(ring), var=var),
         refinements=refinements,
         linear_data=(ring, rank),
-        constructing_category=constructing_category,
+        constructing_category=OwnedGroups(),
     )
 
 
 def _GL(degree, ring, var="a"):
     r"""``Groups.GL(n, R)``: ``GL_n(R)`` as an object of the groups.
 
-    Built by the construction of :class:`GeneralLinearGroups` and constructed
-    in the groups, so its Mor is all group homomorphisms;
-    ``GeneralLinearGroups()(R, n)`` is the same group constructed in the
-    category whose arrows are induced by ring maps.
+    The same object as ``GeneralLinearGroups()(R, n)`` (``OWN-02``).
     """
-    return _general_linear_group(ring, degree, constructing_category=OwnedGroups(), var=var)
+    return _general_linear_group(ring, degree, var=var)
 
 
 def _SL(degree, ring, var="a"):
@@ -1982,6 +1974,14 @@ def _cartan_label_coxeter_matrix(label):
     return _coxeter_matrix_of_cartan_label(list(label))
 
 
+@cached_function
+def _rows_coxeter_matrix(rows):
+    r"""The owned Coxeter matrix of its rows, read once per rows so equal rows name one group."""
+    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_rows
+
+    return _coxeter_matrix_of_rows(rows)
+
+
 def _coxeter_matrix_datum(data):
     r"""Read Coxeter data as the owned Coxeter matrix ``m: V x V -> Card``.
 
@@ -1991,7 +1991,6 @@ def _coxeter_matrix_datum(data):
     raised to the owned matrix once, so the group retains owned, immutable
     data.
     """
-    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_rows
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
     match data:
@@ -2000,7 +1999,7 @@ def _coxeter_matrix_datum(data):
         case [str(), *_] | (str(), *_):
             return _cartan_label_coxeter_matrix(tuple(data))
         case list() | tuple():
-            return _coxeter_matrix_of_rows(data)
+            return _rows_coxeter_matrix(tuple(tuple(row) for row in data))
         case _:
             assert False, (
                 f"{data!r} does not define a Coxeter group: give the owned Coxeter matrix "
@@ -2008,7 +2007,7 @@ def _coxeter_matrix_datum(data):
             )
 
 
-def _coxeter_group(coxeter_matrix, *, constructing_category, base_ring=None):
+def _coxeter_group(coxeter_matrix, *, base_ring=None):
     r"""``W(m) = F(V) / <<s_v^2, (s_v s_w)^{m_vw}>>`` for an owned Coxeter matrix ``m``.
 
     The group is the presented group of ``lean-categories`` Def. 60.4
@@ -2053,22 +2052,19 @@ def _coxeter_group(coxeter_matrix, *, constructing_category, base_ring=None):
         CoxeterMatrixGroup(engine_matrix, scalar_ring, None),
         refinements=refinements,
         coxeter_matrix=coxeter_matrix,
-        constructing_category=constructing_category,
+        constructing_category=OwnedGroups(),
     )
 
 
 def _coxeter_catalogue(data, base_ring=None):
     r"""``Groups.Coxeter``: the Coxeter group of Coxeter data, as an object of the groups.
 
-    Built by the construction of :class:`CoxeterGroups` with ``OwnedGroups()``
-    as the constructing category, so its Mor is all group homomorphisms.
+    The same object as ``CoxeterGroups()(m)`` for the same data (``OWN-02``).
     ``data`` is an owned Coxeter matrix, its rows, or a Cartan type label;
     ``base_ring`` is an owned ring over which the reflection representation
     is realized.
     """
-    return _coxeter_group(
-        _coxeter_matrix_datum(data), constructing_category=OwnedGroups(), base_ring=base_ring
-    )
+    return _coxeter_group(_coxeter_matrix_datum(data), base_ring=base_ring)
 
 
 
@@ -4861,9 +4857,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             match self:
                 case _ if isinstance(_engine_group(self), FreeGroup_class):
                     # The free source and the caller's chosen relators
-                    # define this quotient F/<<R>>, an object of
-                    # FreeGroupQuotients() constructed here in the groups.
-                    quotient = _free_group_quotient(self, relators, constructing_category=OwnedGroups())
+                    # define this quotient F/<<R>>, the same object as
+                    # FreeGroupQuotients()(F, R).
+                    quotient = _free_group_quotient(self, relators)
                 case _ if self in GroupsWithChosenFinitePresentation():
                     quotient = _engine_quotient_by_relators(self, relators)
                 case _:
@@ -6098,8 +6094,11 @@ class SymmetricGroups(OwnedCategory):
     ``sigma |-> f sigma f^-1`` for a bijection ``f: Omega -> Omega'``.  The
     construction is functorial on bijections only (Mathlib ``Equiv.Perm``,
     ``Equiv.permCongr``, ``Mathlib/Logic/Equiv/Defs.lean``), so these are the
-    arrows of the category and an object constructed here answers ``Mor``
-    with them.  ``lean-categories`` does not formalize symmetric groups; the
+    arrows of the category, asked of it explicitly:
+    ``SymmetricGroups().Mor(A, B)``.  ``Sym(Omega)`` is one object whichever
+    route builds it, and its ambient category is the groups, so ``A.Mor(B)``
+    is all group homomorphisms (``OWN-02``, ``ARC-07``).  ``lean-categories``
+    does not formalize symmetric groups; the
     request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
     group, by its action on ``Omega``.
     """
@@ -6118,7 +6117,7 @@ class SymmetricGroups(OwnedCategory):
         return "symmetric groups"
 
     def _call_(self, points):
-        return _symmetric_group(points, constructing_category=self)
+        return _symmetric_group(points)
 
     class ParentMethods:
         def __init__(self, symmetric_points=None, **rest):
@@ -6253,8 +6252,9 @@ class GeneralLinearGroups(OwnedCategory):
     ``GL_n(phi)`` for a ring map ``phi: R -> S``, applied entrywise.  For
     each ``n`` the construction is a functor from rings to groups (Mathlib
     ``Matrix.GeneralLinearGroup.map``), so these are the arrows of the
-    category and an object constructed here answers ``Mor`` with them.
-    ``lean-categories`` does not formalize ``GL_n``; the request is in
+    category, asked of it explicitly: ``GeneralLinearGroups().Mor(A, B)``.
+    ``GL_n(R)`` is one object whichever route builds it, with the groups as
+    its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the request is in
     ``COMPLAINTS.md``.
     """
 
@@ -6274,7 +6274,7 @@ class GeneralLinearGroups(OwnedCategory):
         return "general linear groups"
 
     def _call_(self, ring, degree):
-        return _general_linear_group(ring, degree, constructing_category=self)
+        return _general_linear_group(ring, degree)
 
     class ParentMethods:
         def __init__(self, selected_linear_data=None, **rest):
@@ -6294,11 +6294,11 @@ class CoxeterGroups(OwnedCategory):
     An object is ``W(m) = <s_v | s_v^2, (s_v s_w)^{m_vw}>`` for a Coxeter
     matrix ``m: V x V -> Card``, built by ``CoxeterGroups()(m)`` and
     retaining ``m`` (``lean-categories`` FOUNDATIONS.md Def. 60.4).  It is
-    constructed through :class:`FreeGroupQuotients` with that presentation,
-    which is its constructing category: its arrows are the maps of
-    presentations.  Arrows of Coxeter data are not formalized in
-    ``lean-categories`` (request in ``COMPLAINTS.md``), so this category
-    presents its objects and states no arrows of its own.
+    constructed through :class:`FreeGroupQuotients` with that presentation.
+    Its ambient category is the groups.  Arrows of Coxeter data are not
+    formalized in ``lean-categories`` (request in ``COMPLAINTS.md``), so this
+    category presents its objects and states no arrows of its own; the maps
+    of presentations are ``FreeGroupQuotients().Mor(W, W')``.
     """
 
     def super_categories(self):
@@ -6313,9 +6313,7 @@ class CoxeterGroups(OwnedCategory):
         return "Coxeter groups"
 
     def _call_(self, coxeter_matrix):
-        return _coxeter_group(
-            _coxeter_matrix_datum(coxeter_matrix), constructing_category=FreeGroupQuotients()
-        )
+        return _coxeter_group(_coxeter_matrix_datum(coxeter_matrix))
 
     class ParentMethods:
         def __init__(self, selected_coxeter_matrix=None, **rest):
@@ -6414,7 +6412,7 @@ class FreeGroupQuotientMorCategoryConstruction(MorCategoryConstruction):
         return self._remember_between(domain, codomain, FreeGroupQuotientMor(self, domain, codomain))
 
 
-def _free_group_quotient(free_group, relators, *, constructing_category):
+def _free_group_quotient(free_group, relators):
     r"""``F/<<R>>`` for a free group ``F`` and a set ``R`` of elements of ``F``.
 
     The datum is ``(F, R)`` with ``R`` an arbitrary subset of ``F`` (Mathlib
@@ -6443,7 +6441,7 @@ def _free_group_quotient(free_group, relators, *, constructing_category):
         raise ValueError(
             f"the relators {relators} of a presentation must be elements of the presenting free group {free_group}"
         )
-    return _engine_quotient_by_relators(free_group, relators, constructing_category=constructing_category)
+    return _engine_quotient_by_relators(free_group, relators)
 
 
 class FreeGroupQuotients(OwnedCategory):
@@ -6453,8 +6451,9 @@ class FreeGroupQuotients(OwnedCategory):
     elements, built by ``FreeGroupQuotients()(F, R)`` and retaining the
     presentation ``(F, R)``; an arrow ``F/<<R>> -> F'/<<R'>>`` is induced by
     a group map ``f: F -> F'`` with ``f(R) subset R'`` (Mathlib
-    ``PresentedGroup`` and ``PresentedGroup.map``).  An object constructed
-    here answers ``Mor`` with these arrows.  When ``F`` has a finite basis
+    ``PresentedGroup`` and ``PresentedGroup.map``), asked of the category
+    explicitly: ``FreeGroupQuotients().Mor(A, B)``.  ``F/<<R>>`` is one object
+    whichever route builds it, with the groups as its ambient category.  When ``F`` has a finite basis
     and ``R`` is finite the presentation is a chosen finite presentation, and
     the group is also placed in :class:`GroupsWithChosenFinitePresentation`;
     how the two relate to the resolution category of ``CAT-29`` is recorded
@@ -6477,7 +6476,7 @@ class FreeGroupQuotients(OwnedCategory):
         return "presented groups"
 
     def _call_(self, free_group, relators):
-        return _free_group_quotient(free_group, relators, constructing_category=self)
+        return _free_group_quotient(free_group, relators)
 
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
@@ -6573,9 +6572,7 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             # its chosen free-source presentation. Validate the induced
             # images against the former as well: a mere dictionary of
             # images does not by itself establish a group homomorphism.
-            # The descended map is a group homomorphism (PresentedGroup.toGroup),
-            # asked in the groups whatever category constructed this quotient.
-            descended = self.Mor(target, category=OwnedGroups())(
+            descended = self.Mor(target)(
                 generator_images, check=True
             )
             # The factorization equation is a statement about actual Mor

@@ -153,7 +153,8 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     points = Sets.Δ[2]
     group = SymmetricGroups()(points)
     assert group in SymmetricGroups()
-    assert group.ambient_category() is SymmetricGroups()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.S(points)
     assert group not in OwnedGroups().Commutative()
     assert SymmetricGroups()(Sets.Δ[1]) in OwnedGroups().Commutative()
     assert group.order() == 6
@@ -236,7 +237,7 @@ def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
     labels = finite_ordered_set(("a", "b", "c"))
     source = SymmetricGroups()(points)
     target = SymmetricGroups()(labels)
-    arrows = source.Mor(target)
+    arrows = SymmetricGroups().Mor(source, target)
     unrank = labels.ranking_map().inverse()
     relabel = Sets().Mor(points, labels)(lambda point: unrank(int(point)))
     induced = arrows(relabel)
@@ -244,9 +245,10 @@ def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
     assert induced(transposition)(labels("a")) == labels("b")
     assert induced(transposition)(labels("c")) == labels("c")
     assert arrows.cardinality() == cardinal(6)
-    assert source.Mor(source).cardinality() == cardinal(6)
-    assert Groups.S(3).Mor(Groups.S(3)).cardinality() == cardinal(10)
-    assert source.Mor(SymmetricGroups()(Sets.Δ[1])).cardinality() == cardinal(0)
+    assert SymmetricGroups().Mor(source, source).cardinality() == cardinal(6)
+    assert source.Mor(source).cardinality() == cardinal(10)
+    assert SymmetricGroups().Mor(source, SymmetricGroups()(Sets.Δ[1])).cardinality() == cardinal(0)
+    assert SymmetricGroups()(Groups.S(3).natural_points()) is Groups.S(3)
 
 
 def test_symmetric_group_of_an_infinite_set_is_outside_the_computed_cases() -> None:
@@ -269,7 +271,8 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert group in OwnedGroups().Finite()
     assert group in CoxeterGroups()
     assert group in FreeGroupQuotients()
-    assert group.ambient_category() is FreeGroupQuotients()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.Coxeter([[1, 3], [3, 1]])
     retained = group.coxeter_matrix()
     assert group.coxeter_matrix() is retained
     assert group.order() == 6
@@ -456,7 +459,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     relators = (a**2, b**3, (a*b)**2)
     quotient = FreeGroupQuotients()(free, relators)
     assert quotient in FreeGroupQuotients()
-    assert quotient.ambient_category() is FreeGroupQuotients()
+    assert quotient.ambient_category() is OwnedGroups()
     assert quotient.order() == 6
     assert quotient.presenting_free_group() is free
     assert tuple(quotient.defining_relations()) == relators
@@ -486,7 +489,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # not only in the convenience descent operation: b^3 is nontrivial.
     quotient_a, quotient_b = tuple(quotient.group_generators())
     try:
-        quotient.Mor(cyclic, category=OwnedGroups())(
+        quotient.Mor(cyclic)(
             {quotient_a: cyclic.one(), quotient_b: cyclic.group_generators()[0]},
             check=True,
         )
@@ -530,10 +533,10 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # killing b factors through q, including on non-generator words.
     target_c2 = Groups.C(2)
     target_involution = tuple(target_c2.group_generators())[0]
-    source_to_c2 = quotient.Mor(target_c2, category=OwnedGroups())(
+    source_to_c2 = quotient.Mor(target_c2)(
         (target_involution, target_c2.one()), check=True
     )
-    factored = second_quotient.Mor(target_c2, category=OwnedGroups())(
+    factored = second_quotient.Mor(target_c2)(
         (target_involution, target_c2.one()), check=True
     )
     descended_quotient = second_quotient.descend_homomorphism(
@@ -549,7 +552,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     )
     # Identity on S_3 does not descend through S_3 / <<b>>: the
     # quotient kills b, whereas identity preserves its nontrivial image.
-    identity_on_source = quotient.Mor(quotient, category=OwnedGroups())(
+    identity_on_source = quotient.Mor(quotient)(
         tuple(quotient.group_generators()), check=True
     )
     assert identity_on_source(projection(b)) != quotient.one()
@@ -649,13 +652,13 @@ def test_presented_group_arrows_are_induced_by_maps_of_presentations() -> None:
     relators = (a**2, b**2, (a*b)**3)
     quotient = FreeGroupQuotients()(free, relators)
     swap = free.Mor(free)({a: b, b: a})
-    induced = quotient.Mor(quotient)(swap, check=True)
+    induced = FreeGroupQuotients().Mor(quotient, quotient)(swap, check=True)
     projection = quotient.quotient_projection()
     assert induced(projection(a)) == projection(b)
     assert induced(projection(b)) == projection(a)
     collapse = free.Mor(free)({a: a, b: a})
     try:
-        quotient.Mor(quotient)(collapse, check=True)
+        FreeGroupQuotients().Mor(quotient, quotient)(collapse, check=True)
     except ValueError as error:
         assert "not a map of presentations" in str(error)
     else:
@@ -676,7 +679,7 @@ def test_quotient_descent_with_identified_presenting_generators() -> None:
     assert descended.domain() is quotient
     assert descended.codomain() is cyclic
     assert descended(projection(a)) == descended(projection(b)) == involution
-    checked = quotient.Mor(cyclic, category=OwnedGroups())(
+    checked = quotient.Mor(cyclic)(
         {projection(a): involution}, check=True
     )
     assert checked(projection(a)) == checked(projection(b)) == involution
@@ -729,7 +732,8 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
 def test_general_linear_group_retains_ring_and_rank() -> None:
     group = GeneralLinearGroups()(GF(2), 2)
     assert group in GeneralLinearGroups()
-    assert group.ambient_category() is GeneralLinearGroups()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.GL(2, GF(2))
     assert group in OwnedGroups().Finite()
     assert group.coefficient_ring() is GF(2)
     assert group.degree() == 2
@@ -766,7 +770,7 @@ def test_general_linear_arrows_are_induced_by_ring_maps() -> None:
     integral = GeneralLinearGroups()(ZZ, 2)
     reduced = GeneralLinearGroups()(GF(2), 2)
     reduction = OwnedRings().Mor(ZZ, GF(2))(lambda n: GF(2)(n))
-    induced = integral.Mor(reduced)(reduction)
+    induced = GeneralLinearGroups().Mor(integral, reduced)(reduction)
     unipotent = integral([[1, 1], [0, 1]])
     assert induced(unipotent) == reduced([[1, 1], [0, 1]])
     assert induced(unipotent).order() == 2
