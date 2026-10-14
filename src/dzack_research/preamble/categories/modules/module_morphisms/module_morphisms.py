@@ -3355,18 +3355,9 @@ class ModuleAutomorphismGroup(CoreMor):
     ElementMethods = ModuleAutomorphismMethods
 
     def __init__(self, mor_family, module) -> None:
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
         self._base_ring = _owned_ring(module.base_ring())
-        CategoricalMor.__init__(
-            self,
-            mor_family,
-            module,
-            module,
-            category=Cat().meet((
-                CoreMor._vertex_group_placement(module, module),
-                ModuleAutomorphismGroups(self._base_ring),
-            )),
+        CoreMor.__init__(
+            self, mor_family, module, module, category=ModuleAutomorphismGroups(self._base_ring)
         )
 
     @lazy_attribute

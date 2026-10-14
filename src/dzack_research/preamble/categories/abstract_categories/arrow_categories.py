@@ -2230,10 +2230,14 @@ class CoreMor(CategoricalMor):
         family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
+        *,
+        category: Category | None = None,
     ) -> None:
-        CategoricalMor.__init__(
-            self, family, domain, codomain, category=self._vertex_group_placement(domain, codomain)
-        )
+        r"""``category`` refines the vertex-group placement of a specialized core Mor."""
+        placement = self._vertex_group_placement(domain, codomain)
+        if category is not None:
+            placement = category if placement is None else Cat().meet((placement, category))
+        CategoricalMor.__init__(self, family, domain, codomain, category=placement)
 
     @staticmethod
     def _vertex_group_placement(domain: Parent, codomain: Parent) -> Category | None:
