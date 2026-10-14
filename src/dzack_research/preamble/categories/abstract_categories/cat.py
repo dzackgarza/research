@@ -1613,9 +1613,11 @@ class _FunctorCategory(FixedMorCategory):
 
         source, target = core_mor.domain(), core_mor.codomain()
         codomain = self.codomain_category()
-        witness = codomain._marked_isometry(self, source, target)
-        if witness is None:
+        isomorphism = core_mor._isomorphism_witness()
+        if isomorphism is None:
             return None
+        _shape, top = self._marking_shape()
+        witness = isomorphism.forward().component(top)
         group = subgroup.supergroup()
         assert witness.domain() is witness.codomain() and witness.parent() is group, (
             f"{subgroup} is a subgroup of {group}, but the isomorphisms {source} -> {target} have apex "

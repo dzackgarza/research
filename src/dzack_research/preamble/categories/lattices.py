@@ -5388,13 +5388,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _stable_complement_root_reflections(self, element)
 
+        @cached_method
         def primitive_isotropic_subobject(self, *basis):
             r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
 
             Admission checks saturation and vanishing of the restricted form
             before refining the represented subobject, so a refused span leaves
             no wrongly placed object behind.  The stated family must also be
-            nonempty and independent.
+            nonempty and independent.  One subobject per spanning family, so
+            its cached isotropic reduction (and parabolic) is shared.
             """
             from dzack_research.preamble.categories.isotropic_parabolics import (
                 PrimitiveIsotropicSubobjects,
@@ -6427,7 +6429,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise NotPrimitiveError(
                     f"cannot form the lattice v^perp/Rv for {self!r}: the vector is not primitive; use isotropic_quotient() to retain the torsion quotient"
                 )
-            return self.sublattice().inclusion().isotropic_reduction()
+            return self.parent().primitive_isotropic_subobject(self).isotropic_reduction()
 
         def isotropic_quotient(self):
             r"""Return the formed module \(v^\perp/Rv\), retaining torsion.
