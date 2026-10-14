@@ -1993,6 +1993,50 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 return _aleph0()
             return None
 
+        @RealizationHook
+        def _emptiness_decision(self) -> bool | None:
+            r"""Protected decision of ``X = ∅`` supplied by a construction.
+
+            Owner: ``Sets``; ``is_empty`` is the only caller.  ``True`` or
+            ``False`` is a decision; ``None`` states that the construction
+            supplies none, and ``is_empty`` then returns the proposition.
+            The cases decided here:
+
+            - an enumerated set is empty exactly when its enumeration has no
+              first point;
+            - an infinite set is not empty.
+
+            A realization whose construction decides more supplies this hook
+            on its own class: a subset holding an admitted member is not empty,
+            and a torsor is not empty by definition (its owner, ``Torsors``,
+            supplies that case).
+            """
+            match self:
+                case _ if self in EnumeratedSets():
+                    return not any(True for _point in self)
+                case _ if self in Sets().Infinite():
+                    return False
+                case _:
+                    return None
+
+        def is_empty(self) -> bool | Predicate:
+            r"""Whether this set has no points, ``X = ∅``.
+
+            Decided where the construction decides it (``_emptiness_decision``);
+            otherwise the proposition ``is_empty(X)``, which ``ask`` answers
+            ``Unknown`` (`DEF-06`).  A predicate here never answers ``False``
+            for an undecided set.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            match self._emptiness_decision():
+                case True:
+                    return True
+                case False:
+                    return False
+                case _:
+                    return AtomicProposition("is_empty", self)
+
         def is_finite(self):
             r"""Return whether the underlying set has finite cardinality."""
             match self:
@@ -3360,6 +3404,36 @@ class _ConditionSetEngine:
             self._admitted_members.append(point)
             self._admitted_member_ids.add(id(point))
         return point
+
+    def _emptiness_decision(self) -> bool | None:
+        r"""Realization of ``Sets``' protected emptiness hook for ``{x in X : P(x)}``.
+
+        A member admitted by construction is a point, so the subset is not
+        empty. Otherwise a decided finite count of the subset decides it.
+        Neither supplied leaves the question to the proposition.
+        """
+        if self._admitted_members:
+            return False
+        count = self._cardinality_decision()
+        if count is None:
+            return None
+        return cardinal(count) == cardinal(0)
+
+    def _an_element_(self):
+        r"""Sage's element-selection protocol: a point admitted by construction.
+
+        Without an admitted member, a decided finite enumeration supplies its
+        first point. A subset with neither has no selected point here.
+        """
+        if self._admitted_members:
+            return self._admitted_members[0]
+        assert self._cardinality_decision() is not None, (
+            f"cannot select a point of {self}: no point has been admitted to it and its "
+            f"membership predicate {self.predicate()} is not decided on an enumerated universe"
+        )
+        for point in self:
+            return point
+        raise ValueError(f"{self} is empty, so it has no point to select")
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""

@@ -9,7 +9,6 @@ combinations of matrices (Gritsenko--Hulek--Sankaran, section 3.1, (4)--(5)).
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
@@ -199,25 +198,30 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
 
         @cached_method
         def integral_members(self):
-            r"""The integral lift locus with its integral-kernel action, decided.
+            r"""The integral lift locus, a subset of the lifts, with its emptiness decided.
 
             Every integral lift has its parameter in the lattice ``P`` of
             :meth:`integral_parameter_quotient`, and integrality is constant
             on the cosets of the period sublattice ``mP``. So the locus is
             empty exactly when the finite residue locus
-            :meth:`integral_parameter_classes` is empty. Otherwise two
-            integral lifts differ by an integral kernel element, so the locus
-            is the torsor :meth:`integral_torsor` through
-            :meth:`integral_base_point`. Emptiness is never inferred from one
-            chosen rational lift.
+            :meth:`integral_parameter_classes` is empty. When it is not, the
+            locus holds :meth:`integral_base_point`, admitted as a member, so
+            ``is_empty()`` and ``an_element()`` are answered; the locus is then
+            the point set of :meth:`integral_torsor`, the torsor under the
+            integral kernel. When it is empty, the locus is the image of the
+            empty set in the lifts. Emptiness is never inferred from one chosen
+            rational lift.
             """
+            _integral_kernel, points = self._integral_lift_locus()
             for _residue in self.integral_parameter_classes():
-                return self.integral_torsor()
+                points(self.integral_base_point())
+                return points
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
-            integral_kernel, _points = self._integral_lift_locus()
-            return GObjects(integral_kernel, Sets()).on_set(
-                finite_ordered_set(()), lambda g, lift: g * lift, orbit_relation=lambda left, right: True
+            empty = finite_ordered_set(())
+            lifts = self.point_set()
+            return Sets().image_set(
+                Sets().Mor(empty, lifts)(lambda lift: lift), empty, inverse=lambda lift: lift
             )
 
         @cached_method
