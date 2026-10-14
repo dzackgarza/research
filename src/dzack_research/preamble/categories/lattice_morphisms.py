@@ -2574,12 +2574,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         return first.domain().Isom(second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
 
     def is_empty(self):
-        r"""Decide emptiness through exact obstructions and proved classifiers.
+        r"""Return whether ``Isom(L, M)`` is empty, decided without constructing an isometry where a theorem allows.
 
-        Passing an obstruction never proves isometry by itself.  Definite
-        survivors are decided by Sage's exact equivalence engine, binary
-        indefinite survivors by reduction of binary forms where it decides,
-        and the remaining indefinite survivors by ``sage-indefinite-port``.
+        :meth:`_isometry_decision` owns the decision; an isometry is built
+        only by :meth:`an_element`.
         """
         return self._isometry_decision()[0]
 
@@ -2645,109 +2643,155 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
     @cached_method
     def _isometry_decision(self):
-        r"""The decision of this isometry Mor object, with the witness that decided it.
+        r"""The decision whether this isometry Mor object is empty, and the theorem that decides it.
 
         Private computation record of :meth:`is_empty` and :meth:`an_element`:
-        the triple of the emptiness answer (``True``, ``False`` or the
-        proposition that the Mor is empty), an explicit isometry when the deciding computation
-        exhibits one (else ``None``), and the theorem that proves
-        nonemptiness without a witness (else ``None``).
+        the pair of the emptiness answer (``True``, ``False`` or the
+        proposition that the Mor is empty) and, for a nonempty Mor, the
+        citation of what established nonemptiness.  No isometry is
+        constructed here; :meth:`an_element` constructs one on request.
+
+        After the invariant obstructions the decision compares the owned
+        genera, ``L.genus() == M.genus()`` (equal signature and canonical
+        ``ZZ_p``-symbols at every ``p | 2d``)
+        [CS99, Ch. 15, §7, Thms 9-10; extraction
+        ``references/literature/lattice-research/conway1999sphere.md``
+        l.12139, l.12197, l.12251].  Inside one genus:
+
+        - indefinite, rank at least 3: a spinor genus is one class
+          [CS99, Ch. 15, Thm 14 (Eichler), l.12511].  With one improper
+          spinor genus the Mor is nonempty with no further computation;
+          with several, membership in one spinor genus is the criterion of
+          [CS99, Ch. 15, Thm 15, l.12521-12529], decided by the one private
+          adapter ``integer_lattices_are_isometric``;
+        - indefinite, rank 2: comparison of the cycles of reduced binary
+          forms [CS99, Ch. 15, §3.3, l.11569; Thm 1, l.11482], whose walk
+          yields the equivalence matrix, cached by :meth:`_witness_matrix`;
+        - definite: a genus whose mass ``sum_i 1/|O(L_i)|``
+          [Conway--Sloane, *Low-dimensional lattices IV*, eq. (1);
+          ``references/literature/lattice-research/conway1988mass.md``
+          l.13-16] equals ``1/|O(L)|`` is the one class of ``L``; otherwise
+          the exact equivalence search of :meth:`_witness_matrix` decides
+          [CS99, Ch. 15, §10-§11, l.12775, l.12905].
         """
         domain = self.domain()
         codomain = self.codomain()
         if domain is codomain:
-            return (False, self.identity(), None)
+            return (False, "the identity of the lattice")
         undecided = AtomicProposition("is_empty", self)
         if not domain.module_rank().is_finite() or not codomain.module_rank().is_finite():
-            return (undecided, None, None)
+            return (undecided, None)
         if domain.module_rank() != codomain.module_rank():
-            return (True, None, None)
+            return (True, None)
         if domain.signature_pair() != codomain.signature_pair():
-            return (True, None, None)
+            return (True, None)
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
-            return (undecided, None, None)
+            return (undecided, None)
 
-        domain_gram = _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ)
-        codomain_gram = _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ)
+        domain_gram, codomain_gram = self._engine_grams()
         if domain_gram == codomain_gram:
-            return (
-                False,
-                self._isometry_from_column_matrix(domain_gram.parent().one()),
-                None,
-            )
+            return (False, "equal Gram tensors: the identity on the generators")
         rank = domain.module_rank()
         if int(rank.finite_value()) <= 1:
-            return (True, None, None)
+            return (True, None)
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
-            return (True, None, None)
+            return (True, None)
         if not domain.is_nondegenerate():
-            return (undecided, None, None)
+            return (undecided, None)
         if domain.is_even() != codomain.is_even():
-            return (True, None, None)
+            return (True, None)
         if domain.discriminant() != codomain.discriminant():
-            return (True, None, None)
+            return (True, None)
         if domain.discriminant_module().invariant_factors() != codomain.discriminant_module().invariant_factors():
-            return (True, None, None)
+            return (True, None)
 
-        from sage.quadratic_forms.genera.genus import LocalGenusSymbol
-        from sage.rings.rational_field import QQ as SageQQ
+        if domain.genus() != codomain.genus():
+            return (True, None)
 
-        domain_engine = domain_gram
-        codomain_engine = codomain_gram
-        rational_domain = QuadraticForm(SageQQ, 2 * domain_engine.change_ring(SageQQ))
-        rational_codomain = QuadraticForm(SageQQ, 2 * codomain_engine.change_ring(SageQQ))
-        if not rational_domain.is_rationally_isometric(rational_codomain):
-            return (True, None, None)
+        signature = domain.signature_pair()
+        definite = signature.first() == 0 or signature.second() == 0
+        match definite, int(rank.finite_value()) >= 3:
+            case False, True:
+                if domain.genus().spinor_genus_count() == domain.base_ring().one():
+                    return (False, "one genus with one spinor genus is one class [CS99, Ch. 15, Thm 14]")
+                if lattice_engines.isometric_within_genus(domain, codomain):
+                    return (False, "one spinor genus [CS99, Ch. 15, Thms 14-15]")
+                return (True, None)
+            case False, False:
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "equivalent in the cycle classification of binary forms [CS99, Ch. 15, §3.3]")
+            case True, _:
+                order = domain.orthogonal_group().cardinality()
+                if domain.genus().mass() * domain.base_ring().fraction_field()(order) == 1:
+                    return (False, "a genus of mass 1/|O(L)| is one class [Conway--Sloane, Low-dimensional lattices IV, eq. (1)]")
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "the exact equivalence search found an isometry [CS99, Ch. 15, §10-§11]")
 
-        determinant = abs(SageZZ(domain_gram.det()))
-        for prime in (2 * determinant).prime_divisors():
-            if LocalGenusSymbol(domain_engine, prime) != LocalGenusSymbol(codomain_engine, prime):
-                return (True, None, None)
+    @cached_method
+    def _engine_grams(self):
+        r"""The Gram matrices over Sage's ``ZZ`` of the two endpoints; private engine data of the decision."""
+        return (
+            _engine_component_matrix(self.domain().gram_tensor()).change_ring(SageZZ),
+            _engine_component_matrix(self.codomain().gram_tensor()).change_ring(SageZZ),
+        )
 
-        domain_discriminant = domain.discriminant_group()
-        codomain_discriminant = codomain.discriminant_group()
-        if not domain_discriminant.is_isomorphic(codomain_discriminant):
-            return (True, None, None)
+    @cached_method
+    def _witness_matrix(self):
+        r"""The equivalence matrix the deciding search produces, or ``False`` when it finds none.
 
-        _signature = domain.signature_pair()
-
-        positive, negative = _signature.first(), _signature.second()
+        Private engine data, for a definite pair (Sage's exact equivalence
+        search, PARI ``qfisom``) or an indefinite binary pair (the cycle
+        walk of :func:`_binary_indefinite_isometry_matrix`).  Its columns
+        are the coordinates of the images of the domain generators.
+        """
+        domain_gram, codomain_gram = self._engine_grams()
+        signature = self.domain().signature_pair()
+        positive, negative = signature.first(), signature.second()
         if positive == 0 or negative == 0:
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
-            transformation = QuadraticForm(SageZZ, 2 * sign * codomain_engine).is_globally_equivalent_to(
-                QuadraticForm(SageZZ, 2 * sign * domain_engine),
+            return QuadraticForm(SageZZ, 2 * sign * codomain_gram).is_globally_equivalent_to(
+                QuadraticForm(SageZZ, 2 * sign * domain_gram),
                 return_matrix=True,
             )
-            if transformation is False:
-                return (True, None, None)
-            # The engine's matrix is an untrusted answer; the isometry's own
-            # form-square validator checks it under strict checking (OWN-22).
-            return (False, self._isometry_from_column_matrix(transformation), None)
+        assert int(self.domain().module_rank()) == 2, (
+            f"an equivalence search between {self.domain()} and {self.codomain()} is run here only for a definite or a binary pair"
+        )
+        return _binary_indefinite_isometry_matrix(domain_gram, codomain_gram)
 
-        if int(domain.module_rank()) == 2:
-            binary_witness = _binary_indefinite_isometry_matrix(
-                domain_gram,
-                codomain_gram,
+    def an_element(self):
+        r"""Return an isometry, constructed on request after the decision.
+
+        The engine's matrix is an untrusted answer; the isometry's own
+        form-square validator checks it under strict checking (OWN-22).
+        """
+        empty, reason = self._isometry_decision()
+        assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
+        if empty:
+            raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
+        domain = self.domain()
+        codomain = self.codomain()
+        if domain is codomain:
+            return self.identity()
+        domain_gram, codomain_gram = self._engine_grams()
+        if domain_gram == codomain_gram:
+            return self._isometry_from_column_matrix(domain_gram.parent().one())
+        signature = domain.signature_pair()
+        if signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2:
+            transformation = self._witness_matrix()
+            assert transformation is not False, (
+                f"{domain} and {codomain} are isometric by {reason}, but the equivalence search found no isometry"
             )
-            if binary_witness is False:
-                return (True, None, None)
-            return (False, self._isometry_from_column_matrix(binary_witness), None)
+            return self._isometry_from_column_matrix(transformation)
 
         from dzack_research.preamble.categories.lattices import Lattices
         from sage_indefinite_port.indefinite.marked_lattices import isometry
 
         witness = isometry(Lattices(domain.base_ring()), domain, codomain)
-        if witness is None:
-            return (True, None, None)
-        return (False, witness, None)
-
-    def an_element(self):
-        r"""Return an explicit isometry when the exact decision exhibits one."""
-        empty, witness, reason = self._isometry_decision()
-        assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
-        if empty:
-            raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
-        assert witness is not None, f"{self.domain()} and {self.codomain()} are isometric by {reason}, but no explicit isometry between them can be constructed"
+        assert witness is not None, (
+            f"{domain} and {codomain} are isometric by {reason}, but sage-indefinite-port constructed no isometry between them"
+        )
         return witness
 
     def _repr_(self):

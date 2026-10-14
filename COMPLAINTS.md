@@ -1537,6 +1537,53 @@ formalization slice at `29ff4ad` supplies genus classes and positive-definite
 finiteness. Further classification and finiteness coverage remains with this
 existing foundation owner.
 
+### The class theorems that decide isometry are not formalized
+
+`LatticeIsometryMor._isometry_decision` (`categories/lattice_morphisms.py`)
+decides whether two nondegenerate integral lattices `L`, `M` of one genus are
+isometric by routing on theorems that `lean-categories` does not state. The
+routing cites them from Conway--Sloane, *SPLAG*, Ch. 15 (extraction
+`references/literature/lattice-research/conway1999sphere.md`) and Conway--Sloane,
+*Low-dimensional lattices IV* (`references/literature/lattice-research/conway1988mass.md`):
+
+- indefinite, rank at least 3: a spinor genus is one isometry class [CS99,
+  Ch. 15, Thm 14 (Eichler), l.12511];
+- the spinor genera of a genus are a power of 2 in number, permuted
+  transitively by spinor operators, and `L`, `M` in one genus lie in one
+  spinor genus exactly when the index `r` of a rational equivalence with
+  denominator prime to `2d` is automorphous [CS99, Ch. 15, §9.2, Thm 15,
+  l.12517-12529];
+- an indefinite unimodular genus of rank at least 3 is one class (proof of
+  Thm 21, l.12743), and indefinite even unimodular lattices of one signature
+  are isometric (Serre V.2.2, not opened; TauCetiRoadmap Layer 6 states it
+  only as a `sorry` target);
+- indefinite binary forms are classified by cycles of reduced forms [CS99,
+  Ch. 15, §3.1-§3.3, Thm 1, l.11482-11600];
+- the mass of a definite genus is `sum_i 1/|O(L_i)|` over its classes
+  [`conway1988mass.md` l.13-16], so a genus of mass `1/|O(L)|` is one class.
+
+**Searched** (2026-10-14): `lean-categories` `origin/main` `fd2cd45f` by
+`git grep` for `eichler`, `kneser`, `strong approximation`, spinor-genus class
+statements, `unimodular` with `indefinite`, and `Nikulin`; the formalization
+corpus API for `spinor genus`, `SpinorGenus`, `SameGenus`,
+`strong approximation spin` and `class number one indefinite`. **Found:**
+`SameGenus`, `genusClassSet`, `classNumber`, `genusClassSet_finite` (positive
+definite only, `Mass.lean:111`), `SameSpinorGenus` and `SpinorGenusCat`
+(`SpinorGenusAdelic.lean:345-606`), `IndefiniteLatticeCat`; TauCeti
+`SameGenus`; TauCetiRoadmap `sorry` targets. **Conclusion:** none of the five
+statements is formalized. **Gaps:** the Lean forum, Loogle and LeanSearch were
+not searched.
+
+**Consumers:** `Isom(L, M).is_empty()`, `L.is_isometric(M)`,
+`Lattices(ZZ).isometry_classes`, lattice-db duplicate detection.
+**Request (not yet filed):** `lean-categories` formalizes the five statements
+above from the cited sources. They do not park the computation (AGENTS.md,
+*`lean-categories` is Lean, not implementation code*); the routing cites CS99
+until they are released. Related: [Genera of integral lattices are formalized
+without finiteness, parity or classification](#genera-of-integral-lattices-are-formalized-without-finiteness-parity-or-classification).
+Execution of the specimens in `tests/lattices/test_isometry_decision.sage`
+remains with terminal T.
+
 ### Dynamic peeking stands in for category membership across the preamble
 
 `AGENTS.md`, *Dynamic peeking is prohibited; the category is the type*, bans
