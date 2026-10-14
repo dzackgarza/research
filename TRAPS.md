@@ -10,6 +10,14 @@ Write to it in the turn the measurement is made.
 
 ## Sage
 
+### Sage's `lcm` takes two arguments or one iterable, never several positional arguments
+
+Measured 2026-10-14, SageMath 10.10.beta8 (container `sagemath/sagemath-dev:develop`). `sage.arith.functions.lcm(1, 2, 3)` raises `TypeError: lcm() takes at most 2 positional arguments (3 given)`; `lcm([1, 2, 3])` returns `6`. Specimen: `tensors/tensor.py:_engine_quotient_form_family_contractions` on the discriminant module of Gram `[[2,-1,0],[-1,-2,0],[0,0,-10]]` (OSCAR spinor-norm specimen `from_sage_0`), reached by `L.discriminant_module().isotropic_subgroups()`, called `lcm(1, *denominators)` with nine denominators. Route chosen: pass one list. Reproduce: `direnv exec /home/dzack/research python3 -c "from sage.arith.functions import lcm; print(lcm([1,2,3])); lcm(1,2,3)"`.
+
+### The declared-graph subcategory decision is the hot path of an indefinite edgewalk; decide each pair once
+
+Measured 2026-10-14 with `cProfile` (single process, first call) on `sage-indefinite-port`'s frozen `ListReflect_0` edgewalk (rank 3): `_declared_category_is_subcategory` was entered about 830,000 times, reached from Sage `Category.__contains__` and the owned join normalization (`_owned_join_as_tuple`, `_owned_sort_uniq`) across roughly 300,000 category-membership tests. Each call reads a fixed pair of unique-representation categories in the declared graph, which does not change once built, so `@cached_function` decides each pair once. Wall time of `HyperbolicLattices(ZZ)(L).allcock_edgewalk()` (`.tmp/probe/edge2.py` in `sage-indefinite-port`, one fresh process each, together with lazy `Hom` framing sources): rank 3 `ListReflect_0` 32.4 s before (research `704da2562a`), 24.2 s after; rank 4 `ListSimpleRootSystem_0` 47.8 s before, 39.6 s after. Two data points: the saving is roughly constant (about 8 s) across these two sizes, not a change of growth rate. The remaining time is spread across the categorical framework with no single dominant entry.
+
 ### Sage twists a rank-28 lattice in milliseconds; owned form scaling was reconstructing its Gram through the Mor
 
 Measured 2026-10-12, SageMath 10.10.beta8, one process and one first call per entry, excluding startup. The specimens are the *stored Gram matrices* of lattice-db `3ICT` (rank 23, odd unimodular), `3ICU` (rank 22, discriminant 3), and `3ICV` (rank 28, even unimodular). Construct Sage's `IntegralLattice(G)` directly, then call `.twist(2)`; construct the preamble's `Lattices(ZZ)(rows)` on those same rows, then call `.twist(2)` on the preamble object. The former measures the engine, the latter the owned constructor. These are individual data points, not an inferred asymptotic curve.

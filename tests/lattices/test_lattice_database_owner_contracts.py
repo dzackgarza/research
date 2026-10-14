@@ -5,8 +5,7 @@ only serializes the returned values and never rechecks these formulas.
 """
 from fractions import Fraction
 
-
-from dzack_research.preamble.all import *
+from dzack_research.preamble.all import QQ, ZZ, Lattices
 
 
 def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> None:
@@ -29,7 +28,7 @@ def test_rational_definite_orthogonal_group_is_owned_by_the_lattice() -> None:
     lattice = Lattices(QQ)([[QQ(1) / 2]])
     group = lattice.orthogonal_group()
     assert group.cardinality() == 2
-    assert len(tuple(group.select_group_resolution().group_generators())) == 1
+    assert len(tuple(group.group_generators())) == 1
 
 
 def test_a2_orbit_and_discriminant_certification_data_are_owned_by_the_lattice() -> None:

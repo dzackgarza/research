@@ -183,7 +183,7 @@ class _RingModulePresentation:
                 self.base_ring(),
                 labels,
                 self._basis.image,
-                source.framing_source(),
+                source.framing_source,
             )
             match self._basis.is_basis():
                 case True:

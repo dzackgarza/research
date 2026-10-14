@@ -4544,8 +4544,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _:
                     return AtomicProposition("is_topological_group", self)
 
+        @RealizationHook
         def _cardinality_decision(self):
             r"""``|G|``, from what the group's own data determine.
+
+            A realization whose construction determines ``|G|``, as ``O(L)``
+            does from its selected generators, supplies this hook on its own
+            class; this body is the answer when no realization decides.
 
             A finite group is counted by its engine.  A free group on a basis
             ``S`` is trivial for empty ``S`` and otherwise has

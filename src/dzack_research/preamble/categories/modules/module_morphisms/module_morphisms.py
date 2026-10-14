@@ -2485,7 +2485,7 @@ def _initialize_module_mor_parent(
                 ring,
                 labels,
                 lambda label: _matrix_unit(parent, label),
-                ring._fresh_free_module_on(labels),
+                lambda: ring._fresh_free_module_on(labels),
             )
         case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
             def selected_presentation_data():

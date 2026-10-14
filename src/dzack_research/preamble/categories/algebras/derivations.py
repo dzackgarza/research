@@ -479,7 +479,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 lambda label: self._from_kahler_classifier(
                     classifiers.module_generator(label)
                 ),
-                presentation.codomain(),
+                presentation.codomain,
             )
             _fix_selected_module_presentation(
                 self,

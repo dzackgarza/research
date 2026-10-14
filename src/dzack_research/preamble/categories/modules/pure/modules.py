@@ -1442,7 +1442,7 @@ class Modules(OwnedCategoryOverBaseRing):
                         ring,
                         labels,
                         module_generator_function,
-                        framing_source,
+                        None if framing_source is None else (lambda: framing_source),
                     )
 
         def __init_extra__(self) -> None:
@@ -4017,36 +4017,15 @@ def _fix_selected_module_resolution(
     base_ring,
     labels,
     generator_function,
-    source=None,
+    source_construction=None,
 ) -> None:
-    r"""Retain one chosen degree-zero free resolution of a module."""
-    match source:
-        case None:
-            source = base_ring.free_module(labels)
-        case _:
-            pass
-    match source.base_ring() is base_ring:
-        case False:
-            raise ValueError(
-                f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
-                f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
-            )
-        case True:
-            pass
-    match source is module:
-        case True:
-            pass
-        case False:
-            match source.module_generating_set() == labels:
-                case False:
-                    raise ValueError(
-                        f"the free module {source} cannot give the generators of {module}: it is free on "
-                        f"{source.module_generating_set()}, not on {labels}"
-                    )
-                case True:
-                    # The free module holds its own copy of S; the generator
-                    # map and the augmentation start at that set.
-                    labels = source.module_generating_set()
+    r"""Retain one chosen degree-zero free resolution of a module.
+
+    ``source_construction`` builds the free module the generators are read
+    from; omitted, it is the free module on ``labels``.  Like the resolution
+    itself it is fixed now and built on the first module-data read, so a Mor
+    parent that is never read as a module never builds its matrix-unit module.
+    """
     match callable(generator_function):
         case False:
             raise TypeError(
@@ -4056,7 +4035,30 @@ def _fix_selected_module_resolution(
         case True:
             pass
 
+    def framing_source():
+        match source_construction:
+            case None:
+                return base_ring.free_module(labels)
+            case _:
+                source = source_construction()
+        match source.base_ring() is base_ring:
+            case False:
+                raise ValueError(
+                    f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
+                    f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
+                )
+            case True:
+                pass
+        # The registration below states S before the source is built, so the
+        # built source must be free on that same set, not on an equal copy.
+        assert source is module or source.module_generating_set() is labels, (
+            f"the free module {source} cannot give the generators of {module}: it must be free on "
+            f"the stated set {labels}, but it is free on {source.module_generating_set()}"
+        )
+        return source
+
     def selected_resolution():
+        source = framing_source()
         ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(Modules, base_ring)
         generator_morphism = Sets().Mor(labels, module)(
             lambda label: module(generator_function(label))

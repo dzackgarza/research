@@ -5735,7 +5735,6 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
 
             integers = _own_ring(SageZZ)
             labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
-            source = integers.free_module(labels)
             _fix_selected_module_resolution(
                 ring,
                 integers,
@@ -5743,7 +5742,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
                 lambda label: _owned_engine_element(ring,
                     engine.basis()[labels.ranking_map()(label)]
                 ),
-                source,
+                lambda: integers.free_module(labels),
             )
         case _:
             pass

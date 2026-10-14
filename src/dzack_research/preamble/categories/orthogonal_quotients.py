@@ -32,10 +32,10 @@ class OrthogonalCharacterQuotient:
                 f"characters: its discriminant, determinant and spinor characters do not "
                 f"determine the whole subgroup"
             )
-        # This finite-image algorithm is explicitly generator-driven.  Selecting
-        # a generating epimorphism onto O(L) is therefore part of constructing
-        # this quotient; merely knowing O(L) is finitely generated would not be.
-        self.supergroup = subgroup.supergroup().select_group_resolution()
+        # This finite-image algorithm is explicitly generator-driven: it reads
+        # the generating epimorphism onto O(L), which O(L) selects at
+        # construction; merely knowing O(L) is finitely generated would not do.
+        self.supergroup = subgroup.supergroup()
         self.lattice = self.supergroup.domain()
         data = subgroup._character_data_snapshot()
         self.discriminant_preimages = tuple(data.get("discriminant_preimages", ()))

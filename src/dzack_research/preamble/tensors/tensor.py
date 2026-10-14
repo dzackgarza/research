@@ -1355,8 +1355,8 @@ def _engine_quotient_form_family_contractions(bilinear_form, quadratic_form, row
                     for j in range(rank)) for i in range(rank))
         if diagonal is not None else bilinear
     )
-    denominator = lcm(1, *(int(x.denominator()) for row in (*bilinear, *self_gram)
-                            for x in row))
+    denominator = lcm([1, *(int(x.denominator()) for row in (*bilinear, *self_gram)
+                            for x in row)])
     self_period = 2 if diagonal is not None else 1
     b_coefficients = numpy.asarray(
         [[int(x * denominator) % denominator for x in row] for row in bilinear],

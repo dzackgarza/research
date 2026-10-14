@@ -52,10 +52,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [
-            Modules(self.base_ring()).FinitelyPresented().Torsion(),
-            ModuleSubobjects(self.base_ring()),
-        ]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
@@ -194,8 +191,9 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"the discriminant form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
+            # The pairing of L^# lies in Res(K); K/R is a quotient of K.
             value = self.dual_lattice().b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
-            return self.bilinear_value_module()(value)
+            return self.bilinear_value_module()(value.underlying_element())
 
         def orthogonal_subgroup(self, subgroup):
             r"""Return ``H^perp`` for a subgroup ``H <= A``."""
@@ -518,7 +516,10 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         return "discriminant submodules"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+        return [
+            Modules(self.base_ring()).FinitelyPresented().Torsion(),
+            ModuleSubobjects(self.base_ring()),
+        ]
 
     class ParentMethods:
         def __init__(
@@ -910,10 +911,12 @@ def _descended_bilinear_gram(dual_lattice, labels, bilinear_values):
     return tuple(
         tuple(
             bilinear_values(
+                # The pairing lies in Res(K), the field read as an R-module;
+                # K/R is a quotient of K, so its value in K is the one read.
                 dual_lattice.b(
                     dual_lattice.module_generator(left),
                     dual_lattice.module_generator(right),
-                )
+                ).underlying_element()
             )
             for right in labels
         )
@@ -933,14 +936,16 @@ def _descended_quadratic_gram(dual_lattice, labels, bilinear_values, quadratic_v
     return tuple(
         tuple(
             quadratic_values(
-                dual_lattice.norm(dual_lattice.module_generator(left))
+                # The norm lies in Res(K), the field read as an R-module;
+                # K/2R is a quotient of K, so its value in K is the one read.
+                dual_lattice.norm(dual_lattice.module_generator(left)).underlying_element()
                 if left == right
                 else bilinear_values.lift(
                     bilinear_values(
                         dual_lattice.b(
                             dual_lattice.module_generator(left),
                             dual_lattice.module_generator(right),
-                        )
+                        ).underlying_element()
                     )
                 )
             )

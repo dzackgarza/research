@@ -100,7 +100,7 @@ def test_indefinite_stable_orthogonal_kernel_with_supplied_generators():
 def test_a2_discriminant_image_from_orthogonal_generators():
     lattice = Lattices(ZZ)("A2")
     rho = lattice.discriminant_representation()
-    group = lattice.Aut().select_group_resolution()
+    group = lattice.Aut()
     image = group.subgroup(tuple(group.group_generators())).image_under(rho)
     assert image.cardinality() == rho.codomain().cardinality() == 2
 

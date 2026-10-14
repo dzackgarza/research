@@ -957,6 +957,7 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
         return _declared_category_is_subcategory(self, category)
 
 
+@cached_function
 def _declared_category_is_subcategory(category: Category, target: Category) -> bool:
     r"""Read category inclusion from the declared graph, without class synthesis.
 
