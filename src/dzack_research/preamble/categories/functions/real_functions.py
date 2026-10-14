@@ -7,15 +7,21 @@ the pointwise structure of \(Y\) (``CON-17``; owner statement 2026-10-14:
 \operatorname{Hom}_{\mathbf C}(X,Y)\)).  Each constructor takes both
 endpoints and is spelled out every time (``OWN-02``):
 
-- ``C(k, X, Y)``: maps of class \(C^k\), \(k\in\mathbb N\cup\{\infty\}\);
-  for \(Y=\mathbb R\) the pointwise product makes it a commutative unital
-  \(\mathbb R\)-algebra.
+- ``C(k, X, Y)``: maps of class \(C^k\), \(k\in\mathbb N\cup\{\infty\}\),
+  on a \(C^k\) manifold \(X\); for \(Y=\mathbb R\) the pointwise product
+  makes it a commutative unital \(\mathbb R\)-algebra.  The condition and
+  the calculus are computed from a formula in one real variable, which is the
+  case \(X=\mathbb R\).
 - ``Lp(p, X, Y)``: the \(p\)-integrable maps \(\mathcal L^p(X,Y)\), whose
   quotient by the null maps is \(L^p\); implemented for Lebesgue measure on
   \(X=\mathbb R\) and \(Y=\mathbb R\).  For \(p=2\) it is the formed module
   with \(b(f,g)=\int fg\).
-- ``ell(p, X, Y)``: the \(p\)-summable maps \(\mathbb N\to\mathbb R\); for
-  \(p=2\) the formed module with \(b(a,c)=\sum_n a_n c_n\).
+- ``ell(p, X, Y)``: the \(p\)-summable maps \(X\to\mathbb R\) for an
+  arbitrary set \(X\) (\(\sum_{x\in X}|a(x)|^p<\infty\), counting measure;
+  bounded for \(p=\infty\)); for \(p=2\) the formed module with
+  \(b(a,c)=\sum_{x\in X}a(x)c(x)\).  The summation and the summability
+  theorems are computed from a formula in one variable read as
+  \(n\in\mathbb N\), which is the case \(X=\mathbb N\).
 
 Each space is ``Y.function_module(X).condition_submodule(P)``: its
 underlying set is a subset of ``Sets().Mor(X, Y)``, and a map enters
@@ -78,6 +84,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import continuum
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.rings.real import RR
 
@@ -488,14 +495,24 @@ def _constant_map(value):
 # ---------------------------------------------------------------------------
 
 
-def _differentiability_condition(regularity):
-    r"""The condition ``f`` is of class \(C^k\): decided for formulas built from polynomials, exp, sin, cos."""
+def _differentiability_condition(regularity, domain):
+    r"""The condition ``f`` is of class \(C^k\) on the manifold ``domain``.
+
+    Decided for a formula in one real variable built from polynomials, exp,
+    sin and cos: such a formula is \(C^\infty\) on \(\mathbb R\).  The
+    formula's variable is a point of \(\mathbb R\), so the decision applies
+    to ``domain`` \(=\mathbb R\) only; on any other domain the condition is
+    the proposition that states it.
+    """
 
     def condition(point):
+        undecided = AtomicProposition(f"is_of_class_C^{_parameter_name(regularity)}", point)
+        if domain is not RR:
+            return undecided
         formula = _function_formula(point.underlying_element()._defining_function())
         if formula is not None and _is_built_from(formula[0], _SMOOTH_FUNCTIONS):
             return True
-        return AtomicProposition(f"is_of_class_C^{_parameter_name(regularity)}", point)
+        return undecided
 
     return condition
 
@@ -521,12 +538,20 @@ def _lebesgue_condition(exponent):
     return condition
 
 
-def _summability_condition(exponent):
-    r"""The condition ``a`` is ``p``-summable on \(\mathbb N\) (bounded for \(p=\infty\))."""
+def _summability_condition(exponent, domain):
+    r"""The condition ``a`` is ``p``-summable on the set ``domain`` (bounded for \(p=\infty\)).
+
+    The nonmembership theorems below are about sequences: a formula in one
+    variable read as \(n\in\mathbb N\).  They decide the condition for
+    ``domain`` \(=\mathbb N\) only; on any other set the condition is the
+    proposition that states it.
+    """
 
     def condition(point):
-        formula = _function_formula(point.underlying_element()._defining_function())
         undecided = AtomicProposition(f"is_{_parameter_name(exponent)}_summable", point)
+        if domain is not NN:
+            return undecided
+        formula = _function_formula(point.underlying_element()._defining_function())
         if formula is None:
             return undecided
         if _sequence_nonmembership_reason(formula[0], formula[1], exponent) is not None:
@@ -608,6 +633,10 @@ class _DifferentiableMap(_FunctionSpaceMap):
         space = self.parent()
         k = space.differentiability()
         assert k != 0, f"{self} is only of class C^0, so it has no C^k derivative"
+        assert space.domain() is RR, (
+            f"cannot differentiate {self}: the derivative is computed from a formula in one real "
+            f"variable, which is the derivative on the domain RR, but {space} has domain {space.domain()}"
+        )
         body, variable = _required_formula(self, "the derivative")
         target = space if k is Infinity else C(k - 1, space.domain(), space.codomain())
         return target(_formula_map(body.diff(variable), variable))
@@ -615,6 +644,10 @@ class _DifferentiableMap(_FunctionSpaceMap):
     def integral_from(self, lower):
         r"""Return \(x\mapsto\int_a^x f\), in \(C^{k+1}(\mathbb R,\mathbb R)\) when \(k\) is finite."""
         space = self.parent()
+        assert space.domain() is RR, (
+            f"cannot integrate {self}: the antiderivative is computed from a formula in one real "
+            f"variable, which is the antiderivative on the domain RR, but {space} has domain {space.domain()}"
+        )
         body, variable = _required_formula(self, "an antiderivative")
         antiderivative = body.integral(variable)
         k = space.differentiability()
@@ -671,7 +704,7 @@ def _differentiability_class(regularity, domain, codomain):
     )
     module = _condition_submodule(
         codomain.function_module(domain),
-        _differentiability_condition(regularity),
+        _differentiability_condition(regularity, domain),
         engine=(_DifferentiabilityClass, _DifferentiableMap),
         engine_data={"regularity": regularity},
         categories=(VectorSpaces(RR),),
@@ -729,7 +762,17 @@ def _l2_pairing(left, right):
 
 
 def _ell2_pairing(left, right):
-    r"""\(\sum_{n\in\mathbb N} a_n b_n\) on sequences given by formulas."""
+    r"""\(\sum_{x\in X} a(x)b(x)\), computed as \(\sum_{n=0}^\infty a_n b_n\) on formulas.
+
+    The sum runs over \(n=0,1,2,\dots\) in the formula's variable, which is
+    the sum over \(X\) exactly when \(X=\mathbb N\); that is this
+    computation's hypothesis, asserted here and not at the space.
+    """
+    domain = left.parent().domain()
+    assert domain is NN, (
+        f"cannot sum a({domain}) b({domain}) over {domain}: the sum is computed as sum_(n=0)^oo in the "
+        f"formula's variable, which is the sum over the domain only when the domain is NN"
+    )
     left_body, variable = _required_formula(left, "the sum of a product")
     right_body, right_variable = _required_formula(right, "the sum of a product")
     product = left_body * right_body.subs({right_variable: variable})
@@ -837,9 +880,11 @@ def Lp(p, domain, codomain):
 
 
 class _SequenceSpace(_FunctionSpace):
-    r"""\(\ell^p(\mathbb N,\mathbb R)\); the datum this level adds is \(p\in(0,\infty]\).
+    r"""\(\ell^p(X,\mathbb R)\) for a set \(X\); the datum this level adds is \(p\in(0,\infty]\).
 
-    For \(p=2\) the object is the formed module with \(b(a,c)=\sum_n a_n c_n\).
+    The \(p\)-summable maps for counting measure on \(X\): \(\sum_{x\in X}|a(x)|^p<\infty\),
+    bounded maps for \(p=\infty\).  For \(p=2\) the object is the formed
+    module with \(b(a,c)=\sum_{x\in X}a(x)c(x)\).
     """
 
     def integrability_exponent(self):
@@ -870,13 +915,13 @@ class _SequenceSpace(_FunctionSpace):
 
 @cached_function(key=lambda exponent, domain, codomain: (_exponent_key(exponent), id(domain), id(codomain)))
 def _sequence_space(exponent, domain, codomain):
-    r"""Build \(\ell^p(\mathbb N,\mathbb R)\) in \(\mathbb R^{\mathbb N}\); for \(p=2\), equipped with \(\sum a_n c_n\)."""
+    r"""Build \(\ell^p(X,\mathbb R)\) in \(\mathbb R^X\) for a set \(X\); for \(p=2\), equipped with \(\sum_x a(x)c(x)\)."""
     assert codomain is RR, (
         f"ell^p(X, Y) is implemented for real-valued sequences, Y = RR, not for Y = {codomain}"
     )
     module = _condition_submodule(
         RR.function_module(domain),
-        _summability_condition(exponent),
+        _summability_condition(exponent, domain),
         engine=(_SequenceSpace, _FunctionSpaceMap),
         engine_data={"exponent": exponent},
         categories=(VectorSpaces(RR),),
@@ -887,7 +932,7 @@ def _sequence_space(exponent, domain, codomain):
 
 
 class _SequenceSpaceNotation:
-    r"""The notation ``ell(p, X, Y)`` for \(\ell^p(X,Y)\)."""
+    r"""The notation ``ell(p, X, Y)`` for \(\ell^p(X,Y)\), \(X\) any set."""
 
     def __call__(self, p, domain, codomain):
         return _sequence_space(_integrability(p), domain, codomain)
