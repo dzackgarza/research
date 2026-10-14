@@ -2468,6 +2468,8 @@ Two kinds of subcategory, and the distinction decides method placement.
   The first three are truncated resolutions and live in the category of
   resolutions over the base (`CAT-29`); its methods consume the datum.
 
+An object together with an arrow is not "an object with data": it IS a slice or coslice object. Several arrows are remembered by slicing over pullbacks or coslicing under pushouts (products, coproducts). A pair \((X, x)\) with \(x\) an element of \(F(X)\) is an object of the Grothendieck construction \(\int F\) (category of elements) of \(F\colon \mathbf C\to\mathbf{Set}\), and a property of the element ("\(x\) primitive") cuts out a full subcategory of \(\int F\). Err on the side of the abstraction being actual mathematics; no class is declared for "an object with a chosen arrow" (owner ruling, 2026-10-14; `CAT-30`).
+
 A property is the propositional truncation of the corresponding data
 category: finitely generated = "some resolution finite in degree 0 exists";
 finitely presented = "finite through truncation 1"; $FP_n$ continues through
