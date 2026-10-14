@@ -1256,122 +1256,62 @@ def _indefinite_binary_representation(lattice, value):
     return None
 
 
-def _isometry_class_representatives(grams, genus_of):
+def _isometry_class_representatives(lattices, grams):
     r"""Private computation of ``Lattices.isometry_classes``.
 
-    ``grams`` are the Gram matrices over Sage's ``ZZ`` of nondegenerate
-    integral lattices of finite rank, and ``genus_of(position)`` is the
-    owned genus of the lattice at ``position``.  Returns, for each position,
-    the position of the first Gram matrix isometric to it.
+    ``lattices`` are nondegenerate lattices over ``ZZ`` of finite rank and
+    ``grams`` their Gram matrices over Sage's ``ZZ``.  Returns, for each
+    position, the position of the first lattice isometric to it.
 
-    Each position's invariants are computed once, and positions are grouped
-    by them in turn: rank, determinant and signature; for a definite form the
-    numbers ``N_1, ..., N_4`` of vectors of norm ``1, ..., 4``, which the
-    lattice determines [CS10, Ch. 2, §2.3]; the genus.  Only positions in
-    one genus are compared, and a genus of one class is not compared at all:
-    an indefinite genus of rank at least 3 with one spinor genus is one class
-    [CS10, Ch. 15, §9.1, Thm. 14, p. 388], and a definite genus whose mass
-    is ``1/|O(L)|`` is one class, the mass being the sum of ``1/|O(L_i)|``
-    over its classes [Conway--Sloane, *Low-dimensional lattices IV: the mass
-    formula*, §1, eq. (1)].  TRAPS.md records the wall times that order the
-    steps.
+    Positions are grouped by invariants of the isometry class, in turn:
+    rank, determinant and signature; for a definite form the numbers
+    ``N_1, ..., N_4`` of vectors of norm ``1, ..., 4``, which the lattice
+    determines [CS10, Ch. 2, §2.3]; the genus.  Inside a group two lattices
+    are compared by the one decision ``Isom(L, M).is_empty()``
+    (``LatticeIsometryMor._isometry_decision``), which constructs no
+    isometry.  TRAPS.md records the wall times that order the steps.
     """
 
     from sage.libs.pari import pari
-    from sage.quadratic_forms.binary_qf import BinaryQF
-    from sage.quadratic_forms.genera.genus import Genus as SageGenus
     from sage.quadratic_forms.genera.genus import signature_pair_of_matrix
 
     signatures = tuple(signature_pair_of_matrix(gram) for gram in grams)
-
-    def is_definite(position):
-        return 0 in signatures[position]
-
-    @cache
-    def definite_form(position):
-        return pari(
-            grams[position] if signatures[position][1] == 0 else -grams[position]
-        )
-
-    @cache
-    def genus_symbol(position):
-        return SageGenus(grams[position])
 
     def numerical_invariants(position):
         return (grams[position].nrows(), grams[position].det(), signatures[position])
 
     def short_vector_counts(position):
         # ``qfrep`` counts the pairs ``±v``.
-        return (
-            tuple(definite_form(position).qfrep(4, 0)) if is_definite(position) else ()
-        )
+        if 0 not in signatures[position]:
+            return ()
+        sign = 1 if signatures[position][1] == 0 else -1
+        return tuple(pari(sign * grams[position]).qfrep(4, 0))
 
-    genera = [tuple(range(len(grams)))]
-    for invariant in (numerical_invariants, short_vector_counts, genus_of):
+    def genus(position):
+        return lattices[position].genus()
+
+    blocks = [tuple(range(len(grams)))]
+    for invariant in (numerical_invariants, short_vector_counts, genus):
         refined = []
-        for block in genera:
+        for block in blocks:
             parts = {}
             for position in block:
                 parts.setdefault(invariant(position), []).append(position)
             refined.extend(part for part in parts.values() if len(part) > 1)
-        genera = refined
+        blocks = refined
+
+    def isometric(found, position):
+        empty = lattices[found].Isom(lattices[position]).is_empty()
+        assert empty is True or empty is False, (
+            f"cannot decide whether {lattices[found]!r} and {lattices[position]!r} are isometric, so their isometry classes cannot be separated"
+        )
+        return not empty
 
     representative = list(range(len(grams)))
-    for genus in genera:
-        first = genus[0]
-        match is_definite(first), grams[first].nrows() >= 3:
-            case False, True:
-                if not genus_symbol(first).spinor_generators(proper=False):
-                    for position in genus:
-                        representative[position] = first
-                    continue
-
-                def isometric(found, position):
-                    return (
-                        lattice_engines._oscar_lattices.integer_lattices_are_isometric(
-                            grams[found], grams[position]
-                        )
-                    )
-
-            case False, False:
-                binary_forms = {
-                    position: BinaryQF(
-                        grams[position][0, 0],
-                        2 * grams[position][0, 1],
-                        grams[position][1, 1],
-                    )
-                    for position in genus
-                }
-
-                def isometric(found, position):
-                    return binary_forms[position].is_equivalent(
-                        binary_forms[found], proper=False
-                    )
-
-            case True, _:
-                isometry_data = {first: pari.qfisominit(definite_form(first))}
-                if (
-                    len(genus) > 2
-                    and genus_symbol(first).mass()
-                    * pari.qfauto(isometry_data[first])[0]
-                    == 1
-                ):
-                    for position in genus:
-                        representative[position] = first
-                    continue
-
-                def isometric(found, position):
-                    if found not in isometry_data:
-                        isometry_data[found] = pari.qfisominit(definite_form(found))
-                    return (
-                        pari.qfisom(isometry_data[found], definite_form(position)) != 0
-                    )
-
+    for block in blocks:
         classes = []
-        for position in genus:
-            match next(
-                (found for found in classes if isometric(found, position)), None
-            ):
+        for position in block:
+            match next((found for found in classes if isometric(found, position)), None):
                 case None:
                     classes.append(position)
                 case found:
@@ -1573,14 +1513,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             f"isometry classes are implemented for lattices over ZZ, but {self} has base ring {self.base_ring()}"
         )
         indices = tuple(lattices.index_set())
+        family_members = tuple(lattices.value(index) for index in indices)
         representatives = _isometry_class_representatives(
+            family_members,
             tuple(
-                _engine_component_matrix(
-                    lattices.value(index).gram_tensor()
-                ).change_ring(SageZZ)
-                for index in indices
+                _engine_component_matrix(member.gram_tensor()).change_ring(SageZZ)
+                for member in family_members
             ),
-            lambda position: lattices.value(indices[position]).genus(),
         )
         blocks = {}
         for index, representative in zip(indices, representatives, strict=True):

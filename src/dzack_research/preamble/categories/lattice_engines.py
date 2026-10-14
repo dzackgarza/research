@@ -826,6 +826,14 @@ class _OscarLatticeAdapter:
         improperly automorphous (Conway and Sloane, *Sphere Packings, Lattices
         and Groups*, chapter 15, Theorem 15, as Hecke's
         ``improper_spinor_generators`` cites it).
+
+        The one private adapter of the several-spinor-genera regime of
+        ``LatticeIsometryMor._isometry_decision`` (``lattice_morphisms.py``).
+        Owed at T (`ENG-07`): a measurement of this route against Sage's
+        improper spinor kernel (``Genus._improper_spinor_kernel`` with the
+        spinor operator of the index of a rational equivalence), as wall time
+        against the determinant at more than one size, recorded in
+        ``TRAPS.md`` before either route is fixed as the delegation.
         """
         answer = SageZZ(
             self._bridge().call(
