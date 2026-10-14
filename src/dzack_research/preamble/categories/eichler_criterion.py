@@ -173,9 +173,12 @@ class TwoUEichlerModel(SageObject):
         from sage.rings.integer_ring import ZZ as SageZZ
 
         from dzack_research.preamble.categories.lattices import Lattices
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        ZZ = _own_ring(SageZZ)
+        ZZ = _owned_integers()
         if orthogonal_complement.base_ring() is not ZZ:
             raise ValueError(
                 f"cannot form 2U + K with K = {orthogonal_complement}: the Eichler model needs K "

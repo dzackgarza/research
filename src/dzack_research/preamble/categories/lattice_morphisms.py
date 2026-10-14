@@ -59,6 +59,7 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules, Mod
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -832,7 +833,7 @@ class LatticeIsometryMethods:
         locus = self.witt_extension_locus(source_inclusion, target_inclusion)
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
         field = source.base_ring()
-        if field is not _own_ring(SageQQ) or target.base_ring() is not field:
+        if field is not _owned_rationals() or target.base_ring() is not field:
             raise TypeError("this codimension-one extension requires rational quadratic spaces")
         for inclusion in (source_inclusion, target_inclusion):
             if inclusion.domain().module_rank() + 1 != inclusion.codomain().module_rank():

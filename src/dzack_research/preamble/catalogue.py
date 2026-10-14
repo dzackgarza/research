@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.lattices import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -26,7 +27,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
-ZZ = _own_ring(SageZZ)
+ZZ = _owned_integers()
 
 
 def _gram_from_engine_matrix(engine_matrix):

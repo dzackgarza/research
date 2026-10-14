@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_engine_element,
+    _owned_integers,
 )
 
 
@@ -327,7 +328,7 @@ class QuadraticCharacter(ProfiniteCharacter):
             stage = domain.extension_data(owned_field, embedding=embedding)
             root_at_stage = _owned_engine_element(owned_field, field.gen())
 
-        integers = _own_ring(ZZ)
+        integers = _owned_integers()
         return domain.continuous_morphisms_to(integers.unit_group())._from_realization_engine(
             cls, owned_a, owned_root, root_at_stage, stage
         )
@@ -336,7 +337,7 @@ class QuadraticCharacter(ProfiniteCharacter):
         self._square_class = square_class
         self._root = root
         self._root_at_stage = root_at_stage
-        self._integers = _own_ring(ZZ)
+        self._integers = _owned_integers()
         super().__init__(parent, extension)
 
     kernel = ProfiniteCharacter._root_generated_kernel

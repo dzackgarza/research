@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set, Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -85,7 +86,7 @@ def _residue_field_order(base_prime):
     or as an owned integer; a prime ideal of ``O_K`` has absolute norm
     ``|O_K / p|``.
     """
-    integers = _own_ring(ZZ)
+    integers = _owned_integers()
     match base_prime:
         case int() | Integer():
             return abs(ZZ(base_prime))
@@ -492,7 +493,7 @@ class _FrobeniusConjugacyClassEngine:
 
     def residue_field_cardinality(self):
         r"""``q = |O_K/p|`` for the prime ``p`` of this class, as an owned integer."""
-        return _own_ring(ZZ)(_residue_field_order(self._prime))
+        return _owned_integers()(_residue_field_order(self._prime))
 
     def representative(self, prolongation=None):
         r"""The Frobenius element at ``prolongation``, or at an unspecified prime of ``Kbar`` above this prime.

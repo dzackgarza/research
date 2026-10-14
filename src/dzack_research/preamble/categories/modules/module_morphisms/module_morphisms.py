@@ -1329,10 +1329,13 @@ class ModuleMorphismMethods:
         """
         from sage.rings.integer_ring import ZZ as SageZZ
         from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
         ring = source.base_ring()
-        if ring is not _own_ring(SageZZ) or target.base_ring() is not ring:
+        if ring is not _owned_integers() or target.base_ring() is not ring:
             raise TypeError("the normalized denominator ideal requires integral modules over ZZ")
         field_map = ring.fraction_field_map()
         if self.domain() is not source.base_change(field_map) or self.codomain() is not target.base_change(field_map):

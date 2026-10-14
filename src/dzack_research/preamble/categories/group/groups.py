@@ -92,6 +92,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -660,7 +661,7 @@ def _engine_word_letters(group, word):
 
 def _integer_engine_point(point):
     r"""An owned integer as the engine's integer; any other point unchanged."""
-    integers = _own_ring(ZZ)
+    integers = _owned_integers()
     return _engine_element(integers, integers(point)) if point in integers else point
 
 
@@ -3091,7 +3092,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = IndexedFreeGroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -3176,7 +3177,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return typecall(cls, family, domain, codomain)
 
     def __init__(self, mor_family, domain, codomain, *, category=None, pointwise=True):
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -3471,7 +3472,7 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = GroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self, mor_family, domain, codomain, category=_group_mor_placement(domain, codomain)
         )
@@ -4465,7 +4466,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 
             ring = lattice.base_ring()
-            if ring is not _own_ring(ZZ):
+            if ring is not _owned_integers():
                 raise TypeError("an integral invariant overlattice requires a lattice over ZZ")
             if not lattice.module_rank().is_finite():
                 raise NotImplementedError("the invariant overlattice construction requires finite rank")
@@ -4659,7 +4660,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             size = cardinal(self.cardinality())
             match size.is_finite():
                 case True:
-                    return _own_ring(ZZ)(int(size.finite_value()))
+                    return _owned_integers()(int(size.finite_value()))
                 case False:
                     return size
 
@@ -5279,13 +5280,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             @cached_method
             def scalar_action(self):
 
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 endomorphisms = self.endomorphism_ring()
                 return integers.Mor(endomorphisms)(endomorphisms._scalar_identity)
 
             def scalar_multiple(self, exponent, element):
 
-                return self.scalar_action()(_own_ring(ZZ)(exponent))(element)
+                return self.scalar_action()(_owned_integers()(exponent))(element)
 
     class Finite(CategoryWithAxiom):
         def an_object(self):
@@ -5464,7 +5465,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         representatives=representatives,
                     )
                 )
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 irreducibles = self.irreducible_characters()
                 inner_products = tuple(
                     candidate._inner_product(irreducible) for irreducible in irreducibles
@@ -6399,7 +6400,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.group.additive_mors import AdditiveEndomorphismRings
 
-        return [AdditiveEndomorphismRings(_own_ring(ZZ))]
+        return [AdditiveEndomorphismRings(_owned_integers())]
 
     class ParentMethods:
         def _commutativity_decision(self):
@@ -6410,7 +6411,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
             """
             undecided = AtomicProposition("is_commutative", self)
             group = self.domain()
-            if group is _own_ring(ZZ):
+            if group is _owned_integers():
                 return True
             if group not in OwnedGroups() or not group.has_selected_group_resolution():
                 return undecided

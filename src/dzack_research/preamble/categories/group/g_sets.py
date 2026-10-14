@@ -36,7 +36,10 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
     _owned_point,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -1162,7 +1165,7 @@ def _owned_point_set(point_set):
     """
     if point_set in FiniteSets():
         return point_set
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     def own_point(point):
         match point:
             case int():

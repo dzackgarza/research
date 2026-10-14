@@ -165,6 +165,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
     _OwnedRingParent,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -257,7 +259,7 @@ def _register_indecomposable(name, lattice):
 
 def _indecomposable_name(lattice):
     r"""Return the registered exact or scalar-twist name, if one exists."""
-    gram = lattice.gram_tensor().change_ring(_own_ring(SageZZ))
+    gram = lattice.gram_tensor().change_ring(_owned_integers())
     exact = _INDECOMPOSABLE_NAMES.get(_gram_key(gram))
     if exact is not None:
         return exact
@@ -396,7 +398,7 @@ class LocalGenusSymbol:
     """
 
     def __init__(self, prime, jordan_blocks) -> None:
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         self._prime = integers(prime)
         if not self._prime.is_prime():
             raise ValueError(
@@ -545,7 +547,7 @@ class _Genus(Sets().ObjectType):
     @cached_method
     def local_symbol(self, prime):
         r"""Return the canonical ``ZZ_p`` genus symbol of the members at ``prime``."""
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         prime = integers(prime)
         symbol = self._engine().local_symbol(_engine_element(integers, prime))
         return LocalGenusSymbol(
@@ -581,7 +583,7 @@ class _Genus(Sets().ObjectType):
             raise ValueError(
                 f"the Smith--Minkowski--Siegel mass of {self!r} is not defined: the mass is a finite sum only for a definite genus, and this genus has signature ({positive}, {negative})"
             )
-        return _owned_engine_element(_own_ring(SageQQ), SageQQ(self._engine().mass()))
+        return _owned_engine_element(_owned_rationals(), SageQQ(self._engine().mass()))
 
     @cached_method
     def spinor_genus_count(self):
@@ -590,7 +592,7 @@ class _Genus(Sets().ObjectType):
         Defined here for rank at least 3 [CS99, Ch. 15, §3.5, l.11778]; Sage's
         ``spinor_generators(proper=False)`` on the genus symbol computes it.
         """
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         rank = int(self._lattice.module_rank())
         assert rank >= 3, (
             f"the spinor-genus count of {self!r} is taken here in rank at least three, and the rank is {rank}"
@@ -641,13 +643,13 @@ class _Genus(Sets().ObjectType):
         """
         from sage.rings.rational_field import QQ as SageQQ
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         density = _local_density(
             self._engine_form(),
             _engine_element(integers, integers(prime)),
             _engine_element(integers, integers(value)),
         )
-        return _owned_engine_element(_own_ring(SageQQ), SageQQ(density))
+        return _owned_engine_element(_owned_rationals(), SageQQ(density))
 
     def siegel_eisenstein_coefficient(self, value):
         r"""Return Siegel's product ``a_E(m)`` of the local densities of this definite genus at ``value``.
@@ -715,8 +717,8 @@ class _Genus(Sets().ObjectType):
             f"Siegel's Hauptsatz for {self!r} requires at least 2 variables, and this genus has rank {rank}"
         )
         sign = 1 if negative == 0 else -1
-        integers = _own_ring(SageZZ)
-        rationals = _own_ring(SageQQ)
+        integers = _owned_integers()
+        rationals = _owned_rationals()
         m = _engine_element(integers, integers(value))
         assert m >= 1, (
             f"the Siegel product of {self!r} is taken at a positive integer, not at {m}"
@@ -809,7 +811,7 @@ class _Genus(Sets().ObjectType):
         of primes of ``ZZ`` cut out by that criterion, decided at each
         prime.
         """
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         form = self._engine_form()
         match int(self._lattice.module_rank()):
             case rank if rank >= 3:
@@ -849,7 +851,7 @@ class _Genus(Sets().ObjectType):
         ``ZZ`` cut out by the definition, decided at each prime by
         :func:`_least_represented_valuations`.
         """
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         form = self._engine_form()
         conditions = form.local_representation_conditions()
 
@@ -895,7 +897,7 @@ class _Genus(Sets().ObjectType):
         The classes of the improper spinor genus of the representative come
         first.
         """
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         gram = _engine_component_matrix(self._lattice.gram_tensor()).change_ring(SageZZ)
         gram.set_immutable()
         return finite_ordered_set(
@@ -916,7 +918,7 @@ class _Genus(Sets().ObjectType):
 
     def class_number(self):
         r"""Return the number of isometry classes in this genus [PS24, Def. 1.10.5]."""
-        return _own_ring(SageZZ)(int(self.cardinality()))
+        return _owned_integers()(int(self.cardinality()))
 
     def __contains__(self, lattice) -> bool:
         r"""Return whether ``lattice`` is a lattice whose class lies in this genus."""
@@ -940,7 +942,7 @@ class _Genus(Sets().ObjectType):
             case _ if other is self:
                 return True
             case _ if other in _integral_lattice_genera():
-                integers = _own_ring(SageZZ)
+                integers = _owned_integers()
                 return (
                     self.signature_pair() == other.signature_pair()
                     and self.determinant() == other.determinant()
@@ -1198,7 +1200,7 @@ def _represents_every_integer(conditions, prime, least):
 
 def _square_class_family(least):
     r"""Private raising of the least represented valuations: the family on the represented square classes, valued in those valuations."""
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     classes = finite_ordered_set(
         tuple(
             _owned_engine_element(integers, representative) for representative in least
@@ -1227,7 +1229,7 @@ def _locally_represented(local_representations, value) -> bool:
     """
     from sage.rings.rational_field import QQ as SageQQ
 
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     numerator = SageQQ(_engine_element(integers, value))
 
     def represented_at(prime) -> bool:
@@ -1824,7 +1826,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
         if kind not in {"A", "B", "C", "D", "E", "F", "G"}:
             raise ValueError(f"unknown finite root family {kind!r}")
-        return Lattices(_own_ring(SageZZ))(f"{kind}{rank}", names=names)
+        return Lattices(_owned_integers())(f"{kind}{rank}", names=names)
 
     @staticmethod
     def IPQ(positive, negative):
@@ -1840,7 +1842,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             [entry if row == column else 0 for column, entry in enumerate(diagonal)]
             for row in range(len(diagonal))
         ]
-        return Lattices(_own_ring(SageZZ))(gram)
+        return Lattices(_owned_integers())(gram)
 
     @staticmethod
     def IIPQ(positive, negative):
@@ -1861,7 +1863,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise ValueError(
                 f"no even unimodular lattice II_({positive},{negative}) exists: the signature p - q = {positive - negative} of an even unimodular lattice is divisible by eight"
             )
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         category = Lattices(integers)
         summands = [category("U") for _ in range(min(positive, negative))]
         if negative > positive:
@@ -1874,7 +1876,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     @staticmethod
     def rank_one_negative(scale):
         r"""Return the rank-one lattice ``<-2 scale>``."""
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return Lattices(integers)(1).twist(integers(-2 * int(scale)))
 
     @staticmethod
@@ -1885,7 +1887,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise ValueError(
                 f"no K3 lattice of degree 2d with d = {degree}: a polarization has positive degree, so d >= 1"
             )
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         category = Lattices(integers)
         return _orthogonal_sum(
             (
@@ -1912,7 +1914,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise ValueError(
                 f"unknown hyperkähler deformation type {deformation_type!r}"
             )
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         category = Lattices(integers)
         hyperbolic = (category("U"), category("U"), category("U"))
         if deformation_type == "K3":
@@ -1945,7 +1947,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     @cached_function
     def leech_lattice():
         r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         positive = Lattices(integers)(lattice_engines._oscar_lattices.leech_gram_rows())
         return positive.twist(-integers.one())
 
@@ -2635,7 +2637,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     assert False, (
                         f"the Witt index of {self!r} is computed here over represented absolute number fields, but {self!r} is over {field}"
                     )
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(index))
 
         def is_isotropic(self) -> bool:
@@ -3368,7 +3370,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 # The odd-lattice discriminant pairing has no quadratic
                 # refinement: its exponent is the common denominator of G^-1.
                 level = gram.inverse().denominator()
-            return _own_ring(SageZZ)(int(level))
+            return _owned_integers()(int(level))
 
         def bad_reduction_primes(self):
             r"""Return the primes of bad reduction of the quadric ``Q(x) = n``: the primes dividing ``2 det(L)``.
@@ -5173,7 +5175,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             the one restriction functor along ``ZZ -> QQ``, so two integral
             structures are compared as subobjects of one object.
             """
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             field_map = integers.fraction_field_map()
             assert field_map.codomain() is self.base_ring(), (
                 f"an integral structure of {self} is a ZZ-lattice in a QQ-space, but {self} is over "
@@ -5762,7 +5764,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: L.affine_line_fibre(V.zero(), V.zero()).image_point_set().cardinality() == 1
                 True
             """
-            if self.base_ring() is not _own_ring(SageZZ):
+            if self.base_ring() is not _owned_integers():
                 raise TypeError("an integral affine-line presentation requires ZZ")
             fibre = self.affine_line_fibre(base, direction)
             try:
@@ -8080,14 +8082,14 @@ class RootLattices(OwnedCategory):
 
     def an_object(self):
         r"""Return the canonical ``A2`` root lattice as an inhabitant."""
-        return Lattices(_own_ring(SageZZ))("A2")
+        return Lattices(_owned_integers())("A2")
 
     @classmethod
     def _repr_object_names(cls):
         return "root lattices"
 
     def super_categories(self):
-        return [Lattices(_own_ring(SageZZ)).FinitelyGenerated().Nondegenerate().Even()]
+        return [Lattices(_owned_integers()).FinitelyGenerated().Nondegenerate().Even()]
 
     class ParentMethods:
         def __init__(self, root_system_type_name, **rest) -> None:
