@@ -30,9 +30,6 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     DecompositionGroupConjugacyClass,
     FrobeniusConjugacyClass,
     InertiaGroupConjugacyClass,
-    _chosen_rational_prolongation,
-    _finite_frobenius_element,
-    _residue_field_order,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteExtensionAutomorphismGroup,
@@ -85,26 +82,7 @@ class AbsoluteGaloisGroupElement(Element):
             None if frobenius_exponent is None else ZZ(frobenius_exponent)
         )
         self._stage_rule = stage_rule
-        if (
-            self._exact_action is None
-            and self._frobenius_exponent is None
-            and self._stage_rule is None
-        ):
-            raise TypeError(
-                f"an element of {parent} must be given as an automorphism of the "
-                f"algebraic closure, as a power of Frobenius, or by its restrictions to "
-                f"the finite Galois stages, but none was given"
-            )
-        if self._exact_action is not None and element_parent(self._exact_action) is not parent.field_automorphism_mor():
-            raise TypeError(
-                f"the exact action of an element of {parent} must lie in "
-                f"{parent.field_automorphism_mor()}, but got {self._exact_action}"
-            )
-        if self._frobenius_exponent is not None and not parent._is_finite_field():
-            raise TypeError(
-                f"a q-Frobenius power requires a finite base field, but the base field "
-                f"of {parent} is {parent.base_field()}"
-            )
+        self.validate_defining_datum(check=False)
         self.validate_base_fixing(check=False)
 
     @cached_method
@@ -170,18 +148,6 @@ class AbsoluteGaloisGroupElement(Element):
             return None
         return _owned_engine_element(ZZ, self._frobenius_exponent)
 
-    def arithmetic_frobenius_prime(self):
-        r"""The prime at which this element is a retained arithmetic Frobenius, or ``None``."""
-        return None
-
-    def frobenius_prolongation(self):
-        r"""The chosen prolongation of :meth:`arithmetic_frobenius_prime`, or ``None``."""
-        return None
-
-    def frobenius_residue_cardinality(self):
-        r"""``q = |O_K/p|`` at :meth:`arithmetic_frobenius_prime`, or ``None``."""
-        return None
-
     def is_globally_evaluable(self) -> bool:
         return self._frobenius_exponent is not None or self._exact_action is not None
 
@@ -225,6 +191,31 @@ class AbsoluteGaloisGroupElement(Element):
         parent = cast("_AbsoluteGaloisGroupEngine", self.parent())
         embedding = parent.base_embedding()
         return self.as_morphism() * embedding == embedding
+
+    @validator
+    def validate_defining_datum(self) -> None:
+        r"""Reject a defining datum of the wrong kind (``OWN-22``: checked on request).
+
+        One of an exact action in ``Mor(Kbar, Kbar)``, a ``q``-Frobenius
+        exponent over a finite base field, or a stage rule is the datum.
+        """
+        parent = self.parent()
+        if self._exact_action is None and self._frobenius_exponent is None and self._stage_rule is None:
+            raise ValueError(
+                f"an element of {parent} must be given as an automorphism of the "
+                f"algebraic closure, as a power of Frobenius, or by its restrictions to "
+                f"the finite Galois stages, but none was given"
+            )
+        if self._exact_action is not None and element_parent(self._exact_action) is not parent.field_automorphism_mor():
+            raise ValueError(
+                f"the exact action of an element of {parent} must lie in "
+                f"{parent.field_automorphism_mor()}, but got {self._exact_action}"
+            )
+        if self._frobenius_exponent is not None and parent not in AbsoluteGaloisGroupsOfFiniteFields():
+            raise ValueError(
+                f"a q-Frobenius power requires a finite base field, but the base field "
+                f"of {parent} is {parent.base_field()}"
+            )
 
     @validator
     def validate_base_fixing(self) -> None:
@@ -295,16 +286,7 @@ class AbsoluteGaloisGroupElement(Element):
         ):
             return self._frobenius_exponent == other._frobenius_exponent
         if self._stage_rule is not None or other._stage_rule is not None:
-            # Agreement on finitely many stages does not decide equality in
-            # G_K; two Frobenius elements retaining the same prime and the
-            # same prolongation are the same element by construction.
-            prime = self.arithmetic_frobenius_prime()
-            if (
-                prime is not None
-                and prime == other.arithmetic_frobenius_prime()
-                and self.frobenius_prolongation() is other.frobenius_prolongation()
-            ):
-                return True
+            # Agreement on finitely many stages does not decide equality in G_K.
             return AtomicProposition("equal_automorphisms", self, other)
         return self.as_morphism() == other.as_morphism()
 
@@ -353,18 +335,16 @@ class ArithmeticFrobeniusElement(AbsoluteGaloisGroupElement):
 
     def _frobenius_at_stage(self, stage):
         quotient = self.parent().finite_quotient(stage)
-        return _finite_frobenius_element(
-            quotient, self._base_prime, self._prolongation.at(stage)
-        )
+        return quotient.frobenius_class(
+            self._base_prime, self._prolongation.at(stage)
+        ).representative()
 
-    def arithmetic_frobenius_prime(self):
+    def base_prime(self):
         return self._base_prime
 
-    def frobenius_prolongation(self):
+    def prolongation(self):
         return self._prolongation
 
-    def frobenius_residue_cardinality(self):
-        return _owned_engine_element(ZZ, ZZ(_residue_field_order(self._base_prime)))
 
     def conjugacy_class(self):
         r"""The Frobenius class at ``p``: the Frobenius elements at all prolongations of ``p``."""
@@ -612,41 +592,34 @@ class _AbsoluteGaloisGroupEngine:
         return self.frobenius() if self._is_finite_field() else self.one()
 
     def frobenius(self, prime=None, prolongation=None):
-        r"""Return ``x -> x^q`` over a finite field, or a Frobenius element at ``prime``.
+        r"""Return ``x -> x^q`` over a finite field, or the Frobenius element at ``prolongation``.
 
-        Over a number field ``K`` the result is an element of ``G_K`` that
-        retains ``prime`` and the prolongation ``prolongation`` (a
-        :func:`PrimeProlongation`); its class is :meth:`frobenius_class`.
-        Without a supplied prolongation of a rational prime, this group
-        constructs one coherent chosen prolongation per prime and retains it,
-        so repeated calls give equal elements.
+        Over a number field ``K`` the element is determined by a prime of
+        ``Kbar`` above ``prime``, supplied as a :func:`PrimeProlongation`;
+        the conjugacy class :meth:`frobenius_class` does not depend on it.
+        No prolongation is chosen here: a coherent prime of ``Kbar`` needs a
+        datum such as an embedding ``Kbar -> Qbar_p``, which the caller holds.
         """
         from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
 
         if prime is None:
             assert self in AbsoluteGaloisGroupsOfFiniteFields(), (
                 f"the base field {self._field} of {self} is not finite, so a Frobenius "
-                f"element exists only at a prime; give `prime`"
+                f"element exists only at a prime; give `prime` and a prime of the "
+                f"algebraic closure above it"
             )
             return FrobeniusElement(self, ZZ.one())
         assert self._field in OwnedNumberFields(), (
             f"a Frobenius element at the prime {prime} is constructed here only over a "
             f"number field, but the base field of {self} is {self._field}"
         )
-        if prolongation is None:
-            prolongation = self._chosen_prolongation(prime)
-        return ArithmeticFrobeniusElement(self, prime, prolongation)
-
-    @cached_method(key=lambda group, prime: ZZ(int(prime)))
-    def _chosen_prolongation(self, prime):
-        r"""The prolongation of the rational prime ``prime`` that this group chooses and retains."""
-        from dzack_research.preamble.categories.rings.ring_foundation import PrimeFields
-
-        assert self._field in PrimeFields(), (
-            f"a prolongation of {prime} is chosen here only over QQ, where the prime is "
-            f"rational; over {self._field} supply a PrimeProlongation"
+        assert prolongation is not None, (
+            f"a Frobenius element of {self} at {prime} depends on a prime of "
+            f"{self._closure} above {prime}; supply it as "
+            f"prolongation=PrimeProlongation({prime}, ...). Its class is "
+            f"frobenius_class({prime})"
         )
-        return _chosen_rational_prolongation(ZZ(int(prime)))
+        return ArithmeticFrobeniusElement(self, prime, prolongation)
 
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():

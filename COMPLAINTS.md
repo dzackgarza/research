@@ -2097,6 +2097,12 @@ For a field `K` with a chosen closure `e: K -> Kbar`, `G_K = Aut_K(Kbar)` is a p
 **Consumers:** `AbsoluteGaloisGroup.frobenius`, `CyclotomicCharacter` and `QuadraticCharacter` (`categories/group/profinite/`).
 **Request (not yet filed):** `lean-categories` formalizes `G_K` as a profinite group, Frobenius elements at a chosen prolongation, and `chi_n` as a continuous homomorphism into `(ZZ/n)^x`, citing the Mathlib statements above. The request runs beside the computation: the Frobenius elements and the cyclotomic character are presented at source, with their execution in the terminal-T bank of [TODO.md](TODO.md); neither is parked on it.
 
+### No embedding of the algebraic closure into Qbar_p is represented
+
+A prime of `Kbar = QQbar` above a rational prime `p` is a coherent family of primes `P_L` of the rings of integers of the finite stages `L`. An embedding `iota: QQbar -> Qbar_p` determines one without any state: `P_L = {x in O_L : |iota(x)|_p < 1}`. Coherence under contraction then follows from the construction. This is the datum that `AbsoluteGaloisGroup.frobenius(p, prolongation=...)` needs over `QQ`.
+**Searched (2026-10-14, source only):** the owned closure `QQbar` is Sage's `AlgebraicField`. Sage's `Qp(p)` is a complete field, and its algebraic extensions are finite extensions built by `Qp(p).extension(f)`. Sage presents no algebraic closure of `Qp`, so it presents no map `QQbar -> Qbar_p`. A finite `iota_L: L -> K_w` exists stage by stage, but compatible choices across all stages are the same coherence problem. **Conclusion:** no stateless prolongation is constructed here. The rejected query-order-dependent default is recorded in the commit that removed it.
+**Consumers:** `AbsoluteGaloisGroup.frobenius`, `FrobeniusConjugacyClass.representative`, and the protected Galois expectations that call `frobenius(p)` with no prolongation. Remediation: `prime-prolongations-from-p-adic-embeddings` in [TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite

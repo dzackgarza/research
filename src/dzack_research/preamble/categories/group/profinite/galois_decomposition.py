@@ -202,91 +202,6 @@ def _finite_frobenius_element(quotient, base_prime, prime_above):
     return candidates[0]
 
 
-def _stage_inclusion(smaller, larger):
-    r"""The ``K``-embedding ``f: L -> L'`` of two stages inside ``Kbar``, or ``None``.
-
-    ``L`` lies in ``L'`` inside ``Kbar`` exactly when some field map ``f``
-    satisfies ``e_{L'} f = e_L`` for the retained embeddings into ``Kbar``;
-    such an ``f`` is unique, since ``e_{L'}`` is injective.
-    """
-    for candidate in smaller.field().exact_embeddings(larger.field()):
-        if (larger.embedding() * candidate == smaller.embedding()) is True:
-            return candidate
-    return None
-
-
-def _lies_over(prime_above, inclusion, prime_below) -> bool:
-    r"""Whether ``P'`` of ``O_{L'}`` lies over ``P`` of ``O_L`` along ``f: L -> L'``.
-
-    For primes of rings of integers, ``P'`` lies over ``P`` exactly when
-    ``f(P)`` is contained in ``P'``, read on the generators of ``P``.
-    """
-    small_field = inclusion.domain()
-    large_order = prime_above.ring()
-    return all(
-        large_order(inclusion(small_field(generator))) in prime_above
-        for generator in prime_below.ideal_generators()
-    )
-
-
-class _ChosenRationalProlongation:
-    r"""A coherent choice of primes above a rational prime ``p`` at the stages of ``Kbar/QQ``.
-
-    The chosen prime at a stage ``L`` is the contraction of a prime already
-    chosen at a stage containing ``L``.  Otherwise it is the first prime of
-    ``L`` above ``p``, in the order of ``L.primes_above(p)``, that lies over
-    the primes already chosen at the stages contained in ``L``.  Each
-    recorded prime is fixed once chosen, and every recorded pair lies over
-    every smaller recorded pair, so the choices are the restrictions of one
-    prime of ``Kbar`` above ``p``.  The family is a datum of this object, and
-    which stages it has fixed depends on which stages it was asked about.
-    """
-
-    def __init__(self, rational_prime) -> None:
-        self._rational_prime = rational_prime
-        self._chosen = []
-
-    def __call__(self, stage):
-        for recorded_stage, recorded_prime in self._chosen:
-            inclusion = _stage_inclusion(stage, recorded_stage)
-            if inclusion is not None:
-                return self._contraction(stage, inclusion, recorded_prime)
-        smaller = tuple(
-            (inclusion, recorded_prime)
-            for recorded_stage, recorded_prime in self._chosen
-            if (inclusion := _stage_inclusion(recorded_stage, stage)) is not None
-        )
-        prime = next(
-            (
-                candidate
-                for candidate in stage.field().primes_above(int(self._rational_prime))
-                if all(
-                    _lies_over(candidate, inclusion, recorded_prime)
-                    for inclusion, recorded_prime in smaller
-                )
-            ),
-            None,
-        )
-        assert prime is not None, (
-            f"no prime of {stage.field()} above {self._rational_prime} lies over the "
-            f"primes already chosen at the smaller stages"
-        )
-        self._chosen.append((stage, prime))
-        return prime
-
-    def _contraction(self, stage, inclusion, prime_above):
-        return next(
-            candidate
-            for candidate in stage.field().primes_above(int(self._rational_prime))
-            if _lies_over(prime_above, inclusion, candidate)
-        )
-
-
-def _chosen_rational_prolongation(rational_prime):
-    r"""Construct a coherent chosen prolongation of the rational prime ``p`` to ``Kbar``."""
-    return PrimeProlongation(rational_prime, _ChosenRationalProlongation(rational_prime))
-
-
 class _AbsoluteDecompositionGroupEngine:
     r"""Finite-quotient realization of the decomposition subgroup at ``prolongation``."""
 
@@ -573,9 +488,16 @@ class _FrobeniusConjugacyClassEngine:
     def image(self, quotient, prime_above):
         return quotient.frobenius_class(self._prime, prime_above)
 
-    def representative(self):
-        r"""The Frobenius element at the group's chosen prolongation of this prime."""
-        return self._supergroup.frobenius(self._prime)
+    def residue_field_cardinality(self):
+        r"""``q = |O_K/p|`` for the prime ``p`` of this class, as an owned integer."""
+        return _own_ring(ZZ)(_residue_field_order(self._prime))
+
+    def representative(self, prolongation):
+        r"""The Frobenius element at ``prolongation``, a prime of ``Kbar`` above this prime.
+
+        The class does not depend on the prolongation; its representative does.
+        """
+        return self._supergroup.frobenius(self._prime, prolongation=prolongation)
 
     def conjugacy_class(self):
         return self

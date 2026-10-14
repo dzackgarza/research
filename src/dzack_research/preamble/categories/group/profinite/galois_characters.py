@@ -231,31 +231,21 @@ class CyclotomicCharacter(ProfiniteCharacter):
     def _call_(self, element):
         r"""``chi_n(sigma)``: the unit ``a`` with ``sigma(zeta) = zeta^a`` for the chosen root ``zeta``.
 
-        The cases, in order:
-
-        - the ``q``-Frobenius raises every root of unity to its ``q``-th
-          power, so ``chi_n(Frob^e)`` is the residue of ``q^e``;
-        - an arithmetic Frobenius at a prime with residue field of order
-          ``q`` prime to ``n`` sends every ``n``-th root of unity ``zeta`` to
-          ``zeta^q`` (Mathlib ``AlgHom.IsArithFrobAt.apply_of_pow_eq_one``,
-          ``Mathlib/RingTheory/Frobenius.lean:107-110``), so by
-          ``modularCyclotomicCharacter.toFun_unique`` its value is the residue
-          of ``q``; it is read from the prime alone, so it is the same on the
-          whole Frobenius class;
-        - otherwise the exponent ``a`` is the discrete logarithm of
-          ``sigma(zeta)`` to the base ``zeta`` in the cyclic group ``mu_n``,
-          with ``sigma(zeta)`` read on the stage ``K(zeta_n)``.
+        Routed by the placement of ``G_K``. Over ``F_q`` an element given as a
+        power ``Frob^e`` of the ``q``-Frobenius, which raises
+        roots of unity to the ``q``-th power, so the value is the residue of
+        ``q^e``. Otherwise ``sigma(zeta)`` is read on the stage ``K(zeta_n)``
+        and ``a`` is its discrete logarithm to the base ``zeta`` in ``mu_n``.
         """
         element = self.domain()(element)
         units = self.codomain()
-        exponent = element.frobenius_exponent()
-        residue_order = element.frobenius_residue_cardinality()
-        match element:
-            case _ if exponent is not None:
-                q = self._residues(int(self.domain().base_field_order()))
-                return units(q ** int(exponent))
-            case _ if residue_order is not None and gcd(int(residue_order), int(self._modulus)) == 1:
-                return units(self._residues(int(residue_order)))
+        match self.domain():
+            case domain if (
+                domain in AbsoluteGaloisGroupsOfFiniteFields()
+                and element.frobenius_exponent() is not None
+            ):
+                q = self._residues(int(domain.base_field_order()))
+                return units(q ** int(element.frobenius_exponent()))
             case _:
                 coordinate = element.restriction_coordinate(self.factor_extension())
                 if coordinate is not None:
@@ -266,6 +256,28 @@ class CyclotomicCharacter(ProfiniteCharacter):
                     self.domain().algebraic_closure(), image, self._root, self._modulus
                 )
                 return units(self._residues(int(residue)))
+
+    def value_at_frobenius_class(self, frobenius_class):
+        r"""``chi_n`` on the Frobenius class at a prime ``p`` of ``K`` with ``|O_K/p| = q`` prime to ``n``.
+
+        A Frobenius at a prime above ``p`` sends every ``n``-th root of unity
+        ``zeta`` to ``zeta^q`` when ``n`` is prime to ``p`` (Mathlib
+        ``AlgHom.IsArithFrobAt.apply_of_pow_eq_one``,
+        ``Mathlib/RingTheory/Frobenius.lean:107-110``), so by
+        ``modularCyclotomicCharacter.toFun_unique``
+        (``Mathlib/NumberTheory/Cyclotomic/CyclotomicCharacter.lean``) the
+        value is the residue of ``q``, the same at every prolongation.
+        """
+        assert frobenius_class.supergroup() is self.domain(), (
+            f"{frobenius_class} is a class of {frobenius_class.supergroup()}, not of "
+            f"the domain {self.domain()} of {self}"
+        )
+        q = ZZ(int(frobenius_class.residue_field_cardinality()))
+        assert gcd(int(q), int(self._modulus)) == 1, (
+            f"the value of {self} on {frobenius_class} is the residue of q = {q} only "
+            f"when q is prime to {self._modulus}"
+        )
+        return self.codomain()(self._residues(int(q)))
 
     def _repr_(self) -> str:
         return f"Cyclotomic character chi_{self._modulus}: {self.domain()} -> {self.codomain()}"
