@@ -5571,8 +5571,8 @@ def _presented_ring_category(engine: Ring) -> Category:
                 OrdersWithChosenIntegralBasis(),
             )
         case (
-            RealField() | RealDoubleField() | RealBallField() | RealIntervalField()
-            | ComplexField() | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
+            RealDoubleField() | RealBallField() | RealIntervalField()
+            | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
         ):
             # These constructors present RR or CC, uncountable fields.
             placements = (*field, owned_sets.UncountableSets())
@@ -5822,9 +5822,11 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     rather than a bare native ring later labelled as a free algebra.
     """
     from sage.algebras.free_algebra import FreeAlgebra_generic
-    from sage.rings.cc import CC as SageCC
     from sage.rings.complex_double import CDF as SageCDF
     from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.rings.abc import ComplexField as SageComplexFieldClass
+    from sage.rings.abc import RealField as SageRealFieldClass
+    from sage.rings.abc import pAdicField as SagePadicFieldClass
     from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
     from sage.rings.real_double import RDF as SageRDF
 
@@ -5843,8 +5845,12 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             return _owned_real_double_field()
         case _ if engine is SageCDF:
             return _owned_complex_double_field()
-        case _ if engine is SageCC:
-            return _owned_complex_field()
+        case SageRealFieldClass():
+            return _owned_real_field(int(engine.precision()))
+        case SageComplexFieldClass():
+            return _owned_complex_field_of_precision(int(engine.precision()))
+        case SagePadicFieldClass() if engine is _SageQp(engine.prime(), engine.precision_cap()):
+            return _owned_padic_field(int(engine.prime()), int(engine.precision_cap()))
         case SageFiniteFieldClass():
             # A finite-field engine is raised through ``GF``'s construction
             # on its order and generator label.
@@ -5942,9 +5948,7 @@ def _owned_complex_double_field() -> _OwnedRingParent:
 
 def _owned_complex_field() -> _OwnedRingParent:
     r"""The canonical owned 53-bit complex field ``CC``."""
-    from sage.rings.cc import CC as SageCC
-
-    return _OwnedRingParent(SageCC, named_placement=_real_or_complex_field_placements)
+    return _owned_complex_field_of_precision(53)
 
 
 def _owned_ring(ring):
@@ -6109,9 +6113,9 @@ def PrimeField(characteristic):
     return PrimeFields()(characteristic)
 
 
-def Zmod(*args, **kwargs):
-    r"""Return ``ZZ/nZZ`` with its exact finite-ring refinements."""
-    engine = _SageZmod(*_lowered_integer_arguments(args), **kwargs)
+def Zmod(modulus):
+    r"""Return ``ZZ/nZZ`` for the modulus ``n``, its defining datum."""
+    engine = _SageZmod(*_lowered_integer_arguments((modulus,)))
     ring = _own_ring(engine)
     if engine is SageZZ:
         return ring
@@ -6125,37 +6129,59 @@ IntegerModRing = Zmod
 Integers = Zmod
 
 
-def Qp(*args, **kwargs):
-    engine = _SageQp(*args, **kwargs)
-    ring = _own_ring(engine)
-    _set_owned_ring_display(
-        ring,
-        f"Q_{engine.prime()} with precision {engine.precision_cap()}",
-        kind="padic",
+def Qp(prime, precision=20):
+    r"""The ``p``-adic numbers ``Q_p`` represented to relative ``precision``.
+
+    ``p`` is the defining datum; the precision is part of which represented
+    field this is (``API-10``).  Equal data give the same field.
+    """
+    (prime, precision) = _lowered_integer_arguments((prime, precision))
+    return _owned_padic_field(int(prime), int(precision))
+
+
+def _padic_field_placements() -> tuple[Category, ...]:
+    r"""``Q_p`` and its finite extensions are uncountable fields."""
+    return (*_field_placements(), owned_sets.UncountableSets())
+
+
+@cached_function
+def _owned_padic_field(prime: int, precision: int) -> _OwnedRingParent:
+    engine = _SageQp(prime, precision)
+    field = _OwnedRingParent(engine, named_placement=_padic_field_placements)
+    _set_owned_ring_display(field, f"Q_{prime} with precision {precision}", kind="padic")
+    return field
+
+
+def RealField(precision=53):
+    r"""The real numbers represented to ``precision`` bits (``API-10``)."""
+    (precision,) = _lowered_integer_arguments((precision,))
+    return _owned_real_field(int(precision))
+
+
+@cached_function
+def _owned_real_field(precision: int) -> _OwnedRingParent:
+    field = _OwnedRingParent(
+        _SageRealField(precision), named_placement=_real_or_complex_field_placements
     )
-    return ring
+    _set_owned_ring_display(field, f"Real field with {precision} bits precision", kind="real")
+    return field
 
 
-def RealField(*args, **kwargs):
-    engine = _SageRealField(*args, **kwargs)
-    ring = _own_ring(engine)
-    _set_owned_ring_display(
-        ring,
-        f"Real field with {engine.precision()} bits precision",
-        kind="real",
+def ComplexField(precision=53):
+    r"""The complex numbers represented to ``precision`` bits (``API-10``)."""
+    (precision,) = _lowered_integer_arguments((precision,))
+    return _owned_complex_field_of_precision(int(precision))
+
+
+@cached_function
+def _owned_complex_field_of_precision(precision: int) -> _OwnedRingParent:
+    field = _OwnedRingParent(
+        _SageComplexField(precision), named_placement=_real_or_complex_field_placements
     )
-    return ring
-
-
-def ComplexField(*args, **kwargs):
-    engine = _SageComplexField(*args, **kwargs)
-    ring = _own_ring(engine)
     _set_owned_ring_display(
-        ring,
-        f"Complex field with {engine.precision()} bits precision",
-        kind="complex",
+        field, f"Complex field with {precision} bits precision", kind="complex"
     )
-    return ring
+    return field
 
 
 Rings = OwnedRings

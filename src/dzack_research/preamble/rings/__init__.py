@@ -131,24 +131,24 @@ def PrimeField(characteristic):
     return PrimeFields()(characteristic)
 
 
-def Zmod(*args, **kwargs):
-    return _public_commutative_ring(_Zmod(*args, **kwargs))
+def Zmod(modulus):
+    return _public_commutative_ring(_Zmod(modulus))
 
 
 IntegerModRing = Zmod
 Integers = Zmod
 
 
-def Qp(*args, **kwargs):
-    return _public_commutative_ring(_Qp(*args, **kwargs))
+def Qp(prime, precision=20):
+    return _public_commutative_ring(_Qp(prime, precision))
 
 
-def RealField(*args, **kwargs):
-    return _public_commutative_ring(_RealField(*args, **kwargs))
+def RealField(precision=53):
+    return _public_commutative_ring(_RealField(precision))
 
 
-def ComplexField(*args, **kwargs):
-    return _public_commutative_ring(_ComplexField(*args, **kwargs))
+def ComplexField(precision=53):
+    return _public_commutative_ring(_ComplexField(precision))
 
 
 def CyclotomicField(*args, **kwargs):
