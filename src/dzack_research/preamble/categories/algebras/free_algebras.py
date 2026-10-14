@@ -500,6 +500,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         presentation_lift=None,
         finite_free_generator=None,
         finite_free_coordinates=None,
+        constructing_category=None,
     ) -> None:
         # An auxiliary native polynomial cover retains its actual map from
         # the chosen presentation.  Other realizations have no such cover.
@@ -588,6 +589,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
             algebra_framing_source=presentation_ring,
+            constructing_category=constructing_category,
         )
         _fix_selected_algebra_presentation(
             self,
@@ -889,6 +891,7 @@ def _finitely_presented_algebra_from_data(
     _extra_categories=(),
     _extra_construction_data=None,
     _generating_module=None,
+    _constructing_category=None,
 ):
     r"""Return the selected polynomial or associative quotient by relations.
 
@@ -969,6 +972,7 @@ def _finitely_presented_algebra_from_data(
             _extra_categories=_extra_categories,
             _extra_construction_data=_extra_construction_data,
             _generating_module=_generating_module,
+            _constructing_category=_constructing_category,
         )
     presentation_engine = _engine_ring(presentation_ring)
     commutative_backend = presentation_ring in SymmetricAlgebras(base)
@@ -1108,6 +1112,7 @@ def _finitely_presented_algebra_from_data(
         presentation_flattening=presentation_flattening,
         generator_values=generator_values,
         presentation_lift=presentation_lift,
+        constructing_category=_constructing_category,
         **word_frame,
     )
 

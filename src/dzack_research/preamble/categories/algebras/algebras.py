@@ -3049,6 +3049,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             _extra_categories=tuple(extra_categories),
             _extra_construction_data=extra_construction_data,
             _generating_module=generating_module,
+            _constructing_category=self,
         )
 
     class ParentMethods:
@@ -4253,15 +4254,17 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if framing_owner is not associative:
             retained_laws["commutativity"] = True
         retained_laws.update(dict(law_decisions))
-        # The algebra is built in the algebra category it is realized as,
-        # unless the construction names a stronger one (OWN-15).
+        # The algebra is an object of the category its public constructor
+        # was asked for (OWN-15).  A route that names none is an algebra of
+        # ``Algebras(R).Associative().Unital()``; commutativity, read off the
+        # engine above, is a full axiom and is not recorded (ARC-08).
         _OwnedRingParent.__init__(
             self,
             engine,
             base=base,
             category=Cat().meet(tuple(placement)),
             constructing_category=(
-                framing_owner if constructing_category is None else constructing_category
+                associative if constructing_category is None else constructing_category
             ),
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
