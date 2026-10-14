@@ -14,6 +14,12 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Sets have no emptiness operation, so a decided locus cannot answer `is_empty()`
+
+A set \(X\) is empty exactly when it has no point; a torsor under a group is nonempty by definition (it has a point and a simply transitive action), and a set enumerated by a finite ordered family is empty exactly when the family is. The owned `Sets()` category states no `is_empty()` at all: only cardinal and ordinal Mor sets, schemes and lattice Mor sets define one (`categories/sets/cardinals.py`, `categories/lattice_morphisms.py`). So `TrivializedTorsors` (`categories/group/g_sets.py`) and the G-set on a finite ordered point set (`_GSetOnPoints`) answer `an_element()` but not `is_empty()`, even when emptiness is decided by their construction.
+
+Evidence: `IsotropicReductionLiftTorsors.integral_members()` (`categories/isotropic_lifts.py`) now decides the integral lift locus from its finite residue classes and returns the integral torsor or the G-set on the empty set; the port's `recursive.py:168` calls `members.is_empty()` on it. Dependency path: integral reduction lifts → G-sets on points / trivialized torsors → `Sets()` emptiness. Remediation: `port-configurations-cones-and-integral-lifts` in TODO (the operation belongs at `Sets()`, with a decided answer from a selected point, a torsor's base point, or a finite enumeration, and otherwise the proposition). Coverage boundary: source inspection only; the session was not executed (DEV-58).
+
 ### Implementation code retains mathematical construction authority
 
 **Because the intended route is enforced inside a callable constructor, but use of that constructor is optional.** The preamble still gives ordinary implementation code the power to define and construct mathematical objects. The rules prohibit this; the runtime permits it.
