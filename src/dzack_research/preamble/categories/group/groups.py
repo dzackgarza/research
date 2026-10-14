@@ -1452,8 +1452,6 @@ def _own_group(
     if group in OwnedGroups():
         return group
     assert group in SageGroups(), f"{group} is not a group"
-    if free_basis is None and isinstance(group, FreeGroup_class):
-        free_basis = finite_ordinal_set(int(group.ngens()))
     match group:
         case PermutationGroup_subgroup() | AbelianGroup_subgroup():
             return _transported_subgroup(_own_group(group.ambient_group()), group)
@@ -1468,7 +1466,10 @@ def _own_group(
                     owned_relations = finite_ordered_set(chosen_relations)
                 else:
                     source_engine, backend_relations = _chosen_engine_presentation(group)
-                    presentation_source = None if source_engine is None else _own_group(source_engine)
+                    presentation_source = (
+                        None if source_engine is None
+                        else _own_group(source_engine, free_basis=finite_ordinal_set(int(source_engine.ngens())))
+                    )
                     if presentation_source is None:
                         owned_relations = finite_ordered_set(())
                     else:
@@ -1733,7 +1734,11 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
     engine_rank = None if n is None else _group_constructor_argument(n)
     engine_names = _group_constructor_argument(names)
     if index_set is None:
-        return _own_group(SageFree(engine_rank, engine_names, index_set=None, abelian=abelian, **engine_kwds))
+        engine = SageFree(engine_rank, engine_names, index_set=None, abelian=abelian, **engine_kwds)
+        # A free group built here is free on the ordinal of its rank: that
+        # basis is construction data, supplied by the constructor that knows
+        # the group is free, not read off the engine's class.
+        return _own_group(engine, free_basis=None if abelian else finite_ordinal_set(int(engine.ngens())))
     assert index_set in Sets(), f"the free group on {index_set} cannot be formed: its index set must be a set of the preamble's category of sets"
     match index_set:
         case _ if index_set in FiniteSets():
@@ -1763,6 +1768,7 @@ def _group_over_ring(constructor, degree, ring, *args, **kwargs):
     )
 
 
+@cached_function
 def _symmetric_group(points):
     r"""``Sym(points)``, built from its point set and placed by that set's cardinality.
 
@@ -1770,7 +1776,9 @@ def _symmetric_group(points):
     ``|Omega| <= 2`` (it is trivial or cyclic of order two), while the
     transpositions ``(12)`` and ``(23)`` do not commute once ``|Omega| >= 3``.
     The engine is Sage's symmetric group on ``{1, ..., |Omega|}``; a point of
-    ``Omega`` is read through the ranking of ``Omega``.
+    ``Omega`` is read through the ranking of ``Omega``.  The cache key is the
+    defining datum ``Omega`` under its own equality, so equal point sets give
+    one group and the engine is built once per point set.
     """
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
@@ -1779,7 +1787,7 @@ def _symmetric_group(points):
         f"and {points} is not known to be finite (it lies in {points.category()})"
     )
     size = cardinal(points.cardinality()).finite_value()
-    standard = points is _standard_symmetric_points(int(size))
+    standard = points == _standard_symmetric_points(int(size))
     refinements = (
         SymmetricGroups(),
         OwnedGroups().Finite(),
@@ -1819,6 +1827,15 @@ def _S(points):
 
 
 def _general_linear_group(ring, degree, var="a"):
+    r"""``GL_n(R)`` from its defining data, cached on ``(R, n)``; see :func:`_general_linear_group_of`."""
+    assert degree in ZZ and degree == ZZ(degree) and degree >= 0, (
+        f"GL_n(R) needs a rank n that is an integer n >= 0, but got {degree!r}"
+    )
+    return _general_linear_group_of(_owned_ring(ring), int(degree), var)
+
+
+@cached_function
+def _general_linear_group_of(ring, rank, var):
     r"""``GL_n(R)``, built from ``(R, n)`` and placed by ``R``'s placement.
 
     The placement is read from the category ``R`` was constructed in, never
@@ -1832,15 +1849,11 @@ def _general_linear_group(ring, degree, var="a"):
       field the scalar matrices give one of ``R^x`` for ``n >= 1``;
     - ``GL_1(R) = R^x`` is commutative when ``R`` is.
 
-    The engine is Sage's ``GL(n, R)`` over the engine of ``R``.
+    The engine is Sage's ``GL(n, R)`` over the engine of ``R``, built once
+    per key ``(R, n)``.
     """
     from sage.groups.matrix_gps.catalog import GL
 
-    assert degree in ZZ and degree == ZZ(degree) and degree >= 0, (
-        f"GL_n(R) needs a rank n that is an integer n >= 0, but got {degree!r}"
-    )
-    ring = _owned_ring(ring)
-    rank = int(degree)
     infinite_ring = ring in Sets().Infinite() or ring in Sets().Uncountable()
     finite = rank == 0 or ring in FiniteSets() or (rank == 1 and ring is _own_ring(ZZ))
     infinite = (rank >= 2 and infinite_ring) or (
@@ -1879,16 +1892,16 @@ def _SL(degree, ring, var="a"):
         raise ValueError("SL_n(R) requires an integral rank")
     if degree < 1:
         raise ValueError("SL_n(R) requires a positive rank")
-    # SL_2(ZZ) is constructed as the integral points of SL_2 inside
-    # GL_2(QQ): arithmeticity is a property of that subgroup (Mathlib
-    # Subgroup.IsArithmetic), not an axiom of the abstract group.  It is
-    # generated by S and T (Serre, A Course in Arithmetic, VII.1, Thm. 2).
-    if degree == 2 and _owned_ring(ring) is ZZ:
+    # SL_n(ZZ) is constructed as the integral points of SL_n inside
+    # GL_n(QQ): arithmeticity is a property of that subgroup (Mathlib
+    # Subgroup.IsArithmetic), not an axiom of the abstract group.  SL_2(ZZ)
+    # is generated by S and T (Serre, A Course in Arithmetic, VII.1, Thm. 2).
+    if _owned_ring(ring) is ZZ:
         return _integral_points_subgroup(
-            _GL(2, _own_ring(QQ)),
-            SL(2, _engine_ring(ZZ), var=var),
+            _GL(int(degree), _own_ring(QQ)),
+            SL(int(degree), _engine_ring(ZZ), var=var),
             _owned_ring(ring),
-            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),),
+            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),) if degree == 2 else (),
         )
     return _group_over_ring(SL, degree, ring, var=var)
 
@@ -2007,6 +2020,22 @@ def _coxeter_matrix_datum(data):
             )
 
 
+def _coxeter_matrix_type(engine_matrix):
+    r"""Whether a Coxeter matrix is of finite type, and whether of affine type.
+
+    ``OWN-06`` adapter: Sage's ``CoxeterMatrix.is_finite`` and ``is_affine``
+    read the type off the classification of Coxeter diagrams.  The theorem
+    that places the group, ``W(m)`` finite exactly when the bilinear form of
+    ``m`` is positive definite (Humphreys, *Reflection groups and Coxeter
+    groups*, 6.4), is not yet cited from an opened source and is not in
+    ``lean-categories`` or Mathlib (formalization-corpus search 2026-10-14);
+    the citation is owed with the node.  An undecided type counts as
+    neither.
+    """
+    return engine_matrix.is_finite() is True, engine_matrix.is_affine() is True
+
+
+@cached_function
 def _coxeter_group(coxeter_matrix, *, base_ring=None):
     r"""``W(m) = F(V) / <<s_v^2, (s_v s_w)^{m_vw}>>`` for an owned Coxeter matrix ``m``.
 
@@ -2017,10 +2046,12 @@ def _coxeter_group(coxeter_matrix, *, base_ring=None):
     matrix group, the reflection representation over ``base_ring``, is its
     private engine and supplies the presentation through
     ``_chosen_engine_presentation``.  Placement is read from the matrix:
-    finite when Sage's ``CoxeterMatrix`` certifies finite type; infinite for
+    finite for a matrix of finite type (:func:`_coxeter_matrix_type`); infinite for
     an affine matrix, an entry ``m_vw = aleph_0``, or a triangle
     ``1/m + 1/m' + 1/m'' <= 1`` (an infinite standard parabolic subgroup);
     commutative, and finite, when every entry off the diagonal is ``2``.
+    The cache key is the matrix by its entries and the ring, so equal data
+    give one group and the engine is built once per key.
     """
     from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
 
@@ -2030,9 +2061,10 @@ def _coxeter_group(coxeter_matrix, *, base_ring=None):
     engine_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
     indices = tuple(engine_matrix.index_set())
     commutative = all(engine_matrix[left, right] == 2 for left, right in combinations(indices, 2))
-    finite = engine_matrix.is_finite() is True or commutative
+    finite_type, affine_type = _coxeter_matrix_type(engine_matrix)
+    finite = finite_type or commutative
     infinite = not finite and (
-        engine_matrix.is_affine() is True
+        affine_type
         or any(engine_matrix[left, right] in (-1, infinity) for left, right in combinations(indices, 2))
         or any(
             sum((QQ(1) / ZZ(engine_matrix[left, right]) for left, right in combinations(triple, 2)), QQ(0)) <= 1
@@ -4855,7 +4887,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             # one-shot iterable of relations.
             relators = tuple(relators)
             match self:
-                case _ if isinstance(_engine_group(self), FreeGroup_class):
+                case _ if self in GroupsWithChosenFreeBasis():
                     # The free source and the caller's chosen relators
                     # define this quotient F/<<R>>, the same object as
                     # FreeGroupQuotients()(F, R).
@@ -4869,7 +4901,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     )
             if not return_projection:
                 return quotient
-            if isinstance(_engine_group(self), FreeGroup_class):
+            if self in GroupsWithChosenFreeBasis():
                 # The selected presentation *is* the quotient of this free
                 # source. Reuse its retained augmentation instead of
                 # independently rebuilding a second arrow from GAP's
@@ -6001,6 +6033,28 @@ class PermutationGroups(OwnedCategory):
             return self.natural_g_set().is_transitive_action()
 
 
+class _DataInducedMorCategoryConstruction(MorCategoryConstruction):
+    r"""A family of fixed Mors of a data category: ``FixedMor`` between two of its objects.
+
+    The shared ``Of`` of :class:`SymmetricGroups`, :class:`GeneralLinearGroups`
+    and :class:`FreeGroupQuotients`: both endpoints must be objects of the
+    category, and the fixed Mor is built once per pair.
+    """
+
+    FixedMor = None
+
+    def Of(self, domain, codomain=None):
+        codomain = domain if codomain is None else codomain
+        assert domain in self.base_category() and codomain in self.base_category(), (
+            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
+            f"objects of it, but they lie in {domain.category()} and {codomain.category()}"
+        )
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
+            return cached
+        return self._remember_between(domain, codomain, self.FixedMor(self, domain, codomain))
+
+
 class _InducedPermutationMap:
     r"""The homomorphism ``Sym(Omega) -> Sym(Omega')``, ``sigma |-> f sigma f^-1``, of a bijection ``f``.
 
@@ -6032,7 +6086,8 @@ class SymmetricGroupMor(GroupMor):
 
     An arrow is the homomorphism ``sigma |-> f sigma f^-1`` of a bijection
     ``f: Omega -> Omega'`` (Mathlib ``Equiv.permCongr``); it is constructed
-    from ``f``, an arrow of ``Sets()`` between the natural point sets.  Two
+    from ``f``, an isomorphism of the core of ``Sets()`` between the natural
+    point sets, so the datum's type carries its bijectivity.  Two
     bijections induce the same arrow exactly when they differ by an element of
     the centre of ``Sym(Omega)``.  These arrows are group homomorphisms, so
     this Mor is a subcategory of the group Mor; it is not closed under the
@@ -6044,16 +6099,17 @@ class SymmetricGroupMor(GroupMor):
         super().__init__(mor_family, domain, codomain, pointwise=False)
 
     def _element_constructor_(self, datum, *, check=False, **_options):
-        point_maps = Sets().Mor(self.domain().natural_points(), self.codomain().natural_points())
+        bijections = Sets().Core().Mor(self.domain().natural_points(), self.codomain().natural_points())
         match datum:
             case _ if element_parent(datum) is self:
                 return datum
-            case _ if datum in point_maps:
+            case _ if datum in bijections:
                 return self._from_elementwise_rule(_InducedPermutationMap(datum, self.codomain()))
             case _:
                 raise TypeError(
                     f"an arrow {self.domain()} -> {self.codomain()} of symmetric groups is induced by a bijection "
-                    f"{self.domain().natural_points()} -> {self.codomain().natural_points()}, but got {datum!r}"
+                    f"{self.domain().natural_points()} -> {self.codomain().natural_points()}, an arrow of "
+                    f"Sets().Core(), but got {datum!r}"
                 )
 
     @cached_method
@@ -6063,27 +6119,18 @@ class SymmetricGroupMor(GroupMor):
         source_size = cardinal(domain.natural_points().cardinality())
         if source_size != cardinal(codomain.natural_points().cardinality()):
             return cardinal(0)
-        bijections = int(_gap_model(domain).Size())
-        centre = int(_gap_model(domain).Centre().Size())
+        bijections = cardinal(domain.cardinality()).finite_value()
+        centre = cardinal(domain.center().cardinality()).finite_value()
         return cardinal(bijections // centre)
 
     def _repr_(self):
         return f"Mor_SymmetricGroups({self.domain()}, {self.codomain()})"
 
 
-class SymmetricGroupMorCategoryConstruction(MorCategoryConstruction):
+class SymmetricGroupMorCategoryConstruction(_DataInducedMorCategoryConstruction):
     r"""The family ``(Sym(Omega), Sym(Omega')) |-> `` the arrows induced by bijections ``Omega -> Omega'``."""
 
-    def Of(self, domain, codomain=None):
-        codomain = domain if codomain is None else codomain
-        assert domain in self.base_category() and codomain in self.base_category(), (
-            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
-            f"symmetric groups constructed by it, but they lie in {domain.category()} and {codomain.category()}"
-        )
-        cached = self._cached_between(domain, codomain)
-        if cached is not None:
-            return cached
-        return self._remember_between(domain, codomain, SymmetricGroupMor(self, domain, codomain))
+    FixedMor = SymmetricGroupMor
 
 
 class SymmetricGroups(OwnedCategory):
@@ -6228,19 +6275,10 @@ class GeneralLinearGroupMor(GroupMor):
         return f"Mor_GeneralLinearGroups({self.domain()}, {self.codomain()})"
 
 
-class GeneralLinearGroupMorCategoryConstruction(MorCategoryConstruction):
+class GeneralLinearGroupMorCategoryConstruction(_DataInducedMorCategoryConstruction):
     r"""The family ``(GL_n(R), GL_m(S)) |-> `` the arrows ``GL_n(phi)`` of ring maps ``phi: R -> S``."""
 
-    def Of(self, domain, codomain=None):
-        codomain = domain if codomain is None else codomain
-        assert domain in self.base_category() and codomain in self.base_category(), (
-            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
-            f"general linear groups constructed by it, but they lie in {domain.category()} and {codomain.category()}"
-        )
-        cached = self._cached_between(domain, codomain)
-        if cached is not None:
-            return cached
-        return self._remember_between(domain, codomain, GeneralLinearGroupMor(self, domain, codomain))
+    FixedMor = GeneralLinearGroupMor
 
 
 class GeneralLinearGroups(OwnedCategory):
@@ -6397,19 +6435,10 @@ class FreeGroupQuotientMor(GroupMor):
         return f"Mor_FreeGroupQuotients({self.domain()}, {self.codomain()})"
 
 
-class FreeGroupQuotientMorCategoryConstruction(MorCategoryConstruction):
+class FreeGroupQuotientMorCategoryConstruction(_DataInducedMorCategoryConstruction):
     r"""The family ``(F/<<R>>, F'/<<R'>>) |-> `` the maps induced by maps of presentations."""
 
-    def Of(self, domain, codomain=None):
-        codomain = domain if codomain is None else codomain
-        assert domain in self.base_category() and codomain in self.base_category(), (
-            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
-            f"presented groups F/<<R>>, but they lie in {domain.category()} and {codomain.category()}"
-        )
-        cached = self._cached_between(domain, codomain)
-        if cached is not None:
-            return cached
-        return self._remember_between(domain, codomain, FreeGroupQuotientMor(self, domain, codomain))
+    FixedMor = FreeGroupQuotientMor
 
 
 def _free_group_quotient(free_group, relators):
@@ -6441,7 +6470,18 @@ def _free_group_quotient(free_group, relators):
         raise ValueError(
             f"the relators {relators} of a presentation must be elements of the presenting free group {free_group}"
         )
-    return _engine_quotient_by_relators(free_group, relators)
+    return _presented_group(free_group, frozenset(free_group(relator) for relator in relators))
+
+
+@cached_function
+def _presented_group(free_group, relator_set):
+    r"""``F/<<R>>`` keyed by its defining data: ``F`` and the set ``R``.
+
+    ``R`` is a set, so reordering or repeating relators gives the same group,
+    and the engine is built once per key.  The order in which the relators are
+    handed to the engine is that of the set, and carries no meaning.
+    """
+    return _engine_quotient_by_relators(free_group, tuple(relator_set))
 
 
 class FreeGroupQuotients(OwnedCategory):

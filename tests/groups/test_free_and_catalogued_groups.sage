@@ -239,7 +239,8 @@ def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
     target = SymmetricGroups()(labels)
     arrows = SymmetricGroups().Mor(source, target)
     unrank = labels.ranking_map().inverse()
-    relabel = Sets().Mor(points, labels)(lambda point: unrank(int(point)))
+    relabel = Sets().Mor(points, labels)(lambda point: unrank(int(point))).as_isomorphism()
+    assert relabel in Sets().Core().Mor(points, labels)
     induced = arrows(relabel)
     transposition = source((1, 2))
     assert induced(transposition)(labels("a")) == labels("b")
@@ -462,7 +463,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert quotient.ambient_category() is OwnedGroups()
     assert quotient.order() == 6
     assert quotient.presenting_free_group() is free
-    assert tuple(quotient.defining_relations()) == relators
+    assert set(quotient.defining_relations()) == set(relators)
     projection = quotient.quotient_projection()
     assert projection.domain() is free
     assert projection.codomain() is quotient
@@ -509,8 +510,10 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     # mathematical construction, not a weaker anonymous presentation.
     from_operation = free.quotient_by_relators(relators)
     assert from_operation in FreeGroupQuotients()
+    assert from_operation is quotient
+    assert FreeGroupQuotients()(free, tuple(reversed(relators))) is quotient
     assert from_operation.presenting_free_group() is free
-    assert tuple(from_operation.defining_relations()) == relators
+    assert set(from_operation.defining_relations()) == set(relators)
     free_quotient, free_projection = free.quotient_by_relators(
         relators, return_projection=True
     )
