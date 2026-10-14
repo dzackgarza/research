@@ -1492,15 +1492,18 @@ class Lattices(OwnedCategoryOverBaseRing):
     def _core_automorphism_generators(self, core_mor):
         r"""Implementer side of ``CoreMor``'s core contract for lattices: generators of ``O(L)``.
 
-        ``O(L)`` answers ``group_generators()`` from its selected resolution:
-        definite ``O(L)`` selects its computed generators at construction,
-        and an indefinite one after ``select_group_resolution()``.  No
-        generators are computed implicitly here.
+        ``CoreMor.group_generators`` reads a selected resolution first and
+        asks this only without one.  The generators are those of the
+        lattice realization: Sage's for definite ``L``, and for indefinite
+        ``L`` the port's ``automorphism_group_generators`` (#403), the
+        port's own algorithm for ``O(L)`` (``_computed_group_generators``).
         """
-        assert False, (
-            f"{core_mor} has no selected generating resolution: call select_group_resolution() "
-            f"to select the computed generators of {core_mor}, or supply a generating family"
+        lattice = core_mor.domain()
+        assert lattice.module_rank().is_finite(), (
+            f"generators of O({lattice}) are computed only for a lattice of finite rank, and {lattice} has "
+            f"rank {lattice.module_rank()}"
         )
+        return core_mor._computed_group_generators()
 
     def _marked_isometry(self, diagram_category, source, target):
         r"""Implementer side of ``_FunctorCategory``'s protected marked-diagram contract.

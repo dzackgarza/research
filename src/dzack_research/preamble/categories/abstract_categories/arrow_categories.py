@@ -2256,6 +2256,21 @@ class CoreMor(CategoricalMor):
     def core_category(self) -> _CoreCategory:
         return self.base_category()
 
+    # Protected contract (OWN-05): the core decisions of a base category C.
+    # Purpose: whether two objects of C are isomorphic, one isomorphism, the
+    # generators of Aut(X), and an isomorphism whose (apex) component lies
+    # in a supplied subgroup, are decisions C owns; no public operation of
+    # an arbitrary C answers them.  Owner: CoreMor.  Callers: CoreMor's
+    # is_empty, an_element, group_generators, an_element_in; no other.
+    # Implementers: the base category C = core_category().base_category():
+    #   C._core_isomorphism_witness(core_mor) -> element of core_mor or None;
+    #   C._core_automorphism_generators(core_mor) -> finite ordered set of
+    #       elements of core_mor = Aut(X) generating it;
+    #   C._core_isomorphism_in(core_mor, subgroup) -> element or None.
+    # Implemented by _FunctorCategory (marked diagrams, through the codomain
+    # category), Lattices and Modules.  A base category without them fails
+    # at the call.
+
     @cached_method
     def _isomorphism_witness(self):
         r"""One isomorphism, or ``None``: the base category's decision (its protected core contract)."""
