@@ -17,6 +17,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.functions.real_functions import (
     Lp,
+    _constant_map,
+    _pointwise_product,
     _integrability,
     _is_lebesgue_space,
 )
@@ -61,7 +63,8 @@ def _lebesgue_exponent(degree):
 
 
 def _pointwise_piece_product(left, right, degree):
-    return Lp(_lebesgue_exponent(degree))(left.expression() * right.expression())
+    r"""The pointwise product, in the Lebesgue space of the sum of the Hölder degrees."""
+    return Lp(_lebesgue_exponent(degree), RR, RR)(_pointwise_product(left, right))
 
 
 def _compose_morphisms(left, right):
@@ -176,7 +179,7 @@ class _LebesgueDirectSum(_DirectSumOfModules):
             degree = self.grading_index_set()(_holder_degree(source).as_extended_real())
             return self.from_component(degree, value)
         if self in Algebras(self.base_ring()).Unital() and value in self.base_ring():
-            return self.from_component(self.grading_monoid().monoidal_unit(), Lp(Infinity)(value))
+            return self.from_component(self.grading_monoid().monoidal_unit(), Lp(Infinity, RR, RR)(_constant_map(value)))
         return super()._element_constructor_(value)
 
     def _repr_(self):
@@ -201,7 +204,7 @@ def GradedLebesgueModule(grading_monoid):
             case value if value is Infinity:
                 return ring.free_module(0)
             case _:
-                return Lp(_lebesgue_exponent(degree))
+                return Lp(_lebesgue_exponent(degree), RR, RR)
 
     return _direct_sum_of_modules(
         ring, grading_monoid, indexed_family(grading_monoid, piece),
@@ -244,7 +247,7 @@ def graded_lebesgue_algebra():
     ))
     return _algebra_on_module(
         module, multiplication, placement=(category,),
-        unit=module.from_component(NonNegativeReals.zero(), Lp(Infinity).one()),
+        unit=module.from_component(NonNegativeReals.zero(), Lp(Infinity, RR, RR).one()),
         law_decisions={
             "associativity": True,
             "unit": True,

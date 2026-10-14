@@ -13,7 +13,7 @@ without being restated at this level.
 import logging
 import operator
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.validation import validator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -532,6 +533,12 @@ class _FunctionModule:
         self._function_module_codomain = function_module_codomain
         super().__init__(**rest)
 
+    def _element_from_underlying_set(self, value):
+        r"""An element of this module is already one; any other value is read by ``Sets().Mor(A, B)``."""
+        if element_parent(value) is self:
+            return value
+        return super()._element_from_underlying_set(value)
+
     def domain(self):
         r"""The set ``A`` the maps start at."""
         return self.underlying_set().domain()
@@ -617,9 +624,11 @@ class _ConditionSubmodule:
         condition_predicate,
         condition_categories,
         condition_engine,
+        condition_engine_data,
         **rest,
     ) -> None:
         self._condition_ambient = condition_ambient
+        self._condition_engine_data = condition_engine_data
         self._condition_predicate = condition_predicate
         self._condition_categories = condition_categories
         self._condition_engine = condition_engine
@@ -670,6 +679,7 @@ class _ConditionSubmodule:
             self._condition_predicate,
             self.underlying_set(),
             engine=self._condition_engine,
+            engine_data=self._condition_engine_data,
             categories=(*self._condition_categories, *categories),
             construction_data=construction_data,
             subobject=False,
@@ -685,6 +695,7 @@ def _condition_submodule_object(
     points,
     *,
     engine,
+    engine_data=None,
     categories=(),
     construction_data=None,
     subobject=True,
@@ -694,7 +705,9 @@ def _condition_submodule_object(
     ``points`` is the condition set of ``predicate`` in ``ambient``;
     ``engine`` is the pair of computation classes realizing the objects and
     elements (this module's, or a specialization of them such as a function
-    space); ``categories`` are the further placements the caller established.
+    space), and ``engine_data`` the data those classes add (a regularity,
+    an exponent), kept as one dictionary so a structured object built on the
+    same data receives them again; ``categories`` are the further placements the caller established.
     With ``subobject`` the object is placed in ``ModuleSubobjects`` with the
     inclusion of ``points``; a structured object on its data is not.
     """
@@ -715,6 +728,7 @@ def _condition_submodule_object(
         "condition_predicate": predicate,
         "condition_categories": tuple(categories),
         "condition_engine": engine,
+        "condition_engine_data": dict(engine_data or {}),
     }
     if subobject:
         placement.append(ModuleSubobjects(ring))
@@ -731,7 +745,7 @@ def _condition_submodule_object(
     )
 
 
-def _condition_submodule(module, predicate, *, engine=None, categories=()):
+def _condition_submodule(module, predicate, *, engine=None, engine_data=None, categories=()):
     r"""Construct ``M.condition_submodule(P)``; the route of ``Modules.ParentMethods.condition_submodule``.
 
     Zero satisfies the condition by the submodule hypothesis, so the zero
@@ -749,6 +763,7 @@ def _condition_submodule(module, predicate, *, engine=None, categories=()):
         predicate,
         module.condition_set(condition),
         engine=engine or (_ConditionSubmodule, _ConditionSubmoduleElement),
+        engine_data=engine_data,
         categories=categories,
     )
 

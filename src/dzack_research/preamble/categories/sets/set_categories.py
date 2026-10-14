@@ -566,6 +566,19 @@ class OwnedSetMorphism(SetMorphism):
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
+    def _defining_function(self):
+        r"""The function on points this map was constructed from.
+
+        Protected contract of the set-map owner (``OWN-05``): the datum the
+        Mor's element constructor received (a callable, or a formula binding
+        its own variable).  Its readers are computation adapters that need
+        the datum itself rather than its values -- the function-space
+        formula adapter of ``categories/functions/real_functions.py``, which
+        differentiates, integrates and sums a map given by a symbolic
+        formula.  Evaluation goes through ``__call__``, never through this.
+        """
+        return self._owned_function
+
     def __call__(self, element: SourcePointT, *args, **kwargs) -> TargetPointT:
         r"""Send a point of the source to its point of the target.
 

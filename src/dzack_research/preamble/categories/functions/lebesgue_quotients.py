@@ -36,13 +36,15 @@ def _symbolic_ae_equality(left, right):
 
     if left is right:
         return True
-    left_formula, right_formula = left._formula(), right._formula()
+    from dzack_research.preamble.categories.functions.real_functions import _map_formula
+
+    left_formula, right_formula = _map_formula(left), _map_formula(right)
     if left_formula is None or right_formula is None:
         return Unknown
     try:
         x = sympy.Symbol("x", real=True)
-        f = left_formula._sympy_().subs(left.parent().indeterminate()._sympy_(), x)
-        g = right_formula._sympy_().subs(right.parent().indeterminate()._sympy_(), x)
+        f = left_formula[0]._sympy_().subs(left_formula[1]._sympy_(), x)
+        g = right_formula[0]._sympy_().subs(right_formula[1]._sympy_(), x)
         difference = sympy.piecewise_fold((f - g).rewrite(sympy.Piecewise))
         zeros = sympy.solveset(difference, x, domain=sympy.S.Reals)
         measure = (sympy.S.Reals - zeros).measure
