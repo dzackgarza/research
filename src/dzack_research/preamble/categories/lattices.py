@@ -5231,15 +5231,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: L.binary_fixed_norm_representatives(3).cardinality() == NN(0)
                 True
             """
-            from dzack_research.preamble.categories.group.g_objects import GObjects
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 
             square = self.base_ring()(square)
             orthogonal = self.orthogonal_group()
             special = self.special_orthogonal_group()
             group = orthogonal if acting_group is None else acting_group
-            assert group is orthogonal or group is special, (
+            restricted = group == special
+            assert restricted or group == orthogonal, (
                 f"the orbits of the square fibre of {self} are computed under O(L) or SO(L), "
                 f"but {group} is neither"
             )
@@ -5249,8 +5248,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     "binary orbit representatives require a nondegenerate form"
                 )
             if discriminant > 0 and not discriminant.is_square():
-                candidates = lattice_engines._binary_special_orthogonal_representatives(
-                    self, square
+                candidates = finite_ordered_set(
+                    lattice_engines._binary_special_orthogonal_representatives(self, square)
                 )
             elif not square and discriminant > 0:
                 raise ValueError(
@@ -5259,7 +5258,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             else:
                 candidates = self.vectors_of_square(square)
 
-            def same_orbit(left, right):
+            def same_orbit(left, right, *, special_only):
                 if left == right:
                     return True
                 if left.content() != right.content():
@@ -5269,32 +5268,19 @@ class Lattices(OwnedCategoryOverBaseRing):
                 extensions = self.definite_complement_extensions(
                     left.primitive_part(), right.primitive_part()
                 )
-                if group is orthogonal:
-                    return bool(extensions)
-                return any(extension.determinant() == 1 for extension in extensions)
+                if special_only:
+                    return any(extension.determinant() == 1 for extension in extensions)
+                return bool(extensions)
 
-            fibre = self.square_fibre(square).object()
-            match group:
-                case _ if group is orthogonal:
-                    action = self.square_fibre_action(square, orbit_relation=same_orbit)
-                case _:
-                    # The restriction along SO(L) -> O(L) acts by the same
-                    # isometries; the restriction functor retains no orbit
-                    # relation, so the decided one is supplied here.
-                    action = GObjects(special, OwnedSets()).on_set(
-                        fibre,
-                        lambda isometry, vector: special.inclusion()(isometry)(vector),
-                        orbit_relation=same_orbit,
-                    )
-            representatives = []
-            for candidate in candidates:
-                if any(
-                    same_orbit(candidate, representative)
-                    for representative in representatives
-                ):
-                    continue
-                representatives.append(candidate)
-            return action.orbits_presented_by(finite_ordered_set(tuple(representatives)))
+            action = self.square_fibre_action(
+                square, orbit_relation=lambda left, right: same_orbit(left, right, special_only=False)
+            )
+            if restricted:
+                action = action.restrict_action(
+                    special.inclusion(),
+                    orbit_relation=lambda left, right: same_orbit(left, right, special_only=True),
+                )
+            return action.orbits_presented_by(candidates)
 
         def reduction_cycle(self, bound, start):
             r"""Return the binary period automorph and bounded vectors, or ``None``.

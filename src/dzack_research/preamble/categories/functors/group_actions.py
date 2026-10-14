@@ -428,11 +428,12 @@ class RestrictionOfGroupActionFunctor(Functor):
     module presentation in hand.
     """
 
-    def __init__(self, group_morphism, underlying_category) -> None:
+    def __init__(self, group_morphism, underlying_category, *, orbit_relation=None) -> None:
         from dzack_research.preamble.categories.group.g_objects import GObjects
 
         self._group_morphism = group_morphism
         self._underlying_category = underlying_category
+        self._orbit_relation = orbit_relation
         Functor.__init__(
             self,
             GObjects(group_morphism.codomain(), underlying_category),
@@ -459,6 +460,16 @@ class RestrictionOfGroupActionFunctor(Functor):
                 return FiniteGSets(morphism.domain())(
                     acted.point_set(),
                     lambda group_element, point: acted.act(morphism(group_element), point),
+                )
+            if self._orbit_relation is not None:
+                # The restricted H-set has the same points; the supplied
+                # procedure decides its orbit relation y ~_H x.
+                from dzack_research.preamble.categories.group.g_objects import GObjects
+
+                return GObjects(morphism.domain(), Sets()).on_set(
+                    acted,
+                    lambda group_element, point: acted.act(morphism(group_element), point),
+                    orbit_relation=self._orbit_relation,
                 )
 
         # The affine owner retains the coordinate algebra and constructs the

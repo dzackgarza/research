@@ -964,7 +964,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         )
         return TransportGroupActionFunctor(self.acting_group(), functor)
 
-    def restriction(self, group_morphism):
+    def restriction(self, group_morphism, *, orbit_relation=None):
         r"""Return ``phi^*: GObjects(G, C) -> GObjects(H, C)`` for ``phi: H -> G``.
 
         Restriction along a group morphism is the reindexing functor
@@ -979,6 +979,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         return RestrictionOfGroupActionFunctor(
             group_morphism,
             self.underlying_category(),
+            orbit_relation=orbit_relation,
         )
 
     def _scheme_action_functor(self, acted):
@@ -1353,16 +1354,15 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
 
-        def orbits_presented_by(self, transversal):
-            r"""The orbit set ``X/G`` presented by a finite transversal of the orbits.
+        def orbits_presented_by(self, covering):
+            r"""The orbit set ``X/G`` presented by a finite set of points meeting every orbit.
 
-            ``transversal`` is a finite set of points meeting every orbit
-            exactly once, stated by the caller's construction.  The result is
-            the coequalizer of the action and the projection, with its
-            projection ``X -> X/G`` and the section ``X/G -> X`` with image
-            ``transversal``; its orbits are equal exactly when the orbit
-            relation of this object relates their points, so that relation
-            must be decided (``in_same_orbit``).
+            ``covering`` is a finite set of points meeting every orbit, stated
+            by the caller's construction.  The result is the coequalizer of the
+            action and the projection, with its projection ``X -> X/G`` and a
+            section ``X/G -> X`` with image in ``covering``; the orbits are the
+            distinct orbits of its points, so this object's orbit relation must
+            be decided (``in_same_orbit``).
             """
             from dzack_research.preamble.categories.group.g_sets import _orbit_set_presented_by
 
@@ -1370,7 +1370,17 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 f"the orbit object of {self} under {self.acting_group()} is a colimit in "
                 f"{self.underlying_category()}, and the preamble constructs it only for G-sets"
             )
-            return _orbit_set_presented_by(self, transversal)
+            return _orbit_set_presented_by(self, covering)
+
+        def restrict_action(self, group_morphism, *, orbit_relation=None):
+            r"""Return this object acted on by ``H`` through ``phi: H -> G``.
+
+            ``orbit_relation``, when supplied, is the procedure deciding the
+            orbit relation of the restricted ``H``-object (``y ~_H x``); the
+            restriction carries it as its decision.
+            """
+            category = GObjects(self.acting_group(), self.underlying_category())
+            return category.restriction(group_morphism, orbit_relation=orbit_relation)(self)
 
         def orbit_representatives(self, points):
             r"""Retain selected representatives together with their orbit projection."""
@@ -1431,11 +1441,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 description=f"stabilizer of {point} in {self}",
                 generating_morphism=self._stabilizer_generating_morphism(point),
             )
-
-        def restrict_action(self, group_morphism):
-            r"""Return this object acted on by ``H`` through ``phi: H -> G``."""
-            category = GObjects(self.acting_group(), self.underlying_category())
-            return category.restriction(group_morphism)(self)
 
         def _cyclic_restriction(self, group_element):
             r"""Return this object acted on by the cyclic subgroup ``<g> <= G``."""

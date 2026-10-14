@@ -878,54 +878,59 @@ class _OrbitSet:
 
 
 class _TransversalOrbitSet(_OrbitSet):
-    r"""The orbit set ``X/G`` presented by a supplied finite transversal ``T subset X``.
+    r"""The orbit set ``X/G`` presented by a finite set ``S subset X`` meeting every orbit.
 
-    The datum adds to ``X`` a finite set ``T`` of points meeting every orbit
-    exactly once; the caller's construction states this (``OWN-22``), as a
-    theorem on the action does (a finiteness theorem for the orbits and an
-    algorithm listing one point of each).  ``X`` may be infinite: the orbits
-    are listed through ``T``, equality of orbits is still the orbit relation
-    of ``X``, and :meth:`section` is the set map ``X/G -> X`` choosing the
-    point of ``T`` in an orbit, a section of :meth:`projection`.
+    The datum adds to ``X`` a finite set ``S`` of points meeting every orbit;
+    the caller's construction states this (``OWN-22``), as a theorem on the
+    action does (a finiteness theorem for the orbits and an algorithm listing
+    points of each).  ``X`` may be infinite.  The orbits are the distinct
+    orbits of the points of ``S`` under the orbit relation of ``X``, which
+    must be decided; :meth:`section` is the set map ``X/G -> X`` choosing the
+    first point of ``S`` in an orbit, a section of :meth:`projection`.
     """
 
-    def __init__(self, g_set, orbit_transversal, **rest) -> None:
-        self._orbit_transversal = orbit_transversal
+    def __init__(self, g_set, orbit_covering, **rest) -> None:
+        self._orbit_covering = orbit_covering
         super().__init__(g_set, **rest)
 
-    def orbit_transversal(self):
-        r"""The finite transversal ``T`` presenting the orbits."""
-        return self._orbit_transversal
+    def orbit_covering(self):
+        r"""The finite set ``S`` of points meeting every orbit."""
+        return self._orbit_covering
 
     @cached_method
     def _orbits(self):
-        return tuple(self.orbit_of(point) for point in self.orbit_transversal())
+        found = []
+        for point in self.orbit_covering():
+            orbit = self.orbit_of(point)
+            if orbit not in found:
+                found.append(orbit)
+        return tuple(found)
 
     @cached_method
     def section(self):
-        r"""The section ``s: X/G -> X`` of the projection with image ``T``."""
-        transversal = self.orbit_transversal()
+        r"""The section ``s: X/G -> X`` of the projection, choosing the first point of ``S``."""
+        covering = self.orbit_covering()
 
         def chosen_point(orbit):
-            for point in transversal:
+            for point in covering:
                 if self.orbit_of(point) == orbit:
                     return point
             assert False, (
-                f"{orbit} meets no point of the transversal {transversal} of {self}, "
-                f"so the stated transversal does not meet every orbit"
+                f"{orbit} meets no point of {covering}, so that set does not meet every "
+                f"orbit of {self.g_set()}"
             )
 
         return Sets().Mor(self, self.g_set())(chosen_point)
 
 
-def _orbit_set_presented_by(g_set, transversal):
-    r"""The orbit set ``X/G`` of ``X``, finite and enumerated through the transversal ``transversal``."""
+def _orbit_set_presented_by(g_set, covering):
+    r"""The orbit set ``X/G`` of ``X``, finite and enumerated through a finite set meeting every orbit."""
     category = owned_category_join((FiniteSets(), EnumeratedSets()))
     return _object_of(
         category,
         _engine=(category, _TransversalOrbitSet, _Orbit),
         g_set=g_set,
-        orbit_transversal=transversal,
+        orbit_covering=covering,
     )
 
 
