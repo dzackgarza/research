@@ -1394,6 +1394,17 @@ and [lean-categories #62](https://github.com/dzackgarza/lean-categories/issues/6
 The source inspection establishes a **representation gap**, not a runtime
 failure or a claim that the general mathematical theory is unavailable.
 
+**Presented groups (2026-10-14).** `FreeGroupQuotients()` (`categories/group/groups.py`)
+now follows Mathlib `PresentedGroup` (`Mathlib/GroupTheory/PresentedGroup.lean:39`): an
+object is `F/<<R>>` for a free group `F` and any set `R` of its elements, and an arrow is
+induced by a map of presentations `f: F -> F'` with `f(R) subset R'` (`PresentedGroup.map`,
+line 63). `GroupsWithChosenFinitePresentation` is the case `F` of finite basis and `R`
+finite: it is the finite truncation-1 case of the resolution category of `CAT-29`, which
+is not presented, and `FreeGroupQuotients()` relates to it by forgetting finiteness. The
+two stay separate classes until that resolution category exists; a group built by
+`FreeGroupQuotients()` from finite data is placed in both. **Consumers:**
+`FreeGroupQuotients()`, `CoxeterGroups()`, `quotient_by_relators`, `descend_homomorphism`.
+
 ### Indefinite integral lattices of rank at least three have no exact represented-value witness backend
 
 For an integral lattice `L` and integer `n`, `representation_vector(n)` must
@@ -2158,6 +2169,86 @@ For a field `K` with a chosen closure `e: K -> Kbar`, `G_K = Aut_K(Kbar)` is a p
 A prime of `Kbar = QQbar` above a rational prime `p` is a coherent family of primes `P_L` of the rings of integers of the finite stages `L`. An embedding `iota: QQbar -> Qbar_p` determines one without any state: `P_L = {x in O_L : |iota(x)|_p < 1}`. Coherence under contraction then follows from the construction. This is the datum that `AbsoluteGaloisGroup.frobenius(p, prolongation=...)` needs over `QQ`.
 **Searched (2026-10-14, source only):** the owned closure `QQbar` is Sage's `AlgebraicField`. Sage's `Qp(p)` is a complete field, and its algebraic extensions are finite extensions built by `Qp(p).extension(f)`. Sage presents no algebraic closure of `Qp`, so it presents no map `QQbar -> Qbar_p`. A finite `iota_L: L -> K_w` exists stage by stage, but compatible choices across all stages are the same coherence problem. **Conclusion:** no stateless prolongation is constructed here. The rejected query-order-dependent default is recorded in the commit that removed it.
 **Consumers:** `AbsoluteGaloisGroup.frobenius`, `FrobeniusConjugacyClass.representative`, and the restrictions of a bare `frobenius(p)` to non-abelian stages, which assert. Remediation: `prime-prolongations-from-p-adic-embeddings` in [TODO.md](TODO.md).
+
+### `lean-categories` does not formalize symmetric groups as a functor on bijections
+
+For a set `Omega`, `Sym(Omega)` is the group of bijections `Omega -> Omega`; a bijection
+`f: Omega -> Omega'` gives the isomorphism `sigma |-> f sigma f^-1`, and `Sym` is a functor
+from sets with bijections to groups, not from all maps of sets.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`, `rg -F` over
+`LeanCategories/` and `FOUNDATIONS.md` for `Equiv.Perm`, `permCongr`, "symmetric group".
+**Found:** files use Mathlib's `Equiv.Perm` as a type (`Homological/HochschildShuffleProduct.lean`,
+`ForMathlib/HumphreysH4RootModel.lean`, `Lattices/Valued/HasseInvariance.lean`). **Not found:**
+`permCongr`, a definition of the symmetric group as a construction, or its functoriality.
+**Formal statement outside `lean-categories`** (formalization-corpus API, 2026-10-14):
+Mathlib `Equiv.permCongr : Perm α' ≃ Perm β'`, `Mathlib/Logic/Equiv/Defs.lean:386`.
+**Dependency path:** sets and bijections (the core of `Set`) -> `Sym` on objects and on
+bijections -> the category `SymmetricGroups()` and its arrows.
+**Consumers:** `SymmetricGroups()`, `SymmetricGroupMor`, `Groups.S` (`categories/group/groups.py`).
+**Request:** `lean-categories` formalizes `Sym : core(Set) -> Grp`, citing `Equiv.Perm` and
+`Equiv.permCongr`. The request runs beside the presentation; the construction is at source,
+its execution in the terminal-T bank of `group-categories-defined-by-data` in [TODO.md](TODO.md).
+
+### `lean-categories` does not formalize `GL_n` as a functor on rings
+
+For a ring `R` and `n >= 0`, `GL_n(R)` is the group of invertible `n x n` matrices over `R`,
+the automorphisms of `R^n`; a ring map `phi: R -> S` gives `GL_n(phi)`, applied entrywise,
+and `GL_n` is a functor from rings to groups.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`, `rg -F` for
+`GeneralLinearGroup`. **Found:** `Algebra/IntegralGeneralLinearGroup.lean` uses Mathlib's
+`Matrix.GeneralLinearGroup` and `Matrix.GeneralLinearGroup.map` for finite adelic
+coefficients; `Algebra/JordanCanonical.lean` and `Algebra/AdjointChevalleyGroupData.lean`
+use the type. **Not found:** `GL_n` stated as a functor `Ring -> Grp` for every `n`.
+**Formal statement outside `lean-categories`** (formalization-corpus API, 2026-10-14):
+Mathlib `Matrix.GeneralLinearGroup.map (f : R →+* S) : GL n R →* GL n S`,
+`Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean:187`.
+**Dependency path:** rings and ring maps -> matrices over a ring and entrywise maps ->
+`GL_n` on objects and arrows -> the category `GeneralLinearGroups()` and its arrows.
+**Consumers:** `GeneralLinearGroups()`, `GeneralLinearGroupMor`, `Groups.GL`, the ambient of
+`Groups.SL(2, ZZ)` (`categories/group/groups.py`).
+**Request:** `lean-categories` formalizes `GL_n : Ring -> Grp`, citing
+`Matrix.GeneralLinearGroup.map`. The request runs beside the presentation, as above.
+
+### `lean-categories` uses "arithmetic subgroup" without defining it
+
+A subgroup `Gamma` of the rational points `G(QQ)` of a linear algebraic group `G` over `QQ`
+is arithmetic when it is commensurable with `G(ZZ)` for an integral structure; this is a
+property of the subgroup, not of the abstract group.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`, `rg -F` for
+`IsArithmetic` and "arithmetic subgroup". **Found:** `FOUNDATIONS.md:4341` (Def. 61.4,
+"Arithmetic quotient") takes "an arithmetic subgroup `Gamma ⊆ O^+(T)`" as given. **Not
+found:** a definition of an arithmetic subgroup.
+**Formal statement outside `lean-categories`** (formalization-corpus API, 2026-10-14):
+Mathlib `class Subgroup.IsArithmetic (𝒢 : Subgroup (GL (Fin 2) ℝ))`, commensurable with the
+image of `SL(2, ℤ)`, with `instance : IsArithmetic 𝒮ℒ`,
+`Mathlib/NumberTheory/ModularForms/ArithmeticSubgroups.lean:102-106`. It covers only
+subgroups of `GL_2(RR)`.
+**Dependency path:** linear algebraic groups over `QQ` with an integral structure ->
+commensurability of subgroups -> arithmetic subgroups -> arithmetic quotients (Def. 61.4).
+**Consumers:** `Subgroups.ParentMethods.is_arithmetic_group` and `Groups.SL(2, ZZ)`
+(`categories/group/groups.py`); `O^+(T)` arithmetic quotients.
+**Request:** `lean-categories` defines arithmetic subgroups of `G(QQ)` for a linear
+algebraic group `G` over `QQ`, citing Mathlib `Subgroup.IsArithmetic` for the `GL_2(RR)`
+case. Until then the predicate answers only by construction (integral points) and
+otherwise returns the proposition.
+
+### `lean-categories` defines Coxeter systems but no morphisms of Coxeter data
+
+`lean-categories` `FOUNDATIONS.md` Def. 60.4 defines the Coxeter system `(W, S)` by the
+presentation `<S | (st)^{m_st}>` of a Coxeter matrix. It states no morphisms between Coxeter
+matrices or Coxeter systems, so the category `CoxeterGroups()` has objects and no arrows of
+its own.
+**Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb`, `rg -F` for
+`CoxeterSystem` and `CoxeterMatrix`. **Found:** `Combinatorics/CoxeterPoincare.lean` and the
+Hecke files in `ForMathlib/` use Mathlib's `CoxeterSystem` and `CoxeterMatrix`. **Not found:**
+a morphism of Coxeter matrices or of Coxeter systems.
+**Dependency path:** Coxeter matrices -> their maps (for example inclusions of index sets
+preserving `m`, giving standard parabolic subgroups) -> the arrows of `CoxeterGroups()`.
+**Consumers:** `CoxeterGroups()` (`categories/group/groups.py`), whose objects record
+`FreeGroupQuotients()` as their constructing category in the meantime, so their `Mor` is
+the maps of presentations.
+**Request:** `lean-categories` formalizes morphisms of Coxeter matrices or systems and the
+induced group maps, citing Mathlib's `CoxeterSystem`.
 
 ## Workflow Papercuts
 

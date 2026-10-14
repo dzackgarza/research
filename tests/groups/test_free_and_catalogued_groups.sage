@@ -151,10 +151,12 @@ def test_the_cyclic_subgroups_of_c4_have_orders_four_and_two() -> None:
 
 def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     points = Sets.Δ[2]
-    group = SymmetricGroups(points)()
-    assert group in SymmetricGroups(points)
-    assert not SymmetricGroups(points).is_subcategory(OwnedGroups().Commutative())
-    assert SymmetricGroups(Sets.Δ[1]).is_subcategory(OwnedGroups().Commutative())
+    group = SymmetricGroups()(points)
+    assert group in SymmetricGroups()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.S(points)
+    assert group not in OwnedGroups().Commutative()
+    assert SymmetricGroups()(Sets.Δ[1]) in OwnedGroups().Commutative()
     assert group.order() == 6
     assert group.natural_points() is points
     action = group.natural_g_set()
@@ -188,7 +190,7 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
         assert False, "the common permutation action silently fixed an external point"
 
     labelled = finite_ordered_set(("alpha", "beta", "gamma"))
-    labelled_group = SymmetricGroups(labelled)()
+    labelled_group = SymmetricGroups()(labelled)
     assert labelled_group.natural_points() is labelled
     permutation = labelled_group((1, 2))
     labelled_action = labelled_group.natural_g_set()
@@ -221,13 +223,42 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
         assert labelled_action.act(cycle, point) == cycle(point)
 
 
-def test_finite_symmetric_group_category_rejects_infinite_point_set() -> None:
+def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
+    r"""An arrow of ``SymmetricGroups()`` is ``sigma |-> f sigma f^-1`` for a bijection ``f``.
+
+    Mathlib ``Equiv.permCongr``.  ``Z(S_3)`` is trivial, so the six
+    bijections ``Delta[2] -> {a, b, c}`` induce six distinct arrows, while
+    ``S_3`` has ten group endomorphisms (four of them with image of order at
+    most two, one of them trivial).
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    points = Sets.Δ[2]
+    labels = finite_ordered_set(("a", "b", "c"))
+    source = SymmetricGroups()(points)
+    target = SymmetricGroups()(labels)
+    arrows = SymmetricGroups().Mor(source, target)
+    unrank = labels.ranking_map().inverse()
+    relabel = Sets().Mor(points, labels)(lambda point: unrank(int(point))).as_isomorphism()
+    assert relabel in Sets().Core().Mor(points, labels)
+    induced = arrows(relabel)
+    transposition = source((1, 2))
+    assert induced(transposition)(labels("a")) == labels("b")
+    assert induced(transposition)(labels("c")) == labels("c")
+    assert arrows.cardinality() == cardinal(6)
+    assert SymmetricGroups().Mor(source, source).cardinality() == cardinal(6)
+    assert source.Mor(source).cardinality() == cardinal(10)
+    assert SymmetricGroups().Mor(source, SymmetricGroups()(Sets.Δ[1])).cardinality() == cardinal(0)
+    assert SymmetricGroups()(Groups.S(3).natural_points()) is Groups.S(3)
+
+
+def test_symmetric_group_of_an_infinite_set_is_outside_the_computed_cases() -> None:
     try:
-        SymmetricGroups(NN)
+        SymmetricGroups()(NN)
     except AssertionError as error:
         assert "finite point set" in str(error)
     else:
-        assert False, "the finite-group category admitted an infinite permutation domain"
+        assert False, "Sym(NN) was realized by a finite permutation engine"
 
 
 def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
@@ -237,14 +268,16 @@ def test_orders_of_catalogued_finite_groups_from_their_definitions() -> None:
 
 def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     matrix = [[1, 3], [3, 1]]
-    theory = CoxeterGroups(matrix)
-    assert theory.is_subcategory(OwnedGroups().Finite())
-    group = theory()
-    assert theory.coxeter_matrix() is matrix
-    assert group in theory
-    assert group.coxeter_matrix() is matrix
+    group = CoxeterGroups()(matrix)
+    assert group in OwnedGroups().Finite()
+    assert group in CoxeterGroups()
+    assert group in FreeGroupQuotients()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.Coxeter([[1, 3], [3, 1]])
+    retained = group.coxeter_matrix()
+    assert group.coxeter_matrix() is retained
     assert group.order() == 6
-    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     # The Coxeter realization is not Sage's FinitelyPresentedGroup; its
     # canonical reduced words must nevertheless lift through the selected
     # Coxeter presentation when adjoining a normal relator.
@@ -281,7 +314,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
 
     # For an even Coxeter bond, killing one reflection leaves the other
     # involution (unlike A2's odd bond, which kills both reflections).
-    b2 = CoxeterGroups([[1, 4], [4, 1]])()
+    b2 = CoxeterGroups()([[1, 4], [4, 1]])
     b2_reflection = tuple(b2.group_generators())[0]
     b2_quotient, b2_map = b2.quotient_by_relators((b2_reflection,), return_projection=True)
     assert b2_quotient.order() == 2
@@ -303,14 +336,14 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     # Adjoining (s*t)^3 makes precisely I_2(3) = S_3; the quotient is
     # finite even though its source is provably infinite. This separates
     # Coxeter presentation relations from inherited source finiteness.
-    infinite_dihedral = CoxeterGroups([[1, -1], [-1, 1]])()
+    infinite_dihedral = CoxeterGroups()([[1, -1], [-1, 1]])
     infinite_s, infinite_t = tuple(infinite_dihedral.group_generators())
     finite_dihedral, finite_projection = infinite_dihedral.quotient_by_relators(
         ((infinite_s * infinite_t)**3,), return_projection=True
     )
     assert infinite_dihedral.is_finite() is False
     assert finite_dihedral.order() == 6
-    assert finite_dihedral.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert finite_dihedral.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     assert finite_projection(infinite_s * infinite_t) == (
         finite_projection(infinite_s) * finite_projection(infinite_t)
     )
@@ -322,7 +355,7 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     assert projection.domain() is source
     assert projection.codomain() is group
     assert all(projection(relation) == group.one() for relation in group.defining_relations())
-    symmetric = SymmetricGroups(Sets.Δ[2])()
+    symmetric = SymmetricGroups()(Sets.Δ[2])
     free_generators = tuple(source.group_generators())
     f = source.Mor(symmetric)({
         free_generators[0]: symmetric((1, 2)),
@@ -335,134 +368,102 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
 
 
 def test_rank_two_coxeter_infinitude_depends_on_the_bond() -> None:
-    commuting = CoxeterGroups([[1, 2], [2, 1]])
-    finite = CoxeterGroups([[1, 4], [4, 1]])
-    infinite = CoxeterGroups([[1, -1], [-1, 1]])
-    assert commuting.is_subcategory(OwnedGroups().Commutative())
-    assert commuting.is_subcategory(OwnedGroups().Finite())
-    assert finite.is_subcategory(OwnedGroups().Finite())
-    assert infinite.is_subcategory(OwnedGroups().Infinite())
-    assert not infinite.is_subcategory(OwnedGroups().Finite())
+    commuting = CoxeterGroups()([[1, 2], [2, 1]])
+    finite = CoxeterGroups()([[1, 4], [4, 1]])
+    infinite = CoxeterGroups()([[1, -1], [-1, 1]])
+    assert commuting in (OwnedGroups().Commutative())
+    assert commuting in (OwnedGroups().Finite())
+    assert finite in (OwnedGroups().Finite())
+    assert infinite in (OwnedGroups().Infinite())
+    assert infinite not in (OwnedGroups().Finite())
 
-    commuting_rank_three = CoxeterGroups([[1, 2, 2], [2, 1, 2], [2, 2, 1]])
-    assert commuting_rank_three.is_subcategory(OwnedGroups().Finite())
-    assert commuting_rank_three.is_subcategory(OwnedGroups().Commutative())
-    two_a2_components = CoxeterGroups([
+    commuting_rank_three = CoxeterGroups()([[1, 2, 2], [2, 1, 2], [2, 2, 1]])
+    assert commuting_rank_three in (OwnedGroups().Finite())
+    assert commuting_rank_three in (OwnedGroups().Commutative())
+    two_a2_components = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 2, 2], [2, 2, 1, 3], [2, 2, 3, 1]
     ])
-    assert two_a2_components.is_subcategory(OwnedGroups().Finite())
-    assert not two_a2_components.is_subcategory(OwnedGroups().Commutative())
-    a4 = CoxeterGroups([
+    assert two_a2_components in (OwnedGroups().Finite())
+    assert two_a2_components not in (OwnedGroups().Commutative())
+    a4 = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    affine_a3 = CoxeterGroups([
+    affine_a3 = CoxeterGroups()([
         [1, 3, 2, 3], [3, 1, 3, 2], [2, 3, 1, 3], [3, 2, 3, 1]
     ])
-    assert a4.is_subcategory(OwnedGroups().Finite())
-    assert not affine_a3.is_subcategory(OwnedGroups().Finite())
-    assert affine_a3.is_subcategory(OwnedGroups().Infinite())
-    b4 = CoxeterGroups([
+    assert a4 in (OwnedGroups().Finite())
+    assert affine_a3 not in (OwnedGroups().Finite())
+    assert affine_a3 in (OwnedGroups().Infinite())
+    b4 = CoxeterGroups()([
         [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    affine_c3 = CoxeterGroups([
+    affine_c3 = CoxeterGroups()([
         [1, 4, 2, 2], [4, 1, 3, 2], [2, 3, 1, 4], [2, 2, 4, 1]
     ])
-    assert b4.is_subcategory(OwnedGroups().Finite())
-    assert not affine_c3.is_subcategory(OwnedGroups().Finite())
-    assert affine_c3.is_subcategory(OwnedGroups().Infinite())
-    d4 = CoxeterGroups([
+    assert b4 in (OwnedGroups().Finite())
+    assert affine_c3 not in (OwnedGroups().Finite())
+    assert affine_c3 in (OwnedGroups().Infinite())
+    d4 = CoxeterGroups()([
         [1, 3, 3, 3], [3, 1, 2, 2], [3, 2, 1, 2], [3, 2, 2, 1]
     ])
-    assert d4.is_subcategory(OwnedGroups().Finite())
-    f4 = CoxeterGroups([
+    assert d4 in (OwnedGroups().Finite())
+    f4 = CoxeterGroups()([
         [1, 3, 2, 2], [3, 1, 4, 2], [2, 4, 1, 3], [2, 2, 3, 1]
     ])
-    h4 = CoxeterGroups([
+    h4 = CoxeterGroups()([
         [1, 5, 2, 2], [5, 1, 3, 2], [2, 3, 1, 3], [2, 2, 3, 1]
     ])
-    assert f4.is_subcategory(OwnedGroups().Finite())
-    assert h4.is_subcategory(OwnedGroups().Finite())
-    # The finite-type decision belongs to the selected Sage Coxeter
-    # matrix, not to a separately maintained ADE/B/H pattern catalogue.
-    assert f4._engine_coxeter_matrix.is_finite() is True
-    assert h4._engine_coxeter_matrix.is_finite() is True
+    assert f4 in (OwnedGroups().Finite())
+    assert h4 in (OwnedGroups().Finite())
     # E6: the central vertex has arms of lengths 1, 2, 2.
-    e6 = CoxeterGroups([
+    e6 = CoxeterGroups()([
         [1, 3, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2],
         [2, 3, 1, 3, 2, 3], [2, 2, 3, 1, 3, 2],
         [2, 2, 2, 3, 1, 2], [2, 2, 3, 2, 2, 1],
     ])
-    assert e6.is_subcategory(OwnedGroups().Finite())
+    assert e6 in (OwnedGroups().Finite())
     # Affine E6 has three arms of length two, so it is not spherical.
-    affine_e6 = CoxeterGroups([
+    affine_e6 = CoxeterGroups()([
         [1, 3, 2, 2, 2, 2, 2], [3, 1, 3, 2, 2, 2, 2],
         [2, 3, 1, 3, 2, 3, 2], [2, 2, 3, 1, 3, 2, 2],
         [2, 2, 2, 3, 1, 2, 2], [2, 2, 3, 2, 2, 1, 3],
         [2, 2, 2, 2, 2, 3, 1],
     ])
-    assert not affine_e6.is_subcategory(OwnedGroups().Finite())
-    infinite_rank_three = CoxeterGroups([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
-    assert infinite_rank_three.is_subcategory(OwnedGroups().Infinite())
-    affine_a2 = CoxeterGroups([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
-    assert affine_a2.is_subcategory(OwnedGroups().Infinite())
-    assert not affine_a2.is_subcategory(OwnedGroups().Finite())
-    affine_c2 = CoxeterGroups([[1, 4, 4], [4, 1, 2], [4, 2, 1]])
-    hyperbolic_triangle = CoxeterGroups([[1, 5, 5], [5, 1, 5], [5, 5, 1]])
-    spherical_triangle = CoxeterGroups([[1, 3, 3], [3, 1, 2], [3, 2, 1]])
-    assert affine_c2.is_subcategory(OwnedGroups().Infinite())
-    assert hyperbolic_triangle.is_subcategory(OwnedGroups().Infinite())
-    assert not spherical_triangle.is_subcategory(OwnedGroups().Infinite())
-    assert spherical_triangle.is_subcategory(OwnedGroups().Finite())
+    assert affine_e6 not in (OwnedGroups().Finite())
+    infinite_rank_three = CoxeterGroups()([[1, -1, 2], [-1, 1, 2], [2, 2, 1]])
+    assert infinite_rank_three in (OwnedGroups().Infinite())
+    affine_a2 = CoxeterGroups()([[1, 3, 3], [3, 1, 3], [3, 3, 1]])
+    assert affine_a2 in (OwnedGroups().Infinite())
+    assert affine_a2 not in (OwnedGroups().Finite())
+    affine_c2 = CoxeterGroups()([[1, 4, 4], [4, 1, 2], [4, 2, 1]])
+    hyperbolic_triangle = CoxeterGroups()([[1, 5, 5], [5, 1, 5], [5, 5, 1]])
+    spherical_triangle = CoxeterGroups()([[1, 3, 3], [3, 1, 2], [3, 2, 1]])
+    assert affine_c2 in (OwnedGroups().Infinite())
+    assert hyperbolic_triangle in (OwnedGroups().Infinite())
+    assert spherical_triangle not in (OwnedGroups().Infinite())
+    assert spherical_triangle in (OwnedGroups().Finite())
 
 
 def test_mutating_selected_coxeter_matrix_does_not_change_its_group() -> None:
+    r"""Rows of a Coxeter matrix are read once into the owned matrix; mutating them later changes nothing."""
     matrix = [[1, 3], [3, 1]]
-    category = CoxeterGroups(matrix)
-    matrix[0][1] = 4
-    matrix[1][0] = 4
-    try:
-        category.super_categories()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "a mutated Coxeter matrix retained its category placement"
-    try:
-        category.coxeter_matrix()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "the Coxeter category returned a mutated defining matrix"
-    try:
-        category()
-    except ValueError as error:
-        assert "changed after category construction" in str(error)
-    else:
-        assert False, "a mutated defining matrix silently changed the selected Coxeter group"
-
-    matrix = [[1, 3], [3, 1]]
-    realized = CoxeterGroups(matrix)()
-    assert realized.coxeter_matrix() is matrix
+    group = CoxeterGroups()(matrix)
+    retained = group.coxeter_matrix()
     matrix[0][1] = matrix[1][0] = 4
-    try:
-        realized.coxeter_matrix()
-    except ValueError as error:
-        assert "changed after group construction" in str(error)
-    else:
-        assert False, "a realized Coxeter group reported a mutated defining matrix"
+    assert group.coxeter_matrix() is retained
+    assert group.order() == 6
 
 
 def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())
     relators = (a**2, b**3, (a*b)**2)
-    theory = FreeGroupQuotients(free, relators)
-    quotient = theory()
-    assert theory.free_group() is free
-    assert theory.relators() == relators
-    assert quotient in theory
+    quotient = FreeGroupQuotients()(free, relators)
+    assert quotient in FreeGroupQuotients()
+    assert quotient.ambient_category() is OwnedGroups()
     assert quotient.order() == 6
     assert quotient.presenting_free_group() is free
-    assert tuple(quotient.defining_relations()) == relators
+    assert set(quotient.defining_relations()) == set(relators)
     projection = quotient.quotient_projection()
     assert projection.domain() is free
     assert projection.codomain() is quotient
@@ -472,7 +473,7 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
     assert descended.codomain() is quotient
     assert all(descended(projection(generator)) == projection(generator) for generator in (a, b))
     assert all(descended(projection(word)) == projection(word) for word in (a*b, b*a, a*b*a, b**2*a))
-    symmetric = SymmetricGroups(Sets.Δ[2])()
+    symmetric = SymmetricGroups()(Sets.Δ[2])
     free_to_symmetric = free.Mor(symmetric)(
         {a: symmetric((1, 2)), b: symmetric((1, 2, 3))}
     )
@@ -503,14 +504,16 @@ def test_free_group_quotient_retains_source_and_dihedral_relations() -> None:
         assert "defining relators" in str(error)
     else:
         assert False, "a map not killing the relations descended to the quotient"
-    assert quotient.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert quotient.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
 
     # The ordinary quotient operation is another entry into the same
     # mathematical construction, not a weaker anonymous presentation.
     from_operation = free.quotient_by_relators(relators)
-    assert from_operation in theory
+    assert from_operation in FreeGroupQuotients()
+    assert from_operation is quotient
+    assert FreeGroupQuotients()(free, tuple(reversed(relators))) is quotient
     assert from_operation.presenting_free_group() is free
-    assert tuple(from_operation.defining_relations()) == relators
+    assert set(from_operation.defining_relations()) == set(relators)
     free_quotient, free_projection = free.quotient_by_relators(
         relators, return_projection=True
     )
@@ -600,29 +603,32 @@ def test_a_chosen_generating_set_does_not_make_a_group_free() -> None:
     cyclic = Groups.C(3)
     assert cyclic.has_selected_group_resolution()
     try:
-        FreeGroupQuotients(cyclic, (cyclic.one(),))
+        FreeGroupQuotients()(cyclic, (cyclic.one(),))
     except AssertionError as error:
-        assert "actual free group" in str(error)
+        assert "free group on a chosen set" in str(error)
     else:
         assert False, "a nonfree cyclic group was admitted as a free source"
 
 
-def test_finitely_many_relators_require_a_finite_free_basis() -> None:
+def test_presentations_outside_the_computed_cases_and_foreign_relators() -> None:
+    r"""``F/<<R>>`` is defined for every free group and every relator set (Mathlib
+    ``PresentedGroup``); it is computed for a finite basis and finitely many relators.
+    """
     infinite_free = Groups.Free(index_set=NN)
     try:
-        FreeGroupQuotients(infinite_free, ())
-    except ValueError as error:
+        FreeGroupQuotients()(infinite_free, ())
+    except AssertionError as error:
         assert "finite free basis" in str(error)
     else:
-        assert False, "an infinite-rank free group was assigned a finite presentation"
+        assert False, "an infinite-rank free group was handed to a finitely presented engine"
 
     finite_free = Groups.Free(1)
     try:
-        FreeGroupQuotients(finite_free, NN)
-    except ValueError as error:
-        assert "finite relator family" in str(error)
+        FreeGroupQuotients()(finite_free, NN)
+    except AssertionError as error:
+        assert "finitely many relators" in str(error)
     else:
-        assert False, "an infinite set of relators was assigned a finite presentation"
+        assert False, "an infinite set of relators was handed to a finitely presented engine"
 
     # Relations from another presented group are not words in this
     # selected free source, even if both have one chosen generator.
@@ -630,17 +636,42 @@ def test_finitely_many_relators_require_a_finite_free_basis() -> None:
     other_free = Groups.Free(index_set=finite_ordered_set(("z",)))
     other_generator = other_free.group_generators()[0]
     try:
-        FreeGroupQuotients(finite_free, (other_generator,))
+        FreeGroupQuotients()(finite_free, (other_generator,))
     except ValueError as error:
-        assert "selected presenting free group" in str(error)
+        assert "presenting free group" in str(error)
     else:
         assert False, "a relator from another free group changed the selected presentation"
+
+
+def test_presented_group_arrows_are_induced_by_maps_of_presentations() -> None:
+    r"""An arrow of ``FreeGroupQuotients()`` is induced by ``f: F -> F'`` with ``f(R) subset R'``.
+
+    Mathlib ``PresentedGroup.map``.  On ``F(a, b)``, the swap ``a <-> b``
+    sends ``{a^2, b^2, (ab)^3}`` into itself, so it induces an automorphism
+    of ``<a, b | a^2, b^2, (ab)^3> = S_3``, exchanging the two generators.
+    """
+    free = Groups.Free(2)
+    a, b = tuple(free.group_generators())
+    relators = (a**2, b**2, (a*b)**3)
+    quotient = FreeGroupQuotients()(free, relators)
+    swap = free.Mor(free)({a: b, b: a})
+    induced = FreeGroupQuotients().Mor(quotient, quotient)(swap, check=True)
+    projection = quotient.quotient_projection()
+    assert induced(projection(a)) == projection(b)
+    assert induced(projection(b)) == projection(a)
+    collapse = free.Mor(free)({a: a, b: a})
+    try:
+        FreeGroupQuotients().Mor(quotient, quotient)(collapse, check=True)
+    except ValueError as error:
+        assert "not a map of presentations" in str(error)
+    else:
+        assert False, "a free-group map sending (ab)^3 to a^6, not a relator, was admitted"
 
 
 def test_quotient_descent_with_identified_presenting_generators() -> None:
     free = Groups.Free(2)
     a, b = tuple(free.group_generators())
-    quotient = FreeGroupQuotients(free, (a * ~b, a**2))()
+    quotient = FreeGroupQuotients()(free, (a * ~b, a**2))
     projection = quotient.quotient_projection()
     assert projection(a) == projection(b)
 
@@ -670,7 +701,7 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
     free = Groups.Free(index_set=labels)
     a = free.free_generator(labels(0))
     b = free.free_generator(labels(1))
-    quotient = FreeGroupQuotients(free, (a**2, b**3, (a*b)**2))()
+    quotient = FreeGroupQuotients()(free, (a**2, b**3, (a*b)**2))
     projection = quotient.quotient_projection()
     via_operation, operation_projection = free.quotient_by_relators(
         (a**2, b**3, (a*b)**2), return_projection=True
@@ -702,43 +733,58 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
 
 
 def test_general_linear_group_retains_ring_and_rank() -> None:
-    category = GeneralLinearGroups(GF(2), 2)
-    group = category()
-    assert group in category
-    assert category.is_subcategory(OwnedGroups().Finite())
-    assert category.coefficient_ring() is GF(2)
-    assert category.degree() == 2
-    assert group.coefficient_ring() is category.coefficient_ring()
-    assert group.degree() == category.degree()
+    group = GeneralLinearGroups()(GF(2), 2)
+    assert group in GeneralLinearGroups()
+    assert group.ambient_category() is OwnedGroups()
+    assert group is Groups.GL(2, GF(2))
+    assert group in OwnedGroups().Finite()
+    assert group.coefficient_ring() is GF(2)
+    assert group.degree() == 2
     assert group.order() == 6
-    assert group.is_isomorphic_to(SymmetricGroups(Sets.Δ[2])())
+    assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
 
     # Repeated constructions must retain the same selected ring and rank;
     # the temporary pair passed to the engine cache is not a datum identity.
-    second_category = GeneralLinearGroups(GF(3), 2)
-    second_group = second_category()
+    second_group = GeneralLinearGroups()(GF(3), 2)
     assert second_group.coefficient_ring() is GF(3)
     assert second_group.degree() == 2
     assert second_group.order() == 48
 
     # GL_1(ZZ) is the group of units {+1,-1}, while GL_2(ZZ)
     # contains an infinite cyclic subgroup of unipotent matrices.
-    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
-    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Commutative())
-    assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Commutative())
-    assert not GeneralLinearGroups(GF(2), 2).is_subcategory(OwnedGroups().Commutative())
-    assert not GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Finite())
-    assert GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ, 2).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ["t"].fraction_field(), 1).is_subcategory(OwnedGroups().Infinite())
+    assert GeneralLinearGroups()(ZZ, 1) in OwnedGroups().Finite()
+    assert GeneralLinearGroups()(ZZ, 1) in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(QQ, 1) in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(GF(2), 2) not in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(ZZ, 2) not in OwnedGroups().Finite()
+    assert GeneralLinearGroups()(ZZ, 2) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ, 1) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ, 2) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ["t"].fraction_field(), 1) in OwnedGroups().Infinite()
+
+
+def test_general_linear_arrows_are_induced_by_ring_maps() -> None:
+    r"""An arrow of ``GeneralLinearGroups()`` is ``GL_n(phi)``, ``phi`` applied entrywise.
+
+    Mathlib ``Matrix.GeneralLinearGroup.map``.  Reduction ``ZZ -> GF(2)``
+    sends the unipotent ``[[1, 1], [0, 1]]`` of infinite order to the
+    transvection ``[[1, 1], [0, 1]]`` of order two.
+    """
+    integral = GeneralLinearGroups()(ZZ, 2)
+    reduced = GeneralLinearGroups()(GF(2), 2)
+    reduction = OwnedRings().Mor(ZZ, GF(2))(lambda n: GF(2)(n))
+    induced = GeneralLinearGroups().Mor(integral, reduced)(reduction)
+    unipotent = integral([[1, 1], [0, 1]])
+    assert induced(unipotent) == reduced([[1, 1], [0, 1]])
+    assert induced(unipotent).order() == 2
+    assert induced(integral([[0, -1], [1, 0]])) == reduced([[0, 1], [1, 0]])
 
 
 def test_general_linear_rank_cannot_be_truncated() -> None:
     try:
-        GeneralLinearGroups(GF(2), QQ(3) / 2)
+        GeneralLinearGroups()(GF(2), QQ(3) / 2)
     except AssertionError as error:
-        assert "integral rank" in str(error)
+        assert "integer" in str(error)
     else:
         assert False, "a nonintegral rank was silently truncated"
 
