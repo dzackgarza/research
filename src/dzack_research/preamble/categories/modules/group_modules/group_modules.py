@@ -846,7 +846,7 @@ class ModulesOverGroupAlgebra(Modules):
             forward = self.Mor(self)(automorphism.forward()).restrict_to(
                 acted_inclusion
             )
-            inverse = self.Mor(self)(automorphism.inverse()).restrict_to(
+            inverse = self.Mor(self)(automorphism.inverse().forward()).restrict_to(
                 acted_inclusion
             )
             piece = acted_inclusion.domain()

@@ -353,10 +353,10 @@ def _hodge_star(metric, volume, degree):
         raise ValueError(f"no Hodge star on {degree}-forms of {metric}: the degree must lie in [0, {rank}], the rank of {metric}")
     correlation = metric.correlation_isomorphism()
     poincare = metric.poincare_duality(volume, degree)
-    raise_metric = correlation.inverse().exterior_power(degree)
+    raise_metric = correlation.inverse().forward().exterior_power(degree)
     lower_metric = correlation.forward().exterior_power(degree)
     forward = poincare.forward() * raise_metric
-    inverse = lower_metric * poincare.inverse()
+    inverse = lower_metric * poincare.inverse().forward()
     source = metric.exterior_forms(degree)
     target = metric.exterior_forms(rank - degree)
     modules = Modules(metric.base_ring())

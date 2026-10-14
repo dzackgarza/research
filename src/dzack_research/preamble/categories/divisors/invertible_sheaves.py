@@ -1104,7 +1104,7 @@ class _ProjectiveSubschemeLineBundleEngine:
         )
         sheaves = QuasiCoherentSheaves(self.scheme())
         forward = sheaves.Mor(self, target)(ambient.forward())
-        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        inverse = sheaves.Mor(target, self)(ambient.inverse().forward())
         return sheaves.Core().Mor(self, target)(forward, inverse)
 
     def _repr_(self):
@@ -1596,7 +1596,7 @@ class _ProductProjectiveSubschemeLineBundleEngine:
         )
         sheaves = QuasiCoherentSheaves(self.scheme())
         forward = sheaves.Mor(self, target)(ambient.forward())
-        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        inverse = sheaves.Mor(target, self)(ambient.inverse().forward())
         return sheaves.Core().Mor(self, target)(forward, inverse)
 
     def _repr_(self):

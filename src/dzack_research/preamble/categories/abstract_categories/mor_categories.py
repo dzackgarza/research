@@ -1294,15 +1294,25 @@ class CategoricalIsomorphism(Morphism):
     def forward(self) -> Morphism:
         return self._forward
 
-    def inverse(self) -> Morphism:
-        return self._inverse
+    def inverse(self) -> CategoricalIsomorphism:
+        r"""The inverse isomorphism ``Y -> X``, an element of the core Mor from the codomain.
+
+        It is one morphism: its forward arrow is the base inverse of this
+        isomorphism and its inverse is this forward arrow.  On ``Aut(X)`` it
+        is the group inverse.  The base arrow is ``inverse().forward()``.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+
+        return _isomorphism_from_known_inverse_pair(self._inverse, self._forward)
 
     def left_inverse_decision(self):
-        composite = self.inverse() * self.forward()
+        composite = self._inverse * self.forward()
         return composite == composite.parent().identity()
 
     def right_inverse_decision(self):
-        composite = self.forward() * self.inverse()
+        composite = self.forward() * self._inverse
         return composite == composite.parent().identity()
 
     def inverse_pair_decision(self):
@@ -1314,7 +1324,7 @@ class CategoricalIsomorphism(Morphism):
         decision = self.inverse_pair_decision()
         if decision is False:
             raise ValueError(
-                f"{self.inverse()} is not an inverse of {self.forward()}: at least one inverse equation fails"
+                f"{self._inverse} is not an inverse of {self.forward()}: at least one inverse equation fails"
             )
         return decision
 
@@ -1334,7 +1344,7 @@ class CategoricalIsomorphism(Morphism):
                 pass
             case _:
                 return False
-        equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
+        equalities = (self.forward() == other.forward(), self._inverse == other._inverse)
         from dzack_research.preamble.logic import conjunction
 
         return conjunction(equalities)
@@ -1367,7 +1377,7 @@ class CategoricalIsomorphism(Morphism):
 
         return _isomorphism_from_known_inverse_pair(
             self.forward() * other.forward(),
-            other.inverse() * self.inverse(),
+            other._inverse * self._inverse,
             base_category=core,
         )
 

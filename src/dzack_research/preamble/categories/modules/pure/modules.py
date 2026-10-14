@@ -1054,7 +1054,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
                 if coequalizer_transport is None:
                     return raw_factor
-                return raw_factor * coequalizer_transport.inverse()
+                return raw_factor * coequalizer_transport.inverse().forward()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
@@ -5942,7 +5942,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             # For a square in Arr(Mod_R), right * original = diagonal * left.
             # Thus D = right * A * left^{-1} in matrix notation.
             left_change = normalization.forward().right()
-            right_change = normalization.inverse().left()
+            right_change = normalization.inverse().forward().left()
             labels = finite_ordered_set((
                 "diagonal",
                 "left_change",

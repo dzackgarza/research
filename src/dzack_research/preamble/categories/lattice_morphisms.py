@@ -994,7 +994,7 @@ class LatticeIsometryMethods:
                 codomain,
                 self.domain(),
             )._from_known_inverse_pair(
-                module_isomorphism.inverse(),
+                module_isomorphism.inverse().forward(),
                 module_isomorphism.forward(),
             )
             return target.element_class(target, reverse)
