@@ -523,10 +523,12 @@ class CoxeterDiagrams(OwnedCategory):
             return super().Mor(codomain, category=category)
 
         def vertex_weight(self, vertex):
-            return self.vinberg_invariant_matrix().vertex_weight(vertex)
+            r"""Return the Vinberg invariant \([4:1]\) of the mirror ``vertex`` with itself."""
+            return self.vinberg_invariant_matrix().vertex_label(vertex)
 
         def edge_weight(self, left, right):
-            return self.vinberg_invariant_matrix().edge_weight(left, right)
+            r"""Return the Vinberg invariant of the two joined mirrors, a point of \(\mathbb P^1(R)\)."""
+            return self.vinberg_invariant_matrix().edge_label(left, right)
 
         def vertex_names(self):
             return self._names
