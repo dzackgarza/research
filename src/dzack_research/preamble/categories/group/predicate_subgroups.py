@@ -5,10 +5,13 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
+    _fix_selected_resolution,
 )
 from dzack_research.preamble.categories.group.groups import (
+    OwnedFiniteGroups,
     OwnedGroups,
     Subgroups,
+    _selected_group_resolution,
     _finite_group_morphism_kernel_cardinality,
     _finite_group_morphism_kernel_is_abelian,
     _finite_if_bounded_by,
@@ -23,6 +26,33 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set, _ConditionSetEngine
 from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
+
+
+def _has_selected_finite_group_generators(group) -> bool:
+    r"""Whether ``group`` retains a selected finite free-group augmentation."""
+    return group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set()
+
+
+def _fix_selected_generating_morphism(subgroup, generating_morphism) -> None:
+    r"""Retain ``E ->> H`` from a free group as ``H``'s selected resolution, realized at first read.
+
+    ``generating_morphism`` is a zero-argument computation of a group
+    morphism from a free group onto ``subgroup``.  Fixing the datum computes
+    nothing (``OWN-22``): the morphism, and the degree-zero resolution read
+    off its free basis, are built when the generators are first requested.
+    """
+
+    def resolution():
+        augmentation = generating_morphism()
+        free = augmentation.domain()
+        return _selected_group_resolution(
+            subgroup,
+            free,
+            free.free_basis(),
+            augmentation * free.group_generator_morphism(),
+        )
+
+    _fix_selected_resolution(subgroup, OwnedGroups(), resolution)
 
 
 def _predicate_subgroup_category(category):
@@ -125,6 +155,33 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def _element_constructor_(self, datum):
             r"""Read ambient group literals, then use the set owner's predicate admission."""
             return _ConditionSetEngine._element_constructor_(self, self.supergroup()(datum))
+
+        def has_selected_group_resolution(self) -> bool:
+            r"""Whether a generating resolution is retained or supplied by finite defining data.
+
+            A predicate alone supplies no generating family.  A subgroup whose
+            construction retains finite data -- the kernel or preimage of a
+            map to a finite group, an intersection with such a subgroup --
+            supplies its Schreier generating morphism, which is fixed here
+            unrealized and computed at the first read of its generators.
+            """
+            if not self.has_selected_resolution(OwnedGroups()) and self._generated_by_finite_data():
+                _fix_selected_generating_morphism(self, self._finite_data_generating_morphism)
+            return self.has_selected_resolution(OwnedGroups())
+
+        def selected_group_resolution(self):
+            self.has_selected_group_resolution()
+            return self.selected_resolution(OwnedGroups())
+
+        def _generated_by_finite_data(self) -> bool:
+            r"""Whether the construction data supply a generating morphism; a bare predicate supplies none."""
+            return False
+
+        def _finite_data_generating_morphism(self):
+            r"""The free generating morphism supplied by the construction's finite data."""
+            assert False, (
+                f"{self} is cut out by a predicate, which supplies no generating family"
+            )
 
         def finite_index_schreier_generators(self, *, index_bound, generators=None):
             r"""Generate a finite-index predicate subgroup by coset traversal.
@@ -579,6 +636,16 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             words = self.schreier_generators(generators=generators)
             return self._selected_schreier_augmentation(words)
 
+        def _generated_by_finite_data(self) -> bool:
+            r"""Schreier's lemma applies: the ambient group is finitely generated and the image is finite."""
+            return (
+                _has_selected_finite_group_generators(self.supergroup())
+                and self.kernel_morphism().codomain() in OwnedFiniteGroups()
+            )
+
+        def _finite_data_generating_morphism(self):
+            return self.schreier_generating_morphism()
+
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
@@ -770,6 +837,16 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 name="Schreier generators of a subgroup preimage",
             )
 
+        def _generated_by_finite_data(self) -> bool:
+            r"""Schreier's lemma applies: the ambient group is finitely generated and the codomain is finite."""
+            return (
+                _has_selected_finite_group_generators(self.supergroup())
+                and self.preimage_morphism().codomain() in OwnedFiniteGroups()
+            )
+
+        def _finite_data_generating_morphism(self):
+            return self.schreier_generating_morphism()
+
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
@@ -925,6 +1002,47 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
 
         def intersected_subgroups(self):
             return self._intersected_subgroups
+
+        def _finite_data_factors(self):
+            r"""``(f, K, B)`` when one factor is ``f^-1(K)`` for ``f`` to a finite group and the other ``B`` is finitely generated, else None."""
+            group = self.supergroup()
+            subgroups = tuple(self.intersected_subgroups())
+            if len(subgroups) != 2:
+                return None
+            for preimage, generated in (subgroups, subgroups[::-1]):
+                match preimage:
+                    case _ if preimage in KernelSubgroups(group):
+                        morphism = preimage.kernel_morphism()
+                        target = morphism.codomain().subgroup(())
+                    case _ if preimage in PreimageSubgroups(group):
+                        morphism = preimage.preimage_morphism()
+                        target = preimage.target_subgroup()
+                    case _:
+                        continue
+                if morphism.codomain() in OwnedFiniteGroups() and _has_selected_finite_group_generators(generated):
+                    return morphism, target, generated
+            return None
+
+        def _generated_by_finite_data(self) -> bool:
+            return self._finite_data_factors() is not None
+
+        def _finite_data_generating_morphism(self):
+            r"""Generators of ``f^-1(K) cap B`` as the preimage of ``K`` along ``f`` restricted to ``B``.
+
+            With ``i: B -> G`` the inclusion, ``f^-1(K) cap B = i((f i)^-1(K))``,
+            and ``(f i)^-1(K)`` is a preimage under a map to a finite group
+            from a finitely generated group, generated by its Schreier family.
+            Its free generating morphism is composed with the two inclusions,
+            so no member is readmitted through the ambient membership problem.
+            """
+            morphism, target, generated = self._finite_data_factors()
+            inclusion = generated.inclusion()
+            restricted = (morphism * inclusion).preimage_subgroup(target)
+            augmentation = restricted.schreier_generating_morphism()
+            source = augmentation.domain()
+            return source.Mor(self)._from_elementwise_rule(
+                inclusion * restricted.inclusion() * augmentation
+            )
 
 __all__ = [
     "CentralizerSubgroups",
