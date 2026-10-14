@@ -2113,11 +2113,10 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             once by the construction (``_defining_construction``, ``OWN-15``);
             this accessor exposes it and computes nothing after the fact
             (``OWN-17``).  Refinement into a property subcategory changes
-            ``category()`` and leaves this unchanged.  Property axioms are
-            removed because an axiom subcategory is a full subcategory, so its
-            Mor equals the Mor of its base; data subcategories carry chosen
-            structure and have their own arrows, so they stay
-            (``_ambient_of``).
+            ``category()`` and leaves this unchanged.  An axiom is removed
+            when its subcategory is full, with the same arrows as its base;
+            data subcategories, and axiom subcategories that are not full,
+            keep their arrows (``_ambient_of``).
             """
             construction = self._defining_construction
             assert construction is not None, (

@@ -1625,14 +1625,14 @@ def _declared_construction(category, declaration_name):
 
 
 def _ambient_of(category: Category) -> Category:
-    r"""Remove the property axioms of ``category`` that leave its Mor unchanged.
+    r"""Remove the axioms of ``category`` whose subcategories are full.
 
-    An axiom subcategory is a full subcategory, so its Mor equals the Mor of
-    its base: finite sets have the set maps.  A data subcategory carries
-    chosen structure and has its own arrows, and so does an axiom category
-    whose arrows preserve more (the unit of ``Algebras(R).Associative().Unital()``);
-    either declares its own ``_MorCategory``.  So an axiom is removed exactly
-    when its category declares no Mor family of its own, and a join is taken
+    An axiom is removed exactly when its subcategory is full, with the same
+    arrows as its base: finite sets have the set maps, commutative algebras
+    the algebra maps.  A data subcategory carries chosen structure and keeps
+    its arrows, and so does an axiom subcategory that is not full (unital
+    algebras, whose arrows preserve the unit).  An axiom class marks itself
+    non-full by declaring its own ``_MorCategory``.  A join is taken
     component by component.
 
     ``OWN-06`` adapter of Sage's category runtime: a join is the class Sage
