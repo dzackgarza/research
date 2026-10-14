@@ -12,7 +12,7 @@ def test_the_hyperbolic_basis_family_is_stabilized_by_the_exchange() -> None:
     lattice = NamedLattices.U
     e = lattice.basis_vector(0)
     f = lattice.basis_vector(1)
-    family = finite_indexed_family_from_values(None, (e, f))
+    family = Sets().Mor(Sets.Δ[1], lattice)(lambda i: (e, f)[int(i)])
 
     assert lattice.O().stabilizer(family).cardinality() == 2
 
@@ -20,6 +20,6 @@ def test_the_hyperbolic_basis_family_is_stabilized_by_the_exchange() -> None:
 def test_a_single_isotropic_basis_vector_is_fixed_by_the_identity_alone() -> None:
     lattice = NamedLattices.U
     e = lattice.basis_vector(0)
-    family = finite_indexed_family_from_values(None, (e,))
+    family = Sets().Mor(Sets.Δ[0], lattice)(lambda _i: e)
 
     assert lattice.O().stabilizer(family).cardinality() == 1

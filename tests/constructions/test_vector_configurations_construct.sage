@@ -12,21 +12,22 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _a2_family():
     lattice = Lattices(ZZ)("A2")
-    roots = tuple(lattice.module_generator(i) for i in range(2))
-    return lattice, finite_indexed_family_from_values(None, roots)
+    indices = Sets.Δ[1]
+    return lattice, Sets().Mor(indices, lattice)(lambda i: lattice.module_generator(int(i)))
 
 
 def test_the_a2_root_family_spans_its_lattice() -> None:
     lattice, family = _a2_family()
+    roots = tuple(family(i) for i in family.domain())
 
-    assert family.cardinality() == cardinal(2)
-    assert lattice.subobject_on(tuple(family)).module_rank() == lattice.module_rank()
+    assert family.domain().cardinality() == cardinal(2)
+    assert lattice.subobject_on(roots).module_rank() == lattice.module_rank()
 
 
 def test_the_a2_root_family_has_the_two_root_symmetries() -> None:
     lattice, family = _a2_family()
     stabilizer = lattice.O().stabilizer(family)
-    roots = tuple(family)
+    roots = tuple(family(i) for i in family.domain())
 
     assert stabilizer.cardinality() == 2
     assert lattice.O().one() in stabilizer
@@ -38,8 +39,8 @@ def test_the_a2_root_family_has_the_two_root_symmetries() -> None:
 
 def test_the_reindexed_a2_root_family_is_carried_to_the_family() -> None:
     lattice, family = _a2_family()
-    roots = tuple(family)
-    reindexed = finite_indexed_family_from_values(None, (roots[1], roots[0]))
+    indices = family.domain()
+    reindexed = Sets().Mor(indices, lattice)(lambda i: lattice.module_generator(1 - int(i)))
     transporter = lattice.O().transporter(family, reindexed)
 
     assert transporter is not None
