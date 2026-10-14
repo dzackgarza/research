@@ -3317,8 +3317,13 @@ def _finite_index_coset_engine_action(automorphisms, subgroup_generators, index)
         < s_2, s_3, e | s_2^4, s_2^2 s_3^-3, e^2, e s_2 e^-1 = w(e s_2 e),
                         e s_3 e^-1 = w(e s_3 e) >,
 
-    a presentation of ``SL_2(ZZ) x| <e> = GL_2(ZZ)`` whose source is not
-    yet opened (COMPLAINTS.md, *A finite presentation of GL_2(ZZ)*).
+    a presentation of ``SL_2(ZZ) x| <e> = GL_2(ZZ)``.  Generation by ``S, T``
+    is Mathlib's ``Matrix.SpecialLinearGroup.SL2Z_generators`` and the
+    relation ``(TS)^3 = -1`` is TauCeti's ``T_mul_S_pow_three``
+    (``TauCeti/NumberTheory/Modular/Relations.lean``); that the relations
+    present the group is not formalized (COMPLAINTS.md, *A finite
+    presentation of GL_2(ZZ)*).  A table on ``n`` points bounds the index,
+    TauCeti's ``CosetTable.index_le`` (``TauCeti/GroupTheory/Coset/Table.lean``).
     Enumeration terminates exactly when the index is finite; the caller
     states that index, and the table is asserted to have that many cosets.
 
