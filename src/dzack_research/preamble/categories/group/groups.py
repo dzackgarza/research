@@ -1801,10 +1801,58 @@ def _S(points):
             )
 
 
-def _GL(degree, ring, var="a"):
+def _general_linear_group(ring, degree, *, constructing_category, var="a"):
+    r"""``GL_n(R)``, built from ``(R, n)`` and placed by ``R``'s placement.
+
+    The placement is read from the category ``R`` was constructed in, never
+    computed from ``R``:
+
+    - ``GL_0(R)`` is the trivial group;
+    - ``GL_n(R)`` is finite when ``R`` is, being a subset of the finite set
+      of ``n x n`` matrices, and ``GL_1(ZZ) = ZZ^x = {1, -1}`` is finite;
+    - for ``n >= 2`` and ``R`` infinite the transvections ``I + r E_12``
+      give an injection of ``R`` into ``GL_n(R)``; for ``R`` an infinite
+      field the scalar matrices give one of ``R^x`` for ``n >= 1``;
+    - ``GL_1(R) = R^x`` is commutative when ``R`` is.
+
+    The engine is Sage's ``GL(n, R)`` over the engine of ``R``.
+    """
     from sage.groups.matrix_gps.catalog import GL
 
-    return _group_over_ring(GL, degree, ring, var=var)
+    assert degree in ZZ and degree == ZZ(degree) and degree >= 0, (
+        f"GL_n(R) needs a rank n that is an integer n >= 0, but got {degree!r}"
+    )
+    ring = _owned_ring(ring)
+    rank = int(degree)
+    infinite_ring = ring in Sets().Infinite() or ring in Sets().Uncountable()
+    finite = rank == 0 or ring in FiniteSets() or (rank == 1 and ring is _own_ring(ZZ))
+    infinite = (rank >= 2 and infinite_ring) or (
+        rank >= 1 and infinite_ring and ring in OwnedRings().Division().Commutative()
+    )
+    commutative = rank == 0 or (rank == 1 and ring in OwnedRings().Commutative())
+    refinements = (
+        GeneralLinearGroups(),
+        *((OwnedGroups().Finite(),) if finite else ()),
+        *((OwnedGroups().Infinite(),) if infinite else ()),
+        *((OwnedGroups().Commutative(),) if commutative else ()),
+    )
+    return _own_group(
+        GL(rank, _engine_ring(ring), var=var),
+        refinements=refinements,
+        linear_data=(ring, rank),
+        constructing_category=constructing_category,
+    )
+
+
+def _GL(degree, ring, var="a"):
+    r"""``Groups.GL(n, R)``: ``GL_n(R)`` as an object of the groups.
+
+    Built by the construction of :class:`GeneralLinearGroups` and constructed
+    in the groups, so its Mor is all group homomorphisms;
+    ``GeneralLinearGroups()(R, n)`` is the same group constructed in the
+    category whose arrows are induced by ring maps.
+    """
+    return _general_linear_group(ring, degree, constructing_category=OwnedGroups(), var=var)
 
 
 def _SL(degree, ring, var="a"):
@@ -6059,74 +6107,120 @@ class SymmetricGroups(OwnedCategory):
             return FiniteGSets(self)(points, lambda element, point: element(point))
 
 
-class GeneralLinearGroups(OwnedCategory):
-    r"""Automorphism groups of the chosen standard free module ``R^n``."""
+class _InducedMatrixMap:
+    r"""``GL_n(phi): GL_n(R) -> GL_n(S)``, applying a ring map ``phi`` to every entry.
 
-    def __init__(self, ring, degree):
-        self._coefficient_ring = _owned_ring(ring)
-        # An integral rank is part of the defining free-module datum.
-        # Casting first would silently identify GL_(3/2)(R) with GL_1(R).
-        assert degree in ZZ and degree == ZZ(degree), (
-            "GL_n(R) requires an integral rank"
+    The action of the general-linear construction on a ring map
+    ``phi: R -> S`` (Mathlib ``Matrix.GeneralLinearGroup.map``,
+    ``Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean:187``).
+    Nothing is evaluated at construction.
+    """
+
+    def __init__(self, ring_map, domain, codomain) -> None:
+        self._ring_map = ring_map
+        self._domain = domain
+        self._codomain = codomain
+
+    def __call__(self, element):
+        source_ring = self._domain.coefficient_ring()
+        target_ring = self._codomain.coefficient_ring()
+        matrix = _matrix_group_element_matrix(self._domain, element)
+        return self._codomain([
+            [
+                _engine_element(target_ring, self._ring_map(_owned_engine_element(source_ring, entry)))
+                for entry in row
+            ]
+            for row in matrix.rows()
+        ])
+
+
+class GeneralLinearGroupMor(GroupMor):
+    r"""``Mor(GL_n(R), GL_n(S))`` in ``GeneralLinearGroups()``: the maps ``GL_n(phi)`` of ring maps.
+
+    An arrow is ``GL_n(phi)`` for a ring map ``phi: R -> S``, applied to
+    every entry (Mathlib ``Matrix.GeneralLinearGroup.map``); it is
+    constructed from ``phi``, an arrow of ``OwnedRings()``.  The rank is
+    part of the object; there is no arrow between groups of different rank.
+    These arrows are group homomorphisms, so this Mor lies under the group
+    Mor; it is not closed under pointwise products, so it carries no
+    pointwise enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        source_ring = self.domain().coefficient_ring()
+        target_ring = self.codomain().coefficient_ring()
+        assert self.domain().degree() == self.codomain().degree(), (
+            f"{self.domain()} -> {self.codomain()} has no arrow in GeneralLinearGroups(): the ranks "
+            f"{self.domain().degree()} and {self.codomain().degree()} differ, and an arrow is induced by a ring map"
         )
-        self._degree = int(degree)
-        assert self._degree >= 0, "GL_n(R) requires a nonnegative rank"
-        super().__init__()
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in OwnedRings().Mor(source_ring, target_ring):
+                return self._from_elementwise_rule(_InducedMatrixMap(datum, self.domain(), self.codomain()))
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of general linear groups is induced by a ring map "
+                    f"{source_ring} -> {target_ring}, but got {datum!r}"
+                )
 
-    def coefficient_ring(self):
-        return self._coefficient_ring
+    def _cardinality_decision(self):
+        r"""Not decided here: the arrows are indexed by ring maps, counted modulo their kernel on ``GL_n``."""
+        return None
 
-    def degree(self):
-        return self._degree
+    def _repr_(self):
+        return f"Mor_GeneralLinearGroups({self.domain()}, {self.codomain()})"
+
+
+class GeneralLinearGroupMorCategoryConstruction(MorCategoryConstruction):
+    r"""The family ``(GL_n(R), GL_m(S)) |-> `` the arrows ``GL_n(phi)`` of ring maps ``phi: R -> S``."""
+
+    def Of(self, domain, codomain=None):
+        codomain = domain if codomain is None else codomain
+        assert domain in self.base_category() and codomain in self.base_category(), (
+            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
+            f"general linear groups constructed by it, but they lie in {domain.category()} and {codomain.category()}"
+        )
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
+            return cached
+        return self._remember_between(domain, codomain, GeneralLinearGroupMor(self, domain, codomain))
+
+
+class GeneralLinearGroups(OwnedCategory):
+    r"""The general linear groups ``GL_n(R)``, with the arrows ``GL_n(phi)`` of ring maps.
+
+    An object is ``GL_n(R)``, the automorphisms of the free module ``R^n``,
+    built from the ring ``R`` and the rank ``n`` by
+    ``GeneralLinearGroups()(R, n)``; an arrow ``GL_n(R) -> GL_n(S)`` is
+    ``GL_n(phi)`` for a ring map ``phi: R -> S``, applied entrywise.  For
+    each ``n`` the construction is a functor from rings to groups (Mathlib
+    ``Matrix.GeneralLinearGroup.map``), so these are the arrows of the
+    category and an object constructed here answers ``Mor`` with them.
+    ``lean-categories`` does not formalize ``GL_n``; the request is in
+    ``COMPLAINTS.md``.
+    """
+
+    _MorCategory = GeneralLinearGroupMorCategoryConstruction
 
     def super_categories(self):
-        # GL_0(R) is trivial, and GL_1(R)=R^× is abelian for commutative R.
-        # Neither statement licenses commutativity of the unit group of an
-        # arbitrary noncommutative ring.
-        abelian = (
-            self.degree() == 0
-            or (self.degree() == 1 and self.coefficient_ring() in OwnedRings().Commutative())
-        )
-        refinements = [OwnedGroups().Commutative()] if abelian else []
-        # GL_n(R) is a subset of the finite matrix set R^(n*n) whenever
-        # R is finite; rank zero is the trivial group over any ring.
-        # For rank one, the group is R^× rather than all of R. In
-        # particular ZZ^× = {1,-1} despite ZZ being infinite. Do not
-        # infer infinitude merely from the coefficient set.
-        if (
-            self.degree() == 0
-            or self.coefficient_ring().is_finite() is True
-            or (self.degree() == 1 and self.coefficient_ring() is ZZ)
-        ):
-            return [OwnedGroups().Finite(), *refinements]
-        # For any infinite coefficient ring and n >= 2, the elementary
-        # transvections I + r E_12 give an injection of its underlying set
-        # into GL_n(R). The rank-one case instead detects the unit group,
-        # which need not be infinite (e.g. ZZ^×).
-        if self.degree() >= 2 and self.coefficient_ring().is_finite() is False:
-            return [OwnedGroups().Infinite(), *refinements]
-        # An infinite field has infinitely many nonzero units. Their
-        # diagonal matrices give an infinite subgroup even in rank one;
-        # this implication does not extend to arbitrary infinite rings.
-        if (
-            self.degree() >= 1
-            and self.coefficient_ring().is_field() is True
-            and self.coefficient_ring().is_finite() is False
-        ):
-            return [OwnedGroups().Infinite(), *refinements]
-        return [OwnedGroups(), *refinements]
+        return [OwnedGroups()]
 
     def an_object(self):
-        return self()
+        r"""``GL_2(GF(2))``, of order six."""
+        from sage.rings.finite_rings.finite_field_constructor import GF
 
-    def _call_(self):
-        from sage.groups.matrix_gps.catalog import GL
+        return self(_own_ring(GF(2)), 2)
 
-        ring = self.coefficient_ring()
-        return _own_group(
-            GL(self.degree(), _engine_ring(ring)),
-            refinements=(self,), linear_data=(ring, self.degree()),
-        )
+    @classmethod
+    def _repr_object_names(cls):
+        return "general linear groups"
+
+    def _call_(self, ring, degree):
+        return _general_linear_group(ring, degree, constructing_category=self)
 
     class ParentMethods:
         def __init__(self, selected_linear_data=None, **rest):
@@ -6138,6 +6232,7 @@ class GeneralLinearGroups(OwnedCategory):
 
         def degree(self):
             return self._selected_linear_data[1]
+
 
 class CoxeterGroups(OwnedCategory):
     r"""The Coxeter group defined by the actual selected Coxeter matrix."""

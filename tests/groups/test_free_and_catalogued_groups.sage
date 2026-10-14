@@ -730,43 +730,57 @@ def test_quotient_descent_respects_the_selected_free_basis_labels() -> None:
 
 
 def test_general_linear_group_retains_ring_and_rank() -> None:
-    category = GeneralLinearGroups(GF(2), 2)
-    group = category()
-    assert group in category
-    assert category.is_subcategory(OwnedGroups().Finite())
-    assert category.coefficient_ring() is GF(2)
-    assert category.degree() == 2
-    assert group.coefficient_ring() is category.coefficient_ring()
-    assert group.degree() == category.degree()
+    group = GeneralLinearGroups()(GF(2), 2)
+    assert group in GeneralLinearGroups()
+    assert group.ambient_category() is GeneralLinearGroups()
+    assert group in OwnedGroups().Finite()
+    assert group.coefficient_ring() is GF(2)
+    assert group.degree() == 2
     assert group.order() == 6
     assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
 
     # Repeated constructions must retain the same selected ring and rank;
     # the temporary pair passed to the engine cache is not a datum identity.
-    second_category = GeneralLinearGroups(GF(3), 2)
-    second_group = second_category()
+    second_group = GeneralLinearGroups()(GF(3), 2)
     assert second_group.coefficient_ring() is GF(3)
     assert second_group.degree() == 2
     assert second_group.order() == 48
 
     # GL_1(ZZ) is the group of units {+1,-1}, while GL_2(ZZ)
     # contains an infinite cyclic subgroup of unipotent matrices.
-    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Finite())
-    assert GeneralLinearGroups(ZZ, 1).is_subcategory(OwnedGroups().Commutative())
-    assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Commutative())
-    assert not GeneralLinearGroups(GF(2), 2).is_subcategory(OwnedGroups().Commutative())
-    assert not GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Finite())
-    assert GeneralLinearGroups(ZZ, 2).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ, 1).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ, 2).is_subcategory(OwnedGroups().Infinite())
-    assert GeneralLinearGroups(QQ["t"].fraction_field(), 1).is_subcategory(OwnedGroups().Infinite())
+    assert GeneralLinearGroups()(ZZ, 1) in OwnedGroups().Finite()
+    assert GeneralLinearGroups()(ZZ, 1) in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(QQ, 1) in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(GF(2), 2) not in OwnedGroups().Commutative()
+    assert GeneralLinearGroups()(ZZ, 2) not in OwnedGroups().Finite()
+    assert GeneralLinearGroups()(ZZ, 2) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ, 1) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ, 2) in OwnedGroups().Infinite()
+    assert GeneralLinearGroups()(QQ["t"].fraction_field(), 1) in OwnedGroups().Infinite()
+
+
+def test_general_linear_arrows_are_induced_by_ring_maps() -> None:
+    r"""An arrow of ``GeneralLinearGroups()`` is ``GL_n(phi)``, ``phi`` applied entrywise.
+
+    Mathlib ``Matrix.GeneralLinearGroup.map``.  Reduction ``ZZ -> GF(2)``
+    sends the unipotent ``[[1, 1], [0, 1]]`` of infinite order to the
+    transvection ``[[1, 1], [0, 1]]`` of order two.
+    """
+    integral = GeneralLinearGroups()(ZZ, 2)
+    reduced = GeneralLinearGroups()(GF(2), 2)
+    reduction = OwnedRings().Mor(ZZ, GF(2))(lambda n: GF(2)(n))
+    induced = integral.Mor(reduced)(reduction)
+    unipotent = integral([[1, 1], [0, 1]])
+    assert induced(unipotent) == reduced([[1, 1], [0, 1]])
+    assert induced(unipotent).order() == 2
+    assert induced(integral([[0, -1], [1, 0]])) == reduced([[0, 1], [1, 0]])
 
 
 def test_general_linear_rank_cannot_be_truncated() -> None:
     try:
-        GeneralLinearGroups(GF(2), QQ(3) / 2)
+        GeneralLinearGroups()(GF(2), QQ(3) / 2)
     except AssertionError as error:
-        assert "integral rank" in str(error)
+        assert "integer" in str(error)
     else:
         assert False, "a nonintegral rank was silently truncated"
 
