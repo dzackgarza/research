@@ -4972,8 +4972,32 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return self.left_cosets(subgroup)
 
         def double_cosets(self, left_subgroup, right_subgroup):
-            r"""Return ``Q \\ G / H``, the ``Q``-orbits on ``G/H`` (``LeftCosetGSets.double_cosets``)."""
-            return self.left_cosets(right_subgroup).double_cosets(left_subgroup)
+            r"""Return ``Q \\ G / H`` as an orbit set of a finite coset space.
+
+            Two realizations of the same quotient.  When ``G/H`` is a finite
+            ``G``-set, ``Q \\ G / H`` is the set of ``Q``-orbits on ``G/H``,
+            the orbit of ``xH`` being ``QxH``.  When ``G/H`` is infinite but
+            ``G/Q`` is a finite ``G``-set -- ``Q`` of finite index, realized
+            as a kernel or preimage along a map to a finite group -- it is
+            the set of ``H``-orbits on ``G/Q``: inversion ``x |-> x^-1``
+            carries ``QxH`` to ``H x^-1 Q``, so the ``H``-orbit of ``tQ`` is
+            the double coset ``Q t^-1 H``.  Each orbit set retains its coset
+            space, the projection from ``G`` and the section.  When neither
+            coset space is finite no orbit computation is available.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            right_cosets = self.left_cosets(right_subgroup)
+            if right_cosets in FiniteGSets(self):
+                return right_cosets.double_cosets(left_subgroup)
+            left_cosets = self.left_cosets(left_subgroup)
+            assert left_cosets in FiniteGSets(self), (
+                f"the double cosets {left_subgroup} \\ {self} / {right_subgroup} are computed as orbits on a "
+                f"finite coset space, but neither {self}/{right_subgroup} nor {self}/{left_subgroup} is "
+                f"realized as a finite {self}-set: neither subgroup is a kernel or preimage along a map "
+                f"to a finite group, and {self} is not known to be finite"
+            )
+            return left_cosets.double_cosets(right_subgroup)
 
         @cached_method
         @RealizationHook
