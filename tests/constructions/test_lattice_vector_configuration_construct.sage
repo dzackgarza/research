@@ -1,22 +1,25 @@
-r"""A lattice refines an explicitly framed sublattice to a vector configuration."""
+r"""Stabilizers in ``O(U)`` of families of hyperbolic basis vectors.
+
+``O(U)`` has order four: ``±1`` and ``±`` the exchange of ``e`` and ``f``.
+The family ``(e, f)`` is permuted by the identity and by the exchange; the
+family ``(e,)`` is fixed by the identity alone.
+"""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_hyperbolic_basis_vectors_form_a_vector_configuration() -> None:
+def test_the_hyperbolic_basis_family_is_stabilized_by_the_exchange() -> None:
     lattice = NamedLattices.U
     e = lattice.basis_vector(0)
     f = lattice.basis_vector(1)
-    configuration = lattice.vector_configuration((e, f))
+    family = finite_indexed_family_from_values(None, (e, f))
 
-    assert configuration in VectorConfigurations(ZZ)
-    assert configuration.ambient_lattice() is lattice
-    assert configuration.module_rank() == cardinal(2)
+    assert lattice.O().stabilizer(family).cardinality() == 2
 
 
-def test_vector_configuration_retains_the_selected_inclusion() -> None:
+def test_a_single_isotropic_basis_vector_is_fixed_by_the_identity_alone() -> None:
     lattice = NamedLattices.U
     e = lattice.basis_vector(0)
-    configuration = lattice.vector_configuration((e,))
+    family = finite_indexed_family_from_values(None, (e,))
 
-    assert configuration.inclusion()(configuration.module_generator(0)) == e
+    assert lattice.O().stabilizer(family).cardinality() == 1
