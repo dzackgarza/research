@@ -4997,7 +4997,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 f"realized as a finite {self}-set: neither subgroup is a kernel or preimage along a map "
                 f"to a finite group, and {self} is not known to be finite"
             )
-            return left_cosets.double_cosets(right_subgroup)
+            return left_cosets.inverted_double_cosets(right_subgroup)
 
         @cached_method
         @RealizationHook
