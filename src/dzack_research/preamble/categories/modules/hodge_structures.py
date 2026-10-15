@@ -173,6 +173,9 @@ class HodgeStructures(OwnedCategoryOverBaseRing):
         :class:`PolarizedHodgeStructures`.
         """
 
+        def _repr_object_names(self) -> str:
+            return f"polarizable {self.base_category()._repr_object_names()}"
+
 
 HodgeStructures.__dict__["Polarizable"]._base_category_class_and_axiom = (
     HodgeStructures,
