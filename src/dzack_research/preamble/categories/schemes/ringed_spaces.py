@@ -208,9 +208,22 @@ class ModuleSheaves(OwnedParameterizedCategory):
             r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
 
             The image of this sheaf ``F`` under
-            ``ModuleSheaves(X).derived_global_sections()``.
+            ``ModuleSheaves(X).derived_global_sections()``.  Computed for the
+            standard line bundles ``O(d)`` on ``P^n_R``, ``n >= 1``, from
+            Hartshorne, Theorem III.5.1.
             """
-            assert False, "derived_global_sections on ModuleSheaves: not implemented"
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _projective_space_line_bundle_derived_global_sections,
+            )
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+            space = self.scheme()
+            base = space.scheme_base_ring()
+            match space:
+                case _ if space in ProjectiveSpaces(base) and self in InvertibleSheavesWithChosenTrivialization(space):
+                    return _projective_space_line_bundle_derived_global_sections(self)
+                case _:
+                    assert False, "derived_global_sections on ModuleSheaves: not implemented"
 
         def sheaf_cohomology(self, degree):
             r"""``H^degree(X, F) = H^degree(RΓ(X, F))``, an object of ``Modules(Γ(X, O_X))``."""

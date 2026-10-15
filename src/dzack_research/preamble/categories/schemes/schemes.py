@@ -3386,9 +3386,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                 The hypercohomology of the de Rham complex: the class of the
                 total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg
                 injective resolution of ``Ω^•_{X/R}`` by sheaves of
-                ``R``-modules.
+                ``R``-modules.  Computed for projective spaces ``P^n_R`` from
+                Stacks Project, Tag 0FMJ.
                 """
-                assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
+                from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                    _projective_space_de_rham_hypercohomology,
+                )
+
+                base = self.scheme_base_ring()
+                match self:
+                    case _ if self in ProjectiveSpaces(base):
+                        return _projective_space_de_rham_hypercohomology(self)
+                    case _:
+                        assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
 
             def de_rham_cohomology(self, degree):
                 r"""``H^degree_dR(X/R) = H^degree(RΓ(X, Ω^•_{X/R}))``, an object of ``Modules(R)``."""
