@@ -4838,6 +4838,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 self._standard_chart_change(target_index, source_index),
             )
 
+        @cached_method
         def O(self, degree):
             r"""Return the standard invertible sheaf ``O(d)`` on this projective space, for any integer ``d``.
 
