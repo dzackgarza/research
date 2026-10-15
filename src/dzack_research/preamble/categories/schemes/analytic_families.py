@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _polynomial_exponents,
     _projective_coordinate_morphism,
 )
-from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.real import RR
 
 
@@ -301,13 +301,10 @@ class _AnalyticDiscFamilyEngine:
 
     def comparison_maps(self):
         r"""The open inclusions ``X_Delta -> X^an`` and ``Delta -> B^an``, the horizontal legs of the comparison square."""
-        return finite_family(
-            (
-                self.analytic_total_space().open_inclusion(),
-                self.analytic_base().open_inclusion(),
-            ),
-            name=f"Comparison maps of {self}",
-        )
+        total_inclusion = self.analytic_total_space().open_inclusion()
+        base_inclusion = self.analytic_base().open_inclusion()
+        product = Sets().product((total_inclusion.parent(), base_inclusion.parent()))
+        return product((total_inclusion, base_inclusion))
 
     def comparison_square_commutes(self) -> bool:
         total_inclusion, base_inclusion = self.comparison_maps()
