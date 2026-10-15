@@ -3190,6 +3190,28 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_integral(self):
                 return True
 
+            @cached_method
+            def function_field(self):
+                r"""The function field ``K(X) = O_{X,eta}``, the local ring at the generic point.
+
+                Domain: an integral scheme ``X`` over ``R``.  Codomain: a field,
+                an ``R``-algebra through ``R -> O_{X,eta}`` (Hartshorne,
+                *Algebraic Geometry*, II, Ex. 3.6).  For every nonempty affine
+                open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
+                integral scheme this is the fraction field of its coordinate
+                algebra, so the function field of ``A^1_k`` is ``k[t]``'s
+                ``fraction_field()``, the field ``k(t)``.
+                """
+                base = self.scheme_base_ring()
+                match self in Schemes(base).Affine():
+                    case True:
+                        return self.coordinate_algebra().fraction_field()
+                    case False:
+                        assert False, (
+                            f"function_field on the non-affine integral schemes over {base}, through a "
+                            f"nonempty affine open of {self}: not implemented"
+                        )
+
         def an_object(self):
             r"""The affine line, integral because ``R[x]`` is a domain when ``R`` is."""
             base = self.base_ring()
@@ -4364,6 +4386,21 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Affine().FiniteType().Smooth()]
 
     class ParentMethods:
+        def hypersurface(self, f):
+            r"""The hypersurface ``V(f) = Spec k[x_1, ..., x_n]/(f)`` with its closed immersion into ``A^n_k``.
+
+            Domain: a nonconstant polynomial ``f`` of the coordinate algebra
+            ``k[x_1, ..., x_n]`` of this affine space (Hartshorne, *Algebraic
+            Geometry*, I.1).  Codomain: a closed subscheme of ``A^n_k``, a
+            scheme over ``k`` whose inclusion ``V(f) -> A^n_k`` is ``Spec`` of
+            the quotient map ``k[x_1, ..., x_n] -> k[x_1, ..., x_n]/(f)``.
+            """
+            assert f in self.coordinate_algebra(), (
+                f"a hypersurface of {self} is cut out by an element of its coordinate algebra "
+                f"{self.coordinate_algebra()}, but {f} is not one"
+            )
+            return self.closed_subscheme(f)
+
         @cached_method
         def _picard_group(self, base_picard_group=None):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
@@ -4593,6 +4630,19 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def hyperplane(self, index=0):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
             return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
+
+        def hypersurface(self, f):
+            r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
+
+            Domain: a nonconstant homogeneous polynomial ``f`` of the
+            homogeneous coordinate ring ``k[x_0, ..., x_n]`` of this projective
+            space (Hartshorne, *Algebraic Geometry*, I.2).  Codomain: a closed
+            subscheme of ``P^n_k``, a projective scheme over ``k`` whose
+            inclusion ``V_+(f) -> P^n_k`` is induced by the graded quotient map
+            ``k[x_0, ..., x_n] -> k[x_0, ..., x_n]/(f)``.  The projective
+            closed-subscheme construction asserts that ``f`` is homogeneous.
+            """
+            return self.closed_subscheme(f)
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
