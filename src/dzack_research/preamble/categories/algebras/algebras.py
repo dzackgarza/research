@@ -2389,48 +2389,56 @@ class Algebras(OwnedCategoryOverBaseRing):
                         .FinitelyGeneratedAsAlgebra()
                     ]
 
-                @cached_method
-                def resolution_category(self):
-                    r"""Return finite projective presentation data in the actual theory.
+                class SubcategoryMethods:
+                    r"""Operations of every subcategory of finitely presented algebras, the commutative ones included.
 
-                    Associative presentations use algebra-projective
-                    sources. Commutative presentations use symmetric
-                    algebras with projective degree-one modules, witnessed
-                    here by their projective underlying modules. Finite
-                    levels and an underlying-surjective augmentation are
-                    required; the reflexive coequalizer laws belong to the
-                    represented presentation data. No presentation is
-                    chosen by this property selector.
+                    ``Commutative().FinitelyPresentedAsAlgebra()`` is a join, which
+                    reaches only these methods; the presentation data of a
+                    commutative quotient is built there.
                     """
-                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
-                        Resolutions,
-                    )
-                    from dzack_research.preamble.categories.algebras.free_algebras import (
-                        SymmetricAlgebras,
-                    )
 
-                    ordinary = Algebras(self.base_ring()).Associative().Unital()
-                    commutative = ordinary.Commutative()
-                    if self.is_subcategory(commutative):
-                        theory = commutative
-                        projectives = Cat().meet((
-                            SymmetricAlgebras(self.base_ring()),
-                            Modules(self.base_ring()).Projective(),
-                        ))
-                    else:
-                        theory = ordinary
-                        projectives = ordinary.ProjectiveAsAlgebra()
-                    finite_projectives = Cat().meet(
-                        (projectives, ordinary.FinitelyGeneratedAsAlgebra())
-                    )
-                    return Resolutions(
-                        theory, projectives, 1, finite_projectives,
-                        augmentation_family=Sets().category_packet().Epis(),
-                    )
+                    @cached_method
+                    def resolution_category(self):
+                        r"""Return finite projective presentation data in the actual theory.
 
-                @cached_method
-                def resolution_classifier(self):
-                    return self.resolution_category().target_functor()
+                        Associative presentations use algebra-projective
+                        sources. Commutative presentations use symmetric
+                        algebras with projective degree-one modules, witnessed
+                        here by their projective underlying modules. Finite
+                        levels and an underlying-surjective augmentation are
+                        required; the reflexive coequalizer laws belong to the
+                        represented presentation data. No presentation is
+                        chosen by this property selector.
+                        """
+                        from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                            Resolutions,
+                        )
+                        from dzack_research.preamble.categories.algebras.free_algebras import (
+                            SymmetricAlgebras,
+                        )
+
+                        ordinary = Algebras(self.base_ring()).Associative().Unital()
+                        commutative = ordinary.Commutative()
+                        if self.is_subcategory(commutative):
+                            theory = commutative
+                            projectives = Cat().meet((
+                                SymmetricAlgebras(self.base_ring()),
+                                Modules(self.base_ring()).Projective(),
+                            ))
+                        else:
+                            theory = ordinary
+                            projectives = ordinary.ProjectiveAsAlgebra()
+                        finite_projectives = Cat().meet(
+                            (projectives, ordinary.FinitelyGeneratedAsAlgebra())
+                        )
+                        return Resolutions(
+                            theory, projectives, 1, finite_projectives,
+                            augmentation_family=Sets().category_packet().Epis(),
+                        )
+
+                    @cached_method
+                    def resolution_classifier(self):
+                        return self.resolution_category().target_functor()
 
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
@@ -2475,6 +2483,18 @@ class Algebras(OwnedCategoryOverBaseRing):
                 @classmethod
                 def _repr_object_names(cls):
                     return "commutative algebras"
+
+                class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
+                    r"""Commutative ``R``-algebras ``R[x_1, ..., x_n]/(f_1, ..., f_r)``: finitely presented commutative algebras.
+
+                    A property, as for associative unital algebras; its
+                    presentation data are those of the commutative theory,
+                    read by the inherited ``resolution_category``.
+                    """
+
+                    @classmethod
+                    def _repr_object_names(cls):
+                        return "finitely presented commutative algebras"
 
                 def an_object(self):
                     modules = Modules(self.base_ring())

@@ -494,10 +494,10 @@ class Cardinalities(OwnedCategory):
         zero ring gives a singleton, and any nonzero ring gives cardinality
         ``max(|coefficient_ring|, |index_set|)``.
         """
-        match cardinal(index_set.cardinality()).is_finite(), coefficient_ring.one() == coefficient_ring.zero():
-            case True, _:
+        match cardinal(index_set.cardinality()).is_finite():
+            case True:
                 return self.set_power_category(coefficient_ring, index_set)
-            case False, True:
+            case False if (coefficient_ring.one() == coefficient_ring.zero()) is True:
                 return self.set_category(self.one())
             case _:
                 return self.set_category(self.supremum(coefficient_ring.cardinality(), index_set.cardinality()))
