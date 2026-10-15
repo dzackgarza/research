@@ -4402,9 +4402,7 @@ def _owned_ring_element_text(element) -> str:
     if kind == "real" or kind == "complex" or kind == "symbolic":
         return str(value)
     if parent._preamble_is_number_field():
-        polynomial = value.polynomial()
-        owned_parent = _own_ring(polynomial.parent())
-        return repr(_owned_engine_element(owned_parent, polynomial))
+        return str(value)
     if parent._preamble_is_number_field_order():
         coefficients = tuple(value.list())
         owned = tuple(_cross_engine_ring_value(coefficient) for coefficient in coefficients)
