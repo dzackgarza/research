@@ -464,11 +464,17 @@ class _FiniteAtlasInvertibleSheafEngine:
         return self.tensor_power(-1)
 
     def global_sections(self):
-        assert self._section_space is not None, (
-            f"cannot compute the global sections of {self}: they are known only for line bundles "
-            "constructed with their space of sections, such as O(d) on projective space"
-        )
-        return self._section_space
+        r"""Return \(\Gamma(X, L)\) as an object of ``Modules(R)``.
+
+        A bundle constructed with its framed section space, such as \(O(d)\)
+        on \(\mathbb{P}^n_R\), returns it.  Otherwise \(\Gamma(X, L)\) is the
+        equalizer of the restrictions of the chart sections to the overlaps.
+        """
+        match self._section_space:
+            case None:
+                return self.compatible_sections()
+            case section_space:
+                return section_space
 
     sections = global_sections
 
@@ -711,14 +717,12 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                 if self._degree >= 0
                 else ratio.inverse_of_unit() ** int(-self._degree)
             )
-        section_space = (
-            _homogeneous_polynomial_section_space(
-                projective_space,
-                self._degree,
-                coordinate_names=projective_space.variable_names(),
-            )
-            if self._degree >= 0
-            else None
+        # Gamma(P^n_R, O(d)) is the degree-d piece S_d of S = R[x_0..x_n] for
+        # every integer d, and S_d = 0 for d < 0 (Hartshorne, Proposition II.5.13).
+        section_space = _homogeneous_polynomial_section_space(
+            projective_space,
+            self._degree,
+            coordinate_names=projective_space.variable_names(),
         )
         super().__init__(
             atlas,
@@ -899,11 +903,6 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                     f"cannot multiply sections of {self} and {other}: {other} is not O(d) on a "
                     "projective space"
                 )
-        assert self.degree() >= 0 and other.degree() >= 0, (
-            f"cannot multiply sections of {self} and {other}: sections are computed here as homogeneous "
-            f"polynomials, which requires nonnegative degrees, but the degrees are {self.degree()} and "
-            f"{other.degree()}"
-        )
         target_bundle = self.tensor_product(other)
         left = self.global_sections()
         right = other.global_sections()
