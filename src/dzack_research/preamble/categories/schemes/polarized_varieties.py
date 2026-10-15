@@ -45,9 +45,16 @@ class _PicardCategoryOfElements(_CategoryOfElements):
             r"""The pair ``(X, L)`` of an object ``X`` of ``C`` and an ample class ``L`` in ``Pic(X)``.
 
             Ampleness of ``L`` is the caller's datum; construction stores
-            the pair and does not decide it.
+            the pair and does not decide it.  When ``X`` was constructed as
+            an object of ``C.Smooth()``, the pair is constructed in
+            ``Smooth()``, the polarized pairs with ``X`` smooth.
             """
-            return _object_of_elements(self, self.base_category(), underlying_object, element)
+            schemes = self.base_category().projection_functor().codomain()
+            match underlying_object:
+                case _ if underlying_object in schemes.Smooth():
+                    return self.Smooth().object(underlying_object, element)
+                case _:
+                    return _object_of_elements(self, self.base_category(), underlying_object, element)
 
         __call__ = object
 
@@ -80,6 +87,18 @@ class _PicardCategoryOfElements(_CategoryOfElements):
 
         class Smooth(CategoryWithAxiom):
             r"""The polarized pairs ``(X, L)`` with ``X`` smooth."""
+
+            def object(self, underlying_object: ObjectOfCategory, element: Element) -> ObjectOfCategory:
+                r"""The pair ``(X, L)`` of a smooth object ``X`` of ``C`` and an ample class ``L`` in ``Pic(X)``."""
+                elements = self.base_category().base_category()
+                schemes = elements.projection_functor().codomain()
+                assert underlying_object in schemes.Smooth(), (
+                    f"cannot form the smooth polarized pair ({underlying_object}, {element}): "
+                    f"{underlying_object} is not an object of {schemes.Smooth()}"
+                )
+                return _object_of_elements(self, elements, underlying_object, element)
+
+            __call__ = object
 
             class ParentMethods:
                 r"""A smooth projective variety ``X`` with its chosen ample class ``L``."""

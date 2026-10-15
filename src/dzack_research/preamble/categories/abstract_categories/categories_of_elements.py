@@ -128,6 +128,10 @@ class _CategoryOfElements(OwnedCategory):
             r"""The element ``x`` of ``F(X)`` of ``(X, x)``, when this object was constructed in one category of elements."""
             return self._chosen_pair()[1]
 
+        def _repr_(self) -> str:
+            underlying_object, element = self._chosen_pair()
+            return f"({underlying_object}, {element})"
+
         def _chosen_pair(self) -> tuple[ObjectOfCategory, Element]:
             match tuple(self._functor_elements.values()):
                 case (pair,):
