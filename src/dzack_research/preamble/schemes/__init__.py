@@ -112,7 +112,12 @@ from dzack_research.preamble.categories.schemes.toric.blowups import ToricFixedP
 
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 
-from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes, SmoothCompleteRationalToricSchemes
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+    GorensteinToricSchemes,
+    SmoothCompleteRationalToricSchemes,
+    ToricProjectiveSpaces,
+    ToricSchemes,
+)
 
 from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import FiniteGluedInvariantQuotient
 
@@ -210,6 +215,8 @@ __all__ = [
     'ToricFixedPointBlowups',
     'ToricSchemes',
     'SmoothCompleteRationalToricSchemes',
+    'GorensteinToricSchemes',
+    'ToricProjectiveSpaces',
     'ToricGeometricLineBundleCohomologySpaces',
     'GeometricFundamentalGroups',
     'IntegralTopologicalCohomologyGroups',
