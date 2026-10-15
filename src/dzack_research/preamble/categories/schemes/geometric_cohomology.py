@@ -262,6 +262,31 @@ def _projective_space_line_bundle_derived_global_sections(sheaf):
     return CochainComplexes(base).localization_at_quasi_isomorphisms()(complex_)
 
 
+@cached_function(key=lambda space: id(space))
+def _projective_space_de_rham_hypercohomology(space):
+    r"""``RΓ(P^n_R, Ω^•_{P^n_R/R})``, an object of ``DerivedCategories(R)``.
+
+    Stacks Project, Tag 0FMJ (Lemma 50.11.4): for \(0 \le i \le n\),
+    \(H^{2i}_{dR}(\mathbf{P}^n_R/R)\) is free of rank one with basis
+    \(c_1^{dR}(\mathcal{O}(1))^i\), and every other de Rham cohomology module
+    is zero.  The hypercohomology is bounded and every cohomology module is
+    free, so each truncation triangle splits (\(\operatorname{Ext}^1_R\) out
+    of a free module vanishes) and the object is \(Q\) of the complex with
+    those modules in degrees \(0, 2, \dots, 2n\) and zero differentials.
+    """
+    base = space.scheme_base_ring()
+    dimension = space.relative_dimension()
+    complex_ = CochainComplexes(base)(
+        {
+            2 * power: base.free_module(finite_ordered_set((f"c_1(O(1))^{power}",)))
+            for power in range(int(dimension) + 1)
+        },
+        {},
+        name=f"de Rham cohomology of {space} with zero differentials",
+    )
+    return CochainComplexes(base).localization_at_quasi_isomorphisms()(complex_)
+
+
 def _affine_geometric_scalar_cohomology_map(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
     complex_ = _affine_geometric_cohomology_complex(sheaf, cover=cover)
