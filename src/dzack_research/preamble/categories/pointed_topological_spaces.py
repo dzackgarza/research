@@ -49,6 +49,12 @@ class TopologicalSpaceCoslices(CosliceCategory):
             )
             return arrow(source.an_element())
 
+        def _repr_(self) -> str:
+            arrow = self.arrow()
+            if arrow.domain().cardinality() == 1:
+                return f"Pointed space ({arrow.codomain()}, {self.base_point()})"
+            return f"Space under {arrow.domain()}: ({arrow.domain()} -> {arrow.codomain()})"
+
         def fundamental_group(self):
             r"""``pi_1(B, b)``, an object of ``Groups``: the degree-0 part of :meth:`homotopy_lie_algebra` as a group."""
             return self.arrow().codomain()._fundamental_group_at(self.base_point())

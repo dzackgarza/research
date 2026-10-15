@@ -886,6 +886,10 @@ class _StandardSphere:
     degree serves every base point (Hatcher, *Algebraic Topology*, §4.1).
     """
 
+    def _an_element_(self):
+        r"""The south pole: the origin of the chart ``U_N``, stereographic projection from the north pole."""
+        return self.point((0,) * self.dimension(), "U_N")
+
     def _homotopy_group_module(self, base_point, degree):
         r"""``pi_k(S^n, x)`` for ``k < n``, ``k = n``, and ``(n, k) = (2, 3)``.
 
