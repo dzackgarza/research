@@ -135,6 +135,8 @@ for _scheme_axiom in (
     "Integral",
     "Normal",
     "CalabiYau",
+    "K3",
+    "DelPezzo",
 ):
     if _scheme_axiom not in all_axioms:
         all_axioms.add(_scheme_axiom)
@@ -2020,6 +2022,13 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     _MorCategory = SchemeMorCategoryConstruction
 
+    @property
+    def _SliceCategory(self):
+        r"""Supply the scheme realization of ``Sch/R`` over ``Y``: families over ``Y``, with their fibres."""
+        from dzack_research.preamble.categories.schemes.families import _SchemeSlice
+
+        return _SchemeSlice
+
     def Mor(self, domain, codomain):
         r"""``Mor_{Sch/R}(X, Y)``, the single Mor selected by its category family."""
         return self.MorCategory().Of(domain, codomain)
@@ -3225,6 +3234,28 @@ class Schemes(OwnedCategoryOverBaseRing):
         class ParentMethods:
             def is_integral(self):
                 return True
+
+            @cached_method
+            def function_field(self):
+                r"""The function field ``K(X) = O_{X,eta}``, the local ring at the generic point.
+
+                Domain: an integral scheme ``X`` over ``R``.  Codomain: a field,
+                an ``R``-algebra through ``R -> O_{X,eta}`` (Hartshorne,
+                *Algebraic Geometry*, II, Ex. 3.6).  For every nonempty affine
+                open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
+                integral scheme this is the fraction field of its coordinate
+                algebra, so the function field of ``A^1_k`` is ``k[t]``'s
+                ``fraction_field()``, the field ``k(t)``.
+                """
+                base = self.scheme_base_ring()
+                match self in Schemes(base).Affine():
+                    case True:
+                        return self.coordinate_algebra().fraction_field()
+                    case False:
+                        assert False, (
+                            f"function_field on the non-affine integral schemes over {base}, through a "
+                            f"nonempty affine open of {self}: not implemented"
+                        )
 
         def an_object(self):
             r"""The affine line, integral because ``R[x]`` is a domain when ``R`` is."""
@@ -4452,6 +4483,21 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Affine().FiniteType().Smooth()]
 
     class ParentMethods:
+        def hypersurface(self, f):
+            r"""The hypersurface ``V(f) = Spec k[x_1, ..., x_n]/(f)`` with its closed immersion into ``A^n_k``.
+
+            Domain: a nonconstant polynomial ``f`` of the coordinate algebra
+            ``k[x_1, ..., x_n]`` of this affine space (Hartshorne, *Algebraic
+            Geometry*, I.1).  Codomain: a closed subscheme of ``A^n_k``, a
+            scheme over ``k`` whose inclusion ``V(f) -> A^n_k`` is ``Spec`` of
+            the quotient map ``k[x_1, ..., x_n] -> k[x_1, ..., x_n]/(f)``.
+            """
+            assert f in self.coordinate_algebra(), (
+                f"a hypersurface of {self} is cut out by an element of its coordinate algebra "
+                f"{self.coordinate_algebra()}, but {f} is not one"
+            )
+            return self.closed_subscheme(f)
+
         @cached_method
         def _picard_group(self, base_picard_group=None):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
@@ -4518,9 +4564,9 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
             pass
     match (base in OwnedFields(), dimension):
         case (True, 2):
-            from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+            from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-            decided.append(ProjectiveSurfaces(base))
+            decided.append(Surfaces(base).Projective())
         case _:
             pass
     return _object_of(
@@ -4681,6 +4727,19 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def hyperplane(self, index=0):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
             return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
+
+        def hypersurface(self, f):
+            r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
+
+            Domain: a nonconstant homogeneous polynomial ``f`` of the
+            homogeneous coordinate ring ``k[x_0, ..., x_n]`` of this projective
+            space (Hartshorne, *Algebraic Geometry*, I.2).  Codomain: a closed
+            subscheme of ``P^n_k``, a projective scheme over ``k`` whose
+            inclusion ``V_+(f) -> P^n_k`` is induced by the graded quotient map
+            ``k[x_0, ..., x_n] -> k[x_0, ..., x_n]/(f)``.  The projective
+            closed-subscheme construction asserts that ``f`` is homogeneous.
+            """
+            return self.closed_subscheme(f)
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
@@ -5281,9 +5340,9 @@ def _scheme_product(*schemes, placements=(), **level_data):
             dimension = sum(width - 1 for width in widths)
             projective_surface_placement = ()
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                projective_surface_placement = (ProjectiveSurfaces(base),)
+                projective_surface_placement = (Surfaces(base).Projective(),)
             names = tuple(
                 f"x{factor}_{coordinate}"
                 for factor, width in enumerate(widths)
@@ -5464,9 +5523,9 @@ def _mixed_affine_projective_product(factors, base, placements, level_data):
             placements.append(schemes_over_base.Projective())
             dimension = sum(int(factor.relative_dimension()) for factor in schemes)
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                placements.append(ProjectiveSurfaces(base))
+                placements.append(Surfaces(base).Projective())
     return schemes_over_base.glue_affine_atlas(
         tuple(charts[label] for label in chart_labels),
         transitions,
@@ -6532,11 +6591,17 @@ class ProjectiveLines(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
-    r"""Schemes with a canonical generic fibre over an integral base."""
+    r"""Schemes over an integral domain ``R``, with their generic fibre.
+
+    The generic fibre of ``X -> Spec R`` is the base change along
+    ``R -> Frac(R)``.  That ``R`` is an integral domain is the category of
+    the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedIntegralDomains()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedIntegralDomains():
-            raise TypeError("a canonical generic fibre requires an integral-domain base")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6544,8 +6609,11 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected integral-domain base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:
@@ -6555,11 +6623,17 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
-    r"""Schemes over a local base with its distinguished closed point."""
+    r"""Schemes over a local ring ``R``, with their special fibre.
+
+    The special fibre of ``X -> Spec R`` is the base change along the residue
+    map ``R -> R/m`` at the closed point.  That ``R`` is local is the category
+    of the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedRings().Local()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedRings().Local():
-            raise TypeError("a canonical special fibre requires a local base ring")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6567,8 +6641,11 @@ class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected local base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:

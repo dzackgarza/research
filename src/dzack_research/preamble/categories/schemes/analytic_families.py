@@ -174,6 +174,31 @@ class _AnalyticDiscFamilyEngine:
     def analytic_family_object(self):
         return self
 
+    def fibre_inclusion(self, point):
+        r"""The inclusion ``X_t -> X_Delta``, ``x |-> (x, t)``, of the fibre over a point ``t`` of ``Delta``.
+
+        The family is the restriction of the projection ``C^2 -> C``,
+        ``(x, t) |-> t``, to the preimage of ``Delta``, so its fibre over
+        ``t`` is the line ``{(x, t)}``.  Domain: the fibre, a complex line
+        with coordinate ``x``.  The composite with the family is constant at
+        ``t``.
+        """
+        base = self.analytic_base()
+        assert point in base, (
+            f"the fibre of {self.analytic_family_morphism()} is taken over a point of its base "
+            f"{base}, but {point} is a point of {point.parent()}"
+        )
+        (parameter,) = tuple(point.coordinates())
+        fibre = ComplexManifolds().affine_space(
+            1, name=f"X_({parameter})", coordinate_names=("x",),
+        )
+        x = fibre.atlas()["standard"].coordinate(0)
+        return fibre.holomorphic_polynomial_map(self.analytic_total_space(), (x, parameter))
+
+    def fibre(self, point):
+        r"""The fibre ``X_t`` of the family over a point ``t`` of ``Delta``; its inclusion is :meth:`fibre_inclusion`."""
+        return self.fibre_inclusion(point).domain()
+
     def comparison_maps(self):
         total_inclusion = self.analytic_total_space().open_inclusion()
         base_inclusion = self.analytic_base().open_inclusion()

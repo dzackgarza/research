@@ -4,17 +4,22 @@ A variety over ``S`` is an integral separated scheme of finite type over
 ``S``; a curve and a surface are the varieties of relative dimension one and
 two.  Constructors which establish those hypotheses place the result in the
 corresponding full subcategory; membership never recomputes them afterwards.
+
+Projectivity, properness, smoothness, the K3 condition and the del Pezzo
+condition are properties, so they are axioms on these categories, and
+``Surfaces(k).Projective()`` is the category Sage computes from the axiom
+rather than a class of its own (``CAT-17``, ``CAT-27``).
 """
 
 from sage.misc.cachefunc import cached_method
-from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
-    _own_ring,
     _owned_integers,
 )
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     ProjectiveSpaces,
@@ -27,7 +32,13 @@ from dzack_research.preamble.categories.schemes.schemes import (
 
 
 class Varieties(OwnedCategoryOverBaseRing):
-    r"""Integral separated schemes of finite type over the stated base."""
+    r"""Integral separated schemes of finite type over the stated base.
+
+    The base is any ring, so a variety over ``QQbar`` or over ``CC`` is an
+    object here as one over ``QQ`` is: over a field ``k`` it is an integral
+    separated scheme of finite type over ``Spec k`` (Huybrechts, *Lectures on
+    K3 Surfaces* [Huy16], Ch. 1, before Def. 1.1).
+    """
 
     def an_object(self):
         r"""The affine line over the base ring."""
@@ -44,6 +55,7 @@ class Varieties(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Schemes(self.base_ring()).Integral().Separated().FiniteType()]
 
+
 class _DimensionSubcategoryOfVarieties(OwnedCategoryOverBaseRing):
     r"""The varieties over ``S`` of one relative dimension.
 
@@ -56,6 +68,7 @@ class _DimensionSubcategoryOfVarieties(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [Varieties(self.base_ring())]
+
 
 class Curves(_DimensionSubcategoryOfVarieties):
     r"""Varieties of relative dimension one over the stated base."""
@@ -157,7 +170,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
                     f"{base} is {engine.dimension_relative()}, not 1"
                 )
                 return _projective_closed_subscheme(
-                    ambient, equations, placements=(self, ProjectiveCurves(base), *placements),
+                    ambient, equations, placements=(self, self.Projective(), *placements),
                     _engine=engine, **level_data,
                 )
 
@@ -234,6 +247,69 @@ class Curves(_DimensionSubcategoryOfVarieties):
             )
             return True
 
+    class Projective(CategoryWithAxiom):
+        r"""Integral projective curves over the base.
+
+        Over a field the arithmetic genus ``p_a(C) = 1 - P_C(0)`` is read off
+        the Hilbert polynomial of a projective embedding, so the genus
+        operations live at this axiom, the weakest structure that states them.
+        """
+
+        def an_object(self):
+            r"""The projective line."""
+            return ProjectiveSpaces(self.base_ring())(1)
+
+        class ParentMethods:
+            def arithmetic_genus(self):
+                r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
+
+                For a projective curve the Hilbert polynomial is the defining
+                projective invariant whose constant term gives ``1-p_a``.  The
+                computation therefore belongs to the projective presentation and
+                remains distinct from normalization/geometric-genus algorithms.
+                """
+                base = self.scheme_base_ring()
+                assert base in OwnedFields(), (
+                    f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
+                )
+                integers = _owned_integers()
+                if self in ProjectiveSpaces(base):
+                    return integers.zero()
+                defining_ideal = self.defining_ideal_owned()
+                return integers.one() - integers(
+                    defining_ideal.hilbert_polynomial_value(0)
+                )
+
+            @cached_method
+            def genus_comparison(self):
+                from dzack_research.preamble.categories.schemes.curve_genus import _CurveGenusComparison
+
+                return _CurveGenusComparison(self)
+
+            def geometric_genus(self):
+                r"""The genus of the normalization, or the arithmetic genus when smooth."""
+                match self._normalization_curve:
+                    case None:
+                        assert self.is_smooth(), (
+                            f"the geometric genus of {self} needs its normalization: {self} is not "
+                            "known to be smooth and no normalization was given"
+                        )
+                        return self.arithmetic_genus()
+                    case _:
+                        normalized = self.normalization_curve()
+                        base = self.scheme_base_ring()
+                        assert normalized in Curves(base).Projective(), (
+                            f"the geometric genus of {self} is the arithmetic genus of its normalization "
+                            f"{normalized}, which must be a projective curve over {base}, but it is in "
+                            f"{normalized.category()}"
+                        )
+                        return normalized.arithmetic_genus()
+
+            def genus(self):
+                r"""Return geometric genus, never arithmetic genus by convention."""
+                return self.geometric_genus()
+
+
 class Surfaces(_DimensionSubcategoryOfVarieties):
     r"""Varieties of relative dimension two over the stated base."""
 
@@ -251,184 +327,238 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
     def _repr_object_names(self):
         return f"surfaces over {self.base_ring()}"
 
-
-class ProperSurfaces(OwnedCategoryOverBaseRing):
-    r"""Proper integral surfaces over the stated base.
-
-    Over a field, two invertible sheaves on a proper surface have an
-    integer-valued numerical intersection number (Stacks Project, Tag 0BEP).
-    This is therefore the common owner of the Picard intersection pairing for
-    represented proper surfaces.  Computational families implement only
-    the private hook.
-    """
-
-    def parameter_category(self):
-        return OwnedFields()
-
-    def super_categories(self):
-        base = self.base_ring()
-        return [Surfaces(base), Schemes(base).Proper()]
-
-    def an_object(self):
-        r"""The projective plane, hence a proper integral surface."""
-        return ProjectiveSpaces(self.base_ring())(2)
-
-    def _repr_object_names(self):
-        return f"proper surfaces over {self.base_ring()}"
-
-    class ParentMethods:
-        @cached_method
-        def picard_intersection_pairing(self):
-            r"""Return ``Pic(X) x Pic(X) -> ZZ`` by numerical intersection."""
-            base = self.scheme_base_ring()
-            assert base in OwnedFields(), (
-                f"the integer-valued numerical intersection pairing on Pic({self}) is owned here for "
-                f"proper surfaces over a field, but the base ring is {base}"
-            )
-            return self._picard_intersection_pairing()
-
-        def _picard_intersection_pairing(self):
-            raise AssertionError(
-                f"the Picard intersection pairing of the proper surface {self} is mathematically "
-                "defined by numerical intersection, but no represented algorithm for it applies here"
-            )
-
-
-class ProjectiveCurves(OwnedCategoryOverBaseRing):
-    r"""Integral projective curves over a field."""
-
-    def super_categories(self):
-        if self.base_ring() not in OwnedFields():
-            raise TypeError("projective arithmetic genus requires a field base")
-        return [Curves(self.base_ring()), Schemes(self.base_ring()).Projective()]
-
-    def an_object(self):
-        return self(ProjectiveSpaces(self.base_ring())(1))
-
-    def _call_(self, curve):
-        from dzack_research.preamble.refine import refine
-        if curve not in Curves(self.base_ring()) or curve not in Schemes(self.base_ring()).Projective():
-            raise TypeError("this is not a projective curve over the selected field")
-        return refine(curve, self)
-    class ParentMethods:
-        def arithmetic_genus(self):
-            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
-
-            For a projective curve the Hilbert polynomial is the defining
-            projective invariant whose constant term gives ``1-p_a``.  The
-            computation therefore belongs to the projective presentation and
-            remains distinct from normalization/geometric-genus algorithms.
-            """
-            base = self.scheme_base_ring()
-            assert base in OwnedFields(), (
-                f"the numerical Hilbert-polynomial arithmetic genus of {self} requires a field base, not {base}"
-            )
-            assert self in Schemes(base).Projective(), (
-                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
-                f"projective curves, but {self} is not known to be projective over {base}"
-            )
-            integers = _owned_integers()
-            if self in ProjectiveSpaces(base):
-                return integers.zero()
-            defining_ideal = self.defining_ideal_owned()
-            return integers.one() - integers(
-                defining_ideal.hilbert_polynomial_value(0)
-            )
-
-        @cached_method
-        def genus_comparison(self):
-            from dzack_research.preamble.categories.schemes.curve_genus import _CurveGenusComparison
-
-            return _CurveGenusComparison(self)
-
-        def geometric_genus(self):
-            r"""The genus of the normalization, or the arithmetic genus when smooth."""
-            match self._normalization_curve:
-                case None:
-                    assert self.is_smooth(), (
-                        f"the geometric genus of {self} needs its normalization: {self} is not "
-                        "known to be smooth and no normalization was given"
-                    )
-                    return self.arithmetic_genus()
-                case _:
-                    normalized = self.normalization_curve()
-                    return ProjectiveCurves(self.scheme_base_ring())(normalized).arithmetic_genus()
-
-        def genus(self):
-            r"""Return geometric genus, never arithmetic genus by convention."""
-            return self.geometric_genus()
-
-
-
-class ProjectiveSurfaces(OwnedCategoryOverBaseRing):
-    r"""Projective integral surfaces over the stated base.
-
-    The Del Pezzo predicate uses the convention represented in this repository:
-    a normal Gorenstein projective surface whose anticanonical line bundle is
-    ample.  The smooth projective definition is the smooth special case; the
-    normal Gorenstein singular convention is the one used by
-    Hidaka--Watanabe, *Tokyo J. Math.* 4 (1981), 319--330.
-    """
-
-    def parameter_category(self):
-        return OwnedFields()
-
-    def super_categories(self):
-        base = self.base_ring()
-        return [ProperSurfaces(base), Schemes(base).Projective()]
-
-    def an_object(self):
-        r"""The projective plane, a projective integral surface."""
-        return ProjectiveSpaces(self.base_ring())(2)
-
-    def _repr_object_names(self):
-        return f"projective surfaces over {self.base_ring()}"
-
     class ParentMethods:
         def is_del_pezzo(self) -> bool:
-            r"""Decide whether ``X`` is a normal Gorenstein Del Pezzo surface."""
-            base = self.scheme_base_ring()
-            assert base in OwnedFields(), (
-                f"the represented Del Pezzo predicate for {self} is owned for projective surfaces over "
-                f"a field, but the base ring is {base}"
-            )
-            return bool(self._is_del_pezzo())
+            r"""Decide whether the surface ``X`` is smooth and projective with ``omega_X^{-1}`` ample.
+
+            Domain: a surface ``X`` over a field.  Codomain: a truth value.
+            A del Pezzo surface is projective [Dol12, Rem. 8.1.19], so the
+            decision is made on projective surfaces by
+            :meth:`Surfaces.Projective.ParentMethods.is_del_pezzo`; a surface
+            not placed projective reaches this stub.
+            """
+            assert False, f"is_del_pezzo on Surfaces: not implemented for {self} outside projective surfaces"
 
         def _is_del_pezzo(self) -> bool:
-            raise AssertionError(
-                f"whether the projective surface {self} is normal Gorenstein with ample anticanonical "
-                "line bundle is not decided by a represented algorithm here"
-            )
+            r"""Ampleness of ``-K_X`` on a smooth projective surface; realizations supply it.
+
+            This default sorts after every realization category (complete
+            intersections, projective spaces, point blowups), so it is reached
+            only by a surface whose realization decides nothing.
+            """
+            assert False, f"ampleness of -K_X on Surfaces: not implemented for {self}"
+
+        def _is_gorenstein_del_pezzo(self) -> bool:
+            r"""Normality, the Gorenstein property and ampleness of ``-K_X`` on a singular projective surface."""
+            assert False, f"the Gorenstein del Pezzo condition on Surfaces: not implemented for {self}"
 
         def _del_pezzo_degree(self):
-            raise AssertionError(
-                f"the Del Pezzo degree of {self} is (-K)^2, but no represented self-intersection "
-                "algorithm for its anticanonical class applies here"
+            r"""The self-intersection ``K_X^2`` of a Gorenstein del Pezzo surface; realizations supply it."""
+            assert False, f"K_X^2 on Surfaces: not implemented for {self}"
+
+    class SubcategoryMethods:
+        def K3(self):
+            r"""Return this category with the axiom that its objects are K3 surfaces."""
+            return self._with_axiom("K3")
+
+        def DelPezzo(self):
+            r"""Return this category with the axiom that its objects are smooth del Pezzo surfaces."""
+            return self._with_axiom("DelPezzo")
+
+    class Proper(CategoryWithAxiom):
+        r"""Proper integral surfaces over the base.
+
+        Over a field, two invertible sheaves on a proper surface have an
+        integer-valued numerical intersection number (Stacks Project, Tag 0BEP).
+        This is therefore the common owner of the Picard intersection pairing
+        for represented proper surfaces.  Computational families implement
+        only the private hook.
+        """
+
+        def an_object(self):
+            r"""The projective plane, hence a proper integral surface."""
+            return ProjectiveSpaces(self.base_ring())(2)
+
+        class ParentMethods:
+            @cached_method
+            def picard_intersection_pairing(self):
+                r"""Return ``Pic(X) x Pic(X) -> ZZ`` by numerical intersection."""
+                base = self.scheme_base_ring()
+                assert base in OwnedFields(), (
+                    f"the integer-valued numerical intersection pairing on Pic({self}) is owned here for "
+                    f"proper surfaces over a field, but the base ring is {base}"
+                )
+                return self._picard_intersection_pairing()
+
+    class Projective(CategoryWithAxiom):
+        r"""Projective integral surfaces over the base.
+
+        Two del Pezzo conventions are stated here.  A smooth del Pezzo surface
+        is a smooth projective surface whose anticanonical sheaf is ample,
+        that is a Fano variety of dimension two (Dolgachev, *Classical
+        Algebraic Geometry* [Dol12], Rem. 8.1.19); those surfaces are the
+        objects of the ``DelPezzo`` axiom.  A Gorenstein del Pezzo surface is
+        a normal Gorenstein projective surface whose anticanonical sheaf is
+        ample, the convention of Hidaka--Watanabe, *Tokyo J. Math.* 4 (1981),
+        319--330; it admits singular points.
+
+        Each realization (projective space, complete intersection, toric
+        surface, point blowup) supplies the private hooks ``_is_del_pezzo``
+        (ampleness of ``-K_X`` on a smooth surface), ``_is_gorenstein_del_pezzo``
+        and ``_del_pezzo_degree`` on its own category.  Their assert-gated
+        defaults live on ``Surfaces``: this axiom category sorts ahead of the
+        realization categories, so a default here would shadow them.
+        """
+
+        def an_object(self):
+            r"""The projective plane, a projective integral surface."""
+            return ProjectiveSpaces(self.base_ring())(2)
+
+        class ParentMethods:
+            def is_del_pezzo(self) -> bool:
+                r"""Decide whether ``X`` is smooth with ``omega_X^{-1}`` ample [Dol12, Rem. 8.1.19]."""
+                base = self.scheme_base_ring()
+                assert base in OwnedFields(), (
+                    f"the represented del Pezzo predicate for {self} is owned for projective surfaces over "
+                    f"a field, but the base ring is {base}"
+                )
+                match bool(self.is_smooth()):
+                    case False:
+                        return False
+                    case True:
+                        return bool(self._is_del_pezzo())
+
+            def is_gorenstein_del_pezzo(self) -> bool:
+                r"""Decide whether ``X`` is normal Gorenstein with ``omega_X^{-1}`` ample (Hidaka--Watanabe)."""
+                base = self.scheme_base_ring()
+                assert base in OwnedFields(), (
+                    f"the represented Gorenstein del Pezzo predicate for {self} is owned for projective "
+                    f"surfaces over a field, but the base ring is {base}"
+                )
+                match bool(self.is_smooth()):
+                    case True:
+                        # A smooth surface is normal and Gorenstein.
+                        return self.is_del_pezzo()
+                    case False:
+                        return bool(self._is_gorenstein_del_pezzo())
+
+            def del_pezzo_degree(self):
+                r"""Return the anticanonical self-intersection ``K_X^2`` of a Gorenstein del Pezzo surface.
+
+                Domain: a Gorenstein del Pezzo surface ``X`` over a field, smooth
+                or not, where ``K_X`` is Cartier and ``K_X^2`` is an integer
+                (Hidaka--Watanabe, *Tokyo J. Math.* 4 (1981), 319--330).
+                Codomain: the positive integers.
+                """
+                assert self.is_gorenstein_del_pezzo(), (
+                    f"the degree K_X^2 is defined for Gorenstein del Pezzo surfaces, and {self} is not one"
+                )
+                return self._del_pezzo_degree()
+
+    class K3(CategoryWithAxiom):
+        r"""K3 surfaces over the base.
+
+        Huybrechts, *Lectures on K3 Surfaces* [Huy16], Ch. 1, Def. 1.1: a K3
+        surface over a field ``k`` is a complete nonsingular variety ``X`` of
+        dimension two with ``Omega^2_{X/k} ~= O_X`` and ``H^1(X, O_X) = 0``.
+        A surface is a variety of dimension two, and complete, nonsingular and
+        ``Omega^2 ~= O_X`` together are the Calabi--Yau axiom, the immediate
+        supercategory; the vanishing of ``H^1(X, O_X)`` is the property this
+        axiom adds.  Applying the category is the caller's statement of it;
+        :meth:`ParentMethods.validate_k3` is the check.
+        """
+
+        def extra_super_categories(self):
+            return [Surfaces(self.base_ring()).CalabiYau()]
+
+        def _repr_object_names(self):
+            return f"K3 surfaces over {self.base_ring()}"
+
+        def _call_(self, surface):
+            r"""Place the Calabi--Yau surface ``surface`` here, as the caller states."""
+            from dzack_research.preamble.refine import refine
+
+            base = self.base_ring()
+            assert surface in Surfaces(base).CalabiYau(), (
+                f"only a Calabi--Yau surface over {base} is a K3 surface, but {surface} is in "
+                f"{surface.category()}"
             )
+            return refine(surface, self)
+
+        class ParentMethods:
+            def is_k3(self):
+                return True
+
+            @validator
+            def validate_k3(self) -> None:
+                r"""Check the caller's statement that ``H^1(X, O_X) = 0`` [Huy16, Ch. 1, Def. 1.1]."""
+                assert False, (
+                    f"the vanishing of H^1(X, O_X) for the K3 surface {self}: not implemented"
+                )
+
+    class DelPezzo(CategoryWithAxiom):
+        r"""Smooth del Pezzo surfaces over the base.
+
+        A smooth projective surface ``X`` whose anticanonical sheaf
+        ``omega_X^{-1}`` is ample (Dolgachev [Dol12], Rem. 8.1.19).
+        Projectivity and smoothness are the immediate supercategories;
+        ampleness of ``omega_X^{-1}`` is the property this axiom adds.
+        Applying the category to a projective surface is the caller's
+        statement of that property; :meth:`ParentMethods.validate_del_pezzo`
+        checks it.
+        """
+
+        def extra_super_categories(self):
+            base = self.base_ring()
+            return [Surfaces(base).Projective(), Surfaces(base).Smooth()]
+
+        def _repr_object_names(self):
+            return f"del Pezzo surfaces over {self.base_ring()}"
+
+        def an_object(self):
+            r"""The projective plane, whose anticanonical sheaf ``O(3)`` is ample."""
+            return self(ProjectiveSpaces(self.base_ring())(2))
+
+        def _call_(self, surface):
+            r"""Place the projective surface ``surface`` here, as the caller states."""
+            from dzack_research.preamble.refine import refine
+
+            base = self.base_ring()
+            assert surface in Surfaces(base).Projective(), (
+                f"only a projective surface over {base} is a del Pezzo surface, but {surface} is in "
+                f"{surface.category()}"
+            )
+            return refine(surface, self)
+
+        class ParentMethods:
+            @validator
+            def validate_del_pezzo(self) -> None:
+                r"""Check the caller's statement that ``X`` is smooth with ``omega_X^{-1}`` ample."""
+                assert self.is_del_pezzo(), (
+                    f"{self} was placed as a del Pezzo surface, but it is not smooth with ample "
+                    "anticanonical sheaf"
+                )
 
 
-class DelPezzoSurfaces(OwnedCategoryOverBaseRing):
-    r"""Normal Gorenstein projective surfaces with ample anticanonical class."""
+def ProjectiveCurves(base):
+    r"""Integral projective curves over ``base``: ``Curves(base).Projective()``."""
+    return Curves(base).Projective()
 
-    def parameter_category(self):
-        return OwnedFields()
 
-    def super_categories(self):
-        return [ProjectiveSurfaces(self.base_ring())]
+def ProperSurfaces(base):
+    r"""Proper integral surfaces over ``base``: ``Surfaces(base).Proper()``."""
+    return Surfaces(base).Proper()
 
-    def an_object(self):
-        return self(ProjectiveSurfaces(self.base_ring()).an_object())
 
-    def _call_(self, surface):
-        from dzack_research.preamble.refine import refine
-        if surface not in ProjectiveSurfaces(self.base_ring()) or not surface.is_del_pezzo():
-            raise ValueError("Del Pezzo surfaces require normal Gorenstein projective surfaces with ample anticanonical class")
-        return refine(surface, self)
+def ProjectiveSurfaces(base):
+    r"""Projective integral surfaces over ``base``: ``Surfaces(base).Projective()``."""
+    return Surfaces(base).Projective()
 
-    class ParentMethods:
-        def del_pezzo_degree(self):
-            r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
-            return self._del_pezzo_degree()
+
+def DelPezzoSurfaces(base):
+    r"""Smooth del Pezzo surfaces over ``base``: ``Surfaces(base).DelPezzo()``."""
+    return Surfaces(base).DelPezzo()
 
 
 __all__ = ["Curves", "ProjectiveCurves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]
+

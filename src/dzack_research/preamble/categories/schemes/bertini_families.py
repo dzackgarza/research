@@ -11,6 +11,10 @@ the represented open ``D(t^3-1)`` in the parameter scheme, not a claim that
 every member is smooth.  The fibre ``t=0`` is the Fermat cubic and is smooth;
 ``t=1`` is an explicit singular member of the same family.
 
+The family is an object of the slice ``Sch_T/Spec T`` over the parameter
+ring ``T = QQ[t]``: the cubic ``X`` with its structure morphism
+``X -> Spec T``.
+
 The pencil has base points.  One rational base point ``[1:-1:0]`` is retained
 with its actual value and first-jet evaluation maps, so the application keeps
 the base-locus hypothesis visible rather than silently treating the pencil as
@@ -18,97 +22,58 @@ basepoint free.
 """
 
 from sage.misc.cachefunc import cached_method
-from sage.rings.rational_field import QQ as SageQQ
-from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _own_ring,
-    _owned_rationals,
-)
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
 from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+from dzack_research.preamble.validation import validator
 
 
-class HesseBertiniFamily(SageObject):
-    r"""The Hesse cubic pencil with its exact good and exceptional parameter loci."""
+class _HessePencil:
+    r"""Private realization of the Hesse family as an object of ``Sch_T/Spec T``.
 
-    def __init__(self) -> None:
-        base = _owned_rationals()
-        parameter = base.polynomial_ring("t")
-        t = parameter.algebra_generator("t")
-        plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
-        relative_sections = plane.O(3).global_sections()
-        relative_ring = relative_sections.homogeneous_coordinate_ring()
-        x = relative_ring.algebra_generator("x")
-        y = relative_ring.algebra_generator("y")
-        z = relative_ring.algebra_generator("z")
-        scalar = relative_ring.algebra_structure_morphism()
-        equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane, equation)
+    The slice object itself retains the family ``X -> Spec T``.  This engine
+    adds the pencil on the reference plane ``P^2_QQ`` that the family
+    specializes, with its selected base point.
+    """
 
-        reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
-        bundle = reference_plane.O(3)
-        sections = bundle.global_sections()
-        ring = sections.homogeneous_coordinate_ring()
-        rx = ring.algebra_generator("x")
-        ry = ring.algebra_generator("y")
-        rz = ring.algebra_generator("z")
-        fermat = sections.section_from_homogeneous_polynomial(rx**3 + ry**3 + rz**3)
-        product = sections.section_from_homogeneous_polynomial(rx * ry * rz)
-        linear_system = bundle.linear_system((fermat, product))
-        basepoint = reference_plane.point_morphism((base.one(), -base.one(), base.zero()))
-        base_locus_point = linear_system.base_locus().corestriction(basepoint)
-        value_evaluation = bundle.jet_evaluation(basepoint, 1)
-        first_jet_evaluation = bundle.jet_evaluation(basepoint, 2)
-        assert all(
-            value_evaluation(section) == value_evaluation.codomain().zero()
-            for section in (fermat, product)
-        ), (
-            f"the point {basepoint} = [1:-1:0] of {reference_plane} is not a base point of the "
-            "Hesse pencil: x^3 + y^3 + z^3 or xyz does not vanish there"
-        )
-
-        discriminant = t**3 - parameter.one()
-        parameter_scheme = family.base_scheme()
-        good_locus = parameter_scheme.distinguished_open(discriminant)
-        exceptional_locus = parameter_scheme.closed_subscheme(discriminant)
-
-        self._base_ring = base
-        self._parameter_ring = parameter
-        self._parameter = t
-        self._family = family
-        self._reference_plane = reference_plane
-        self._line_bundle = bundle
+    def __init__(
+        self,
+        *,
+        base_field,
+        parameter,
+        line_bundle,
+        linear_system,
+        fermat_section,
+        product_section,
+        basepoint,
+        **rest,
+    ) -> None:
+        self._base_field = base_field
+        self._parameter = parameter
+        self._line_bundle = line_bundle
         self._linear_system = linear_system
-        self._fermat_section = fermat
-        self._product_section = product
+        self._fermat_section = fermat_section
+        self._product_section = product_section
         self._basepoint = basepoint
-        self._base_locus_point = base_locus_point
-        self._value_evaluation = value_evaluation
-        self._first_jet_evaluation = first_jet_evaluation
-        self._discriminant = discriminant
-        self._good_locus = good_locus
-        self._exceptional_locus = exceptional_locus
+        super().__init__(**rest)
 
-    def base_ring(self):
-        return self._base_ring
+    def base_field(self):
+        return self._base_field
 
     def parameter_ring(self):
-        return self._parameter_ring
+        return self.parameter_scheme().coordinate_algebra()
 
     def parameter(self):
         return self._parameter
 
     def parameter_scheme(self):
-        return self.family().base_scheme()
+        return self.arrow().codomain()
 
     def family(self):
-        return self._family
-
-    def family_morphism(self):
-        return self.family().family_morphism()
+        return self.arrow().domain()
 
     def linear_system(self):
         return self._linear_system
@@ -119,44 +84,62 @@ class HesseBertiniFamily(SageObject):
     def basepoint(self):
         return self._basepoint
 
+    @cached_method
     def base_locus_point(self):
-        return self._base_locus_point
+        return self.base_locus().corestriction(self.basepoint())
 
+    @cached_method
     def basepoint_value_evaluation(self):
-        return self._value_evaluation
+        return self._line_bundle.jet_evaluation(self.basepoint(), 1)
 
+    @cached_method
     def basepoint_first_jet_evaluation(self):
-        return self._first_jet_evaluation
+        return self._line_bundle.jet_evaluation(self.basepoint(), 2)
+
+    @validator
+    def validate_basepoint(self) -> None:
+        r"""Check that ``[1:-1:0]`` is a base point: both spanning sections vanish there."""
+        evaluation = self.basepoint_value_evaluation()
+        for section in (self._fermat_section, self._product_section):
+            if evaluation(section) != evaluation.codomain().zero():
+                raise ValueError(
+                    f"the point {self.basepoint()} of {self.basepoint().codomain()} is not a base "
+                    f"point of the Hesse pencil: the section {section} does not vanish there"
+                )
 
     def discriminant(self):
-        return self._discriminant
+        t = self.parameter()
+        return t**3 - self.parameter_ring().one()
 
+    @cached_method
     def good_parameter_locus(self):
         r"""Return ``D(t^3-1)``, exactly the smooth-fibre locus on this chart."""
-        return self._good_locus
+        return self.parameter_scheme().distinguished_open(self.discriminant())
 
+    @cached_method
     def exceptional_parameter_locus(self):
         r"""Return ``V(t^3-1)``, the singular-fibre locus on this chart."""
-        return self._exceptional_locus
+        return self.parameter_scheme().closed_subscheme(self.discriminant())
 
     def parameter_is_good(self, value) -> bool:
-        value = self.base_ring()(value)
-        return value**3 != self.base_ring().one()
+        value = self.base_field()(value)
+        return value**3 != self.base_field().one()
 
-    def fiber(self, value):
-        value = self.base_ring()(value)
-        specialization = self.parameter_ring().Mor(self.base_ring())(
+    def member(self, value):
+        r"""The member over the rational point ``t = value``: the base change of ``X`` along ``T -> QQ``, ``t |-> value``."""
+        value = self.base_field()(value)
+        specialization = self.parameter_ring().Mor(self.base_field())(
             {"t": value}
         )
         return self.family().base_change(specialization)
 
     @cached_method
     def general_member(self):
-        return self.fiber(self.base_ring().zero())
+        return self.member(self.base_field().zero())
 
     @cached_method
     def exceptional_member(self):
-        return self.fiber(self.base_ring().one())
+        return self.member(self.base_field().one())
 
     @cached_method
     def restriction_to_good_locus(self):
@@ -168,18 +151,66 @@ class HesseBertiniFamily(SageObject):
 
     def theorem_hypotheses(self) -> bool:
         r"""The selected Hesse/Bertini calculation uses characteristic zero."""
-        return int(self.base_ring().characteristic()) == 0
+        return int(self.base_field().characteristic()) == 0
 
     def theorem_conclusion_is_exact(self) -> bool:
         r"""Record the computed conclusion without upgrading it to every fibre."""
         return (
             self.theorem_hypotheses()
-            and self.parameter_is_good(self.base_ring().zero())
-            and not self.parameter_is_good(self.base_ring().one())
+            and self.parameter_is_good(self.base_field().zero())
+            and not self.parameter_is_good(self.base_field().one())
         )
 
     def _repr_(self) -> str:
         return f"Hesse-Bertini family over {self.parameter_ring()} with good locus {self.good_parameter_locus()}"
+
+
+def HesseBertiniFamily(check=False):
+    r"""Return the Hesse cubic pencil as an object of ``Sch_T/Spec T`` for ``T = QQ[t]``.
+
+    The object is the cubic ``X = V(x^3+y^3+z^3-3txyz) <= P^2_T`` with its
+    structure morphism ``X -> Spec T``, together with the pencil
+    ``<x^3+y^3+z^3, xyz> <= H^0(P^2_QQ, O(3))`` and its base point
+    ``[1:-1:0]``.
+    """
+    base = _owned_rationals()
+    parameter = base.polynomial_ring("t")
+    t = parameter.algebra_generator("t")
+    plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
+    relative_sections = plane.O(3).global_sections()
+    relative_ring = relative_sections.homogeneous_coordinate_ring()
+    x = relative_ring.algebra_generator("x")
+    y = relative_ring.algebra_generator("y")
+    z = relative_ring.algebra_generator("z")
+    scalar = relative_ring.algebra_structure_morphism()
+    equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
+    family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane, equation)
+
+    reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
+    bundle = reference_plane.O(3)
+    sections = bundle.global_sections()
+    ring = sections.homogeneous_coordinate_ring()
+    rx = ring.algebra_generator("x")
+    ry = ring.algebra_generator("y")
+    rz = ring.algebra_generator("z")
+    fermat = sections.section_from_homogeneous_polynomial(rx**3 + ry**3 + rz**3)
+    product = sections.section_from_homogeneous_polynomial(rx * ry * rz)
+
+    pencil = family.scheme_category().slice_category().object(
+        family.structure_morphism(),
+        _engine=_HessePencil,
+        construction_data={
+            "base_field": base,
+            "parameter": t,
+            "line_bundle": bundle,
+            "linear_system": bundle.linear_system((fermat, product)),
+            "fermat_section": fermat,
+            "product_section": product,
+            "basepoint": reference_plane.point_morphism((base.one(), -base.one(), base.zero())),
+        },
+    )
+    pencil.validate_basepoint(check=check)
+    return pencil
 
 
 __all__ = ["HesseBertiniFamily"]
