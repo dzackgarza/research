@@ -1541,7 +1541,10 @@ class _FunctorCategory(FixedMorCategory):
     # supplies that decision.
     # Owner: ``_FunctorCategory``, which builds the natural isomorphisms.
     # Caller: ``CoreMor`` (``is_empty``, ``an_element``, ``group_generators``,
-    # ``an_element_in``) through ``_CoreCategory.base_category()``; no other.
+    # ``an_element_in``) through ``_CoreCategory.base_category()``; and, for
+    # ``D._marked_automorphism_generators`` only, ``LatticeIsometryMor``
+    # (``split_orbit`` and ``vector_stabilizer_generators``), which needs the
+    # apex image of ``Aut`` of a marking as a subgroup of ``O(L)``; no other.
     # Implementer: the codomain category ``D``, through
     #   ``D._marked_isometry(diagram_category, source, target)`` -> apex
     #   isomorphism ``F(n-1) -> G(n-1)`` of ``D``, or ``None`` when none exists;

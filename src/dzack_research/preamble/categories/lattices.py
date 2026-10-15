@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
 
 from sage.arith.misc import gcd
+from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
@@ -1378,8 +1379,51 @@ def _ring_notation(ring):
     return str(ring), raw
 
 
+def _postcomposed(automorphism, leg):
+    r"""The arrow ``g o leg`` for an automorphism ``g`` of the codomain of ``leg``, in the Mor of ``leg``.
+
+    ``g`` is an automorphism of ``B = leg.codomain()``, so ``g o leg`` has the
+    endpoints of ``leg`` and is constructed in its Mor on its generator images.
+    """
+    source = leg.domain()
+    return leg.parent()(lambda label: automorphism(leg(source.module_generator(label))))
+
+
+def _assert_monic_leg(category, marked, leg):
+    r"""State the hypothesis that a marking of ``Ar(Lattices)`` or ``Fun([n], Lattices)`` is a monomorphism."""
+    assert leg.is_injective() is True, (
+        f"{marked} is an object of {category} whose leg {leg} into its apex is not known to be "
+        f"injective: the automorphisms of the apex carrying a marking onto itself are the setwise "
+        f"stabilizer of its image only when the marking is a monomorphism"
+    )
+
+
 class _MarkedLatticeMethods:
-    r"""Operations of the categories of marked lattices: ``<n>/Lattices``, ``Ar(Lattices)``, ``Fun([2], Lattices)``."""
+    r"""Operations of the categories of marked lattices: ``<n>/Lattices``, ``Ar(Lattices)``, ``Fun([2], Lattices)``.
+
+    A marked lattice is a diagram of lattices ending at a lattice ``L``, its
+    apex (``sage-indefinite-port`` ``references/port-design.md``, *Marked
+    lattices*).  ``O(L)`` acts on the marked lattices with apex ``L`` by
+    postcomposing the legs into the apex, and an isomorphism of marked
+    lattices with apex component ``g in O(L)`` exists from ``m`` to ``m'``
+    exactly when ``g . m`` and ``m'`` are isomorphic with identity apex
+    component.  Each marking category states the two operations of this
+    action: :meth:`apex_action` and :meth:`apex_stabilizer`.
+    """
+
+    @abstract_method
+    def apex_action(self, automorphism, marked):
+        r"""Return ``g . marked``: the marking of the apex ``L`` postcomposed with ``g = automorphism`` in ``O(L)``."""
+
+    @abstract_method
+    def apex_stabilizer(self, marked):
+        r"""Return the subgroup of ``O(L)`` of apex components of the automorphisms of ``marked``.
+
+        It is ``{g in O(L) : g . marked is isomorphic to marked by an
+        isomorphism with apex component g}``, so the stabilizer of
+        ``g . marked`` is ``g S g^{-1}`` for ``S`` the stabilizer of
+        ``marked``.
+        """
 
     def primitive_marking_classes(self, source: Parent, lattice: Parent) -> Parent:
         r"""One marked lattice per isomorphism class of primitive markings of ``lattice`` of shape ``source``.
@@ -1470,11 +1514,73 @@ class Lattices(OwnedCategoryOverBaseRing):
     class Coslices(_MarkedLatticeMethods, CosliceCategory):
         r"""``X/Lattices``: lattices marked by a map from ``X``, the coslice construction on ``Lattices``."""
 
+        def apex_action(self, automorphism, marked):
+            r"""``(L, g o i)`` for the object ``(L, i: X -> L)`` and ``g`` in ``O(L)``."""
+            return self.object(_postcomposed(automorphism, self.arrow(marked)))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g o i = i}``: an isomorphism of ``X/Lattices`` is the identity on ``X``.
+
+            The marking ``i`` is fixed, not movable, so the stabilizer fixes
+            the image of every generator of ``X``; ``i`` need not be injective
+            (the zero vector is a marking of ``<0> -> L``).
+            """
+            arrow = self.arrow(marked)
+            return arrow.codomain().O().pointwise_stabilizer(arrow)
+
     class ArrowDiagrams(_MarkedLatticeMethods, _WalkingArrowFunctorCategory):
         r"""``Ar(Lattices) = [[1], Lattices]``: lattices marked by a sublattice."""
 
+        def apex_action(self, automorphism, marked):
+            r"""``(L, g o i)`` for the marking ``i: I -> L`` and ``g`` in ``O(L)``."""
+            return self.object(_postcomposed(automorphism, marked.arrow()))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g(i(I)) = i(I)}`` for a monic marking ``i: I -> L``.
+
+            An isomorphism of ``Ar(Lattices)`` is a square ``(alpha, g)`` with
+            ``g i = i alpha``; for monic ``i`` such an ``alpha`` exists exactly
+            when ``g`` carries the image of ``i`` onto itself.
+            """
+            arrow = marked.arrow()
+            _assert_monic_leg(self, marked, arrow)
+            return arrow.codomain().O().setwise_stabilizer(arrow)
+
     class SequenceDiagrams(_MarkedLatticeMethods, _FiniteSequenceFunctorCategory):
         r"""``[[n], Lattices]``: lattices marked by a chain of sublattices, such as a flag."""
+
+        def apex_action(self, automorphism, marked):
+            r"""The chain ``I_0 -> ... -> I_{n-1} -> L`` with its last arrow postcomposed with ``g``.
+
+            Every leg into the apex ``L`` factors through the last arrow, so
+            postcomposing it postcomposes each leg.
+            """
+            transitions = tuple(marked.arrows())
+            return self.object((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g(F(j -> top)(F(j))) = F(j -> top)(F(j)) for every j}``, for a chain of monomorphisms.
+
+            An isomorphism of chains is a natural isomorphism; with monic legs
+            ``F(j -> top)`` into the apex its component at ``j`` exists exactly
+            when ``g`` carries the image of that leg onto itself, so the
+            stabilizer is the intersection of the setwise stabilizers of the
+            images of the legs.
+            """
+            functor = marked.functor()
+            shape = functor.domain()
+            top = shape(int(shape.object_set().cardinality()) - 1)
+            orthogonal_group = functor(top).O()
+            legs = tuple(
+                functor(shape.Mor(vertex, top).unique())
+                for vertex in shape.objects()
+                if vertex is not top
+            )
+            for leg in legs:
+                _assert_monic_leg(self, marked, leg)
+            return orthogonal_group.intersection(
+                *(orthogonal_group.setwise_stabilizer(leg) for leg in legs)
+            )
 
     @cached_method
     def Core(self):
@@ -1513,7 +1619,13 @@ class Lattices(OwnedCategoryOverBaseRing):
         return isometry(diagram_category, source, target)
 
     def _marked_automorphism_generators(self, diagram_category, marked):
-        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403)."""
+        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403).
+
+        Callers: ``CoreMor`` through the marking category, as declared at
+        ``_FunctorCategory``, and ``LatticeIsometryMor``, whose orbit
+        splitting and vector stabilizers read the apex image of ``Aut`` of
+        a marking of an indefinite lattice.
+        """
         from sage_indefinite_port.indefinite.marked_lattices import (
             automorphism_group_generators,
         )

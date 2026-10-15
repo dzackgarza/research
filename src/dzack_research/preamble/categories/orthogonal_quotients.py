@@ -276,17 +276,36 @@ class OrthogonalCharacterQuotient:
         )
 
     def splitting_isometries(self, stabilizer_generators):
-        r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
+        r"""Return one lift ``g`` per double coset ``Gamma g Stab`` of ``O(L)``.
+
+        ``Stab`` is the stabilizer in ``G = O(L)`` of a point ``x`` of a
+        ``G``-set, given by ``stabilizer_generators``, and ``Gamma`` is the
+        selected subgroup.  The ``G``-orbit of ``x`` is ``G/Stab``, and its
+        ``Gamma``-orbits are the double cosets ``Gamma \ G / Stab``: the
+        points ``g x`` and ``g' x`` lie in one ``Gamma``-orbit exactly when
+        ``g'`` lies in ``Gamma g Stab``.  As ``Gamma`` contains the kernel of
+        the character map ``rho``, it is ``rho^{-1}(rho(Gamma))``, so
+        ``Gamma g Stab = Gamma g' Stab`` exactly when ``rho(g)`` and
+        ``rho(g')`` lie in one double coset ``rho(Gamma) q rho(Stab)`` of the
+        finite image.  The returned lifts ``g`` therefore give one point
+        ``g x`` in each ``Gamma``-orbit.  The order matters when the image is
+        not abelian: a transversal of ``rho(Stab) \ Q / rho(Gamma)`` need not
+        be one of ``rho(Gamma) \ Q / rho(Stab)``.
+        """
         stabilizer = self.stabilizer_image_keys(stabilizer_generators)
         subgroup = self.subgroup_image_keys()
         keys, permutations, group = self._gap_regular_model()
+        # GAP's DoubleCosets(G, U, V) lists the double cosets U g V.  The
+        # key-to-permutation map is a homomorphism (GAP composes left to
+        # right, and each key acts by right multiplication), so U is the
+        # image of Gamma and V the image of the stabilizer.
         left = libgap.Subgroup(
             group,
-            [permutations[key] for key in stabilizer],
+            [permutations[key] for key in subgroup],
         )
         right = libgap.Subgroup(
             group,
-            [permutations[key] for key in subgroup],
+            [permutations[key] for key in stabilizer],
         )
         representatives = []
         for double_coset in libgap.DoubleCosets(group, left, right):

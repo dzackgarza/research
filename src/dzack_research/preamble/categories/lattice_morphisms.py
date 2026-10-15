@@ -19,6 +19,7 @@ from sage.misc.lazy_attribute import lazy_attribute
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CoreMor,
+    CosliceCategory,
     _CoreCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -33,6 +34,7 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
+    PredicateSubgroups,
     StabilizerSubgroups,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (
@@ -2508,24 +2510,123 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         return self.vector_equivalence_witness(left, right) is not None
 
     def vector_stabilizer_generators(self, element):
-        r"""Return exact generators of ``Stab_{O(L)}(element)`` when finite.
+        r"""Return generators of ``Stab_{O(L)}(element)``.
 
-        The subgroup reduction happens in Sage's private finite isometry group;
-        only live lattice isometries cross back into the public result.
+        ``Stab_{O(L)}(v)`` is the apex image of ``Aut`` of the pointed
+        lattice ``(L, <q(v)> -> L)``, so this is the pointed case of the
+        stabilizer of a marking (:meth:`_marking_stabilizer_generators`).
         """
         lattice = self.domain()
         element = element if element_parent(element) is lattice else lattice(element)
-        if not lattice.is_definite():
-            from sage_indefinite_port.indefinite.marked_lattices import (
-                automorphism_group_generators,
-            )
+        category, marked = _pointed_marking(lattice, element)
+        return self._marking_stabilizer_generators(category, marked, category.apex_stabilizer(marked))
 
-            category, marked = _pointed_marking(lattice, element)
-            return automorphism_group_generators(category, marked)
-        self._assert_definite_over_integers("reduce a stabilizer in")
-        stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
-        engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
+    def _finite_subgroup_generators(self, subgroup):
+        r"""Generators of a subgroup of the finite ``O(L)`` of a definite lattice over ``ZZ``.
+
+        The subgroup is listed in one pass over ``O(L)`` and reduced to a
+        generating set in Sage's private finite isometry group; only live
+        lattice isometries cross back into the public result.
+        """
+        self._assert_definite_over_integers("reduce a subgroup of")
+        elements = tuple(automorphism for automorphism in self if automorphism in subgroup)
+        engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in elements))
         return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
+
+    def _marking_stabilizer_generators(self, category, marked, stabilizer):
+        r"""Generators of ``stabilizer``, the apex image in ``O(L)`` of ``Aut`` of a marked lattice with apex ``L``.
+
+        ``stabilizer`` is ``category.apex_stabilizer(marked)``.  For definite
+        ``L`` over ``ZZ`` it is a subgroup of the finite ``O(L)``, reduced to
+        generators here.  For indefinite ``L`` the generators are the apex
+        isometries that the lattice category's marked-diagram decision
+        supplies (``sage-indefinite-port``, #403); they are untrusted engine
+        output.
+        """
+        lattice = self.lattice()
+        if lattice.is_definite():
+            return self._finite_subgroup_generators(stabilizer)
+        return lattice.lattice_category()._marked_automorphism_generators(category, marked)
+
+    def _marking_category(self, marked):
+        r"""The category of marked lattices with apex ``L`` of which ``marked`` is an object.
+
+        The marking categories over ``Lattices(R)`` are ``Ar(Lattices)``,
+        ``Fun([2], Lattices)`` and the coslices ``X/Lattices``; a coslice
+        object names its ``X`` as the source of its arrow.
+        """
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        lattice = self.lattice()
+        lattices = lattice.lattice_category()
+        sublattices = Cat().Mor(FiniteOrdinalCategory(2), lattices)
+        flags = Cat().Mor(FiniteOrdinalCategory(3), lattices)
+        match marked:
+            case _ if marked in sublattices:
+                category = sublattices
+            case _ if marked in flags:
+                category = flags
+            case _:
+                category = CosliceCategory(lattices, marked.arrow().domain())
+        assert marked in category, (
+            f"{marked} is not a marked lattice: it is an object of none of Ar({lattices}), "
+            f"Fun([2], {lattices}) or a coslice X/{lattices}"
+        )
+        return category
+
+    def split_orbit(self, marked, subgroup):
+        r"""One marked lattice in each ``H``-orbit of the ``O(L)``-orbit of ``marked``.
+
+        ``G = O(L)`` acts on the marked lattices with apex ``L`` (objects of
+        ``X/Lattices``, ``Ar(Lattices)`` or ``Fun([2], Lattices)``) by
+        postcomposing the marking, ``g . m``, with stabilizer
+        ``G_m = category.apex_stabilizer(m)``.  The ``G``-orbit of ``m`` is
+        ``G/G_m``, and for ``H = subgroup`` its ``H``-orbits are the double
+        cosets ``H \ G / G_m``: ``g . m`` and ``g' . m`` are carried onto one
+        another by an element of ``H`` exactly when ``g'`` lies in ``H g G_m``.
+
+        ``H`` contains the kernel of a finite-image character map
+        ``rho: G -> Q`` (``H.contains_character_kernel()``), so these double
+        cosets are those of ``rho(H) \ rho(G) / rho(G_m)``, computed by the
+        character quotient of ``H`` from generators of ``G_m``
+        (``OrthogonalCharacterQuotient.splitting_isometries``).  For ``H = G``
+        there is one double coset and ``m`` is its representative.
+
+        The result is the finite set of the representatives ``g . m``.  The
+        stabilizer in ``H`` of ``g . m`` is ``H cap g G_m g^{-1}``, which is
+        ``subgroup.intersection(category.apex_stabilizer(g . m))``.
+        """
+        category = self._marking_category(marked)
+        stabilizer = category.apex_stabilizer(marked)
+        assert stabilizer.supergroup() is self, (
+            f"the orbit of {marked} under {self} is not defined: its marking ends at a lattice other "
+            f"than {self.lattice()}"
+        )
+        match subgroup:
+            case _ if subgroup is self:
+                return finite_ordered_set((marked,))
+            case _ if (
+                subgroup in PredicateSubgroups(self)
+                and subgroup.supergroup() is self
+                and subgroup.contains_character_kernel()
+            ):
+                stabilizer_generators = self._marking_stabilizer_generators(category, marked, stabilizer)
+                return finite_ordered_set(
+                    tuple(
+                        category.apex_action(splitting, marked)
+                        for splitting in subgroup.finite_character_quotient().splitting_isometries(
+                            stabilizer_generators
+                        )
+                    )
+                )
+        assert False, (
+            f"cannot split the orbit of {marked} under {self} along {subgroup}: the splitting is "
+            f"computed through a finite quotient of {self} by characters (discriminant, determinant, "
+            f"spinor norm), so {subgroup} must contain the kernel of such a character map; it is "
+            f"neither {self} itself nor a subgroup of {self} known to contain one"
+        )
 
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
