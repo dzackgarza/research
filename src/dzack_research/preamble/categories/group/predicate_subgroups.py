@@ -132,8 +132,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         *,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Construct the predicate subgroup of this category's ambient group."""
+        r"""Construct the predicate subgroup of this category's ambient group.
+
+        ``generating_morphism``, when the constructing owner has one, is a
+        group morphism from a free group to the ambient group whose image is
+        this subgroup; it becomes the subgroup's selected generating datum,
+        as for :class:`StabilizerSubgroups`.
+        """
         return _object_of(
             _predicate_subgroup_category(self),
             _ambient=OwnedGroups(),
@@ -142,6 +149,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
+            generating_morphism=generating_morphism,
         )
 
     class ParentMethods:

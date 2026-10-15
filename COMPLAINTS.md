@@ -16,7 +16,11 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ### Labelled graphs present no isomorphisms or automorphism groups
 
-`LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group. Configuration equivalence (#399) needs both, so `_SpanningConfiguration` (`categories/vector_configurations.py`) keeps a Sage `Graph` inside a declared private adapter for bliss/nauty. Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism. Source inspection only.
+`LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group. The stabilizers and transporters of coloured families of lattice vectors (#399, `L.O().stabilizer(family)`) need both, so `_LabelledPairingGraph` (`categories/coloured_vector_families.py`) keeps a Sage `Graph` inside a declared private adapter for bliss/nauty. Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism. Source inspection only.
+
+### Generating data of a predicate subgroup of a finite O(L) cannot be read
+
+Observed (executed, 2026-10-14, branch `port/families-of-lattice-vectors`): for `L = Lattices(ZZ)("A2")` and the family of its simple roots, `L.O().stabilizer(family).group_generators()` raises `NotImplementedError: cannot enumerate {g in O(L) : ...}: O(L) has no selected enumeration`. Path: the stabilizer is `L.O().predicate_subgroup(..., generating_morphism=...)`; realizing the selected resolution builds `free.Mor(subgroup)`, whose `SetMorCategory.__init__` asks `set_power_category` for the cardinality of the subgroup (`sets/cardinals.py:453`), and a predicate subgroup of a group placed in `OwnedFiniteGroups` decides its cardinality by iterating itself (`predicate_subgroups.py`, `_cardinality_decision`), which needs an enumeration of `O(L)` that the definite `LatticeIsometryMor` does not supply. Two defects: constructing a Mor computes a cardinality (`OWN-22`), and a finite `O(L)` has no enumeration reachable by its predicate subgroups. The same path serves every `StabilizerSubgroups` with a generating morphism. Indefinite specimens (`<1> + <1> + <-1>`) are unaffected; the banked definite specimens in `tests/lattices/test_vector_family_stabilizers.sage` reach it at T.
 
 ### Port consumers of binary fibres and cone marks must move (port #33, #15)
 
@@ -226,7 +230,11 @@ realizes the product through GAP for nonempty finite families of finite
 groups only; `Cat.fiber_product` composes that product with an equalizer.
 No represented product of infinite owned groups (pairs of owned elements)
 exists. **Consumers:** `G1.direct_product(G2)` for subgroups of lattice
-orthogonal groups (#397), group pullbacks and subgroup intersections.
+orthogonal groups (#397), group pullbacks and subgroup intersections, and the
+stabilizer of a family `v: I -> L` under `O(L) x Sym_C(I)` itself: only its image
+`L.O().stabilizer(family)` in `O(L)` is presented, its kernel `K_v` stated in
+`coloured_vector_families.py`, and families that do not span `L tensor Q` (whose
+stabilizer contains the pointwise stabilizer of the span) are asserted out.
 **Dependency path:** owned groups -> product group with cone -> orthogonal-sum
 image in O(L1 + L2) -> pullbacks. **Request (not yet filed):**
 `lean-categories` states the categorical product in Grp with its projections,
