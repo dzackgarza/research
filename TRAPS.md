@@ -342,6 +342,10 @@ Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the defini
 
 Over `S = PolynomialRing(QQ, ['x','y'])`, `S.ideal(x, y).is_maximal()` and `S.ideal(x).is_maximal()` raise `NotImplementedError`, as does `ZZ['x'].ideal(2, x).is_maximal()`. `MPolynomialIdeal.dimension()` answers (`S.ideal(x).dimension() == 1`). Over `QQ['x']` the opposite holds: `Ideal_1poly_field` has no `dimension`, and `is_maximal()` answers (`(x^2+1)` gives `True`). Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: multivariate ideals over a field use Zariski's lemma, prime with quotient of dimension zero; every other ideal asks Sage's `is_maximal`.
 
+### `QuotientRing_generic` has no `is_finite`, and its `characteristic` raises
+
+Over `S = PolynomialRing(QQ, ['t','u'])`, `Q = S.quotient(t*u - 1)` is a `QuotientRing_generic` with no `is_finite` attribute, and `Q.characteristic()` raises `NotImplementedError` (`sage/rings/quotient_ring.py:777`). The same holds over `GF(3)`. `PolynomialQuotientRing_generic` (one variable) has `is_finite`. Measured on SageMath 10.10.beta8 (`sage-dev-allopts`), 2026-10-16. Route chosen: for `k[x_1..x_n]/I` over a field, the unit ideal (`I.dimension() == -1`) gives the zero ring; otherwise the ring is finite exactly when `k` is finite and `I.dimension() == 0`.
+
 ### Sage's localizations of polynomial rings decide units on only one shape
 
 `L(e).is_unit()` measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25, for `e` in `x, 2, 3, x+1, 2x`:

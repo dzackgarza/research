@@ -5321,7 +5321,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine.is_integral_domain()
 
     def _finiteness_decision(self):
-        return self._engine.is_finite()
+        return _engine_finiteness_decision(self._engine)
 
     def _preamble_is_number_field_order(self):
         r"""Whether this ring was constructed as an order (``ZZ`` or ``_order_in``), read from its placement."""
@@ -5609,6 +5609,26 @@ def _engine_field_decision(engine):
                 # when they cannot decide field-ness (e.g. lazy power series
                 # rings). Undecided is None, never an implicit False.
                 return None
+
+
+def _engine_finiteness_decision(engine):
+    r"""Return whether the engine's ring is a finite set.
+
+    ``OWN-06`` adapter.  Sage's ``QuotientRing_generic`` has no
+    ``is_finite`` (TRAPS.md).  For ``A = k[x_1, ..., x_n]/I`` over a field
+    ``k``: the unit ideal gives the zero ring, a finite set.  Otherwise
+    ``k -> A`` is injective, and ``A`` is finite exactly when ``k`` is
+    finite and ``dim_k A`` is finite, that is when ``A`` has Krull
+    dimension zero (Atiyah--Macdonald, Ch. 8 and Cor. 5.24 (Zariski)).
+    """
+    match engine:
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
+            engine.cover_ring().base_ring().is_field()
+        ):
+            dimension = engine.defining_ideal().dimension()
+            return bool(dimension == -1 or (engine.cover_ring().base_ring().is_finite() and dimension == 0))
+        case _:
+            return engine.is_finite()
 
 
 def _size_of_finitely_supported_families(coefficients, indeterminates) -> Category:
