@@ -1347,6 +1347,22 @@ The Hesse pencil is an object of `Schemes(QQ).SliceOver(A^1_QQ)`; the tree prese
 
 `categories/algebras/derivations.py` routes on `isinstance` at lines 86, 132, 325, 350, 407, 555, 557, 567, 624, 745 (`rg -n isinstance` on 2026-10-16). AGENTS.md (*Dynamic peeking is prohibited*) requires membership routing. **Consumers:** derivations, the de Rham complex.
 
+### A free module is placed with a chosen finite presentation that it cannot give
+
+`QQ.free_module(2) in ModulesWithChosenFinitePresentation(QQ)` holds, but its object type has no `presentation()`; the method is at `modules/finitely_presented_modules.py:652`. So `M.projectivization()` (`P(M) = Proj Sym(M)` over `Spec R`, EGA II 4.1.1) raises `AttributeError` in `_chart_algebra` (`schemes/relative_proj.py:805`), and `RelativeProjectivizations(R).an_object()` fails the same way (2026-10-16). Membership in a data subcategory and the datum it states disagree (`CAT-29`).
+
+### `dual_module()` of a framed free module has no dual framing
+
+The framed duplicate of `dual_module` is retired into `Modules(R)`, so `M.dual_module()` is the homset `Mor(M, R)`. That homset accepts no coordinate data and gives no dual basis (`FramedFreeModules...dual_basis` is a stub, `modules/framed/framed_free_modules.py:790`). The expectation files `tests/user_simulations/test_module_session.sage:86` and `test_lattice_session.sage:67,161`, with `tests/tensors/test_mixed_tensor_*.sage`, `test_tensors.sage`, `tests/forms/test_infinite_form_duality.sage` and `tests/lattices/test_hyperbolic_chambers.sage`, call `.dual_module()((5, 7))` and `.dual_module().module_generators()`. **Repair:** the homset `Mor(M, R)` of a framed free module constructs elements from coordinates in the dual basis.
+
+### Section spaces on products of projective spaces
+
+`_multihomogeneous_polynomial_section_space` asserts every `d_i >= 0` (`divisors/linear_systems.py`), though `H^0(P^{n_1} x ... x P^{n_k}, O(d_1, ..., d_k)) = 0` when some `d_i < 0`. Its category and `ProjectiveJetSpaces` declare `VectorSpaces(R)`, which is false over `ZZ`; `HomogeneousPolynomialSectionSpaces` now declares `FramedFreeModules(R)`.
+
+### Linear systems do not specialize `ProjectiveLinearSystems`
+
+A complete linear system is `P(H^0(X, L))` and an imposed-multiplicity system is `P(W)` for `W` the kernel of a jet evaluation; both are linear systems `P(W)`, `W <= H^0(X, L)`. `CompleteLinearSystems` and `ImposedMultiplicityLinearSystems` store their own data and not the line bundle and section embedding of `ProjectiveLinearSystems` (`OWN-14`), so `closed_immersion_into_complete_linear_system` (a stub) exists only there. All three are constructed as projective spaces on a framing of `W`; for a general `L` the space `W` has no chosen basis, and the unframed `P(W)` is an object of `RelativeProjectivizations(R)`, whose parent is `Schemes(R)` and not `Schemes(R).Projective()`.
+
 ## Workflow Papercuts
 
 ### The required reading does not fit a worker context
