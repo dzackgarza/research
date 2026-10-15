@@ -729,7 +729,8 @@ class RiemannianManifolds(OwnedCategory):
             ``G/K`` is the orbit space of the right action of ``K`` on ``G``:
             the coequalizer in ``TopologicalSpaces()`` of the action and the
             projection ``K x G -> G``, returned by ``orbit_space()`` on the
-            object of ``GObjects(K, LieGroups())`` with ``k . g = g k^{-1}``.
+            object of ``GObjects(K, SmoothManifolds())`` with ``k . g = g k^{-1}``;
+            right translation is a diffeomorphism of ``G``, not a group morphism.
             The smooth structure and the ``G``-invariant metric induced by
             the Killing form of ``g_0`` restricted to ``p_0`` place it here.
             """
