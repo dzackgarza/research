@@ -47,9 +47,9 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _owned_group,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
 
@@ -784,6 +784,55 @@ class GObjectMorCategoryConstruction(MorCategoryConstruction):
         return GObjectMor
 
 
+class _GSpaceOnSpace:
+    r"""A ``G``-space on a given space ``X``, with the procedure deciding its orbit relation.
+
+    The data are ``X`` and the relation, a function of two points answering
+    ``True``, ``False`` or ``Unknown``; the action is the ``GObjects`` datum.
+    """
+
+    def __init__(self, space, orbit_relation, **rest) -> None:
+        self._space = space
+        self._orbit_relation = orbit_relation
+        super().__init__(**rest)
+
+    def space(self):
+        r"""The space ``X`` acted on, retained as defining data."""
+        return self._space
+
+    def __contains__(self, point) -> bool:
+        return point in self.space()
+
+    is_parent_of = __contains__
+
+    def __call__(self, point):
+        return self._element_constructor_(point)
+
+    def _element_constructor_(self, point):
+        return self.space()(point)
+
+    def __iter__(self):
+        return iter(self.space())
+
+    def cardinality(self):
+        return self.space().cardinality()
+
+    @cached_method
+    def ranking_map(self):
+        r"""The enumeration of ``X``, whose points are the points of this ``G``-space."""
+        ranking = self.space().ranking_map()
+        return self._ranking_isomorphism(
+            lambda point: int(ranking(point)),
+            lambda position: ranking.inverse()(position),
+        )
+
+    def _orbit_relation_decision(self, source, target):
+        return self._orbit_relation(source, target)
+
+    def _repr_(self) -> str:
+        return f"{self.space()} with {self.acting_group()}-action"
+
+
 class GObjects(CategoryPacketMethods, OwnedCategory):
     r"""The category of objects of ``C`` with a chosen ``G``-action.
 
@@ -870,6 +919,46 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 lambda element: action(element, point) == point,
                 f"stabilizer of {point}",
             ),
+        )
+
+    def on_space(self, space, action, *, orbit_relation=None):
+        r"""The ``G``-space ``(X, rho)``: ``G`` acting on the space ``X`` by ``action(g, x)``.
+
+        ``rho: G -> Aut_C(X)`` sends ``g`` to the homeomorphism
+        ``x |-> action(g, x)``; it is a left action, checked by
+        ``validate_action``.  The ``G``-space has the points and the
+        topology of ``X``, which is retained as defining data.  An optional
+        orbit decision ``orbit_relation(x, y)`` realizes ``y in G . x``; its
+        absence leaves that relation a proposition.
+        """
+        from dzack_research.preamble.categories.topological_spaces import (
+            TopologicalSpaces,
+            _TransportedTopologyData,
+        )
+
+        category = self.underlying_category()
+        assert category.is_subcategory(TopologicalSpaces()), (
+            f"on_space needs an action in a category of topological spaces, but the "
+            f"actions of {self} are in {category}"
+        )
+        assert space in category, f"{space} is not an object of {category}"
+        match space:
+            case _ if space in FiniteSets() and space in EnumeratedSets():
+                g_spaces = owned_category_join((self, FiniteSets(), EnumeratedSets()))
+            case _:
+                g_spaces = self
+        return _object_of(
+            g_spaces,
+            _engine=(g_spaces, _GSpaceOnSpace, None),
+            space=space,
+            orbit_relation=(lambda left, right: Unknown) if orbit_relation is None else orbit_relation,
+            # The points of the G-space are the points of X, and it has the
+            # topology of X.
+            topology_data=_TransportedTopologyData(space),
+            acting_group=self.acting_group(),
+            action=lambda group_element: (lambda point: action(group_element, point)),
+            underlying_category=category,
+            facade=space,
         )
 
     def orbit_generated_submodule(self, action, seed, *, containing=None):
@@ -1382,7 +1471,50 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 f"orbit space is a coequalizer in topological spaces, and {category} is "
                 f"not a category of topological spaces"
             )
-            assert False, "orbit_space on GObjects: not implemented"
+            return self._orbit_space_construction()[0]
+
+        def orbit_space_projection(self):
+            r"""The projection ``q: X -> G\X``, sending a point to its orbit.
+
+            ``q`` is continuous for the final topology, and ``q rho(g) = q``
+            for every ``g`` in ``G``.
+            """
+            return self._orbit_space_construction()[1]
+
+        @cached_method
+        def _orbit_space_construction(self):
+            r"""The pair ``(G\X, q)``.
+
+            ``G\X`` is the colimit of the action functor ``BG -> Top``.  The
+            forgetful functor ``U: Top -> Set`` creates it: its points are the
+            orbit set of the ``G``-set ``UX``, the colimit of ``BG -> Set``, and
+            its topology is the final topology along ``q`` (Mathlib,
+            ``TopCat.colimit_isOpen_iff``: ``V`` is open exactly when
+            ``q^{-1}(V)`` is open).  Top has no product ``G x X`` of a group
+            with a space, so the parallel pair ``a, pr_2`` is not formed; the
+            colimit over ``BG`` is the same universal pair.
+            """
+            from dzack_research.preamble.categories.topological_spaces import (
+                _final_topology_space,
+            )
+
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            group = self.acting_group()
+            match self:
+                case _ if self in FiniteSets():
+                    # A finite G-set decides its orbit relation from its
+                    # permutation representation G -> Sym(UX).
+                    g_set = FiniteGSets(group)(self, self.act)
+                case _:
+                    g_set = GObjects(group, Sets()).on_set(
+                        self, self.act, orbit_relation=self._orbit_relation_decision
+                    )
+            orbits = g_set.orbits()
+            space, projection, _ = _final_topology_space(
+                self, Sets().Mor(self, orbits)(orbits.orbit_of)
+            )
+            return space, projection
 
         def orbits_presented_by(self, covering):
             r"""The orbit set ``X/G`` presented by a finite set of points meeting every orbit.

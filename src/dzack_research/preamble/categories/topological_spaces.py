@@ -223,6 +223,36 @@ class _FinalTopologyData(SageObject):
         return self._source_space.is_open_subset(preimage)
 
 
+class _TransportedTopologyData(SageObject):
+    r"""The topology of a space ``X`` on a set with the same points as ``X``.
+
+    A subset is open exactly when the subset of ``X`` with the same points is
+    open in ``X``: the final topology along the identity of points.  When the
+    opens of ``X`` form a finite enumerated set, they are enumerated here.
+    """
+
+    def __init__(self, source_space) -> None:
+        self._source_space = source_space
+
+    def open_subsets(self, space):
+        source_opens = self._source_space.open_subsets()
+        match source_opens:
+            case _ if source_opens in FiniteSets() and source_opens in EnumeratedSets():
+                power = space.power_set()
+                return finite_ordered_set(
+                    tuple(power(tuple(space(point) for point in subset)) for subset in source_opens)
+                )
+            case _:
+                return space.power_set().condition_set(
+                    lambda subset: self.is_open_subset(space, subset)
+                )
+
+    def is_open_subset(self, space, subset) -> bool:
+        selected = space.power_set()(subset)
+        source = self._source_space
+        return source.is_open_subset(source.power_set().from_predicate(lambda point: point in selected))
+
+
 class _FinalTopologySpaceEngine:
     r"""A set ``Q`` with the final topology along ``q: UY -> Q``.
 
@@ -294,7 +324,7 @@ def _final_topology_space(source_space, set_projection):
                 topology_data=_FinalTopologyData(source_space, set_projection),
                 point_set=point_set,
             )
-            set_map = Sets().Mor(source_space, space)(set_projection)
+            set_map = Sets().Mor(source_space, space)(lambda point: space(set_projection(point)))
             return space, TopologicalSpaces().Mor(source_space, space)._from_continuous_set_map(set_map), (
                 lambda point: point
             )
@@ -353,6 +383,22 @@ class TopologicalSpaceMor(CategoricalMor):
     """
 
     ElementMethods = ContinuousMap
+
+    def __init__(self, family, domain, codomain) -> None:
+        r"""Place ``Mor_Top(X, Y)`` as a set, a subset of ``Y^X``.
+
+        It is finite when ``X`` and ``Y`` are finite, and ``End_Top(X)`` is a
+        monoid under composition.
+        """
+        from dzack_research.preamble.categories.group.magmas import Monoids
+
+        match domain, codomain:
+            case _ if domain in FiniteSets() and codomain in FiniteSets():
+                sets = FiniteSets()
+            case _:
+                sets = Sets()
+        monoids = (Monoids(),) if domain is codomain else ()
+        super().__init__(family, domain, codomain, category=owned_category_join((sets, *monoids)))
 
     def _preimages_of_opens_are_open(self, set_map) -> bool:
         r"""Continuity of ``set_map: UX -> UY``, decided from its definition.
