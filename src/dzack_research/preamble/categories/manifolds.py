@@ -1774,6 +1774,15 @@ class ComplexManifolds(OwnedCategory):
         globally symmetric space of noncompact type.
         """
 
+        def extra_super_categories(self):
+            r"""``RiemannianManifolds().GloballySymmetric()``: the domain with its Bergman metric.
+
+            The Bergman metric is determined by the complex structure, so it
+            is no choice; with it ``G/K`` is a Riemannian globally symmetric
+            space of noncompact type (Helgason, Ch. VIII, §7).
+            """
+            return [RiemannianManifolds().GloballySymmetric()]
+
         def type_I(self, p, q):
             r"""Return ``I_{p,q} = SU(p, q)/S(U(p) x U(q))``, Cartan type AIII.
 
