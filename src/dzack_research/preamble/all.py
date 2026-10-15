@@ -355,6 +355,7 @@ from dzack_research.preamble.categories.modules import (
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
+    DerivedCategories,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,

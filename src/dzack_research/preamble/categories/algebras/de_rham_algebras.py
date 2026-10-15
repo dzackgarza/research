@@ -37,6 +37,16 @@ class _DeRhamAlgebra:
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
+    r"""De Rham algebras ``DR_R(A) = Ω^•_{A/R}`` of commutative ``R``-algebras ``A``.
+
+    ``Ω^•_{A/R}`` is the exterior algebra of the Kähler differentials with
+    the differential extending ``d : A -> Ω^1_{A/R}``; it is a
+    supercommutative differential graded ``R``-algebra.  On a smooth scheme
+    ``X`` over ``R`` these are the sections over affine opens
+    ``Spec A ⊆ X`` of the sheaf ``Ω^•_{X/R}``
+    (``Schemes(R).Smooth()`` objects' ``de_rham_complex()``).
+    """
+
     def an_object(self):
         r"""The de Rham algebra of a finite dual-number presentation.
 

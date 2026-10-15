@@ -151,6 +151,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
         return _cohomology_functor(self.base_ring(), degree)
 
+    def localization_at_quasi_isomorphisms(self):
+        r"""Return ``Q : Ch(R) -> D(R)``, the localization at quasi-isomorphisms."""
+        from dzack_research.preamble.categories.modules.derived_categories import (
+            _derived_localization_functor,
+        )
+
+        return _derived_localization_functor(self.base_ring())
+
     class ParentMethods:
         @cached_method
         def differential(self):

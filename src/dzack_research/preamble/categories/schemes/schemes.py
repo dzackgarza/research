@@ -3275,9 +3275,61 @@ class Schemes(OwnedCategoryOverBaseRing):
             def anticanonical_bundle(self, *args, **kwargs):
                 return self.anticanonical_line_bundle(*args, **kwargs)
 
+            def de_rham_complex(self):
+                r"""``Ω^•_{X/R}``, the algebraic de Rham complex of this smooth scheme.
+
+                An object of ``Sheaves(zariski_coverage(X),
+                DifferentialGradedAlgebras(R).Supercommutative().Alternating())``:
+                a sheaf of supercommutative differential graded ``R``-algebras
+                whose sections over an affine open ``Spec A`` are
+                ``DeRhamAlgebras(R)(A) = DR_R(A)``.  Its differential is
+                ``R``-linear but not ``O_X``-linear.
+                """
+                assert False, "de_rham_complex on Schemes.Smooth: not implemented"
+
+            def de_rham_hypercohomology(self):
+                r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategories(R)``.
+
+                The hypercohomology of the de Rham complex: the class of the
+                total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg
+                injective resolution of ``Ω^•_{X/R}`` by sheaves of
+                ``R``-modules.
+                """
+                assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
+
+            def de_rham_cohomology(self, degree):
+                r"""``H^degree_dR(X/R) = H^degree(RΓ(X, Ω^•_{X/R}))``, an object of ``Modules(R)``."""
+                return self.de_rham_hypercohomology().cohomology(degree)
+
+            def de_rham_cohomology_algebra(self):
+                r"""``H^*_dR(X/R)``, an object of ``GradedAlgebras(R).Supercommutative()``.
+
+                The graded module ``⊕_k H^k_dR(X/R)`` with the cup product
+                induced by the wedge product of ``Ω^•_{X/R}``; it needs a
+                multiplicative model of ``RΓ(X, Ω^•_{X/R})``, which the
+                derived category alone does not supply.
+                """
+                assert False, "de_rham_cohomology_algebra on Schemes.Smooth: not implemented"
+
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+        def de_rham_cohomology(self, degree):
+            r"""Return ``H^degree_dR(-/R) : Sm_R^op -> Mod_R``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_functor(self.base_ring(), degree)
+
+        def de_rham_cohomology_algebra(self):
+            r"""Return ``H^*_dR(-/R) : Sm_R^op -> GradedAlgebras(R).Supercommutative()``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_algebra_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_algebra_functor(self.base_ring())
 
     class CalabiYau(CategoryWithAxiom):
         r"""Calabi--Yau schemes: smooth and proper, with trivial canonical bundle.
