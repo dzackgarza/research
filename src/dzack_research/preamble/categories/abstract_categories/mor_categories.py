@@ -1113,7 +1113,14 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
     two_mor = Mor
 
     def identity_2(self, arrow: Parent | Morphism) -> Morphism:
-        return self.Mor(arrow, arrow).identity()
+        r"""The identity 2-arrow of ``arrow``, read through ``two_mor``.
+
+        ``two_mor`` is this category's ``Mor`` between its objects.  When this
+        Mor is also a group or a set, the name ``Mor`` on it resolves to the
+        object-level ``X.Mor(Y)`` of that category (``ARC-07``), so the
+        category-level construction is asked by ``two_mor``.
+        """
+        return self.two_mor(arrow, arrow).identity()
 
     def identity(self, arrow_object: Parent | Morphism) -> Morphism:
         return self.Mor(arrow_object, arrow_object).identity()
