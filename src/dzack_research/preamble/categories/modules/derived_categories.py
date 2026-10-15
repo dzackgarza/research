@@ -24,7 +24,7 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
     \(\mathrm{Ch}(R)\) of \(\mathbb{Z}\)-graded cochain complexes of
     \(R\)-modules at the class \(W\) of quasi-isomorphisms, the cochain maps
     \(f\) for which every \(H^n(f)\) is an isomorphism (Stacks Project, Tag
-    05QI, Chapter 13).  It comes with the localization functor
+    05RU, Definition 13.11.3).  It comes with the localization functor
     \(Q : \mathrm{Ch}(R) \to D(R)\), which is the identity on objects, sends
     every quasi-isomorphism to an isomorphism, and is initial among functors
     out of \(\mathrm{Ch}(R)\) with that property.  Mathlib states this as

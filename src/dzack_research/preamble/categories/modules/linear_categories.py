@@ -65,7 +65,7 @@ class TriangulatedCategories(OwnedCategoryOverBaseRing):
     \(R\)-linear.  Mathlib states the structure as ``Pretriangulated C`` with
     ``IsTriangulated C`` (``Mathlib/CategoryTheory/Triangulated/``), together
     with ``Linear R C``.  The derived category \(D(R)\) of
-    \(R\)-modules is one (Stacks Project, Tag 05QI, Chapter 13).
+    \(R\)-modules is one (Stacks Project, Tag 05RU, Definition 13.11.3).
 
     The shift and the distinguished triangles are chosen structure on an
     additive \(R\)-linear category; forgetting them in place leaves the
