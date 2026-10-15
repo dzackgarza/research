@@ -8,6 +8,8 @@ represented atlas transition.
 
 from sage.categories.category_with_axiom import all_axioms
 from sage.manifolds.manifold import Manifold as _SageManifold
+from sage.matrix.constructor import matrix as _engine_matrix
+from sage.matrix.special import identity_matrix as _engine_identity_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.element import Element
@@ -209,6 +211,37 @@ def _engine_manifold_expression(value):
     """
     expression = _admit_manifold_expression(value)
     return _engine_element(_manifold_expression_ring(), expression)
+
+
+def _upper_triangle(n):
+    r"""The index pairs ``(i, j)``, ``i <= j < n``, of the entries of an ``n x n`` symmetric matrix."""
+    return tuple((row, column) for row in range(int(n)) for column in range(row, int(n)))
+
+
+def _symmetric_entry(coordinates, row, column):
+    return coordinates[(min(row, column), max(row, column))]
+
+
+def _skew_entry(coordinates, row, column):
+    match row - column:
+        case 0:
+            return SR.zero()
+        case difference if difference > 0:
+            return -coordinates[(column, row)]
+        case _:
+            return coordinates[(row, column)]
+
+
+def _engine_positive_definite(hermitian):
+    r"""Sylvester's criterion: a Hermitian matrix is positive definite iff each leading principal minor is positive.
+
+    The minors of a Hermitian matrix are real; the conditions compare their
+    real parts with ``0`` so that the engine reads each as a real inequality.
+    """
+    return tuple(
+        hermitian[:size, :size].det().real_part() > 0
+        for size in range(1, hermitian.nrows() + 1)
+    )
 
 
 def _admit_manifold_expression_family(values, *, name):
@@ -1221,27 +1254,74 @@ class ComplexManifolds(OwnedCategory):
             Bounded realization ``{Z in M_{p x q}(C) : 1_q - Z^* Z > 0}``,
             of complex dimension ``pq``, for positive integers ``p`` and
             ``q``.  ``I_{1,1}`` is the disc, biholomorphic to
-            ``upper_half_plane()``.
+            ``upper_half_plane()``.  The positivity of the Hermitian matrix
+            ``1_q - Z^* Z`` is read by Sylvester's criterion: every leading
+            principal minor is positive.
             """
-            assert False, "type_I on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert p >= 1 and q >= 1, (
+                f"I_{{p,q}} is defined for positive integers p and q, not p = {p}, q = {q}"
+            )
+            index_pairs = tuple(
+                (row, column) for row in range(int(p)) for column in range(int(q))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"I_{p}_{q}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(p), int(q), lambda row, column: coordinates[(row, column)]
+            )
+            return self._bounded_open_domain(
+                space,
+                f"I_{p}_{q}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(q)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_II(self, n):
             r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
 
             Bounded realization ``{Z in M_n(C) : Z^t = -Z, 1_n - Z^* Z > 0}``,
-            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``.
+            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``;
+            the coordinates are the entries ``z_{ij}``, ``i < j``.
             """
-            assert False, "type_II on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 2, f"II_n is defined for integers n >= 2, not n = {n}"
+            index_pairs = tuple(
+                (row, column) for row in range(int(n)) for column in range(row + 1, int(n))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"II_{n}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _skew_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"II_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_III(self, n):
             r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
 
             Bounded realization ``{Z in M_n(C) : Z^t = Z, 1_n - Z^* Z > 0}``,
             of complex dimension ``n(n + 1)/2``, for a positive integer
-            ``n``.  The Cayley transform identifies it with
+            ``n``; the coordinates are the entries ``z_{ij}``, ``i <= j``.
+            The Cayley transform identifies it with
             ``siegel_upper_half_space(n)``; ``III_1 = I_{1,1}``.
             """
-            assert False, "type_III on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"III_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"III_{n}", _upper_triangle(n)
+            )
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _symmetric_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"III_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_IV(self, n):
             r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
@@ -1255,8 +1335,36 @@ class ComplexManifolds(OwnedCategory):
             two components and that choosing one is additional data;
             ``LeanCategories/Lattices/Valued/PeriodDomainData.lean``,
             ``latticePeriodDomainData``).
+
+            The construction is the tube domain
+            ``{z in C^n : Im z in C^+}``, ``C^+ = {y : y_1 > 0, (y, y) > 0}``
+            for ``(y, y) = y_1^2 - y_2^2 - ... - y_n^2``.  Write
+            ``V = U + W`` with ``U`` a hyperbolic plane on ``e, f`` and ``W``
+            of signature ``(1, n - 1)``.  A line with ``(omega, e) != 0`` has
+            the unique representative ``omega = -(z, z)/2 e + f + z``,
+            ``z in W_C``, which is isotropic, and
+            ``(omega, bar omega) = 2 (Im z, Im z)``.  No line of the period
+            domain has ``(omega, e) = 0``: then ``Re omega`` and
+            ``Im omega`` would span a positive definite real ``2``-plane in
+            ``e^perp/e = W``, which has one positive direction.  The two
+            components of ``{(y, y) > 0}`` are the two components of the
+            period domain, and ``y_1 > 0`` chooses one.
             """
-            assert False, "type_IV on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"IV_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"IV_{n}", tuple((0, index) for index in range(int(n)))
+            )
+            imaginary = tuple(
+                coordinates[(0, index)].imag_part() for index in range(int(n))
+            )
+            return self._bounded_open_domain(
+                space,
+                f"IV_{n}",
+                (
+                    imaginary[0] > 0,
+                    imaginary[0] ** 2 - sum(y**2 for y in imaginary[1:]) > 0,
+                ),
+            )
 
         def type_EIII(self):
             r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
@@ -1294,9 +1402,46 @@ class ComplexManifolds(OwnedCategory):
 
             It is ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``, of complex
             dimension ``g(g + 1)/2``, for a positive integer ``g``;
-            ``H_1 = upper_half_plane()``.
+            ``H_1 = upper_half_plane()``.  The coordinates are the entries
+            ``z_{ij}``, ``i <= j``, of ``Z``, and the positive definiteness
+            of the real symmetric matrix ``Im(Z)`` is read by Sylvester's
+            criterion: every leading principal minor is positive.
             """
-            assert False, "siegel_upper_half_space on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert g >= 1, f"H_g is defined for positive integers g, not g = {g}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"H_{g}", _upper_triangle(g)
+            )
+            imaginary = _engine_matrix(
+                SR,
+                int(g),
+                int(g),
+                lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
+            )
+            return self._bounded_open_domain(
+                space, f"H_{g}", _engine_positive_definite(imaginary)
+            )
+
+        def _matrix_coordinate_space(self, name, index_pairs):
+            r"""The complex affine space with one coordinate ``z_i_j`` per index pair, and its engine coordinates."""
+            space = self.base_category().affine_space(
+                len(index_pairs),
+                name=f"{name}_space",
+                coordinate_names=tuple(f"z_{row}_{column}" for row, column in index_pairs),
+            )
+            chart = space.atlas()[tuple(space.chart_labels())[0]]
+            return space, {
+                pair: _engine_manifold_expression(chart.coordinate(index))
+                for index, pair in enumerate(index_pairs)
+            }
+
+        def _bounded_open_domain(self, space, name, restriction):
+            r"""The open subset of ``space`` cut out by ``restriction``, an object of this category."""
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                **complex_manifolds._open_submanifold_data(space, name, restriction),
+            )
 
         class ParentMethods:
             def harish_chandra_realization(self):
