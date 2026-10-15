@@ -4811,6 +4811,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             ``Spec k``.
             """
             from dzack_research.preamble.categories.divisors.general_divisors import (
+                _projective_space_over_field_picard_to_class_group_morphism,
                 _projective_space_picard_to_class_group_morphism,
             )
 
@@ -4823,14 +4824,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                         f"is not a field, the Picard group and class group of Spec {base} and the map between "
                         "them must be given"
                     )
-                    from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-                    from dzack_research.preamble.categories.divisors.picard_groups import _zero_picard_group
-
-                    base_scheme = self.base_scheme()
-                    base_picard = _zero_picard_group()
-                    base_class = ClassGroups().trivial(base_scheme)
-                    comparison = base_picard.module_category().Mor(base_picard, base_class)({})
-                    return _projective_space_picard_to_class_group_morphism(self, base_picard, base_class, comparison)
+                    return _projective_space_over_field_picard_to_class_group_morphism(self)
                 case _:
                     assert all(value is not None for value in supplied), (
                         f"cannot compare the Picard and class groups of {self}: the Picard group, the class "
@@ -4862,13 +4856,11 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     return _projective_bundle_picard_group(base_picard_group)
 
         def hyperplane_class(self):
-            r"""``[O(1)]`` in ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``, the image of the hyperplane summand's generator.
+            r"""``[O(1)]``, the module generator of ``Pic(P^n_k) = ZZ[O(1)]`` over a field ``k``.
 
-            Over a field it generates ``Pic(P^n_k) = ZZ`` (Hartshorne,
-            *Algebraic Geometry*, II.6.17).
+            Hartshorne, *Algebraic Geometry*, II.6.4 and II.6.17.
             """
-            picard = self.picard_group()
-            return picard.injection(1)(picard.biproduct_factor(1).module_generator("O(1)"))
+            return self.picard_group().module_generator("O(1)")
 
         def integral_singular_cohomology(self, degree):
             r"""``H^degree(P^n(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""

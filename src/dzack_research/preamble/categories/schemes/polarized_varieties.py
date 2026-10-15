@@ -167,9 +167,7 @@ def _polarization_multiple(variety, polarization):
                 f"c_1 of a class in Pic({variety}) is read from Pic(P^n_k) = ZZ [O(1)], which needs a "
                 f"field base, but the base is {base}"
             )
-            picard = variety.picard_group()
-            hyperplane = picard.biproduct_factor(1)
-            return hyperplane.dual_basis()["O(1)"](picard.projection(1)(polarization))
+            return variety.picard_group().dual_basis()["O(1)"](polarization)
         case _ if variety in ProjectiveCompleteIntersections(base):
             return polarization.underlying_element().representative().ambient_line_bundle().degree()
         case _:
