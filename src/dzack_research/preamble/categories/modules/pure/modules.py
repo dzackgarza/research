@@ -3645,6 +3645,58 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
+        def invariant_factor_form(self):
+            r"""Return ``self -> M_if`` with only non-unit invariant factors."""
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _module_invariant_factor_form,
+            )
+
+            return _module_invariant_factor_form(self)
+
+        def base_change(self, ring_map, *, _extra_construction_data=None):
+            r"""Transport the selected finite presentation along ``R -> S``."""
+            from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _presented_module_from_morphism,
+            )
+
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
+            presentation = self.presentation()
+            source = presentation.domain().base_change(ring_map)
+            target = presentation.codomain().base_change(ring_map)
+            generator_labels = tuple(
+                zip(
+                    target.module_generating_set(),
+                    presentation.codomain().module_generating_set(),
+                    strict=True,
+                )
+            )
+
+            def changed_image(relation_label):
+                image = presentation(presentation.domain().module_generator(relation_label)).to_vector()
+                return target.linear_combination(
+                    {
+                        changed_label: _base_change_scalar(ring_map, image(label))
+                        for changed_label, label in generator_labels
+                        if image(label)
+                    }
+                )
+
+            images = {
+                changed_label: changed_image(relation_label)
+                for changed_label, relation_label in zip(
+                    source.module_generating_set(),
+                    presentation.domain().module_generating_set(),
+                    strict=True,
+                )
+            }
+            return _presented_module_from_morphism(
+                source.module_category().Mor(source, target)(images),
+                _extra_construction_data=_extra_construction_data,
+            )
+
+        @cached_method
         def _scalar_restriction_data(self, ring_map):
             r"""Retain one exact coefficient-field dimension and its finite basis.
 
