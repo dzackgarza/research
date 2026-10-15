@@ -2627,3 +2627,9 @@ Opened texts (2026-10-14), partial evidence only: Conrad, *SL_2(ZZ)* (kconrad.ma
 
 **Node.** `rational-definite-orthogonal-groups-are-not-finite`.
 
+
+## The dual lattice of a unimodular lattice has integer norms without the field-element interface
+
+**Observed.** For L with Gram ((-4, 1), (1, 0)) (unimodular), `_descended_quadratic_gram(L.dual_lattice(), ...)` raises `AttributeError: ... has no attribute 'underlying_element'` at `dual_lattice.norm(...).underlying_element()`: the norms of `L.dual_lattice()` are elements of the integers, while for non-unimodular L they are elements of Res(K) carrying `underlying_element`. The two cases of L^# do not present one element interface for the same operation. `_discriminant_module` avoids the call only through its `trivial_quotient` branch.
+
+**Desired.** `dual_lattice().norm` returns values of one type (in K) for every nondegenerate L, so the generic descent applies to a zero discriminant module as well and the special branch can be removed. Not repaired; reached from sage-indefinite-port `.tmp/probe/binary.py hecke_binary_-2_1_0` while the branch was bypassed.
