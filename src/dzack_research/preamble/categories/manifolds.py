@@ -6,6 +6,8 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
+from itertools import combinations
+
 from sage.categories.category_with_axiom import all_axioms
 from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.misc.cachefunc import cached_function, cached_method
@@ -1083,6 +1085,69 @@ class ComplexManifolds(OwnedCategory):
             )
         manifold = self(dimension, name)
         manifold.chart("standard", " ".join(coordinate_names))
+        return manifold
+
+    def projective_space(self, dimension, name=None):
+        r"""Complex projective space ``CP^n = (C^{n+1} - 0)/C^*``, a compact complex manifold.
+
+        The atlas is the standard one (Griffiths--Harris, *Principles of
+        Algebraic Geometry*, Ch. 0, Sec. 1): ``U_i = {x_i != 0}`` with chart ``x_k/x_i`` (``k != i``), and on
+        ``U_i \cap U_j`` the holomorphic coordinate change
+        ``x_k/x_j = (x_k/x_i)/(x_j/x_i)``.  ``CP^n`` is the image of the
+        compact sphere ``S^{2n+1}`` under the quotient map, so it is compact.
+        The chart labels are ``U0, ..., Un`` and the coordinates are named
+        ``x{k}_over_x{i}``, as on the standard affine charts of ``P^n``.
+        Engine adapter: SageManifolds' open subsets, charts and transition
+        maps, the pattern of its ``RealProjectiveSpace`` with complex field.
+        """
+        dimension = int(dimension)
+        if name is None:
+            name = f"CP^{dimension}"
+        assert dimension > 0, (
+            f"cannot construct the complex projective space {name} of dimension {dimension}: "
+            f"the dimension must be positive"
+        )
+        engine = _SageManifold(
+            dimension, str(name), field="complex", structure="smooth", unique_tag=object(),
+        )
+        manifold = _object_of(
+            self.Compact(),
+            topology_data=_ManifoldTopologyData(engine),
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="complex analytic",
+            differentiability_degree=Infinity,
+            manifold_field="complex",
+        )
+        indices = range(dimension + 1)
+        charts = {
+            i: manifold._register_chart(
+                f"U{i}",
+                engine.open_subset(f"U{i}").chart(
+                    " ".join(f"x{k}_over_x{i}" for k in indices if k != i)
+                ),
+            )
+            for i in indices
+        }
+        for i, j in combinations(indices, 2):
+            source = _engine_manifold_chart(charts[i])
+            target = _engine_manifold_chart(charts[j])
+            # Homogeneous coordinates of a point of U_i (x_i = 1), and of U_j (x_j = 1).
+            on_i = list(source[:])
+            on_i.insert(i, 1)
+            on_j = list(target[:])
+            on_j.insert(j, 1)
+            transition = source.transition_map(
+                target,
+                [on_i[k] / on_i[j] for k in indices if k != j],
+                restrictions1=on_i[j] != 0,
+                restrictions2=on_j[i] != 0,
+            )
+            transition.set_inverse(
+                *(on_j[k] / on_j[i] for k in indices if k != i), check=False,
+            )
+        engine.declare_union(engine.subsets())
         return manifold
 
     def _open_submanifold_data(self, containing_manifold, name, restriction):
