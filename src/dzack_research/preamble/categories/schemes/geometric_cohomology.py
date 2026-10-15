@@ -173,6 +173,16 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             target = self.geometric_sheaf().global_sections()
             return source.module_category().Mor(source, target).identity()
 
+        def derived_global_sections(self):
+            r"""``RΓ(X, F)`` as ``Q`` of this complex, an object of ``DerivedCategories(R)``.
+
+            An affine Čech complex of a quasi-coherent sheaf on an affine
+            scheme is an acyclic resolution computing ``Γ(X, -)``, so its
+            image under the localization ``Q : Ch(R) -> D(R)`` represents
+            ``RΓ(X, F)``.
+            """
+            return CochainComplexes(self.base_ring()).localization_at_quasi_isomorphisms()(self)
+
 
 def _affine_geometric_cohomology_complex(sheaf, cover=None):
     r"""Return the one-chart affine complex computing ``H^*(X,sheaf)``.
