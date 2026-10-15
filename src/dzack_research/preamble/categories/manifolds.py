@@ -713,6 +713,35 @@ class RiemannianManifolds(OwnedCategory):
         geodesic symmetry at ``p``.
         """
 
+        def noncompact_type(self, satake_diagram):
+            r"""Return the irreducible symmetric space ``G/K`` of noncompact type of a real form.
+
+            ``satake_diagram`` is an object of ``SatakeDiagrams()`` with a
+            connected Dynkin diagram, classifying a noncompact real form
+            ``g_0`` of a complex simple Lie algebra.  ``G`` is a connected Lie
+            group with Lie algebra ``g_0`` and finite centre, ``K`` a maximal
+            compact subgroup, and ``(g_0, theta)`` with ``theta`` a Cartan
+            involution is an orthogonal symmetric Lie algebra of the
+            noncompact type (Helgason, Ch. V, §1, Definition; the
+            irreducible spaces of this type are listed in Ch. X, §6,
+            Table V).
+
+            ``G/K`` is the orbit space of the right action of ``K`` on ``G``:
+            the coequalizer in ``TopologicalSpaces()`` of the action and the
+            projection ``K x G -> G``, returned by ``orbit_space()`` on the
+            object of ``GObjects(K, LieGroups())`` with ``k . g = g k^{-1}``.
+            The smooth structure and the ``G``-invariant metric induced by
+            the Killing form of ``g_0`` restricted to ``p_0`` place it here.
+            """
+            from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
+
+            assert satake_diagram in SatakeDiagrams(), (
+                f"cannot construct the symmetric space of noncompact type of {satake_diagram}: "
+                f"a noncompact real form of a simple Lie algebra is classified by an object "
+                f"of SatakeDiagrams(), and {satake_diagram} is in {satake_diagram.category()}"
+            )
+            assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
+
         class ParentMethods:
             def geodesic_symmetry(self, point):
                 r"""Return ``s_p``, the involutive isometry of ``M`` with isolated fixed point ``p``.
