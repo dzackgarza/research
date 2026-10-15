@@ -1389,10 +1389,6 @@ AGENTS.md requires every subagent to read `INTENT.md`, `CONTRIBUTING.md` in full
 
 Three workers overflowed their context before or after their first edit. **Repair:** an index that names the sections each kind of edit must read.
 
-### `docs/preamble-megadoc.md` is stale
-
-The megadoc predates the category stubs of 2026-10-16. **Repair:** `just preamble-megadoc`.
-
 ### Expectation files use names that AGENTS §5 calls aliases
 
 `ProjectiveCurves`, `ProperSurfaces`, `ProjectiveSurfaces`, `DelPezzoSurfaces` and `SmoothQuarticK3CompleteIntersections` are called by protected expectation files (`test_surfaces_construct.sage:15-21`, `test_toric_schemes_construct.sage:13-23`, `test_projective_complete_intersection_methods_construct.sage:48`, `..._integral_cohomology_construct.sage:11`, `..._del_pezzo_construct.sage:12-20`, `test_projective_point_blowup_del_pezzo_construct.sage:10-15`, `test_toric_fixed_point_blowups_construct.sage:16-24`). Each name is a second spelling of an axiom category such as `Surfaces(k).Projective()`, which AGENTS §5 bans, and the expectation files may not be edited. **For the owner to rule.**
