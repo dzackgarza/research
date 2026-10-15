@@ -156,10 +156,11 @@ def test_O_of_2U_plus_A2_surjects_onto_O_of_its_discriminant_form() -> None:
     model = Lattices(ZZ)("A2").two_u_eichler_model()
     lattice = model.lattice()
     target = lattice.discriminant_group().O()
-    lifts = model.discriminant_generator_lifts()
+    lifts = lattice.O().discriminant_orthogonal_group_generator_lifts()
 
-    assert lifts.index_set() == target.group_generators()
-    for generator in lifts.index_set():
-        witness = lifts[generator]
+    generators = target.group_generators()
+    assert lifts.index_set() == generators.index_set()
+    for label in lifts.index_set():
+        witness = lifts.value(label)
         assert witness in lattice.O()
-        assert witness.discriminant_morphism() == generator
+        assert witness.discriminant_morphism() == generators.value(label)
