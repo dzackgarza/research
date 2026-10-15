@@ -786,12 +786,12 @@ class GradedDerivation(ModuleElement):
         return self + (-other)
 
     def _lmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        return self.parent().scalar_multiple_of(scalar, self)
 
     _rmul_ = _lmul_
 
     def __rmul__(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        return self.parent().scalar_multiple_of(scalar, self)
 
     def check_on_generators(self):
         r"""Refute degree/Leibniz on finite selected generators when decidable.
@@ -1084,8 +1084,28 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
                     f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
                     f"map {function.domain()} -> {function.codomain()}"
                 )
-            case _:
+            case _ if callable(function):
                 return self.elementwise(function, check=check)
+            case _:
+                return self.from_algebra_generator_images(function, check=check)
+
+    def from_algebra_generator_images(self, generator_images, *, check=False):
+        r"""The map ``D`` with ``D(x_i) = m_i`` on the algebra generators, extended by the Leibniz rule.
+
+        The extension is the derivation of ``Der_R(A, M)`` with these
+        generator images.  It is a graded derivation of degree ``r`` when the
+        images have degree ``|x_i| + r`` and the signs ``(-1)^(r |x_i|)`` of
+        the graded Leibniz rule are ``1``; that law stays the proposition
+        ``is_graded_derivation(D)``, which ``check_on_generators`` decides on
+        the generators.
+        """
+        algebra = self.algebra()
+        match self.target():
+            case target if target is algebra:
+                derivation = algebra.vector_fields()(generator_images)
+            case target:
+                derivation = algebra.derivations(target)(generator_images)
+        return self.elementwise(lambda element: derivation(element), check=check)
 
     def zero(self):
         return self._from_constructed_elementwise(
@@ -1130,7 +1150,8 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         derivation.validate_graded_leibniz(check=False)
         return derivation
 
-    def scalar_multiple(self, scalar, derivation):
+    def scalar_multiple_of(self, scalar, derivation):
+        r"""Return ``a theta``, ``(a theta)(b) = a theta(b)``, for ``a`` in the scalars of this module."""
         if derivation.parent() is not self:
             derivation = self(derivation)
         scalar = self.base_ring()(scalar)
