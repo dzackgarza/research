@@ -321,7 +321,7 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
             r"""``H^*(X(CC); R)``, the graded-commutative algebra whose degree piece this is.
 
             It is ``X(CC).singular_cohomology(R)``, an object of
-            ``GradedAlgebras(R).Supercommutative()`` under the cup product
+            ``GradedAlgebras(R, ZZ).Supercommutative()`` under the cup product
             (Hatcher, *Algebraic Topology*, Thm 3.11), and this object is its
             ``graded_piece(cohomological_degree())``.  Forming it needs the
             embedding ``sigma`` that fixes ``X(CC)``.
