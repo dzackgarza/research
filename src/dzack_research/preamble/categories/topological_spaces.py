@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.validation import validator
 
 
 def _members_of_subset(base_set, candidate):
@@ -350,6 +351,17 @@ class ContinuousMap:
     def underlying_set_morphism(self):
         return self._set_morphism
 
+    @validator
+    def validate_continuity(self) -> None:
+        r"""Raise ``ValueError`` unless the preimage of each open set of ``Y`` is open in ``X`` (``OWN-22``)."""
+        parent = self.parent()
+        if not parent._preimages_of_opens_are_open(self.underlying_set_morphism()):
+            raise ValueError(
+                f"{self.underlying_set_morphism()} is not continuous from {parent.domain()} to "
+                f"{parent.codomain()}: the preimage of an open set of {parent.codomain()} is not "
+                f"open in {parent.domain()}"
+            )
+
     def __mul__(self, other):
         if not _precomposable(self, other):
             return NotImplemented
@@ -433,21 +445,19 @@ class TopologicalSpaceMor(CategoricalMor):
             and self._preimages_of_opens_are_open(arrow)
         )
 
-    def _element_constructor_(self, datum):
+    def _element_constructor_(self, datum, check=False):
         r"""A continuous map, given by a set map ``X -> Y`` or by a function on points.
 
-        The datum is read as a set map in ``Mor_Set(X, Y)`` and admitted by
-        continuity, the condition that cuts this subset out of it.
+        The datum is read as a set map in ``Mor_Set(X, Y)``.  The caller states
+        that it is continuous, the condition that cuts this subset out of it;
+        the validator :meth:`validate_continuity` checks it when asked
+        (``check=True``) or under strict checking (``OWN-22``).
         """
         if element_parent(datum) is self:
             return datum
-        set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
-        if not self._preimages_of_opens_are_open(set_morphism):
-            raise ValueError(
-                f"{set_morphism} is not continuous from {self.domain()} to {self.codomain()}: "
-                f"the preimage of an open set of {self.codomain()} is not open in {self.domain()}"
-            )
-        return self.element_class(self, set_morphism)
+        arrow = self.element_class(self, Sets().Mor(self.domain(), self.codomain())(datum))
+        arrow.validate_continuity(check=check)
+        return arrow
 
     def _from_continuous_set_map(self, set_morphism):
         r"""Construct a map whose continuity follows from a categorical theorem.

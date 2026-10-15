@@ -459,11 +459,30 @@ class TopologicalManifolds(OwnedCategory):
             return self._engine_point
 
         def __eq__(self, other) -> bool:
-            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given."""
-            return (
-                element_parent(other) is self.parent()
-                and _engine_manifold_point(other) == self._engine_manifold_point()
-            )
+            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given.
+
+            In one chart ``phi``, which is injective, ``p = p'`` exactly when
+            ``phi(p) = phi(p')``: the coordinates are compared as elements of
+            the coordinate field, which decides the equality of exact numbers.
+            Points given in two charts are compared by the private
+            SageManifolds points, through the transition map.
+            """
+            if element_parent(other) is not self.parent():
+                return False
+            match other.chart().label() == self.chart().label():
+                case True:
+                    relations = tuple(
+                        left == right
+                        for left, right in zip(self.coordinates(), other.coordinates(), strict=True)
+                    )
+                    assert all(relation is True or relation is False for relation in relations), (
+                        f"cannot decide whether {self} and {other} are the same point of "
+                        f"{self.parent()}: the equality of their coordinates in the chart "
+                        f"{self.chart().label()} is undecided"
+                    )
+                    return all(relation is True for relation in relations)
+                case False:
+                    return _engine_manifold_point(other) == self._engine_manifold_point()
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -945,6 +964,12 @@ class RiemannianManifolds(OwnedCategory):
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
             Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
+
+            Its one global chart ``hyperboloid`` has the coordinates
+            ``y_0, ..., y_{n-1}`` of the orthogonal projection of ``x`` to
+            ``t^perp``, for ``t`` the timelike vector of ``C^+``: ``x = s t + y``
+            with ``s = sqrt((1 - q(y))/q(t)) > 0`` is a diffeomorphism
+            ``t^perp_RR -> HH(C^+)``, since ``t^perp`` is negative definite.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -954,7 +979,7 @@ class RiemannianManifolds(OwnedCategory):
             engine = _SageManifold(
                 dimension, "HH", structure="smooth", unique_tag=object()
             )
-            return _object_of(
+            space = _object_of(
                 HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
@@ -965,6 +990,8 @@ class RiemannianManifolds(OwnedCategory):
                 manifold_field="real",
                 component=component,
             )
+            space.chart("hyperboloid", " ".join(f"y{index}" for index in range(dimension)))
+            return space
 
         class ParentMethods:
             def geodesic_symmetry(self, point):
