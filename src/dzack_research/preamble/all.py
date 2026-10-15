@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectMorphism,
     TrivialCoveringFamilies,
     trivial_coverage,
+    OpenCoveringFamilies,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     DiscreteCategories,
