@@ -1916,6 +1916,51 @@ def _integral_placement(ring) -> bool:
     return ring in OwnedIntegralDomains()
 
 
+def _function_field_on_atlas(atlas, equations):
+    r"""``K(X) = Frac(A)`` for the first nonempty open ``Spec A = X cap U_i`` over the charts of ``atlas``.
+
+    ``X`` is integral, and meets the chart ``U_i -> Y`` of ``atlas`` in the
+    closed subscheme of ``U_i`` cut out by the pullbacks of ``equations``
+    along the chart's homogeneous coordinates; no equations means ``X = Y``.
+    That intersection is empty exactly when the pulled-back equations
+    generate the unit ideal.  A nonempty open of an integral scheme is
+    integral (Mathlib ``AlgebraicGeometry.isIntegral_of_isOpenImmersion``),
+    so its coordinate ring is a domain (Stacks, Tag 01OK) whose fraction
+    field is ``K(X)`` (Mathlib
+    ``AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen``).
+    """
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        _quotient_by_algebra_elements_backend,
+    )
+
+    for label in atlas.chart_index_set():
+        algebra = atlas.chart(label).coordinate_algebra()
+        coordinates = tuple(
+            _projective_coordinate_morphism(atlas.member(label).domain().arrow()).homogeneous_coordinates()
+        )
+        local_equations = tuple(
+            _evaluate_owned_homogeneous_polynomial_on_coordinates(equation, equation.parent(), coordinates)
+            for equation in equations
+        )
+        match local_equations:
+            case () if algebra in OwnedIntegralDomains():
+                return algebra.fraction_field()
+            case ():
+                empty = algebra.one() == algebra.zero()
+            case _:
+                empty = algebra.ideal(*local_equations).contains_ambient_element(algebra.one())
+        if empty is True:
+            continue
+        domain, _quotient_map = _quotient_by_algebra_elements_backend(
+            algebra, local_equations, extra_categories=(OwnedIntegralDomains(),)
+        )
+        return domain.fraction_field()
+    assert False, (
+        f"an integral scheme has a nonempty affine open, but its pullback to every chart of {atlas} "
+        "is empty"
+    )
+
+
 def _affine_scheme(algebra, base, placements=(), **level_data):
     r"""Construct ``Spec A`` over ``Spec R`` in ``Schemes(R).Affine()`` joined with ``placements``.
 
@@ -3285,25 +3330,38 @@ class Schemes(OwnedCategoryOverBaseRing):
                 Domain: an integral scheme ``X`` over ``R``.  Codomain: a field,
                 an ``R``-algebra through ``R -> O_{X,eta}`` (Hartshorne,
                 *Algebraic Geometry*, II, Ex. 3.6).  For every nonempty affine
-                open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
-                integral scheme this is the fraction field of its coordinate
-                algebra, so the function field of ``A^1_k`` is ``k[t]``'s
-                ``fraction_field()``, the field ``k(t)``.  On ``P^n_k`` the
-                standard chart ``D_+(x_0) = Spec k[x_1/x_0, ..., x_n/x_0]`` is a
-                nonempty affine open, so ``K(P^n_k) = k(x_1/x_0, ..., x_n/x_0)``
-                (Hartshorne, II, Prop. 2.5(b) and Ex. 3.6); for ``n = 1`` this
-                is the rational function field ``k(t)``, ``t = x_1/x_0``.
+                open ``U = Spec A`` of ``X``, ``K(X) = Frac(A)`` (Mathlib
+                ``AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen``).
+                The open is read from the scheme's own construction: an affine
+                scheme is its own open; a scheme with a selected finite affine
+                atlas, such as ``P^n_k`` with its standard charts, uses a chart of
+                that atlas; a projective closed subscheme ``Z = V_+(f_1, ..., f_k)``
+                of such a scheme ``Y`` meets the chart ``U_i -> Y`` in
+                ``V(f_1|U_i, ..., f_k|U_i) <= U_i``, the pullbacks of the
+                equations along the chart's homogeneous coordinates (Stacks,
+                Tag 01M3).  So ``K(P^n_k) = k(x_1/x_0, ..., x_n/x_0)``, and the
+                plane cubic ``V_+(x_0^3 + x_1^3 + x_2^3)`` has the function field
+                ``Frac(k[a, b]/(1 + a^3 + b^3))`` of its chart ``x_0 != 0``.
                 """
                 base = self.scheme_base_ring()
                 match self:
                     case _ if self in Schemes(base).Affine():
                         return self.coordinate_algebra().fraction_field()
-                    case _ if self in ProjectiveSpaces(base):
-                        return self.standard_affine_chart(0).function_field()
+                    case _ if self.has_selected_finite_affine_atlas():
+                        return _function_field_on_atlas(self.selected_finite_affine_atlas(), ())
+                    case _ if (
+                        self in ClosedSubschemes(base)
+                        and self in Schemes(base).Projective()
+                        and self.inclusion().codomain().has_selected_finite_affine_atlas()
+                    ):
+                        return _function_field_on_atlas(
+                            self.inclusion().codomain().selected_finite_affine_atlas(),
+                            tuple(self.defining_equations()),
+                        )
                     case _:
                         assert False, (
-                            f"function_field on the non-affine integral schemes over {base}, through a "
-                            f"nonempty affine open of {self}: not implemented"
+                            f"function_field on the integral schemes over {base} with neither an affine "
+                            f"presentation nor a selected affine atlas, such as {self}: not implemented"
                         )
 
         def an_object(self):
@@ -4858,7 +4916,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
             return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
 
-        def hypersurface(self, f):
+        def hypersurface(self, f, placements=()):
             r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
 
             Domain: a nonconstant homogeneous polynomial ``f`` of the
@@ -4867,9 +4925,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             subscheme of ``P^n_k``, a projective scheme over ``k`` whose
             inclusion ``V_+(f) -> P^n_k`` is induced by the graded quotient map
             ``k[x_0, ..., x_n] -> k[x_0, ..., x_n]/(f)``.  The projective
-            closed-subscheme construction asserts that ``f`` is homogeneous.
+            closed-subscheme construction asserts that ``f`` is homogeneous.  A caller
+            that knows ``f`` irreducible states ``Schemes(k).Integral()`` in
+            ``placements``: then ``(f)`` is a homogeneous prime and ``V_+(f)`` is
+            integral.
             """
-            return self.closed_subscheme(f)
+            return self.closed_subscheme(f, placements=placements)
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
