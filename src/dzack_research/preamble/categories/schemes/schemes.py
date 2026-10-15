@@ -1722,7 +1722,14 @@ def _restriction_to_base(ring, base_ring):
         case _:
             # ``below`` is the initial ring, and the ring map out of it is unique.
             step = below.Mor(ring)(lambda integer: ring(integer))
-    return step * _restriction_to_base(below, base_ring)
+    match below is base_ring:
+        case True:
+            # ``step * id = step``.  The identity of ``base_ring`` can lie in the
+            # Mor category of a subcategory of rings (``ZZ`` is an order), and a
+            # composite across that inclusion is not represented.
+            return step
+        case False:
+            return step * _restriction_to_base(below, base_ring)
 
 
 def _scheme_mor_category(domain, codomain, *, category=None):
