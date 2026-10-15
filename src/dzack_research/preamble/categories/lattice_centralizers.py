@@ -26,13 +26,12 @@ the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 
 from sage.arith.misc import divisors
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -737,7 +736,7 @@ class CyclotomicDecomposition(SageObject):
         block-diagonal generators is the group the gluing needs.
         """
         lattice = self.lattice()
-        assert _engine_ring(lattice.base_ring()) is SageZZ, (
+        assert lattice.base_ring() is _owned_integers(), (
             f"the centralizer of {self.isometry()} is glued through the discriminant group "
             f"A_M of the cyclotomic sum M, which is defined here for lattices over ZZ, and "
             f"{lattice} is over {lattice.base_ring()}"
