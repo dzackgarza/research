@@ -1299,10 +1299,6 @@ Source inspection, 2026-10-15: the engine `CartanType` stays private in `definit
 On 2026-10-16 the owner directed that these categories be stubbed with their placements and functorial constructions, ahead of formalization: varieties over a ring, curves, surfaces, K3 and del Pezzo surfaces, hypersurfaces, families as slice objects and their analytic fibres, primitive cohomology, Lefschetz operators, residues and logarithmic differentials, graded Lie algebras, pointed spaces and `pi_*` with the Whitehead product and the rational homotopy Lie algebra, categories of elements, `Pic` as a functor, polarized varieties, filtered modules, mixed and pure Hodge structures, polarizations, the Gauss–Manin connection, `HH`, `Gamma \ HH`, `HH^n`, `H_g`, `G/K` by Satake type, Hermitian symmetric domains, derived categories, Riemannian manifolds, Lie groups and the orbit space of a group action on a space.
 **Request (not filed):** `lean-categories` formalizes each notion with its source; the presentations run beside the request. Every citation locator written in these stubs was recalled, not opened, and needs checking against the source: Hatcher Thm 3.11, Félix–Halperin–Thomas §21, Whitehead 1941, Hartshorne II.6 and II.7.6, Voisin §6.2 and §7.1, Deligne *Hodge II*, Mac Lane II.6, Riehl 2.4.1, Dolgachev 2012 Rem 8.1.19, Hidaka–Watanabe 1981, Huybrechts Def 1.1.
 
-### `Mor(X, Y)` of commutative algebras has two incompatible constructions
-
-The category of commutative algebras inherits two constructions of `Mor(X, Y)`, and constructing a homset raises "Category of commutative algebras inherits two incompatible constructions of Mor(X, Y)". Observed 2026-10-16 through `QQ[t].algebra_generator("t")`. **Path:** `divisors/invertible_sheaves.py:1119` -> `schemes/ringed_spaces.py:1553` -> `mor_foundation.py:235` -> `mor_categories.py:1916`. **Consumers blocked:** `ProjectiveSpaces(QQ)(2).anticanonical_line_bundle()`, `fibre()` on families, `is_k3`, `HesseBertiniFamily`, `AnalyticDiscFamily`. **Repair:** one Mor construction at the join of the commutative-ring and algebra branches (`CAT-21`).
-
 ### `PositiveConeComponents` is unhashable
 
 A component of the positive cone of a hyperbolic real quadratic space is the object from which `HyperbolicSpaces(component)` constructs `HH^n`. `PositiveConeComponents` is a `Sets().Subobjects()` parent that is unhashable, so the category constructor, which caches on its arguments, raises `TypeError`. `tests/lattices/test_hyperbolic_space.sage` fails on main (2026-10-16). **Consumer:** `HyperbolicSpaces`, and so `HH^n` and its quotients. **Repair:** the subobject parent hashes on its defining inclusion.
@@ -1310,10 +1306,6 @@ A component of the positive cone of a hyperbolic real quadratic space is the obj
 ### Output-named cohomology and fundamental-group categories (`CAT-28`)
 
 `IntegralTopologicalCohomologyGroups`, `IntegralSingularCohomologyGroups`, `ResolutionIntegralCohomologyGroups`, `ToricIntegralSingularCohomologyGroups`, `GeometricFundamentalGroups`, `ToricFundamentalGroups` (`schemes/geometric_cohomology.py`) and `PicardGroups` (`divisors/picard_groups.py`) are categories declared for the class of objects one construction produces. `H^k(X; ZZ)` is a `ZZ`-module, `pi_1(X, x)` a group and `Pic(X)` an abelian group; each belongs to the category of its kind with the construction as a functor (`X.singular_cohomology(R)`, `Pic` as `Varieties(k).Projective().picard_functor()`). **Tell:** `rg -n 'class \w*(Cohomology|Fundamental|Picard)Groups' src`. `IntegralTopologicalCohomologyGroups.cohomology_algebra` also needs the embedding `sigma : k -> CC` to state its source.
-
-### `TopologicalSpaces` declares `Sets()`
-
-A topological space is a set with a topology, so its underlying set is a functor image, and `TopologicalSpaces().super_categories()` names `Sets()` (`categories/topological_spaces.py`). The red flag in AGENTS.md ("A supercategory entry presents a formalized inclusion") applies; the declaration is honest only if `lean-categories` states `Top -> Set` as the inclusion the tree reads. **Repair:** read the forgetful functor from `lean-categories`, then keep or replace the declaration.
 
 ### `TopologicalSpaces` has no coequalizer
 
