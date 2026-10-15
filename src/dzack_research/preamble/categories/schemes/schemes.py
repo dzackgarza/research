@@ -4759,6 +4759,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             picard = self.picard_group()
             return picard.injection(1)(picard.biproduct_factor(1).module_generator("O(1)"))
 
+        def integral_singular_cohomology(self, degree):
+            r"""``H^degree(P^n(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _integral_singular_cohomology_over_rationals,
+            )
+
+            return _integral_singular_cohomology_over_rationals(self, degree)
+
         @cached_method
         def _picard_intersection_pairing(self):
             r"""The form ``[O(1)]^2 = 1`` on ``Pic(P^2)``."""

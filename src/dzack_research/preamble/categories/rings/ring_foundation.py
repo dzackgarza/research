@@ -5298,7 +5298,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             kind = "Field" if self in OwnedRings().Division().Commutative() else "Ring"
             return f"Finite {kind.lower()} with {size} elements"
         base = self.base_ring()
-        return f"Ring over {base}" if base is not self else f"Ring in {self.category()}"
+        # A ring that is its own base names itself; its category's name contains it.
+        return f"Ring over {base}" if base is not self else repr(self._engine)
 
     def _latex_(self):
         text = self._repr_().replace("_", r"\_")
