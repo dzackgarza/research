@@ -108,8 +108,9 @@ def test_square_25_splits_into_two_integral_orbits_and_one_rational_orbit() -> N
     assert _rotation(rational)(rational.scalar_multiple(QQ(5), f0)) == (
         rational.scalar_multiple(QQ(3), f0) + rational.scalar_multiple(QQ(4), f1)
     )
-    with pytest.raises(AssertionError):
-        rational.vectors_of_square(25)
+    fibre = rational.vectors_of_square(25)
+    assert rational.scalar_multiple(QQ(3), f0) + rational.scalar_multiple(QQ(4), f1) in fibre
+    assert rational.scalar_multiple(QQ(3), f0) + rational.scalar_multiple(QQ(3), f1) not in fibre
     with pytest.raises(AssertionError):
         rational.O().vector_orbit_representatives(25)
     with pytest.raises(AssertionError):

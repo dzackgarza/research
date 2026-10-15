@@ -5033,18 +5033,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             finite and enumerated. Other fibres retain the complete defining
             locus; the orbits of a nonsplit binary fibre under ``O(L)`` or
             ``SO(L)`` are :meth:`binary_fixed_norm_representatives`.  A definite
-            fibre over another base ring is not enumerated here (``CAT-01``):
-            over ``QQ`` the fibre of ``x^2 + y^2`` at ``1`` contains
-            ``(3/5, 4/5)`` and is not finite.
+            fibre over another base ring is one of these (``STY-129``): over
+            ``QQ`` the fibre of ``x^2 + y^2`` at ``1`` contains ``(3/5, 4/5)``,
+            and it is not the finite shell of the integral span.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
-                assert self.base_ring() is _owned_integers(), (
-                    f"cannot enumerate the vectors of square {square} in {self!r}: the shell of a definite "
-                    f"lattice is enumerated over ZZ, where it is finite, and {self!r} is over {self.base_ring()}"
-                )
+                if self.base_ring() is not _owned_integers():
+                    return self.square_fibre(square).object()
                 return self.finite_subsets()(_vectors_of_square(self, square))
             if (
                 self.module_rank() == 2
