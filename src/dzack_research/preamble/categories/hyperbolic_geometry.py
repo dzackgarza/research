@@ -1,8 +1,8 @@
 r"""Positive-cone components and their projectivized hyperbolic geometry."""
 
 from itertools import count, product
+from math import gcd
 
-from sage.arith.misc import gcd
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -131,7 +131,7 @@ def _primitive_on_selected_ray(lattice, vector, timelike):
             f"the zero vector of {lattice} spans no ray: a point of a projective space is "
             f"the ray of a nonzero vector"
         )
-    content = gcd(nonzero_coordinates)
+    content = gcd(*nonzero_coordinates)
     primitive = lattice(tuple(entry // content for entry in coordinates))
     if lattice.b(primitive, timelike) < 0:
         primitive = -primitive
@@ -169,7 +169,42 @@ class PositiveConeComponents(OwnedParameterizedCategory):
         return [Sets().Subobjects(self.ambient_space())]
 
     def an_object(self):
-        return _positive_cone_component(self.lattice(), _timelike_witness(self.lattice()))
+        return self.component_through(self.reference_vector())
+
+    @cached_method
+    def reference_vector(self):
+        r"""Return the integral vector of positive square that labels the components.
+
+        The positive cone ``{x : q(x) > 0}`` of a lattice of signature
+        ``(1, n)`` has exactly two components, exchanged by ``-1``, and a
+        timelike ``t`` lies in the component of ``w`` exactly when
+        ``b(t, w) > 0``.  So ``w`` and ``-w`` label the two components.
+        """
+        return _timelike_witness(self.lattice())
+
+    def component_through(self, timelike):
+        r"""Return the component of ``{x : q(x) > 0}`` that contains ``timelike``.
+
+        A component is a subset of ``L ⊗ RR``, determined by the sign of
+        ``b(timelike, w)`` for the reference vector ``w``, so equal components
+        are the same object.
+        """
+        lattice = self.lattice()
+        timelike = lattice(timelike)
+        assert lattice.q(timelike) > lattice.base_ring().zero(), (
+            f"{timelike} lies in no component of the positive cone of {lattice}: "
+            f"it must have positive square, but q = {lattice.q(timelike)}"
+        )
+        reference = self.reference_vector()
+        match lattice.b(timelike, reference) > lattice.base_ring().zero():
+            case True:
+                return self._component_labelled_by(reference)
+            case False:
+                return self._component_labelled_by(-reference)
+
+    @cached_method
+    def _component_labelled_by(self, label):
+        return _labelled_positive_cone_component(self, label)
 
     class ParentMethods:
         def __init__(self, lattice, timelike, **rest) -> None:
@@ -218,6 +253,32 @@ class PositiveConeComponents(OwnedParameterizedCategory):
 
         def opposite(self):
             return _positive_cone_component(self.lattice(), -self.timelike_vector())
+
+        def __eq__(self, other):
+            r"""Two components of the positive cone of ``L`` are equal when they meet.
+
+            The components of ``{x : q(x) > 0}`` are disjoint, and timelike
+            ``s``, ``t`` lie in one component exactly when ``b(s, t) > 0``.  Any
+            other subset of ``L ⊗ RR`` is compared through its inclusion.
+            """
+            if self is other:
+                return True
+            match other in PositiveConeComponents(self.lattice()):
+                case True:
+                    lattice = self.lattice()
+                    pairing = lattice.b(self.timelike_vector(), other.timelike_vector())
+                    return pairing > lattice.base_ring().zero()
+                case False:
+                    return super().__eq__(other)
+
+        def __ne__(self, other):
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
+
+        def __hash__(self) -> int:
+            # Equal subsets of ``L ⊗ RR`` have the same inclusion codomain.
+            return hash(self.codomain())
 
         @cached_method
         def projectivization(self):
@@ -526,9 +587,12 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
 
 
 def _positive_cone_component(lattice, timelike):
-    category = PositiveConeComponents(lattice)
+    return PositiveConeComponents(lattice).component_through(timelike)
+
+
+def _labelled_positive_cone_component(category, timelike):
+    lattice = category.lattice()
     ambient = category.ambient_space()
-    timelike = lattice(timelike)
     subset = ambient.condition_set(
         lambda vector: _positive_component_contains(
             lattice,
