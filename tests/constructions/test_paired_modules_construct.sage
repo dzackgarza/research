@@ -8,8 +8,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_holder_pairing_retains_left_right_value_modules_and_zero_pairing() -> None:
-    left = ell(1)
-    right = ell(oo)
+    left = ell(1, NN, RR)
+    right = ell(oo, NN, RR)
     paired = left * right
 
     assert paired in PairedModules(RR)

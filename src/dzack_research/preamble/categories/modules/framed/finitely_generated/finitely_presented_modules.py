@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     _fix_selected_resolution,
 )
-from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     FreeResolution,
@@ -51,6 +50,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -887,7 +887,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             from sage.categories.fields import Fields as SageFields
 
             if self.is_zero():
-                return _own_ring(SageZZ).zero()
+                return _owned_integers().zero()
             ring = self.base_ring()
             spectrum = ring.spectrum()
             point = point if element_parent(point) is spectrum else spectrum(point)
@@ -925,7 +925,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"multiple of the residue degree {residue_degree} of {point}; a module supported "
                 "only at a point p has dimension a multiple of [kappa(p):k]"
             )
-            return _own_ring(SageZZ)(vector_dimension // residue_degree)
+            return _owned_integers()(vector_dimension // residue_degree)
 
         def minimal_module_generators(self):
             r"""Return a minimal selected generating set over a local base ring.
@@ -1504,11 +1504,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def invariant_factor_form(self):
-            r"""Return ``self -> M_if`` with only non-unit invariant factors."""
-            return _module_invariant_factor_form(self)
-
-        @cached_method
         def finite_free_trivialization(self):
             r"""Return an explicit isomorphism ``self ~= R^r`` in the torsion-free PID regime.
 
@@ -1603,7 +1598,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             trivialization = self.finite_free_trivialization()
             localization = point.local_ring().localization_functor()
             localized_forward = localization(trivialization.forward())
-            localized_inverse = localization(trivialization.inverse())
+            localized_inverse = localization(trivialization.inverse().forward())
             return localized_forward.domain().module_category().Core().Mor(
                 localized_forward.domain(),
                 localized_forward.codomain(),
@@ -1682,50 +1677,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _repr_(self):
             described = f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()}"
             match self.base_ring():
-                case ring if ring is _own_ring(SageZZ):
+                case ring if ring is _owned_integers():
                     # Over the integers the invariant factors classify the module.
                     return f"{described} with invariant factors {self.invariant_factors()}"
                 case _:
                     return described
-
-        def base_change(self, ring_map, *, _extra_construction_data=None):
-            r"""Transport the selected finite presentation along ``R -> S``."""
-
-            if ring_map.is_identity() and not _extra_construction_data:
-                return self
-            presentation = self.presentation()
-            source = presentation.domain().base_change(ring_map)
-            target = presentation.codomain().base_change(ring_map)
-            generator_labels = tuple(
-                zip(
-                    target.module_generating_set(),
-                    presentation.codomain().module_generating_set(),
-                    strict=True,
-                )
-            )
-
-            def changed_image(relation_label):
-                image = presentation(presentation.domain().module_generator(relation_label)).to_vector()
-                return target.linear_combination(
-                    {
-                        changed_label: _base_change_scalar(ring_map, image(label))
-                        for changed_label, label in generator_labels
-                        if image(label)
-                    }
-                )
-
-            images = {
-                changed_label: changed_image(relation_label)
-                for changed_label, relation_label in zip(
-                    source.module_generating_set(),
-                    presentation.domain().module_generating_set(),
-                    strict=True,
-                )
-            }
-            return _presented_module_from_morphism(
-                source.module_category().Mor(source, target)(images),
-                _extra_construction_data=_extra_construction_data,
-            )
 
 
 
@@ -1780,7 +1736,7 @@ def _module_invariant_factor_form(module):
         for position in reduced_labels
     ):
         target_forward = presentation_iso.forward().right()
-        target_inverse = presentation_iso.inverse().right()
+        target_inverse = presentation_iso.inverse().forward().right()
         original_target = module.presentation().codomain()
         normalized_target = diagonal_presentation.codomain()
         normalized_labels = tuple(normalized_target.module_generating_set())
@@ -1842,7 +1798,7 @@ def _module_invariant_factor_form(module):
     )._from_known_inverse_pair(full_to_reduced, reduced_to_full)
 
     target_forward = presentation_iso.forward().right()
-    target_inverse = presentation_iso.inverse().right()
+    target_inverse = presentation_iso.inverse().forward().right()
     full_projection = full_normalized.presentation_projection()
     original_projection = module.presentation_projection()
     original_to_full = module.module_category().Mor(module, full_normalized)(
@@ -1985,6 +1941,25 @@ class _GeneralPresentedModule:
             labels = self._free_module.module_generating_set()
             return self(self._free_module.module_generator(labels[position]))
         return self(self._free_module.gen(position))
+
+    def _submodule_key(self, subobject):
+        r"""A hashable datum equal for two submodules of this module over ZZ exactly when they are equal.
+
+        By the correspondence theorem a submodule is its preimage in the
+        cover, which contains the relations; over ZZ the engine's echelonized
+        basis of that preimage is its Hermite normal form, which is unique.
+        """
+        assert self.base_ring() is _owned_integers(), (
+            f"the echelonized basis of a preimage is canonical over ZZ, but {self} is over {self.base_ring()}"
+        )
+        assert self._relation_submodule is not None, (
+            f"{self} has no engine relation module, so its submodules have no engine preimage to compare"
+        )
+        inclusion = subobject.inclusion()
+        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
+        lifts = [self(inclusion(generator))._representative() for generator in subobject.module_generators()]
+        preimage = self._free_module.submodule(lifts + list(self._relation_submodule.basis()))
+        return tuple(tuple(row) for row in preimage.echelonized_basis_matrix().rows())
 
     def _cover_coordinates(self, element):
         r"""Coordinates of a representative as an indexed family on the cover basis."""
@@ -2406,7 +2381,7 @@ def _selected_presentation_kernel(morphism):
         for label in labels
     ):
         return domain.whole_subobject()
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     match ring:
         case _ if ring in PrincipalIdealDomains():
             return _pid_presentation_kernel(morphism)
@@ -2435,7 +2410,7 @@ def _cap_presentation_kernel(morphism):
             f"over {codomain.base_ring()}, but a module morphism has one base ring"
         )
     variable_names = tuple(ring.variable_names())
-    assert variable_names and ring.base_ring() is _own_ring(SageZZ), (
+    assert variable_names and ring.base_ring() is _owned_integers(), (
         f"cannot compute the kernel of {morphism} with this algorithm: it needs a polynomial "
         f"ring over ZZ, and the base ring is {ring}"
     )

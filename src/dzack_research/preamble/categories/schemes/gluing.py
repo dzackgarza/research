@@ -201,7 +201,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
 
     def _postcompose_with(self, after):
         chart = self.gluing_datum().chart_isomorphism(self.chart_index())
-        return after.local_map(self.chart_index()) * chart.inverse()
+        return after.local_map(self.chart_index()) * chart.inverse().forward()
 
     def __eq__(self, other) -> bool:
         return (
@@ -852,7 +852,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
                 "of schemes between the two overlaps"
             )
         forward = transition.forward()
-        inverse = transition.inverse()
+        inverse = transition.inverse().forward()
         left_overlap = forward.domain()
         right_overlap = forward.codomain()
         if left_overlap not in OpenImmersions(left_chart):
@@ -930,7 +930,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
         r"""``phi^{-1}``, the isomorphism from the right overlap to the left one."""
         transition = self.transition()
         return Schemes(self.base_ring()).Core().Mor(transition.codomain(), transition.domain())(
-            transition.inverse(),
+            transition.inverse().forward(),
             transition.forward(),
         )
 
@@ -1062,7 +1062,7 @@ class _FiniteSchemeGluingDatum(SageObject):
             transition.codomain(),
             transition.domain(),
         )(
-            transition.inverse(),
+            transition.inverse().forward(),
             transition.forward(),
         )
         self._reverse_transitions.append((key, reversed_transition))
@@ -1080,7 +1080,7 @@ class _FiniteSchemeGluingDatum(SageObject):
                     "must be an isomorphism of schemes between the two overlaps"
                 )
             forward = transition.forward()
-            inverse = transition.inverse()
+            inverse = transition.inverse().forward()
             source_overlap = forward.domain()
             target_overlap = forward.codomain()
             source_chart = self.chart(source_index)
@@ -2308,7 +2308,7 @@ class FiniteAtlasAlgebraTransition(SageObject):
         self._pullback = pullback
         self._inverse_pullback = inverse_pullback
         forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
-        reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
+        reverse_scalar = scheme_transition.inverse().forward().coordinate_algebra_morphism()
         if (
             pullback.source() is not target_algebra
             or pullback.target() is not source_algebra
@@ -2393,7 +2393,7 @@ class FiniteAtlasModuleTransition(SageObject):
         self._pullback = pullback
         self._inverse_pullback = inverse_pullback
         forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
-        reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
+        reverse_scalar = scheme_transition.inverse().forward().coordinate_algebra_morphism()
         if (
             pullback.source() is not target_module
             or pullback.target() is not source_module
@@ -2605,7 +2605,7 @@ class _FiniteAtlasModuleGluingDatumEngine:
             self._images_from_coordinates(target, source, pullback_images),
         )
         inverse_pullback = fibered_modules.Mor(source, target)(
-            scheme_transition.inverse().coordinate_algebra_morphism(),
+            scheme_transition.inverse().forward().coordinate_algebra_morphism(),
             self._images_from_coordinates(source, target, inverse_images),
         )
         transition = FiniteAtlasModuleTransition(
@@ -3925,7 +3925,7 @@ class _FiniteAtlasAlgebraGluingDatumEngine:
             self._images(target, source, pullback_images),
         )
         inverse_pullback = SemilinearAlgebraMorphism(
-            source, target, scheme_transition.inverse().coordinate_algebra_morphism(),
+            source, target, scheme_transition.inverse().forward().coordinate_algebra_morphism(),
             self._images(source, target, inverse_images),
         )
         transition = FiniteAtlasAlgebraTransition(scheme_transition, source, target, pullback, inverse_pullback)
@@ -4526,7 +4526,7 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             source = original.codomain()
             target = original.domain()
             return source.module_category().Core().Mor(source, target)(
-                original.inverse(),
+                original.inverse().forward(),
                 original.forward(),
             )
 
@@ -4543,7 +4543,7 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                         "local modules to the overlap"
                     )
                 forward = transition.forward()
-                inverse = transition.inverse()
+                inverse = transition.inverse().forward()
                 for label in _finite_framing(source):
                     generator = source.module_generator(label)
                     if inverse(forward(generator)) != generator:
@@ -5543,7 +5543,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             source = original.codomain()
             target = original.domain()
             return Algebras(source.algebra_base_ring()).Associative().Unital().Core().Mor(source, target)(
-                original.inverse(),
+                original.inverse().forward(),
                 original.forward(),
             )
 
@@ -5569,7 +5569,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                         f"by its stated inverse is not the identity of {source}"
                     )
                 if _algebra_maps_agree_on_generators(
-                    transition.forward() * transition.inverse(),
+                    transition.forward() * transition.inverse().forward(),
                     _algebra_mor(target, target).identity(),
                 ) is False:
                     raise ValueError(
@@ -5707,7 +5707,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                 transition = self._transitions[pair]
                 forget = Algebras(self.cover().intersection(*pair).coordinate_algebra()).underlying_module()
                 forward = forget(transition.forward())
-                inverse = forget(transition.inverse())
+                inverse = forget(transition.inverse().forward())
                 transitions[pair] = forward.domain().module_category().Core().Mor(
                     forward.domain(),
                     forward.codomain(),

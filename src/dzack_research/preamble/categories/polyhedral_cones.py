@@ -9,8 +9,14 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_integers,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -49,7 +55,7 @@ def _integral_covector(lattice, coordinates):
 
 def _engine_rational_coordinates(coordinates):
     r"""Lower session rational coordinates of a wall to the engine, for :func:`_integral_covector`."""
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     return tuple(_engine_element(rationals, coordinate) for coordinate in coordinates)
 
 
@@ -135,14 +141,14 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             FramedFreeModules,
         )
 
-        return FramedFreeModules(_own_ring(SageZZ))
+        return FramedFreeModules(_owned_integers())
 
     def ambient_lattice(self):
         return self.base()
 
     @cached_method
     def ambient_space(self):
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         return rationals.free_module(self.ambient_lattice().module_generating_set())
 
     @classmethod
@@ -157,6 +163,17 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
         return _rational_polyhedral_cone(
             self.ambient_lattice(),
             tuple(dual.module_generators()),
+        )
+
+    def from_halfspaces(self, halfspace_covectors, *, equation_covectors=(), wall_roots=None):
+        r"""Return the rational cone defined by homogeneous covector inequalities.
+
+        Each covector imposes a nonnegative pairing with points of the cone.
+        Equations impose zero pairing; both families use the ambient dual module.
+        """
+        return _rational_polyhedral_cone(
+            self.ambient_lattice(), halfspace_covectors,
+            equation_covectors=equation_covectors, wall_roots=wall_roots,
         )
 
     def from_rays(self, rays, *, wall_roots=None):
@@ -259,7 +276,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 )
             from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
-            return CoxeterDiagrams().from_roots(tuple(self._wall_roots))
+            return CoxeterDiagrams().from_roots(finite_indexed_family_from_values(None, tuple(self._wall_roots)))
 
         def transport(self, isometry):
             r"""Transport this cone and all retained defining covectors along an isometry."""
@@ -653,8 +670,97 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             pairings = tuple(lattice.b(ray, timelike) for ray in rays)
             return all(value >= 0 for value in pairings)
 
+        @cached_method
+        def triangulation(self):
+            r"""Return simplicial subcones covering this pointed cone, as a family.
+
+            The family is indexed by the simplices of a triangulation of the
+            primitive rays: each simplex ``t`` is a set of linearly independent
+            rays, its value is the subcone ``S_t`` they generate (built by
+            ``from_rays``), and the ``S_t`` cover the cone.  Each ``S_t`` lies in
+            the cone because its rays do; :meth:`simplicial_subcone_inclusion`
+            is that inclusion.  Private engine (``OWN-06``): Sage's
+            ``PointConfiguration`` on the rays as projective points computes the
+            simplices; only their ray labels leave it.
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+
+            assert self.is_pointed(), (
+                f"cannot triangulate {self} by its rays: it contains the lines {self.lineality_generators()}"
+            )
+            lattice = self.ambient_lattice()
+            rays = self.primitive_rays()
+            simplices = _engine_ray_triangulation(lattice, rays)
+            category = RationalPolyhedralCones(lattice)
+            return finite_indexed_family(
+                simplices,
+                lambda simplex: category.from_rays(simplex),
+                name=f"Simplicial subcones covering {self}",
+            )
+
+        def simplicial_subcone_inclusion(self, simplex):
+            r"""Return the inclusion ``S_t -> C`` of the subcone of :meth:`triangulation` at ``simplex``.
+
+            A set map that is the identity on points: ``S_t`` is generated by
+            rays of ``C``, so it is contained in ``C``.  ``RationalPolyhedralCones``
+            presents no ``Mor`` of its own (recorded in COMPLAINTS), so the
+            inclusion is the map of the underlying subsets of ``L tensor QQ``.
+            """
+            subcone = self.triangulation().value(simplex)
+            return Sets().Mor(subcone, self)(lambda point: point)
+
+        def ray_span_saturation_index(self, subcone):
+            r"""Return ``[sat(ZZ S) : ZZ S]`` for the rays ``S`` of ``subcone``.
+
+            ``ZZ S`` is the sublattice the rays span, with its inclusion into
+            the ambient lattice; the saturation quotient ``sat(ZZ S)/ZZ S`` is
+            the torsion of its cokernel, and the index is its cardinality. A
+            lattice point of a simplicial subcone has coordinates in
+            ``(1/D) ZZ`` in its rays, ``D`` this index.
+            """
+            lattice = self.ambient_lattice()
+            span = lattice.subobject_on(subcone.primitive_rays())
+            return span.inclusion().cokernel().torsion_submodule().cardinality()
+
         def _repr_(self):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
+
+
+def _engine_ray_triangulation(lattice, rays):
+    r"""Private adapter (``OWN-06``): the simplices of a triangulation of a pointed cone's rays.
+
+    Engine: Sage's ``PointConfiguration`` on the rays scaled onto the affine
+    hyperplane ``c(x) = 1``, ``c`` the sum of the rays of the dual cone, which
+    is positive on every ray of a pointed cone; the triangulations of the
+    cone are those of these points (Sage's ``projective=True`` input accepts
+    only points with last coordinate one, TRAPS.md).  ``triangulate()``
+    returns simplices as tuples of point positions.  Each ray is lowered once,
+    through its owned coordinate function ``to_vector()`` and the ring
+    adapter ``_engine_element``.  Returned: the finite ordered set of
+    simplices, each a finite ordered set of the rays (owned lattice elements)
+    it contains.
+    """
+    from sage.geometry.cone import Cone
+    from sage.geometry.triangulation.point_configuration import PointConfiguration
+    from sage.modules.free_module_element import vector as engine_vector
+
+    ring = lattice.base_ring()
+    labels = tuple(lattice.module_generating_set())
+    points = tuple(rays)
+    rows = [
+        [SageQQ(_engine_element(ring, ray.to_vector()(label))) for label in labels]
+        for ray in points
+    ]
+    functional = sum((engine_vector(SageQQ, ray) for ray in Cone(rows).dual().rays()), engine_vector(SageQQ, [0] * len(labels)))
+    heights = [engine_vector(SageQQ, row) * functional for row in rows]
+    assert all(height > 0 for height in heights), (
+        f"the rays {rows} do not span a pointed cone: the sum of the dual rays is not positive on all of them"
+    )
+    affine = [[entry / height for entry in row] for row, height in zip(rows, heights, strict=True)]
+    return finite_ordered_set(tuple(
+        finite_ordered_set(tuple(points[position] for position in simplex))
+        for simplex in PointConfiguration(affine).triangulate()
+    ))
 
 
 def _rational_polyhedral_cone(

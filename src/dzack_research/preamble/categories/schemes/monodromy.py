@@ -30,7 +30,11 @@ from dzack_research.preamble.categories.manifolds import ComplexManifolds
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+    _owned_rationals,
+)
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
@@ -82,8 +86,8 @@ class LegendreMonodromyFamily(SageObject):
     r"""The Legendre degeneration together with ``R^1 pi_* ZZ`` on a punctured disc."""
 
     def __init__(self) -> None:
-        rationals = _own_ring(SageQQ)
-        integers = _own_ring(SageZZ)
+        rationals = _owned_rationals()
+        integers = _owned_integers()
         parameter = rationals.polynomial_ring("t")
         t = parameter.algebra_generator("t")
         ambient = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
@@ -217,7 +221,7 @@ class LegendreMonodromyFamily(SageObject):
         return self.local_system()
 
     def cohomological_degree(self):
-        return _own_ring(SageZZ).one()
+        return _owned_integers().one()
 
     def local_system(self):
         return self._local_system

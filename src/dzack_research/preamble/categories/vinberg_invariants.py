@@ -38,6 +38,7 @@ Coxeter bonds.
 
 from itertools import combinations
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
@@ -46,9 +47,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.categories.graph_categories import LabelledGraphs
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    OwnedRings,
     _cross_engine_ring_value,
     _engine_numeral,
     _own_ring,
+    _owned_real_algebraic_numbers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -61,11 +65,32 @@ from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 
 
-def _projective_line_over(base_ring):
-    r"""Return the owned projective line over the invariant coefficient ring."""
-    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+def _unimodular_pair(ring, numerator, denominator):
+    r"""Return homogeneous coordinates of ``[numerator : denominator]`` that generate ``ring``.
 
-    return ProjectiveSpaces(base_ring)(1)
+    An ``R``-point of ``P^1_R`` is an invertible module ``L`` on ``Spec R``
+    with two global sections generating it, up to isomorphism of ``L``
+    (Stacks, Lemma 27.13.1, tag 01NE, with ``P^1_R`` the base change of
+    ``P^1_ZZ``, Definition 27.13.2, tag 01NF).  Over a field every nonzero
+    pair generates ``R``.  Over a PID ``L`` is finite torsion free, hence
+    free (Stacks, Lemma 15.22.11, tag 0AUW), so a point is a pair generating
+    the unit ideal up to a unit; since ``(a, b) = (gcd(a, b))``, dividing by
+    the gcd gives that pair.  Elsewhere the pair must generate ``R`` itself.
+    """
+    numerator = ring(numerator)
+    denominator = ring(denominator)
+    match ring:
+        case _ if ring in OwnedFields():
+            return (numerator, denominator)
+        case _ if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+            divisor = numerator.gcd(denominator)
+            return (numerator // divisor, denominator // divisor)
+        case _:
+            assert False, (
+                f"[{numerator} : {denominator}] is an {ring}-point of the projective line "
+                f"only if ({numerator}, {denominator}) generates {ring}; {ring} is neither a "
+                f"field nor a principal ideal domain, and that is not decided here"
+            )
 
 
 def _reflection_cosine(index):
@@ -188,7 +213,6 @@ class VinbergInvariantMatrices(OwnedCategory):
             self._numerators = numerators
             self._denominators = denominators
             self._root_gram = root_gram
-            self._projective_line = _projective_line_over(base_ring)
             super().__init__(**rest)
 
         def base_ring(self):
@@ -243,9 +267,22 @@ class VinbergInvariantMatrices(OwnedCategory):
         def _cardinality_decision(self):
             return self._index_set.cardinality()
 
+        @cached_method
+        def _projective_line_scheme(self):
+            r"""The scheme \(\mathbb P^1_R\) over the coefficient ring."""
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+            return ProjectiveSpaces(self._base_ring)(1)
+
         def projective_line(self):
-            r"""Return \(\mathbb P^1(R)\), where the invariants take their values."""
-            return self._projective_line
+            r"""Return \(\mathbb P^1(R)=\operatorname{Mor}_R(\operatorname{Spec}R,\mathbb P^1_R)\), where the invariants take their values.
+
+            The scheme \(\mathbb P^1_R\) is the codomain of this Mor.
+            """
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+            line = self._projective_line_scheme()
+            return Schemes(line.scheme_base_ring()).Mor(line.base_scheme(), line)
 
         def is_rooted(self) -> bool:
             r"""Return whether the matrix was built from a Gram of mirror normals."""
@@ -333,14 +370,18 @@ class VinbergInvariantMatrices(OwnedCategory):
             return ranking(left), ranking(right)
 
         def vinberg_invariant(self, left, right):
-            r"""Return \([4b(r,s)^2 : q(r)q(s)]\in\mathbb P^1(R)\) for the two mirrors.
+            r"""Return \([4b(r,s)^2 : b(r,r)b(s,s)]\in\mathbb P^1(R)\) for the two mirrors.
 
+            The point is the morphism \(\operatorname{Spec}R\to\mathbb P^1_R\)
+            on a pair of coordinates generating \(R\) (:func:`_unimodular_pair`).
             The diagonal entry is \([4:1]\), the invariant of a mirror with
             itself: \(m_{vv}=1\) and \(4\cos^2\pi=4\).
             """
             i, j = self._positions(left, right)
-            return self._projective_line(
-                [self._numerators[i][j], self._denominators[i][j]]
+            return self._projective_line_scheme().point_morphism(
+                _unimodular_pair(
+                    self._base_ring, self._numerators[i][j], self._denominators[i][j]
+                )
             )
 
         def vinberg_ratio(self, left, right):
@@ -571,7 +612,7 @@ class VinbergInvariantMatrices(OwnedCategory):
                 diagram.root_gram_tensor(), index_set=tuple(diagram.index_set())
             )
         vertices = tuple(diagram.index_set())
-        real_algebraics = _own_ring(AA)
+        real_algebraics = _owned_real_algebraic_numbers()
         values = [
             [
                 _cross_engine_ring_value(

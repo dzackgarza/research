@@ -36,7 +36,10 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
     _owned_point,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -57,6 +60,34 @@ from dzack_research.preamble.validation import validator
 class GSetMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
         return GSetMor
+
+
+def _orbit_schreier_morphism(orbit, word_section, augmentation):
+    r"""Schreier's lemma on a pointed finite orbit: ``E -> G`` onto the base-point stabilizer.
+
+    ``orbit`` is a finite ``G``-set, ``augmentation`` a free cover
+    ``pi: F ->> G`` and ``word_section`` the Sets Mor ``p |-> t_p`` into ``F``
+    with ``pi(t_p)`` carrying the base point to ``p``.  The words
+    ``t_(s.p)^-1 s t_p``, over points ``p`` and free generators ``s``, generate
+    the stabilizer of the base point in ``F``; the returned group morphism
+    from the free group on them to ``G`` has that stabilizer's image as image.
+    This is the one Schreier construction; its callers corestrict it to the
+    subgroup they present.
+    """
+    from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+    free = augmentation.domain()
+    words = tuple(
+        (~word_section(orbit.act(augmentation(generator), point))) * generator * word_section(point)
+        for point in orbit
+        for generator in free.group_generators()
+    )
+    labels = finite_ordinal_set(len(words))
+    source = OwnedGroups.Free(index_set=labels)
+    word_map = source.Mor(free)(
+        Sets().Mor(labels, free)(lambda label: words[int(label)])
+    )
+    return augmentation * word_map
 
 
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
@@ -103,6 +134,31 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
+    def _orbit_words(self, seeds, action, augmentation):
+        r"""The one orbit search: the union of the orbits of ``seeds``, each point with a word.
+
+        ``augmentation`` is a free cover ``pi: F ->> G``.  Breadth-first search
+        over the free generators reaches each new point ``s.y`` by the word
+        ``s t_y``.  Points are recorded by rank in a dictionary keyed by the
+        point, so each membership test is constant time.  The caller supplies
+        an effective action and the hypothesis that these orbits are finite.
+        """
+        free = augmentation.domain()
+        steps = tuple((word, augmentation(word)) for word in free.group_generators())
+        points = list(finite_ordered_set(tuple(seeds)))
+        rank = {point: position for position, point in enumerate(points)}
+        words = [free.one() for _point in points]
+        position = 0
+        while position < len(points):
+            for word, element in steps:
+                image = action(element, points[position])
+                if image not in rank:
+                    rank[image] = len(points)
+                    points.append(image)
+                    words.append(word * words[position])
+            position += 1
+        return points, words
+
     def from_finite_orbits(self, seeds, action):
         r"""The union of the finite orbits of supplied points under a given action.
 
@@ -110,16 +166,27 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         orbits are finite. Enumerating generator images then terminates at
         exactly their union; no search bound is a finiteness certificate.
         """
-        points = list(finite_ordered_set(tuple(seeds)))
-        generators = tuple(self.group().group_generators())
-        position = 0
-        while position < len(points):
-            for generator in generators:
-                image = action(generator, points[position])
-                if image not in points:
-                    points.append(image)
-            position += 1
+        points, _words = self._orbit_words(
+            seeds, action, self.group().selected_group_resolution().augmentation()
+        )
         return self(finite_ordered_set(tuple(points)), action)
+
+    def pointed_orbit(self, subgroup, base, action, augmentation=None):
+        r"""``G/H`` realized as the orbit of ``base``, for ``H`` the stabilizer of ``base``.
+
+        The defining hypothesis is the caller's: ``H`` is the stabilizer of
+        ``base`` and the orbit is finite.  Then ``gH |-> g.base`` identifies
+        ``G/H`` with the orbit; the orbit search supplies the section
+        ``p |-> t_p`` as a word section ``orbit -> F`` composed with the free
+        cover ``pi: F ->> G`` (by default the selected one).  The result is the
+        ``LeftCosetGSets(H)`` object retaining the orbit action, the base
+        point, the section and its word factor.
+        """
+        if augmentation is None:
+            augmentation = self.group().selected_group_resolution().augmentation()
+        points, words = self._orbit_words((base,), action, augmentation)
+        orbit = self(finite_ordered_set(tuple(points)), action)
+        return orbit._pointed_coset_space(subgroup, base, words, augmentation)
 
     def underlying_category(self):
         r"""``FinSet``, the codomain of the forgetful functor."""
@@ -264,9 +331,6 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             assert point in self.point_set(), f"{point!r} is not a point of {self}"
             return self.point_set()(point)
 
-        def Mor(self, codomain):
-            r"""Return the equivariant Mor from this G-set to ``codomain``."""
-            return FiniteGSets(self.acting_group()).Mor(self, codomain)
 
         def fixed_points(self):
             r"""The fixed-point set ``X^G``."""
@@ -352,53 +416,79 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return free
             return self.is_transitive_action()
 
-        @cached_method
-        def _transporter_generator_actions(self):
-            r"""Evaluate each supplied generator's finite permutation once."""
-            return tuple(
-                (generator, self.action_of(generator))
-                for generator in self.acting_group().group_generators()
+        def _pointed_coset_space(self, subgroup, base, words, augmentation):
+            r"""``G/H`` on this transitive ``G``-set, from the words of its points in rank order."""
+            ranking = self.ranking_map()
+            word_section = Sets().Mor(self, augmentation.domain())(
+                lambda point: words[int(ranking(point))]
+            )
+            return LeftCosetGSets(subgroup).from_transitive_action(
+                self,
+                base,
+                augmentation * word_section,
+                word_section=word_section,
+                augmentation=augmentation,
             )
 
-        @cached_method
-        def _transporter_word_tables(self):
-            r"""Per-source Schreier trees, retaining points by semantic equality."""
-            return []
+        @cached_method(key=lambda self, point: self.ranking_map()(point))
+        def _orbit_of(self, point):
+            r"""The single orbit datum of ``point``: its orbit ``G``-set and its words, by the selected cover."""
+            augmentation = self.acting_group().selected_group_resolution().augmentation()
+            category = FiniteGSets(self.acting_group())
+            points, words = category._orbit_words((point,), self.act, augmentation)
+            return category(finite_ordered_set(tuple(points)), self.act), words, augmentation
+
+        def orbit_schreier_morphism(self, point):
+            r"""Schreier's lemma on the orbit of ``point``: ``E -> G`` with image ``G_point``."""
+            orbit, words, augmentation = self._orbit_of(point)
+            ranking = orbit.ranking_map()
+            word_section = Sets().Mor(orbit, augmentation.domain())(
+                lambda image: words[int(ranking(image))]
+            )
+            return _orbit_schreier_morphism(orbit, word_section, augmentation)
+
+        @cached_method(key=lambda self, point: self.ranking_map()(point))
+        def orbit_as_coset_space(self, point):
+            r"""The orbit of ``point`` as ``G/G_point``, with the section of ``G -> G/G_point``."""
+            return self.coset_space_for(point, self.stabilizer(point))
+
+        def coset_space_for(self, point, subgroup):
+            r"""``G/H`` on the orbit of ``point``, for a subgroup ``H`` presenting ``G_point``.
+
+            The caller states that ``H`` is the stabilizer of ``point`` (for
+            example a preimage subgroup cut out by the same condition); the
+            orbit datum of ``point`` is the one computed for this ``G``-set.
+            """
+            orbit, words, augmentation = self._orbit_of(point)
+            return orbit._pointed_coset_space(subgroup, orbit(point), words, augmentation)
 
         def transporter_witness(self, source, target):
-            r"""Return one ``g`` with ``g.source = target`` when one exists."""
+            r"""Return one ``g`` with ``g.source = target``, or ``None`` when they lie in different orbits.
+
+            The witness is the section of the pointed orbit ``G.source`` at
+            ``target``; ``target`` outside that finite orbit has none.
+            """
             if source not in self or target not in self:
                 raise ValueError(
                     f"no transporter from {source} to {target} in {self}: both must be "
                     f"points of {self.point_set()}"
                 )
-            group = self.acting_group()
-            actions = self._transporter_generator_actions()
-            tables = self._transporter_word_tables()
-            table = next((table for table in tables if table[0][0] == source), None)
-            if table is None:
-                points = [source]
-                words = [()]
-                position = 0
-                while position < len(points):
-                    for index, (_generator, action) in enumerate(actions):
-                        image = action(points[position])
-                        if image not in points:
-                            points.append(image)
-                            words.append((*words[position], index))
-                    position += 1
-                table = (points, words)
-                tables.append(table)
-            points, words = table
-            if target in points:
-                witness = group.one()
-                for index in words[points.index(target)]:
-                    witness = actions[index][0] * witness
-                return witness
-            raise ValueError(
-                f"{source} and {target} lie in different orbits of {self}: no element of "
-                f"{group} carries {source} to {target}"
-            )
+            orbit, words, augmentation = self._orbit_of(source)
+            if target not in orbit:
+                return None
+            return augmentation(words[int(orbit.ranking_map()(orbit(target)))])
+
+        def _stabilizer_generating_morphism(self, point):
+            r"""Protected value hook: the Schreier morphism ``E -> G`` onto ``G_point``.
+
+            Owner ``GObjects``, supplied here by ``FiniteGSets``; its only
+            caller is ``GObjects.stabilizer``, which passes it to the
+            stabilizer constructor as that subgroup's generating datum.
+            Without a selected resolution of ``G`` no value is supplied.
+            """
+            if not self.acting_group().has_selected_group_resolution():
+                return None
+            return self.orbit_schreier_morphism(point)
 
         def transporter(self, source, target):
             r"""Return the unique transporter between two points of a torsor.
@@ -449,7 +539,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
         subgroup = self.subgroup()
         return _left_coset_g_set(subgroup.supergroup(), subgroup)
 
-    def from_transitive_action(self, action, base_point, representative_map):
+    def from_transitive_action(self, action, base_point, representative_map, *, word_section=None, augmentation=None):
         r"""Realize ``G/H`` by a finite pointed transitive ``G``-set.
 
         The construction data are an actual finite action ``X``, a point
@@ -460,7 +550,9 @@ class LeftCosetGSets(OwnedParameterizedCategory):
 
         This realization does not require ``G`` to be finite or compute a
         presentation of it. Its representative map may be the composite of
-        an actual free-word section with the selected augmentation to ``G``.
+        an actual free-word section with a free cover ``pi: F ->> G``; the
+        caller then also supplies those two factors, which the Schreier
+        generating morphism of ``H`` reads.
         """
         subgroup = self.subgroup()
         group = subgroup.supergroup()
@@ -476,18 +568,92 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             coset_action=action,
             coset_base_point=action(base_point),
             coset_representative_map=representative_map,
+            coset_word_section=word_section,
+            coset_augmentation=augmentation,
         )
 
     class ParentMethods:
         def __init__(
             self, coset_subgroup, coset_action=None, coset_base_point=None,
-            coset_representative_map=None, **rest,
+            coset_representative_map=None, coset_word_section=None,
+            coset_augmentation=None, **rest,
         ) -> None:
             self._coset_subgroup = coset_subgroup
             self._coset_action = coset_action
             self._coset_base_point = coset_base_point
             self._coset_representative_map = coset_representative_map
+            self._coset_word_section = coset_word_section
+            self._coset_augmentation = coset_augmentation
             super().__init__(**rest)
+
+        def schreier_generating_morphism(self):
+            r"""Schreier's lemma: ``E ->> H`` from the section of ``G -> G/H``, corestricted to ``H``."""
+            assert self._coset_word_section is not None, (
+                f"Schreier generators of {self.subgroup()} are read from a pointed coset space "
+                f"with a word section through a free cover, which {self} was not built with"
+            )
+            schreier = _orbit_schreier_morphism(
+                self, self._coset_word_section, self._coset_augmentation
+            )
+            return schreier.domain().Mor(self.subgroup()).elementwise(schreier)
+
+        @cached_method
+        def right_coset_projection(self):
+            r"""``G -> H\\G``, presented on ``G/H`` by ``Hx |-> x^-1 H``: the set map ``x |-> x^-1 H``."""
+            group = self.acting_group()
+            return Sets().Mor(group, self)(lambda element: self.coset_of(~element))
+
+        @cached_method
+        def right_coset_section(self):
+            r"""The right-coset transversal ``p |-> t_p^-1``: ``H t_p^-1`` is the right coset presented by ``p``."""
+            section = self.representative_map()
+            return Sets().Mor(self, self.acting_group())(lambda point: ~section(point))
+
+        def double_cosets(self, left_subgroup):
+            r"""``Q \\ G / H``: the orbit set of ``Q`` acting on ``G/H`` through its inclusion.
+
+            The double coset of an orbit is ``Q t_p H`` for any point ``p`` of
+            it; the orbit set retains this coset space, its projection from
+            ``G`` and its section.  ``Q`` is a subgroup of ``G`` itself.
+            """
+            group = self.acting_group()
+            assert left_subgroup is group or left_subgroup.supergroup() is group, (
+                f"the double cosets {left_subgroup} \\ {group} / {self.subgroup()} are the orbits of a "
+                f"subgroup of {group}, but {left_subgroup} is a subgroup of {left_subgroup.supergroup()}"
+            )
+            inclusion = (
+                OwnedGroups().Mor(group, group).identity()
+                if left_subgroup is group
+                else left_subgroup.inclusion()
+            )
+            acted = FiniteGSets(left_subgroup)(
+                self, lambda element, point: self.act(inclusion(element), point)
+            )
+            return _double_coset_set(acted, self, _DoubleCosetSet)
+
+        def inverted_double_cosets(self, right_subgroup):
+            r"""``Q \ G / H`` for this ``G/Q``, read through inversion ``x |-> x^-1``.
+
+            ``H`` acts on ``G/Q``; inversion carries ``QxH`` to ``H x^-1 Q``,
+            so the ``H``-orbit of ``tQ`` is the double coset ``Q t^-1 H``.
+            The result's projection from ``G`` is ``g |-> H-orbit of g^-1 Q``
+            and its section sends an orbit to ``t^-1``; the inversion is
+            retained as the set map ``G -> G`` it is.
+            """
+            group = self.acting_group()
+            assert right_subgroup is group or right_subgroup.supergroup() is group, (
+                f"the double cosets {self.subgroup()} \\ {group} / {right_subgroup} need a subgroup of "
+                f"{group}, but {right_subgroup} is a subgroup of {right_subgroup.supergroup()}"
+            )
+            inclusion = (
+                OwnedGroups().Mor(group, group).identity()
+                if right_subgroup is group
+                else right_subgroup.inclusion()
+            )
+            acted = FiniteGSets(right_subgroup)(
+                self, lambda element, point: self.act(inclusion(element), point)
+            )
+            return _double_coset_set(acted, self, _InvertedDoubleCosetSet)
 
         def subgroup(self):
             r"""Return ``H <= G`` for this represented left-coset ``G/H``."""
@@ -736,6 +902,153 @@ class _OrbitSet:
         return f"Orbit set of {self.g_set()}"
 
 
+class _DoubleCosetSet(_OrbitSet):
+    r"""``Q \\ G / H`` as the ``Q``-orbits on the coset space ``G/H``.
+
+    The data are the orbit ``Q``-set on ``G/H`` and the pointed coset space
+    ``G/H`` with its section.  The projection ``G -> Q \\ G / H`` is
+    ``g |-> Q-orbit of gH``; the section sends an orbit to the coset
+    representative of its named point.
+    """
+
+    def __init__(self, g_set, coset_space, **rest) -> None:
+        self._coset_space = coset_space
+        super().__init__(g_set, **rest)
+
+    def coset_space(self):
+        return self._coset_space
+
+    def group(self):
+        return self._coset_space.acting_group()
+
+    def _coset_of(self, element):
+        return self._coset_space.coset_of(element)
+
+    def _representative_of(self, orbit):
+        return self._coset_space.representative_map()(orbit.representative())
+
+    @cached_method
+    def double_coset_projection(self):
+        r"""``G -> Q \\ G / H``, ``g |-> QgH``."""
+        return Sets().Mor(self.group(), self)(lambda element: self.orbit_of(self._coset_of(element)))
+
+    @cached_method
+    def double_coset_section(self):
+        r"""``Q \\ G / H -> G``, one representative of each double coset."""
+        return Sets().Mor(self, self.group())(self._representative_of)
+
+    def _repr_(self) -> str:
+        return f"Double cosets presented as the orbit set of {self.g_set()}"
+
+
+class _InvertedDoubleCosetSet(_DoubleCosetSet):
+    r"""``Q \\ G / H`` as the ``H``-orbits on ``G/Q``, through inversion.
+
+    ``QxH`` corresponds to the ``H``-orbit of ``x^-1 Q``: the projection is
+    ``g |-> H-orbit of g^-1 Q`` and the section ``t^-1`` for the
+    representative ``t`` of an orbit, both through the retained inversion.
+    """
+
+    @cached_method
+    def inversion(self):
+        r"""The set map ``G -> G``, ``g |-> g^-1``."""
+        group = self.group()
+        return Sets().Mor(group, group)(lambda element: ~element)
+
+    def _coset_of(self, element):
+        return self._coset_space.coset_of(self.inversion()(element))
+
+    def _representative_of(self, orbit):
+        return self.inversion()(self._coset_space.representative_map()(orbit.representative()))
+
+
+def _double_coset_set(g_set, coset_space, engine):
+    r"""Construct a double-coset set on the orbit set of ``g_set``, placed as ``_orbit_set`` places it."""
+    match g_set:
+        case _ if g_set in FiniteSets() and g_set in EnumeratedSets():
+            category = owned_category_join((FiniteSets(), EnumeratedSets()))
+        case _ if g_set in FiniteSets():
+            category = FiniteSets()
+        case _:
+            category = Sets()
+    return _object_of(category, _engine=(category, engine, _Orbit), g_set=g_set, coset_space=coset_space)
+
+
+class _TransversalOrbitSet(_OrbitSet):
+    r"""The orbit set ``X/G`` presented by a finite set ``S subset X`` meeting every orbit.
+
+    The datum adds to ``X`` a finite set ``S`` of points meeting every orbit;
+    the caller's construction states this (``OWN-22``), as a theorem on the
+    action does (a finiteness theorem for the orbits and an algorithm listing
+    points of each).  ``X`` may be infinite.  The orbits are the distinct
+    orbits of the points of ``S`` under the orbit relation of ``X``, which
+    must be decided; :meth:`section` is the set map ``X/G -> X`` choosing the
+    first point of ``S`` in an orbit, a section of :meth:`projection`.
+    """
+
+    def __init__(self, g_set, orbit_covering, **rest) -> None:
+        self._orbit_covering = orbit_covering
+        super().__init__(g_set, **rest)
+
+    def orbit_covering(self):
+        r"""The finite set ``S`` of points meeting every orbit."""
+        return self._orbit_covering
+
+    @cached_method
+    def _representatives(self):
+        r"""The points of ``S`` that are first in their orbit, each decided once.
+
+        Each point of ``S`` is decided against the representatives already
+        recorded, by orbit membership (the G-set's decided orbit relation); a decided relation
+        on a general ``X`` has no canonical form to key by, so the record is
+        keyed by representative point and grows by one per new orbit.  The
+        decisions made are at most ``|S|`` times the number of orbits.
+        """
+        record = {}
+        for point in self.orbit_covering():
+            if not any(point in self.orbit_of(chosen) for chosen in record):
+                record[point] = point
+        return record
+
+    @cached_method
+    def _orbits(self):
+        r"""One orbit per recorded representative, in the order of ``S``."""
+        return tuple(self.orbit_of(point) for point in self._representatives())
+
+    @cached_method
+    def section(self):
+        r"""The section ``s: X/G -> X`` of the projection, choosing the first point of ``S``.
+
+        The orbit of a point ``x`` is sent to the recorded representative
+        related to ``x``; every orbit has one because ``S`` meets it.
+        """
+        g_set = self.g_set()
+        representatives = self._representatives()
+
+        def chosen_point(orbit):
+            point = orbit.representative()
+            for chosen in representatives:
+                if point in self.orbit_of(chosen):
+                    return chosen
+            assert False, (
+                f"{orbit} meets no point of {self.orbit_covering()}, so that set does not meet "
+                f"every orbit of {g_set}"
+            )
+
+        return Sets().Mor(self, g_set)(chosen_point)
+
+
+def _orbit_set_presented_by(g_set, covering):
+    r"""The orbit set ``X/G`` of ``X``, finite and enumerated through a finite set meeting every orbit."""
+    category = owned_category_join((FiniteSets(), EnumeratedSets()))
+    return _object_of(
+        category,
+        _engine=(category, _TransversalOrbitSet, _Orbit),
+        g_set=g_set,
+        orbit_covering=covering,
+    )
+
+
 def _orbit_set(g_set):
     r"""The orbit set ``X/G`` of the ``G``-set ``X``, finite and enumerated with ``X``."""
     match g_set:
@@ -765,6 +1078,10 @@ class _GSetOnPoints:
 
     def point_set(self):
         return self._point_set
+
+    def _emptiness_decision(self):
+        r"""``Sets``' emptiness hook: a ``G``-set on points has the points of its point set."""
+        return self.point_set()._emptiness_decision()
 
     def __contains__(self, point) -> bool:
         return point in self.point_set()
@@ -848,7 +1165,7 @@ def _owned_point_set(point_set):
     """
     if point_set in FiniteSets():
         return point_set
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     def own_point(point):
         match point:
             case int():
@@ -888,7 +1205,7 @@ def _finite_g_set_from_action(
     backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
     mor = group.Mor(permutations)
-    permutation_representation = mor._from_elementwise_rule(
+    permutation_representation = mor.elementwise(
         lambda group_element: _permutation_from_point_map(
             permutations, point_set, lambda point: action(group_element, point),
         )
@@ -962,6 +1279,18 @@ def _left_coset_g_set(group, subgroup):
         raise ValueError(
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
         )
+    from dzack_research.preamble.categories.group.predicate_subgroups import (
+        KernelSubgroups,
+        PreimageSubgroups,
+    )
+
+    # A kernel or preimage along a map to a finite group is realized as the
+    # finite orbit of the target's coset, with its section, for finite and
+    # infinite G alike.
+    if (
+        subgroup in KernelSubgroups(group) or subgroup in PreimageSubgroups(group)
+    ) and subgroup.has_finite_coset_space():
+        return subgroup.coset_space()
     if group.is_finite() is not True:
         points = _LeftCosetPointSet(group, subgroup)
         category = LeftCosetGSets(subgroup)
@@ -1073,6 +1402,20 @@ class Torsors(OwnedParameterizedCategory):
         )
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""``Sets``' emptiness hook: a torsor is not empty, by definition.
+
+            A torsor under ``G`` is a nonempty ``G``-set on which ``G`` acts
+            freely and transitively: Mathlib's ``AddTorsor``
+            (``Mathlib/Algebra/Torsor/Defs.lean``) carries the field
+            ``nonempty : Nonempty P``, and ``lean-categories`` Definition 34.2
+            (``FOUNDATIONS.md``, *Torsor*) requires the torsor to be locally
+            nonempty.  A possibly empty locus on which ``G`` acts, such as the
+            integral lifts of an isotropic reduction isometry, is a ``G``-set,
+            not an object of this category.
+            """
+            return False
+
         def an_element(self):
             r"""Return the selected point trivializing this represented torsor.
 

@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
-    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _module_invariant_factor_form,
@@ -46,6 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -521,7 +521,7 @@ def _torsion_form_all_subobjects(form, *, quadratic: bool):
     subgroup lattice to GAP.  We cross only its returned generators through
     the invariant-factor normalization.
     """
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     assert form.base_ring() is integers, (
         f"the submodules of the torsion form {form} are enumerated only over ZZ, "
         f"but {form} is over {form.base_ring()}"
@@ -1122,7 +1122,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             category=OwnedFiniteGroups(),
         )
         realize_owned_category(self)
-        _fix_selected_group_resolution_on(self, self._computed_group_generators)
+        self.select_group_generators(self._computed_group_generators)
 
     @cached_method
     def _computed_group_generators(self):
@@ -1281,7 +1281,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         inverse = normalized_form.module_category().Mor(
             normalized_form,
             normalization.domain(),
-        )(normalization.inverse())
+        )(normalization.inverse().forward())
         from sage.matrix.constructor import matrix as sage_matrix
 
         labels = tuple(normalized_form.module_generating_set())

@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedRings,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.logic import AtomicProposition
@@ -273,7 +274,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
-        names = "graded algebras" if monoid is _own_ring(SageZZ) else f"algebras graded by {monoid}"
+        names = "graded algebras" if monoid is _owned_integers() else f"algebras graded by {monoid}"
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):
@@ -377,9 +378,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             return _graded_derivations(self, target=target, shift=shift)
 
         def _Hom_(self, codomain, category=None):
-            # Object-level Mor defaults to the underlying algebra category.
-            # Degree-preserving maps are selected explicitly through
-            # ``GradedAlgebras(...).Mor``.
+            # ``A.Mor(B)`` is ``A.ambient_category().Mor(A, B)`` (``ARC-07``,
+            # owner ruling 2026-10-14): for an algebra built by
+            # ``GradedAlgebras(R, M, parity)`` that is the degree-preserving
+            # algebra maps.  This hook only answers Sage's own ``Hom`` calls.
             return super()._Hom_(codomain, category=category)
 
     def Mor(self, domain, codomain):

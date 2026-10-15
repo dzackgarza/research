@@ -5,10 +5,13 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
+    _fix_selected_resolution,
 )
 from dzack_research.preamble.categories.group.groups import (
+    OwnedFiniteGroups,
     OwnedGroups,
     Subgroups,
+    _selected_group_resolution,
     _finite_group_morphism_kernel_cardinality,
     _finite_group_morphism_kernel_is_abelian,
     _finite_if_bounded_by,
@@ -25,13 +28,77 @@ from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.owned_category import _object_of
 
 
+def _retains_group_resolution(group) -> bool:
+    r"""Whether ``group`` has a selected free-group augmentation, without realizing it."""
+    return group.has_selected_resolution(OwnedGroups())
+
+
+def _fix_selected_generating_morphism(subgroup, generating_morphism) -> None:
+    r"""Retain ``E ->> H`` from a free group as ``H``'s selected resolution, realized at first read.
+
+    ``generating_morphism`` computes, from the constructed subgroup, a group
+    morphism from a free group onto it.  Fixing the datum at construction
+    computes nothing (``OWN-22``): the morphism, and the degree-zero
+    resolution read off its free basis, are built when the generators are
+    first requested and cached by the resolution registry.
+    """
+
+    def resolution():
+        augmentation = generating_morphism(subgroup)
+        free = augmentation.domain()
+        return _selected_group_resolution(
+            subgroup,
+            free,
+            free.free_basis(),
+            augmentation * free.group_generator_morphism(),
+        )
+
+    _fix_selected_resolution(subgroup, OwnedGroups(), resolution)
+
+
+def _free_cover(ambient, generators):
+    r"""``pi: F ->> G``: the selected free cover, or the free group on supplied generators of ``G``."""
+    if generators is None:
+        return ambient.selected_group_resolution().augmentation()
+    return ambient.free_cover(generators)
+
+
+def _preimage_coset_space(subgroup, morphism, target, generators):
+    r"""``G/P`` for ``P = f^-1(K)``, ``f: G -> Q`` finite: the orbit of ``K`` in ``Q/K``.
+
+    ``G`` acts on ``Q/K`` through ``f``; the stabilizer of the base point
+    ``K`` is ``f^-1(K) = P``.  The finiteness used is that of ``Q``.
+    """
+    from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+    assert morphism.codomain() in OwnedFiniteGroups(), (
+        f"the cosets of {subgroup} are realized through the finite group {morphism.codomain()}, "
+        f"but it is not known to be finite"
+    )
+    image_cosets = morphism.codomain().left_cosets(target)
+    return FiniteGSets(subgroup.supergroup()).pointed_orbit(
+        subgroup,
+        image_cosets.base_point(),
+        lambda element, point: image_cosets.act(morphism(element), point),
+        _free_cover(subgroup.supergroup(), generators),
+    )
+
+
 def _predicate_subgroup_category(category):
     r"""The category a predicate subgroup of ``category.base()`` is constructed in.
 
-    A subgroup of a finite group is finite (Lagrange), so the subgroup is
-    placed in finite groups at construction whenever its group is.
+    A subgroup of a finite group is finite (Lagrange), and every subgroup
+    of an abelian group is abelian. Both refinements follow from the
+    ambient group, independently of whether the predicate is decidable.
+    For example, the equalizer of two maps of abelian groups must remain
+    in Ab, whereas the equalizer of arbitrary group maps need not.
     """
-    return Cat().meet((category, *_finite_if_bounded_by(category.base())))
+    group = category.base()
+    return Cat().meet((
+        category,
+        *_finite_if_bounded_by(group),
+        *((OwnedGroups().Commutative(),) if group in OwnedGroups().Commutative() else ()),
+    ))
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):
@@ -65,15 +132,24 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         *,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Construct the predicate subgroup of this category's ambient group."""
+        r"""Construct the predicate subgroup of this category's ambient group.
+
+        ``generating_morphism``, when the constructing owner has one, is a
+        group morphism from a free group to the ambient group whose image is
+        this subgroup; it becomes the subgroup's selected generating datum,
+        as for :class:`StabilizerSubgroups`.
+        """
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=self.base(),
             predicate=predicate,
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
+            generating_morphism=generating_morphism,
         )
 
     class ParentMethods:
@@ -84,10 +160,11 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             description,
             character_data=None,
             character_data_complete=None,
+            generating_morphism=None,
             **rest,
         ) -> None:
             self._predicate = predicate
-            self._admitted_members = []
+            self._admitted_members = {}
             self._description = description
             self._character_data = dict(character_data or {})
             self._character_data_complete = (
@@ -96,6 +173,17 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 else bool(character_data_complete)
             )
             super().__init__(supergroup=supergroup, **rest)
+            # A generating morphism E -> G supplied by the constructing owner,
+            # with image this subgroup, is a selected datum; its corestriction
+            # to this subgroup is realized at the first read.  A bare
+            # predicate supplies none.
+            if generating_morphism is not None:
+                _fix_selected_generating_morphism(
+                    self,
+                    lambda subgroup: generating_morphism.domain().Mor(subgroup).elementwise(
+                        generating_morphism
+                    ),
+                )
 
         def defining_predicate(self):
             return self._predicate
@@ -111,8 +199,26 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         # group closure is a premise of this subgroup construction.
         __contains__ = _ConditionSetEngine.__contains__
         is_parent_of = __contains__
-        __iter__ = _ConditionSetEngine.__iter__
+        _points_satisfying = _ConditionSetEngine._points_satisfying
         _retain_admitted_member = _ConditionSetEngine._retain_admitted_member
+
+        def __iter__(self):
+            r"""Enumerate ``{g in G : P(g)}`` by filtering an enumeration of ``G``.
+
+            A finite group is enumerated by its realization (GAP's for an
+            engine group, Sage's ``GroupOfIsometries`` for ``O(L)`` of a
+            definite lattice over ``ZZ``), so a predicate subgroup of a
+            finite group is that enumeration filtered by ``P``; a
+            realization without one states its own frontier.  Any other
+            supergroup is enumerated by the set owner's rule, from a chosen
+            enumeration of ``G``.
+            """
+            group = self.supergroup()
+            match group:
+                case _ if group in OwnedFiniteGroups():
+                    return self._points_satisfying(group)
+                case _:
+                    return _ConditionSetEngine.__iter__(self)
 
         def _element_constructor_(self, datum):
             r"""Read ambient group literals, then use the set owner's predicate admission."""
@@ -215,7 +321,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                     lambda label: words.value(label)
                 )
             )
-            return free.Mor(self)._from_elementwise_rule(ambient_map)
+            return free.Mor(self).elementwise(ambient_map)
 
         def finite_index_schreier_generating_morphism(self, *, index_bound, generators=None):
             r"""The free generating epimorphism onto a bounded finite-index subgroup."""
@@ -250,11 +356,14 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return AtomicProposition("is_finite", self)
 
         def _cardinality_decision(self):
-            r"""``|H|``: from the retained character data, else by counting a finite supergroup.
+            r"""``|H|``: from the retained character data, from selected generators, else by counting.
 
             With complete finite-character data ``H`` is the preimage of a
             subgroup of a finite quotient, so ``|H| = |G| |image of H| /
-            |image of G|``.  Otherwise, in a finite ``G``, ``H`` is the set of
+            |image of G|``.  In a finite ``G``, a selected generating family
+            of ``H`` (its constructing owner's claim, trusted under
+            ``OWN-22``) gives ``|H|`` as the order of the engine subgroup it
+            generates.  Otherwise, in a finite ``G``, ``H`` is the set of
             elements satisfying the predicate, counted exactly in one pass over
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
@@ -274,6 +383,11 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 f"{self.supergroup()} has order {supergroup_cardinality}, which is not finite, "
                 f"and the subgroup is not known as the preimage of a subgroup of a finite quotient"
             )
+            if _retains_group_resolution(self):
+                generated = self.supergroup()._engine_subgroup_from_generators(
+                    tuple(self.group_generators())
+                )
+                return cardinal(int(generated.order()))
             return cardinal(sum(1 for _element in self))
 
         @cached_method
@@ -468,6 +582,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         identity = morphism.codomain().one()
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
             description=f"{morphism}(g)=1",
@@ -482,6 +597,16 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def __init__(self, kernel_morphism, **rest) -> None:
             self._kernel_morphism = kernel_morphism
             super().__init__(**rest)
+            # Schreier's lemma: a finitely generated group mapping to a finite
+            # group has its kernel generated by the Schreier family of the
+            # finite image, so that family is this kernel's selected datum.
+            if (
+                self.supergroup().has_selected_group_resolution()
+                and kernel_morphism.codomain() in OwnedFiniteGroups()
+            ):
+                _fix_selected_generating_morphism(
+                    self, lambda kernel: kernel.schreier_generating_morphism()
+                )
 
         def kernel_morphism(self):
             return self._kernel_morphism
@@ -495,81 +620,23 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             generators may be supplied when the ambient group has not
             selected a generating resolution.
             """
-            morphism = self.kernel_morphism()
-            return cardinal(len(self.supergroup().finite_image_lifts(morphism, generators=generators)))
+            return self.coset_space(generators=generators).cardinality()
 
-        def schreier_generators(self, *, generators=None):
-            r"""Generators of the kernel of a homomorphism with finite image.
-
-            For left image representatives ``t_q`` and each selected source
-            generator ``s``, Schreier's rewriting gives
-            ``t_(f(s)q)^(-1) s t_q``. The finite image and its chosen lifts
-            come from the group owner's ``finite_image_lifts`` construction;
-            no ambient finite-group hypothesis is imposed. Explicit source
-            generators may be provided when the ambient resolution has not
-            been selected.
-
-            EXAMPLES::
-
-                sage: four, two = Groups.C(4), Groups.C(2)
-                sage: s, t = four.group_generators()[0], two.group_generators()[0]
-                sage: kernel = four.Mor(two)({s: t}).kernel()
-                sage: generators = kernel.schreier_generators()
-                sage: all(g in kernel for g in generators)
-                True
-                sage: four.subgroup(generators).cardinality() == kernel.cardinality()
-                True
-                sage: F = Groups.Free(1)
-                sage: label = next(iter(F.free_basis()))
-                sage: s = F.group_generators()[0]
-                sage: reduction = F.Mor(two)({label: t})
-                sage: free_kernel = reduction.kernel()
-                sage: generators = free_kernel.schreier_generators()
-                sage: all(reduction(g) == two.one() for g in generators)
-                True
-                sage: any(g == s*s or g == ~(s*s) for g in generators)
-                True
-                sage: G = Groups.S(3)
-                sage: H = G.subgroup((G((1, 2)),))
-                sage: identity_on_generators = G.Mor(G)({g: g for g in G.group_generators()})
-                sage: P = identity_on_generators.preimage_subgroup(H)
-                sage: generators = P.schreier_generators()
-                sage: all(g in P for g in generators)
-                True
-                sage: G.subgroup(generators).cardinality() == H.cardinality() == 2
-                True
-            """
-            morphism = self.kernel_morphism()
-            ambient = self.supergroup()
-            if generators is None:
-                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
-                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
-                    "selected finite generating set; pass a finite generating family"
-                )
-                generators = tuple(ambient.group_generators())
-            else:
-                generators = tuple(generators)
-            from dzack_research.preamble.categories.sets.finite_families import finite_family
-
-            lifts = ambient.finite_image_lifts(morphism, generators=generators)
-            return finite_family(
-                (
-                    self((~lifts[morphism(s) * image]) * s * representative)
-                    for image, representative in lifts.items()
-                    for s in generators
-                ),
-                name="Schreier generators of a kernel",
+        def has_finite_coset_space(self) -> bool:
+            r"""Whether ``G/ker(f)`` is realized through ``f`` into a finite group with selected generators of ``G``."""
+            return (
+                self.kernel_morphism().codomain() in OwnedFiniteGroups()
+                and self.supergroup().has_selected_group_resolution()
             )
 
-        def schreier_generating_morphism(self, *, generators=None):
-            r"""The selected epimorphism from a free group on Schreier generators.
+        def coset_space(self, *, generators=None):
+            r"""``G/ker(f)`` as the orbit of the identity in ``Q`` under ``G`` acting through ``f``."""
+            morphism = self.kernel_morphism()
+            return _preimage_coset_space(self, morphism, morphism.codomain().subgroup(()), generators)
 
-            The images come from the existing Schreier family. The free basis
-            and its image map are retained by the free-group Mor constructor,
-            rather than exposing an unparented list of group elements.
-            """
-            words = self.schreier_generators(generators=generators)
-            return self._selected_schreier_augmentation(words)
+        def schreier_generating_morphism(self, *, generators=None):
+            r"""Schreier's lemma on the coset space ``G/ker(f)`` with its section."""
+            return self.coset_space(generators=generators).schreier_generating_morphism()
 
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
@@ -608,8 +675,15 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         description=None,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Construct the inverse image of ``subgroup`` along ``morphism``."""
+        r"""Construct the inverse image of ``subgroup`` along ``morphism``.
+
+        ``generating_morphism``, when the constructing owner has one, maps
+        the constructed preimage to a free generating morphism onto it.
+        Otherwise a finitely generated source mapping to a finite group
+        selects the Schreier family of the finite image.
+        """
         group = self.base()
         if morphism.domain() is not group:
             raise ValueError(
@@ -628,6 +702,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             description = f"{morphism}(g) lies in {subgroup}"
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=predicate,
             description=description,
@@ -635,6 +710,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             character_data_complete=character_data_complete,
             preimage_morphism=morphism,
             target_subgroup=subgroup,
+            generating_morphism=generating_morphism,
         )
 
     @classmethod
@@ -646,6 +722,14 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             self._preimage_morphism = preimage_morphism
             self._target_subgroup = target_subgroup
             super().__init__(**rest)
+            if (
+                not _retains_group_resolution(self)
+                and self.supergroup().has_selected_group_resolution()
+                and preimage_morphism.codomain() in OwnedFiniteGroups()
+            ):
+                _fix_selected_generating_morphism(
+                    self, lambda preimage: preimage.schreier_generating_morphism()
+                )
 
         def preimage_morphism(self):
             return self._preimage_morphism
@@ -653,115 +737,107 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         def target_subgroup(self):
             return self._target_subgroup
 
-        def schreier_generating_morphism(self, *, generators=None):
-            r"""A finite free-group augmentation onto this finite-index preimage.
-
-            Write ``P = rho^-1(H)`` inside ``G``. The selected augmentation
-            ``pi: F -> G`` supplies formal source words without deciding
-            membership of their values in a generated subgroup of a larger
-            group. Schreier's formula is computed for ``rho*pi`` in ``F``.
-            The resulting word map ``w: E -> F`` satisfies
-            ``rho*pi(w(E)) <= H``, so ``pi*w`` defines the returned map
-            ``E -> P`` with this literal preimage as codomain.
-
-            Its finite basis indexes the complete Schreier family, retaining
-            repeated and identity words. The actual word map and ambient
-            augmentation are retained by the defining group-map composite.
-            No value is readmitted by the predicate-subgroup constructor.
-            Explicit generators may replace the selected augmentation; these
-            must be admitted elements generating the ambient group.
-            """
-            from dzack_research.preamble.categories.sets.set_categories import (
-                Sets,
-                finite_ordinal_set,
+        def has_finite_coset_space(self) -> bool:
+            r"""Whether ``G/f^-1(K)`` is realized through ``f`` into a finite group with selected generators of ``G``."""
+            return (
+                self.preimage_morphism().codomain() in OwnedFiniteGroups()
+                and self.supergroup().has_selected_group_resolution()
             )
+
+        def coset_space(self, *, generators=None):
+            r"""``G/f^-1(K)`` as the orbit of ``K`` in ``Q/K`` under ``G`` acting through ``f``."""
+            return _preimage_coset_space(
+                self, self.preimage_morphism(), self.target_subgroup(), generators
+            )
+
+        def schreier_generating_morphism(self, *, generators=None):
+            r"""Schreier's lemma on the coset space ``G/f^-1(K)`` with its section.
+
+            Explicit generators may replace the selected cover of the ambient
+            group; they must generate it.
+            """
+            return self.coset_space(generators=generators).schreier_generating_morphism()
+
+        def selected_group_resolution(self):
+            r"""The selected generating epimorphism onto ``f^-1(K)``, assembled when ``f: G -> Q`` has infinite codomain.
+
+            For finite ``Q`` the Schreier family is selected at construction.
+            For infinite ``Q``, ``f^-1(K) = f^-1(K cap f(G))`` is generated by
+            ``ker(f)`` together with one preimage of each generator of
+            ``K cap f(G)`` (``kernel_image_generating_morphism``), from three
+            data the caller supplies: generators selected on ``f.kernel()``,
+            a finite realization of ``Q / f(G)`` (``Q.left_cosets(f.image())``
+            a finite ``Q``-set, e.g. by ``Q.select_left_cosets``), and a
+            section of ``f`` on its image (``f.lift``).  Each missing datum is
+            asserted by name.  The family is computed on first request and
+            retained (``OWN-22``).
+            """
+            match self.preimage_morphism().codomain():
+                case _ if _retains_group_resolution(self):
+                    pass
+                case codomain if codomain in OwnedFiniteGroups():
+                    pass
+                case _:
+                    _fix_selected_generating_morphism(
+                        self, lambda preimage: preimage.kernel_image_generating_morphism()
+                    )
+            return super().selected_group_resolution()
+
+        def kernel_image_generating_morphism(self):
+            r"""``E ->> f^-1(K)`` sending free generators to ``ker(f)``'s and to lifts of ``K cap f(G)``'s generators.
+
+            ``K cap f(G)`` is the stabilizer in ``K`` of the base coset of the
+            finite ``Q``-set ``Q / f(G)``; Schreier's lemma on the ``K``-orbit
+            of that coset gives its generators.  Their preimages under ``f``
+            together with the generators of ``ker(f)`` generate ``f^-1(K)``:
+            for ``g in f^-1(K)``, ``f(g)`` is a word in the former, and ``g``
+            differs from that word's lift by an element of ``ker(f)``.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 
             morphism = self.preimage_morphism()
-            ambient = self.supergroup()
-            if generators is None:
-                assert ambient.has_selected_group_resolution() and ambient.has_selected_finite_group_generating_set(), (
-                    f"cannot compute finite Schreier generators of {self}: {ambient} has no "
-                    "selected finite generating set; pass a finite generating family"
-                )
-                resolution = ambient.selected_group_resolution()
-                free = resolution.level(0)
-                augmentation = resolution.augmentation()
-            else:
-                source_generators = tuple(generators)
-                for generator in source_generators:
-                    admitted = ambient.is_parent_of(generator)
-                    if admitted is False:
-                        raise ValueError(
-                            f"cannot compute Schreier generators of {self}: {generator} is not an element of {ambient}"
-                        )
-                    assert admitted is True, (
-                        f"cannot compute Schreier generators of {self}: membership of the supplied "
-                        f"generator {generator} in {ambient} is undecided"
-                    )
-                source_labels = finite_ordinal_set(len(source_generators))
-                free = OwnedGroups.Free(index_set=source_labels)
-                augmentation = free.Mor(ambient)(
-                    Sets().Mor(source_labels, ambient)(
-                        lambda label: source_generators[int(label)]
-                    )
-                )
-
             target = self.target_subgroup()
-            free_generators = tuple(free.group_generators())
-            finite_map = morphism * augmentation
-            lifts = free.finite_image_lifts(finite_map, generators=free_generators)
-            representatives = []
-            for image in lifts:
-                if not any((~representative) * image in target for representative in representatives):
-                    representatives.append(image)
-
-            def representative_of(image):
-                return next(rep for rep in representatives if (~rep) * image in target)
-
-            words = tuple(
-                (~lifts[representative_of(finite_map(generator) * image)]) * generator * lifts[image]
-                for image in representatives
-                for generator in free_generators
+            codomain = morphism.codomain()
+            kernel = morphism.kernel()
+            assert kernel.has_selected_group_resolution(), (
+                f"the preimage {self} is generated by ker({morphism}) and lifts of generators of "
+                f"{target} cap {morphism}({self.supergroup()}), but no generators of the kernel were "
+                f"supplied, and {codomain} is not known to be finite so Schreier's lemma does not give "
+                f"them: select them with {morphism}.kernel().select_group_resolution(generators=...)"
             )
-            labels = finite_ordinal_set(len(words))
-            source = OwnedGroups.Free(index_set=labels)
-            word_map = source.Mor(free)(
-                Sets().Mor(labels, free)(lambda label: words[int(label)])
+            image = morphism.image()
+            image_cosets = codomain.left_cosets(image)
+            assert image_cosets in FiniteGSets(codomain), (
+                f"the preimage {self} needs {target} cap {image} generated through the finite "
+                f"coset space {codomain}/{image}, but {image} is not known to have finite index in "
+                f"{codomain}: realize {codomain}/{image} as a finite {codomain}-set and select it with "
+                f"{codomain}.select_left_cosets(...)"
             )
-            return source.Mor(self)._from_elementwise_rule(augmentation * word_map)
-
-        def schreier_generators(self, *, generators=None):
-            r"""Generate a finite-index preimage using cosets ``t J`` of its image.
-
-            Let ``Q=f(G)`` and ``J=Q intersect H``. Choose a representative
-            ``t`` for each left coset ``q J`` and lift it to ``G``. For
-            each source generator ``s`` and representative ``t``, the
-            element ``t_(f(s)tJ)^-1 s t`` belongs to the preimage and the
-            resulting Schreier family generates it. The supplied generator
-            family, when present, must generate the whole ambient group.
-
-            EXAMPLES::
-
-                sage: C = Groups.C(4)
-                sage: c = C.group_generators()[0]
-                sage: H = C.subgroup((c*c,))
-                sage: F = Groups.Free(1)
-                sage: s = F.group_generators()[0]
-                sage: phi = F.Mor(C)({next(iter(F.free_basis())): c})
-                sage: P = phi.preimage_subgroup(H)
-                sage: generators = P.schreier_generators()
-                sage: all(g in P for g in generators)
-                True
-                sage: any(g == s*s or g == ~(s*s) for g in generators)
-                True
-            """
-            augmentation = self.schreier_generating_morphism(generators=generators)
-            source = augmentation.domain()
-            return source.group_generators().map(
-                augmentation,
-                name="Schreier generators of a subgroup preimage",
+            assert target.has_selected_group_resolution(), (
+                f"the preimage {self} needs generators of {target}, which has none selected"
             )
-
+            inclusion = target.inclusion()
+            base = image_cosets.base_point()
+            intersection = target.predicate_subgroup(
+                lambda element: image_cosets.act(inclusion(element), base) == base,
+                f"elements of {target} in {image}",
+            )
+            orbit = FiniteGSets(target).pointed_orbit(
+                intersection,
+                base,
+                lambda element, point: image_cosets.act(inclusion(element), point),
+            )
+            schreier = orbit.schreier_generating_morphism()
+            lifts = tuple(
+                morphism.lift(inclusion(intersection.inclusion()(schreier(word))))
+                for word in schreier.domain().group_generators()
+            )
+            elements = (
+                *(kernel.inclusion()(generator) for generator in kernel.group_generators()),
+                *lifts,
+            )
+            cover = self.supergroup().free_cover(elements)
+            return cover.domain().Mor(self).elementwise(cover)
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
@@ -780,8 +856,17 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         predicate,
         *,
         description=None,
+        generating_morphism=None,
+        basis_change=None,
     ):
-        r"""Construct the stabilizer retaining the stabilized object and action."""
+        r"""Construct the stabilizer retaining the stabilized object and action.
+
+        ``generating_morphism`` is the action owner's free generating
+        morphism onto the stabilizer, when its action supplies one.
+        ``basis_change`` is the automorphism of the acted-on object through
+        which that owner computed the generators (the basis adapted to a
+        flag), when it used one.
+        """
         from dzack_research.preamble.categories.functors.core import Functor
 
         group = self.base()
@@ -794,11 +879,14 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             description = f"g stabilizes {stabilized_object} {action}"
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=predicate,
             description=description,
             stabilized_object=stabilized_object,
             stabilizer_action=action,
+            generating_morphism=generating_morphism,
+            basis_change=basis_change,
         )
 
     @classmethod
@@ -806,10 +894,18 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         return "stabilizer subgroups"
 
     class ParentMethods:
-        def __init__(self, stabilized_object, stabilizer_action, **rest) -> None:
+        def __init__(self, stabilized_object, stabilizer_action, basis_change=None, **rest) -> None:
             self._stabilized_object = stabilized_object
             self._stabilizer_action = stabilizer_action
+            self._basis_change = basis_change
             super().__init__(**rest)
+
+        def basis_change(self):
+            r"""The automorphism ``P`` the generators were computed through: ``P(e_j) = b_j``, ``b`` adapted to the stabilized flag."""
+            assert self._basis_change is not None, (
+                f"{self} was not constructed through an adapted basis"
+            )
+            return self._basis_change
 
         def stabilized_object(self):
             return self._stabilized_object
@@ -817,17 +913,25 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         def stabilizer_action(self):
             return self._stabilizer_action
 
-        @cached_method
-        def restricted_action_functor(self):
-            r"""The original action precomposed with the stabilizer inclusion.
+        def restricted_stabilizer_action(self):
+            r"""The action of this stabilizer, restricted along its inclusion.
 
-            For ``H=Stab_G(x)``, the canonical functor ``BH -> BG``
-            induced by ``H -> G`` restricts the actual action
-            ``BG -> C``. This preserves the exact acted-on object and
-            all structural maps; the stabilized embedded subobject remains
-            the separate ``stabilized_object`` datum.
+            For ``i: H -> G`` and the retained action ``rho: BG -> C``,
+            this is the actual composite ``B(i) ; rho: BH -> C``.
+            It retains the original stabilized object and does not replace
+            the action by the predicate defining membership in ``H``.
+
+            Unexecuted distinguishing specimen: take ``G = S3`` acting on
+            itself by conjugation, and ``H = Stab_G((1,2))``. The restricted
+            action has domain ``BH``, not ``BG``; on the unique object it
+            agrees with the original action, while the morphism associated
+            to ``h in H`` acts as conjugation by its image under ``i``.
+            In particular, merely returning ``rho`` would have the wrong
+            domain, even though every ``h`` fixes the selected point.
             """
-            from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
+            from dzack_research.preamble.categories.group.classifying_categories import (
+                ClassifyingFunctor,
+            )
 
             return ClassifyingFunctor(self.inclusion()).then(self.stabilizer_action())
 
@@ -847,6 +951,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
             )
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
             description=f"g commutes with {element}",
@@ -890,6 +995,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             )
         return _object_of(
             _predicate_subgroup_category(self),
+            _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: conjunction(subgroup.is_parent_of(element) for subgroup in subgroups),
             description="g lies in every selected subgroup",
@@ -906,9 +1012,47 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         def __init__(self, intersected_subgroups, **rest) -> None:
             self._intersected_subgroups = intersected_subgroups
             super().__init__(**rest)
+            # For f: G -> F finite, K <= F and B <= G finitely generated with
+            # inclusion i, f^-1(K) cap B = i((f i)^-1(K)); the Schreier family
+            # of that restricted preimage, pushed into G, generates this
+            # intersection.
+            if not _retains_group_resolution(self) and intersected_subgroups.cardinality() == cardinal(2):
+                group = self.supergroup()
+                for preimage in intersected_subgroups:
+                    match preimage:
+                        case _ if preimage in KernelSubgroups(group):
+                            morphism = preimage.kernel_morphism()
+                            target = morphism.codomain().subgroup(())
+                        case _ if preimage in PreimageSubgroups(group):
+                            morphism = preimage.preimage_morphism()
+                            target = preimage.target_subgroup()
+                        case _:
+                            continue
+                    generated = next(
+                        other for other in intersected_subgroups if other is not preimage
+                    )
+                    if morphism.codomain() in OwnedFiniteGroups() and generated.has_selected_group_resolution():
+                        _fix_selected_generating_morphism(
+                            self,
+                            lambda intersection, morphism=morphism, target=target, generated=generated: (
+                                intersection._restricted_preimage_generating_morphism(
+                                    morphism, target, generated
+                                )
+                            ),
+                        )
+                        return
 
         def intersected_subgroups(self):
             return self._intersected_subgroups
+
+        def _restricted_preimage_generating_morphism(self, morphism, target, generated):
+            r"""``E ->> f^-1(K) cap B`` through the Schreier morphism onto ``(f i)^-1(K)``."""
+            inclusion = generated.inclusion()
+            restricted = (morphism * inclusion).preimage_subgroup(target)
+            augmentation = restricted.schreier_generating_morphism()
+            return augmentation.domain().Mor(self).elementwise(
+                inclusion * restricted.inclusion() * augmentation
+            )
 
 __all__ = [
     "CentralizerSubgroups",

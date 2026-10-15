@@ -60,6 +60,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
@@ -93,7 +94,7 @@ from dzack_research.preamble.refine import RealizationHook
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _ray_generator(ray):

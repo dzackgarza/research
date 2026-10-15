@@ -87,9 +87,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
     OwnedRings,
-    Zmod,
     _engine_element,
     _engine_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -101,6 +101,12 @@ from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunct
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+
+    from dzack_research.preamble.owned_category import ConstructionData
 
 for _form_axiom in ("Symmetric", "Nondegenerate", "Unimodular", "Even"):
     if _form_axiom not in all_axioms:
@@ -1486,6 +1492,11 @@ class FormModules(OwnedCategoryOverBaseRing):
             self._preamble_form = source_form
             super().__init__(**rest)
 
+        def _added_structure(self, construction_data: "dict[str, ConstructionData]") -> "tuple[tuple[Category, ...], dict[str, ConstructionData]]":
+            r"""The form this level adds, kept when the module is constructed again (``OWN-05``; see ``Objects``)."""
+            categories, data = super()._added_structure(construction_data)
+            return categories, {"source_form": self.form(), **data}
+
         def form(self):
             r"""Return the selected form datum, stated on the unformed module."""
             return self._preamble_form
@@ -1690,10 +1701,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case False:
                     return self.left_curry().is_injective() and self.right_curry().is_injective()
 
-        def Mor(self, codomain, category=None):
-            if category is None and codomain in FormModules(self.base_ring()):
-                return FormModules(self.base_ring()).Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
@@ -3148,7 +3155,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                         total += QQbar.zeta(2 * value.denominator()) ** value.numerator()
                     phase = total / QQbar(int(self.cardinality())).sqrt()
                     zeta8 = QQbar.zeta(8)
-                    return Zmod(8)(next(residue for residue in range(8) if phase == zeta8**residue))
+                    integers = _owned_integers()
+                    residues = integers.quotient_ring(integers.ideal(integers(8)))
+                    return residues(next(residue for residue in range(8) if phase == zeta8**residue))
 
                 def b(self, left, right):
                     r"""The bilinear form ``b: A x A -> K/R`` of ``q: A -> K/2R``.
@@ -3544,8 +3553,13 @@ def _form_module(
         case (None, None):
             pass
         case _:
+            from dzack_research.preamble.categories.abstract_categories.cat import Cat
             from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
+            # A formed submodule is a formed module with an inclusion as
+            # additional data: its ambient category (ARC-07) is that of the
+            # formed modules, without the subobject placements below.
+            construction_data["_constructing_category"] = Cat().meet(tuple(categories))
             categories.append(ModuleSubobjects(base_ring))
             match _subobject_ambient:
                 case None:

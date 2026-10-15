@@ -172,9 +172,12 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
         r"""The owned integers under multiplication."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -515,6 +518,10 @@ class Monoids(CategoryPacketMethods, OwnedCategory):
             return generic_power(self, exponent)
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""A monoid is not empty: it contains its unit (``Sets``' emptiness hook)."""
+            return False
+
         @cached_method
         def unit_group(self):
             r"""Return the group of two-sided units of this exact monoid."""
@@ -621,9 +628,12 @@ class AdditiveMagmas(CategoryPacketMethods, OwnedCategory):
         r"""The owned integers under addition."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -695,6 +705,10 @@ class AdditiveMonoids(CategoryPacketMethods, OwnedCategory):
         return [AdditiveSemigroups()]
 
     class ParentMethods:
+        def _emptiness_decision(self) -> bool:
+            r"""An additive monoid is not empty: it contains its zero (``Sets``' emptiness hook)."""
+            return False
+
         @abstract_method
         def zero(self):
             r"""Return the identity element for the additive monoid law."""
@@ -740,9 +754,12 @@ class AdditiveGroups(CategoryPacketMethods, OwnedCategory):
         r"""The additive group of the owned integers."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        return _own_ring(SageZZ)
+        return _owned_integers()
 
     def super_categories(self):
         return [AdditiveMonoids()]

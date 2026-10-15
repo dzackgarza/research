@@ -94,16 +94,16 @@ from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
-    _fix_selected_group_resolution_data,
-    _integer_engine_point,
-    _owned_point,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     RestrictedScalarsModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import ask
@@ -124,14 +124,13 @@ class _FiniteIntegralRepresentation(SageObject):
         assert quotient.cardinality().is_finite() is True, (
             "the residue-action computation requires a represented finite module M/dM"
         )
-        self._quotient_points = tuple(quotient)
         selected = action.selected_submodule()
         self._submodules = [selected]
-        self._position_by_key = {self._submodule_key(selected): 0}
+        self._positions = {self._submodule_key(selected): 0}
         self._registering_orbit = True
         augmentation = self.generating_augmentation()
         free = augmentation.domain()
-        zero = _own_ring(SageZZ).zero()
+        zero = _owned_integers().zero()
         self._word_orbit = FiniteGSets(free).from_finite_orbits(
             (zero,),
             lambda word, position: self._act_on_position(augmentation(word), position),
@@ -173,16 +172,11 @@ class _FiniteIntegralRepresentation(SageObject):
         ))
 
     def _submodule_key(self, submodule):
-        inclusion = submodule.inclusion()
-        positions = []
-        for position, point in enumerate(self._quotient_points):
-            contained = ask(inclusion.is_in_image(point))
-            assert contained is True or contained is False, (
-                "coding a submodule of the finite residue module requires decided membership"
-            )
-            if contained is True:
-                positions.append(position)
-        return tuple(positions)
+        return self._action.finite_module()._submodule_key(submodule)
+
+    def _position_of(self, submodule):
+        r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``."""
+        return self._positions.get(self._submodule_key(submodule))
 
     def _move_submodule(self, group_element, submodule):
         quotient = self.action().finite_module()
@@ -196,103 +190,73 @@ class _FiniteIntegralRepresentation(SageObject):
 
     def _act_on_position(self, group_element, position):
         candidate = self._move_submodule(group_element, self._submodules[int(position)])
-        key = self._submodule_key(candidate)
-        if key not in self._position_by_key:
+        image_position = self._position_of(candidate)
+        if image_position is None:
             assert self._registering_orbit, (
                 "the supplied rational action leaves its computed finite lattice orbit"
             )
-            self._position_by_key[key] = len(self._submodules)
+            image_position = len(self._submodules)
             self._submodules.append(candidate)
-        return _own_ring(SageZZ)(self._position_by_key[key])
+            self._positions[self._submodule_key(candidate)] = image_position
+        return _owned_integers()(image_position)
 
     def orbit_submodules(self):
         return tuple(self._submodules)
 
-    @cached_method
-    def orbit_word_section(self):
-        r"""A chosen free word above each point of the lattice orbit."""
-        return Sets().Mor(self.g_set(), self.generating_augmentation().domain())(
-            lambda point: self._word_orbit.transporter_witness(_own_ring(SageZZ).zero(), point)
-        )
-
-    @cached_method
     def orbit_section(self):
-        r"""The actual section from lattice-orbit points to G, evaluated through pi."""
-        return self.generating_augmentation() * self.orbit_word_section()
+        r"""The actual section from lattice-orbit points to G: the section of ``G -> G/G_L``."""
+        return self.right_cosets().representative_map()
 
     def orbit_witnesses(self):
         section = self.orbit_section()
         return tuple(section(point) for point in self.g_set())
 
     def transporter_to(self, submodule):
-        position = self._position_by_key.get(self._submodule_key(submodule))
+        position = self._position_of(submodule)
         if position is None:
             return None
-        return self.orbit_section()(self.g_set().point_set()(_own_ring(SageZZ)(position)))
+        return self.orbit_section()(self.g_set().point_set()(_owned_integers()(position)))
+
+    def _selected_point(self):
+        return self.g_set().point_set()(_owned_integers().zero())
 
     @cached_method
     def finite_stabilizer(self):
-        image = self.finite_image()
-        permutations = self.permutation_representation().codomain()
-        selected = self.g_set().point_set()(_own_ring(SageZZ).zero())
-        # The preimage target must be a subgroup of the literal codomain of
-        # rho, not only a subgroup of its intermediate image.
-        return permutations.subgroup(tuple(
-            permutations(element)
-            for element in image
-            if _owned_point(permutations(element)(_integer_engine_point(selected))) == selected
-        ))
+        r"""``Sym(X)_x``, the stabilizer of the selected lattice in the literal codomain of ``rho``.
+
+        It is the point stabilizer of the natural action, a subgroup of the
+        codomain of ``rho: G -> Sym(X)`` itself, so ``rho^-1(Sym(X)_x)`` is
+        a preimage along ``rho`` with matching endpoints.  Nothing iterates
+        the finite image ``rho(G)``.
+        """
+        return self.permutation_representation().codomain().stabilizer(self._selected_point())
 
     @cached_method
     def lattice_stabilizer(self):
-        preimage = self.permutation_representation().preimage_subgroup(self.finite_stabilizer())
+        r"""``G_L = rho^-1(Sym(X)_x)``, generated by the Schreier morphism of the lattice orbit.
+
+        The lattice orbit is the coset space ``G/G_L``; its orbit Schreier
+        morphism ``E -> G`` (selected cover of ``G``) is the generating datum
+        of the literal preimage.
+        """
         group = self.action().rational_group()
-        if group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set():
-            augmentation = preimage.schreier_generating_morphism()
-        else:
-            augmentation = preimage.schreier_generating_morphism(
-                generators=self.action()._group_generators()
-            )
-        free = augmentation.domain()
-        _fix_selected_group_resolution_data(
-            preimage,
-            free,
-            free.free_basis(),
-            augmentation * free.group_generator_morphism(),
+        assert group.has_selected_group_resolution() and group.has_selected_finite_group_generating_set(), (
+            f"the lattice stabilizer in {group} is generated from its lattice orbit, which needs a "
+            f"selected finite generating set of {group}"
         )
-        return preimage
-
-    @cached_method
-    def word_lifts(self):
-        r"""One actual free word above every element of the finite image."""
-        return self.generating_augmentation().domain().finite_image_lifts(self.word_representation())
-
-    @cached_method
-    def image_lifts(self):
-        augmentation = self.generating_augmentation()
-        return {image: augmentation(word) for image, word in self.word_lifts().items()}
+        return self.permutation_representation().preimage_subgroup(
+            self.finite_stabilizer(),
+            generating_morphism=self.g_set().orbit_schreier_morphism(self._selected_point()),
+        )
 
     @cached_method
     def right_cosets(self):
-        r"""G/G_L as the pointed transitive G-set of its finite lattice orbit."""
-        return LeftCosetGSets(self.lattice_stabilizer()).from_transitive_action(
-            self.g_set(), _own_ring(SageZZ).zero(), self.orbit_section()
-        )
+        r"""G/G_L as the pointed lattice orbit with its section (the orbit owner's datum)."""
+        return self.g_set().coset_space_for(self._selected_point(), self.lattice_stabilizer())
 
     def double_cosets(self, left_subgroup):
-        group = self.action().rational_group()
-        if left_subgroup is group:
-            inclusion = OwnedGroups().Mor(group, group).identity()
-        else:
-            if left_subgroup.supergroup() is not group:
-                raise ValueError(f"the left subgroup {left_subgroup} lies in {left_subgroup.supergroup()}, not in {group}")
-            inclusion = left_subgroup.inclusion()
-        cosets = self.right_cosets()
-        # Retain the owned G/G_L object itself as the point set, so the
-        # orbit quotient retains H, G, G_L and both quotient maps.
-        return FiniteGSets(left_subgroup)(
-            cosets, lambda element, point: cosets.act(inclusion(element), point)
-        ).orbits()
+        r"""``Q \\ G / G_L`` through the one double-coset owner on ``G/G_L``."""
+        return self.right_cosets().double_cosets(left_subgroup)
 
 
 class IntegralStructureAction(SageObject):
@@ -570,13 +534,6 @@ class IntegralStructureAction(SageObject):
 
     def double_cosets(self, subgroup):
         r"""Return ``subgroup \\ G / G_L`` with all three sides retained."""
-        rational_group = self.rational_group()
-        if subgroup is not rational_group and subgroup.supergroup() is not rational_group:
-            raise ValueError(
-                f"cannot form the double cosets {subgroup} \\ G / G_L for G = "
-                f"{rational_group}: {subgroup} must be a subgroup of G, but it is a "
-                f"subgroup of {subgroup.supergroup()}"
-            )
         return self.finite_representation().double_cosets(subgroup)
 
     lattice_stabilizer = stabilizer
@@ -686,6 +643,7 @@ class FiniteCommensurabilityQuotient(SageObject):
             )
         return forward
 
+    @cached_method
     def quotient_automorphism(self, automorphism):
         r"""Return the induced automorphism of ``F_M``."""
         quotient = self.quotient_module()
@@ -758,7 +716,7 @@ def _full_orthogonal_integral_transporter(
     source = source_inclusion.domain()
     target = target_inclusion.domain()
     ring = source.base_ring()
-    assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
+    assert target.base_ring() is ring and ring is _owned_integers(), (
         f"cannot search for an isometry carrying {source} to {target}: the search works only for lattices over ZZ, and these are over {ring} and {target.base_ring()}"
     )
     if space not in RestrictedScalarsModules(ring):

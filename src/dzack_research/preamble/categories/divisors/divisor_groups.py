@@ -16,6 +16,8 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
@@ -24,7 +26,7 @@ from dzack_research.preamble.owned_category import owned_category_join
 
 
 def _integers():
-    return _own_ring(SageZZ)
+    return _owned_integers()
 
 
 def _cokernel_in_category(presentation, category, **data):
@@ -53,7 +55,7 @@ def _affine_line_over_rationals():
     r"""\(\mathbb{A}^1_{\mathbb{Q}} = \operatorname{Spec} \mathbb{Q}[x]\), the witness scheme of the divisor categories."""
     from sage.rings.rational_field import QQ as SageQQ
 
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     return rationals.polynomial_ring(("x",)).affine_spectrum(base_ring=rationals)
 
 
@@ -75,7 +77,7 @@ class DivisorGroups(Category):
         return "divisor groups"
 
     def super_categories(self):
-        return [FramedFreeModules(_own_ring(SageZZ))]
+        return [FramedFreeModules(_owned_integers())]
 
     def _call_(self, prime_divisors):
         r"""The free abelian group on the set ``prime_divisors`` of prime divisors."""

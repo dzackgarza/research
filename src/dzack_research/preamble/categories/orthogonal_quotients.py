@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import NN, Set, Sets
 
 
@@ -32,10 +33,10 @@ class OrthogonalCharacterQuotient:
                 f"characters: its discriminant, determinant and spinor characters do not "
                 f"determine the whole subgroup"
             )
-        # This finite-image algorithm is explicitly generator-driven.  Selecting
-        # a generating epimorphism onto O(L) is therefore part of constructing
-        # this quotient; merely knowing O(L) is finitely generated would not be.
-        self.supergroup = subgroup.supergroup().select_group_resolution()
+        # This finite-image algorithm is explicitly generator-driven: it reads
+        # the generating epimorphism onto O(L), which O(L) selects at
+        # construction; merely knowing O(L) is finitely generated would not do.
+        self.supergroup = subgroup.supergroup()
         self.lattice = self.supergroup.domain()
         data = subgroup._character_data_snapshot()
         self.discriminant_preimages = tuple(data.get("discriminant_preimages", ()))
@@ -275,17 +276,36 @@ class OrthogonalCharacterQuotient:
         )
 
     def splitting_isometries(self, stabilizer_generators):
-        r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
+        r"""Return one lift ``g`` per double coset ``Gamma g Stab`` of ``O(L)``.
+
+        ``Stab`` is the stabilizer in ``G = O(L)`` of a point ``x`` of a
+        ``G``-set, given by ``stabilizer_generators``, and ``Gamma`` is the
+        selected subgroup.  The ``G``-orbit of ``x`` is ``G/Stab``, and its
+        ``Gamma``-orbits are the double cosets ``Gamma \ G / Stab``: the
+        points ``g x`` and ``g' x`` lie in one ``Gamma``-orbit exactly when
+        ``g'`` lies in ``Gamma g Stab``.  As ``Gamma`` contains the kernel of
+        the character map ``rho``, it is ``rho^{-1}(rho(Gamma))``, so
+        ``Gamma g Stab = Gamma g' Stab`` exactly when ``rho(g)`` and
+        ``rho(g')`` lie in one double coset ``rho(Gamma) q rho(Stab)`` of the
+        finite image.  The returned lifts ``g`` therefore give one point
+        ``g x`` in each ``Gamma``-orbit.  The order matters when the image is
+        not abelian: a transversal of ``rho(Stab) \ Q / rho(Gamma)`` need not
+        be one of ``rho(Gamma) \ Q / rho(Stab)``.
+        """
         stabilizer = self.stabilizer_image_keys(stabilizer_generators)
         subgroup = self.subgroup_image_keys()
         keys, permutations, group = self._gap_regular_model()
+        # GAP's DoubleCosets(G, U, V) lists the double cosets U g V.  The
+        # key-to-permutation map is a homomorphism (GAP composes left to
+        # right, and each key acts by right multiplication), so U is the
+        # image of Gamma and V the image of the stabilizer.
         left = libgap.Subgroup(
             group,
-            [permutations[key] for key in stabilizer],
+            [permutations[key] for key in subgroup],
         )
         right = libgap.Subgroup(
             group,
-            [permutations[key] for key in subgroup],
+            [permutations[key] for key in stabilizer],
         )
         representatives = []
         for double_coset in libgap.DoubleCosets(group, left, right):
@@ -352,16 +372,24 @@ def _finite_supergroup_elements(subgroup):
 
     A predicate subgroup with no character data has no finite quotient of
     ``O(L)`` describing it, so the only thing that describes it is the group
-    itself.  Listing it is a finite computation exactly when ``O(L)`` is
-    finite, which for a lattice is definiteness.
+    itself.  The listing runs through the enumeration of ``O(L)``, which is
+    supplied for a definite lattice of finite rank over ``ZZ``, where ``O(L)``
+    is finite (``lean-categories`` ``orthogonalGroup_finite``).  A definite
+    lattice over ``QQ`` is a quadratic space whose ``O(V)`` is not finite in
+    rank at least 2, so definiteness alone does not make the listing finite.
     """
     supergroup = subgroup.supergroup()
     lattice = supergroup.domain()
     assert lattice.is_definite(), (
         f"cannot list the elements of {subgroup}: it is cut out by a predicate that "
         f"is not a character kernel, so its elements must be listed inside O(L), "
-        f"and O(L) is finite only for a definite lattice, which {lattice} is not.  "
+        f"and {lattice} is not definite.  "
         + _MISSING_ARITHMETIC_GENERATING_SET
+    )
+    assert lattice.base_ring() is _owned_integers(), (
+        f"cannot list the elements of {subgroup}: it is cut out by a predicate that "
+        f"is not a character kernel, so its elements must be listed inside O(L), and "
+        f"O(L) is enumerated for a definite lattice over ZZ, while {lattice} is over {lattice.base_ring()}"
     )
     return tuple(
         automorphism for automorphism in supergroup if automorphism in subgroup

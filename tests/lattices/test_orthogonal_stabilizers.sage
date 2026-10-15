@@ -33,7 +33,7 @@ def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_on
     assert pointwise.stabilized_object() is embedding
     assert setwise.stabilizer_action() is orthogonal_group.natural_module_action_functor()
     assert pointwise.stabilizer_action() is orthogonal_group.natural_module_action_functor()
-    restricted = setwise.restricted_action_functor()
+    restricted = setwise.restricted_stabilizer_action()
     assert restricted.domain() is setwise.classifying_category()
     assert restricted.codomain() is Modules(lattice.base_ring())
     point = restricted.domain().an_object()

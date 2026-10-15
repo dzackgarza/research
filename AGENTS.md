@@ -1017,14 +1017,19 @@ workaround preserves the misunderstanding that created the work.
 
 # Search the formalization corpus first (always-on)
 
-`lean-reference-corpus` — checked out here as `~/gitclones/formalization-corpus` — checks out and
+`lean-reference-corpus` checks out and
 indexes the pinned Mathlib, every registered Lean formalization repository, the Reservoir packages,
 and the Rocq and Agda port sources as one searchable tree. One query asks the whole formal
 literature: *has this been stated, and where?*
 
 ```sh
-just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
+curl -s https://formalization-corpus.dzackgarza.com/api/search \
+  -H 'Content-Type: application/json' \
+  -d '{"Q": "IsometryEquiv file:\\.lean$", "Opts": {"MaxDocDisplayCount": 20, "ChunkMatches": true}}' \
+  | jq -r '.Result.Files[] | "\(.Repository)  \(.FileName)"'
 ```
+
+The keys are capitalized (`Q`, `Opts`). `NumContextLines` and `Whole` return context or whole files; `/api/list` lists the indexed sources.
 
 **It is the first approximation for mathematical work of every kind here, not only Lean.** Sage
 code, preamble categories, notebooks and prose all state mathematics that somebody has probably
@@ -2462,6 +2467,8 @@ Two kinds of subcategory, and the distinction decides method placement.
   presentation (that epimorphism plus chosen free relations), a chosen basis.
   The first three are truncated resolutions and live in the category of
   resolutions over the base (`CAT-29`); its methods consume the datum.
+
+An object together with an arrow is not "an object with data": it IS a slice or coslice object. Several arrows are remembered by slicing over pullbacks or coslicing under pushouts (products, coproducts). A pair \((X, x)\) with \(x\) an element of \(F(X)\) is an object of the Grothendieck construction \(\int F\) (category of elements) of \(F\colon \mathbf C\to\mathbf{Set}\), and a property of the element ("\(x\) primitive") cuts out a full subcategory of \(\int F\). When \(x\) is a point of \(X\), \(F\) is the covariant hom out of the point, \(F=\operatorname{Hom}_{\mathbf C}(*,-)\), and \(\int\operatorname{Hom}_{\mathbf C}(*,-)\cong {*}/\mathbf C\): a pointed object is a coslice object, the same statement as above. A family of elements is a set map \(v\colon I\to U(X)\), where \(I\) is a set carrying whatever structure the notion needs: a colouring is a map \(I\to C\) (so \(I\) is a set over \(C\)), and a coloured multiset is the family of pairs \((v_i, c_i)_{i\in I}\), a not necessarily injective map \(I\to U(X)\times C\). An \(I\)-indexed family of objects of a category \(\mathbf C\) (of sheaves, say) is a functor from the discrete category on \(I\), an object of \(\mathbf C^{I}\). Families are never encoded through a free functor (\(\mathbb Z^{I}\to L\)): that only exists where a free functor does, and it does not generalize (owner, 2026-10-14). Err on the side of the abstraction being actual mathematics; no class is declared for "an object with a chosen arrow" (owner ruling, 2026-10-14; `CAT-30`).
 
 A property is the propositional truncation of the corresponding data
 category: finitely generated = "some resolution finite in degree 0 exists";

@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
@@ -231,7 +232,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         def defining_degrees(self):
             r"""The degrees ``d_1, ..., d_r`` of the selected regular sequence."""
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return finite_family(
                 tuple(
                     integers(int(equation.degree()))
@@ -279,7 +280,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             isomorphism are returned by :meth:`canonical_line_bundle` and
             :meth:`adjunction_isomorphism`.
             """
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             ambient_dimension = integers(
                 int(self.complete_intersection_ambient().relative_dimension())
             )
@@ -321,7 +322,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         def projective_degree(self):
             r"""Return the complete-intersection degree ``prod d_i``."""
-            degree = _own_ring(SageZZ).one()
+            degree = _owned_integers().one()
             for value in self.defining_degrees():
                 degree *= value
             return degree

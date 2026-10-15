@@ -11,11 +11,17 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from sage.misc.lazy_attribute import lazy_attribute
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    CoreMor,
+    CosliceCategory,
+    _CoreCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
     CategoricalMor,
@@ -25,10 +31,10 @@ from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGrou
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
-    _fix_selected_group_resolution_on,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
+    PredicateSubgroups,
     StabilizerSubgroups,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (
@@ -45,6 +51,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleAutomorphismMethods,
     ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
@@ -53,9 +60,11 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules, Mod
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import aleph, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     OrderedEnumeratedSets,
@@ -556,7 +565,9 @@ class LatticeIsometryMethods:
 
     def __init__(self, parent, images) -> None:
         match images:
-            case CategoricalIsomorphism():
+            # A module isomorphism of the underlying modules: an inverse pair,
+            # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
+            case CategoricalIsomorphism() | ModuleAutomorphismMethods():
                 domain = parent.domain()
                 codomain = parent.codomain()
                 forward = domain.module_category().Mor(domain, codomain)(images.forward())
@@ -824,7 +835,7 @@ class LatticeIsometryMethods:
         locus = self.witt_extension_locus(source_inclusion, target_inclusion)
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
         field = source.base_ring()
-        if field is not _own_ring(SageQQ) or target.base_ring() is not field:
+        if field is not _owned_rationals() or target.base_ring() is not field:
             raise TypeError("this codimension-one extension requires rational quadratic spaces")
         for inclusion in (source_inclusion, target_inclusion):
             if inclusion.domain().module_rank() + 1 != inclusion.codomain().module_rank():
@@ -994,7 +1005,7 @@ class LatticeIsometryMethods:
                 codomain,
                 self.domain(),
             )._from_known_inverse_pair(
-                module_isomorphism.inverse(),
+                module_isomorphism.inverse().forward(),
                 module_isomorphism.forward(),
             )
             return target.element_class(target, reverse)
@@ -1175,6 +1186,13 @@ class LatticeIsometryMethods:
         if empty is True:
             return None
         if target.module_rank().is_finite() and target.is_definite():
+            # The search runs over the finite group O(L) of a definite lattice over ZZ
+            # (orthogonalGroup_finite); over QQ they form O(V), not finite in rank at least 2.
+            assert target.base_ring() is _owned_integers(), (
+                f"cannot find an isometry h: {source} -> {target} with h*{self} = {other}*h: "
+                f"the search runs over the finite orthogonal group of a definite lattice over ZZ, "
+                f"and {target} is over {target.base_ring()}"
+            )
             for candidate in mor:
                 if candidate * self == other * candidate:
                     return candidate
@@ -1581,6 +1599,16 @@ class LatticeEmbeddingMor(CategoricalMor):
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
 
+    def _codomain_is_definite_over_integers(self) -> bool:
+        r"""Whether the codomain is a definite ZZ-lattice of finite rank, whose square shells are finite.
+
+        Over ``QQ`` a definite space has infinite square fibres (``x^2 + y^2 = 1``
+        has the rational points ``(3/5, 4/5)``), so embeddings into it are not
+        enumerated shell by shell.
+        """
+        target = self.codomain()
+        return target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite()
+
     def _codomain_is_even_unimodular_indefinite(self) -> bool:
         target = self.codomain()
         if not target.module_rank().is_finite() or not target.is_nondegenerate():
@@ -1707,8 +1735,9 @@ class LatticeEmbeddingMor(CategoricalMor):
         """
         source = self.domain()
         target = self.codomain()
-        assert target.module_rank().is_finite() and target.is_definite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {target} is definite of finite rank"
+        assert target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite(), (
+            f"the embeddings of {source} into {target} are enumerated only when {target} is a definite lattice of "
+            f"finite rank over ZZ, whose square shells are finite; {target} is over {target.base_ring()}"
         )
         assert source.module_rank().is_finite(), f"the embeddings of {source} into {target} are enumerated only when {source} has finite rank"
         match source.is_nondegenerate():
@@ -1730,7 +1759,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         yield from assign(())
 
     def is_empty(self):
-        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
+        if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
             return True
@@ -1754,7 +1783,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return AtomicProposition("is_empty", self)
 
     def an_element(self):
-        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
+        if self._codomain_is_definite_over_integers():
             for embedding in self:
                 return embedding
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
@@ -1787,25 +1816,90 @@ class LatticeEmbeddingMor(CategoricalMor):
             )
         assert False, (
             f"cannot construct an embedding of {self.domain()} into {self.codomain()}: "
-            f"embeddings are constructed only into definite targets, targets of equal "
+            f"embeddings are constructed only into definite targets over ZZ, targets of equal "
             f"rank, indefinite targets OSCAR classifies, and even unimodular indefinite "
             f"targets, and {self.codomain()} is none of these"
         )
 
 
-class LatticeIsometryMor(LatticeEmbeddingMor):
+def _orthogonal_group_is_finite_by_theorem(lattice) -> bool:
+    r"""Whether a cited theorem places ``O(L) = Aut(L)`` among the finite groups (``CON-07``).
+
+    The decision reads the base ring, the rank, the signature and the square
+    class of the determinant; it never computes the group.  The routed cases:
+
+    - ``L`` a definite lattice of finite rank over ``ZZ``.  For positive
+      definite ``L`` this is ``lean-categories``
+      ``LeanCategories/Lattices/Valued/Mass.lean:41``, ``orthogonalGroup_finite``.
+      A negative definite ``L`` has the positive definite sign twist ``L(-1)``,
+      the same module with form ``-b``; an automorphism preserves ``b`` exactly
+      when it preserves ``-b``, so ``O(L) = O(L(-1))`` is the same group.
+    - ``L`` of rank 2 over ``ZZ`` with ``-det G`` a nonzero square in ``QQ``.
+      C. O'Sullivan, *Topographs for binary quadratic forms and class numbers*,
+      arXiv:2408.14405v3, Section 8.1, Corollary 8.2 (p. 29), with
+      ``Aut(q) := {M in SL(2, Z) : q|M = q}`` for ``q = [a, b, c]`` of
+      discriminant ``D = b^2 - 4ac``: "Let q be a primitive form of
+      discriminant D. Then Aut(q) = {±I} for D a nonzero square or D < -4."
+      The same section notes ``Aut(lambda q) = Aut(q)``, so primitivity is no
+      restriction.  The form of ``L`` is ``q = [g_11, 2 g_12, g_22]``, so
+      ``D = -4 det G``, and ``D`` is a nonzero square exactly when ``-det G``
+      is one.  Hence ``SO(L) = Aut(q) = {1, -1}``.  The determinant
+      ``O(L) -> {1, -1}`` is a group morphism with kernel ``SO(L)``, so
+      ``[O(L) : SO(L)] <= 2`` and ``O(L)`` has order at most 4; for the
+      hyperbolic plane ``U``, ``O(U) = {1, -1, swap, -swap}``.  The
+      ``lean-categories`` statement is requested (COMPLAINTS.md, *Finiteness
+      of O(L) for split binary lattices is not formalized*).
+
+    Definite lattices over ``QQ`` are not routed: ``O(x^2 + y^2)`` over ``QQ``
+    contains the rotation with cosine ``3/5`` and sine ``4/5``, of infinite
+    order.  A rank-2 indefinite ``ZZ``-lattice with ``-det G`` not a square is
+    not routed either; its group is infinite by Pell's equation, whose
+    solvability has no opened source here.
+    """
+    if _engine_ring(lattice.base_ring()) is not SageZZ or not lattice.module_rank().is_finite():
+        return False
+    if lattice.is_definite():
+        return True
+    if lattice.module_rank() != 2:
+        return False
+    minus_determinant = lattice_engines._binary_form_discriminant(lattice)
+    return bool(minus_determinant != 0 and minus_determinant.is_square())
+
+
+class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
+    r"""``Isom(L, M)``: the core Mor of ``Lattices(R)``, its isomorphisms being the isometries.
+
+    It is ``Lattices(R).Core().Mor(L, M)`` (``_LatticeCore``), so
+    ``O(L) = Aut(L)`` takes its group placement from the core owner
+    (``CoreMor._vertex_group_placement``).  Its elements remain the lattice
+    isometries (``LatticeIsometryMethods``), and its group computations are
+    realized by Sage matrix groups.
+    """
+
     ElementMethods = LatticeIsometryMethods
 
+    @lazy_attribute
+    def element_class(self) -> type:
+        r"""The lattice isometry arrow type generated from ``LatticeIsometryMethods``, not ``CoreMor``'s isomorphism pair."""
+        return self._generated_arrow_type()
+
+    @property
+    def ElementType(self) -> type:
+        return self._generated_arrow_type()
+
+    def core_category(self):
+        return self.domain().lattice_category().Core()
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        r"""The isometry whose forward arrow is ``forward``; its inverse is that of the isometry."""
+        domain = self.domain()
+        return self(lambda label: forward(domain.module_generator(label)))
+
     def __init__(self, mor_family, domain, codomain) -> None:
-        categories = []
-        if domain is codomain:
-            categories.append(OwnedGroups())
-            if (
-                _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
-                and domain.module_rank().is_finite()
-                and domain.is_definite()
-            ):
-                categories.append(OwnedFiniteGroups())
+        group = CoreMor._vertex_group_placement(domain, codomain)
+        categories = [] if group is None else [group]
+        if domain is codomain and _orthogonal_group_is_finite_by_theorem(domain):
+            categories.append(OwnedFiniteGroups())
         LatticeEmbeddingMor.__init__(
             self,
             mor_family,
@@ -1813,13 +1907,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
         )
-        if (
-            domain is codomain
-            and _engine_ring(domain.base_ring()) in (SageZZ, SageQQ)
-            and domain.module_rank().is_finite()
-            and domain.is_definite()
-        ):
-            self._select_computed_group_resolution()
+        if domain is codomain:
+            self._initialize_vertex_group()
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
@@ -1881,14 +1970,29 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return ``O(codomain)`` acting by postcomposition on this Mor."""
         return self.codomain().Aut()
 
-    def cardinality(self):
-        r"""Return the cardinality of ``Isom(L,M)`` from its torsor structure.
+    def _cardinality_decision(self):
+        r"""``|Isom(L, M)|``, supplied to the ``Sets`` cardinality hook by this realization.
 
-        An empty isometry Mor has cardinality zero.  A nonempty one is a
-        torsor under ``O(M)`` by postcomposition and therefore has the same
-        cardinality as ``O(M)``.  When emptiness is undecided, the cardinality
-        is not computed (`CAT-01`).
+        ``O(L)`` is counted from its own data: the finite definite engine
+        for definite ``L`` over ``ZZ``; for definite ``L`` over another base
+        ring no exact count is computed here (``CAT-01``); otherwise the
+        integral matrix group generated by
+        the selected generators of ``O(L)``, whose finiteness and order GAP
+        decides.  A nonempty ``Isom(L, M)`` is a torsor under ``O(M)`` by
+        postcomposition and has its cardinality; an empty one has none.
+        When emptiness is undecided, the cardinality is not computed
+        (``CAT-01``).
         """
+        if self.domain() is self.codomain():
+            if self.domain().module_rank() == 0:
+                return cardinal(1)
+            if self.domain().is_definite():
+                self._assert_definite_over_integers("count")
+                return cardinal(int(self._engine_group().order()))
+            generated = self._engine_subgroup_from_generators(tuple(self._computed_group_generators()))
+            if generated.is_finite():
+                return cardinal(int(generated.order()))
+            return aleph(0)
         empty = self.is_empty()
         assert empty is True or empty is False, (
             f"cannot compute the cardinality of {self}: it is undecided whether "
@@ -1917,11 +2021,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
         For lattice vectors this is an exact orbit witness ``g(source)=target``.
         For two isometries in ``Isom(L,M)`` it retains the torsor operation
-        ``g ∘ source = target``.
+        ``g ∘ source = target``.  For two finite families of vectors of ``L``
+        (elements of ``Sets().Mor(I, L)``, or of ``Sets().Mor(I, L x C)`` for
+        coloured families) it is one ``g`` in ``O(L)`` with ``g o v = w o sigma`` for
+        some colour-preserving bijection ``sigma`` of the index sets, or
+        ``None`` when there is none; see ``coloured_vector_families`` for the
+        computation and its spanning hypothesis.
         """
         lattice = self.codomain()
         if self.domain() is lattice and element_parent(source) is lattice and element_parent(target) is lattice:
             return self.vector_equivalence_witness(source, target)
+        if self.domain() is lattice and element_parent(source) is not self and element_parent(target) is not self:
+            from dzack_research.preamble.categories.coloured_vector_families import _transporter
+
+            return _transporter(self, source, target)
         for candidate in (source, target):
             if element_parent(candidate) is not self:
                 raise ValueError(
@@ -1936,8 +2049,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the subgroup of ``O(A_L)`` generated by the known ``O(L)`` generators."""
         if self.domain() is not self.codomain():
             raise ValueError(f"the isometries {self.domain()} -> {self.codomain()} form no group, so they have no image in the orthogonal group of a discriminant form")
-        group = self.select_group_resolution()
-        generating_subgroup = group.subgroup(tuple(group.group_generators()))
+        generating_subgroup = self.subgroup(tuple(self.group_generators()))
         return generating_subgroup.image_under(self.discriminant_representation())
 
     def discriminant_lift(self, automorphism):
@@ -1959,7 +2071,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         target = self.domain().discriminant_group().orthogonal_group()
         automorphism = target(automorphism)
         representation = self.discriminant_representation()
-        witnesses = self.select_group_resolution().finite_image_lifts(representation)
+        witnesses = self.finite_image_lifts(representation)
         return witnesses.get(automorphism)
 
     def discriminant_preimage(self, subgroup):
@@ -2010,13 +2122,21 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Return the positive-cone-preserving subgroup when defined."""
         return self.lattice().positive_cone_subgroup()
 
-    def centralizer(self, isometry):
-        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup."""
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            CentralizerSubgroups,
+    def _centralizer_construction(self, isometry):
+        r"""Realization of the groups' centralizer hook: ``Z_{O(L)}(isometry)`` with its generators selected.
+
+        Implementer side of ``OwnedGroups.ParentMethods._centralizer_construction``
+        (``OWN-05``), called only by ``centralizer``.  The subgroup is the
+        predicate subgroup ``{g : g f = f g}``; its group generators are
+        computed on first request, by gluing the centralizers on the
+        cyclotomic summands of ``isometry``
+        (``lattice_centralizers.arithmetic_centralizer``).
+        """
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            arithmetic_centralizer,
         )
 
-        return CentralizerSubgroups(self)(isometry)
+        return arithmetic_centralizer(self, isometry)
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""
@@ -2045,11 +2165,17 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         )
 
     def stabilizer(self, target, action="setwise"):
-        r"""Return a vector or sublattice stabilizer in ``O(L)``.
+        r"""Return a vector, sublattice or family stabilizer in ``O(L)``.
 
         A lattice vector is fixed pointwise.  A represented lattice subobject
         accepts ``action='setwise'`` or ``action='pointwise'`` and delegates to
-        the existing inclusion-based subgroup constructions.
+        the existing inclusion-based subgroup constructions.  A finite family
+        ``v: I -> L`` (an element of ``Sets().Mor(I, L)``), or a coloured family
+        ``i |-> (v_i, c_i)`` in ``Sets().Mor(I, L x C)``, has the stabilizer
+        ``O(L)_[v] = {g : g o v = v o sigma for some colour-preserving bijection sigma of I}``,
+        the image in ``O(L)`` of its stabilizer under ``O(L) x Sym_C(I)``; the
+        kernel of that projection, ``K_v``, is trivial exactly when the coloured
+        family is injective (``coloured_vector_families``).
         """
         lattice = self.lattice()
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -2066,15 +2192,62 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 return self.pointwise_stabilizer(embedding)
             raise ValueError(f"action={action!r} is not a stabilizer of the sublattice {target}: use 'setwise' (g(I) = I) or 'pointwise' (g fixes I elementwise)")
         if action != "setwise":
-            raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector is always fixed pointwise")
-        assert target.parent() is lattice, (
-            f"{target} has no stabilizer in O({lattice}): it is neither a vector nor a sublattice of {lattice}, but an element of {target.parent()}"
-        )
+            raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector or a family is stabilized up to reindexing")
+        if element_parent(target) is not lattice:
+            return self._family_stabilizer(target)
         return StabilizerSubgroups(self)(
             target,
             self.natural_module_action_functor(),
             lambda automorphism: automorphism(target) == target,
             description=f"g fixes {target}",
+        )
+
+    @cached_method(key=lambda self, family: id(family))
+    def _family_stabilizer(self, family):
+        r"""``O(L)_[v]`` for a finite (coloured) family of vectors, with its computed group generators.
+
+        The subgroup is cut out of ``O(L)`` by its definition: ``g`` carries
+        the coloured family to itself up to a colour-preserving bijection of
+        its indices.  Its generators are the stabilizer of the integral
+        structure ``L`` under the rational configuration group of the family
+        (``coloured_vector_families``), selected as its generating set; they
+        are the computation's answer, untrusted like every answer.
+        """
+        from dzack_research.preamble.categories.coloured_vector_families import (
+            _matching,
+            _realization,
+            _stabilizer_generators,
+        )
+
+        realization = _realization(self.lattice(), family)
+        return self.predicate_subgroup(
+            lambda automorphism: _matching(realization, realization, automorphism) is not None,
+            f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
+            generating_morphism=self.free_cover(_stabilizer_generators(self, family)),
+        )
+
+    def index_action(self, family):
+        r"""The action of ``O(L)_[v]`` on the index set ``I`` of an injective coloured family.
+
+        For an injective coloured family ``(v_i, c_i)_{i in I}`` an element
+        ``g`` of its stabilizer determines the colour-preserving bijection
+        ``sigma = (v, c)^-1 o (g x id) o (v, c)`` of ``I``, and
+        ``g . i = sigma(i)`` is an action.  The result is that finite
+        ``O(L)_[v]``-set on ``I``; its ``permutation_representation()`` is the
+        group morphism ``O(L)_[v] -> Sym(I)``.  For a family carrying one
+        coloured vector at two indices ``sigma`` is determined only up to
+        ``K_v`` and no action on ``I`` is defined.
+        """
+        from dzack_research.preamble.categories.coloured_vector_families import (
+            _assert_injective,
+            _index_permutation,
+        )
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+        realization = _assert_injective(self, family)
+        return FiniteGSets(self.stabilizer(family))(
+            realization.indices(),
+            lambda automorphism, index: _index_permutation(self, family, automorphism)[index],
         )
 
     def pointwise_stabilizer(self, embedding):
@@ -2127,38 +2300,42 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             description=f"g(im({embedding}))=im({embedding})",
         )
 
+    def _assert_definite_over_integers(self, operation: str) -> None:
+        r"""State the hypothesis of the finite routes of ``O(L)``: ``L`` definite of finite rank over ``ZZ``.
+
+        ``O(L)`` is finite for such ``L`` (``lean-categories``
+        ``orthogonalGroup_finite``, ``LeanCategories/Lattices/Valued/Mass.lean:41``,
+        with ``L(-1)`` for negative definite ``L``).  A definite lattice over
+        ``QQ`` is a quadratic space ``V`` whose ``O(V)`` is not finite in rank
+        at least 2 (``O(x^2+y^2)`` contains the rotation ``(3/5, 4/5)``); no
+        exact computation of it is supplied here (``CAT-01``).
+        """
+        lattice = self.domain()
+        assert lattice.base_ring() is _owned_integers() and lattice.module_rank().is_finite() and lattice.is_definite(), (
+            f"cannot {operation} O({lattice}) as a finite group: that computation is supplied for a definite "
+            f"lattice of finite rank over ZZ, and {lattice} is a lattice over {lattice.base_ring()} of rank "
+            f"{lattice.module_rank()}"
+        )
+
     @cached_method
     def _engine_group(self):
         r"""Return Sage's private orthogonal-group engine when it is exact.
 
         The public group remains this Mor of live lattice isometries.  Sage's
-        ``GroupOfIsometries`` is used only to compute the finite definite
-        integral case; its matrices act on row vectors, hence are transposed
-        when converted to this Mor's column-image convention.
+        ``GroupOfIsometries`` is used only to compute the finite group ``O(L)``
+        of a definite lattice of finite rank over ``ZZ``
+        (``orthogonalGroup_finite``); its matrices act on row vectors, hence
+        are transposed when converted to this Mor's column-image convention.
+        Over ``QQ`` the Gram matrix cleared of denominators presents only the
+        integral span of the chosen basis, whose finite group is not ``O(V)``.
         """
         lattice = self.domain()
         if lattice is not self.codomain():
             raise ValueError(f"the isometries {lattice} -> {self.codomain()} are not an orthogonal group O(L): domain and codomain are different lattices")
-        assert lattice.module_rank().is_finite() and lattice.is_definite(), (
-            f"O({lattice}) is computed as a finite group only for definite lattices of finite rank, and {lattice} is not one"
-        )
+        self._assert_definite_over_integers("compute")
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        engine_ring = _engine_ring(lattice.base_ring())
-        match engine_ring is SageZZ, engine_ring is SageQQ:
-            case True, _:
-                gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
-            case False, True:
-                rational_gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
-                denominator = SageZZ.one()
-                for entry in rational_gram.list():
-                    denominator = denominator.lcm(SageZZ(entry.denominator()))
-                gram = (denominator * rational_gram).change_ring(SageZZ)
-            case _:
-                raise ValueError(
-                    f"O({lattice}) is computed by the finite definite engine only over ZZ or QQ, "
-                    f"but {lattice} is over {lattice.base_ring()}"
-                )
+        gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram
@@ -2245,15 +2422,25 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
     def _computed_group_generators(self):
         r"""Return generators of ``O(L)``, computed by a backend, as a finite ordered set of ``O(L)``.
 
-        For definite ``L``, Sage's ``GroupOfIsometries`` computes the
-        generators of the finite group ``O(L)``. For indefinite ``L``,
+        Protected realization hook (``OWN-05``): owner ``LatticeIsometryMor``;
+        caller ``Lattices._core_automorphism_generators`` (read by ``CoreMor._initialize_vertex_group``)
+        (the lattice implementer of ``CoreMor``'s core contract).
+
+        For definite ``L`` over ``ZZ``, Sage's ``GroupOfIsometries`` computes the
+        generators of the finite group ``O(L)``; a definite ``L`` over another
+        base ring reaches the stated frontier. For indefinite ``L``,
         ``sage_indefinite_port`` computes them. Both answers are untrusted
         engine output: each computed isometry is constructed through ``O(L)``
         into an element of ``O(L)``, and the family becomes one finite ordered
         set of ``O(L)``.
         """
         lattice = self.domain()
-        if lattice.is_definite():
+        if lattice.module_rank() == 0:
+            # O(0) is trivial, generated by the empty family (TRAPS.md: Sage's
+            # GroupOfIsometries cannot be formed on an empty generating family).
+            generators = ()
+        elif lattice.is_definite():
+            self._assert_definite_over_integers("compute generators of")
             generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
         else:
             from dzack_research.preamble.categories.lattices import Lattices
@@ -2273,46 +2460,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def _select_computed_group_resolution(self) -> None:
-        r"""Select the generating epimorphism from the free group on the computed generators of ``O(L)``.
-
-        Selecting computes nothing; the generators are computed when
-        ``group_generators()`` first reads the selected resolution.
-        """
-        _fix_selected_group_resolution_on(self, self._computed_group_generators)
-
-    def select_group_resolution(self, *, generators=None):
-        r"""Select the generating epimorphism ``F(S) -> O(L)`` on the computed generating set ``S``, and return ``O(L)``.
-
-        It is the degree-zero truncation of a free-group resolution of
-        ``O(L)`` (``CAT-29``); after it, ``group_generators()`` answers.
-        A known complete generating family may be supplied explicitly when
-        the indefinite orthogonal-group engine is not yet available. The
-        caller must establish that its family generates the full group.
-
-        EXAMPLES::
-
-            sage: L = Lattices(ZZ)([[0,2],[2,0]])
-            sage: O = L.Aut()
-            sage: exchange = O([[0,1],[1,0]])
-            sage: minus_id = O([[-1,0],[0,-1]])
-            sage: O.select_group_resolution(generators=(exchange, minus_id))
-            Orthogonal group O(Integral lattice of rank 2 and signature (1, 1))
-            sage: rho = L.discriminant_representation()
-            sage: all(rho(g) == rho.codomain().one() for g in L.stable_orthogonal_group().schreier_generators())
-            True
-        """
-        if self.has_selected_group_resolution():
-            if generators is not None:
-                raise ValueError("the orthogonal group already has a selected generating resolution")
-            return self
-        if generators is None:
-            self._select_computed_group_resolution()
-        else:
-            selected = finite_ordered_set(tuple(self(generator) for generator in generators))
-            _fix_selected_group_resolution_on(self, lambda: selected)
-        return self
-
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.
 
@@ -2322,18 +2469,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         isomorphism invariant, so no equality or subgroup decision in the
         owned layer depends on it.
         """
-        lattice = self.domain()
-        assert lattice.is_definite(), f"O({lattice}) has a structure description only when it is finite, i.e. when {lattice} is definite, and {lattice} is indefinite"
+        self._assert_definite_over_integers("describe the structure of")
         return str(self._engine_group().structure_description())
 
     def __iter__(self):
+        r"""Enumerate the finite group ``O(L)`` of a definite lattice over ``ZZ``."""
+        self._assert_definite_over_integers("enumerate")
         return (self._from_engine(element) for element in self._engine_group())
 
     def vector_equivalence_witness(self, left, right):
         r"""Return ``g in O(L)`` with ``g(left)=right``, or ``None``.
 
-        In the finite definite regime this is an exact search through the full
-        owned orthogonal group.  Indefinite vector equivalence belongs to its
+        For a definite lattice over ``ZZ`` this is an exact search through the
+        finite group ``O(L)``; a definite lattice over another base ring reaches
+        the stated frontier.  Indefinite vector equivalence belongs to its
         separate exact computation and is not approximated here.
         """
         lattice = self.domain()
@@ -2356,6 +2505,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 source.Mor(lattice)(lambda _label: right)
             )
             return isometry(category, marked_left, marked_right)
+        self._assert_definite_over_integers("search")
         for automorphism in self:
             if automorphism(left) == right:
                 return automorphism
@@ -2366,29 +2516,131 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         return self.vector_equivalence_witness(left, right) is not None
 
     def vector_stabilizer_generators(self, element):
-        r"""Return exact generators of ``Stab_{O(L)}(element)`` when finite.
+        r"""Return generators of ``Stab_{O(L)}(element)``.
 
-        The subgroup reduction happens in Sage's private finite isometry group;
-        only live lattice isometries cross back into the public result.
+        ``Stab_{O(L)}(v)`` is the apex image of ``Aut`` of the pointed
+        lattice ``(L, <q(v)> -> L)``, so this is the pointed case of the
+        stabilizer of a marking (:meth:`_marking_stabilizer_generators`).
         """
         lattice = self.domain()
         element = element if element_parent(element) is lattice else lattice(element)
-        if not lattice.is_definite():
-            from sage_indefinite_port.indefinite.marked_lattices import (
-                automorphism_group_generators,
-            )
+        category, marked = _pointed_marking(lattice, element)
+        return self._marking_stabilizer_generators(category, marked, category.apex_stabilizer(marked))
 
-            category, marked = _pointed_marking(lattice, element)
-            return automorphism_group_generators(category, marked)
-        stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
-        engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
+    def _finite_subgroup_generators(self, subgroup):
+        r"""Generators of a subgroup of the finite ``O(L)`` of a definite lattice over ``ZZ``.
+
+        The subgroup is listed in one pass over ``O(L)`` and reduced to a
+        generating set in Sage's private finite isometry group; only live
+        lattice isometries cross back into the public result.
+        """
+        self._assert_definite_over_integers("reduce a subgroup of")
+        elements = tuple(automorphism for automorphism in self if automorphism in subgroup)
+        engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in elements))
         return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
+
+    def _marking_stabilizer_generators(self, category, marked, stabilizer):
+        r"""Generators of ``stabilizer``, the apex image in ``O(L)`` of ``Aut`` of a marked lattice with apex ``L``.
+
+        ``stabilizer`` is ``category.apex_stabilizer(marked)``.  For definite
+        ``L`` over ``ZZ`` it is a subgroup of the finite ``O(L)``, reduced to
+        generators here.  For indefinite ``L`` the generators are the apex
+        isometries that the lattice category's marked-diagram decision
+        supplies (``sage-indefinite-port``, #403); they are untrusted engine
+        output.
+        """
+        lattice = self.lattice()
+        if lattice.is_definite():
+            return self._finite_subgroup_generators(stabilizer)
+        return lattice.lattice_category()._marked_automorphism_generators(category, marked)
+
+    def _marking_category(self, marked):
+        r"""The category of marked lattices with apex ``L`` of which ``marked`` is an object.
+
+        The marking categories over ``Lattices(R)`` are ``Ar(Lattices)``,
+        ``Fun([2], Lattices)`` and the coslices ``X/Lattices``; a coslice
+        object names its ``X`` as the source of its arrow.
+        """
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        lattice = self.lattice()
+        lattices = lattice.lattice_category()
+        sublattices = Cat().Mor(FiniteOrdinalCategory(2), lattices)
+        flags = Cat().Mor(FiniteOrdinalCategory(3), lattices)
+        match marked:
+            case _ if marked in sublattices:
+                category = sublattices
+            case _ if marked in flags:
+                category = flags
+            case _:
+                category = CosliceCategory(lattices, marked.arrow().domain())
+        assert marked in category, (
+            f"{marked} is not a marked lattice: it is an object of none of Ar({lattices}), "
+            f"Fun([2], {lattices}) or a coslice X/{lattices}"
+        )
+        return category
+
+    def split_orbit(self, marked, subgroup):
+        r"""One marked lattice in each ``H``-orbit of the ``O(L)``-orbit of ``marked``.
+
+        ``G = O(L)`` acts on the marked lattices with apex ``L`` (objects of
+        ``X/Lattices``, ``Ar(Lattices)`` or ``Fun([2], Lattices)``) by
+        postcomposing the marking, ``g . m``, with stabilizer
+        ``G_m = category.apex_stabilizer(m)``.  The ``G``-orbit of ``m`` is
+        ``G/G_m``, and for ``H = subgroup`` its ``H``-orbits are the double
+        cosets ``H \ G / G_m``: ``g . m`` and ``g' . m`` are carried onto one
+        another by an element of ``H`` exactly when ``g'`` lies in ``H g G_m``.
+
+        ``H`` contains the kernel of a finite-image character map
+        ``rho: G -> Q`` (``H.contains_character_kernel()``), so these double
+        cosets are those of ``rho(H) \ rho(G) / rho(G_m)``, computed by the
+        character quotient of ``H`` from generators of ``G_m``
+        (``OrthogonalCharacterQuotient.splitting_isometries``).  For ``H = G``
+        there is one double coset and ``m`` is its representative.
+
+        The result is the finite set of the representatives ``g . m``.  The
+        stabilizer in ``H`` of ``g . m`` is ``H cap g G_m g^{-1}``, which is
+        ``subgroup.intersection(category.apex_stabilizer(g . m))``.
+        """
+        category = self._marking_category(marked)
+        stabilizer = category.apex_stabilizer(marked)
+        assert stabilizer.supergroup() is self, (
+            f"the orbit of {marked} under {self} is not defined: its marking ends at a lattice other "
+            f"than {self.lattice()}"
+        )
+        match subgroup:
+            case _ if subgroup is self:
+                return finite_ordered_set((marked,))
+            case _ if (
+                subgroup in PredicateSubgroups(self)
+                and subgroup.supergroup() is self
+                and subgroup.contains_character_kernel()
+            ):
+                stabilizer_generators = self._marking_stabilizer_generators(category, marked, stabilizer)
+                return finite_ordered_set(
+                    tuple(
+                        category.apex_action(splitting, marked)
+                        for splitting in subgroup.finite_character_quotient().splitting_isometries(
+                            stabilizer_generators
+                        )
+                    )
+                )
+        assert False, (
+            f"cannot split the orbit of {marked} under {self} along {subgroup}: the splitting is "
+            f"computed through a finite quotient of {self} by characters (discriminant, determinant, "
+            f"spinor norm), so {subgroup} must contain the kernel of such a character map; it is "
+            f"neither {self} itself nor a subgroup of {self} known to contain one"
+        )
 
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
 
-        For a definite lattice the represented shell is finite, and ``O(L)``
-        is finite, so this is an exact finite quotient with no search bound.
+        For a definite lattice over ``ZZ`` the represented shell is finite, and
+        ``O(L)`` is finite, so this is an exact finite quotient with no search
+        bound; a definite lattice over another base ring reaches the stated
+        frontier.
         """
         lattice = self.domain()
         square = lattice.base_ring()(int(square))
@@ -2447,6 +2699,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                     for representative in _primitive_pointed_classes(lattice, primitive_square)
                 )
             return finite_ordered_set(tuple(representatives))
+        self._assert_definite_over_integers("split a square shell into the orbits of")
         remaining = {_framing_tuple(vector): vector for vector in lattice.vectors_of_square(square)}
         representatives = []
         while remaining:
@@ -2536,12 +2789,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         return first.domain().Isom(second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
 
     def is_empty(self):
-        r"""Decide emptiness through exact obstructions and proved classifiers.
+        r"""Return whether ``Isom(L, M)`` is empty, decided without constructing an isometry where a theorem allows.
 
-        Passing an obstruction never proves isometry by itself.  Definite
-        survivors are decided by Sage's exact equivalence engine, binary
-        indefinite survivors by reduction of binary forms where it decides,
-        and the remaining indefinite survivors by ``sage-indefinite-port``.
+        :meth:`_isometry_decision` owns the decision; an isometry is built
+        only by :meth:`an_element`.
         """
         return self._isometry_decision()[0]
 
@@ -2607,115 +2858,168 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
 
     @cached_method
     def _isometry_decision(self):
-        r"""The decision of this isometry Mor object, with the witness that decided it.
+        r"""The decision whether this isometry Mor object is empty, and the theorem that decides it.
 
         Private computation record of :meth:`is_empty` and :meth:`an_element`:
-        the triple of the emptiness answer (``True``, ``False`` or the
-        proposition that the Mor is empty), an explicit isometry when the deciding computation
-        exhibits one (else ``None``), and the theorem that proves
-        nonemptiness without a witness (else ``None``).
+        the pair of the emptiness answer (``True``, ``False`` or the
+        proposition that the Mor is empty) and, for a nonempty Mor, the
+        citation of what established nonemptiness.  No isometry is
+        constructed here; :meth:`an_element` constructs one on request.
+
+        After the invariant obstructions the decision compares the owned
+        genera, ``L.genus() == M.genus()`` (equal signature and canonical
+        ``ZZ_p``-symbols at every ``p | 2d``)
+        [CS99, Ch. 15, §7, Thms 9-10; extraction
+        ``references/literature/lattice-research/conway1999sphere.md``
+        l.12139, l.12197, l.12251].  Inside one genus:
+
+        - indefinite, rank at least 3: a spinor genus is one class
+          [CS99, Ch. 15, Thm 14 (Eichler), l.12511].  With one improper
+          spinor genus the Mor is nonempty with no further computation;
+          with several, membership in one spinor genus is the criterion of
+          [CS99, Ch. 15, Thm 15, l.12521-12529], decided by the one private
+          adapter ``integer_lattices_are_isometric``;
+        - indefinite, rank 2: comparison of the cycles of reduced binary
+          forms [CS99, Ch. 15, §3.3, l.11569; Thm 1, l.11482], whose walk
+          yields the equivalence matrix, cached by :meth:`_witness_matrix`;
+        - definite: a genus whose mass ``sum_i 1/|O(L_i)|``
+          [Conway--Sloane, *Low-dimensional lattices IV*, eq. (1);
+          ``references/literature/lattice-research/conway1988mass.md``
+          l.13-16] equals ``1/|O(L)|`` is the one class of ``L``; otherwise
+          the exact equivalence search of :meth:`_witness_matrix` decides
+          [CS99, Ch. 15, §10-§11, l.12775, l.12905].
         """
         domain = self.domain()
         codomain = self.codomain()
         if domain is codomain:
-            return (False, self.identity(), None)
+            return (False, "the identity of the lattice")
         undecided = AtomicProposition("is_empty", self)
         if not domain.module_rank().is_finite() or not codomain.module_rank().is_finite():
-            return (undecided, None, None)
+            return (undecided, None)
         if domain.module_rank() != codomain.module_rank():
-            return (True, None, None)
+            return (True, None)
         if domain.signature_pair() != codomain.signature_pair():
-            return (True, None, None)
+            return (True, None)
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
-            return (undecided, None, None)
+            return (undecided, None)
 
-        domain_gram = _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ)
-        codomain_gram = _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ)
+        domain_gram, codomain_gram = self._engine_grams()
         if domain_gram == codomain_gram:
-            return (
-                False,
-                self._isometry_from_column_matrix(domain_gram.parent().one()),
-                None,
-            )
+            return (False, "equal Gram tensors: the identity on the generators")
         rank = domain.module_rank()
         if int(rank.finite_value()) <= 1:
-            return (True, None, None)
+            return (True, None)
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
-            return (True, None, None)
+            return (True, None)
         if not domain.is_nondegenerate():
-            return (undecided, None, None)
+            return (undecided, None)
         if domain.is_even() != codomain.is_even():
-            return (True, None, None)
+            return (True, None)
         if domain.discriminant() != codomain.discriminant():
-            return (True, None, None)
+            return (True, None)
         if domain.discriminant_module().invariant_factors() != codomain.discriminant_module().invariant_factors():
-            return (True, None, None)
+            return (True, None)
 
-        from sage.quadratic_forms.genera.genus import LocalGenusSymbol
-        from sage.rings.rational_field import QQ as SageQQ
+        if domain.genus() != codomain.genus():
+            return (True, None)
 
-        domain_engine = domain_gram
-        codomain_engine = codomain_gram
-        rational_domain = QuadraticForm(SageQQ, 2 * domain_engine.change_ring(SageQQ))
-        rational_codomain = QuadraticForm(SageQQ, 2 * codomain_engine.change_ring(SageQQ))
-        if not rational_domain.is_rationally_isometric(rational_codomain):
-            return (True, None, None)
+        signature = domain.signature_pair()
+        definite = signature.first() == 0 or signature.second() == 0
+        match definite, int(rank.finite_value()) >= 3:
+            case False, True:
+                if domain.genus().spinor_genus_count() == domain.base_ring().one():
+                    return (False, "one genus with one spinor genus is one class [CS99, Ch. 15, Thm 14]")
+                if lattice_engines.isometric_within_genus(domain, codomain):
+                    return (False, "one spinor genus [CS99, Ch. 15, Thms 14-15]")
+                return (True, None)
+            case False, False:
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "equivalent in the cycle classification of binary forms [CS99, Ch. 15, §3.3]")
+            case True, _:
+                order = domain.orthogonal_group().cardinality()
+                if domain.genus().mass() * domain.base_ring().fraction_field()(order) == 1:
+                    return (False, "a genus of mass 1/|O(L)| is one class [Conway--Sloane, Low-dimensional lattices IV, eq. (1)]")
+                if self._witness_matrix() is False:
+                    return (True, None)
+                return (False, "the exact equivalence search found an isometry [CS99, Ch. 15, §10-§11]")
 
-        determinant = abs(SageZZ(domain_gram.det()))
-        for prime in (2 * determinant).prime_divisors():
-            if LocalGenusSymbol(domain_engine, prime) != LocalGenusSymbol(codomain_engine, prime):
-                return (True, None, None)
+    @cached_method
+    def _engine_grams(self):
+        r"""The Gram matrices over Sage's ``ZZ`` of the two endpoints; private engine data of the decision."""
+        return (
+            _engine_component_matrix(self.domain().gram_tensor()).change_ring(SageZZ),
+            _engine_component_matrix(self.codomain().gram_tensor()).change_ring(SageZZ),
+        )
 
-        domain_discriminant = domain.discriminant_group()
-        codomain_discriminant = codomain.discriminant_group()
-        if not domain_discriminant.is_isomorphic(codomain_discriminant):
-            return (True, None, None)
+    @cached_method
+    def _witness_matrix(self):
+        r"""The equivalence matrix the deciding search produces, or ``False`` when it finds none.
 
-        _signature = domain.signature_pair()
-
-        positive, negative = _signature.first(), _signature.second()
+        Private engine data, for a definite pair (Sage's exact equivalence
+        search, PARI ``qfisom``) or an indefinite binary pair (the cycle
+        walk of :func:`_binary_indefinite_isometry_matrix`).  Its columns
+        are the coordinates of the images of the domain generators.
+        """
+        domain_gram, codomain_gram = self._engine_grams()
+        signature = self.domain().signature_pair()
+        positive, negative = signature.first(), signature.second()
         if positive == 0 or negative == 0:
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
-            transformation = QuadraticForm(SageZZ, 2 * sign * codomain_engine).is_globally_equivalent_to(
-                QuadraticForm(SageZZ, 2 * sign * domain_engine),
+            return QuadraticForm(SageZZ, 2 * sign * codomain_gram).is_globally_equivalent_to(
+                QuadraticForm(SageZZ, 2 * sign * domain_gram),
                 return_matrix=True,
             )
-            if transformation is False:
-                return (True, None, None)
-            # The engine's matrix is an untrusted answer; the isometry's own
-            # form-square validator checks it under strict checking (OWN-22).
-            return (False, self._isometry_from_column_matrix(transformation), None)
+        assert int(self.domain().module_rank()) == 2, (
+            f"an equivalence search between {self.domain()} and {self.codomain()} is run here only for a definite or a binary pair"
+        )
+        return _binary_indefinite_isometry_matrix(domain_gram, codomain_gram)
 
-        if int(domain.module_rank()) == 2:
-            binary_witness = _binary_indefinite_isometry_matrix(
-                domain_gram,
-                codomain_gram,
+    def an_element(self):
+        r"""Return an isometry, constructed on request after the decision.
+
+        The engine's matrix is an untrusted answer; the isometry's own
+        form-square validator checks it under strict checking (OWN-22).
+        """
+        empty, reason = self._isometry_decision()
+        assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
+        if empty:
+            raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
+        domain = self.domain()
+        codomain = self.codomain()
+        if domain is codomain:
+            return self.identity()
+        domain_gram, codomain_gram = self._engine_grams()
+        if domain_gram == codomain_gram:
+            return self._isometry_from_column_matrix(domain_gram.parent().one())
+        signature = domain.signature_pair()
+        if signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2:
+            transformation = self._witness_matrix()
+            assert transformation is not False, (
+                f"{domain} and {codomain} are isometric by {reason}, but the equivalence search found no isometry"
             )
-            if binary_witness is False:
-                return (True, None, None)
-            return (False, self._isometry_from_column_matrix(binary_witness), None)
+            return self._isometry_from_column_matrix(transformation)
 
         from dzack_research.preamble.categories.lattices import Lattices
         from sage_indefinite_port.indefinite.marked_lattices import isometry
 
         witness = isometry(Lattices(domain.base_ring()), domain, codomain)
-        if witness is None:
-            return (True, None, None)
-        return (False, witness, None)
-
-    def an_element(self):
-        r"""Return an explicit isometry when the exact decision exhibits one."""
-        empty, witness, reason = self._isometry_decision()
-        assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
-        if empty:
-            raise ValueError(f"there is no isometry from {self.domain()} to {self.codomain()}: the lattices are not isometric")
-        assert witness is not None, f"{self.domain()} and {self.codomain()} are isometric by {reason}, but no explicit isometry between them can be constructed"
+        assert witness is not None, (
+            f"{domain} and {codomain} are isometric by {reason}, but sage-indefinite-port constructed no isometry between them"
+        )
         return witness
 
     def _repr_(self):
         if self.domain() is self.codomain():
             return f"Orthogonal group O({self.domain()})"
         return f"Isom({self.domain()}, {self.codomain()})"
+
+
+class _LatticeCore(_CoreCategory):
+    r"""The core of ``Lattices(R)``: its Mor objects are the isometry Mors ``Isom(L, M)``."""
+
+    def Mor(self, domain, codomain) -> LatticeIsometryMor:
+        return _lattice_isometry_mor(domain, codomain)
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))

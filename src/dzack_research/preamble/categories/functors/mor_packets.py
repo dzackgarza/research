@@ -152,7 +152,7 @@ class _InducedAutFunctor(_InducedMorFunctor):
     def _apply_object(self, arrow_object):
         isomorphism = _arrow_of(self.domain(), arrow_object)
         forward = self.base_functor().on_morphism(isomorphism.forward())
-        inverse = self.base_functor().on_morphism(isomorphism.inverse())
+        inverse = self.base_functor().on_morphism(isomorphism.inverse().forward())
         return self.codomain()(
             _isomorphism_from_known_inverse_pair(
                 forward, inverse, base_category=self.codomain().base_category()

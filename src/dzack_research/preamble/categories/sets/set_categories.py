@@ -21,6 +21,8 @@ from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
+from sage.symbolic.expression import Expression
+from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
@@ -29,6 +31,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MonoCategoryConstruction,
     MorCategories,
     MorCategoryConstruction,
+    _ambient_of,
     _category_accepts_morphism,
     _category_mor,
 )
@@ -207,6 +210,42 @@ class _GeneratedRelationQuotient:
         if self.left_morphism() is self.right_morphism():
             # The identical pair generates only the diagonal relation.
             return left == right
+        source = self.left_morphism().domain()
+        if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            # The finite list of relation edges generates its connected
+            # components, even when the ambient target is infinite. Traverse
+            # only certified endpoint equalities: an undecidable comparison
+            # cannot be used either to join or to separate components.
+            edges = tuple(
+                (self.left_morphism()(point), self.right_morphism()(point))
+                for point in source
+            )
+            reached = [left]
+            for _ in range(2 * len(edges)):
+                added = False
+                for first, second in edges:
+                    for start, end in ((first, second), (second, first)):
+                        if any((start == seen) is True for seen in reached):
+                            if (end == right) is True:
+                                return True
+                            if not any((end == seen) is True for seen in reached):
+                                reached.append(end)
+                                added = True
+                if not added:
+                    break
+            # All certified finite paths have been explored. Distinct
+            # representatives may still compare undecidably, so a failed
+            # search alone never certifies inequivalence.
+            if any((right == seen) is True for seen in reached):
+                return True
+            # Finite support and decidable equality on its vertices also
+            # certify nonmembership in the generated equivalence class.
+            # Never conclude False when an unknown endpoint comparison
+            # could connect another component to the explored one.
+            vertices = (left, right) + tuple(value for edge in edges for value in edge)
+            decisions = tuple(a == b for a in vertices for b in vertices)
+            if all(decision is True or decision is False for decision in decisions):
+                return False
         return AtomicProposition("generated_equivalence", self, left, right)
 
     def class_of(self, representative):
@@ -567,6 +606,19 @@ class OwnedSetMorphism(SetMorphism):
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
+    def _defining_function(self):
+        r"""The function on points this map was constructed from.
+
+        Protected contract of the set-map owner (``OWN-05``): the datum the
+        Mor's element constructor received (a callable, or a formula binding
+        its own variable).  Its readers are computation adapters that need
+        the datum itself rather than its values -- the function-space
+        formula adapter of ``categories/functions/real_functions.py``, which
+        differentiates, integrates and sums a map given by a symbolic
+        formula.  Evaluation goes through ``__call__``, never through this.
+        """
+        return self._owned_function
+
     def __call__(self, element: SourcePointT, *args, **kwargs) -> TargetPointT:
         r"""Send a point of the source to its point of the target.
 
@@ -925,9 +977,11 @@ class SetMorCategory(CategoricalMor):
         domain: Parent,
         codomain: Parent,
     ) -> None:
+        # Placement reads the endpoints' placements; constructing a Mor runs
+        # no finiteness or cardinality decision (OWN-22).
         placement = (
             FinitelySupportedFunctionSets()
-            if Sets().is_provably_finite(domain)
+            if domain in FiniteSets()
             else FunctionSets()
         )
         placement = owned_category_join((
@@ -954,12 +1008,18 @@ class SetMorCategory(CategoricalMor):
         return self
 
     def _element_constructor_(self, datum):
-        r"""Admit an arrow: a set map between these endpoints, or a callable.
+        r"""Admit an arrow: a set map between these endpoints, a callable, or a formula.
 
         The element constructor is the one boundary that reads foreign data,
-        so it is where the datum's shape is inspected.  An injection or a
-        surjection ``X -> Y`` is an arrow of a full subcategory of this Mor,
-        so it is a map ``X -> Y`` and is admitted as itself.
+        so it is where the datum's shape is inspected (``CON-17``).  An
+        injection or a surjection ``X -> Y`` is an arrow of a full
+        subcategory of this Mor, so it is a map ``X -> Y`` and is admitted
+        as itself.  A symbolic expression with exactly one free variable, in
+        a variable the caller introduced (``x = var("x")``, then
+        ``x**2 + 1``), is a formula binding that variable: the map
+        ``x |-> x**2 + 1``, admitted as the callable expression that binds
+        it.  An expression with no free variable or with several is not a
+        map of one argument, and is rejected naming its variables.
         """
         if isinstance(datum, Morphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
@@ -970,6 +1030,11 @@ class SetMorCategory(CategoricalMor):
             arrows = datum.parent()
             if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
+        match datum:
+            case Expression() if element_parent(datum) is SR:
+                datum = _formula_binding_its_variable(datum, self.domain(), self.codomain())
+            case _:
+                pass
         if not callable(datum):
             raise TypeError(
                 f"a map of sets {self.domain()} -> {self.codomain()} needs a function on points, but "
@@ -991,6 +1056,23 @@ class SetMorCategory(CategoricalMor):
 
     def _repr_(self):
         return f"Mor_Set({self.domain()}, {self.codomain()})"
+
+
+def _formula_binding_its_variable(formula, domain, codomain):
+    r"""The callable symbolic expression ``x |-> formula`` binding the one free variable ``x`` of ``formula``.
+
+    Private intake adapter of :meth:`SetMorCategory._element_constructor_`:
+    a plain symbolic expression in a variable the caller introduced is the
+    map given by that formula.  Sage's callable expression ``formula.function(x)``
+    is the realization the map stores, and the formula adapters of the
+    function spaces read it back as ``(formula, x)``.
+    """
+    variables = formula.variables()
+    assert len(variables) == 1, (
+        f"cannot read {formula} as a map {domain} -> {codomain}: a formula is a map of one argument "
+        f"when it has exactly one free variable, which it binds, but its free variables are {variables}"
+    )
+    return formula.function(variables[0])
 
 
 class SetMorCategoryConstruction(MorCategoryConstruction):
@@ -1213,14 +1295,26 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             return _cartesian_product_of_finite_family(family)
 
         def _categorical_product_construction(self, factors):
+            r"""The product cone for a represented discrete set-valued diagram.
+
+            A nonfinite diagram must retain its selected functor (or a
+            constant factor). Its natural-transformation cone supplies the
+            mediating map; no finite enumeration or sampled component map
+            replaces that datum.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 SelectedLimitConstruction,
                 _discrete_diagram,
-                _finite_factor_family,
+                _factor_family,
             )
 
-            family = _finite_factor_family(factors, name="Product factors")
-            product = self._finite_product(family)
+            family = _factor_family(factors, name="Product factors")
+            product = self.product(family)
+            if product not in self:
+                raise TypeError(
+                    f"the Cartesian product {product} is not an object of {self}; "
+                    "the selected subcategory does not contain this product"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
@@ -1228,9 +1322,18 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             def factorizer(cone):
-                return product.from_maps(
-                    cone.apex(),
-                    lambda label: cone.structure_morphism(diagram.domain()(label)),
+                finite = family.cardinality().is_finite() and family.index_set() in EnumeratedSets()
+                components = (
+                    (lambda label: cone.structure_morphism(diagram.domain()(label)))
+                    if finite else cone.transformation()
+                )
+                # This is a limit in Sets. Its apex need not carry the
+                # additive structure that the product's factors happen to
+                # possess, so the additive-monoid/group specialization of
+                # from_maps is not the universal set-map constructor.
+                return CartesianProductsOfSets.ParentMethods.from_maps(
+                    product,
+                    cone.apex(), components,
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
@@ -1264,6 +1367,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             if source not in self or target not in self:
                 raise TypeError(
                     f"an equalizer in the category of sets needs maps between sets, but {source} or {target} is not a set"
+                )
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError(
+                    "a set equalizer requires both parallel arrows to belong to its selected Mor category"
                 )
 
             equalizer = self.condition_set(
@@ -1470,14 +1580,23 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             return _coproduct_of_finite_family(family)
 
         def _categorical_coproduct_construction(self, factors):
+            r"""The selected cocone of a represented, possibly infinite, sum of sets.
+
+            For an infinite index its universal arrow is obtained from the
+            actual cocone natural transformation, not an unchecked callback.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 SelectedColimitConstruction,
                 _discrete_diagram,
-                _finite_factor_family,
+                _factor_family,
             )
 
-            family = _finite_factor_family(factors, name="Coproduct factors")
-            coproduct = self._finite_coproduct(family)
+            family = _factor_family(factors, name="Coproduct factors")
+            coproduct = self.coproduct(family)
+            if coproduct not in self:
+                raise TypeError(
+                    f"the disjoint union {coproduct} is not an object of {self}"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
@@ -1485,9 +1604,11 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
 
             def factorizer(cocone):
+                finite = family.cardinality().is_finite() and family.index_set() in EnumeratedSets()
                 return coproduct.from_maps(
                     cocone.apex(),
-                    lambda label: cocone.costructure_morphism(diagram.domain()(label)),
+                    (lambda label: cocone.costructure_morphism(diagram.domain()(label)))
+                    if finite else cocone.transformation(),
                 )
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
@@ -1520,6 +1641,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 raise TypeError(
                     f"a coequalizer in the category of sets needs maps between sets, but {source} or {target} is not a set"
                 )
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError(
+                    "a set coequalizer requires both parallel arrows to belong to its selected Mor category"
+                )
             enumerated_finite_relation = (
                 Sets().is_provably_finite(source)
                 and Sets().is_provably_finite(target)
@@ -1536,12 +1664,14 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 elif right_morphism is identity and isinstance(left_morphism, OwnedSetMorphism):
                     translation_step = left_morphism.selected_integer_translation_step()
 
-            if left_morphism is right_morphism:
-                # Coequalizing an identical parallel pair imposes no
-                # relations. The target and its identity constitute the
-                # universal coequalizer even for infinite, unenumerated X.
+            if left_morphism is right_morphism or (
+                Sets().is_provably_finite(source) and source.cardinality() == cardinal(0)
+            ):
+                # An empty relation generates equality, even when the
+                # target is infinite and has no selected enumeration. The
+                # same holds for an identical parallel pair f = g.
                 quotient = target
-                projection = self.Mor(target, target).identity()
+                projection = Sets().Mor(target, target).identity()
                 representative_point = target
             elif translation_step is not None:
                 quotient, projection, representative_point = (
@@ -1664,7 +1794,13 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                         for displacement in displacements[1:]
                     )
 
-            if translation_differences is not None:
+            if all(morphisms.value(label) is reference for label in labels) or (
+                Sets().is_provably_finite(source) and source.cardinality() == cardinal(0)
+            ):
+                quotient = target
+                projection = Sets().Mor(target, target).identity()
+                representative_point = target
+            elif translation_differences is not None:
                 quotient, projection, representative_point = (
                     _integer_translation_relation_quotient(
                         target, translation_differences
@@ -1910,8 +2046,9 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             supplies no exact cardinal computation.  ``None`` makes no
             assertion about finiteness or emptiness.
 
-            Permitted callers are ``cardinality``, the finite-endpoint
-            queries in ``Cardinalities.set_power_category``, and the
+            Permitted callers are ``cardinality``, the size that
+            ``Cardinalities.set_power_category`` reads from an endpoint
+            presented by an enumeration from an index set, and the
             cardinality suppliers of set, ring, algebra and module
             constructions reading their retained parameters, and their
             finiteness decisions. These callers retain only established
@@ -2012,6 +2149,55 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 return _aleph0()
             return None
 
+        @RealizationHook
+        def _emptiness_decision(self) -> bool | None:
+            r"""Protected decision of ``X = ∅`` supplied by a construction.
+
+            Owner: ``Sets``; ``is_empty`` is the only caller.  ``True`` or
+            ``False`` is a decision; ``None`` states that the construction
+            supplies none, and ``is_empty`` then returns the proposition.
+            The cases decided here:
+
+            - a set whose construction decides its cardinality is empty
+              exactly when that cardinal is ``0`` (``_cardinality_decision``,
+              which already counts enumerated, finite-ordered, power, product
+              and coproduct sets);
+            - an infinite set is not empty.
+
+            A realization or category whose construction decides more supplies
+            this hook on its own class: a monoid is not empty because it has a
+            unit, an image is empty exactly when its source is, a product
+            exactly when some factor is.  A
+            torsor is not empty by definition; ``Torsors`` supplies that case
+            in its own file.
+            """
+            match self:
+                case _ if self in Sets().Infinite():
+                    return False
+                case _:
+                    count = self._cardinality_decision()
+                    if count is None:
+                        return None
+                    return cardinal(count) == cardinal(0)
+
+        def is_empty(self) -> bool | Predicate:
+            r"""Whether this set has no points, ``X = ∅``.
+
+            Decided where the construction decides it (``_emptiness_decision``);
+            otherwise the proposition ``is_empty(X)``, which ``ask`` answers
+            ``Unknown`` (`DEF-06`).  A predicate here never answers ``False``
+            for an undecided set.
+            """
+            from dzack_research.preamble.logic import AtomicProposition
+
+            match self._emptiness_decision():
+                case True:
+                    return True
+                case False:
+                    return False
+                case _:
+                    return AtomicProposition("is_empty", self)
+
         def is_finite(self):
             r"""Return whether the underlying set has finite cardinality."""
             match self:
@@ -2070,14 +2256,52 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
 
+        # Recorded by the construction that builds the object (``_object_of``
+        # through the root ``OwnedParent``, or the ring route); ``None`` for an
+        # object no category's constructor built.
+        _constructing_category = None
+
+        def ambient_category(self) -> Category:
+            r"""The category whose constructor built this object, without its property axioms.
+
+            The constructing category is defining construction data, recorded
+            once by the construction (``_constructing_category``, ``OWN-15``);
+            this accessor exposes it and computes nothing after the fact
+            (``OWN-17``).  Refinement into a property subcategory changes
+            ``category()`` and leaves this unchanged.  An axiom is removed
+            when its subcategory is full, with the same arrows as its base;
+            data subcategories, and axiom subcategories that are not full,
+            keep their arrows (``_ambient_of``).
+            """
+            constructing = self._constructing_category
+            assert constructing is not None, (
+                f"{self} has no ambient category: it was not built by a category's constructor, "
+                f"so nothing recorded which category it is an object of (it is placed in {self.category()})"
+            )
+            return _ambient_of(constructing)
+
         def Mor(
             self,
             codomain: Parent,
             category: Category | None = None,
         ) -> Category:
-            if category is None:
-                return Sets().Mor(self, codomain)
-            return _category_mor(category, self, codomain)
+            r"""``A.Mor(B) := A.ambient_category().Mor(A, B)``.
+
+            Owner ruling 2026-10-14 (``ARC-07``): the morphisms of a category
+            are determined by the mathematics, and ``Mor(A, B)`` makes no
+            sense when ``A`` and ``B`` share no ambient category.  A named
+            ``category`` is the explicit request for the arrows of that
+            category (``X.Mor(Y, category=Sets())`` forgets structure).
+            """
+            if category is not None:
+                return _category_mor(category, self, codomain)
+            ambient = self.ambient_category()
+            assert codomain in ambient, (
+                f"Mor({self}, {codomain}) is asked in the ambient category {ambient} of {self}, "
+                f"but {codomain} is not an object of it (it lies in {codomain.category()}); "
+                f"name the category whose arrows are meant"
+            )
+            return ambient.Mor(self, codomain)
 
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
@@ -3361,8 +3585,7 @@ class _ConditionSetEngine:
     def __init__(self, universe: Parent, predicate: Callable[[SourcePointT], bool | Predicate], **rest) -> None:
         self._universe = universe
         self._predicate = predicate
-        self._admitted_members = []
-        self._admitted_member_ids = set()
+        self._admitted_members = {}
         super().__init__(facade=True, **rest)
 
     def _retain_admitted_member(self, element):
@@ -3373,12 +3596,32 @@ class _ConditionSetEngine:
         zero or generators, and a protected subset inclusion applied to an
         admitted source point. This records that point, not a decision of
         the defining predicate and not a rule for admitting arbitrary data.
+        The record is read by ``__contains__``: an admitted point is a member
+        without asking the predicate again (which may be undecided on it).
+        It is keyed by the point's identity and holds the point, so the key
+        cannot be reused by another object while the record stands.
         """
         point = self.universe()(element)
-        if id(point) not in self._admitted_member_ids:
-            self._admitted_members.append(point)
-            self._admitted_member_ids.add(id(point))
+        self._admitted_members.setdefault(id(point), point)
         return point
+
+    def _an_element_(self):
+        r"""Sage's element-selection protocol: the first point of a decided finite enumeration.
+
+        Emptiness and the count are asked of the owned cardinality
+        (``_cardinality_decision``); a subset whose count is not decided has no
+        selected point here.
+        """
+        count = self._cardinality_decision()
+        assert count is not None, (
+            f"cannot select a point of {self}: its membership predicate {self.predicate()} "
+            f"is not decided on an enumerated universe"
+        )
+        assert cardinal(count) != cardinal(0), (
+            f"{self} has no point to select: it is the empty subset of {self.universe()} "
+            f"cut out by {self.predicate()}"
+        )
+        return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
         r"""The set \(X\) this subset is cut out of."""
@@ -3437,7 +3680,7 @@ class _ConditionSetEngine:
                 return False
             case True:
                 point = universe(element)
-                if id(point) in self._admitted_member_ids:
+                if id(point) in self._admitted_members:
                     return True
                 member = self.predicate()(point)
                 if member is not True and member is not False and not isinstance(member, Predicate):
@@ -3475,7 +3718,16 @@ class _ConditionSetEngine:
             raise NotImplementedError(
                 f"cannot enumerate {self}: {universe} has no selected enumeration"
             )
-        for point in universe:
+        return self._points_satisfying(universe)
+
+    def _points_satisfying(self, points):
+        r"""The points of an enumeration of ``X`` at which ``P`` holds, in that order.
+
+        Private to this subset construction and its group specialization:
+        ``points`` enumerates the universe ``X``; filtering it by the
+        predicate enumerates ``{x in X : P(x)}``.
+        """
+        for point in points:
             member = self.is_parent_of(point)
             assert member is True or member is False, (
                 f"cannot enumerate {self}: membership of {point!r} remains undecided"
@@ -3539,6 +3791,10 @@ class _ImageSetEngine:
     def source_set(self) -> Sets().ObjectType:
         r"""The set \(A\) of which this set is the image \(f(A)\)."""
         return self._source
+
+    def _emptiness_decision(self) -> bool | None:
+        r"""Realization of ``Sets``' emptiness hook: ``f(A)`` is empty exactly when ``A`` is."""
+        return self.source_set()._emptiness_decision()
 
     def image_map(self) -> Callable[[SourcePointT], TargetPointT]:
         r"""The map \(f\) of which this set is the image \(f(A)\)."""
@@ -3775,14 +4031,28 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         CartesianProductsOfSets(),
         _cardinalities().set_indexed_category(family, operation="product"),
     ]
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
+    commutative_groups = AdditiveGroups().AdditiveCommutative()
+    commutative_monoids = AdditiveMonoids().AdditiveCommutative()
 
     constant = family.constant_value()
     if constant is not None and constant in AdditiveMonoids():
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if constant is not None and constant in commutative_monoids:
+        placements.append(commutative_monoids)
+    if constant is not None and constant in AdditiveGroups():
+        placements.append(CartesianProductsOfAdditiveGroups())
+    if constant is not None and constant in commutative_groups:
+        placements.append(commutative_groups)
     diagram = family.selected_diagram()
     if diagram is not None and diagram.codomain().is_subcategory(AdditiveMonoids()):
         placements.append(CartesianProductsOfAdditiveMonoids())
+    if diagram is not None and diagram.codomain().is_subcategory(commutative_monoids):
+        placements.append(commutative_monoids)
+    if diagram is not None and diagram.codomain().is_subcategory(AdditiveGroups()):
+        placements.append(CartesianProductsOfAdditiveGroups())
+    if diagram is not None and diagram.codomain().is_subcategory(commutative_groups):
+        placements.append(commutative_groups)
     if Sets().is_provably_finite(index_set) and index_set in EnumeratedSets():
         # Select the finite factor family once. Both categorical placement
         # and its enumeration must read the same retained values; independent
@@ -3790,6 +4060,12 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         factors = tuple(family(index) for index in index_set)
         if all(factor in AdditiveMonoids() for factor in factors):
             placements.append(CartesianProductsOfAdditiveMonoids())
+        if all(factor in commutative_monoids for factor in factors):
+            placements.append(commutative_monoids)
+        if all(factor in AdditiveGroups() for factor in factors):
+            placements.append(CartesianProductsOfAdditiveGroups())
+        if all(factor in commutative_groups for factor in factors):
+            placements.append(commutative_groups)
         if all(factor in EnumeratedSets() for factor in factors):
             placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
     return _object_of(owned_category_join(placements), family=family)
@@ -3973,6 +4249,22 @@ class CartesianProductsOfSets(OwnedCategory):
         def family(self) -> IndexedFamily[IndexT, Sets().ObjectType]:
             return self._family
 
+        def _emptiness_decision(self) -> bool | None:
+            r"""``Sets``' emptiness hook: a product is empty exactly when some factor is.
+
+            Decided over a finite enumerated index set when a factor is decided
+            empty, or every factor is decided nonempty.
+            """
+            indices = self.index_set()
+            if not self.has_finite_index_set() or indices not in EnumeratedSets():
+                return None
+            decisions = tuple(self.factor(index)._emptiness_decision() for index in indices)
+            if any(decision is True for decision in decisions):
+                return True
+            if all(decision is False for decision in decisions):
+                return False
+            return None
+
         def has_finite_index_set(self) -> bool:
             index = self.index_set()
             return Sets().is_provably_finite(index)
@@ -4120,6 +4412,56 @@ class CartesianProductsOfSets(OwnedCategory):
         return [Sets()]
 
 
+class CartesianProductsOfAdditiveGroups(OwnedCategory):
+    r"""Products of additive groups, with pointwise additive inverses."""
+
+    def an_object(self):
+        r"""A genuine group-valued product, not a monoid-only specimen."""
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        factor = AdditiveGroups().an_object()
+        return Sets().product((factor, factor))
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return [CartesianProductsOfAdditiveMonoids(), AdditiveGroups()]
+
+    class ElementMethods:
+        def _neg_(self):
+            return self.parent()(lambda index: -self.component(index))
+
+    class ParentMethods:
+        def projection(self, index):
+            r"""Projection in additive groups, preserving pointwise inverses."""
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            normalized = self.index_set()(index)
+            return AdditiveGroups().Mor(self, self.factor(normalized))(
+                lambda section: section.component(normalized)
+            )
+
+        def from_maps(self, source, maps):
+            r"""The group map induced by an admitted additive-monoid cone.
+
+            A monoid homomorphism between additive groups automatically
+            preserves inverses: f(x)+f(-x)=f(0)=0, and similarly on the
+            other side. Retain the existing cone admission and universal
+            construction rather than reimplementing its index handling.
+            """
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            underlying = CartesianProductsOfAdditiveMonoids.ParentMethods.from_maps(
+                self, source, maps
+            )
+            # The same product remains a product in additive monoids. An
+            # additive-monoid source need not itself possess inverses, so its
+            # universal arrow must keep the weaker Mor parent.
+            if source not in AdditiveGroups():
+                return underlying
+            return AdditiveGroups().Mor(source, self)(lambda point: underlying(point))
+
+
 class CartesianProductsOfAdditiveMonoids(OwnedCategory):
     r"""Cartesian products with the componentwise additive-monoid structure."""
 
@@ -4141,7 +4483,21 @@ class CartesianProductsOfAdditiveMonoids(OwnedCategory):
                 lambda index: self.component(index) + other.component(index)
             )
 
-        __radd__ = __add__
+        def __radd__(self, other):
+            r"""Right-hand addition respects the order of a noncommutative monoid.
+
+            For product sections x and y, (y+x)_i = y_i+x_i;
+            reversing the two inputs is not justified without the
+            independent commutativity axiom on every factor. In the free
+            monoid on a,b, with its operation written additively, the
+            singleton-index sections (a) and (b) have (a)+(b)=(ab)
+            but (b)+(a)=(ba), with ab != ba. Hence __radd__ cannot
+            simply alias __add__ on this category.
+            """
+            other = self.parent()(other)
+            return self.parent()(
+                lambda index: other.component(index) + self.component(index)
+            )
 
     class ParentMethods:
         def zero(self):
@@ -5266,12 +5622,54 @@ class Mors(OwnedCategory):
         return [Sets()]
 
 
+class _PosetOnOrderRelation:
+    r"""Private realization of the poset \((X,\le)\) given by its set and its order relation.
+
+    Owner: ``PartiallyOrderedSets.__call__``, its one constructor.  The
+    defining data are the owned set ``X`` and the relation ``le``; the points
+    of the poset are the points of ``X``, and its cardinality is that of
+    ``X``, read off the retained set.
+    """
+
+    def __init__(self, underlying_set, order_relation, **rest) -> None:
+        self._underlying_set = underlying_set
+        self._order_relation = order_relation
+        super().__init__(**rest)
+
+    def underlying_set(self):
+        r"""The set ``X`` the order is on."""
+        return self._underlying_set
+
+    def le(self, left, right) -> bool:
+        return self._order_relation(left, right)
+
+    def __iter__(self):
+        return iter(self._underlying_set)
+
+    def __contains__(self, point) -> bool:
+        return point in self._underlying_set
+
+    def _element_constructor_(self, point):
+        assert point in self._underlying_set, f"{point} is not a point of the poset {self}"
+        return point
+
+    def _cardinality_decision(self):
+        r"""The cardinality of the set ``X``, asked of ``X``."""
+        return self._underlying_set.cardinality()
+
+    def _repr_(self) -> str:
+        return f"Partial order on {self._underlying_set}"
+
+
 class PartiallyOrderedSets(OwnedCategory):
-    r"""Sets equipped with a partial order.
+    r"""Sets equipped with a partial order (Mathlib ``PartOrd``, re-exported by ``lean-categories`` ``Orders.lean``).
 
     The relation ``le`` is the defining operation supplied by each represented
     partial order.  The four element comparisons are derived from that one
-    relation, rather than reimplemented by particular ordered sets.
+    relation, rather than reimplemented by particular ordered sets.  The order
+    is a chosen datum on the set, so this is a data category, not an axiom on
+    ``Sets()`` (``CAT-17``).  Its morphisms, the monotone maps, are not yet
+    presented (TODO ``partially-ordered-sets-have-monotone-maps``).
     """
 
     def an_object(self) -> ObjectOfCategory:
@@ -5281,10 +5679,58 @@ class PartiallyOrderedSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    def __call__(self, *data):
+        r"""``P(x)`` is Sage's membership and conversion; ``P(X, le)`` constructs the poset \((X,\le)\).
+
+        With one argument this is ``Category.__call__``: an object already in
+        the category is returned.  With two, ``X`` is an owned set and
+        ``le(x, y)`` its order relation; the caller is trusted that it is
+        reflexive, antisymmetric and transitive (``OWN-22``).
+        """
+        match data:
+            case (underlying_set, le):
+                assert underlying_set in Sets(), (
+                    f"a partial order is a relation on a set, but {underlying_set} is not a set: "
+                    f"it is in {underlying_set.category()}"
+                )
+                return _object_of(
+                    self,
+                    _engine=(self, _PosetOnOrderRelation, None),
+                    underlying_set=underlying_set,
+                    order_relation=le,
+                )
+            case _:
+                return super().__call__(*data)
+
     class ParentMethods:
         @abstract_method
         def le(self, left, right) -> bool:
             r"""Return whether ``left <= right`` in the selected partial order."""
+
+        def maximum(self):
+            r"""The point above every point, which a partial order has at most one of.
+
+            Decided here on a finite poset, by comparing against every point.
+            """
+            assert self.cardinality().is_finite() is True, (
+                f"the maximum of {self} is found here only on a finite poset, and {self} is "
+                f"not known to be finite"
+            )
+            top = next((m for m in self if all(self.le(x, m) for x in self)), None)
+            if top is None:
+                raise ValueError(f"{self} has no maximum: no point lies above every point")
+            return top
+
+        def minimum(self):
+            r"""The point below every point, which a partial order has at most one of."""
+            assert self.cardinality().is_finite() is True, (
+                f"the minimum of {self} is found here only on a finite poset, and {self} is "
+                f"not known to be finite"
+            )
+            bottom = next((m for m in self if all(self.le(m, x) for x in self)), None)
+            if bottom is None:
+                raise ValueError(f"{self} has no minimum: no point lies below every point")
+            return bottom
 
     class ElementMethods:
         def __le__(self, other):

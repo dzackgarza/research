@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -179,7 +180,7 @@ def _central_projector(module, character: IsotypicCharacter):
     base_ring = module.coefficient_ring()
     engine_ring = _engine_ring(base_ring)
 
-    computation_ring = _own_ring(SageQQ) if engine_ring is SageZZ else base_ring
+    computation_ring = _owned_rationals() if engine_ring is SageZZ else base_ring
     rank = int(coefficient_module.module_rank())
     matrices = computation_ring.matrix_space(rank)
     projector = matrices.zero()

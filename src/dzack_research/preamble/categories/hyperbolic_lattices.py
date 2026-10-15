@@ -33,6 +33,7 @@ from sage.rings.qqbar import AA as SageAA
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -43,6 +44,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
+    _owned_real_algebraic_numbers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -227,7 +230,7 @@ class NumberFieldVinbergLattice(SageObject):
     def __init__(self, lattice, real_embedding) -> None:
         order = lattice.base_ring()
         field = order.fraction_field()
-        real_algebraics = _own_ring(SageAA)
+        real_algebraics = _owned_real_algebraic_numbers()
         assert int(field.degree()) == 2, (
             f"cannot run Vinberg's algorithm on {lattice} over {field}: the algorithm "
             f"holds over any totally real field, but the available implementation "
@@ -316,7 +319,7 @@ class NumberFieldVinbergLattice(SageObject):
     def _selected_primitive_approximation(self):
         field = self.lattice().base_ring().fraction_field()
         image = self.real_embedding()(field.primitive_element())
-        backend = _engine_element(_own_ring(SageAA), image)
+        backend = _engine_element(_owned_real_algebraic_numbers(), image)
         return str(backend.n(128))
 
     def _cross_root(self, serialized_row):
@@ -480,7 +483,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             realization works over the integers only, so the wider case is a
             stated absence rather than a silent coercion.
             """
-            assert self.base_ring() is _own_ring(SageZZ), (
+            assert self.base_ring() is _owned_integers(), (
                 f"cannot run Vinberg's algorithm on {self} over {self.base_ring()}: the "
                 f"algorithm holds over any totally real ring of integers, but the "
                 f"available implementation works over ZZ only.  Bottinelli's "
@@ -610,7 +613,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots=max_roots,
                 max_decompositions=max_decompositions,
             )
-            return CoxeterDiagrams().from_roots(tuple(roots))
+            return CoxeterDiagrams().from_roots(finite_indexed_family_from_values(None, tuple(roots)))
 
         def _chamber_vertex_squares(self, controlling_vector, max_roots, max_decompositions):
             r"""Return the squares of the vertices of the fundamental polyhedron.
@@ -743,7 +746,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             divisibility check is exactly the condition that the rational
             reconstruction lies back in \(L\).
             """
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             assert self.base_ring() is integers, (
                 f"cannot enumerate isotropic vectors of {self} by height: the enumeration works only over ZZ, and {self} is over {self.base_ring()}"
             )

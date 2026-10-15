@@ -54,9 +54,12 @@ class SquareClass(MultiplicativeGroupElement):
 
     def order(self):
         r"""The order of \([u]\): one when \(u\) is a square, two otherwise."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _own_ring,
+            _owned_integers,
+        )
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         decision = self.is_one()
         if decision is True:
             return integers.one()
@@ -151,6 +154,23 @@ class _SquareClassGroup:
         if parent(unit) is monoid:
             return unit.is_square()
         return AtomicProposition("is_square", monoid, unit)
+
+    def sign_isomorphism(self):
+        r"""``RR^x/(RR^x)^2 -> C_2``, the class of a unit to its sign.
+
+        Every positive real is a square, so the classes of the real field are
+        those of ``1`` and ``-1``; the sign of a representative is the class.
+        """
+        from dzack_research.preamble.rings.real import RR
+
+        assert self._monoid is RR, (
+            f"the sign identifies the square classes of the real field, but {self} is the square-class group of {self._monoid}"
+        )
+        signs = OwnedGroups().C(2)
+        (negative,) = tuple(element for element in signs if not element.is_one())
+        return OwnedGroups().Mor(self, signs)(
+            lambda square_class: signs.one() if square_class.representative() > 0 else negative
+        )
 
     def __call__(self, datum):
         return self._element_constructor_(datum)

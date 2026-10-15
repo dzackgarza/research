@@ -10,7 +10,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlases,
     ModuleGluingData,
@@ -691,7 +694,7 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                 f"over {base}"
             )
         self._projective_space = projective_space
-        self._degree = _own_ring(SageZZ)(degree)
+        self._degree = _owned_integers()(degree)
         atlas = projective_space.standard_affine_atlas()
         units = {}
         for source_index, target_index in atlas.transition_index_set():
@@ -748,7 +751,7 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
 
     @cached_method
     def tensor_power(self, exponent):
-        exponent = _own_ring(SageZZ)(exponent)
+        exponent = _owned_integers()(exponent)
         match exponent == 1:
             case True:
                 return self
@@ -1055,7 +1058,7 @@ class _ProjectiveSubschemeLineBundleEngine:
         )
 
     def tensor_power(self, exponent):
-        exponent = _own_ring(SageZZ)(exponent)
+        exponent = _owned_integers()(exponent)
         if exponent == 1:
             return self
         return self.pullback_morphism().module_pullback(
@@ -1104,7 +1107,7 @@ class _ProjectiveSubschemeLineBundleEngine:
         )
         sheaves = QuasiCoherentSheaves(self.scheme())
         forward = sheaves.Mor(self, target)(ambient.forward())
-        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        inverse = sheaves.Mor(target, self)(ambient.inverse().forward())
         return sheaves.Core().Mor(self, target)(forward, inverse)
 
     def _repr_(self):
@@ -1182,10 +1185,10 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                         f"{projective_product} are indexed by {factor_indices}"
                     )
                 degree_values = tuple(
-                    _own_ring(SageZZ)(degrees[label]) for label in factor_labels
+                    _owned_integers()(degrees[label]) for label in factor_labels
                 )
             case _:
-                degree_values = tuple(_own_ring(SageZZ)(degree) for degree in degrees)
+                degree_values = tuple(_owned_integers()(degree) for degree in degrees)
                 if len(degree_values) != len(factor_labels):
                     raise ValueError(
                         f"the multidegree {degree_values} has {len(degree_values)} entries, but "
@@ -1275,7 +1278,7 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
 
     @cached_method
     def tensor_power(self, exponent):
-        exponent = _own_ring(SageZZ)(exponent)
+        exponent = _owned_integers()(exponent)
         match exponent == 1:
             case True:
                 return self
@@ -1539,7 +1542,7 @@ class _ProductProjectiveSubschemeLineBundleEngine:
         )
 
     def tensor_power(self, exponent):
-        exponent = _own_ring(SageZZ)(exponent)
+        exponent = _owned_integers()(exponent)
         if exponent == 1:
             return self
         return _product_projective_subscheme_line_bundle(
@@ -1596,7 +1599,7 @@ class _ProductProjectiveSubschemeLineBundleEngine:
         )
         sheaves = QuasiCoherentSheaves(self.scheme())
         forward = sheaves.Mor(self, target)(ambient.forward())
-        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        inverse = sheaves.Mor(target, self)(ambient.inverse().forward())
         return sheaves.Core().Mor(self, target)(forward, inverse)
 
     def _repr_(self):

@@ -69,6 +69,7 @@ class CyclicGroups(OwnedCategory):
             placement.append(FiniteAbelianGroups())
         return _object_of(
             Cat().meet(placement),
+            _ambient=OwnedGroups(),
             supergroup=supergroup,
             group_generator=supergroup(generator),
             **level_data,

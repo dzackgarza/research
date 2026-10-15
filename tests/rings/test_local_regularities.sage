@@ -4,7 +4,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_affine_plane_origin_has_dimension_and_embedding_dimension_two() -> None:
-    ring = QQ.polynomial_ring("x", "y")
+    ring = QQ.polynomial_ring(("x", "y"))
     x, y = (ring.algebra_generator(name) for name in ("x", "y"))
     origin = ring.spectrum()(ring.ideal(x, y))
 

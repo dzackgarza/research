@@ -28,6 +28,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_complex_field,
+    _owned_rationals,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
@@ -69,8 +72,8 @@ class _AffineSpaceAnalytificationFunctor(Functor):
 
     def __init__(self, scalar_embedding) -> None:
         self._scalar_embedding = scalar_embedding
-        source = _own_ring(scalar_embedding.domain())
-        target = _own_ring(scalar_embedding.codomain())
+        source = _owned_ring(scalar_embedding.domain())
+        target = _owned_ring(scalar_embedding.codomain())
         assert _engine_ring(target) is SageCC, (
             f"analytification along {scalar_embedding} needs an embedding into the complex "
             f"numbers CC, but its codomain is {target}"
@@ -203,8 +206,8 @@ def AnalyticDiscFamily(radius=1):
     Restricting the base to ``Delta={|t|<r}`` and the total space to its inverse
     image gives the represented slice object.
     """
-    qq = _own_ring(SageQQ)
-    cc = _own_ring(SageCC)
+    qq = _owned_rationals()
+    cc = _owned_complex_field()
     embedding = qq.Mor(cc)(lambda scalar: cc(scalar))
     algebraic_total = AffineSpaces(qq)(2, names=("x", "t"))
     algebraic_base = AffineSpaces(qq)(1, names=("t",))

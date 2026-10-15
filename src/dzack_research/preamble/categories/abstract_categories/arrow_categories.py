@@ -1112,6 +1112,14 @@ class CosliceCategory(_SubcategoryOfArrows):
         match cls:
             case DynamicMetaclass():
                 return cls.__base__(base_category, base_object)
+        if cls is CosliceCategory:
+            # X/C is the functorial construction C |-> X/C: a category class
+            # declares the construction's class for its coslices as the nested
+            # ``Coslices`` (a subclass of CosliceCategory), found through its
+            # class inheritance like any category-level declaration.
+            construction = _declared_construction(base_category, "Coslices")
+            if construction is not None:
+                return typecall(construction, base_category, base_object)
         return typecall(cls, base_category, base_object)
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
@@ -1233,6 +1241,34 @@ class CosliceCategory(_SubcategoryOfArrows):
     def admits_arrow(self, arrow: Morphism) -> bool:
         r"""An arrow out of the fixed base object."""
         return arrow.domain() is self.base_object() and super().admits_arrow(arrow)
+
+    # Implementer side of CoreMor's core contract (OWN-05) for X/C: an
+    # isomorphism (B, i) -> (B', i') is a base isomorphism g with g i = i',
+    # the square (id_X, g). The base category owns the marked decisions, as it
+    # does for marked diagrams (_FunctorCategory).
+    def _core_isomorphism_from_apex(self, core_mor, apex):
+        r"""The isomorphism of ``core_mor`` whose component on the apex is ``apex``."""
+        source, target = core_mor.domain(), core_mor.codomain()
+        base = self.base_object()
+        identity = _category_mor_parent(self.base_category(), base, base).identity()
+        forward = self.Mor(source, target)(identity, apex)
+        inverse = self.Mor(target, source)(identity, ~apex)
+        return core_mor(forward, inverse)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""One isomorphism of ``core_mor``, or ``None`` when the base category decides there is none."""
+        apex = self.base_category()._marked_isometry(self, core_mor.domain(), core_mor.codomain())
+        return None if apex is None else self._core_isomorphism_from_apex(core_mor, apex)
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Automorphisms of the marked object generating its automorphism group, from the base category."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"group generators belong to Aut(X) = Iso(X, X), but {core_mor} has distinct endpoints"
+        )
+        apexes = self.base_category()._marked_automorphism_generators(self, core_mor.domain())
+        return finite_ordered_set(tuple(self._core_isomorphism_from_apex(core_mor, apex) for apex in apexes))
 
     def _repr_(self) -> str:
         return f"Coslice category {self.base_object()}/{self.base_category()}"
@@ -2230,21 +2266,102 @@ class CoreMor(CategoricalMor):
         family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
+        *,
+        category: Category | None = None,
     ) -> None:
-        CategoricalMor.__init__(
-            self, family, domain, codomain
+        r"""``category`` refines the vertex-group placement of a specialized core Mor."""
+        placement = self._vertex_group_placement(domain, codomain)
+        if category is not None:
+            placement = category if placement is None else Cat().meet((placement, category))
+        CategoricalMor.__init__(self, family, domain, codomain, category=placement)
+        if domain is codomain:
+            self._initialize_vertex_group()
+
+    def _initialize_vertex_group(self) -> None:
+        r"""Make ``Aut(X)`` the vertex group of the core groupoid (protected; ``OWN-05``).
+
+        Its ambient category (``ARC-07``) is that of groups, and it selects the
+        generating family its base category computes (the core contract);
+        selecting computes nothing until ``group_generators()`` first reads it.
+        Callers: ``CoreMor.__init__`` and specialized core Mors that do not
+        initialize through it (``LatticeIsometryMor``).
+        """
+        # A module-level import of groups here is circular (observed: ImportError
+        # on ModuleMorphismMethods while loading the preamble), so it is read here.
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        self._constructing_category = OwnedGroups()
+        self.select_group_generators(
+            lambda: self.core_category().base_category()._core_automorphism_generators(self)
         )
+
+    @staticmethod
+    def _vertex_group_placement(domain: Parent, codomain: Parent) -> Category | None:
+        r"""``Aut_C(X) = Core(C)(X, X)`` is the vertex group of the core groupoid.
+
+        Composition, identity and inverse are those of the groupoid.  A
+        specialized core Mor (lattice isometries) takes its group placement
+        from here and refines it.
+        """
+        if domain is not codomain:
+            return None
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return OwnedGroups()
+
+    def one(self) -> CategoricalIsomorphism:
+        r"""The identity of ``Aut(X)``: the identity isomorphism of ``X``."""
+        return self.identity()
 
     def core_category(self) -> _CoreCategory:
         return self.base_category()
+
+    # Protected contract (OWN-05): the core decisions of a base category C.
+    # Purpose: whether two objects of C are isomorphic, one isomorphism, the
+    # generators of Aut(X), and an isomorphism whose (apex) component lies
+    # in a supplied subgroup, are decisions C owns; no public operation of
+    # an arbitrary C answers them.  Owner: CoreMor.  Callers: CoreMor's
+    # is_empty, an_element, group_generators, an_element_in; no other.
+    # Implementers: the base category C = core_category().base_category():
+    #   C._core_isomorphism_witness(core_mor) -> element of core_mor or None;
+    #   C._core_automorphism_generators(core_mor) -> finite ordered set of
+    #       elements of core_mor = Aut(X) generating it;
+    #   C._core_isomorphism_in(core_mor, subgroup) -> element or None.
+    # Implemented by _FunctorCategory (marked diagrams, through the codomain
+    # category), Lattices and Modules.  A base category without them fails
+    # at the call.
+
+    @cached_method
+    def _isomorphism_witness(self):
+        r"""One isomorphism, or ``None``: the base category's decision (its protected core contract)."""
+        return self.core_category().base_category()._core_isomorphism_witness(self)
+
+    def is_empty(self) -> bool:
+        r"""Whether there is no isomorphism between the endpoints, as the base category decides."""
+        return self._isomorphism_witness() is None
+
+    def an_element(self) -> CategoricalIsomorphism:
+        r"""One isomorphism between the endpoints; an empty core Mor has none."""
+        witness = self._isomorphism_witness()
+        if witness is None:
+            raise ValueError(f"there is no isomorphism {self.domain()} -> {self.codomain()}")
+        return witness
+
+    def an_element_in(self, subgroup) -> CategoricalIsomorphism | None:
+        r"""An isomorphism whose apex component lies in ``subgroup``, or ``None``.
+
+        For marked diagrams, ``subgroup`` is a subgroup of the automorphism
+        group of the common apex; the base category owns the search.
+        """
+        return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
 
     def _element_constructor_(self, forward, inverse=None):
         match forward:
             case CategoricalIsomorphism() if inverse is None:
                 if forward.parent() is self:
                     return forward
-                self._require_base_morphisms(forward.forward(), forward.inverse())
-                return self._from_known_inverse_pair(forward.forward(), forward.inverse())
+                self._require_base_morphisms(forward.forward(), forward.inverse().forward())
+                return self._from_known_inverse_pair(forward.forward(), forward.inverse().forward())
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)

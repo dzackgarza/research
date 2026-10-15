@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
@@ -260,7 +261,7 @@ class IsolatedHypersurfaceSingularity:
         return (self.polynomial_ring()).quotient_by_relations(self.jacobian_generators())
 
     def milnor_number(self):
-        return _own_ring(SageZZ)(self._milnor_number)
+        return _owned_integers()(self._milnor_number)
 
     def tjurina_algebra(self):
         return (self.polynomial_ring()).quotient_by_relations((self.equation(), *self.jacobian_generators()),
@@ -277,7 +278,7 @@ class IsolatedHypersurfaceSingularity:
             f"{self} is not an isolated singularity: its Tjurina algebra is infinite-dimensional, "
             "so the Tjurina number is infinite"
         )
-        return _own_ring(SageZZ)(dimension)
+        return _owned_integers()(dimension)
 
     def completed_local_ring(self, *, precision=20):
         hypersurface = (self.polynomial_ring()).quotient_by_relations((self.equation(),))
@@ -419,13 +420,13 @@ class IsolatedHypersurfaceSingularity:
         r"""Return the local delta invariant at a represented closed point."""
         delta, _tjurina, _branches, _degree = self._plane_curve_prime_data(point)
         assert delta >= 0, f"the curve {self} has infinite delta invariant at {point}"
-        return _own_ring(SageZZ)(delta)
+        return _owned_integers()(delta)
 
     def delta_contribution_over_base(self, point):
         r"""Return ``delta_p [kappa(p):k]`` without splitting the closed point."""
         delta, _tjurina, _branches, degree = self._plane_curve_prime_data(point)
         assert delta >= 0, f"the curve {self} has infinite delta invariant at {point}"
-        return _own_ring(SageZZ)(delta * degree)
+        return _owned_integers()(delta * degree)
 
     def delta_invariant(self):
         r"""Return the local plane-curve delta invariant at the selected origin.
@@ -442,12 +443,12 @@ class IsolatedHypersurfaceSingularity:
     def local_tjurina_number(self):
         r"""Return the local Tjurina number from the same selected germ calculation."""
         _delta, tjurina, _branches = self._plane_curve_origin_data()
-        return _own_ring(SageZZ)(tjurina)
+        return _owned_integers()(tjurina)
 
     def number_of_branches_at_origin(self):
         r"""Return the number of geometric branches of the reduced plane-curve germ."""
         _delta, _tjurina, branches = self._plane_curve_origin_data()
-        return _own_ring(SageZZ)(branches)
+        return _owned_integers()(branches)
 
     def conductor_ideal_at_origin(self):
         r"""Return the conductor ideal in the local ring at the selected origin.

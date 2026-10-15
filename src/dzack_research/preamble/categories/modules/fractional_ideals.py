@@ -28,6 +28,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -457,7 +459,7 @@ def _fraction_field_backend_value(base_ring, value):
 
 
 def _zz_fractional_generator(module_generator_values):
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     values = tuple(
         SageQQ(_fraction_field_backend_value(integers, value))
         for value in module_generator_values
@@ -478,7 +480,7 @@ def _zz_fractional_generator(module_generator_values):
 def _order_coordinate_vector(base_ring, value):
 
     ring = _owned_ring(base_ring)
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     backend_value = _fraction_field_backend_value(ring, value)
     return tensor.vector(
         rationals,
@@ -513,7 +515,7 @@ def _integer_coordinate_submodule_from_values(base_ring, module_generator_values
         for order_basis in order.basis()
     ]
     if not rows:
-        rationals = _own_ring(SageQQ)
+        rationals = _owned_rationals()
         rows = [tensor.vector(rationals, [rationals.zero()] * int(order.module_rank()))]
     return span([_engine_component_vector(row) for row in rows], SageZZ)
 
@@ -574,7 +576,7 @@ def _principal_generator_from_order_values(base_ring, module_generator_values):
     if not basis_values:
         return field.zero()
 
-    rationals = _own_ring(SageQQ)
+    rationals = _owned_rationals()
     rank = int(order.module_rank())
     # The map QQ^rank -> K sending e_j to the j-th basis element of the order,
     # written in the power basis of K.
@@ -649,7 +651,7 @@ def _fractional_ideal_from_backend(base_ring, backend):
     values = () if principal == 0 else (principal,)
     return _fractional_ideal_object(
         ring,
-        _own_ring(SageQQ),
+        _owned_rationals(),
         values,
         projective=True,
     )

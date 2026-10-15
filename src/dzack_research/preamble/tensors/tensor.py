@@ -1124,6 +1124,61 @@ def _engine_component_matrix(value):
     )
 
 
+# Protected engine-adapter contract (OWN-05, OWN-06, OWN-24): the
+# ``_engine_*`` row-action functions below are the one place where Sage's
+# row-action convention and coordinate matrices are handled.  Owner: this
+# tensor package.  Permitted callers: the group-realization adapters of the
+# automorphism groups that lower an element to a row action and raise one
+# back (``LatticeIsometryMor``, ``ModuleAutomorphismGroup`` and the module
+# engine adapter ``_flag_stabilizer_engine_data``).  Inputs are owned
+# morphisms or raw engine matrices produced by these functions; outputs are
+# raw engine matrices that the caller raises immediately.  Mathematical
+# code never receives them.
+
+
+def _engine_flag_adapted_rows(spans, engine_ring):
+    r"""Private engine adapter: coordinate rows of a basis adapted to a chain of row spans over a PID.
+
+    ``spans`` lists coordinate-row bases of ``T_1 < ... < T_k < M``.  For the
+    adapted rows ``A`` of ``T_(i-1)`` and a basis ``S`` of ``T_i``, write
+    ``A = C S``; the Smith form ``U C V = D`` gives the basis ``V^-1 S`` of
+    ``T_i`` whose first rows span ``T_(i-1)`` exactly when every diagonal
+    entry of ``D`` is a unit, i.e. ``T_(i-1)`` is saturated in ``T_i``.
+    Returns the adapted rows, the block sizes and the first step that is
+    not saturated (``None`` when all are).
+    """
+    adapted = None
+    sizes = []
+    for step, span in enumerate(spans):
+        rows = _sage_matrix(engine_ring, span)
+        if adapted is None:
+            adapted = rows
+            sizes.append(rows.nrows())
+            continue
+        coefficients = rows.solve_left(adapted)
+        diagonal, _left, right = coefficients.smith_form()
+        if not all(diagonal[i, i].is_unit() for i in range(adapted.nrows())):
+            return None, None, step
+        rebased = right.inverse() * rows
+        adapted = adapted.stack(rebased.matrix_from_rows(range(adapted.nrows(), rebased.nrows())))
+        sizes.append(rebased.nrows() - sum(sizes))
+    return adapted.rows(), tuple(size for size in sizes if size), None
+
+
+def _engine_block_general_linear_row_actions(sizes, engine_ring):
+    r"""Private engine adapter: Sage's generators of each ``GL(n_i, R)``, embedded block-diagonally as row actions."""
+    from sage.groups.matrix_gps.linear import GL
+    from sage.matrix.constructor import block_diagonal_matrix
+
+    actions = []
+    for index, size in enumerate(sizes):
+        for generator in GL(size, engine_ring).gens():
+            blocks = [_sage_matrix.identity(engine_ring, other) for other in sizes]
+            blocks[index] = generator.matrix()
+            actions.append(block_diagonal_matrix(blocks))
+    return tuple(actions)
+
+
 def _engine_row_action_matrix(morphism):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): a morphism as Sage's row action.
 
@@ -1154,6 +1209,139 @@ def _engine_column_matrix_from_row_action(row_action):
     convention, so its caller reads generator images from its columns.
     """
     return row_action.transpose()
+
+
+def _engine_general_linear_two_word(row_action):
+    r"""Private engine adapter (`OWN-05`, `OWN-06`, `OWN-24`): an element of ``GL_2(ZZ)`` as a word.
+
+    Protected caller: ``ModuleAutomorphismGroup._general_linear_two_word``
+    (``modules/module_morphisms/module_morphisms.py``), and
+    :func:`_engine_general_linear_two_coset_permutations` here.  Input: the
+    engine row action of an automorphism of a free rank-two ``ZZ``-module on
+    its selected basis.  Output: a tuple of signed letters, ``1, 2, 3`` for
+    ``s_2 = [[0,-1],[1,0]]``, ``s_3 = [[0,1],[-1,1]]``, ``e = diag(1,-1)`` and
+    negative for inverses, whose product is the column matrix ``C``
+    (``C(gh) = C(g) C(h)``).  ``C = e A`` with ``det A = 1`` when
+    ``det C = -1``; ``A`` is written in ``l, r`` by Sage's
+    ``sl2z_word_problem``, with ``l = s_3^-1 s_2^-1`` and ``r = s_3 s_2``.
+    """
+    return _engine_general_linear_two_column_word(_engine_column_matrix_from_row_action(row_action))
+
+
+def _engine_general_linear_two_column_word(column):
+    r"""The word of :func:`_engine_general_linear_two_word`, read from the column matrix ``C`` itself."""
+    from sage.modular.arithgroup.arithgroup_perm import sl2z_word_problem
+    from sage.modular.arithgroup.congroup_sl2z import SL2Z
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    reflection = _sage_matrix.diagonal(SageZZ, [1, -1])
+    letters = ((-2, -1), (2, 1))
+
+    def special(matrix):
+        return tuple(
+            letter
+            for which, exponent in sl2z_word_problem(SL2Z(matrix))
+            for letter in (
+                letters[int(which)] * int(exponent)
+                if int(exponent) >= 0
+                else tuple(-step for step in reversed(letters[int(which)])) * -int(exponent)
+            )
+        )
+
+    match column.det():
+        case 1:
+            return special(column)
+        case -1:
+            return (3, *special(reflection * column))
+        case determinant:
+            raise AssertionError(f"{column} has determinant {determinant}, not +-1")
+
+
+def _engine_general_linear_two_coset_permutations(generator_row_actions, index):
+    r"""Private engine adapter (`OWN-05`, `OWN-06`): Todd--Coxeter for a subgroup of ``GL_2(ZZ)``.
+
+    Protected caller: ``ModuleAutomorphismGroup._finite_index_coset_permutations``.
+    ``generator_row_actions`` are the engine row actions of generators of
+    ``H``; ``index`` is the caller's stated finite index.  GAP's
+    ``CosetTable`` enumerates the right cosets of ``H`` in
+
+        < s_2, s_3, e | s_2^4, s_2^2 s_3^-3, e^2, e s_2 e^-1 = w(e s_2 e),
+                        e s_3 e^-1 = w(e s_3 e) >,
+
+    taken to present ``GL_2(ZZ)``.  ``s_2 = S`` and ``s_3 = S^-1 T^-1 =
+    (TS)^-1`` for ``S = [[0,-1],[1,0]]``, ``T = [[1,1],[0,1]]`` (hand
+    computation).  Generation is Mathlib's
+    ``Matrix.SpecialLinearGroup.SL2Z_generators`` and Conrad, *SL_2(ZZ)*
+    (kconrad.math.uconn.edu), Cor. 2.3.  The relators hold:
+    ``s_2^2 = -1`` and ``s_3^3 = ((TS)^3)^-1 = -1`` by TauCeti's
+    ``T_mul_S_pow_three``; the last two relators hold because ``w`` is the
+    word Sage's ``sl2z_word_problem`` returns for the matrix ``e s_i e``.  UNSOURCED: that these relations
+    present the group.  Conrad, Thm. C.1 (proved), and Milne, *Modular
+    Functions and Modular Forms* v1.31, Remark 2.14 (stated without proof),
+    give only ``PSL_2(ZZ) = ZZ/2 * ZZ/3``; no opened source states the
+    presentation of ``SL_2(ZZ)`` or of its extension by ``e = diag(1,-1)``
+    (COMPLAINTS.md, *A finite presentation of GL_2(ZZ)*).  The index
+    assertion below detects a wrong presentation only when it changes the
+    coset count.  Enumeration terminates exactly when the
+    index is finite (TauCeti's ``CosetTable.index_le`` bounds the index by a
+    table's size).  Returns, for ``s_2, s_3, e``, the right action on the
+    coset numbers ``0, ..., index - 1`` (``0`` is ``H``) as tuples.
+    """
+    from functools import reduce
+
+    from sage.libs.gap.libgap import libgap
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    free = libgap.FreeGroup(["s2", "s3", "e"])
+    letters = free.GeneratorsOfGroup()
+
+    def word(signed_letters, generators):
+        return reduce(
+            lambda product, letter: product * generators[abs(letter) - 1] ** (1 if letter > 0 else -1),
+            signed_letters,
+            generators[0] ** 0,
+        )
+
+    two = _sage_matrix(SageZZ, [[0, -1], [1, 0]])
+    three = _sage_matrix(SageZZ, [[0, 1], [-1, 1]])
+    reflection = _sage_matrix.diagonal(SageZZ, [1, -1])
+    s2, s3, e = letters
+    relators = [
+        s2 ** 4,
+        s2 ** 2 * s3 ** -3,
+        e ** 2,
+        e * s2 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * two * reflection), letters).Inverse(),
+        e * s3 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * three * reflection), letters).Inverse(),
+    ]
+    presented = free / relators
+    presented_letters = presented.GeneratorsOfGroup()
+    subgroup = presented.Subgroup(
+        [word(_engine_general_linear_two_word(row_action), presented_letters) for row_action in generator_row_actions]
+    )
+    table = presented.CosetTable(subgroup)
+    assert int(libgap.Length(table[0])) == int(index), (
+        f"the subgroup was stated to have index {index} in GL_2(ZZ), but Todd--Coxeter enumeration "
+        f"found {libgap.Length(table[0])} cosets"
+    )
+    # Row 2k of GAP's coset table is the right action of the k-th generator.
+    return tuple(tuple(int(point) - 1 for point in table[2 * position]) for position in range(3))
+
+
+def _engine_permutation_word_action(permutations, signed_letters, point):
+    r"""Private engine adapter: the right action of a word on a point, from the generators' permutations.
+
+    Protected caller: ``ModuleAutomorphismGroup.finite_index_left_cosets``.
+    """
+    from functools import reduce
+
+    inverses = tuple(
+        tuple(sorted(range(len(permutation)), key=permutation.__getitem__)) for permutation in permutations
+    )
+    return reduce(
+        lambda current, letter: (permutations if letter > 0 else inverses)[abs(letter) - 1][current],
+        signed_letters,
+        point,
+    )
 
 
 def _engine_row_family_gram(gram, row_family):
@@ -1300,8 +1488,8 @@ def _engine_quotient_form_family_contractions(bilinear_form, quadratic_form, row
                     for j in range(rank)) for i in range(rank))
         if diagonal is not None else bilinear
     )
-    denominator = lcm(1, *(int(x.denominator()) for row in (*bilinear, *self_gram)
-                            for x in row))
+    denominator = lcm([1, *(int(x.denominator()) for row in (*bilinear, *self_gram)
+                            for x in row)])
     self_period = 2 if diagonal is not None else 1
     b_coefficients = numpy.asarray(
         [[int(x * denominator) % denominator for x in row] for row in bilinear],

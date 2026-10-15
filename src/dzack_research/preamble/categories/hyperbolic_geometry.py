@@ -11,7 +11,10 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
@@ -149,7 +152,7 @@ class PositiveConeComponents(OwnedParameterizedCategory):
     def parameter_category(self):
         from dzack_research.preamble.categories.lattices import Lattices
 
-        return Lattices(_own_ring(SageZZ))
+        return Lattices(_owned_integers())
 
     def lattice(self):
         return self.base()

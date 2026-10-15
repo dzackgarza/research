@@ -6,6 +6,21 @@ These are source-level mathematical specimens; execution follows terminal T.
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_group_product_retains_abelianity_from_factors_not_selected_category() -> None:
+    r"""The product of abelian groups remains abelian when selected in Grp."""
+    cyclic = Groups.C(2)
+    product = Groups().product_construction((cyclic, cyclic))
+    result = product.object()
+    diagram = product.diagram()
+    first, second = diagram.domain()(0), diagram.domain()(1)
+    left = product.structure_morphism(first)
+    right = product.structure_morphism(second)
+
+    assert result in AbelianGroups()
+    assert result.cardinality() == cardinal(4)
+    assert left.codomain() is cyclic and right.codomain() is cyclic
+
+
 def test_empty_group_diagrams_have_the_trivial_group_and_unique_maps() -> None:
     category = Groups().FinitelyPresentedAsGroup()
     cyclic = Groups.C(2)
@@ -24,6 +39,66 @@ def test_empty_group_diagrams_have_the_trivial_group_and_unique_maps() -> None:
     initial = coproduct.factor(cocone).apex_map()
     assert initial.domain() is coproduct.object() and initial.codomain() is cyclic
     assert initial(coproduct.object().one()) == cyclic.one()
+
+
+def test_abelian_coproduct_of_two_cyclic_groups_is_product_not_free_product() -> None:
+    r"""``C2 ⊕ C2`` has commuting injections and their universal sum map."""
+    abelian = AbelianGroups()
+    cyclic = Groups.C(2)
+    generator = next(iter(cyclic.group_generators()))
+    construction = abelian.coproduct_construction((cyclic, cyclic))
+    coproduct = construction.object()
+    shape = construction.diagram().domain()
+    first, second = shape(0), shape(1)
+    left = construction.costructure_morphism(first)
+    right = construction.costructure_morphism(second)
+    identity = cyclic.Mor(cyclic).identity()
+    cocone = construction.diagram().Cocones().cocone(
+        cyclic, lambda _index: identity
+    )
+    fold = construction.factor(cocone).apex_map()
+
+    assert coproduct in abelian
+    assert coproduct.cardinality() == cardinal(4)
+    assert left(generator) * right(generator) == right(generator) * left(generator)
+    assert fold * left == identity
+    assert fold * right == identity
+    assert fold(left(generator) * right(generator)) == cyclic.one()
+
+
+def test_mixed_abelian_coproduct_injections_are_sections_of_selected_projections() -> None:
+    r"""The coproduct ``Z ⊕ C2`` reuses the product's canonical coordinates."""
+    abelian = AbelianGroups()
+    integers = Groups.Free(1)
+    label = next(iter(integers.free_basis()))
+    generator = integers.free_generator(label)
+    cyclic = Groups.C(2)
+    involution = next(iter(cyclic.group_generators()))
+    factors = (integers, cyclic)
+    coproduct = abelian.coproduct_construction(factors)
+    diagram = coproduct.diagram()
+    first, second = diagram.domain()(0), diagram.domain()(1)
+    injection_z = coproduct.costructure_morphism(first)
+    injection_c2 = coproduct.costructure_morphism(second)
+    to_z = coproduct.factor(diagram.Cocones().cocone(
+        integers,
+        lambda index: integers.Mor(integers).identity()
+        if index is first else cyclic.Mor(integers).elementwise(
+            lambda _element: integers.one()
+        ),
+    )).apex_map()
+    to_c2 = coproduct.factor(diagram.Cocones().cocone(
+        cyclic,
+        lambda index: integers.Mor(cyclic).elementwise(
+            lambda _element: cyclic.one()
+        ) if index is first else cyclic.Mor(cyclic).identity(),
+    )).apex_map()
+
+    assert coproduct.object() in abelian
+    assert to_z(injection_z(generator)) == generator
+    assert to_c2(injection_z(generator)) == cyclic.one()
+    assert to_z(injection_c2(involution)) == integers.one()
+    assert to_c2(injection_c2(involution)) == involution
 
 
 def test_product_of_two_infinite_free_groups_retains_projections_and_universal_factor() -> None:
@@ -224,6 +299,33 @@ def test_group_coequalizer_has_quotient_projection_and_universal_map() -> None:
     assert coequalizer.cardinality() == cardinal(2)
     assert projection.domain() is cyclic and projection.codomain() is coequalizer
     assert projection(g**2) == coequalizer.one()
+    assert factor * projection == reduction
+    assert factor(projection(g)) == h
+
+
+def test_group_coequalizer_from_generated_subgroup_uses_its_selected_relator() -> None:
+    r"""Maps from ``<g²> <= C4`` impose ``g² = 1`` on ``C4``."""
+    cyclic = Groups.C(4)
+    g = next(iter(cyclic.group_generators()))
+    subgroup = cyclic.subgroup((g**2,))
+    inclusion = subgroup.inclusion()
+    trivial = subgroup.Mor(cyclic).elementwise(lambda _element: cyclic.one())
+    construction = Groups().coequalizer_construction(inclusion, trivial)
+    shape = construction.diagram().domain()
+    projection = construction.costructure_morphism(shape.target())
+
+    assert construction.object().cardinality() == cardinal(2)
+    assert projection(g**2) == construction.object().one()
+    assert projection * inclusion == projection * trivial
+
+    two = Groups.C(2)
+    h = next(iter(two.group_generators()))
+    reduction = cyclic.Mor(two)({g: h})
+    cocone = construction.diagram().Cocones().cocone(
+        two,
+        lambda index: reduction * inclusion if index is shape.source() else reduction,
+    )
+    factor = construction.factor(cocone).apex_map()
     assert factor * projection == reduction
     assert factor(projection(g)) == h
 

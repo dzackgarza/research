@@ -258,7 +258,7 @@ class _SchemeBaseChangeFunctor(Functor):
             changed_charts[source_index],
             old_target_open,
             old_source_open,
-            old_transition.inverse(),
+            old_transition.inverse().forward(),
         )
         return Schemes(self._target_ring).Core().Mor(
             source_open,

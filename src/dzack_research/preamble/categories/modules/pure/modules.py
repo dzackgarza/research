@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import itertools
 import operator
 from dataclasses import dataclass
@@ -27,6 +28,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
     IsoCategoryConstruction,
     MonoCategoryConstruction,
+    _category_accepts_morphism,
     _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -67,6 +69,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_ring,
     RingMor,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
@@ -83,10 +86,11 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
     NN,
     Sets,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, conjunction
+from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, ask, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 
@@ -263,6 +267,23 @@ class Modules(OwnedCategoryOverBaseRing):
                 pass
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
+    def Core(self):
+        r"""The core groupoid of modules; at ``(M, M)`` its Mor is ``Aut_R(M)`` (``_ModuleCore``)."""
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _ModuleCore
+
+        return _ModuleCore(self)
+
+    def _core_isomorphism_witness(self, core_mor):
+        r"""Implementer side of ``CoreMor``'s core contract for modules: the identity of ``Aut_R(M)``."""
+        assert core_mor.domain() is core_mor.codomain(), (
+            f"whether {core_mor.domain()} and {core_mor.codomain()} are isomorphic modules is not decided here"
+        )
+        return core_mor.identity()
+
+    def _core_automorphism_generators(self, core_mor):
+        r"""Implementer side of the core contract: generators of ``GL(M)`` from Sage's ``GL(n, R)`` on the selected basis."""
+        return core_mor._basis_general_linear_generators()
+
     def free_module(self, labels):
         r"""``F_R(S)``, the free object of this category on the set ``S`` of labels.
 
@@ -349,10 +370,14 @@ class Modules(OwnedCategoryOverBaseRing):
         assert _owned_ring(ring_map.domain()) is self.base_ring()
         return _ScalarExtensionFunctor(ring_map)
 
+    @cached_method
     def restriction_of_scalars(self, ring_map):
         r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``.
 
         Along the augmentation ``R[G] -> R`` this is the trivial action.
+        One functor per ring map (the cache key is the ring map itself), so
+        the forward image ``Res_f(M)`` of a module is one object, cached by
+        that functor.
         """
         from dzack_research.preamble.categories.functors.group_actions import (
             _TrivialActionFunctor,
@@ -776,6 +801,12 @@ class Modules(OwnedCategoryOverBaseRing):
                         self.base_ring(),
                         family,
                     )
+            if product not in self:
+                raise TypeError(
+                    f"the module product {product} of {family} does not belong to {self}; "
+                    "a realization of the product in the ambient module category does not "
+                    "establish closure in this subcategory"
+                )
             # Reuse an established module-valued diagram rather than
             # reclassifying its values through a new unchecked callback.
             # This retains the original functor's actual object and arrow
@@ -827,6 +858,11 @@ class Modules(OwnedCategoryOverBaseRing):
                 f"but not every factor of {family} is one"
             )
             coproduct = self.biproduct(family)
+            if coproduct not in self:
+                raise TypeError(
+                    f"the module coproduct {coproduct} of {family} does not belong to {self}; "
+                    "its biproduct realization does not establish closure in this subcategory"
+                )
             diagram = _discrete_diagram(family, self)
             universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
@@ -883,6 +919,11 @@ class Modules(OwnedCategoryOverBaseRing):
                         f"the equalizer of {left_morphism} and {right_morphism} is not defined: "
                         f"both maps must be {left_morphism.domain().base_ring()}-linear maps in {ambient_mor}"
                     )
+            if not all(
+                _category_accepts_morphism(self, left_morphism.domain(), left_morphism.codomain(), arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("the module equalizer requires arrows in the selected Mor category")
             match (
                 _represented_finite_presentation(left_morphism.domain()),
                 _represented_finite_presentation(left_morphism.codomain()),
@@ -900,8 +941,14 @@ class Modules(OwnedCategoryOverBaseRing):
                         left_morphism,
                         right_morphism,
                     )
+            if equalizer not in self:
+                raise TypeError(
+                    f"the equalizer {equalizer} of {left_morphism} and {right_morphism} "
+                    f"is not an object of {self}; an ambient module kernel does not "
+                    "establish closure in the selected subcategory"
+                )
             diagram = _parallel_pair_diagram(
-                left_morphism, right_morphism, ambient_modules
+                left_morphism, right_morphism, self
             )
             shape = diagram.domain()
             universal_cone = (diagram).Cones().cone(
@@ -951,6 +998,19 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the coequalizer of {left_morphism} and {right_morphism} is not defined in {self}: "
                     f"the two maps must be parallel morphisms between objects of {self}"
                 )
+            ambient_mor = Modules(self.base_ring()).Mor(
+                left_morphism.domain(), left_morphism.codomain()
+            )
+            if left_morphism not in ambient_mor or right_morphism not in ambient_mor:
+                raise ValueError(
+                    f"the coequalizer of {left_morphism} and {right_morphism} needs "
+                    f"two {self.base_ring()}-linear morphisms in {ambient_mor}"
+                )
+            if not all(
+                _category_accepts_morphism(self, left_morphism.domain(), left_morphism.codomain(), arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("the module coequalizer requires arrows in the selected Mor category")
             difference = left_morphism - right_morphism
             raw_coequalizer = difference.cokernel()
             raw_projection = difference.cokernel_projection()
@@ -984,9 +1044,15 @@ class Modules(OwnedCategoryOverBaseRing):
                         coequalizer = candidate_transport.codomain()
                         projection = candidate_transport.forward() * raw_projection
 
-            ambient_modules = Modules(left_morphism.domain().base_ring())
+            if coequalizer not in self:
+                raise TypeError(
+                    f"the coequalizer of {left_morphism} and {right_morphism} is {raw_coequalizer}, "
+                    f"which has no selected representative in {self}; an ambient module "
+                    "quotient is not automatically a colimit in this subcategory"
+                )
+
             diagram = _parallel_pair_diagram(
-                left_morphism, right_morphism, ambient_modules
+                left_morphism, right_morphism, self
             )
             shape = diagram.domain()
             universal_cocone = (diagram).Cocones().cocone(
@@ -1007,7 +1073,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
                 if coequalizer_transport is None:
                     return raw_factor
-                return raw_factor * coequalizer_transport.inverse()
+                return raw_factor * coequalizer_transport.inverse().forward()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
@@ -1024,11 +1090,59 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the wide equalizer in {self} is not defined for the empty family {morphisms}: "
                     f"it needs at least one map to fix the domain"
                 )
-            reference = morphisms[0]
+            index_set = morphisms.index_set()
+            assert index_set in EnumeratedSets(), (
+                f"computing the wide module equalizer requires an enumeration of {index_set}"
+            )
+            labels = tuple(index_set)
+            reference = morphisms.value(labels[0])
+            ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
+            if reference.domain() not in self or reference.codomain() not in self:
+                raise ValueError(f"the wide equalizer of {morphisms} is not a diagram in {self}")
+            for label in labels:
+                arrow = morphisms.value(label)
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor or not _category_accepts_morphism(self, reference.domain(), reference.codomain(), arrow):
+                    raise ValueError(f"the wide equalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
+            if len(labels) == 1:
+                # A singleton parallel family imposes no equality relation.
+                # The limit is its literal source, not a newly computed
+                # kernel of the zero morphism.
+                return reference.domain()
             equalizer = self._categorical_equalizer(reference, reference)
-            for position in range(1, count):
-                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms[position], reference))
+            for label in labels[1:]:
+                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms.value(label), reference))
+            if equalizer not in self:
+                raise TypeError(f"the wide equalizer {equalizer} is not an object of {self}")
             return equalizer
+
+        def _categorical_equalizer_family_construction(self, morphisms):
+            r"""Retain the selected wide equalizer's diagram and inclusion."""
+            from dzack_research.preamble.categories.abstract_categories.products import _parallel_family_diagram
+
+            equalizer = self._categorical_equalizer_family(morphisms)
+            reference = morphisms.value(next(iter(morphisms.index_set())))
+            inclusion = (
+                equalizer.Mor(equalizer).identity()
+                if equalizer is reference.domain()
+                else equalizer.inclusion()
+            )
+            diagram = _parallel_family_diagram(morphisms, self)
+            shape = diagram.domain()
+            universal_cone = diagram.Cones().cone(
+                equalizer,
+                lambda index: inclusion if index is shape.source() else reference * inclusion,
+            )
+
+            def factorizer(cone):
+                source = cone.apex()
+                source_leg = cone.structure_morphism(shape.source())
+                if equalizer is reference.domain():
+                    return source_leg
+                return source.module_category().Mor(source, equalizer)._equalizer_factor(
+                    source_leg, inclusion=inclusion
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def _categorical_coequalizer_family(self, morphisms):
             r"""Realize a finite wide coequalizer through images/sums/cokernels."""
@@ -1043,11 +1157,63 @@ class Modules(OwnedCategoryOverBaseRing):
                     f"the wide coequalizer in {self} is not defined for the empty family {morphisms}: "
                     f"it needs at least one map to fix the codomain"
                 )
-            reference = morphisms[0]
+            index_set = morphisms.index_set()
+            assert index_set in EnumeratedSets(), (
+                f"computing the wide module coequalizer requires an enumeration of {index_set}"
+            )
+            labels = tuple(index_set)
+            reference = morphisms.value(labels[0])
+            ambient_mor = Modules(self.base_ring()).Mor(reference.domain(), reference.codomain())
+            if reference.domain() not in self or reference.codomain() not in self:
+                raise ValueError(f"the wide coequalizer of {morphisms} is not a diagram in {self}")
+            for label in labels:
+                arrow = morphisms.value(label)
+                if arrow.domain() is not reference.domain() or arrow.codomain() is not reference.codomain() or arrow not in ambient_mor or not _category_accepts_morphism(self, reference.domain(), reference.codomain(), arrow):
+                    raise ValueError(f"the wide coequalizer needs parallel {self.base_ring()}-linear arrows, but got {arrow}")
+            if len(labels) == 1:
+                return reference.codomain()
             relations = (reference - reference).image()
-            for position in range(1, count):
-                relations = relations.sum((morphisms[position] - reference).image())
-            return relations.inclusion().cokernel()
+            for label in labels[1:]:
+                relations = relations.sum((morphisms.value(label) - reference).image())
+            quotient = relations.inclusion().cokernel()
+            if quotient not in self:
+                raise TypeError(f"the wide coequalizer {quotient} is not an object of {self}")
+            return quotient
+
+        def _categorical_coequalizer_family_construction(self, morphisms):
+            r"""Retain the relation quotient and its universal wide cocone."""
+            from dzack_research.preamble.categories.abstract_categories.products import _parallel_family_diagram
+
+            quotient = self._categorical_coequalizer_family(morphisms)
+            reference = morphisms.value(next(iter(morphisms.index_set())))
+            target = reference.codomain()
+            # This quotient was constructed as the cokernel of the inclusion
+            # of the generated relation submodule. Retain that cokernel's
+            # selected projection, rather than independently making another
+            # arrow from generator labels.
+            projection = (
+                target.Mor(target).identity()
+                if quotient is target
+                else quotient.cokernel_projection()
+            )
+            if projection.domain() is not target or projection.codomain() is not quotient:
+                raise ValueError("the wide module quotient's retained projection has incorrect endpoints")
+            diagram = _parallel_family_diagram(morphisms, self)
+            shape = diagram.domain()
+            universal_cocone = diagram.Cocones().cocone(
+                quotient,
+                lambda index: projection * reference if index is shape.source() else projection,
+            )
+
+            def factorizer(cocone):
+                target_leg = cocone.costructure_morphism(shape.target())
+                if quotient is target:
+                    return target_leg
+                return quotient.module_category().Mor(quotient, cocone.apex())(
+                    lambda label: target_leg(target.module_generator(label))
+                )
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
             return left_morphism.biproduct_map(right_morphism, source=source, target=target)
@@ -1278,7 +1444,7 @@ class Modules(OwnedCategoryOverBaseRing):
                         ring,
                         labels,
                         module_generator_function,
-                        framing_source,
+                        None if framing_source is None else (lambda: framing_source),
                     )
 
         def __init_extra__(self) -> None:
@@ -1295,11 +1461,6 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             _register_module_scalar_action(self)
 
-        def Mor(self, codomain, category=None):
-            modules = Modules(self.base_ring())
-            if category is None:
-                return modules.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the declared injective linear maps into ``codomain``."""
@@ -1308,6 +1469,14 @@ class Modules(OwnedCategoryOverBaseRing):
         def End(self):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
             return Modules(self.base_ring()).End(self)
+
+        def general_linear_group(self):
+            r"""``GL(M) = Aut_R(M)``: the automorphism group of the underlying module, one object with ``Modules(R).Aut(M)``.
+
+            For a lattice this is the group of the underlying module, of
+            which ``O(L)`` is a subgroup; it is not ``L.Aut()``.
+            """
+            return self.module_category().Aut(self)
 
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
@@ -1458,6 +1627,45 @@ class Modules(OwnedCategoryOverBaseRing):
                     return modules.biproduct((self, other))
                 case False:
                     return NotImplemented
+
+        def function_module(self, domain):
+            r"""Return ``B^A``: the ``R``-module of all maps ``domain -> self``, pointwise.
+
+            Its underlying set is ``Sets().Mor(domain, self)``, so a map is
+            constructed by that Mor's element constructor (a callable, or a
+            formula binding its own variable), and ``(f + g)(a) = f(a) + g(a)``,
+            ``(r f)(a) = r f(a)``.  This is Mathlib's ``Function.module``
+            (``Mathlib/Algebra/Module/Pi.lean:52``), the product
+            ``prod_{a in A} B`` in ``Mod_R``; its law is the one the module
+            product uses (``_pointwise_module_operations``).  A space of maps
+            ``A -> B`` cut out by a condition is a submodule of it
+            (``CON-17``): ``self.function_module(A).condition_submodule(P)``.
+            """
+            from dzack_research.preamble.categories.modules.general_modules import (
+                _function_module,
+            )
+
+            return _function_module(self, domain)
+
+        def condition_submodule(self, predicate):
+            r"""Return the submodule ``{x in M : P(x)}`` of this module, with its inclusion.
+
+            ``predicate`` answers ``True``, ``False`` or a proposition on
+            elements of ``M``.  Its extension contains zero and is closed
+            under addition and scalar multiplication: that is the caller's
+            hypothesis, stated by asking for this construction, and not
+            checked.  The result is an object of ``ModuleSubobjects(R)`` built
+            on the condition set of ``P`` in ``M`` (``Sets().condition_set``),
+            with ``M``'s operations; its inclusion is the inclusion of that
+            set.  Constructing an element does not ask ``P`` (``OWN-22``):
+            ``x in N`` asks it, and an element's
+            ``validate_condition_membership`` raises when ``P(x)`` is false.
+            """
+            from dzack_research.preamble.categories.modules.general_modules import (
+                _condition_submodule,
+            )
+
+            return _condition_submodule(self, predicate)
 
         def pairings_with(self, right_module, value_module):
             r"""Return bilinear pairings ``self x right_module -> value_module``."""
@@ -3123,6 +3331,25 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             )
             super().__init__(**rest)
 
+        def is_contained_in(self, other) -> bool:
+            r"""Whether this submodule lies in the submodule ``other`` of the same ambient module.
+
+            ``S <= T`` exactly when every generator of ``S`` lies in the image
+            of ``T``'s inclusion; equality is containment both ways.
+            """
+            if self.inclusion().codomain() is not other.inclusion().codomain():
+                raise ValueError(f"{self} and {other} are submodules of different modules")
+            target = other.inclusion()
+            inclusion = self.inclusion()
+            for label in self.module_generating_set():
+                decision = ask(target.is_in_image(inclusion(self.module_generator(label))))
+                assert decision is True or decision is False, (
+                    f"containment of {self} in {other} requires decided membership of its generators"
+                )
+                if decision is False:
+                    return False
+            return True
+
         def module_subobject_construction(self):
             r"""Return the selected construction defining this module subobject."""
             return self._module_subobject_construction
@@ -3418,6 +3645,58 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
+        def invariant_factor_form(self):
+            r"""Return ``self -> M_if`` with only non-unit invariant factors."""
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _module_invariant_factor_form,
+            )
+
+            return _module_invariant_factor_form(self)
+
+        def base_change(self, ring_map, *, _extra_construction_data=None):
+            r"""Transport the selected finite presentation along ``R -> S``."""
+            from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _presented_module_from_morphism,
+            )
+
+            if ring_map.is_identity() and not _extra_construction_data:
+                return self
+            presentation = self.presentation()
+            source = presentation.domain().base_change(ring_map)
+            target = presentation.codomain().base_change(ring_map)
+            generator_labels = tuple(
+                zip(
+                    target.module_generating_set(),
+                    presentation.codomain().module_generating_set(),
+                    strict=True,
+                )
+            )
+
+            def changed_image(relation_label):
+                image = presentation(presentation.domain().module_generator(relation_label)).to_vector()
+                return target.linear_combination(
+                    {
+                        changed_label: _base_change_scalar(ring_map, image(label))
+                        for changed_label, label in generator_labels
+                        if image(label)
+                    }
+                )
+
+            images = {
+                changed_label: changed_image(relation_label)
+                for changed_label, relation_label in zip(
+                    source.module_generating_set(),
+                    presentation.domain().module_generating_set(),
+                    strict=True,
+                )
+            }
+            return _presented_module_from_morphism(
+                source.module_category().Mor(source, target)(images),
+                _extra_construction_data=_extra_construction_data,
+            )
+
+        @cached_method
         def _scalar_restriction_data(self, ring_map):
             r"""Retain one exact coefficient-field dimension and its finite basis.
 
@@ -3608,7 +3887,7 @@ class FreeResolution:
 
     def length(self):
         r"""Return the largest degree carrying a nonzero term."""
-        return _own_ring(SageZZ)(int(max(self._degrees)))
+        return _owned_integers()(int(max(self._degrees)))
 
     def is_exact(self):
         r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
@@ -3845,36 +4124,15 @@ def _fix_selected_module_resolution(
     base_ring,
     labels,
     generator_function,
-    source=None,
+    source_construction=None,
 ) -> None:
-    r"""Retain one chosen degree-zero free resolution of a module."""
-    match source:
-        case None:
-            source = base_ring.free_module(labels)
-        case _:
-            pass
-    match source.base_ring() is base_ring:
-        case False:
-            raise ValueError(
-                f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
-                f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
-            )
-        case True:
-            pass
-    match source is module:
-        case True:
-            pass
-        case False:
-            match source.module_generating_set() == labels:
-                case False:
-                    raise ValueError(
-                        f"the free module {source} cannot give the generators of {module}: it is free on "
-                        f"{source.module_generating_set()}, not on {labels}"
-                    )
-                case True:
-                    # The free module holds its own copy of S; the generator
-                    # map and the augmentation start at that set.
-                    labels = source.module_generating_set()
+    r"""Retain one chosen degree-zero free resolution of a module.
+
+    ``source_construction`` builds the free module the generators are read
+    from; omitted, it is the free module on ``labels``.  Like the resolution
+    itself it is fixed now and built on the first module-data read, so a Mor
+    parent that is never read as a module never builds its matrix-unit module.
+    """
     match callable(generator_function):
         case False:
             raise TypeError(
@@ -3884,7 +4142,30 @@ def _fix_selected_module_resolution(
         case True:
             pass
 
+    def framing_source():
+        match source_construction:
+            case None:
+                return base_ring.free_module(labels)
+            case _:
+                source = source_construction()
+        match source.base_ring() is base_ring:
+            case False:
+                raise ValueError(
+                    f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
+                    f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
+                )
+            case True:
+                pass
+        # The registration below states S before the source is built, so the
+        # built source must be free on that same set, not on an equal copy.
+        assert source is module or source.module_generating_set() is labels, (
+            f"the free module {source} cannot give the generators of {module}: it must be free on "
+            f"the stated set {labels}, but it is free on {source.module_generating_set()}"
+        )
+        return source
+
     def selected_resolution():
+        source = framing_source()
         ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(Modules, base_ring)
         generator_morphism = Sets().Mor(labels, module)(
             lambda label: module(generator_function(label))
@@ -4799,26 +5080,63 @@ def _module_product_created_by_underlying_sets(base_ring, factors):
     )
     underlying_product = Sets().product(underlying_factors)
 
+    def combine(operation, operands):
+        return underlying_product(
+            lambda index: operation(
+                factors.value(index),
+                *(operand.component(index) for operand in operands),
+            )
+        )
+
     return GeneralModules(ring).from_operations(
         underlying_product,
-        addition=lambda left, right: underlying_product(
-            lambda index: factors.value(index)(
-                left.component(index) + right.component(index)
-            )
-        ),
-        zero=underlying_product(
-            lambda index: factors.value(index).zero()
-        ),
-        negation=lambda element: underlying_product(
-            lambda index: -element.component(index)
-        ),
-        scalar_action=lambda scalar, element: underlying_product(
-            lambda index: factors.value(index).scalar_multiple(
-                scalar,
-                element.component(index),
-            )
-        ),
+        **_pointwise_module_operations(combine),
     )
+
+
+def _pointwise_sum(module, left, right):
+    r"""``f(i) + g(i)`` in the module at ``i``."""
+    return module(left + right)
+
+
+def _pointwise_zero(module):
+    r"""The zero of the module at ``i``."""
+    return module.zero()
+
+
+def _pointwise_negative(module, value):
+    r"""``-f(i)`` in the module at ``i``."""
+    return -value
+
+
+def _pointwise_scalar_multiple(scalar, module, value):
+    r"""``r f(i)`` in the module at ``i``."""
+    return module.scalar_multiple(scalar, value)
+
+
+def _pointwise_module_operations(combine):
+    r"""The pointwise ``R``-module law on functions ``i |-> f(i) in M_i``.
+
+    This is the one statement of the law for every module of functions with
+    values in modules: the product ``prod_i M_i`` (whose points are families
+    of components) and the module ``B^A`` of all maps ``A -> B``
+    (``_function_module`` in ``general_modules.py``, Mathlib
+    ``Function.module``, ``Mathlib/Algebra/Module/Pi.lean:52``) differ only in
+    how a function is read at an index and assembled from its values, which
+    ``combine`` supplies: ``combine(operation, operands)`` is the function
+    whose value at ``i`` is ``operation(M_i, f_1(i), ..., f_k(i))``.  The
+    operations are the four module-level functions above, so a consumer that
+    reads an assembled function back (the function-space formula adapter)
+    can recognize which operation built it.
+    """
+    return {
+        "addition": lambda left, right: combine(_pointwise_sum, (left, right)),
+        "zero": combine(_pointwise_zero, ()),
+        "negation": lambda element: combine(_pointwise_negative, (element,)),
+        "scalar_action": lambda scalar, element: combine(
+            functools.partial(_pointwise_scalar_multiple, scalar), (element,)
+        ),
+    }
 
 
 def _module_product_projection(product, factors, index):
@@ -5319,16 +5637,13 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
             f"must be {left_morphism.codomain()} and {right_morphism.codomain()}"
         )
 
+    # f + g = i_L f p_L + i_R g p_R, read on the biproduct's own projections and
+    # injections, so it does not depend on how the source labels its generators.
+    left_projection, right_projection = source.projection(source_left), source.projection(source_right)
+    left_injection, right_injection = target.injection(target_left), target.injection(target_right)
     return source.module_category().Mor(source, target)(
-        lambda label: (
-            target.injection(target_left)(
-                left_morphism(left_morphism.domain().module_generator(label.summand_element()))
-            )
-            if label.summand_index() == source_left
-            else target.injection(target_right)(
-                right_morphism(right_morphism.domain().module_generator(label.summand_element()))
-            )
-        )
+        lambda label: left_injection(left_morphism(left_projection(source.module_generator(label))))
+        + right_injection(right_morphism(right_projection(source.module_generator(label))))
     )
 
 
@@ -5415,7 +5730,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             )
 
         def matrix_shape(self):
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return Sets().product((integers, integers))((self.nrows(), self.ncols()))
 
         def matrix_unit(self, row_label, column_label):
@@ -5600,7 +5915,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         def matrix_rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(_engine_matrix(self).rank()))
 
         def solve_right(self, target):
@@ -5795,7 +6110,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             # For a square in Arr(Mod_R), right * original = diagonal * left.
             # Thus D = right * A * left^{-1} in matrix notation.
             left_change = normalization.forward().right()
-            right_change = normalization.inverse().left()
+            right_change = normalization.inverse().forward().left()
             labels = finite_ordered_set((
                 "diagonal",
                 "left_change",

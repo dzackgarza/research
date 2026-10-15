@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
@@ -326,7 +327,7 @@ class ProjectiveCurves(OwnedCategoryOverBaseRing):
                 f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
                 f"projective curves, but {self} is not known to be projective over {base}"
             )
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             if self in ProjectiveSpaces(base):
                 return integers.zero()
             defining_ideal = self.defining_ideal_owned()

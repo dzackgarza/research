@@ -46,7 +46,8 @@ def _compose_operation_preserving_mor(left, right, fallback):
 
 from typing import TYPE_CHECKING, Any
 
-from sage.categories.category import Category
+from sage.categories.category import Category, JoinCategory as SageJoinCategory
+from sage.categories.category_with_axiom import CategoryWithAxiom as SageCategoryWithAxiom
 from sage.categories.homset import Hom as SageHom, Homset as SageHomset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
@@ -1294,15 +1295,28 @@ class CategoricalIsomorphism(Morphism):
     def forward(self) -> Morphism:
         return self._forward
 
-    def inverse(self) -> Morphism:
-        return self._inverse
+    def inverse(self) -> CategoricalIsomorphism:
+        r"""The inverse isomorphism ``Y -> X``, an element of the core Mor from the codomain.
+
+        It is one morphism: its forward arrow is the base inverse of this
+        isomorphism and its inverse is this forward arrow.  On ``Aut(X)`` it
+        is the group inverse.  The base arrow is ``inverse().forward()``.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+
+        return _isomorphism_from_known_inverse_pair(self._inverse, self._forward)
+
+    def __invert__(self) -> CategoricalIsomorphism:
+        return self.inverse()
 
     def left_inverse_decision(self):
-        composite = self.inverse() * self.forward()
+        composite = self._inverse * self.forward()
         return composite == composite.parent().identity()
 
     def right_inverse_decision(self):
-        composite = self.forward() * self.inverse()
+        composite = self.forward() * self._inverse
         return composite == composite.parent().identity()
 
     def inverse_pair_decision(self):
@@ -1314,7 +1328,7 @@ class CategoricalIsomorphism(Morphism):
         decision = self.inverse_pair_decision()
         if decision is False:
             raise ValueError(
-                f"{self.inverse()} is not an inverse of {self.forward()}: at least one inverse equation fails"
+                f"{self._inverse} is not an inverse of {self.forward()}: at least one inverse equation fails"
             )
         return decision
 
@@ -1334,7 +1348,7 @@ class CategoricalIsomorphism(Morphism):
                 pass
             case _:
                 return False
-        equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
+        equalities = (self.forward() == other.forward(), self._inverse == other._inverse)
         from dzack_research.preamble.logic import conjunction
 
         return conjunction(equalities)
@@ -1367,7 +1381,7 @@ class CategoricalIsomorphism(Morphism):
 
         return _isomorphism_from_known_inverse_pair(
             self.forward() * other.forward(),
-            other.inverse() * self.inverse(),
+            other._inverse * self._inverse,
             base_category=core,
         )
 
@@ -1608,6 +1622,32 @@ def _declared_construction(category, declaration_name):
         if isinstance(construction, type):
             return construction
     return None
+
+
+def _ambient_of(category: Category) -> Category:
+    r"""Remove the axioms of ``category`` whose subcategories are full.
+
+    An axiom is removed exactly when its subcategory is full, with the same
+    arrows as its base: finite sets have the set maps, commutative algebras
+    the algebra maps.  A data subcategory carries chosen structure and keeps
+    its arrows, and so does an axiom subcategory that is not full (unital
+    algebras, whose arrows preserve the unit).  An axiom class marks itself
+    non-full by declaring its own ``_MorCategory``.  A join is taken
+    component by component.
+
+    ``OWN-06`` adapter of Sage's category runtime: a join is the class Sage
+    builds for a meet of components, read here through its ``super_categories``,
+    and an axiom category is read through ``base_category``.
+    """
+    match category:
+        case SageJoinCategory():
+            return owned_category_join(
+                tuple(_ambient_of(component) for component in category.super_categories())
+            )
+        case SageCategoryWithAxiom() if _declared_construction(category, "_MorCategory") is None:
+            return _ambient_of(category.base_category())
+        case _:
+            return category
 
 
 def _declared_family(category, declaration_name, default):

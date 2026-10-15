@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.group.g_sets import TrivializedTorsors
 from dzack_research.preamble.categories.lattices import IsotropicReductions, Lattices
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
@@ -184,23 +185,129 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             return Sets().Core().Mor(parameters, self)._from_known_inverse_pair(forward, backward)
 
         @cached_method
-        def integral_members(self):
-            r"""The integral lift locus with its integral-kernel action.
+        def _integral_lift_locus(self):
+            r"""The integral kernel ``K_Z`` and the integral lift locus ``T_Z`` as a subset of ``T``.
 
-            This locus can be empty. Its definition does not infer emptiness
-            from the failure of one chosen rational lift to be integral.
+            Write ``r: P -> P/mP`` for the residue map of
+            :meth:`integral_parameter_quotient`, ``C`` for the finite residue
+            locus :meth:`integral_parameter_classes`, and ``phi`` for the
+            parameterization ``V -> T``.  Theorem used (established in
+            :meth:`integral_parameter_quotient`, from the Eichler transvection
+            formula of Gritsenko--Hulek--Sankaran, arXiv:0810.1614, section 3.1,
+            (4)--(5), cited in this module's docstring): every integral lift has
+            its parameter in ``P``; for ``m = 2AB`` (``A`` the denominator of the
+            isotropic vector, ``B`` that of the section of ``P``) the
+            transvection of a parameter in ``mP`` and its inverse are integral,
+            and ``phi(x + y) = E(y) phi(x)``, so integrality of ``phi(x)`` depends
+            only on the class of ``x`` in ``P/mP``.  Hence
+
+                ``T_Z = phi(r^{-1}(C))``,  ``r^{-1}(C) = { s(c) + k : c in C, k in mP }``
+
+            for the section ``s`` of ``r`` selected by the cokernel. ``T_Z`` is
+            constructed as the image of ``C x ker(r)`` under
+            ``(c, k) |-> phi(s(c) + k)``, a bijection onto ``T_Z`` with its inverse
+            ``lift |-> (r(x), x - s(r(x)))``, ``x = phi^{-1}(lift)`` read in ``P``.
             """
-            source = self.source_reduction().isotropic_embedding().codomain()
             target = self.target_reduction().isotropic_embedding().codomain()
-            points = self.point_set().condition_set(
-                lambda lift: lift.integral_restriction(source, target) is not None
-            )
             integral_kernel = self.acting_group().predicate_subgroup(
                 lambda g: g.integral_restriction(target, target) is not None,
                 "integral automorphisms in the marked-line reduction kernel",
             )
+            residue = self.integral_parameter_quotient()
+            lattice_inclusion = residue.domain().inclusion()
+            period = residue.kernel()
+            period_inclusion = period.inclusion()
+            classes = self.integral_parameter_classes()
+            # C x ker(r), the decomposition r^{-1}(C) = { s(c) + k }; its
+            # components are read by the product's own projections and its
+            # points built by its universal map from the component maps.
+            period_set = period.inclusion().domain()
+            pairs = classes.product_with(period_set)
+            class_projection, period_projection = (pairs.projection(index) for index in pairs.index_set())
+            parameterization = self.parameterization()
+            coordinates = parameterization.inverse()
+
+            def lift_of(pair):
+                parameter_point = (
+                    residue.preimage(class_projection(pair))
+                    + period_inclusion(period_projection(pair))
+                )
+                return parameterization(lattice_inclusion(parameter_point).underlying_element())
+
+            def parameter_of(lift):
+                return lattice_inclusion.lift(lattice_inclusion.codomain().wrap(coordinates(lift)))
+
+            to_class = Sets().Mor(self, classes)(lambda lift: residue(parameter_of(lift)))
+            to_period = Sets().Mor(self, period_set)(
+                lambda lift: period_inclusion.lift(
+                    parameter_of(lift) - residue.preimage(residue(parameter_of(lift)))
+                )
+            )
+            ranking = pairs.index_set().ranking_map()
+            components = (to_class, to_period)
+            pair_of = pairs.from_maps(self, lambda index: components[int(ranking(index))])
+
+            locus = Sets().image_set(Sets().Mor(pairs, self)(lift_of), pairs, inverse=pair_of)
+            return integral_kernel, locus
+
+        @cached_method
+        def integral_members(self):
+            r"""The integral lift locus ``T_Z = phi(r^{-1}(C))`` with its ``K_Z``-action.
+
+            ``T_Z`` is constructed in :meth:`_integral_lift_locus` from the finite
+            residue locus ``C``; it is empty exactly when ``C`` is, which the
+            image and product constructions decide from ``C`` (finite, decided)
+            and ``ker r`` (a module, nonempty). The integral kernel ``K_Z`` acts
+            by composition. Emptiness is never inferred from one chosen
+            rational lift.
+            """
+            integral_kernel, locus = self._integral_lift_locus()
             return GObjects(integral_kernel, Sets()).on_set(
-                points, lambda g, lift: g * lift, orbit_relation=lambda left, right: True
+                locus, lambda g, lift: g * lift, orbit_relation=lambda left, right: True
+            )
+
+        @cached_method
+        def integral_kernel_group_generators(self):
+            r"""A generating family of the integral kernel ``K_Z``, as quotients of integral lifts.
+
+            ``phi(x + y) = E(y) phi(x)`` (Gritsenko--Hulek--Sankaran,
+            arXiv:0810.1614, section 3.1, (4)--(5)), so for integral lifts
+            ``phi(x)`` and ``phi(x_0)`` the quotient ``phi(x) phi(x_0)^{-1} =
+            E(x - x_0)`` is an integral element of the kernel, and ``K_Z``
+            acts simply transitively on ``T_Z = phi(r^{-1}(C))``
+            (:meth:`_integral_lift_locus`).  With ``x_0 = s(c_0)`` for one
+            residue ``c_0`` in ``C``, the parameters of ``K_Z`` are
+            ``r^{-1}(C) - x_0``, generated by ``s(c) - s(c_0)`` for ``c`` in the
+            finite locus ``C`` and by the period lattice ``ker r``.  The
+            family is those quotients.  It requires a nonempty integral
+            locus; the identity marking of a reduction always has one.
+            """
+            integral_kernel, _locus = self._integral_lift_locus()
+            residue = self.integral_parameter_quotient()
+            lattice_inclusion = residue.domain().inclusion()
+            period_inclusion = residue.kernel().inclusion()
+            classes = self.integral_parameter_classes()
+            assert classes.is_empty() is False, (
+                f"the integral lifts of {self.reduction_isometry()!r} form an empty set, so they "
+                f"determine no elements of the integral kernel: ask the identity marking of "
+                f"{self.target_reduction()!r} for its integral kernel"
+            )
+            parameterization = self.parameterization()
+
+            def lift(parameter):
+                return parameterization(lattice_inclusion(parameter).underlying_element())
+
+            origin = residue.preimage(next(iter(classes)))
+            base = lift(origin)
+            parameters = (
+                *(residue.preimage(residue_class) for residue_class in classes),
+                *(
+                    origin + period_inclusion(period)
+                    for period in period_inclusion.domain().module_generators()
+                ),
+            )
+            return finite_ordered_set(
+                tuple(integral_kernel(lift(parameter) * base.inverse()) for parameter in parameters)
             )
 
         @cached_method
@@ -296,9 +403,7 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             """
             from dzack_research.preamble.categories.group.g_sets import Torsors
 
-            members = self.integral_members()
-            group = members.acting_group()
-            points = members.point_set()
+            group, points = self._integral_lift_locus()
             chosen = self.integral_base_point()
             forward = Sets().Mor(group, points)(lambda g: points(g * chosen))
             backward = Sets().Mor(points, group)(lambda lift: group(lift * chosen.inverse()))

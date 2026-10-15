@@ -6,11 +6,8 @@ from sage.all import (
 from sage.all import (
     NumberField as _SageNumberField,
 )
-from sage.all import (
-    QuadraticField as _SageQuadraticField,
-)
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -29,12 +26,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
+    _OwnedRingParent,
+    _field_placements,
+    _owned_rationals,
     _engine_element,
     _engine_numeral,
     _engine_ring,
     _own_ring,
     _owned_engine_ring,
     _set_owned_ring_display,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -43,36 +44,252 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 def _own_number_field(engine):
+    r"""Raise a Sage number-field engine met in an adapter through the number-field construction."""
     return _owned_engine_ring(engine)
 
 
-def CyclotomicField(order, *args, **kwargs):
-    field = _own_number_field(
-        _SageCyclotomicField(_engine_numeral(SageZZ, order), *args, **kwargs)
+def _number_field_placements():
+    r"""A number field is a field, finite over ``QQ``, countably infinite, presented by its primitive element."""
+    from dzack_research.preamble.categories.sets.set_categories import CountablyInfiniteSets
+
+    return (
+        *_field_placements(),
+        OwnedNumberFields(),
+        NumberFieldsWithChosenPrimitiveElement(),
+        CountablyInfiniteSets(),
     )
-    _set_owned_ring_display(field, f"Cyclotomic field Q(zeta_{order})")
+
+
+def _polynomial_in(ring, polynomial):
+    r"""``polynomial`` with its coefficients kept and its variable renamed to that of ``ring``.
+
+    This is the relabelling isomorphism ``K[x] -> K[t]`` of univariate
+    polynomial rings over one coefficient ring, applied to one element.
+    """
+    source = element_parent(polynomial)
+    assert len(source.variable_names()) == 1 and source.base_ring() is ring.base_ring(), (
+        f"cannot read {polynomial} in {ring}: its coefficients lie in {source.base_ring()}, "
+        f"not in {ring.base_ring()}"
+    )
+    coefficients = _engine_element(source, polynomial).list()
+    return _owned_engine_element(ring, _engine_ring(ring)(coefficients))
+
+
+def _number_field_engine(polynomial):
+    r"""The private Sage realization of ``QQ[t]/(f)``, one rule for every route (``CON-12``).
+
+    A cyclotomic ``f = Phi_n`` is realized by Sage's cyclotomic field, whose
+    arithmetic converts GAP's cyclotomic numbers (the character values of
+    ``groups.py``); any other ``f`` by Sage's number field with no embedding.
+    """
+    ring = element_parent(polynomial)
+    (label,) = ring.variable_names()
+    engine_polynomial = _engine_element(ring, polynomial)
+    if all(coefficient in SageZZ for coefficient in engine_polynomial.list()):
+        order = engine_polynomial.change_ring(SageZZ).is_cyclotomic(certificate=True)
+        if order:
+            # No embedding (CON-08): Sage's default cyclotomic field carries
+            # zeta_n -> e^{2 pi i/n}; embedding=None is accepted by
+            # CyclotomicFieldFactory.create_key (number_field.py:1122).
+            # GAP conversion does not read the embedding: _coerce_from_gap
+            # writes CoeffsCyc in self.gen(), and a UCF element converts
+            # through _coerce_from_other_cyclotomic_field's
+            # _lift_cyclotomic_element (number_field.py:11376, 11431;
+            # universal_cyclotomic_field.py to_cyclotomic_field).
+            return _SageCyclotomicField(int(order), label, embedding=None)
+    return _SageNumberField(engine_polynomial, label)
+
+
+def _engine_number_field_isomorphism(source, target):
+    r"""The Sage isomorphism ``source -> target`` of two realizations of one number field, generator to generator.
+
+    Private number-field adapter (``OWN-06``).  Both engines realize
+    ``QQ[t]/(f)`` (or ``K[t]/(g)`` over realizations of one ``K``) for the
+    same polynomial, so sending the class of ``t`` to the class of ``t`` is an
+    isomorphism, determined by that polynomial.  Callers: the raising of a
+    number-field engine's orders and maps into the owned field
+    (:func:`_order_from_engine`, the Galois action in ``groups.py``, the
+    splitting-field base maps in ``absolute_galois_group(s).py``).  The
+    identity when the engines are one parent.
+    """
+    if source is target:
+        return source.Hom(source).identity()
+    if source.is_absolute():
+        assert target.is_absolute() and source.defining_polynomial().list() == target.defining_polynomial().list(), (
+            f"{source} and {target} are not realizations of one number field: their defining "
+            "polynomials differ"
+        )
+        return source.hom([target.gen()], target)
+    base = _engine_number_field_isomorphism(source.base_field(), target.base_field())
+    inclusion = target.coerce_map_from(target.base_field())
+    return source.hom([target.gen()], target, base_map=inclusion * base)
+
+
+@cached_function(key=lambda polynomial: (id(element_parent(polynomial)), polynomial))
+def _number_field_of(polynomial):
+    r"""``QQ(theta) = QQ[t]/(f)``: the number field of an irreducible ``f`` in ``QQ[t]``, ``theta`` the class of ``t``.
+
+    The defining datum is ``f`` in the one polynomial ring ``QQ[t]``, so the
+    field is one object for ``f`` (``OWN-02``); the label ``t`` names the
+    chosen primitive element.  Irreducibility of ``f`` is the caller's claim
+    (``OWN-22``).  The field is placed by this construction, never by the
+    class of its engine (``ARC-08``).
+    """
+    ring = element_parent(polynomial)
+    assert ring in OwnedRings() and ring.base_ring() is _owned_rationals() and len(ring.variable_names()) == 1, (
+        f"a number field QQ[t]/(f) is constructed from a polynomial f in one variable over QQ, but {polynomial} "
+        f"lies in {ring}"
+    )
+    field = _OwnedRingParent(_number_field_engine(polynomial), named_placement=_number_field_placements)
+    _set_owned_ring_display(field, f"Number field defined by {polynomial}")
     return field
 
 
-def QuadraticField(discriminant, *args, **kwargs):
-    field = _own_number_field(
-        _SageQuadraticField(_engine_numeral(SageQQ, discriminant), *args, **kwargs)
+@cached_function(key=lambda base, polynomial: (id(base), id(element_parent(polynomial)), polynomial))
+def _number_field_extension(base, polynomial):
+    r"""``K(theta) = K[t]/(g)``: the finite extension of the number field ``K`` by an irreducible ``g`` in ``K[t]``.
+
+    The defining datum is ``(K, g)``; it is a number field, finite over ``QQ``
+    by the tower law.  Irreducibility of ``g`` is the caller's claim.
+    """
+    ring = element_parent(polynomial)
+    assert ring.base_ring() is base and len(ring.variable_names()) == 1, (
+        f"an extension of {base} is constructed from a polynomial in one variable over {base}, but {polynomial} "
+        f"lies in {ring}"
     )
-    _set_owned_ring_display(field, f"Quadratic field of discriminant {discriminant}")
+    (label,) = ring.variable_names()
+    engine = _engine_ring(base).extension(_engine_element(ring, polynomial), label)
+    field = _OwnedRingParent(engine, named_placement=_number_field_placements)
+    _set_owned_ring_display(field, f"Number field defined by {polynomial} over {base}")
     return field
 
 
-def _number_field(polynomial, *args, **kwargs):
+def _number_field_from_engine(engine):
+    r"""The owned number field a Sage number-field engine presents: its defining polynomial and label."""
+    label = engine.variable_name()
+    if engine.is_absolute():
+        ring = _owned_rationals().polynomial_ring(label)
+        polynomial = _owned_engine_element(ring, _engine_ring(ring)(engine.defining_polynomial().list()))
+        return _number_field_of(polynomial)
+    base = _owned_engine_ring(engine.base_field())
+    ring = base.polynomial_ring(label)
+    polynomial = _owned_engine_element(ring, _engine_ring(ring)(engine.relative_polynomial().list()))
+    return _number_field_extension(base, polynomial)
+
+
+def _order_placements():
+    r"""An order of a number field: a Noetherian domain, free of finite rank over ``ZZ``, countably infinite.
+
+    Its integral basis is the one its construction selects (``OrdersWithChosenIntegralBasis``).
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedIntegralDomains
+    from dzack_research.preamble.categories.sets.set_categories import CountablyInfiniteSets
+
+    return (
+        OwnedIntegralDomains(),
+        OwnedRings().Noetherian(),
+        CountablyInfiniteSets(),
+        OrdersWithChosenIntegralBasis(),
+        OwnedOrders(),
+    )
+
+
+def _power_basis_lattice(engine_order):
+    r"""The ``ZZ``-lattice of an order in ``K``'s power basis: its echelonized basis rows over ``QQ``.
+
+    Private key of :func:`_order_in`.  Sage's ``Order.free_module()`` is the
+    ``ZZ``-span of the order in ``K.vector_space()``, the coordinates in the
+    power basis ``1, theta, ..., theta^{n-1}``; its echelonized basis matrix
+    is determined by the lattice alone, so equal lattices give equal rows.
+    """
+    return tuple(
+        tuple(row) for row in engine_order.free_module().echelonized_basis_matrix().rows()
+    )
+
+
+@cached_function(key=lambda field, engine_order: (field, _power_basis_lattice(engine_order)))
+def _order_in(field, engine_order):
+    r"""The order of the number field ``K`` whose underlying lattice ``engine_order`` presents.
+
+    An order of ``K`` is a subring that is a full ``ZZ``-lattice in ``K``; it
+    is determined by ``K`` and that lattice, so equal lattices give one order
+    (``OWN-02``).  The cache key is ``(K, the lattice in K's power basis)``
+    (:func:`_power_basis_lattice`), never the realization: two Sage orders
+    with one lattice are one order.  Its integral basis is the basis the
+    realization holds.  ``ZZ`` is the order of ``QQ``, and is not reached
+    here (``K.ring_of_integers()`` answers it for ``QQ``).
+    """
+    if field is _owned_rationals():
+        return _owned_integers()
+    assert _engine_ring(field) is engine_order.number_field(), (
+        f"{engine_order} is not an order of {field}"
+    )
+    return _OwnedRingParent(engine_order, named_placement=_order_placements)
+
+
+def _order_from_engine(engine_order):
+    r"""The owned order a Sage order engine presents, raised through its number field.
+
+    When the engine's field is another realization of the same field (an
+    embedded one, say), the lattice is carried to the field's own
+    realization along the isomorphism sending primitive element to primitive
+    element, both defined by the same polynomial.
+    """
+    field = _owned_engine_ring(engine_order.number_field())
+    canonical = _engine_ring(field)
+    source = engine_order.number_field()
+    if source is not canonical and field is not _owned_rationals():
+        transport = _engine_number_field_isomorphism(source, canonical)
+        engine_order = canonical.order([transport(element) for element in engine_order.basis()])
+    return _order_in(field, engine_order)
+
+
+def CyclotomicField(order, name=None):
+    r"""``QQ(zeta_n) = QQ[name]/(Phi_n)``, ``n`` the order; the specification's name for that number field."""
+    integers = _owned_integers()
+    order = int(integers(order))
+    label = f"zeta{order}" if name is None else str(name)
+    from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
+
+    ring = _owned_rationals().polynomial_ring(label)
+    polynomial = _owned_engine_element(ring, _engine_ring(ring)(cyclotomic_coeffs(order)))
+    return _number_field_of(polynomial)
+
+
+def QuadraticField(discriminant, name="a"):
+    r"""``QQ(sqrt d) = QQ[name]/(name^2 - d)`` for a nonsquare ``d``; the specification's name for that number field.
+
+    No embedding into ``RR`` or ``CC`` is part of the field (``CON-08``):
+    an embedding is an element of ``K.Mor(target)`` the caller chooses.
+    """
+    rationals = _owned_rationals()
+    ring = rationals.polynomial_ring(str(name))
+    generator = ring.algebra_generator(str(name))
+    return _number_field_of(generator ** 2 - ring(rationals(discriminant)))
+
+
+def _number_field(polynomial, name):
+    r"""The number field of ``polynomial`` with its primitive element labelled ``name``.
+
+    Over ``QQ`` this is ``QQ[name]/(f)``; over a number field ``K`` it is the
+    extension ``K[name]/(f)``.
+    """
     parent = element_parent(polynomial)
     if parent not in OwnedRings():
         raise TypeError(
             f"cannot construct a number field from {polynomial!r}: it must be a polynomial in a "
             f"polynomial ring of this session, but its parent is {parent!r}"
         )
-    backend_polynomial = _engine_element(parent, polynomial)
-    field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
-    _set_owned_ring_display(field, f"Number field defined by {polynomial}")
-    return field
+    base = parent.base_ring()
+    ring = base.polynomial_ring(str(name))
+    transported = _polynomial_in(ring, polynomial)
+    if base is _owned_rationals():
+        return _number_field_of(transported)
+    assert base in OwnedNumberFields(), (
+        f"cannot construct a number field from {polynomial}: its coefficients lie in {base}, "
+        "which is neither QQ nor a number field"
+    )
+    return _number_field_extension(base, transported)
 
 
 class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
@@ -96,22 +313,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         return [OwnedRings().Division().Commutative()]
 
     class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""The ring ``Mor``, unless another category is requested.
-
-            A number field is also placed among the ``QQ``-algebras, whose
-            ``Mor`` would otherwise be found first; every ring map between
-            fields of characteristic zero is ``QQ``-linear, so the ring maps
-            are the maps of number fields.
-            """
-            if category is None or category.is_subcategory(OwnedNumberFields()):
-                return OwnedRings.ParentMethods.Mor(self, codomain)
-            return super().Mor(codomain, category=category)
 
         def degree(self):
             r"""Return ``[K:QQ]`` as an owned integer."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = (
                 SageZZ.one()
@@ -127,7 +333,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def discriminant(self):
             r"""Return the discriminant of the ring of integers of ``K``."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.discriminant())
             return _owned_engine_element(integers, value)
@@ -144,22 +350,22 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def class_number(self):
             r"""Return the class number of the ring of integers."""
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.class_number())
             return _owned_engine_element(integers, value)
 
         def extension(self, polynomial, name="a"):
-            r"""Return the finite extension defined by an owned polynomial over ``self``."""
+            r"""``K[name]/(g)``: the finite extension of this number field by an irreducible ``g`` over it."""
             polynomial_ring = element_parent(polynomial)
             if polynomial_ring not in OwnedRings() or polynomial_ring.base_ring() is not self:
                 raise TypeError(
                     f"cannot form the extension of {self} defined by {polynomial!r}: it must be a polynomial "
                     f"with coefficients in {self}, but its parent is {polynomial_ring!r}"
                 )
-
-            backend_polynomial = _engine_element(polynomial_ring, polynomial)
-            return _own_ring(_engine_ring(self).extension(backend_polynomial, name))
+            return _number_field_extension(
+                self, _polynomial_in(self.polynomial_ring(str(name)), polynomial)
+            )
 
         def primes_above(self, prime):
             r"""Return the prime ideals of ``O_K`` above a rational prime."""
@@ -178,15 +384,13 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 ideals.append(order.ideal(*generators))
             return finite_ordered_set(ideals)
 
+        @cached_method
         def ring_of_integers(self):
-            r"""Return the maximal order ``O_K`` as an owned ring."""
-
+            r"""``O_K``, the integral closure of ``ZZ`` in ``K``: determined by ``K``, so cached on ``K``."""
             engine = _engine_ring(self)
-            match engine is SageQQ:
-                case True:
-                    return _owned_engine_ring(SageZZ)
-                case False:
-                    return _owned_engine_ring(engine.ring_of_integers())
+            if engine is SageQQ:
+                return _owned_integers()
+            return _order_in(self, engine.ring_of_integers())
 
         maximal_order = ring_of_integers
 
@@ -206,7 +410,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 if len(backend_generators) == 1
                 else list(backend_generators)
             )
-            return _owned_engine_ring(engine.order(datum))
+            return _order_in(self, engine.order(datum))
 
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
@@ -335,7 +539,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             maximal order.  Over ``QQ`` the selected finite algebra presentation
             is :meth:`as_algebra` itself.
             """
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             rationals = _own_number_field(SageQQ)
             match base_ring:
                 case None:
@@ -367,7 +571,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 Algebras,
             )
 
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             rationals = _own_number_field(SageQQ)
             match base_ring:
                 case None:
@@ -615,7 +819,7 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
 
     def super_categories(self):
 
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         return [
             OwnedOrders(),
             FinitelyGeneratedFreeModules(integers),
@@ -624,7 +828,7 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
     class ParentMethods:
         def base_ring(self):
 
-            return _own_ring(SageZZ)
+            return _owned_integers()
 
         algebra_base_ring = base_ring
 

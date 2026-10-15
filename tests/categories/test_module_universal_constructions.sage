@@ -61,6 +61,41 @@ def test_zero_and_times_two_on_Z_have_zero_equalizer_and_coequalizer_Z_mod_2() -
     assert Modules(ZZ).coequalizer(zero, twice).cardinality() == 2
 
 
+def test_module_parallel_pair_constructions_retain_ambient_category_and_maps() -> None:
+    r"""Both the equalizer and coequalizer remain diagrams in ``ZZ-Mod``."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    zero = line.Mor(line)({e: line.zero()})
+    twice = line.Mor(line)({e: 2 * e})
+
+    equalizer = modules.equalizer_construction(zero, twice)
+    eq_shape = equalizer.diagram().domain()
+    eq_inclusion = equalizer.structure_morphism(eq_shape.source())
+    assert equalizer.diagram().codomain() is modules
+    assert equalizer.object() in modules
+    assert zero * eq_inclusion == twice * eq_inclusion
+
+    coequalizer = modules.coequalizer_construction(zero, twice)
+    coeq_shape = coequalizer.diagram().domain()
+    projection = coequalizer.costructure_morphism(coeq_shape.target())
+    assert coequalizer.diagram().codomain() is modules
+    assert coequalizer.object() in modules
+    assert projection(zero(e)) == projection(twice(e))
+    assert coequalizer.object().cardinality() == 2
+
+    # The quotient's universal arrow must be the actual descent of a
+    # compatible linear map, not just a correctly typed projection.
+    target = line / line.span((2 * e,))
+    reduction = line.Mor(target)({e: target.projection()(e)})
+    cocone = coequalizer.diagram().Cocones().cocone(
+        target,
+        lambda index: reduction * zero if index is coeq_shape.source() else reduction,
+    )
+    factor = coequalizer.factor(cocone).apex_map()
+    assert factor * projection == reduction
+
+
 def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> None:
     r"""On ``Z/4``: ``eq(2, 0) = ker 2 = 2Z/4``, the submodule of order 2."""
     line = Modules(ZZ)(ZZ**1)
@@ -77,6 +112,110 @@ def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> N
     assert 2 * a in inclusion.image()
     assert a not in inclusion.image()
     assert twice * inclusion == zero * inclusion
+
+
+def test_module_equalizer_cone_factors_a_nonzero_torsion_map() -> None:
+    r"""The map ``Z/4 -> Z/4``, ``x |-> 2x``, factors through ``ker(2)``."""
+    modules = Modules(ZZ)
+    free = modules(ZZ**1)
+    (e,) = free.basis()
+    cyclic_four = free / free.span((4 * e,))
+    a = cyclic_four.projection()(e)
+    twice = cyclic_four.Mor(cyclic_four)({a: 2 * a})
+    zero = cyclic_four.Mor(cyclic_four)({a: cyclic_four.zero()})
+    construction = modules.equalizer_construction(twice, zero)
+    shape = construction.diagram().domain()
+    inclusion = construction.structure_morphism(shape.source())
+    cone = construction.diagram().Cones().cone(
+        cyclic_four,
+        lambda index: twice if index is shape.source() else zero,
+    )
+    factor = construction.factor(cone).apex_map()
+
+    assert construction.object().cardinality() == 2
+    assert inclusion * factor == twice
+    assert inclusion(factor(a)) == 2 * a
+
+
+def test_wide_module_constructions_use_the_selected_nonordinal_family_labels() -> None:
+    r"""The three maps ``0,2,4`` on ``Z`` have equalizer zero and coequalizer ``Z/2``."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    labels = finite_ordered_set(("zero", "twice", "fourfold"))
+    arrows = {
+        "zero": line.Mor(line)({e: line.zero()}),
+        "twice": line.Mor(line)({e: 2 * e}),
+        "fourfold": line.Mor(line)({e: 4 * e}),
+    }
+    family = indexed_family(labels, lambda label: arrows[label])
+
+    equalizer = modules.equalizer_of_family(family)
+    coequalizer = modules.coequalizer_of_family(family)
+    assert equalizer in modules and coequalizer in modules
+    assert equalizer.cardinality() == 1
+    assert coequalizer.cardinality() == 2
+
+    wide_equalizer = modules.equalizer_of_family_construction(family)
+    wide_coequalizer = modules.coequalizer_of_family_construction(family)
+    assert wide_equalizer.diagram().morphisms() is family
+    assert wide_coequalizer.diagram().morphisms() is family
+    shape = wide_coequalizer.diagram().domain()
+    projection = wide_coequalizer.costructure_morphism(shape.target())
+    assert all(projection(arrow(e)) == projection(arrows["zero"](e)) for arrow in arrows.values())
+    target = line / line.span((2 * e,))
+    reduction = line.Mor(target)({e: target.projection()(e)})
+    cocone = wide_coequalizer.diagram().Cocones().cocone(
+        target,
+        lambda index: reduction * arrows["zero"] if index is shape.source() else reduction,
+    )
+    assert wide_coequalizer.factor(cocone).apex_map() * projection == reduction
+
+
+def test_singleton_wide_module_diagrams_retain_identity_constructions() -> None:
+    r"""A single module arrow imposes no parallel equality or quotient relation."""
+    modules = Modules(ZZ)
+    line = modules(ZZ**1)
+    (e,) = line.basis()
+    twice = line.Mor(line)({e: 2 * e})
+    family = indexed_family(finite_ordered_set(("only",)), lambda _label: twice)
+    equalizer = modules.equalizer_of_family_construction(family)
+    coequalizer = modules.coequalizer_of_family_construction(family)
+    equalizer_shape = equalizer.diagram().domain()
+    coequalizer_shape = coequalizer.diagram().domain()
+
+    assert equalizer.object() is line
+    assert coequalizer.object() is line
+    assert equalizer.structure_morphism(equalizer_shape.source()) == line.Mor(line).identity()
+    assert coequalizer.costructure_morphism(coequalizer_shape.target()) == line.Mor(line).identity()
+
+
+def test_wide_module_equalizer_retains_nonzero_universal_factor() -> None:
+    r"""The common equalizer of ``0, 2, 4`` on ``Z/4`` is ``2Z/4``."""
+    modules = Modules(ZZ)
+    free = modules(ZZ**1)
+    (e,) = free.basis()
+    cyclic_four = free / free.span((4 * e,))
+    a = cyclic_four.projection()(e)
+    zero = cyclic_four.Mor(cyclic_four)({a: cyclic_four.zero()})
+    twice = cyclic_four.Mor(cyclic_four)({a: 2 * a})
+    fourfold = cyclic_four.Mor(cyclic_four)({a: 4 * a})
+    labels = finite_ordered_set(("zero", "twice", "fourfold"))
+    arrows = {"zero": zero, "twice": twice, "fourfold": fourfold}
+    family = indexed_family(labels, lambda label: arrows[label])
+    construction = modules.equalizer_of_family_construction(family)
+    shape = construction.diagram().domain()
+    inclusion = construction.structure_morphism(shape.source())
+    cone = construction.diagram().Cones().cone(
+        cyclic_four,
+        lambda index: twice if index is shape.source() else zero,
+    )
+    factor = construction.factor(cone).apex_map()
+
+    assert construction.diagram().morphisms() is family
+    assert construction.object().cardinality() == 2
+    assert inclusion * factor == twice
+    assert inclusion(factor(a)) == 2 * a
 
 
 def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:

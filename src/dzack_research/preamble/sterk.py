@@ -2,6 +2,7 @@ r"""Sterk cusp and root configurations for degree-two Enriques moduli."""
 
 from sage.rings.rational_field import QQ
 
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family_from_values
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -345,8 +346,8 @@ class Sterk:
     def diagrams():
         return {
             name: CoxeterDiagrams().from_roots(
-                roots,
-                names=tuple(f"r{i + 1}" for i in range(len(roots))),
+                finite_indexed_family_from_values(None, tuple(roots)),
+                names=finite_ordered_set(tuple(f"r{i + 1}" for i, _root in enumerate(roots))),
                 positions=_STERK_DIAGRAM_LAYOUTS[name],
             )
             for name, roots in Sterk.sterk_roots().items()

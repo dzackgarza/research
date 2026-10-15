@@ -3,10 +3,10 @@
 These are mathematical tests of the preamble objects themselves.  Lattice-db
 only serializes the returned values and never rechecks these formulas.
 """
+
 from fractions import Fraction
 
-
-from dzack_research.preamble.all import *
+from dzack_research.preamble.all import QQ, ZZ, Lattices
 
 
 def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> None:
@@ -20,16 +20,14 @@ def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> No
     for automorphism in group.group_generators():
         for left in lattice.module_generators():
             for right in lattice.module_generators():
-                assert lattice.b(left, right) == lattice.b(
-                    automorphism(left), automorphism(right)
-                )
+                assert lattice.b(left, right) == lattice.b(automorphism(left), automorphism(right))
 
 
 def test_rational_definite_orthogonal_group_is_owned_by_the_lattice() -> None:
     lattice = Lattices(QQ)([[QQ(1) / 2]])
     group = lattice.orthogonal_group()
     assert group.cardinality() == 2
-    assert len(tuple(group.select_group_resolution().group_generators())) == 1
+    assert len(tuple(group.group_generators())) == 1
 
 
 def test_a2_orbit_and_discriminant_certification_data_are_owned_by_the_lattice() -> None:
@@ -121,9 +119,7 @@ def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     theta = lattice.theta_series(precision=5)
     assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
     rank_one = Lattices(ZZ)([[1]]).reflective_root_system_components()
-    assert [(component.type, component.scale) for component in rank_one] == [
-        ("A1", Fraction(1, 2))
-    ]
+    assert [(component.type, component.scale) for component in rank_one] == [("A1", Fraction(1, 2))]
 
 
 def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:

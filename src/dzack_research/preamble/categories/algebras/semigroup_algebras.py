@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -76,7 +77,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             raw = self._affine_semigroup_presentation._raw_generator_coordinates()
             labels = self.algebra_generating_set()
             coordinate_indices = Sets.Δ[len(raw[0]) - 1]
-            integers = _own_ring(SageZZ)
+            integers = _owned_integers()
             return finite_indexed_family(
                 labels,
                 lambda label: finite_indexed_family(

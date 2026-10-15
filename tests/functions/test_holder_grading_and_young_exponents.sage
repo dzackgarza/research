@@ -16,9 +16,9 @@ import pytest
 def test_the_square_of_the_gaussian_in_L2_is_its_double_exponent_in_L1() -> None:
     r"""``e^{-x^2}`` sits in degree ``1/2``; its pointwise square ``e^{-2x^2}`` sits in degree ``1``."""
     algebra = GradedLebesgueAlgebra
-    square_integrable = Lp(2)
-    x = square_integrable.indeterminate()
-    gaussian = algebra(square_integrable(exp(-x * x)))
+    square_integrable = Lp(2, RR, RR)
+    f1(x) = exp(-x * x)
+    gaussian = algebra(square_integrable(f1))
     square = gaussian * gaussian
 
     assert algebra in Algebras(RR).Associative().Unital().Commutative()
@@ -29,20 +29,20 @@ def test_the_square_of_the_gaussian_in_L2_is_its_double_exponent_in_L1() -> None
 def test_a_homogeneous_element_projects_to_zero_off_its_degree() -> None:
     r"""``pi_1(e^{-x^2}) = 0`` for ``e^{-x^2}`` in degree ``1/2``, and ``pi_{1/2}(e^{-2x^2}) = 0``."""
     algebra = GradedLebesgueAlgebra
-    square_integrable = Lp(2)
-    x = square_integrable.indeterminate()
-    gaussian = algebra(square_integrable(exp(-x * x)))
+    square_integrable = Lp(2, RR, RR)
+    f1(x) = exp(-x * x)
+    gaussian = algebra(square_integrable(f1))
 
-    assert algebra.degree_projection(1)(gaussian) == Lp(1).zero()
+    assert algebra.degree_projection(1)(gaussian) == Lp(1, RR, RR).zero()
     assert algebra.degree_projection(QQ(1) / 2)(gaussian * gaussian) == square_integrable.zero()
 
 
 def test_the_unit_of_the_pointwise_algebra_is_the_constant_one_in_degree_zero() -> None:
     r"""The constant ``1`` is essentially bounded and is the pointwise unit; it projects to ``1``."""
     algebra = GradedLebesgueAlgebra
-    square_integrable = Lp(2)
-    x = square_integrable.indeterminate()
-    gaussian = algebra(square_integrable(exp(-x * x)))
+    square_integrable = Lp(2, RR, RR)
+    f1(x) = exp(-x * x)
+    gaussian = algebra(square_integrable(f1))
 
     assert algebra.unit_piece_projection()(algebra.one())(5) == 1
     assert algebra.degree_projection(QQ(1) / 2)(algebra.one() * gaussian)(1) == exp(-1)
@@ -51,8 +51,8 @@ def test_the_unit_of_the_pointwise_algebra_is_the_constant_one_in_degree_zero() 
 def test_the_constant_one_times_a_map_is_that_map() -> None:
     r"""``1 . f = f`` in the pointwise algebra, for ``f = e^{-x^2}``."""
     algebra = GradedLebesgueAlgebra
-    x = Lp(2).indeterminate()
-    gaussian = algebra(Lp(2)(exp(-x * x)))
+    f1(x) = exp(-x * x)
+    gaussian = algebra(Lp(2, RR, RR)(f1))
 
     assert algebra.one() * gaussian == gaussian
 
@@ -60,16 +60,16 @@ def test_the_constant_one_times_a_map_is_that_map() -> None:
 def test_integration_of_the_degree_one_piece_is_the_integral_on_L1() -> None:
     r"""``int e^{-|x|} dx = 2`` on the degree-1 piece ``L^1``."""
     algebra = GradedLebesgueAlgebra
-    x = Lp(1).indeterminate()
+    f1(x) = exp(-abs(x))
 
-    assert algebra.integration_of_degree_one()(Lp(1)(exp(-abs(x)))) == 2
+    assert algebra.integration_of_degree_one()(Lp(1, RR, RR)(f1)) == 2
 
 
 def test_the_integral_form_reads_the_degree_one_component() -> None:
     r"""``epsilon(e^{-x^2} . e^{-x^2}) = int e^{-2x^2} = sqrt(pi/2)``; ``epsilon`` vanishes off degree 1."""
     algebra = GradedLebesgueAlgebra
-    x = Lp(2).indeterminate()
-    gaussian = algebra(Lp(2)(exp(-x * x)))
+    f1(x) = exp(-x * x)
+    gaussian = algebra(Lp(2, RR, RR)(f1))
 
     assert algebra.integral_form()(gaussian * gaussian) == sqrt(pi / 2)
     assert algebra.integral_form()(gaussian) == 0
@@ -77,9 +77,9 @@ def test_the_integral_form_reads_the_degree_one_component() -> None:
 
 def test_young_exponents_of_convolution_pairings() -> None:
     r"""``L^1 * L^oo -> L^oo``, ``L^2 * L^2 -> L^oo``, ``L^1 * L^2 -> L^2``: ``1/r = 1/p + 1/q - 1``."""
-    integrable = Lp(1).quotient_by_null_functions()
-    square = Lp(2).quotient_by_null_functions()
-    bounded = Lp(oo).quotient_by_null_functions()
+    integrable = Lp(1, RR, RR).quotient_by_null_functions()
+    square = Lp(2, RR, RR).quotient_by_null_functions()
+    bounded = Lp(oo, RR, RR).quotient_by_null_functions()
 
     assert integrable.convolution_pairing(bounded).codomain() is bounded
     assert square.convolution_pairing(square).codomain() is bounded
@@ -88,8 +88,8 @@ def test_young_exponents_of_convolution_pairings() -> None:
 
 def test_a_pair_below_the_young_line_has_no_convolution_pairing() -> None:
     r"""``1/2 + 1/3 = 5/6 < 1``: no ``r >= 1`` solves Young's relation for ``(p, q) = (2, 3)``."""
-    square = Lp(2).quotient_by_null_functions()
-    cube = Lp(3).quotient_by_null_functions()
+    square = Lp(2, RR, RR).quotient_by_null_functions()
+    cube = Lp(3, RR, RR).quotient_by_null_functions()
 
     with pytest.raises(ValueError):
         square.convolution_pairing(cube)
@@ -110,7 +110,7 @@ def test_the_gaussian_convolved_with_itself_is_a_wider_gaussian() -> None:
     Complete the square: ``t^2 + (y-t)^2 = 2(t - y/2)^2 + y^2/2``.
     """
     algebra = LebesgueConvolutionAlgebra
-    x = Lp(1).indeterminate()
-    gaussian = algebra(Lp(1)(exp(-x * x)))
+    f1(x) = exp(-x * x)
+    gaussian = algebra(Lp(1, RR, RR)(f1))
 
     assert (gaussian * gaussian).representative()(0) == sqrt(pi / 2)

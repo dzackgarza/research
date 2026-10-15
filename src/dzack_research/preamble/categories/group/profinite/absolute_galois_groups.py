@@ -32,14 +32,12 @@ from dzack_research.preamble.logic import ask
 
 def _finite_field_absolute_galois_group():
     r"""Return the selected finite-field specimen used by these categories."""
-    from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
-
     from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
         AbsoluteGaloisGroup,
     )
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import GF
 
-    return AbsoluteGaloisGroup(_own_ring(SageGF(2)))
+    return AbsoluteGaloisGroup(GF(2))
 
 
 class AbsoluteGaloisGroups(OwnedCategory):
@@ -193,10 +191,19 @@ class AbsoluteGaloisGroups(OwnedCategory):
             The stage ``K -> L`` is the base map the splitting-field
             construction returns.
             """
-            splitting_field, base_backend = polynomial.splitting_field(
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _engine_number_field_isomorphism,
+            )
+
+            splitting_engine, base_backend = polynomial.splitting_field(
                 "s", map=True
             )
-            splitting_field = _own_ring(splitting_field)
+            splitting_field = _own_ring(splitting_engine)
+            # K -> L on L's own realization (generator to generator).
+            base_backend = (
+                _engine_number_field_isomorphism(splitting_engine, _engine_ring(splitting_field))
+                * base_backend
+            )
             base_embedding = self.base_field().Mor(splitting_field)(base_backend)
             stage = self.extension_data(
                 splitting_field, base_embedding=base_embedding

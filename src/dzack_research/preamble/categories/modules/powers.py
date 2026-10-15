@@ -537,6 +537,11 @@ class QuadraticModuleMor(ModuleMor):
             lift_coordinate_values=lift_coordinate_values,
         )
 
+    def zero(self):
+        r"""The zero quadratic map, whose chosen bilinear lift is the zero bilinear map."""
+        labels = _finite_framing(self.domain().divided_square_source())
+        return self._from_coordinate_datum(tuple(tuple(self.codomain().zero() for _right in labels) for _left in labels))
+
     def _from_coordinate_datum(self, datum):
         r"""The quadratic map ``q(x) = G(x, x)`` for the chosen bilinear lift ``G`` given by its values.
 

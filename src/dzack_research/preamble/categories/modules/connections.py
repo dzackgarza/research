@@ -33,7 +33,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+    _owned_integers,
+)
 from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 
@@ -143,15 +146,6 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             r"""Return the selected connection datum on :meth:`unformed_module`."""
             return self._preamble_source_connection
 
-        def Mor(self, codomain, category=None):
-            connections = ModulesWithConnection(self.base_ring())
-            if codomain in connections and (
-                category is None or category.is_subcategory(connections)
-            ):
-                return connections.Mor(self, codomain)
-            if category is None:
-                return self.module_category().Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             return self.Mor(codomain, category=category)
@@ -937,7 +931,7 @@ class ConnectionDeRhamModule:
         coefficient_module = connection.module()
         algebra = connection.algebra()
         dga = algebra.de_rham_algebra()
-        integers = _own_ring(SageZZ)
+        integers = _owned_integers()
         match dga.grading_monoid() is integers:
             case True:
                 pass

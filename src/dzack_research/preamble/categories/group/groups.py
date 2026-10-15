@@ -92,6 +92,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -297,6 +298,29 @@ def _element_from_engine(group, gap_element):
                 f"represented as permutations, words, or GAP group elements"
             )
             return group._from_engine(engine(gap_element))
+
+
+def _finite_group_centralizer_generators(group, element):
+    r"""Return a generating set of ``C_G(g) = {x in G : x g = g x}`` computed by GAP.
+
+    Protected engine contract (``OWN-05``, ``OWN-06``).  Owner: this
+    module's GAP adapter.  Permitted caller: the arithmetic centralizer route
+    of ``lattice_centralizers``, which supplies ``G = O(L)`` of a definite
+    lattice over ``ZZ`` -- a finite group, whose engine is Sage's
+    ``GroupOfIsometries`` and whose elements GAP encodes.  GAP's
+    ``Centralizer(G, g)`` computes the centralizer of an element of a finite
+    group; commuting is symmetric, so the answer does not depend on whether
+    the engine law is the owned law or its reverse.  Every returned value is
+    an element of ``group``.
+    """
+    assert element in group, f"{element} is not an element of {group}, so it has no centralizer there"
+    engine_centralizer = libgap.Centralizer(_gap_model(group), _element_to_engine(group, element))
+    return finite_ordered_set(
+        tuple(
+            _element_from_engine(group, generator)
+            for generator in engine_centralizer.GeneratorsOfGroup()
+        )
+    )
 
 
 def _matrix_group_element_matrix(group, element):
@@ -660,7 +684,7 @@ def _engine_word_letters(group, word):
 
 def _integer_engine_point(point):
     r"""An owned integer as the engine's integer; any other point unchanged."""
-    integers = _own_ring(ZZ)
+    integers = _owned_integers()
     return _engine_element(integers, integers(point)) if point in integers else point
 
 
@@ -688,9 +712,21 @@ def _engine_element_action(group, backend_element, point):
     engine = _engine_group(group)
     match engine:
         case SageGaloisGroup():
-            field = _own_ring(engine.number_field())
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _engine_number_field_isomorphism,
+            )
+
+            source = engine.number_field()
+            field = _own_ring(source)
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
-            return _owned_engine_element(field, backend_element.as_hom()(_engine_element(field, point)))
+            # The automorphism on the owned field's own realization: the
+            # Galois group's engine field is carried there generator to
+            # generator, and sigma is conjugated by that isomorphism.
+            canonical = _engine_ring(field)
+            into_source = _engine_number_field_isomorphism(canonical, source)
+            out_of_source = _engine_number_field_isomorphism(source, canonical)
+            value = out_of_source(backend_element.as_hom()(into_source(_engine_element(field, point))))
+            return _owned_engine_element(field, value)
         case PermutationGroup_generic():
             return group._permutation_point_action(backend_element, point)
         case _:
@@ -780,7 +816,7 @@ def _group_generating_epimorphism(group, source, labels, generator_morphism):
     assert source.free_basis() is labels, (
         f"the free group {source} does not have {labels} as its free basis, so it cannot map onto {group} by sending the free generators to the elements indexed by {labels}"
     )
-    return source.Mor(group)(generator_morphism)
+    return OwnedGroups().Mor(source, group)(generator_morphism)
 
 
 def _fix_selected_group_resolution_data(
@@ -948,13 +984,12 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     )
 
 
-def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
+def _engine_quotient_by_relators(group, relators):
     r"""Return ``G / <<relators>>`` with its actual quotient presentation.
 
-    A selected free-quotient category is passed into the *same* owned
-    construction that receives the quotient engine. Re-wrapping an already
-    owned group is not a change of its category, so that intermediate
-    owned realization must not replace the selected quotient constructor.
+    A quotient of a free group ``F`` is ``F/<<R>>`` with its presentation
+    ``(F, R)``, an object of :class:`FreeGroupQuotients` whose ambient
+    category is the groups.
     """
     # The normal closure is taken inside this group, not in an unrelated
     # group whose elements happen to admit backend coercion to words.
@@ -965,12 +1000,14 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
     match engine:
         case FreeGroup_class():
             quotient = engine.quotient([group._to_engine(group(relator)) for relator in relators])
-            if quotient_category is None:
-                return _own_group(quotient)
             return _own_group(
                 quotient,
-                refinements=(quotient_category,),
-                chosen_presentation=(group, quotient_category.relators()),
+                refinements=(
+                    FreeGroupQuotients(),
+                    *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
+                ),
+                chosen_presentation=(group, tuple(group(relator) for relator in relators)),
+                constructing_category=OwnedGroups(),
             )
         case FinitelyPresentedGroup():
             # G = F/R and G/<<S>> = F/<<R, S>>, with S lifted to words in F.
@@ -979,7 +1016,10 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
             # This quotient is not isomorphic to G in general. The
             # presentation_source_group slot certifies an isomorphic model
             # (presentation_isomorphism), not a quotient ancestor.
-            return _own_group(free.quotient(relations))
+            return _own_group(
+                free.quotient(relations),
+                refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+            )
         case CoxeterMatrixGroup():
             # A Coxeter group has a canonical free presentation on its
             # simple reflections. Lift each additional normal relator by
@@ -996,7 +1036,10 @@ def _engine_quotient_by_relators(group, relators, *, quotient_category=None):
                 # Sage's multiplication. Reverse the word when transporting
                 # it between these representations.
                 lifted.append(free([positions[label] for label in reversed(word)]))
-            return _own_group(free.quotient(tuple(defining_relations) + tuple(lifted)))
+            return _own_group(
+                free.quotient(tuple(defining_relations) + tuple(lifted)),
+                refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+            )
         case _:
             assert False, f"the quotient of {group} by the normal closure of {relators} cannot be computed: this is available only for free groups and finitely presented groups"
 
@@ -1245,8 +1288,6 @@ class _GroupEngine:
             case _:
                 return AtomicProposition("is_abelian", self)
 
-    def _arithmeticity_decision(self):
-        return AtomicProposition("is_arithmetic_group", self)
 
 
 class _GroupElement(MultiplicativeGroupElement):
@@ -1388,8 +1429,9 @@ def _group_mor_placement(domain, codomain, *categories, pointwise=True):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None, linear_data=None: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group, symmetric_points=None, chosen_presentation=None, coxeter_matrix=None, linear_data=None, constructing_category=None: (
         id(group),
+        constructing_category,
         refinements,
         description,
         id(free_basis),
@@ -1417,6 +1459,7 @@ def _own_group(
     chosen_presentation=None,
     coxeter_matrix=None,
     linear_data=None,
+    constructing_category=None,
 ):
     r"""Return the owned group realized by the Sage group ``group``.
 
@@ -1431,15 +1474,20 @@ def _own_group(
     object, the proved refinements, the catalogue notation, the chosen free
     basis, and—when this is a computed presented model—the exact source group.
     Its comparison images are derived from that source group's selected
-    group resolution rather than retained a second time.  Sage groups compare
+    group resolution rather than retained a second time.
+
+    ``constructing_category`` is recorded as the group's ambient category
+    (``ARC-07``).  The groups built from data (symmetric, general linear,
+    presented and Coxeter groups) name ``OwnedGroups()`` on every route, so
+    one datum gives one object whose ``Mor`` is all group homomorphisms; the
+    data-induced arrows are asked of the data category explicitly.  ``None``
+    keeps the placement category.  Sage groups compare
     structurally, so the engine enters the key by identity, and the cache keeps
     the engine alive while its owned group is.
     """
     if group in OwnedGroups():
         return group
     assert group in SageGroups(), f"{group} is not a group"
-    if free_basis is None and isinstance(group, FreeGroup_class):
-        free_basis = finite_ordinal_set(int(group.ngens()))
     match group:
         case PermutationGroup_subgroup() | AbelianGroup_subgroup():
             return _transported_subgroup(_own_group(group.ambient_group()), group)
@@ -1454,7 +1502,10 @@ def _own_group(
                     owned_relations = finite_ordered_set(chosen_relations)
                 else:
                     source_engine, backend_relations = _chosen_engine_presentation(group)
-                    presentation_source = None if source_engine is None else _own_group(source_engine)
+                    presentation_source = (
+                        None if source_engine is None
+                        else _own_group(source_engine, free_basis=finite_ordinal_set(int(source_engine.ngens())))
+                    )
                     if presentation_source is None:
                         owned_relations = finite_ordered_set(())
                     else:
@@ -1469,9 +1520,15 @@ def _own_group(
             if free_basis is None:
                 owned = _object_of(
                     Cat().meet(placement),
+                    _ambient=constructing_category,
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    # ARC-07: the ambient category is the category whose constructor
+                    # built the object; Groups.Free and the engine groups are
+                    # constructed by Groups, as subobjects record their objects' plain
+                    # category (cc66c2d1ed).
+                    _constructing_category=OwnedGroups(),
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     **({"selected_linear_data": linear_data} if linear_data is not None else {}),
@@ -1482,9 +1539,15 @@ def _own_group(
                     Cat().meet(
                         (*placement, GroupsWithChosenFreeBasis())
                     ),
+                    _ambient=constructing_category,
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    # ARC-07: the ambient category is the category whose constructor
+                    # built the object; Groups.Free and the engine groups are
+                    # constructed by Groups, as subobjects record their objects' plain
+                    # category (cc66c2d1ed).
+                    _constructing_category=OwnedGroups(),
                     **({"symmetric_points": symmetric_points} if symmetric_points is not None else {}),
                     **({"selected_coxeter_matrix": coxeter_matrix} if coxeter_matrix is not None else {}),
                     **({"selected_linear_data": linear_data} if linear_data is not None else {}),
@@ -1506,8 +1569,10 @@ def _transported_subgroup(group, engine_subgroup):
                 _owned_group_category(engine_subgroup),
                 Subgroups(group),
                 *_finite_if_bounded_by(group),
+                *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
+        _ambient=OwnedGroups(),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
@@ -1515,6 +1580,29 @@ def _transported_subgroup(group, engine_subgroup):
     if _is_finitely_generated_witness(engine_subgroup):
         _fix_selected_group_resolution(subgroup)
     return subgroup
+
+
+def _integral_points_subgroup(group, engine_subgroup, ring, *, refinements=()):
+    r"""The subgroup of integral points ``G(ring)`` of ``group``, computed by ``engine_subgroup``.
+
+    The construction records ``ring`` as its datum: a subgroup built here is
+    the group of ``ring``-points of its ambient, which is what makes it
+    arithmetic (``Subgroups.ParentMethods.is_arithmetic_group``).
+    """
+    return _object_of(
+        Cat().meet(
+            (
+                _owned_group_category(engine_subgroup),
+                Subgroups(group),
+                *refinements,
+            )
+        ),
+        _ambient=OwnedGroups(),
+        _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+        engine=engine_subgroup,
+        supergroup=group,
+        integral_points_ring=ring,
+    )
 
 
 def _generated_subgroup(group, engine_subgroup, generators):
@@ -1525,8 +1613,10 @@ def _generated_subgroup(group, engine_subgroup, generators):
                 _owned_group_category(engine_subgroup),
                 GeneratedSubgroups(group),
                 *_finite_if_bounded_by(group),
+                *((OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else ()),
             )
         ),
+        _ambient=OwnedGroups(),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
         supergroup=group,
@@ -1690,7 +1780,11 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
     engine_rank = None if n is None else _group_constructor_argument(n)
     engine_names = _group_constructor_argument(names)
     if index_set is None:
-        return _own_group(SageFree(engine_rank, engine_names, index_set=None, abelian=abelian, **engine_kwds))
+        engine = SageFree(engine_rank, engine_names, index_set=None, abelian=abelian, **engine_kwds)
+        # A free group built here is free on the ordinal of its rank: that
+        # basis is construction data, supplied by the constructor that knows
+        # the group is free, not read off the engine's class.
+        return _own_group(engine, free_basis=None if abelian else finite_ordinal_set(int(engine.ngens())))
     assert index_set in Sets(), f"the free group on {index_set} cannot be formed: its index set must be a set of the preamble's category of sets"
     match index_set:
         case _ if index_set in FiniteSets():
@@ -1720,10 +1814,118 @@ def _group_over_ring(constructor, degree, ring, *args, **kwargs):
     )
 
 
-def _GL(degree, ring, var="a"):
+@cached_function
+def _symmetric_group(points):
+    r"""``Sym(points)``, built from its point set and placed by that set's cardinality.
+
+    ``Sym(Omega)`` is finite when ``Omega`` is, and commutative when
+    ``|Omega| <= 2`` (it is trivial or cyclic of order two), while the
+    transpositions ``(12)`` and ``(23)`` do not commute once ``|Omega| >= 3``.
+    The engine is Sage's symmetric group on ``{1, ..., |Omega|}``; a point of
+    ``Omega`` is read through the ranking of ``Omega``.  The cache key is the
+    defining datum ``Omega`` under its own equality, so equal point sets give
+    one group and the engine is built once per point set.
+    """
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    assert points in FiniteSets(), (
+        f"Sym({points}) is a group for every set, but it is computed here only for a finite point set, "
+        f"and {points} is not known to be finite (it lies in {points.category()})"
+    )
+    size = cardinal(points.cardinality()).finite_value()
+    standard = points == _standard_symmetric_points(int(size))
+    refinements = (
+        SymmetricGroups(),
+        OwnedGroups().Finite(),
+        *((OwnedGroups().Commutative(),) if size <= 2 else ()),
+    )
+    return _own_group(
+        SymmetricGroup(int(size)),
+        refinements=refinements,
+        description=f"Symmetric group S_{size}" if standard else None,
+        symmetric_points=points,
+        constructing_category=OwnedGroups(),
+    )
+
+
+@cached_function
+def _standard_symmetric_points(size):
+    r"""The point set ``{1, ..., n}`` on which ``Groups.S(n)`` acts, as owned integers."""
+    integers = _own_ring(ZZ)
+    return finite_ordered_set(tuple(integers(point) for point in range(1, int(size) + 1)))
+
+
+def _S(points):
+    r"""``Groups.S``: the symmetric group as an object of the groups.
+
+    ``Groups.S(n)`` is ``Sym({1, ..., n})`` and ``Groups.S(Omega)`` is
+    ``Sym(Omega)``: the same object as ``SymmetricGroups()(Omega)`` for the
+    same ``Omega`` (``OWN-02``).
+    """
+    match points:
+        case _ if points in Sets():
+            return _symmetric_group(points)
+        case _:
+            assert points in ZZ and points >= 0, (
+                f"Groups.S takes a finite set or a number n >= 0 of points, but got {points!r}"
+            )
+            return _symmetric_group(_standard_symmetric_points(int(points)))
+
+
+def _general_linear_group(ring, degree, var="a"):
+    r"""``GL_n(R)`` from its defining data, cached on ``(R, n)``; see :func:`_general_linear_group_of`."""
+    assert degree in ZZ and degree == ZZ(degree) and degree >= 0, (
+        f"GL_n(R) needs a rank n that is an integer n >= 0, but got {degree!r}"
+    )
+    return _general_linear_group_of(_owned_ring(ring), int(degree), var)
+
+
+@cached_function
+def _general_linear_group_of(ring, rank, var):
+    r"""``GL_n(R)``, built from ``(R, n)`` and placed by ``R``'s placement.
+
+    The placement is read from the category ``R`` was constructed in, never
+    computed from ``R``:
+
+    - ``GL_0(R)`` is the trivial group;
+    - ``GL_n(R)`` is finite when ``R`` is, being a subset of the finite set
+      of ``n x n`` matrices, and ``GL_1(ZZ) = ZZ^x = {1, -1}`` is finite;
+    - for ``n >= 2`` and ``R`` infinite the transvections ``I + r E_12``
+      give an injection of ``R`` into ``GL_n(R)``; for ``R`` an infinite
+      field the scalar matrices give one of ``R^x`` for ``n >= 1``;
+    - ``GL_1(R) = R^x`` is commutative when ``R`` is.
+
+    The engine is Sage's ``GL(n, R)`` over the engine of ``R``, built once
+    per key ``(R, n)``.
+    """
     from sage.groups.matrix_gps.catalog import GL
 
-    return _group_over_ring(GL, degree, ring, var=var)
+    infinite_ring = ring in Sets().Infinite() or ring in Sets().Uncountable()
+    finite = rank == 0 or ring in FiniteSets() or (rank == 1 and ring is _own_ring(ZZ))
+    infinite = (rank >= 2 and infinite_ring) or (
+        rank >= 1 and infinite_ring and ring in OwnedRings().Division().Commutative()
+    )
+    commutative = rank == 0 or (rank == 1 and ring in OwnedRings().Commutative())
+    refinements = (
+        GeneralLinearGroups(),
+        *((OwnedGroups().Finite(),) if finite else ()),
+        *((OwnedGroups().Infinite(),) if infinite else ()),
+        *((OwnedGroups().Commutative(),) if commutative else ()),
+    )
+    return _own_group(
+        GL(rank, _engine_ring(ring), var=var),
+        refinements=refinements,
+        linear_data=(ring, rank),
+        constructing_category=OwnedGroups(),
+    )
+
+
+def _GL(degree, ring, var="a"):
+    r"""``Groups.GL(n, R)``: ``GL_n(R)`` as an object of the groups.
+
+    The same object as ``GeneralLinearGroups()(R, n)`` (``OWN-02``).
+    """
+    return _general_linear_group(ring, degree, var=var)
 
 
 def _SL(degree, ring, var="a"):
@@ -1736,16 +1938,16 @@ def _SL(degree, ring, var="a"):
         raise ValueError("SL_n(R) requires an integral rank")
     if degree < 1:
         raise ValueError("SL_n(R) requires a positive rank")
-    # The arithmetic refinement is specific to the actual integral rank
-    # two group. Truncating first would incorrectly identify SL_(5/2)(ZZ)
-    # with SL_2(ZZ), bypassing the engine's rank admission.
-    if degree == 2 and _owned_ring(ring) is ZZ:
-        # The standard integral modular group is arithmetic by its
-        # defining integral matrix realization; the axiom does not follow
-        # for arbitrary named matrix groups from their engine type alone.
-        return _own_group(
-            SL(2, _engine_ring(ZZ), var=var),
-            refinements=(OwnedGroups().Arithmetic(), OwnedGroups().FinitelyGeneratedAsMagma()),
+    # SL_n(ZZ) is constructed as the integral points of SL_n inside
+    # GL_n(QQ): arithmeticity is a property of that subgroup (Mathlib
+    # Subgroup.IsArithmetic), not an axiom of the abstract group.  SL_2(ZZ)
+    # is generated by S and T (Serre, A Course in Arithmetic, VII.1, Thm. 2).
+    if _owned_ring(ring) is ZZ:
+        return _integral_points_subgroup(
+            _GL(int(degree), _own_ring(QQ)),
+            SL(int(degree), _engine_ring(ZZ), var=var),
+            _owned_ring(ring),
+            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),) if degree == 2 else (),
         )
     return _group_over_ring(SL, degree, ring, var=var)
 
@@ -1823,27 +2025,125 @@ def _SmallGroup(order, index):
     return _own_group(PermutationGroup(gap_group=model))
 
 
-def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None, *, refinements=(), selected_matrix=None):
-    from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
+@cached_function
+def _cartan_label_coxeter_matrix(label):
+    r"""The owned Coxeter matrix of a Cartan type label, read once per label so one label names one group."""
+    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_cartan_label
 
-    from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+    return _coxeter_matrix_of_cartan_label(list(label))
+
+
+@cached_function
+def _rows_coxeter_matrix(rows):
+    r"""The owned Coxeter matrix of its rows, read once per rows so equal rows name one group."""
+    from dzack_research.preamble.categories.coxeter_diagrams import _coxeter_matrix_of_rows
+
+    return _coxeter_matrix_of_rows(rows)
+
+
+def _coxeter_matrix_datum(data):
+    r"""Read Coxeter data as the owned Coxeter matrix ``m: V x V -> Card``.
+
+    Literal ingress adapter (``OWN-06``): an owned Coxeter matrix (an
+    indexed family on ``V x V``) is the datum itself; a Cartan type label
+    ``[letter, rank]`` or ``[letter, rank, 1]`` and a list of rows are
+    raised to the owned matrix once, so the group retains owned, immutable
+    data.
+    """
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
     match data:
         case IndexedFamily():
-            # The owned Coxeter matrix m: V x V -> Card, lowered to Sage's matrix on V.
-            data = _engine_coxeter_matrix_of(data)
+            return data
+        case [str(), *_] | (str(), *_):
+            return _cartan_label_coxeter_matrix(tuple(data))
+        case list() | tuple():
+            return _rows_coxeter_matrix(tuple(tuple(row) for row in data))
+        case _:
+            assert False, (
+                f"{data!r} does not define a Coxeter group: give the owned Coxeter matrix "
+                f"m: V x V -> Card, its rows, or a Cartan type label [letter, rank]"
+            )
+
+
+def _coxeter_matrix_type(engine_matrix):
+    r"""Whether a Coxeter matrix is of finite type, and whether of affine type.
+
+    ``OWN-06`` adapter: Sage's ``CoxeterMatrix.is_finite`` and ``is_affine``
+    read the type off the classification of Coxeter diagrams.  The theorem
+    that places the group, ``W(m)`` finite exactly when the bilinear form of
+    ``m`` is positive definite (Humphreys, *Reflection groups and Coxeter
+    groups*, 6.4), is not yet cited from an opened source and is not in
+    ``lean-categories`` or Mathlib (formalization-corpus search 2026-10-14);
+    the citation is owed with the node.  An undecided type counts as
+    neither.
+    """
+    return engine_matrix.is_finite() is True, engine_matrix.is_affine() is True
+
+
+@cached_function
+def _coxeter_group(coxeter_matrix, *, base_ring=None):
+    r"""``W(m) = F(V) / <<s_v^2, (s_v s_w)^{m_vw}>>`` for an owned Coxeter matrix ``m``.
+
+    The group is the presented group of ``lean-categories`` Def. 60.4
+    (FOUNDATIONS.md, "Coxeter system and Coxeter diagram"; Humphreys,
+    *Reflection groups and Coxeter groups*, 5.1), an object of
+    :class:`FreeGroupQuotients` retaining that presentation; Sage's Coxeter
+    matrix group, the reflection representation over ``base_ring``, is its
+    private engine and supplies the presentation through
+    ``_chosen_engine_presentation``.  Placement is read from the matrix:
+    finite for a matrix of finite type (:func:`_coxeter_matrix_type`); infinite for
+    an affine matrix, an entry ``m_vw = aleph_0``, or a triangle
+    ``1/m + 1/m' + 1/m'' <= 1`` (an infinite standard parabolic subgroup);
+    commutative, and finite, when every entry off the diagonal is ``2``.
+    The cache key is the matrix by its entries and the ring, so equal data
+    give one group and the engine is built once per key.
+    """
+    from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
+
+    assert base_ring is None or base_ring in OwnedRings(), (
+        f"the Coxeter group is realized over a ring, but {base_ring} is not a ring"
+    )
+    engine_matrix = _engine_coxeter_matrix_of(coxeter_matrix)
+    indices = tuple(engine_matrix.index_set())
+    commutative = all(engine_matrix[left, right] == 2 for left, right in combinations(indices, 2))
+    finite_type, affine_type = _coxeter_matrix_type(engine_matrix)
+    finite = finite_type or commutative
+    infinite = not finite and (
+        affine_type
+        or any(engine_matrix[left, right] in (-1, infinity) for left, right in combinations(indices, 2))
+        or any(
+            sum((QQ(1) / ZZ(engine_matrix[left, right]) for left, right in combinations(triple, 2)), QQ(0)) <= 1
+            for triple in combinations(indices, 3)
+            if all(engine_matrix[left, right] > 0 for left, right in combinations(triple, 2))
+        )
+    )
+    refinements = (
+        CoxeterGroups(),
+        FreeGroupQuotients(),
+        *((OwnedGroups().Finite(),) if finite else ()),
+        *((OwnedGroups().Infinite(),) if infinite else ()),
+        *((OwnedGroups().Commutative(),) if commutative else ()),
+    )
     scalar_ring = None if base_ring is None else _engine_ring(base_ring)
     return _own_group(
-        CoxeterGroup(
-            data,
-            implementation=implementation,
-            base_ring=scalar_ring,
-            index_set=index_set,
-        ),
+        CoxeterMatrixGroup(engine_matrix, scalar_ring, None),
         refinements=refinements,
-        coxeter_matrix=selected_matrix,
+        coxeter_matrix=coxeter_matrix,
+        constructing_category=OwnedGroups(),
     )
+
+
+def _coxeter_catalogue(data, base_ring=None):
+    r"""``Groups.Coxeter``: the Coxeter group of Coxeter data, as an object of the groups.
+
+    The same object as ``CoxeterGroups()(m)`` for the same data (``OWN-02``).
+    ``data`` is an owned Coxeter matrix, its rows, or a Cartan type label;
+    ``base_ring`` is an owned ring over which the reflection representation
+    is realized.
+    """
+    return _coxeter_group(_coxeter_matrix_datum(data), base_ring=base_ring)
+
 
 
 # --------------------------------------------------------------------------
@@ -1871,7 +2171,13 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     gap_quotient = gap_projection.Image()
     permutation_isomorphism = gap_quotient.IsomorphismPermGroup()
     permutation_model = permutation_isomorphism.Image()
-    quotient = _own_group(PermutationGroup(gap_group=permutation_model))
+    # Quotients of abelian groups are abelian, independently of whether the
+    # permutation realization exposes its commutativity to the placement
+    # adapter. This is construction-derived, not an engine heuristic.
+    quotient = _own_group(
+        PermutationGroup(gap_group=permutation_model),
+        refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
+    )
     projection = group.Mor(quotient)(
         gap_projection * permutation_isomorphism
     )
@@ -1897,19 +2203,23 @@ class _AbelianSubgroupQuotientElement(MultiplicativeGroupElement):
     def __invert__(self):
         return self._invert_()
 
-    def is_one(self) -> bool:
-        return self.representative() in self.parent().subgroup()
+    def is_one(self):
+        return self.parent().subgroup().is_parent_of(self.representative())
 
     def __eq__(self, other):
-        return (
-            isinstance(other, _AbelianSubgroupQuotientElement)
-            and other.parent() is self.parent()
-            and self.representative() * ~other.representative()
-            in self.parent().subgroup()
+        if not isinstance(other, _AbelianSubgroupQuotientElement) or other.parent() is not self.parent():
+            return False
+        # The defining coset equation is a proposition if membership in
+        # the subgroup is undecided. Do not coerce it to a Python boolean.
+        return self.parent().subgroup().is_parent_of(
+            self.representative() * ~other.representative()
         )
 
     def __ne__(self, other):
-        return not self == other
+        # Coset equality can be an undecided subgroup-membership
+        # proposition. Negation preserves that proposition rather than
+        # demanding a Python truth value for it.
+        return negation(self == other)
 
     def __hash__(self):
         r"""A quotient class has no canonical representative in the general predicate case."""
@@ -2222,11 +2532,18 @@ class GroupMorphism:
             images = self._generator_images
             if images is None:
                 source = self.domain()
-                assert source.has_selected_group_resolution() and source.group_generating_set() in FiniteSets(), (
-                    f"cannot compute with {self} through GAP: this elementwise group morphism "
-                    "has no selected finite source generating set from which to compute generator images"
-                )
-                images = {generator: self(generator) for generator in source.group_generators()}
+                if source.has_selected_group_resolution() and source.group_generating_set() in FiniteSets():
+                    generators = source.group_generators()
+                elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                    generators = source.selected_subgroup_generators()
+                elif source in OwnedFiniteGroups():
+                    generators = source
+                else:
+                    raise TypeError(
+                        f"cannot compute with {self} through GAP: this elementwise group morphism "
+                        "has neither a selected finite source generating family nor a finite source"
+                    )
+                images = {generator: self(generator) for generator in generators}
             codomain = self.codomain()
             self._gap_homomorphism = self.parent()._engine_homomorphism(
                 [_element_to_engine(self.domain(), generator) for generator in images],
@@ -2256,6 +2573,18 @@ class GroupMorphism:
                     self(generator) == other(generator)
                     for generator in source.group_generators()
                 )
+            case _ if hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                # The source is defined by this generating family; equality
+                # of homomorphisms on the generators determines equality on
+                # every group word, without a second free resolution.
+                equal = conjunction(
+                    self(generator) == other(generator)
+                    for generator in source.selected_subgroup_generators()
+                )
+            case _ if source in OwnedFiniteGroups():
+                # A finite source is itself a determining family. This is
+                # effective even when it has no selected presentation.
+                equal = conjunction(self(element) == other(element) for element in source)
             case _:
                 return super()._richcmp_(other, op)
         return equal if op == op_EQ else negation(equal)
@@ -2290,6 +2619,17 @@ class GroupMorphism:
             return source.Mor(self.codomain())(
                 {generator: self(right(generator)) for generator in source.group_generators()}
             )
+        if (
+            hasattr(source, "supergroup")
+            and source in GeneratedSubgroups(source.supergroup())
+            and (right._gap_homomorphism is not None or right._generator_images is not None)
+        ):
+            # Use the subgroup's defining generators as determining data
+            # for composition, just as the resolution route does. The
+            # existing Mor constructor checks their relations.
+            return source.Mor(self.codomain())(
+                {generator: self(right(generator)) for generator in source.selected_subgroup_generators()}
+            )
         return OwnedGroups().Mor(source, self.codomain())._from_elementwise_rule(
             lambda element: self(right(element))
         )
@@ -2307,12 +2647,46 @@ class GroupMorphism:
         r"""Return one preimage of ``element``.
 
         The inclusion of a subgroup ``H`` sends ``h`` to ``h``, so the
-        preimage of an element of ``H`` is that element.
+        preimage of an element of ``H`` is that element.  The identity lifts
+        to the identity.  When the codomain is finite and the source has
+        determining generators (a selected finite generating family, its
+        subgroup generators, or its finitely many elements), the lift is the
+        word section of the finite image (``finite_image_lifts``); it is a
+        set section, not a homomorphic splitting.  A section selected with
+        :meth:`select_section` answers before those cases.  An infinite
+        image, or a source with no determining generators, is outside these
+        cases and reaches the GAP computation, which states that hypothesis.
         """
         if self._subgroup_premise:
             assert element in self.domain(), f"{element} is not in the image of {self}"
             return self.domain()(element)
-        engine_element = _element_to_engine(self.codomain(), element)
+        source = self.domain()
+        codomain = self.codomain()
+        if (element == codomain.one()) is True:
+            return source.one()
+        if self.has_selected_section():
+            section = self.selected_section()
+            return section(section.domain()(element))
+        if codomain in OwnedFiniteGroups() and (
+            source.has_selected_finite_group_generating_set()
+            or source in GeneratedSubgroups(source.supergroup())
+            or source in OwnedFiniteGroups()
+        ):
+            # Finite image, determining source generators: the lift is the
+            # word section of the image read off the Cayley traversal.
+            witnesses = self._finite_image_lift_table()
+            assert element in witnesses, (
+                f"{element} is not in the image of {self}: the images of the selected "
+                f"generators of {source} generate a subgroup of {codomain} not containing it"
+            )
+            return witnesses[element]
+        from dzack_research.preamble.categories.group.predicate_subgroups import PredicateSubgroups
+
+        assert source not in PredicateSubgroups(source.supergroup()), (
+            f"a preimage of {element} under {self} is a word in generators of {source}, but none were "
+            f"selected: {source} is cut out by a predicate; supply its generators with select_group_resolution"
+        )
+        engine_element = _element_to_engine(codomain, element)
         gap_morphism = self._gap_morphism_crossing()
         assert engine_element in gap_morphism.Image(), (
             f"{element} is not in the image of {self}"
@@ -2330,8 +2704,14 @@ class GroupMorphism:
         description=None,
         character_data=None,
         character_data_complete=None,
+        generating_morphism=None,
     ):
-        r"""Return the inverse image of ``subgroup`` under this group morphism."""
+        r"""Return the inverse image of ``subgroup`` under this group morphism.
+
+        ``generating_morphism`` supplies, when the caller's construction has
+        one, the free generating morphism onto the preimage; otherwise the
+        preimage owner selects its Schreier family when that applies.
+        """
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             PreimageSubgroups,
         )
@@ -2343,9 +2723,53 @@ class GroupMorphism:
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
+            generating_morphism=generating_morphism,
         )
 
+    _SECTION_ON_IMAGE = "set section on the image"
+
+    @cached_method
+    def _selected_data_registry(self):
+        r"""The data selected on this arrow, by key, as objects hold theirs (``select_left_cosets``)."""
+        return {}
+
+    def has_selected_section(self) -> bool:
+        r"""Whether a set section of this arrow on its image was selected with :meth:`select_section`."""
+        return self._SECTION_ON_IMAGE in self._selected_data_registry()
+
+    def selected_section(self):
+        r"""The set map ``s: f(G) -> G`` selected with :meth:`select_section`."""
+        assert self.has_selected_section(), (
+            f"{self} has no selected section on its image: select one with select_section"
+        )
+        return self._selected_data_registry()[self._SECTION_ON_IMAGE]
+
+    def select_section(self, section):
+        r"""Select a set section ``s: f(G) -> G`` of this arrow on its image, and return the arrow.
+
+        ``section`` is a morphism of ``Sets`` whose domain is a subset of
+        the codomain presenting the image of ``f`` (its admission decides
+        membership in the image) and whose codomain is the source ``G``, with
+        ``f(s(h)) = h``.  It is a chosen datum (``CON-08``): a set-theoretic
+        section, not a homomorphic splitting, stored in this arrow's registry
+        of selected data under the key ``"set section on the image"`` and
+        trusted (``OWN-22``).  Afterwards :meth:`lift` answers from it.
+        Selecting computes nothing.
+        """
+        assert section.codomain() is self.domain(), (
+            f"a section of {self} lands in its source {self.domain()}, but {section} lands in "
+            f"{section.codomain()}"
+        )
+        assert not self.has_selected_section(), (
+            f"{self} already has a selected section on its image, {self.selected_section()}; "
+            f"a second choice would make lift() depend on the order of selection"
+        )
+        self._selected_data_registry()[self._SECTION_ON_IMAGE] = section
+        return self
+
+    @cached_method
     def kernel(self):
+        r"""``ker(f)``, one subgroup per morphism, so its selected generators persist."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
             KernelSubgroups,
         )
@@ -2365,10 +2789,59 @@ class GroupMorphism:
         source = self.domain()
         if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
             return self.codomain().subgroup(self(generator) for generator in source.group_generators())
+        if source in GeneratedSubgroups(source.supergroup()):
+            # The represented subgroup supplies a generating family even
+            # without a separately selected free resolution. Its image is
+            # generated by the images of exactly those subgroup generators.
+            return self.codomain().subgroup(
+                self(generator) for generator in source.selected_subgroup_generators()
+            )
+        if source in OwnedFiniteGroups():
+            return self.codomain().subgroup(
+                self(element) for element in source
+            )
+        codomain = self.codomain()
+        if codomain in OwnedFiniteGroups() and codomain.is_trivial() is True:
+            # The image of any group in the trivial group is that group.
+            return codomain.trivial_subgroup()
+        from dzack_research.preamble.categories.group.predicate_subgroups import PredicateSubgroups
+
+        assert source not in PredicateSubgroups(source.supergroup()), (
+            f"the image of {source} under {self} is computed from generators of {source}, but none were "
+            f"selected: {source} is cut out by a predicate; supply its generators with select_group_resolution"
+        )
         return _subgroup_from_gap(
-            self.codomain(),
+            codomain,
             self._gap_morphism_crossing().Image(),
         )
+
+    @cached_method
+    def _finite_image_lift_table(self):
+        r"""One source witness above every element of the finite image (``finite_image_lifts``).
+
+        The determining generators are the source's selected finite
+        generating family (or its subgroup generators, or its elements when
+        it is finite); the termination bound is the order of the finite
+        codomain.  This is the word section of ``G ->> f(G)`` on the
+        image of those generators.
+        """
+        return self.domain().finite_image_lifts(self)
+
+    @cached_method
+    def image_factorization(self):
+        r"""Return ``G ->> im(f) -> H`` with the literal image inclusion.
+
+        The first arrow is induced by ``f`` and the existing inclusion's
+        inverse on its image; it is not an inclusion and need not be
+        injective. Its codomain is the actual represented subgroup, not a
+        fresh group with an isomorphic underlying presentation.
+
+        For the quotient ``C4 -> C2``, the first arrow is noninjective,
+        whereas the second is a subgroup inclusion of ``C2`` into itself.
+        """
+        image = self.image()
+        inclusion = image.inclusion()
+        return self.factor_through(inclusion), inclusion
 
     @cached_method
     def image_section(self):
@@ -2379,13 +2852,13 @@ class GroupMorphism:
         """
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
-        image = self.image()
+        epic, inclusion = self.image_factorization()
+        image = inclusion.domain()
         if image not in OwnedFiniteGroups():
             raise TypeError(
                 f"a finite-image section of {self} needs its image {image} "
                 "to have a selected finite group realization"
             )
-        epic = self.factor_through(image.inclusion())
         section = self.domain().finite_image_section(epic)
         return Sets().Mor(image, self.domain())(
             lambda value: section(section.domain()(image(value)))
@@ -2455,7 +2928,7 @@ class GroupMorphism:
         match source:
             case _ if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 witnesses = source.group_generators()
-            case _ if source in GeneratedSubgroups(self.codomain()):
+            case _ if hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
                 witnesses = source.selected_subgroup_generators()
             case _ if source in OwnedFiniteGroups():
                 witnesses = source
@@ -2508,8 +2981,10 @@ class GroupMorphism:
                 )
             case _ if codomain in GroupsWithChosenFinitePresentation():
                 source = self.domain()
-                if source.has_selected_finite_group_generating_set():
+                if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                     generators = source.group_generators()
+                elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                    generators = source.selected_subgroup_generators()
                 elif source in OwnedFiniteGroups():
                     generators = source
                 else:
@@ -2541,14 +3016,47 @@ class GroupMorphism:
     def is_injective(self):
         if self._injectivity_premise is not None:
             return self._injectivity_premise
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            if self.domain().cardinality() > self.codomain().cardinality():
+                return False
+        # An infinite group cannot inject into a finite group. This follows
+        # from the represented endpoint cardinalities, before selecting any
+        # homomorphism algorithm or enumerating the infinite source.
+        if self.domain() in OwnedInfiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            return False
         if self._gap_homomorphism is not None or self._generator_images is not None:
+            return bool(self._gap_morphism_crossing().IsInjective())
+        source = self.domain()
+        if (
+            source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set()
+        ) or (
+            hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup())
+        ) or source in OwnedFiniteGroups():
             return bool(self._gap_morphism_crossing().IsInjective())
         return Sets().Mor(self.domain(), self.codomain())(self.__call__).is_injective()
 
     def is_surjective(self):
         if self._subgroup_premise and self.domain() is self.codomain():
             return True
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedFiniteGroups():
+            if self.domain().cardinality() < self.codomain().cardinality():
+                return False
+        # A finite group cannot surject onto an infinite group. This is a
+        # categorical cardinality obstruction independent of the selected
+        # realization or the availability of a GAP homomorphism.
+        if self.domain() in OwnedFiniteGroups() and self.codomain() in OwnedInfiniteGroups():
+            return False
         if self._gap_homomorphism is not None or self._generator_images is not None:
+            return bool(self._gap_morphism_crossing().IsSurjective())
+        source, target = self.domain(), self.codomain()
+        if target in OwnedFiniteGroups() and (
+            (source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set())
+            or (hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()))
+            or source in OwnedFiniteGroups()
+        ):
+            # The established GAP homomorphism owner can decide surjectivity
+            # from finite determining data. Do not replace it with a set-map
+            # search or an unselected presentation of an infinite source.
             return bool(self._gap_morphism_crossing().IsSurjective())
         return Sets().Mor(self.domain(), self.codomain())(self.__call__).is_surjective()
 
@@ -2571,6 +3079,16 @@ class GroupMorphism:
             or self._gap_homomorphism is not None
             or self._generator_images is not None
         ):
+            rule = self.lift
+        elif (
+            (self.domain().has_selected_group_resolution() and self.domain().has_selected_finite_group_generating_set())
+            or (hasattr(self.domain(), "supergroup") and self.domain() in GeneratedSubgroups(self.domain().supergroup()))
+            or self.domain() in OwnedFiniteGroups()
+        ):
+            # Both bijectivity decisions can be made by the selected GAP
+            # realization of this elementwise arrow. Reuse its preimage
+            # computation instead of requiring a second set-map inverse.
+            self._gap_morphism_crossing()
             rule = self.lift
         else:
             rule = Sets().Mor(self.domain(), self.codomain())(self.__call__).inverse()
@@ -2652,12 +3170,17 @@ class IndexedFreeGroupMorphism(GroupMorphism):
         )
         return self.codomain().subgroup(tuple(self._admitted_generator_image(label) for label in basis))
 
+    @cached_method
+    def _signed_generator_image(self, index, sign):
+        r"""The image of one letter of a reduced word, a basis element to the power ``sign``."""
+        return self._admitted_generator_image(index) ** sign
+
     def _evaluate_reduced_word(self, element):
         codomain = self.codomain()
         return reduce(
             mul,
             (
-                self._admitted_generator_image(index) ** sign
+                self._signed_generator_image(index, sign)
                 for index, sign in _reduced_word_data(self.domain(), element)
             ),
             codomain.one(),
@@ -2838,7 +3361,7 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = IndexedFreeGroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -2923,7 +3446,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         return typecall(cls, family, domain, codomain)
 
     def __init__(self, mor_family, domain, codomain, *, category=None, pointwise=True):
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -3218,7 +3741,7 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     ElementMethods = GroupMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        self._preamble_base_ring = _own_ring(ZZ)
+        self._preamble_base_ring = _owned_integers()
         CategoricalMor.__init__(
             self, mor_family, domain, codomain, category=_group_mor_placement(domain, codomain)
         )
@@ -3352,9 +3875,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     from sage.groups.perm_gps.permgroup_named import (
         QuaternionGroup as _SageQuaternionGroup,
     )
-    from sage.groups.perm_gps.permgroup_named import (
-        SymmetricGroup as _SageSymmetricGroup,
-    )
     from sage.groups.perm_gps.permutation_groups_catalog import (
         PGL as _SagePGL,
     )
@@ -3401,7 +3921,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         return self.C(2)
 
     C = _owned_group_constructor(_SageCyclicGroup)
-    S = _owned_group_constructor(_SageSymmetricGroup)
+    S = staticmethod(_S)
     A = _owned_group_constructor(_SageAlternatingGroup)
     D = _owned_group_constructor(_SageDihedralGroup)
     Dic = _owned_group_constructor(_SageDiCyclicGroup)
@@ -3413,7 +3933,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     Braid = _owned_group_constructor(_SageBraid)
     Cactus = _owned_group_constructor(_SageCactus)
     PureCactus = _owned_group_constructor(_SagePureCactus)
-    Coxeter = staticmethod(_Coxeter)
+    Coxeter = staticmethod(_coxeter_catalogue)
     Weyl = _owned_group_constructor(_SageWeyl)
     Reflection = _owned_group_constructor(_SageReflection)
     RightAngledArtin = _owned_group_constructor(_SageRightAngledArtin)
@@ -3511,6 +4031,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 presentation_isomorphisms = ()
             else:
                 all_finite = all(factor in OwnedFiniteGroups() for factor in family)
+                # Abelianity is inherited from the actual direct-product
+                # factors even when the caller selected Grp rather than Ab.
+                all_abelian = all(family[label] in OwnedAbelianGroups() for label in labels)
                 # GAP's FP direct product is an FP group for FP inputs (49.1-1).
                 # Convert mixed finite factors through their FP isomorphisms,
                 # preserving the comparison maps used below.
@@ -3531,12 +4054,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
                 product_engine = libgap.DirectProduct(*engines)
                 if all_finite:
-                    product = _own_group(PermutationGroup(gap_group=product_engine))
+                    product = _own_group(
+                        PermutationGroup(gap_group=product_engine),
+                        refinements=(OwnedAbelianGroups(),)
+                        if all_abelian else (),
+                    )
                 else:
                     known_infinite = any(factor in OwnedInfiniteGroups() for factor in family)
                     product = _own_group(
                         product_engine.sage(),
-                        refinements=(OwnedInfiniteGroups(),) if known_infinite else (),
+                        refinements=(
+                            *((OwnedInfiniteGroups(),) if known_infinite else ()),
+                            *((OwnedAbelianGroups(),) if all_abelian else ()),
+                        ),
                     )
             if product not in self:
                 raise ArithmeticError(
@@ -3561,35 +4091,40 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 apex = cone.apex()
                 if not labels:
                     return apex.Mor(product)(lambda _element: product.one())
+                legs = tuple(
+                    cone.structure_morphism(diagram.domain()(label))
+                    for label in labels
+                )
 
-                # The universal map is determined pointwise by its selected
-                # legs, including when the apex group has no GAP realization.
-                # GAP computes the product and its injections, never a model
-                # of the apex or of the incoming cocone maps.
-                def image_of(element):
+                def mediating_map(element):
+                    # Cone legs, not a GAP presentation of the apex, determine
+                    # the universal group homomorphism pointwise.
                     image = product_engine.One()
                     for position, label in enumerate(labels, start=1):
-                        leg = cone.structure_morphism(diagram.domain()(label))
                         factor = family[label]
-                        factor_image = leg(element)
+                        factor_image = legs[position - 1](element)
                         model = _element_to_engine(factor, factor_image)
                         if presentation_isomorphisms:
                             model = presentation_isomorphisms[position - 1].Image(model)
                         image *= libgap.Embedding(product_engine, position).Image(model)
                     return _element_from_engine(product, image)
 
-                # Each component of image_of is a homomorphism, and the
-                # direct-product embeddings commute. Hence the rule
-                # preserves multiplication and is the unique map with
-                # the stated projections; no generator search is needed.
-                return apex.Mor(product)._from_elementwise_rule(image_of)
+                return apex.Mor(product).elementwise(mediating_map)
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def _categorical_coproduct_construction(self, factors):
             r"""Return the selected finite coproduct of represented groups.
 
-            In ``Grp`` the coproduct is the free product.  GAP supplies finite
+            In ``Grp`` the coproduct is the free product, but in ``Ab`` it
+            is the finite direct product with its canonical injections.
+            In particular the coproduct of two copies of C2 in Ab is
+            C2 x C2, not the nonabelian group C2 * C2. The universal
+            mediating arrow in Ab multiplies the component images; this
+            uses commutativity in its target and is not a group-coproduct
+            factorizer for a nonabelian target.
+
+            GAP supplies finite
             presentation isomorphisms for finite groups, and consumes the
             selected presentations of infinite finitely presented groups.
             ``FreeProduct`` and ``Embedding`` are the maintained operations
@@ -3605,6 +4140,62 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             family = _finite_factor_family(factors, name="Group coproduct factors")
             if any(factor not in self for factor in family):
                 raise TypeError(f"the coproduct of {family} cannot be formed in {self}: some factor is not an object of {self}")
+            if self.is_subcategory(OwnedAbelianGroups()):
+                # In Ab, the finite coproduct is the direct product, not
+                # the free product in Grp. Reuse the product's maintained
+                # GAP realization and its selected factor embeddings.
+                product_construction = self._categorical_product_construction(family)
+                coproduct = product_construction.object()
+                labels = tuple(family.index_set())
+                projections = tuple(
+                    product_construction.structure_morphism(
+                        product_construction.diagram().domain()(label)
+                    ) for label in labels
+                )
+                diagram = _discrete_diagram(family, self)
+
+                def injection(label):
+                    factor = family[label]
+                    # The injection is the product universal arrow with
+                    # identity in this coordinate and the trivial group
+                    # morphism in all others. This uses the actual product
+                    # construction, not a second GAP model of its apex.
+                    cone = product_construction.diagram().Cones().cone(
+                        factor,
+                        lambda index: (
+                            factor.Mor(factor).identity()
+                            if index.value() == label
+                            else factor.Mor(family[index.value()]).elementwise(
+                                lambda _element, target=family[index.value()]: target.one()
+                            )
+                        ),
+                    )
+                    return product_construction.factor(cone).apex_map()
+
+                injections = {label: injection(label) for label in labels}
+
+                universal_cocone = diagram.CoproductCocones().cocone(
+                    coproduct, lambda index: injections[index.value()]
+                )
+
+                def factorizer(cocone):
+                    apex = cocone.apex()
+                    if not labels:
+                        return coproduct.Mor(apex).elementwise(lambda _element: apex.one())
+                    legs = tuple(
+                        cocone.costructure_morphism(diagram.domain()(label))
+                        for label in labels
+                    )
+
+                    def mediating_map(element):
+                        result = apex.one()
+                        for position, projection in enumerate(projections):
+                            result *= legs[position](projection(element))
+                        return result
+
+                    return coproduct.Mor(apex).elementwise(mediating_map)
+
+                return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
             assert all(
                 factor in OwnedFiniteGroups() or factor in GroupsWithChosenFinitePresentation()
                 for factor in family
@@ -3680,7 +4271,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 apex = cocone.apex()
                 if not labels:
                     return coproduct.Mor(apex)(lambda _element: apex.one())
-                generator_images = {}
+                generator_models = []
+                images = []
                 for position, label in enumerate(labels):
                     factor = family[label]
                     leg = cocone.costructure_morphism(diagram.domain()(label))
@@ -3689,33 +4281,32 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     for presented_generator in presented_factors[
                         position
                     ].GeneratorsOfGroup():
-                        # The factor embedding supplies the corresponding
-                        # *owned source generator*. No GAP realization of
-                        # the arbitrary cocone apex is needed.
-                        product_generator = _element_from_engine(
-                            coproduct, embedding.Image(presented_generator)
+                        generator_models.append(
+                            embedding.Image(presented_generator)
                         )
                         factor_generator = isomorphism.PreImagesRepresentative(
                             presented_generator
                         )
-                        generator_images[product_generator] = leg(
-                            _element_from_engine(factor, factor_generator)
-                        )
-                selected_generators = tuple(coproduct.group_generators())
-                if not all(generator in generator_images for generator in selected_generators):
-                    raise ValueError(
-                        f"the maintained free-product presentation of {coproduct} "
-                        "does not identify its selected generators with the "
-                        "literal factor embeddings"
-                    )
-                # The selected relation validator verifies that the source
-                # relators vanish at these images. They do: each relation
-                # belongs to a factor and the corresponding cocone leg is
-                # already a group morphism. Thus this is the unique map
-                # from the free product into any represented group apex.
-                return coproduct.Mor(apex)(
-                    {generator: generator_images[generator] for generator in selected_generators}
+                        images.append(leg(_element_from_engine(factor, factor_generator)))
+                augmentation = _engine_generator_epimorphism(
+                    coproduct,
+                    tuple(_element_from_engine(coproduct, generator) for generator in generator_models),
                 )
+
+                def induced(element):
+                    word = augmentation.PreImagesRepresentative(
+                        _element_to_engine(coproduct, element)
+                    )
+                    return reduce(
+                        mul,
+                        (
+                            images[position] if sign > 0 else ~images[position]
+                            for position, sign in _engine_word_letters(coproduct, word)
+                        ),
+                        apex.one(),
+                    )
+
+                return coproduct.Mor(apex).elementwise(induced)
 
             return SelectedColimitConstruction(
                 diagram,
@@ -3744,6 +4335,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             source, target = left_morphism.domain(), left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError(f"the group equalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("a group equalizer requires two morphisms in its selected group category")
 
             equalizer = source.predicate_subgroup(
                 lambda element: left_morphism(element) == right_morphism(element),
@@ -3766,8 +4364,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def factorizer(cone):
                 source_leg = cone.structure_morphism(shape.source())
-                return cone.apex().Mor(equalizer)(
-                    lambda element: equalizer(source_leg(element))
+                # The equalizer is supplied with its actual inclusion.
+                # Factor through that monomorphism, rather than invoking
+                # the predicate subgroup's fresh element constructor as a
+                # second, unrelated description of the same subobject.
+                return cone.apex().Mor(equalizer).elementwise(
+                    lambda element: inclusion.lift(source_leg(element))
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
@@ -3798,8 +4400,20 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             source, target = left_morphism.domain(), left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError(f"the group coequalizer of {left_morphism} and {right_morphism} is not a diagram in {self}")
-            if source.has_selected_finite_group_generating_set():
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+            if not all(
+                _category_accepts_morphism(self, source, target, arrow)
+                for arrow in (left_morphism, right_morphism)
+            ):
+                raise TypeError("a group coequalizer requires two morphisms in its selected group category")
+            if source.has_selected_group_resolution() and source.has_selected_finite_group_generating_set():
                 generators = source.group_generators()
+            elif hasattr(source, "supergroup") and source in GeneratedSubgroups(source.supergroup()):
+                # The generating family defining this subgroup also
+                # determines the normal closure of the parallel-map
+                # differences. No separate group resolution is needed.
+                generators = source.selected_subgroup_generators()
             elif source in OwnedFiniteGroups():
                 generators = source
             else:
@@ -3825,6 +4439,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 coequalizer, projection = target.quotient_by_relators(
                     relators, return_projection=True
                 )
+            elif target in OwnedAbelianGroups():
+                # In an abelian group the normal closure of the difference
+                # family is its ordinary generated subgroup. The existing
+                # represented quotient retains the literal subgroup and
+                # projection even without a finite presentation of target.
+                subgroup = target.subgroup(relators)
+                coequalizer = _abelian_subgroup_quotient(subgroup)
+                projection = coequalizer.quotient_projection()
             else:
                 assert False, (
                     f"the coequalizer of {left_morphism} and {right_morphism} is defined, "
@@ -3851,6 +4473,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 if coequalizer in GroupsWithChosenFinitePresentation():
                     return coequalizer.descend_homomorphism(
                         target_leg, through=projection
+                    )
+                if isinstance(coequalizer, _AbelianSubgroupQuotientGroup):
+                    return coequalizer.Mor(cocone.apex()).elementwise(
+                        lambda coset: target_leg(coset.representative())
                     )
                 return coequalizer.Mor(cocone.apex())(
                     lambda point: target_leg(projection.lift(point))
@@ -4016,6 +4642,83 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 name="Group generators"
             )
 
+        def is_trivial(self):
+            r"""Whether ``G = {e}``.
+
+            Decided when ``G`` is finite (its order is one) or when a
+            selected finite generating family consists of the identity;
+            otherwise the proposition.
+            """
+            if self in OwnedFiniteGroups():
+                return self.cardinality() == 1
+            if self.has_selected_finite_group_generating_set():
+                one = self.one()
+                equalities = tuple(generator == one for generator in self.group_generators())
+                if all(equality is True for equality in equalities):
+                    return True
+                if any(equality is False for equality in equalities):
+                    return False
+            return AtomicProposition("is_trivial", self)
+
+        @cached_method
+        def trivial_subgroup(self):
+            r"""The subgroup ``{e}``, generated by the empty family."""
+            return self.subgroup(finite_ordered_set(()))
+
+        def free_cover(self, generators):
+            r"""The group morphism ``F(S) -> G`` from the free group on a family ``S`` of elements, ``s |-> s``.
+
+            Its image is the subgroup ``S`` generates; it is onto ``G``
+            exactly when ``S`` generates ``G``, which the caller states.
+            """
+            elements = tuple(self(generator) for generator in generators)
+            labels = finite_ordinal_set(len(elements))
+            free = OwnedGroups.Free(index_set=labels)
+            return free.Mor(self)(Sets().Mor(labels, self)(lambda label: elements[int(label)]))
+
+        def select_group_resolution(self, *, generators):
+            r"""Select the generating epimorphism ``F(S) ->> G`` on a supplied set ``S``, and return ``G``.
+
+            ``generators`` is an owned set or family of elements of ``G``.
+
+            It is the degree-zero truncation of a free-group resolution of
+            ``G`` (``CAT-29``): the caller supplies a family that generates
+            this group, and is trusted to have established that it does
+            (``OWN-22``).  Afterwards ``group_generators()`` answers, and
+            group morphisms out of ``G`` compute images and finite-image
+            word sections from it.  Selecting computes nothing.  A group
+            whose generators a realization computes selects them itself, as
+            ``O(L)`` does.
+            """
+            if self.has_selected_group_resolution():
+                raise ValueError(f"{self} already has a selected generating resolution")
+            assert generators in Sets(), (
+                f"a generating set of {self} is an owned set or family of its elements, but {generators!r} "
+                f"is not one"
+            )
+            selected = finite_ordered_set(tuple(self(generator) for generator in generators))
+            return self.select_group_generators(lambda: selected)
+
+        def select_group_generators(self, deferred_generators):
+            r"""Select ``F(S) ->> G`` on a generating family computed at first request, and return ``G``.
+
+            ``deferred_generators`` is a function of no arguments returning
+            an owned set of elements of ``G`` that generates ``G``; that it
+            generates is the caller's claim, trusted (``OWN-22``).  It is the
+            lazy form of :meth:`select_group_resolution`: selecting computes
+            nothing, and the function is called when ``group_generators()``
+            or the selected resolution is first read.
+            """
+            # A finite group answers has_selected_group_resolution() with its
+            # canonical cover before any selection; the registry records an
+            # actual selection.
+            assert not self.has_selected_resolution(OwnedGroups()), (
+                f"{self} already has a selected generating resolution; a second generating family "
+                f"would make its group generators depend on the order of selection"
+            )
+            _fix_selected_group_resolution_on(self, deferred_generators)
+            return self
+
         def invariant_overlattice(self, lattice):
             r"""Return the least integral invariant overlattice for this rational orthogonal action.
 
@@ -4032,7 +4735,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 
             ring = lattice.base_ring()
-            if ring is not _own_ring(ZZ):
+            if ring is not _owned_integers():
                 raise TypeError("an integral invariant overlattice requires a lattice over ZZ")
             if not lattice.module_rank().is_finite():
                 raise NotImplementedError("the invariant overlattice construction requires finite rank")
@@ -4102,11 +4805,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             return ClassifyingCategory(self)
 
-        def Mor(self, codomain, category=None):
-            groups = OwnedGroups()
-            if category is None or category.is_subcategory(groups):
-                return groups.Mor(self, codomain)
-            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()
@@ -4167,14 +4865,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _:
                     return AtomicProposition("is_finitely_presented_as_group", self)
 
-        def is_arithmetic_group(self):
-            if self in OwnedGroups().Arithmetic():
-                return True
-            return self._arithmeticity_decision()
-
-        def _arithmeticity_decision(self):
-            return AtomicProposition("is_arithmetic_group", self)
-
         def is_topological_group(self):
             r"""Whether a compatible group topology is part of the selected structure.
 
@@ -4199,8 +4889,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 case _:
                     return AtomicProposition("is_topological_group", self)
 
+        @RealizationHook
         def _cardinality_decision(self):
             r"""``|G|``, from what the group's own data determine.
+
+            A realization whose construction determines ``|G|``, as ``O(L)``
+            does from its selected generators, supplies this hook on its own
+            class; this body is the answer when no realization decides.
 
             A finite group is counted by its engine.  A free group on a basis
             ``S`` is trivial for empty ``S`` and otherwise has
@@ -4231,7 +4926,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             size = cardinal(self.cardinality())
             match size.is_finite():
                 case True:
-                    return _own_ring(ZZ)(int(size.finite_value()))
+                    return _owned_integers()(int(size.finite_value()))
                 case False:
                     return size
 
@@ -4251,11 +4946,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             # one-shot iterable of relations.
             relators = tuple(relators)
             match self:
-                case _ if isinstance(_engine_group(self), FreeGroup_class):
+                case _ if self in GroupsWithChosenFreeBasis():
                     # The free source and the caller's chosen relators
-                    # define this quotient. Preserve them at the family
-                    # constructor rather than discarding them on ingress.
-                    quotient = FreeGroupQuotients(self, relators)()
+                    # define this quotient F/<<R>>, the same object as
+                    # FreeGroupQuotients()(F, R).
+                    quotient = _free_group_quotient(self, relators)
                 case _ if self in GroupsWithChosenFinitePresentation():
                     quotient = _engine_quotient_by_relators(self, relators)
                 case _:
@@ -4265,7 +4960,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     )
             if not return_projection:
                 return quotient
-            if isinstance(_engine_group(self), FreeGroup_class):
+            if self in GroupsWithChosenFreeBasis():
                 # The selected presentation *is* the quotient of this free
                 # source. Reuse its retained augmentation instead of
                 # independently rebuilding a second arrow from GAP's
@@ -4360,11 +5055,23 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             bound would silently change the contract of the finite search.
             """
             if generators is None:
-                assert self.has_selected_group_resolution() and self.has_selected_finite_group_generating_set(), (
-                    f"the image of {self} under {image} cannot be enumerated: {self} has no selected finite "
-                    "generating set; pass a finite generating family explicitly"
-                )
-                generators = tuple(self.group_generators())
+                if self.has_selected_group_resolution() and self.has_selected_finite_group_generating_set():
+                    generators = tuple(self.group_generators())
+                elif hasattr(self, "supergroup") and self in GeneratedSubgroups(self.supergroup()):
+                    # This subgroup carries its own selected generating
+                    # family, even when no free resolution has been chosen
+                    # for the subgroup's represented realization.
+                    generators = tuple(self.selected_subgroup_generators())
+                elif self in OwnedFiniteGroups():
+                    # The complete finite source is itself a generating
+                    # family. No chosen presentation or GAP map is needed
+                    # to produce exact image witnesses from its action.
+                    generators = tuple(self)
+                else:
+                    assert False, (
+                        f"the image of {self} under {image} cannot be enumerated: {self} has no selected finite "
+                        "generating set and is not a represented finite group; pass a finite generating family"
+                    )
             else:
                 generators = tuple(generators)
                 assert all(generator in self for generator in generators), (
@@ -4460,8 +5167,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             *,
             character_data=None,
             character_data_complete=None,
+            generating_morphism=None,
         ):
-            r"""Return the subgroup of elements satisfying ``predicate``."""
+            r"""Return the subgroup of elements satisfying ``predicate``.
+
+            ``generating_morphism`` is the constructing owner's free group
+            morphism onto the subgroup, when it has one.
+            """
             from dzack_research.preamble.categories.group.predicate_subgroups import (
                 PredicateSubgroups,
             )
@@ -4471,7 +5183,20 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 description,
                 character_data=character_data,
                 character_data_complete=character_data_complete,
+                generating_morphism=generating_morphism,
             )
+
+        @RealizationHook
+        def _centralizer_construction(self, element):
+            r"""Supply a selected construction of ``Z_self(element)``, or None.
+
+            Protected construction contract under OWN-05. Only centralizer
+            calls this hook. A realization may return the centralizer
+            subgroup with a generating datum it selects (``O(L)`` glues it
+            from the cyclotomic summands of ``element``); None selects the
+            general predicate subgroup.
+            """
+            return None
 
         def centralizer(self, element):
             r"""Return the subgroup of elements commuting with ``element``."""
@@ -4479,6 +5204,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 CentralizerSubgroups,
             )
 
+            selected = self._centralizer_construction(element)
+            if selected is not None:
+                return selected
             return CentralizerSubgroups(self)(element)
 
         @RealizationHook
@@ -4643,20 +5371,101 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
 
         def left_cosets(self, subgroup):
-            r"""Return the represented left-coset space ``G/H``."""
+            r"""Return the represented left-coset space ``G/H``.
+
+            The result is the pointed transitive left ``G``-set ``G/H`` with
+            the projection ``G -> G/H`` and its section, the representative
+            map ``G/H -> G`` (a transversal).  A realization selected with
+            ``select_left_cosets`` is that object.  Otherwise, for infinite
+            ``G`` and ``H = f^-1(K)`` along a map to a finite group, ``G/H``
+            is realized as the finite orbit of ``K`` in ``F/K``.
+            """
+            from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
+
+            if self.has_selected_left_cosets(subgroup):
+                return self._selected_data_registry()[LeftCosetGSets(subgroup)]
+            return self._left_coset_construction(subgroup)
+
+        @cached_method
+        def _left_coset_construction(self, subgroup):
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
 
+        def has_selected_left_cosets(self, subgroup) -> bool:
+            r"""Whether a realization of ``G/H`` was selected with ``select_left_cosets``."""
+            from dzack_research.preamble.categories.group.g_sets import LeftCosetGSets
+
+            return LeftCosetGSets(subgroup) in self._selected_data_registry()
+
+        def select_left_cosets(self, coset_space):
+            r"""Select a supplied finite realization of ``G/H`` as ``left_cosets(H)``, and return ``G``.
+
+            ``coset_space`` is a finite ``G``-set in ``LeftCosetGSets(H)`` for
+            a subgroup ``H`` of this group: a pointed transitive action with
+            stabilizer ``H`` at its base point and a section
+            (``LeftCosetGSets.from_transitive_action``,
+            ``FiniteGSets.pointed_orbit``, or a computation such as
+            ``GL(M).finite_index_left_cosets``).  It states that ``H`` has
+            finite index; the caller is trusted to have established that
+            (``OWN-22``), as ``select_group_resolution`` trusts a generating
+            family, and it is stored in the same registry of selected data,
+            keyed by the category ``LeftCosetGSets(H)``.  Afterwards
+            ``left_cosets(H)`` is that object, so ``double_cosets`` with ``H``
+            on either side computes orbits on it.  Selecting computes nothing.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets, LeftCosetGSets
+
+            assert coset_space in FiniteGSets(self), (
+                f"a selected realization of a coset space of {self} is a finite {self}-set, "
+                f"but {coset_space} is in {coset_space.category()}"
+            )
+            subgroup = coset_space.subgroup()
+            assert coset_space in LeftCosetGSets(subgroup) and subgroup.supergroup() is self, (
+                f"{coset_space} is not a pointed coset space {self}/{subgroup} of a subgroup of {self}"
+            )
+            if self.has_selected_left_cosets(subgroup):
+                raise ValueError(f"{self}/{subgroup} already has a selected realization")
+            self._selected_data_registry()[LeftCosetGSets(subgroup)] = coset_space
+            return self
+
         def right_cosets(self, subgroup):
-            r"""Return the represented right-coset space ``H\\G``."""
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return _engine_cosets(self, subgroup, "right")
-                case _:
-                    assert False, (
-                        f"the right cosets of {subgroup} in {self} are defined, but the current "
-                        "preamble materializes coset spaces only for finite represented groups"
-                    )
+            r"""Return ``H\\G``, presented as ``G/H`` through ``Hx |-> x^-1 H``.
+
+            One result type for finite and infinite ``G``: the pointed
+            ``G``-set ``G/H``, with ``g.(Hx) = H x g^-1``.  The actual set maps
+            ``right_coset_projection: G -> G/H`` (``x |-> x^-1 H``) and
+            ``right_coset_section`` (``p |-> t_p^-1``) present the right cosets
+            and their transversal.
+            """
+            return self.left_cosets(subgroup)
+
+        def double_cosets(self, left_subgroup, right_subgroup):
+            r"""Return ``Q \\ G / H`` as an orbit set of a finite coset space.
+
+            Two realizations of the same quotient.  When ``G/H`` is a finite
+            ``G``-set, ``Q \\ G / H`` is the set of ``Q``-orbits on ``G/H``,
+            the orbit of ``xH`` being ``QxH``.  When ``G/H`` is infinite but
+            ``G/Q`` is a finite ``G``-set -- ``Q`` of finite index, realized
+            as a kernel or preimage along a map to a finite group -- it is
+            the set of ``H``-orbits on ``G/Q``: inversion ``x |-> x^-1``
+            carries ``QxH`` to ``H x^-1 Q``, so the ``H``-orbit of ``tQ`` is
+            the double coset ``Q t^-1 H``.  Each orbit set retains its coset
+            space, the projection from ``G`` and the section.  When neither
+            coset space is finite no orbit computation is available.
+            """
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            right_cosets = self.left_cosets(right_subgroup)
+            if right_cosets in FiniteGSets(self):
+                return right_cosets.double_cosets(left_subgroup)
+            left_cosets = self.left_cosets(left_subgroup)
+            assert left_cosets in FiniteGSets(self), (
+                f"the double cosets {left_subgroup} \\ {self} / {right_subgroup} are computed as orbits on a "
+                f"finite coset space, but neither {self}/{right_subgroup} nor {self}/{left_subgroup} is "
+                f"realized as a finite {self}-set: neither subgroup is a kernel or preimage along a map "
+                f"to a finite group, and {self} is not known to be finite"
+            )
+            return left_cosets.inverted_double_cosets(right_subgroup)
 
         @cached_method
         @RealizationHook
@@ -4758,13 +5567,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             @cached_method
             def scalar_action(self):
 
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 endomorphisms = self.endomorphism_ring()
                 return integers.Mor(endomorphisms)(endomorphisms._scalar_identity)
 
             def scalar_multiple(self, exponent, element):
 
-                return self.scalar_action()(_own_ring(ZZ)(exponent))(element)
+                return self.scalar_action()(_owned_integers()(exponent))(element)
 
     class Finite(CategoryWithAxiom):
         def an_object(self):
@@ -4780,6 +5589,21 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
+            def has_selected_group_resolution(self) -> bool:
+                r"""A finite group has its canonical free cover ``F(U(G)) ->> G``, so this is ``True``."""
+                return True
+
+            def selected_group_resolution(self):
+                r"""The selected free cover, or the canonical one ``F(U(G)) ->> G``, ``g |-> g``.
+
+                The free group on the finite underlying set of ``G``, each
+                letter sent to itself, is determined by ``G`` and involves no
+                choice; it is fixed here when no other cover was selected.
+                """
+                if not self.has_selected_resolution(OwnedGroups()):
+                    _fix_selected_group_resolution_on(self, lambda: self)
+                return self.selected_resolution(OwnedGroups())
+
             def conjugate_subgroup(self, group_element, subgroup):
                 r"""Return ``g H g^-1``; GAP's ``ConjugateSubgroup(H, x)`` is ``x^-1 H x``."""
                 assert group_element in self, f"{group_element} is not an element of {self}"
@@ -4928,7 +5752,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         representatives=representatives,
                     )
                 )
-                integers = _own_ring(ZZ)
+                integers = _owned_integers()
                 irreducibles = self.irreducible_characters()
                 inner_products = tuple(
                     candidate._inner_product(irreducible) for irreducible in irreducibles
@@ -5003,16 +5827,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @classmethod
         def _repr_object_names(cls):
             return "infinite groups"
-
-    class Arithmetic(CategoryWithAxiom):
-        r"""Groups with a supplied arithmeticity witness."""
-
-        def an_object(self):
-            return OwnedGroups().SL(2, ZZ)
-
-        @classmethod
-        def _repr_object_names(cls):
-            return "arithmetic groups"
 
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
@@ -5299,39 +6113,138 @@ class PermutationGroups(OwnedCategory):
             return self.natural_g_set().is_transitive_action()
 
 
-class SymmetricGroups(OwnedParameterizedCategory):
-    r"""Full permutation groups of a chosen finite enumerated set."""
+class _DataInducedMorCategoryConstruction(MorCategoryConstruction):
+    r"""A family of fixed Mors of a data category: ``FixedMor`` between two of its objects.
 
-    def __init__(self, points):
-        super().__init__(points)
-        assert points in FiniteSets(), (
-            "a category of finite full symmetric groups requires a finite "
-            "point set; an infinite symmetric group is not a finite group"
+    The shared ``Of`` of :class:`SymmetricGroups`, :class:`GeneralLinearGroups`
+    and :class:`FreeGroupQuotients`: both endpoints must be objects of the
+    category, and the fixed Mor is built once per pair.
+    """
+
+    FixedMor = None
+
+    def Of(self, domain, codomain=None):
+        codomain = domain if codomain is None else codomain
+        assert domain in self.base_category() and codomain in self.base_category(), (
+            f"the arrows {domain} -> {codomain} of {self.base_category()} need both endpoints to be "
+            f"objects of it, but they lie in {domain.category()} and {codomain.category()}"
         )
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
+            return cached
+        return self._remember_between(domain, codomain, self.FixedMor(self, domain, codomain))
 
-    def parameter_category(self):
-        return EnumeratedSets()
+
+class _InducedPermutationMap:
+    r"""The homomorphism ``Sym(Omega) -> Sym(Omega')``, ``sigma |-> f sigma f^-1``, of a bijection ``f``.
+
+    The action of the symmetric-group construction on a bijection
+    ``f: Omega -> Omega'`` (Mathlib ``Equiv.permCongr``,
+    ``Mathlib/Logic/Equiv/Defs.lean``).  The image of ``sigma`` sends
+    ``f(x)`` to ``f(sigma(x))`` for every ``x`` in ``Omega``; that pointwise
+    datum is handed to the codomain's engine as the images of its ranked
+    points.  Nothing is evaluated at construction.
+    """
+
+    def __init__(self, bijection, codomain) -> None:
+        self._bijection = bijection
+        self._codomain = codomain
+
+    def __call__(self, permutation):
+        source_points = self._bijection.domain()
+        target_points = self._codomain.natural_points()
+        ranking = target_points.ranking_map()
+        engine_images = {
+            int(ranking(self._bijection(point))): int(ranking(self._bijection(permutation(point)))) + 1
+            for point in source_points
+        }
+        return self._codomain([engine_images[position] for position in sorted(engine_images)])
+
+
+class SymmetricGroupMor(GroupMor):
+    r"""``Mor(Sym(Omega), Sym(Omega'))`` in ``SymmetricGroups()``: the maps induced by bijections.
+
+    An arrow is the homomorphism ``sigma |-> f sigma f^-1`` of a bijection
+    ``f: Omega -> Omega'`` (Mathlib ``Equiv.permCongr``); it is constructed
+    from ``f``, an isomorphism of the core of ``Sets()`` between the natural
+    point sets, so the datum's type carries its bijectivity.  Two
+    bijections induce the same arrow exactly when they differ by an element of
+    the centre of ``Sym(Omega)``.  These arrows are group homomorphisms, so
+    this Mor is a subcategory of the group Mor; it is not closed under the
+    pointwise product of a commutative target, so it carries no pointwise
+    enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        bijections = Sets().Core().Mor(self.domain().natural_points(), self.codomain().natural_points())
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in bijections:
+                return self._from_elementwise_rule(_InducedPermutationMap(datum, self.codomain()))
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of symmetric groups is induced by a bijection "
+                    f"{self.domain().natural_points()} -> {self.codomain().natural_points()}, an arrow of "
+                    f"Sets().Core(), but got {datum!r}"
+                )
+
+    @cached_method
+    def _cardinality_decision(self):
+        r"""``|Bij(Omega, Omega')| / |Z(Sym(Omega))|``: bijections differing by a central element induce one arrow."""
+        domain, codomain = self.domain(), self.codomain()
+        source_size = cardinal(domain.natural_points().cardinality())
+        if source_size != cardinal(codomain.natural_points().cardinality()):
+            return cardinal(0)
+        bijections = cardinal(domain.cardinality()).finite_value()
+        centre = cardinal(domain.center().cardinality()).finite_value()
+        return cardinal(bijections // centre)
+
+    def _repr_(self):
+        return f"Mor_SymmetricGroups({self.domain()}, {self.codomain()})"
+
+
+class SymmetricGroupMorCategoryConstruction(_DataInducedMorCategoryConstruction):
+    r"""The family ``(Sym(Omega), Sym(Omega')) |-> `` the arrows induced by bijections ``Omega -> Omega'``."""
+
+    FixedMor = SymmetricGroupMor
+
+
+class SymmetricGroups(OwnedCategory):
+    r"""The symmetric groups ``Sym(Omega)`` of sets, with the arrows induced by bijections.
+
+    An object is ``Sym(Omega)``, built from the set ``Omega`` by
+    ``SymmetricGroups()(Omega)``; an arrow ``Sym(Omega) -> Sym(Omega')`` is
+    ``sigma |-> f sigma f^-1`` for a bijection ``f: Omega -> Omega'``.  The
+    construction is functorial on bijections only (Mathlib ``Equiv.Perm``,
+    ``Equiv.permCongr``, ``Mathlib/Logic/Equiv/Defs.lean``), so these are the
+    arrows of the category, asked of it explicitly:
+    ``SymmetricGroups().Mor(A, B)``.  ``Sym(Omega)`` is one object whichever
+    route builds it, and its ambient category is the groups, so ``A.Mor(B)``
+    is all group homomorphisms (``OWN-02``, ``ARC-07``).  ``lean-categories``
+    does not formalize symmetric groups; the
+    request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
+    group, by its action on ``Omega``.
+    """
+
+    _MorCategory = SymmetricGroupMorCategoryConstruction
 
     def super_categories(self):
-        categories = [PermutationGroups(), OwnedGroups().Finite()]
-        # For at most two points S_n is trivial or cyclic of order two;
-        # for three points the transpositions (12) and (23) fail to
-        # commute. The axiom is determined by the chosen point set.
-        if cardinal(self.parameter().cardinality()).finite_value() <= 2:
-            categories.append(OwnedGroups().Commutative())
-        return categories
+        return [PermutationGroups()]
 
     def an_object(self):
-        return self()
+        r"""``Sym(Delta[2])``, of order six."""
+        return self(Sets.Δ[2])
 
-    def _call_(self):
-        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+    @classmethod
+    def _repr_object_names(cls):
+        return "symmetric groups"
 
-        points = self.parameter()
-        return _own_group(
-            SymmetricGroup(int(cardinal(points.cardinality()).finite_value())),
-            refinements=(self,), symmetric_points=points,
-        )
+    def _call_(self, points):
+        return _symmetric_group(points)
 
     class ParentMethods:
         def __init__(self, symmetric_points=None, **rest):
@@ -5374,74 +6287,112 @@ class SymmetricGroups(OwnedParameterizedCategory):
             return FiniteGSets(self)(points, lambda element, point: element(point))
 
 
-class GeneralLinearGroups(OwnedCategory):
-    r"""Automorphism groups of the chosen standard free module ``R^n``."""
+class _InducedMatrixMap:
+    r"""``GL_n(phi): GL_n(R) -> GL_n(S)``, applying a ring map ``phi`` to every entry.
 
-    def __init__(self, ring, degree):
-        self._coefficient_ring = _owned_ring(ring)
-        # An integral rank is part of the defining free-module datum.
-        # Casting first would silently identify GL_(3/2)(R) with GL_1(R).
-        assert degree in ZZ and degree == ZZ(degree), (
-            "GL_n(R) requires an integral rank"
+    The action of the general-linear construction on a ring map
+    ``phi: R -> S`` (Mathlib ``Matrix.GeneralLinearGroup.map``,
+    ``Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean:187``).
+    Nothing is evaluated at construction.
+    """
+
+    def __init__(self, ring_map, domain, codomain) -> None:
+        self._ring_map = ring_map
+        self._domain = domain
+        self._codomain = codomain
+
+    def __call__(self, element):
+        source_ring = self._domain.coefficient_ring()
+        target_ring = self._codomain.coefficient_ring()
+        matrix = _matrix_group_element_matrix(self._domain, element)
+        return self._codomain([
+            [
+                _engine_element(target_ring, self._ring_map(_owned_engine_element(source_ring, entry)))
+                for entry in row
+            ]
+            for row in matrix.rows()
+        ])
+
+
+class GeneralLinearGroupMor(GroupMor):
+    r"""``Mor(GL_n(R), GL_n(S))`` in ``GeneralLinearGroups()``: the maps ``GL_n(phi)`` of ring maps.
+
+    An arrow is ``GL_n(phi)`` for a ring map ``phi: R -> S``, applied to
+    every entry (Mathlib ``Matrix.GeneralLinearGroup.map``); it is
+    constructed from ``phi``, an arrow of ``OwnedRings()``.  The rank is
+    part of the object; there is no arrow between groups of different rank.
+    These arrows are group homomorphisms, so this Mor lies under the group
+    Mor; it is not closed under pointwise products, so it carries no
+    pointwise enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        source_ring = self.domain().coefficient_ring()
+        target_ring = self.codomain().coefficient_ring()
+        assert self.domain().degree() == self.codomain().degree(), (
+            f"{self.domain()} -> {self.codomain()} has no arrow in GeneralLinearGroups(): the ranks "
+            f"{self.domain().degree()} and {self.codomain().degree()} differ, and an arrow is induced by a ring map"
         )
-        self._degree = int(degree)
-        assert self._degree >= 0, "GL_n(R) requires a nonnegative rank"
-        super().__init__()
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in OwnedRings().Mor(source_ring, target_ring):
+                return self._from_elementwise_rule(_InducedMatrixMap(datum, self.domain(), self.codomain()))
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of general linear groups is induced by a ring map "
+                    f"{source_ring} -> {target_ring}, but got {datum!r}"
+                )
 
-    def coefficient_ring(self):
-        return self._coefficient_ring
+    def _cardinality_decision(self):
+        r"""Not decided here: the arrows are indexed by ring maps, counted modulo their kernel on ``GL_n``."""
+        return None
 
-    def degree(self):
-        return self._degree
+    def _repr_(self):
+        return f"Mor_GeneralLinearGroups({self.domain()}, {self.codomain()})"
+
+
+class GeneralLinearGroupMorCategoryConstruction(_DataInducedMorCategoryConstruction):
+    r"""The family ``(GL_n(R), GL_m(S)) |-> `` the arrows ``GL_n(phi)`` of ring maps ``phi: R -> S``."""
+
+    FixedMor = GeneralLinearGroupMor
+
+
+class GeneralLinearGroups(OwnedCategory):
+    r"""The general linear groups ``GL_n(R)``, with the arrows ``GL_n(phi)`` of ring maps.
+
+    An object is ``GL_n(R)``, the automorphisms of the free module ``R^n``,
+    built from the ring ``R`` and the rank ``n`` by
+    ``GeneralLinearGroups()(R, n)``; an arrow ``GL_n(R) -> GL_n(S)`` is
+    ``GL_n(phi)`` for a ring map ``phi: R -> S``, applied entrywise.  For
+    each ``n`` the construction is a functor from rings to groups (Mathlib
+    ``Matrix.GeneralLinearGroup.map``), so these are the arrows of the
+    category, asked of it explicitly: ``GeneralLinearGroups().Mor(A, B)``.
+    ``GL_n(R)`` is one object whichever route builds it, with the groups as
+    its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the request is in
+    ``COMPLAINTS.md``.
+    """
+
+    _MorCategory = GeneralLinearGroupMorCategoryConstruction
 
     def super_categories(self):
-        # GL_0(R) is trivial, and GL_1(R)=R^× is abelian for commutative R.
-        # Neither statement licenses commutativity of the unit group of an
-        # arbitrary noncommutative ring.
-        abelian = (
-            self.degree() == 0
-            or (self.degree() == 1 and self.coefficient_ring() in OwnedRings().Commutative())
-        )
-        refinements = [OwnedGroups().Commutative()] if abelian else []
-        # GL_n(R) is a subset of the finite matrix set R^(n*n) whenever
-        # R is finite; rank zero is the trivial group over any ring.
-        # For rank one, the group is R^× rather than all of R. In
-        # particular ZZ^× = {1,-1} despite ZZ being infinite. Do not
-        # infer infinitude merely from the coefficient set.
-        if (
-            self.degree() == 0
-            or self.coefficient_ring().is_finite() is True
-            or (self.degree() == 1 and self.coefficient_ring() is ZZ)
-        ):
-            return [OwnedGroups().Finite(), *refinements]
-        # For any infinite coefficient ring and n >= 2, the elementary
-        # transvections I + r E_12 give an injection of its underlying set
-        # into GL_n(R). The rank-one case instead detects the unit group,
-        # which need not be infinite (e.g. ZZ^×).
-        if self.degree() >= 2 and self.coefficient_ring().is_finite() is False:
-            return [OwnedGroups().Infinite(), *refinements]
-        # An infinite field has infinitely many nonzero units. Their
-        # diagonal matrices give an infinite subgroup even in rank one;
-        # this implication does not extend to arbitrary infinite rings.
-        if (
-            self.degree() >= 1
-            and self.coefficient_ring().is_field() is True
-            and self.coefficient_ring().is_finite() is False
-        ):
-            return [OwnedGroups().Infinite(), *refinements]
-        return [OwnedGroups(), *refinements]
+        return [OwnedGroups()]
 
     def an_object(self):
-        return self()
+        r"""``GL_2(GF(2))``, of order six."""
+        from sage.rings.finite_rings.finite_field_constructor import GF
 
-    def _call_(self):
-        from sage.groups.matrix_gps.catalog import GL
+        return self(_own_ring(GF(2)), 2)
 
-        ring = self.coefficient_ring()
-        return _own_group(
-            GL(self.degree(), _engine_ring(ring)),
-            refinements=(self,), linear_data=(ring, self.degree()),
-        )
+    @classmethod
+    def _repr_object_names(cls):
+        return "general linear groups"
+
+    def _call_(self, ring, degree):
+        return _general_linear_group(ring, degree)
 
     class ParentMethods:
         def __init__(self, selected_linear_data=None, **rest):
@@ -5454,94 +6405,33 @@ class GeneralLinearGroups(OwnedCategory):
         def degree(self):
             return self._selected_linear_data[1]
 
+
 class CoxeterGroups(OwnedCategory):
-    r"""The Coxeter group defined by the actual selected Coxeter matrix."""
+    r"""The Coxeter groups ``W(m)`` of Coxeter matrices ``m``, as presented groups.
 
-    def __init__(self, coxeter_matrix):
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-        # Category placement asserts that the datum is a Coxeter matrix,
-        # not merely a square array. Validate that law at category ingress,
-        # retaining the caller's exact datum for its mathematical identity.
-        self._engine_coxeter_matrix = (
-            _engine_coxeter_matrix_of(coxeter_matrix)
-            if isinstance(coxeter_matrix, IndexedFamily)
-            else CoxeterMatrix(coxeter_matrix)
-        )
-        self._coxeter_matrix = coxeter_matrix
-        super().__init__()
-
-    def coxeter_matrix(self):
-        # The retained datum may be a mutable list. A category cannot
-        # continue to claim a different Coxeter matrix after its defining
-        # representation was selected; this check belongs on the category
-        # accessor too, not only on its group constructor and group accessor.
-        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-        from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-        current = (
-            _engine_coxeter_matrix_of(self._coxeter_matrix)
-            if isinstance(self._coxeter_matrix, IndexedFamily)
-            else CoxeterMatrix(self._coxeter_matrix)
-        )
-        if current != self._engine_coxeter_matrix:
-            raise ValueError("the chosen Coxeter matrix changed after category construction")
-        return self._coxeter_matrix
+    An object is ``W(m) = <s_v | s_v^2, (s_v s_w)^{m_vw}>`` for a Coxeter
+    matrix ``m: V x V -> Card``, built by ``CoxeterGroups()(m)`` and
+    retaining ``m`` (``lean-categories`` FOUNDATIONS.md Def. 60.4).  It is
+    constructed through :class:`FreeGroupQuotients` with that presentation.
+    Its ambient category is the groups.  Arrows of Coxeter data are not
+    formalized in ``lean-categories`` (request in ``COMPLAINTS.md``), so this
+    category presents its objects and states no arrows of its own; the maps
+    of presentations are ``FreeGroupQuotients().Mor(W, W')``.
+    """
 
     def super_categories(self):
-        # Check that the retained defining data have not been mutated.
-        self.coxeter_matrix()
-        # Sage's CoxeterMatrix owns the diagram classification, including
-        # reducible systems, exceptional finite types and affine systems.
-        # Its is_finite() returns True for certified finite type and False
-        # otherwise; False need not certify infinitude (unknown type).
-        finite = self._engine_coxeter_matrix.is_finite()
-        indices = tuple(self._engine_coxeter_matrix.index_set())
-        commutative = all(
-            self._engine_coxeter_matrix[left, right] == 2
-            for left, right in combinations(indices, 2)
-        )
-        categories = [OwnedGroups().FinitelyPresentedAsGroup()]
-        if finite is True:
-            categories.append(OwnedGroups().Finite())
-        elif (
-            self._engine_coxeter_matrix.is_affine() is True
-            or any(self._engine_coxeter_matrix[left, right] in (-1, infinity)
-                   for left, right in combinations(indices, 2))
-            or any(
-                sum((QQ(1) / ZZ(self._engine_coxeter_matrix[left, right])
-                     for left, right in combinations(triple, 2)), QQ(0)) <= 1
-                for triple in combinations(indices, 3)
-                if all(self._engine_coxeter_matrix[left, right] > 0
-                       for left, right in combinations(triple, 2))
-            )
-        ):
-            # These are positive witnesses for infinite standard parabolic
-            # subsystems; the negative answer from is_finite() alone is not.
-            categories.append(OwnedGroups().Infinite())
-        if commutative:
-            # Commuting Coxeter involutions give (C2)^rank, including
-            # the empty diagram. This also independently proves finiteness.
-            categories.extend((OwnedGroups().Commutative(), OwnedGroups().Finite()))
-        return _distinct_supercategories(categories)
+        return [FreeGroupQuotients()]
 
     def an_object(self):
-        return self()
+        r"""``W(A_2)``, of order six."""
+        return self([[1, 3], [3, 1]])
 
-    def _call_(self):
-        # The Coxeter matrix realization exposes the Coxeter presentation
-        # and its generating reflections at the existing engine adapter.
-        # The catalogue's default reflection realization need not carry
-        # those presentation data even when the abstract group is the same.
-        # Validate through the category's mathematical datum accessor.
-        selected_matrix = self.coxeter_matrix()
-        return _Coxeter(
-            self._engine_coxeter_matrix, implementation="matrix",
-            refinements=(self,), selected_matrix=selected_matrix,
-        )
+    @classmethod
+    def _repr_object_names(cls):
+        return "Coxeter groups"
+
+    def _call_(self, coxeter_matrix):
+        return _coxeter_group(_coxeter_matrix_datum(coxeter_matrix))
 
     class ParentMethods:
         def __init__(self, selected_coxeter_matrix=None, **rest):
@@ -5549,76 +6439,165 @@ class CoxeterGroups(OwnedCategory):
             super().__init__(**rest)
 
         def coxeter_matrix(self):
-            r"""The chosen Coxeter datum, provided it still defines this group.
-
-            The engine was constructed from a matrix snapshot. A caller can
-            subsequently mutate a list used as the chosen matrix; returning
-            that altered list as the group's defining matrix would assert a
-            different Coxeter presentation without changing the group.
-            """
-            from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-            from dzack_research.preamble.categories.coxeter_diagrams import _engine_coxeter_matrix_of
-            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
-            chosen = self._selected_coxeter_matrix
-            current = (
-                _engine_coxeter_matrix_of(chosen)
-                if isinstance(chosen, IndexedFamily)
-                else CoxeterMatrix(chosen)
-            )
-            if current != _engine_group(self).coxeter_matrix():
-                raise ValueError("the chosen Coxeter matrix changed after group construction")
+            r"""The Coxeter matrix ``m: V x V -> Card`` this group was built from."""
             return self._selected_coxeter_matrix
 
 
+class _InducedPresentationMap:
+    r"""The map ``F/<<R>> -> F'/<<R'>>`` of a free-group map ``f: F -> F'`` with ``f(R) subset R'``.
+
+    Mathlib ``PresentedGroup.map`` (``Mathlib/GroupTheory/PresentedGroup.lean:63``):
+    ``f`` composed with the projection ``F' -> F'/<<R'>>`` kills ``R``, so it
+    descends through ``F -> F/<<R>>`` (``PresentedGroup.toGroup``, line 135).
+    The descent is computed on the first evaluation and kept.
+    """
+
+    def __init__(self, free_map, domain, codomain) -> None:
+        self._free_map = free_map
+        self._domain = domain
+        self._codomain = codomain
+        self._descended = None
+
+    def __call__(self, element):
+        if self._descended is None:
+            self._descended = self._domain.descend_homomorphism(
+                self._codomain.quotient_projection() * self._free_map
+            )
+        return self._descended(element)
+
+
+class FreeGroupQuotientMor(GroupMor):
+    r"""``Mor(F/<<R>>, F'/<<R'>>)`` in ``FreeGroupQuotients()``: the maps of presentations.
+
+    An arrow is induced by a group map ``f: F -> F'`` of the presenting free
+    groups with ``f(R) subset R'`` (Mathlib ``PresentedGroup.map``); it is
+    constructed from ``f``, an arrow of ``F.Mor(F')``.  Distinct maps of
+    presentations can induce the same group map.  These arrows are group
+    homomorphisms, so this Mor lies under the group Mor; it carries no
+    pointwise enrichment.
+    """
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        super().__init__(mor_family, domain, codomain, pointwise=False)
+
+    def _element_constructor_(self, datum, *, check=False, **_options):
+        source_free = self.domain().presenting_free_group()
+        target_free = self.codomain().presenting_free_group()
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in source_free.Mor(target_free):
+                if check:
+                    target_relators = self.codomain().defining_relations()
+                    unmapped = [
+                        relator for relator in self.domain().defining_relations()
+                        if datum(relator) not in target_relators
+                    ]
+                    if unmapped:
+                        raise ValueError(
+                            f"{datum} is not a map of presentations {self.domain()} -> {self.codomain()}: "
+                            f"it sends the relators {unmapped} outside the relators {target_relators}"
+                        )
+                return self._from_elementwise_rule(
+                    _InducedPresentationMap(datum, self.domain(), self.codomain())
+                )
+            case _:
+                raise TypeError(
+                    f"an arrow {self.domain()} -> {self.codomain()} of presented groups is induced by a map "
+                    f"{source_free} -> {target_free} of the presenting free groups, but got {datum!r}"
+                )
+
+    def _cardinality_decision(self):
+        r"""Not decided here: distinct maps of presentations can induce one group map."""
+        return None
+
+    def _repr_(self):
+        return f"Mor_FreeGroupQuotients({self.domain()}, {self.codomain()})"
+
+
+class FreeGroupQuotientMorCategoryConstruction(_DataInducedMorCategoryConstruction):
+    r"""The family ``(F/<<R>>, F'/<<R'>>) |-> `` the maps induced by maps of presentations."""
+
+    FixedMor = FreeGroupQuotientMor
+
+
+def _free_group_quotient(free_group, relators):
+    r"""``F/<<R>>`` for a free group ``F`` and a set ``R`` of elements of ``F``.
+
+    The datum is ``(F, R)`` with ``R`` an arbitrary subset of ``F`` (Mathlib
+    ``PresentedGroup``, ``Mathlib/GroupTheory/PresentedGroup.lean:39``).  The
+    group is computed here only through Sage's finitely presented groups,
+    which need a finite free basis and finitely many relators; any other
+    presentation is outside the computed cases.
+    """
+    free_group = _owned_group(free_group)
+    assert free_group in GroupsWithChosenFreeBasis(), (
+        f"F/<<R>> is a quotient of a free group, but {free_group} is not constructed as the free group "
+        f"on a chosen set (it lies in {free_group.category()})"
+    )
+    assert free_group.free_basis() in FiniteSets(), (
+        f"F/<<R>> is a group for every free group F, but it is computed here only for a finite free basis, "
+        f"and the basis {free_group.free_basis()} of {free_group} is not known to be finite"
+    )
+    match relators:
+        case _ if relators in Sets():
+            assert relators in FiniteSets(), (
+                f"F/<<R>> is a group for every set R of relators, but it is computed here only for finitely "
+                f"many relators, and {relators} is not known to be finite"
+            )
+    relators = tuple(relators)
+    if any(relator not in free_group for relator in relators):
+        raise ValueError(
+            f"the relators {relators} of a presentation must be elements of the presenting free group {free_group}"
+        )
+    return _presented_group(free_group, frozenset(free_group(relator) for relator in relators))
+
+
+@cached_function
+def _presented_group(free_group, relator_set):
+    r"""``F/<<R>>`` keyed by its defining data: ``F`` and the set ``R``.
+
+    ``R`` is a set, so reordering or repeating relators gives the same group,
+    and the engine is built once per key.  The order in which the relators are
+    handed to the engine is that of the set, and carries no meaning.
+    """
+    return _engine_quotient_by_relators(free_group, tuple(relator_set))
+
+
 class FreeGroupQuotients(OwnedCategory):
-    r"""Groups presented by a chosen free group and finite relators."""
+    r"""The presented groups ``F/<<R>>``, with the maps induced by maps of presentations.
 
-    def __init__(self, free_group, relators):
-        self._free_group = _owned_group(free_group)
-        # Check the mathematical finite-generation requirement before
-        # requiring Sage's finite-rank FreeGroup_class engine. Indexed free
-        # groups on infinite bases use a different backend representation.
-        if self._free_group in GroupsWithChosenFreeBasis():
-            if self._free_group.free_basis() not in FiniteSets():
-                raise ValueError("a finite group presentation requires a finite free basis")
-        assert isinstance(_engine_group(self._free_group), FreeGroup_class), (
-            "a free-group quotient requires an actual free group, not merely "
-            "a group equipped with a chosen generating set"
-        )
-        assert self._free_group in GroupsWithChosenFreeBasis(), (
-            "the free source must retain its chosen free basis"
-        )
-        # A finite relator family alone does not give a finite presentation:
-        # the free generating set must also be finite. In particular a
-        # quotient of F(NN) by finitely many relations is not thereby an
-        # object of GroupsWithChosenFinitePresentation().
-        # An explicitly infinite selected relator *set* also cannot define
-        # an object of this finite-presentation category. Reject it before
-        # attempting to exhaust its iterator into a Python tuple.
-        if relators in Sets() and cardinal(relators.cardinality()).is_finite() is False:
-            raise ValueError("a finite group presentation requires a finite relator family")
-        selected_relators = tuple(relators)
-        if any(relator not in self._free_group for relator in selected_relators):
-            raise ValueError("each defining relator must belong to the selected presenting free group")
-        self._relators = tuple(self._free_group(relator) for relator in selected_relators)
-        super().__init__()
+    An object is ``F/<<R>>`` for a free group ``F`` and a set ``R`` of its
+    elements, built by ``FreeGroupQuotients()(F, R)`` and retaining the
+    presentation ``(F, R)``; an arrow ``F/<<R>> -> F'/<<R'>>`` is induced by
+    a group map ``f: F -> F'`` with ``f(R) subset R'`` (Mathlib
+    ``PresentedGroup`` and ``PresentedGroup.map``), asked of the category
+    explicitly: ``FreeGroupQuotients().Mor(A, B)``.  ``F/<<R>>`` is one object
+    whichever route builds it, with the groups as its ambient category.  When ``F`` has a finite basis
+    and ``R`` is finite the presentation is a chosen finite presentation, and
+    the group is also placed in :class:`GroupsWithChosenFinitePresentation`;
+    how the two relate to the resolution category of ``CAT-29`` is recorded
+    in ``COMPLAINTS.md``.
+    """
 
-    def free_group(self):
-        return self._free_group
-
-    def relators(self):
-        return self._relators
+    _MorCategory = FreeGroupQuotientMorCategoryConstruction
 
     def super_categories(self):
-        return [GroupsWithChosenFinitePresentation()]
+        return [OwnedGroups()]
 
     def an_object(self):
-        return self()
+        r"""``<a | a^2>``, the cyclic group of order two."""
+        free = Groups.Free(1)
+        generator = next(iter(free.group_generators()))
+        return self(free, (generator * generator,))
 
-    def _call_(self):
-        source = self.free_group()
-        return _engine_quotient_by_relators(source, self.relators(), quotient_category=self)
+    @classmethod
+    def _repr_object_names(cls):
+        return "presented groups"
+
+    def _call_(self, free_group, relators):
+        return _free_group_quotient(free_group, relators)
+
 
 class GroupsWithChosenFinitePresentation(OwnedCategory):
     """Finitely presented groups with a chosen finite presentation."""
@@ -5857,7 +6836,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.group.additive_mors import AdditiveEndomorphismRings
 
-        return [AdditiveEndomorphismRings(_own_ring(ZZ))]
+        return [AdditiveEndomorphismRings(_owned_integers())]
 
     class ParentMethods:
         def _commutativity_decision(self):
@@ -5868,7 +6847,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
             """
             undecided = AtomicProposition("is_commutative", self)
             group = self.domain()
-            if group is _own_ring(ZZ):
+            if group is _owned_integers():
                 return True
             if group not in OwnedGroups() or not group.has_selected_group_resolution():
                 return undecided
@@ -5911,12 +6890,40 @@ class Subgroups(OwnedParameterizedCategory):
         return "subgroups"
 
     class ParentMethods:
-        def __init__(self, supergroup, **rest) -> None:
+        def __init__(self, supergroup, integral_points_ring=None, **rest) -> None:
             self._supergroup = supergroup
+            self._integral_points_ring = integral_points_ring
             super().__init__(facade=supergroup, **rest)
 
         def supergroup(self):
             return self._supergroup
+
+        def is_arithmetic_group(self):
+            r"""Whether this subgroup ``Gamma`` of ``GL_n(QQ)`` is arithmetic.
+
+            Arithmeticity is a property of a subgroup of the rational points
+            of an algebraic group, not of an abstract group: ``Gamma`` is
+            arithmetic when it is commensurable with the integral points
+            (Mathlib ``Subgroup.IsArithmetic``,
+            ``Mathlib/NumberTheory/ModularForms/ArithmeticSubgroups.lean:102``,
+            states it for subgroups of ``GL_2(RR)`` against the image of
+            ``SL_2(ZZ)``).  ``lean-categories`` does not define it; the
+            request is in ``COMPLAINTS.md``.  A subgroup constructed as the
+            integral points ``G(ZZ)`` of its ambient is arithmetic by that
+            construction (it is commensurable with itself; Mathlib
+            ``instance : IsArithmetic 𝒮ℒ``); any other subgroup answers the
+            proposition.
+            """
+            ambient = self.supergroup()
+            assert ambient in GeneralLinearGroups(), (
+                f"arithmeticity is a property of a subgroup of a general linear group, but {self} "
+                f"is a subgroup of {ambient}, which lies in {ambient.category()}"
+            )
+            match self._integral_points_ring:
+                case None:
+                    return AtomicProposition("is_arithmetic_group", self)
+                case _:
+                    return True
 
         @cached_method
         def inclusion(self):
@@ -5970,8 +6977,8 @@ class Subgroups(OwnedParameterizedCategory):
                     generators = self.selected_subgroup_generators()
                 case _ if self in OwnedFiniteGroups():
                     generators = tuple(self)
-                case _ if hasattr(self, "schreier_generators"):
-                    generators = self.schreier_generators(generators=ambient_generators)
+                case _ if self.has_selected_group_resolution():
+                    generators = self.group_generators()
                 case _ if index_bound is not None and hasattr(self, "finite_index_schreier_generators"):
                     generators = self.finite_index_schreier_generators(index_bound=index_bound, generators=ambient_generators)
                 case _:

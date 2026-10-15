@@ -495,9 +495,6 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     TopologicalSpaceMor,
     TopologicalSpaces,
 )
-from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
-    VectorConfigurations,
-)
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
@@ -555,7 +552,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     OwnedRngs,
     OwnedSemirings,
     PredicateSubrings,
-    PrimeField,
     PrimeFields,
     PrimeSpectra,
     PrincipalIdealDomains,

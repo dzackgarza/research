@@ -24,8 +24,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    Zmod,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -37,7 +37,7 @@ from dzack_research.preamble.validation import validator
 
 def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
     r"""Return the owned grading monoid, defaulting to \(\mathbb{Z},+\)."""
-    return _own_ring(SageZZ) if monoid is None else monoid
+    return _owned_integers() if monoid is None else monoid
 
 
 def _require_grading_monoid(monoid: Parent | None) -> MonoidObject:
@@ -79,15 +79,16 @@ def _parity_key(parity):
 @cached_function
 def _integer_parity():
     r"""The reduction ``ZZ -> ZZ/2``, the canonical parity of the integer grading."""
-    integers = _own_ring(SageZZ)
-    parity_target = Zmod(2)
+    integers = _owned_integers()
+    parity_target = integers.quotient_ring(integers.ideal(integers(2)))
     return integers.Mor(parity_target)(parity_target)
 
 
 @cached_function
 def _two_parity():
     r"""The identity of ``ZZ/2``, the canonical parity of a grading by ``ZZ/2``."""
-    two = Zmod(2)
+    integers = _owned_integers()
+    two = integers.quotient_ring(integers.ideal(integers(2)))
     return two.Mor(two)(lambda degree: degree)
 
 
@@ -101,9 +102,10 @@ def _grading_parity(grading_monoid, parity=None):
     none otherwise, and a construction that reads the parity (the Koszul sign
     of a supercommutative product) refuses a grading that recorded none.
     """
-    parity_target = Zmod(2)
+    integers = _owned_integers()
+    parity_target = integers.quotient_ring(integers.ideal(integers(2)))
     if parity is None:
-        if grading_monoid is _own_ring(SageZZ):
+        if grading_monoid is _owned_integers():
             return _integer_parity()
         if grading_monoid is parity_target:
             return _two_parity()
@@ -481,7 +483,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return _direct_sum_of_modules(
             self.base_ring(), self.grading_index_set(), pieces,
             extra_categories=((*placements, IntegerGradedModules(self.base_ring()))
-                              if self.grading_index_set() is _own_ring(SageZZ) else placements),
+                              if self.grading_index_set() is _owned_integers() else placements),
             construction_data=construction_data,
         )
 
@@ -495,13 +497,13 @@ class GradedModules(OwnedCategoryOverBaseRing):
         r"""Return the stated parity ``M -> ZZ/2`` of the grading."""
         assert self._parity_key is not None, (
             f"{self.grading_index_set()} is an indexing set with no canonical parity "
-            f"homomorphism to {Zmod(2)}; state the parity with the grading"
+            f"homomorphism to ZZ/(2); state the parity with the grading"
         )
         return self._parity_key.morphism()
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_index_set()
-        if monoid is _own_ring(SageZZ):
+        if monoid is _owned_integers():
             names = "graded modules"
         else:
             names = f"modules graded by {monoid}"
@@ -518,15 +520,6 @@ class GradedModules(OwnedCategoryOverBaseRing):
     _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:
-        def Mor(self, codomain, category=None):
-            r"""Degree-preserving maps in this module's selected grading category.
-
-            An explicitly coarser category still selects its own Mor; in
-            particular ``Modules(R).Mor(M,N)`` forgets the grading.
-            """
-            if category is None:
-                return self._graded_module_placement().Mor(self, codomain)
-            return super().Mor(codomain, category)
 
         def End(self):
             r"""Endomorphisms preserving the chosen degree decomposition."""
@@ -674,7 +667,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         def truncate(self, degree):
             r"""Return the sum of homogeneous terms of degree strictly below ``degree``."""
             parent = self.parent()
-            if parent.grading_monoid() is not _own_ring(SageZZ):
+            if parent.grading_monoid() is not _owned_integers():
                 raise TypeError(
                     f"cannot truncate {self} below degree {degree}: its parent {parent} is graded by "
                     f"{parent.grading_monoid()}, and truncation is computed only for gradings by the integers"
@@ -690,7 +683,7 @@ class IntegerGradedModules(OwnedCategoryOverBaseRing):
     r"""Modules graded by the totally ordered additive group of integers."""
 
     def super_categories(self):
-        return [GradedModules(self.base_ring(), _own_ring(SageZZ))]
+        return [GradedModules(self.base_ring(), _owned_integers())]
 
     def an_object(self):
         return self(GradedModules(self.base_ring()).an_object())
@@ -698,7 +691,7 @@ class IntegerGradedModules(OwnedCategoryOverBaseRing):
     def _call_(self, module):
         from dzack_research.preamble.refine import refine
 
-        if module not in GradedModules(self.base_ring(), _own_ring(SageZZ)):
+        if module not in GradedModules(self.base_ring(), _owned_integers()):
             raise TypeError("maximum degree requires an integer-graded module")
         return refine(module, self)
 

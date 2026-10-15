@@ -50,7 +50,7 @@ def _reversed_isomorphism(transition):
     r"""``phi^{-1}`` read as an arrow of ``Core(Sch/R)`` from the codomain of ``phi``."""
     schemes = Schemes(transition.codomain().scheme_base_ring())
     return schemes.Core().Mor(transition.codomain(), transition.domain())(
-        transition.inverse(),
+        transition.inverse().forward(),
         transition.forward(),
     )
 

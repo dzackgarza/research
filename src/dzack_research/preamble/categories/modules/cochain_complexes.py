@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -256,7 +257,7 @@ class CochainDifferential:
         return self._complex
 
     def degree_shift(self):
-        return _own_ring(SageZZ).one()
+        return _owned_integers().one()
 
     def component(self, degree):
         return self.complex().differential_component(degree)
@@ -392,7 +393,7 @@ def _cochain_complex(
     r"""Construct one integer-graded direct sum carrying its selected differential."""
 
     ring = category.base_ring()
-    integers = _own_ring(SageZZ)
+    integers = _owned_integers()
     match pieces:
         case dict():
             match differentials:

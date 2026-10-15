@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProductProjectiveSpaces,
@@ -667,7 +668,7 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         f"the multidegree {degrees} is indexed by {degrees.index_set()}, but the factors of "
         f"{projective_product} are indexed by {factor_indices}"
     )
-    degree_values = tuple(_own_ring(SageZZ)(degrees[label]) for label in factor_labels)
+    degree_values = tuple(_owned_integers()(degrees[label]) for label in factor_labels)
     assert all(degree >= 0 for degree in degree_values), (
         f"no space of multihomogeneous polynomials of multidegree {degree_values} on "
         f"{projective_product}: every degree must be nonnegative"
@@ -1052,7 +1053,7 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
         _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data={
             "jet_line_bundle": line_bundle,
-            "jet_order": _own_ring(SageZZ)(jet_order),
+            "jet_order": _owned_integers()(jet_order),
             "jet_point": point,
             "jet_affine_chart": chart,
             "jet_spectrum_point": spectrum_point,

@@ -629,16 +629,6 @@ class ModulesOverGroupAlgebra(Modules):
             r"""The element of this ``R[G]``-module on the data of an element of the module the action was stated on."""
             return self(element)
 
-        def Mor(self, codomain, category=None):
-            r"""``Mor_{R[G]}(M,N)``, the equivariant maps.
-
-            The underlying coefficient-linear Mor is
-            ``Hom_R(M.unformed_module(), N.unformed_module())`` and is
-            exposed by the resulting Mor object's :meth:`underlying_mor`.
-            """
-            if category is None or category.is_subcategory(Modules(self.group_algebra())):
-                return Modules(self.group_algebra()).Mor(self, codomain)
-            return super().Mor(codomain, category)
 
         def End(self):
             r"""``End_{R[G]}(M)``, the equivariant endomorphism object.
@@ -846,7 +836,7 @@ class ModulesOverGroupAlgebra(Modules):
             forward = self.Mor(self)(automorphism.forward()).restrict_to(
                 acted_inclusion
             )
-            inverse = self.Mor(self)(automorphism.inverse()).restrict_to(
+            inverse = self.Mor(self)(automorphism.inverse().forward()).restrict_to(
                 acted_inclusion
             )
             piece = acted_inclusion.domain()

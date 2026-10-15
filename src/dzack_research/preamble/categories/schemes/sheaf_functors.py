@@ -101,7 +101,7 @@ class _AffineQuasiCoherentFunctor(Functor):
         match morphism:
             case CategoricalIsomorphism():
                 forward = self.on_morphism(morphism.forward())
-                inverse = self.on_morphism(morphism.inverse())
+                inverse = self.on_morphism(morphism.inverse().forward())
                 return self.codomain().Core().Mor(source, target)(forward, inverse)
             case _:
                 pass
