@@ -593,7 +593,14 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     @cached_method
     def _generated_arrow_type(self) -> type:
         r"""Return the arrow type generated from this Mor category's graph."""
-        providers = []
+        # Each level's ``__init__`` threads cooperatively to the levels it
+        # declares, and only the set-map root runs Sage's non-cooperative
+        # ``Morphism`` initialization.  So every Mor category precedes all of
+        # its supercategories: the reverse postorder of the declared graph,
+        # visited right to left so declaration order breaks ties.  A preorder
+        # placed the root inside an algebra arrow, ahead of its module level,
+        # whose datum then never existed.
+        postorder = []
         visited = set()
 
         def visit(mor):
@@ -601,17 +608,27 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             if marker in visited:
                 return
             visited.add(marker)
+            for super_category in reversed(mor.super_categories()):
+                if isinstance(super_category, CategoricalMor):
+                    visit(super_category)
+            postorder.append(mor)
+
+        visit(self)
+        # A Mor class also inherits the arrow methods of its Python ancestors,
+        # which are the Mor categories of its supercategories.  Each provider
+        # takes the position of the last Mor category that supplies it, so
+        # ``OwnedSetMorphism`` reached through the class of ``RingMor`` still
+        # follows the module level of a graded algebra arrow.
+        providers = {}
+        for mor in reversed(postorder):
             for ancestor in type(mor).__mro__:
                 if ancestor is CategoricalMor:
                     break
                 provider = ancestor.__dict__.get("ElementMethods")
-                if isinstance(provider, type) and provider not in providers:
-                    providers.append(provider)
-            for super_category in mor.super_categories():
-                if isinstance(super_category, CategoricalMor):
-                    visit(super_category)
-
-        visit(self)
+                if isinstance(provider, type):
+                    providers.pop(provider, None)
+                    providers[provider] = None
+        providers = list(providers)
 
         bases = []
         for candidate in (
