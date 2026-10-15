@@ -568,6 +568,7 @@ For algebraic de Rham cohomology of `F2[x]`, `H^0=F2[x^2]` and `H^1=F2[x^2] x dx
 **Source evidence (2026-10-11):** `functors/cohomology.py` has the general codomain `Modules(R)`, while `modules/cochain_complexes.py:_cohomology` still selects a chosen finite cycle presentation after obtaining the actual kernel, image and boundary-in-cycle factorization.
 The unresolved computation is the general represented cycle quotient, not the functor's mathematical codomain.
 The existing `placement-owner-cohomologymodules` owns this remainder and its unavailable-computation assertions.
+**Coverage (2026-10-16):** for a polynomial algebra `Sym_R(F)` on a finitely generated free module `F` over a `QQ`-algebra `R`, `DeRhamAlgebras.cohomology` compares `DR(Sym_R(F))` with `DR(R)` by cochain maps inverse up to homotopy (Stacks Lemma 50.10.5, tag 0FUI), so `H^k_dR(QQ[x0,x1])` is computed without a cycle quotient of `Z^1`, which is not finitely generated over `QQ`. Every other complex, including `F2[x]` (Stacks Example 50.10.6, tag 0FUJ), still uses the finite cycle quotient.
 
 **Searched / Found / Conclusion:** read the cohomology functor, cycles, boundaries, `_cohomology`, and the de Rham consumer; found the selected finite construction and the named frontier, not a general unbounded solver along this route.
 Confidence is high for this source trace; broader algorithms and runtime behavior are uninspected.
