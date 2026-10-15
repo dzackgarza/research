@@ -648,18 +648,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 zero,
             )
 
-        def presentation(self):
-            r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            selected = self.selected_module_resolution()
-            match selected.truncation():
-                case 1:
-                    return selected.differential(1)
-                case _:
-                    raise TypeError(
-                        f"{self} has no selected relation map F_1 -> F_0: its chosen module resolution "
-                        f"is truncated in degree {selected.truncation()}"
-                    )
-
         def presentation_matrix(self):
             r"""Return the relation morphism ``r: F_1 -> F_0`` as a type-``(1,1)`` tensor.
 
