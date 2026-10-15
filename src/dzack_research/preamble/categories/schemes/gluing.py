@@ -6683,7 +6683,13 @@ def _glued_fiber_product_over_affine_base(left_map, right_map):
         for source, target in combinations(labels, 2)
     )
     base = left_map.domain().scheme_base_ring()
-    return Schemes(base).glue_affine_atlas(
+
+    def factor(left_cone_map, right_cone_map):
+        return _glued_fiber_product_factorization(
+            product, datum, labels, charts, left_cone_map, right_cone_map,
+        )
+
+    product = Schemes(base).glue_affine_atlas(
         tuple(charts[label] for label in labels),
         transitions,
         placements=(FiberProductSchemes(base),),
@@ -6693,7 +6699,59 @@ def _glued_fiber_product_over_affine_base(left_map, right_map):
                 tuple(datum.chart_embedding(label) * charts[label].left_projection() for label in labels),
                 tuple(charts[label].right_projection() for label in labels),
             ),
+            scheme_factorization=factor,
         ),
+    )
+    return product
+
+
+def _glued_fiber_product_factorization(product, datum, labels, charts, left_cone_map, right_cone_map):
+    r"""The factorization ``T -> X x_Y Y'`` of a cone ``(a: T -> X, b: T -> Y')``.
+
+    The fibre product is local on ``X`` and on ``T`` (Hartshorne II.3.3,
+    steps 3 and 7; Stacks, Tag 01JR).  When ``a = e_i g`` factors through
+    the chart ``e_i: U_i -> X``, the pair ``(g, b)`` is a cone over
+    ``U_i -> Y <- Y'`` and factors as ``h`` through the chart fibre product
+    ``V_i = U_i x_Y Y'``; the factorization is ``e^V_i h``.  When ``T`` is
+    glued from charts ``t_k: T_k -> T``, the factorizations of the restricted
+    cones ``(a t_k, b t_k)`` agree on the overlaps, because a factorization
+    through a pullback is unique, and they glue to the factorization on ``T``.
+
+    Representation dispatch (OWN-06) on how ``a`` reaches the glued ``X``:
+    through one chart, or out of a glued domain chart by chart.
+    """
+    source = left_cone_map.domain()
+    product_datum = product.gluing_datum()
+    match left_cone_map:
+        case _GluedSchemeChartMap():
+            chart_map = left_cone_map.chart_map()
+        case _GluedSchemeChartEmbedding():
+            chart_map = source.categorical_identity_morphism()
+        case _:
+            chart_map = None
+    if chart_map is not None:
+        label = datum.normalize_chart_index(left_cone_map.chart_index())
+        local = charts[label].from_pullback_cone(chart_map, right_cone_map)
+        return product_datum.chart_embedding(labels.index(label)) * local
+    assert source._is_glued_from_affine_atlas(), (
+        f"factorization through the fibre product {product} of the cone ({left_cone_map}, {right_cone_map}): "
+        f"not implemented when {left_cone_map} is not given through one chart of {datum.scheme()} and its "
+        f"domain {source} is not glued from affine charts"
+    )
+    source_datum = source.gluing_datum()
+    return Schemes(source.scheme_base_ring()).Mor(source, product)(
+        finite_indexed_family(
+            source_datum.chart_index_set(),
+            lambda index: _glued_fiber_product_factorization(
+                product,
+                datum,
+                labels,
+                charts,
+                left_cone_map * source_datum.chart_embedding(index),
+                right_cone_map * source_datum.chart_embedding(index),
+            ),
+            name=f"Chartwise factorizations through {product}",
+        )
     )
 
 

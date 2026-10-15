@@ -700,6 +700,7 @@ class SchemeMorphismMethods:
         if left_pullback is not None and right_pullback is not None:
             return mor(right_pullback * left_pullback)
         if (left_pullback is not None
+                and self.codomain() is Schemes(left_pullback.domain()).base_scheme()
                 and other.codomain() is other.domain().base_scheme()
                 and other.parent().mor_category().is_subcategory(Schemes(other.domain().scheme_base_ring()))):
             return _ScalarStructureSchemeMorphism(mor, left_pullback)
