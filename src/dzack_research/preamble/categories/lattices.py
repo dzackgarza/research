@@ -8269,6 +8269,7 @@ class RootLattices(OwnedCategory):
             r"""Return the private engine Cartan type named by :meth:`root_system_type_name`."""
             return CartanType(self.root_system_type_name())
 
+        @cached_method
         def dynkin_diagram(self):
             r"""Return the Dynkin diagram of the simple roots.
 

@@ -567,6 +567,17 @@ class TopologicalSpaces(OwnedCategory):
         points = Sets.Δ[1]
         return self(points, ((), (points(1),), points))
 
+    @cached_method
+    def terminal_object(self):
+        r"""``*``, the one-point space: every space has exactly one continuous map to it."""
+        point = Sets.Δ[0]
+        return self(point, ((), (point(0),)))
+
+    def pointed_space(self, space, base_point):
+        r"""``(B, b)`` as an object of ``*/Top``: the coslice object on the map ``* -> B``, ``* -> b``."""
+        point = self.terminal_object()
+        return self.CosliceUnder(point)(point.Mor(space)(lambda _: base_point))
+
     def _call_(self, point_set, open_subsets):
         r"""Construct the exact finite topology ``open_subsets`` on ``point_set``.
 

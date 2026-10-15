@@ -820,6 +820,7 @@ class SmoothManifolds(OwnedCategory):
             manifold_field="real",
         )
 
+    @cached_method
     def sphere(self, dimension, name=None):
         r"""The unit sphere ``S^n = {x in R^{n+1} : |x| = 1}``, a compact smooth manifold of dimension ``n``.
 
@@ -1056,6 +1057,7 @@ class RiemannianManifolds(OwnedCategory):
         geodesic symmetry at ``p``.
         """
 
+        @cached_method
         def noncompact_type(self, satake_diagram):
             r"""Return the irreducible symmetric space ``G/K`` of noncompact type of a real form.
 
@@ -1797,6 +1799,7 @@ class ComplexManifolds(OwnedCategory):
             """
             return [RiemannianManifolds().GloballySymmetric()]
 
+        @cached_method
         def type_I(self, p, q):
             r"""Return ``I_{p,q} = SU(p, q)/S(U(p) x U(q))``, Cartan type AIII.
 
@@ -1825,6 +1828,7 @@ class ComplexManifolds(OwnedCategory):
                 ),
             )
 
+        @cached_method
         def type_II(self, n):
             r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
 
@@ -1848,6 +1852,7 @@ class ComplexManifolds(OwnedCategory):
                 ),
             )
 
+        @cached_method
         def type_III(self, n):
             r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
 
@@ -1872,6 +1877,7 @@ class ComplexManifolds(OwnedCategory):
                 ),
             )
 
+        @cached_method
         def type_IV(self, n):
             r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
 
@@ -1971,6 +1977,7 @@ class ComplexManifolds(OwnedCategory):
                 real_rank=rank,
             )
 
+        @cached_method
         def upper_half_plane(self, name="HH"):
             r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
 
@@ -1995,6 +2002,7 @@ class ComplexManifolds(OwnedCategory):
                 ),
             )
 
+        @cached_method
         def siegel_upper_half_space(self, g):
             r"""Return ``H_g = {Z in M_g(C) : Z^t = Z, Im(Z) > 0}``, the Siegel upper half-space.
 
