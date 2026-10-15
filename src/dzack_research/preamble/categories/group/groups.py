@@ -300,6 +300,29 @@ def _element_from_engine(group, gap_element):
             return group._from_engine(engine(gap_element))
 
 
+def _finite_group_centralizer_generators(group, element):
+    r"""Return a generating set of ``C_G(g) = {x in G : x g = g x}`` computed by GAP.
+
+    Protected engine contract (``OWN-05``, ``OWN-06``).  Owner: this
+    module's GAP adapter.  Permitted caller: the arithmetic centralizer route
+    of ``lattice_centralizers``, which supplies ``G = O(L)`` of a definite
+    lattice over ``ZZ`` -- a finite group, whose engine is Sage's
+    ``GroupOfIsometries`` and whose elements GAP encodes.  GAP's
+    ``Centralizer(G, g)`` computes the centralizer of an element of a finite
+    group; commuting is symmetric, so the answer does not depend on whether
+    the engine law is the owned law or its reverse.  Every returned value is
+    an element of ``group``.
+    """
+    assert element in group, f"{element} is not an element of {group}, so it has no centralizer there"
+    engine_centralizer = libgap.Centralizer(_gap_model(group), _element_to_engine(group, element))
+    return finite_ordered_set(
+        tuple(
+            _element_from_engine(group, generator)
+            for generator in engine_centralizer.GeneratorsOfGroup()
+        )
+    )
+
+
 def _matrix_group_element_matrix(group, element):
     r"""Return the private exact matrix of one owned matrix-group element.
 
