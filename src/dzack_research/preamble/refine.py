@@ -10,6 +10,7 @@ through owned facades that hold the Sage parent as a private engine.
 """
 
 import inspect
+from _abc import _abc_init
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from functools import update_wrapper
@@ -130,15 +131,53 @@ def _supply_participant_implementations(new_class: type, mixins: tuple[type, ...
         setattr(new_class, name, supplied)
 
 
-def _rebuild_parent_class(parent: Parent, category: Category) -> None:
+@cached_function
+def _owned_dynamic_class(name: str, bases: tuple[type, ...], doccls: type) -> type:
+    r"""``dynamic_class(name, bases, doccls=doccls)`` built with the owned metaclass.
+
+    Mirrors ``dynamic_class_internal`` (``sage/structure/dynamic_class.py``)
+    and its ``_reduction`` / ``_doccls`` / ``__doc__`` / ``__module__``
+    bookkeeping, as ``owned_category`` does for its generated classes.  Sage
+    chooses ``DynamicClasscallMetaclass`` for a classcall implementation
+    whose category is not yet recorded, and that metaclass and the owned one
+    of a category's ``subcategory_class`` have no common subclass; a Mor
+    object built from this class records its category by joining the two.
+    """
+    from dzack_research.preamble.owned_category import _abc_metaclass_for
+
+    result = _abc_metaclass_for(bases)(
+        name,
+        bases,
+        {
+            "_reduction": (_owned_dynamic_class, (name, bases, doccls)),
+            "_doccls": (doccls,),
+            "__doc__": doccls.__doc__,
+            "__module__": doccls.__module__,
+        },
+    )
+    _abc_init(result)
+    return result
+
+
+def owned_parent_class(implementation: type, category: Category) -> type:
+    r"""The class of a parent of ``implementation`` whose owned methods are those of ``category``.
+
+    The owned ``ParentMethods`` of ``category`` that ``implementation`` does
+    not already carry come first, so a category operation wins over a class
+    method of the same name; ``implementation`` is returned unchanged when
+    there are none.  A construction that knows its category before the object
+    exists instantiates this class, so the ``__init__`` of every level runs in
+    one cooperative chain; ``_rebuild_parent_class`` gives an existing object
+    the same class.
+    """
     providers = _owned_mixins(category, "ParentMethods")
     if not providers:
-        return
-    inherited = type(parent).__dict__.get("_preamble_inherited", type(parent))
+        return implementation
+    inherited = implementation.__dict__.get("_preamble_inherited", implementation)
     carried = frozenset(inherited.__mro__)
     mixins = tuple(provider for provider in providers if provider is not object and provider not in carried)
     if not mixins:
-        return
+        return implementation
 
     # ``inherited`` already contains the method providers reached by earlier
     # construction steps.  A later refinement prepends only newly reached
@@ -164,18 +203,18 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
             if provider in carried and name in new_names:
                 preferred[name] = value
 
-    concrete = type(parent).__dict__.get("_preamble_concrete", inherited)
-    new_class = dynamic_class(
-        f"Owned{concrete.__name__}",
-        (*mixins, inherited),
-        doccls=concrete,
-    )
+    concrete = implementation.__dict__.get("_preamble_concrete", inherited)
+    new_class = _owned_dynamic_class(f"Owned{concrete.__name__}", (*mixins, inherited), concrete)
     for name, value in preferred.items():
         setattr(new_class, name, value)
     _supply_participant_implementations(new_class, mixins, inherited)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
-    parent.__class__ = new_class
+    return new_class
+
+
+def _rebuild_parent_class(parent: Parent, category: Category) -> None:
+    parent.__class__ = owned_parent_class(type(parent), category)
 
 
 

@@ -77,6 +77,7 @@ from dzack_research.preamble.owned_category import (
 from dzack_research.preamble.refine import (
     check_certifying_predicates,
     construction_scope,
+    owned_parent_class,
     realize_owned_category,
     run_construction_hooks,
 )
@@ -1268,15 +1269,29 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
     and cannot become a second Mor for the same fixed endpoints.
 
     The owned category base already makes it a parent; what this level adds
-    is the category its *elements* form (a set, a module, a group), recorded
-    and realized exactly as the owned root records a category on an object:
-    the category is written on the parent and its owned methods are realized,
-    with no second class rewrite.
+    is the category its *elements* form (a set, a module, a group).  The
+    class is fixed from that category before the object exists, so the
+    owned levels of the category consume their construction data (the
+    scalar ring of a module, the inclusion of a subobject) in the same
+    cooperative ``__init__`` chain as this one, and the category is then
+    recorded on the parent with no second class rewrite.
     """
 
     @staticmethod
-    def __classcall__(cls, *arguments, **options):
-        return typecall(cls, *arguments, **options)
+    def __classcall__(cls, family, domain, codomain, *, category=None, **data):
+        r"""Construct an object of ``category`` from the data its owned levels declare."""
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
+        return typecall(
+            owned_parent_class(cls, category),
+            family=family,
+            domain=domain,
+            codomain=codomain,
+            category=category,
+            **data,
+        )
 
     def __init__(
         self,
@@ -1284,13 +1299,14 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
         domain: Parent,
         codomain: Parent,
         *,
-        category: Category | None = None,
+        category: Category,
+        base: Parent | None = None,
     ) -> None:
+        # ``base`` is the scalar ring that a module level of ``category``
+        # hands to the host parent.  That level already records it as its
+        # own datum; as a fixed Mor category the object has no base, so the
+        # chain ends here without one.
         FixedRestrictedMorCategory.__init__(self, family, domain, codomain)
-        if category is None:
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-
-            category = Sets()
         with construction_scope(self) as reached:
             SageCategoryObject._init_category_(self, category)
             realize_owned_category(self)

@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjectConstruction,
@@ -149,19 +150,19 @@ class Derivation(ModuleElement):
         return self.parent().algebra()
 
     def codomain(self):
-        return self.parent().target_module()
+        return self.parent().value_isomorphism().codomain()
 
     def restricted_codomain(self):
         return self.parent().restricted_target_module()
 
     def generator_image(self, label):
-        return self._generator_images[label]
+        return self.parent().value_isomorphism()(self._generator_images[label])
 
     def _evaluate_coefficients(self, coefficients):
-        target = self.codomain()
+        target = self.parent().target_module()
         return sum(
             (
-                target.scalar_multiple(coefficient, self.generator_image(label))
+                target.scalar_multiple(coefficient, self._generator_images[label])
                 for label, coefficient in zip(
                     self.parent().generator_labels(), coefficients, strict=True
                 )
@@ -222,6 +223,10 @@ class Derivation(ModuleElement):
                 )
 
     def __call__(self, element):
+        return self.parent().value_isomorphism()(self._module_value(element))
+
+    def _module_value(self, element):
+        r"""The value ``D(a)`` in the target module ``M``."""
         algebra = self.domain()
         if algebra in LocalizationRings():
             source = algebra.localization_source()
@@ -249,7 +254,7 @@ class Derivation(ModuleElement):
                 source.one(),
                 denominator,
             )
-            target = self.codomain()
+            target = self.parent().target_module()
             first = target.scalar_multiple(
                 denominator_inverse,
                 numerator_derivative,
@@ -310,7 +315,7 @@ class Derivation(ModuleElement):
         return DerivationUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
-            lambda element: self.restricted_codomain()(self(element)),
+            lambda element: self.restricted_codomain()(self._module_value(element)),
         )
 
     as_morphism = underlying_linear_morphism
@@ -411,7 +416,23 @@ class DerivationSpace(RestrictedMorCategoryParent):
     # classifier; the presented-modules slot starts empty, as on ``OwnedMor``.
     _selected_module_presentation = None
 
-    def __init__(self, family, algebra, restricted_target) -> None:
+    @staticmethod
+    def __classcall__(cls, family, algebra, restricted_target):
+        r"""``Der_R(A,M)`` is an ``A``-module, with the presentation of ``Hom_A(Omega_{A/R}, M)`` when that has one."""
+        target_module = restricted_target.module_over_extension()
+        differentials = algebra.kahler_differentials()
+        classifiers = differentials.module_category().Mor(differentials, target_module)
+        match classifiers:
+            case _ if classifiers in ModulesWithChosenFinitePresentation(algebra):
+                category = ModulesWithChosenFinitePresentation(algebra)
+            case _:
+                category = Modules(algebra)
+        return RestrictedMorCategoryParent.__classcall__(
+            cls, family, algebra, restricted_target, category=category, base_ring=algebra
+        )
+
+    def __init__(self, family, domain, codomain, *, category, base=None) -> None:
+        algebra, restricted_target = domain, codomain
         target_module = restricted_target.module_over_extension()
         if target_module.base_ring() is not algebra:
             raise TypeError(
@@ -436,18 +457,15 @@ class DerivationSpace(RestrictedMorCategoryParent):
         differentials = algebra.kahler_differentials()
         classifiers = differentials.module_category().Mor(differentials, target_module)
         self._preamble_kahler_classifier_module = classifiers
-        category = Modules(algebra)
-        if classifiers in ModulesWithChosenFinitePresentation(algebra):
-            category = ModulesWithChosenFinitePresentation(algebra)
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
-        self._preamble_base_ring = algebra
         RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
             restricted_target,
             category=category,
+            base=base,
         )
         if classifiers in ModulesWithChosenFinitePresentation(algebra):
             framing_labels = classifiers.module_generating_set()
@@ -500,9 +518,6 @@ class DerivationSpace(RestrictedMorCategoryParent):
             _subobject_inclusion_factory=restricted_inclusion,
         )
 
-    def base_ring(self):
-        return self._preamble_base_ring
-
     def algebra(self):
         return self._algebra
 
@@ -520,6 +535,25 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     def generator_labels(self):
         return self._generator_labels
+
+    @cached_method
+    def value_isomorphism(self):
+        r"""The isomorphism ``M -> V`` from the target module to the object derivations take values in.
+
+        For ``Der_R(A, A)`` the target module is the regular module ``{}_A A`` and
+        ``V = A`` through ``r e_0 |-> r``
+        (the ring's ``regular_module_isomorphism``), so
+        ``d/dx(x) = 1`` in ``A``.  For any other ``A``-module ``M``, ``V = M``.
+        """
+        target = self.target_module()
+        algebra = self.algebra()
+        match target is algebra.regular_module():
+            case True:
+                return algebra.regular_module_isomorphism()
+            case False:
+                return AdditiveGroups().AdditiveCommutative().Mor(target, target).elementwise(
+                    lambda element: element
+                )
 
     def _kahler_classifier_module(self):
         return self._preamble_kahler_classifier_module
@@ -600,7 +634,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
         target = self.target_module()
         return self(
             {
-                label: target.scalar_multiple(scalar, derivation.generator_image(label))
+                label: target.scalar_multiple(scalar, target(derivation.generator_image(label)))
                 for label in self.generator_labels()
             }
         )
@@ -621,7 +655,13 @@ class DerivationSpace(RestrictedMorCategoryParent):
     scalar_action = algebra_action
 
     def _repr_(self):
-        return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
+        algebra = self.algebra()
+        match self.target_module():
+            case target if target is algebra.regular_module():
+                # Der_R(A) = Der_R(A, A): the values lie in A itself.
+                return f"Der_{algebra.base_ring()}({algebra})"
+            case target:
+                return f"Der_{algebra.base_ring()}({algebra}, {target})"
 
 
 class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
@@ -734,7 +774,7 @@ class GradedDerivation(ModuleElement):
         return self.parent().degree_shift()
 
     def _repr_(self):
-        return f"Degree-{self.degree_shift()} graded derivation of {self.algebra()}"
+        return f"Degree {self.degree_shift()} graded derivation of {self.algebra()}"
 
     def graded_commutator(self, other):
         r"""Return the graded commutator with another endo-derivation."""
@@ -776,12 +816,12 @@ class GradedDerivation(ModuleElement):
         return self + (-other)
 
     def _lmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        return self.parent().scalar_multiple_of(scalar, self)
 
     _rmul_ = _lmul_
 
     def __rmul__(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        return self.parent().scalar_multiple_of(scalar, self)
 
     def check_on_generators(self):
         r"""Refute degree/Leibniz on finite selected generators when decidable.
@@ -916,12 +956,85 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
         return self.derivation().degree_shift()
 
 
+def _contraction_presentation(algebra, shift):
+    r"""The relations of ``Der_R(A)`` when ``algebra`` is ``Omega^*_{A/R}`` and ``shift`` is ``-1``, else ``None``.
+
+    Then ``X |-> i_X`` is an isomorphism ``Der_R(A) -> Der^(-1)(Omega^*_{A/R})``
+    (``GradedDerivationSpace``), so the contractions carry the presentation
+    of the vector fields.
+    """
+    from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+
+    match shift:
+        case -1 if algebra in DeRhamAlgebras(algebra.base_ring()):
+            vector_fields = algebra.de_rham_source_algebra().vector_fields()
+        case _:
+            return None
+    match vector_fields:
+        case _ if vector_fields in ModulesWithChosenFinitePresentation(vector_fields.base_ring()):
+            return vector_fields.presentation()
+        case _:
+            return None
+
+
 class GradedDerivationSpace(RestrictedMorCategoryParent):
-    r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
+    r"""The module ``Der^r(B, M)`` of degree-``r`` graded derivations, a subset of ``Hom_R(B, M)``.
+
+    For a strictly commutative DGA ``B`` and ``M = B`` it is a module over
+    ``B^0``: an element ``a`` of ``B^0`` is even, hence central, so
+    ``(a theta)(bc) = (a theta)(b) c + (-1)^(rp) b (a theta)(c)``.  Its
+    inclusion into ``Hom_R(B, B)`` is then only ``R``-linear, and is the
+    inclusion of its restriction of scalars along ``R -> B^0``.  Otherwise it
+    is the ``R``-submodule of ``Hom_R(B, M)``.
+
+    For the de Rham algebra ``B = Omega^*_{A/R}`` and ``r = -1``, ``theta``
+    vanishes on ``A`` and so is ``A``-linear on ``Omega^1 = Omega_{A/R}``;
+    since ``Omega^1`` generates ``B`` over ``A``, ``theta`` is fixed by that
+    map, and every ``A``-linear map ``Omega^1 -> A`` extends.  So
+    ``X |-> i_X`` is an isomorphism ``Der_R(A) -> Der^(-1)(B)``, and the
+    space has the presentation of ``Der_R(A)``.
+    """
 
     Element = GradedDerivation
 
-    def __init__(self, family, algebra, target) -> None:
+    # Fixed by the constructor for the contractions of a de Rham algebra;
+    # the presented-modules slot starts empty, as on ``DerivationSpace``.
+    _selected_module_presentation = None
+
+    @staticmethod
+    def __classcall__(cls, family, algebra, target):
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+            DifferentialGradedAlgebras,
+        )
+
+        ring = algebra.base_ring()
+        degree_zero = DifferentialGradedAlgebras(ring).degree_zero_algebra()
+        match target:
+            case _ if target is algebra and algebra in degree_zero.domain():
+                scalars = degree_zero(algebra)
+                match _contraction_presentation(algebra, family.degree_shift()):
+                    case None:
+                        category = Modules(scalars)
+                    case _:
+                        category = ModulesWithChosenFinitePresentation(scalars)
+                return RestrictedMorCategoryParent.__classcall__(
+                    cls, family, algebra, target, category=category, base_ring=scalars
+                )
+            case _:
+                return RestrictedMorCategoryParent.__classcall__(
+                    cls,
+                    family,
+                    algebra,
+                    target,
+                    category=Cat().meet((Modules(ring), ModuleSubobjects(ring))),
+                    base_ring=ring,
+                    subobject_inclusion_factory=lambda space: space.Mono(space.arrow_set())._subobject_inclusion(
+                        lambda derivation: derivation.underlying_linear_morphism(),
+                    ),
+                )
+
+    def __init__(self, family, domain, codomain, *, category, base=None) -> None:
+        algebra, target = domain, codomain
         if algebra.base_ring() is not target.base_ring():
             raise ValueError(
                 f"graded derivations {algebra} -> {target} need one coefficient ring, but they are over "
@@ -930,28 +1043,40 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         self._algebra = algebra
         self._target = target
         self._shift = family.degree_shift()
-
-        ring = algebra.base_ring()
-        self._preamble_base_ring = ring
-        # The ModuleSubobjects datum: the canonical inclusion of the
-        # derivations into the underlying graded linear Mor.  The restricted
-        # Mor constructor does not thread construction data, so the datum is
-        # fixed here, before the category is realized.
-        self._module_subobject_construction = ModuleSubobjectConstruction(
-            inclusion_factory=lambda space: space.Mono(space.arrow_set())._subobject_inclusion(
-                lambda derivation: derivation.underlying_linear_morphism(),
-            ),
-        )
         RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
             target,
-            category=Cat().meet((Modules(ring), ModuleSubobjects(ring))),
+            category=category,
+            base=base,
         )
+        presentation = _contraction_presentation(algebra, self._shift)
+        match presentation:
+            case None:
+                pass
+            case _ if target is algebra:
+                vector_fields = algebra.de_rham_source_algebra().vector_fields()
+                _fix_selected_module_resolution(
+                    self,
+                    self.base_ring(),
+                    presentation.codomain().module_generating_set(),
+                    lambda label: vector_fields.module_generator(label).interior_product(),
+                    presentation.codomain,
+                )
+                _fix_selected_module_presentation(self, self.base_ring(), presentation)
 
-    def base_ring(self):
-        return self._preamble_base_ring
+    @cached_method
+    def restricted_module(self):
+        r"""``Res_R Der^r(B)`` along ``R -> B^0``, the ``R``-submodule of ``Hom_R(B, B)``."""
+        scalars = self.base_ring()
+        return _restricted_scalars_view(
+            self,
+            scalars.algebra_structure_morphism(),
+            _subobject_inclusion_factory=lambda restricted: restricted.Mono(self.arrow_set())._subobject_inclusion(
+                lambda derivation: derivation.underlying_element().underlying_linear_morphism(),
+            ),
+        )
 
     def algebra(self):
         return self._algebra
@@ -989,8 +1114,28 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
                     f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
                     f"map {function.domain()} -> {function.codomain()}"
                 )
-            case _:
+            case _ if callable(function):
                 return self.elementwise(function, check=check)
+            case _:
+                return self.from_algebra_generator_images(function, check=check)
+
+    def from_algebra_generator_images(self, generator_images, *, check=False):
+        r"""The map ``D`` with ``D(x_i) = m_i`` on the algebra generators, extended by the Leibniz rule.
+
+        The extension is the derivation of ``Der_R(A, M)`` with these
+        generator images.  It is a graded derivation of degree ``r`` when the
+        images have degree ``|x_i| + r`` and the signs ``(-1)^(r |x_i|)`` of
+        the graded Leibniz rule are ``1``; that law stays the proposition
+        ``is_graded_derivation(D)``, which ``check_on_generators`` decides on
+        the generators.
+        """
+        algebra = self.algebra()
+        match self.target():
+            case target if target is algebra:
+                derivation = algebra.vector_fields()(generator_images)
+            case target:
+                derivation = algebra.derivations(target)(generator_images)
+        return self.elementwise(lambda element: derivation(element), check=check)
 
     def zero(self):
         return self._from_constructed_elementwise(
@@ -998,13 +1143,16 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         )
 
     def _an_element_(self):
-        r"""The zero map, a graded derivation of every degree.
+        r"""A module generator from the chosen presentation, else ``0``.
 
-        A nonzero element needs a construction for the given algebra, such
-        as the contraction ``i_X`` of a vector field for degree ``-1`` on a
-        de Rham algebra (``Derivation.interior_product``).
+        For degree ``-1`` on ``Omega^*_{A/R}`` with ``A = R[x]`` it is the
+        contraction ``i_{d/dx}``, which sends ``dx`` to ``1``.
         """
-        return self.zero()
+        match self:
+            case _ if self in ModulesWithChosenFinitePresentation(self.base_ring()):
+                return self.module_generator(next(iter(self.module_generating_set())))
+            case _:
+                return self.zero()
 
     def elementwise(self, function, *, check=False):
         r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
@@ -1032,19 +1180,38 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         derivation.validate_graded_leibniz(check=False)
         return derivation
 
-    def scalar_multiple(self, scalar, derivation):
+    def scalar_multiple_of(self, scalar, derivation):
+        r"""Return ``a theta``, ``(a theta)(b) = a theta(b)``, for ``a`` in the scalars of this module."""
         if derivation.parent() is not self:
             derivation = self(derivation)
         scalar = self.base_ring()(scalar)
         target = self.target()
-        return self._from_derived_elementwise(
-            lambda element: target.scalar_multiple(scalar, derivation(element)),
-            derivation,
+        match self.base_ring() is self.algebra().base_ring():
+            case True:
+                return self._from_derived_elementwise(
+                    lambda element: target.scalar_multiple(scalar, derivation(element)),
+                    derivation,
+                )
+            case False:
+                # (a theta)(b) = a theta(b), with a in B^0 included into B.
+                included = self._degree_zero_inclusion()(scalar)
+                return self._from_derived_elementwise(
+                    lambda element: included * derivation(element),
+                    derivation,
+                )
+
+    @cached_method
+    def _degree_zero_inclusion(self):
+        r"""The inclusion ``B^0 -> B`` of the scalars of this ``B^0``-module."""
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+            DifferentialGradedAlgebras,
         )
+
+        return DifferentialGradedAlgebras(self.algebra().base_ring()).degree_zero_algebra().inclusion(self.algebra())
 
     def _repr_(self):
         return (
-            f"Degree-{self.degree_shift()} graded derivations "
+            f"Degree {self.degree_shift()} graded derivations "
             f"{self.algebra()} -> {self.target()}"
         )
 

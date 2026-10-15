@@ -21,6 +21,22 @@ The stabilizers and transporters of coloured families of lattice vectors (#399, 
 Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism.
 Source inspection only.
 
+### A ring is a module over its base only, never over itself
+
+A ring `A` over `R` constructs into `Modules(R)`, not into `Modules(A)`. The regular module `A^1 = F_A({0})` is a separate free `A`-module, the one `A.regular_module()` returns. So `Der_R(A, A)` needs the target `A^1`, and its values were `r e_0` instead of elements of `A`.
+
+**Evidence (2026-10-16):** for `A = QQ[x]` and `D = d/dx`, `D(x)` printed `[0]`. `S.derivations(S)` for `S = QQ[x, y]` raised `TypeError: an R-derivation A -> M needs M to be a module over A = Rational Field[x, y], but Rational Field[x, y] is a module over Rational Field`. The graded derivation `p` with `x |-> 1, y |-> 0` raised `cannot convert y*[0] into Rational Field[x, y]` on `p(x*y)`.
+
+**Ruling in force, (a):** the values land in `A` through the named isomorphism `A^1 -> A`, `e_0 |-> 1` (`regular_module_isomorphism` in `ring_foundation.py`), and `regular_module()` stays.
+
+**Options for the OWNER TO RULE:**
+- (b) The ring answers `Modules(A)`, and the module layer takes its scalars from the category of the operation.
+- (c) Each ring is its own base, and an `R`-algebra is an `R`-module through restriction of scalars `Res` along `R -> A`.
+
+**Affected consumers:** `Der_R(A, A)` (`algebras/derivations.py`); `Mor_A(Omega_{A/R}, A)` (`algebras/kahler_differentials.py`); the Lie bracket and the contractions (`algebras/cartan_calculus.py`); ideals of `A` as submodules of `A`.
+
+**Repair:** `TODO.md` `ring-modules-over-two-bases`.
+
 ### A realization's class method is unreachable behind a category operation of the same name
 
 The owned runtime puts a category's method classes before the realization class (`refine.RealizationHook`, `_rebuild_parent_class`), so a class method named like a category operation that is not a `RealizationHook` or an abstract contract is never called.

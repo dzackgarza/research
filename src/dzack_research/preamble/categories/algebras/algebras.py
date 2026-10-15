@@ -2738,6 +2738,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                 ring = self.algebra_base_ring()
                 source = element_parent(value)
                 match source:
+                    case _ if self is _scalar_module(ring):
+                        # U_R(R) is the domain of its own unit map r |-> r * 1.
+                        return super()._element_constructor_(value)
                     case _ if source is ring and self.unformed_module() is not ring:
                         return self.unit_morphism()(value)
                     case _ if source not in Modules(ring) and source in OwnedRings() and value in ring:

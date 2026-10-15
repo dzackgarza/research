@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
+from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra, _PowerAlgebraElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphismMethods,
 )
@@ -1782,6 +1782,9 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     class ParentMethods(_PowerAlgebra):
         r"""The exterior power realization of the alternating algebra on ``M``."""
 
+    class ElementMethods(_PowerAlgebraElement):
+        pass
+
 
 def _presentation_data(algebra):
     from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
@@ -2015,6 +2018,9 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             f"{module} is over {module.base_ring()}"
         )
         return _power_algebra_of(module, "divided")
+
+    class ElementMethods(_PowerAlgebraElement):
+        pass
 
     class ParentMethods(_PowerAlgebra):
         def divided_power(self, value, exponent):
