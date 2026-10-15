@@ -5014,8 +5014,8 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return self.homogeneous_coordinate_ring().algebra_generators()
 
         def hyperplane(self, index=0):
-            r"""Return the coordinate hyperplane ``V(x_index)``."""
-            return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
+            r"""The coordinate hyperplane ``V_+(x_index)``, the hypersurface of the degree-1 form ``x_index``."""
+            return self.hypersurface(tuple(self.homogeneous_coordinate_generators())[int(index)])
 
         def hypersurface(self, f, placements=()):
             r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
