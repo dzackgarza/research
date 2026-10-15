@@ -42,6 +42,8 @@ from dzack_research.preamble.validation import validator
 
 if "Invertible" not in all_axioms:
     all_axioms.add("Invertible")
+if "FiniteLocallyFree" not in all_axioms:
+    all_axioms.add("FiniteLocallyFree")
 
 
 class _SchemeTopologyData(SageObject):
@@ -1589,6 +1591,26 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""Return the full subcategory of invertible ``O_X``-modules."""
             return self._with_axiom("Invertible")
 
+        def FiniteLocallyFree(self):
+            r"""Return the full subcategory of locally free ``O_X``-modules of finite rank.
+
+            ``F`` is locally free of finite rank when ``X`` has an open cover by
+            sets ``U`` with ``F|_U`` isomorphic to ``O_U^{n_U}``, ``n_U`` finite
+            (Hartshorne, *Algebraic Geometry*, II.5).  These are the vector
+            bundles on ``X``.
+            """
+            return self._with_axiom("FiniteLocallyFree")
+
+    class FiniteLocallyFree(CategoryWithAxiom):
+        r"""Locally free ``O_X``-modules of finite rank: the vector bundles on ``X``.
+
+        Local freeness is a property of the sheaf; a trivializing cover is
+        additional data.
+        """
+
+        def _repr_object_names(self):
+            return f"vector bundles on {self.base_category().scheme()}"
+
     class Invertible(CategoryWithAxiom):
         r"""Invertible quasi-coherent sheaves on ``X``.
 
@@ -1597,6 +1619,10 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
         Tag 0B8M).  A particular trivializing cover is additional data and is
         recorded separately by the line-bundle descent category.
         """
+
+        def extra_super_categories(self):
+            r"""An invertible ``O_X``-module is locally free of rank one (Stacks, Tag 0B8M)."""
+            return [self.base_category().FiniteLocallyFree()]
 
         class ParentMethods:
             def is_invertible(self) -> bool:
