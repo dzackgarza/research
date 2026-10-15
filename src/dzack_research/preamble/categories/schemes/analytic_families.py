@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
+    ProjectiveSpaces,
     Schemes,
     _polynomial_exponents,
 )
@@ -128,6 +129,50 @@ def _affine_space_analytification_functor(scalar_embedding):
     return _AffineSpaceAnalytificationFunctor(scalar_embedding)
 
 
+class _ProjectiveSpaceAnalytificationFunctor(Functor):
+    r"""Analytification ``P^n_K -> CP^n`` along an embedding ``sigma: K -> CC``.
+
+    ``(P^n_K)^an`` is the complex manifold of ``C``-points of the base change
+    ``P^n_K x_{K,sigma} C``, which is ``CP^n`` with the standard atlas
+    (Serre, GAGA, Sec. 2; SGA 1, Exp. XII, 1.1).  The chart ``D_+(x_i)`` of
+    ``P^n_K`` goes to the chart ``U_i = {x_i != 0}`` with the same coordinates
+    ``x_k/x_i``.  ``P^n_K`` is proper, so its analytification is compact.
+    """
+
+    def __init__(self, scalar_embedding) -> None:
+        self._scalar_embedding = scalar_embedding
+        source = _owned_ring(scalar_embedding.domain())
+        target = _owned_ring(scalar_embedding.codomain())
+        assert _engine_ring(target) is SageCC, (
+            f"analytification along {scalar_embedding} needs an embedding into the complex "
+            f"numbers CC, but its codomain is {target}"
+        )
+        super().__init__(ProjectiveSpaces(source), ComplexManifolds().Compact())
+
+    def scalar_embedding(self):
+        return self._scalar_embedding
+
+    @cached_method
+    def _apply_object(self, projective_space):
+        return ComplexManifolds().projective_space(
+            int(projective_space.relative_dimension()), name=f"({projective_space})^an",
+        )
+
+    def _apply_morphism(self, morphism):
+        r"""A morphism ``P^n_K -> P^m_K`` goes to the holomorphic map given chartwise by its homogeneous polynomials."""
+        assert False, (
+            f"analytification of the morphism {morphism} on {self.domain()}: not implemented"
+        )
+
+    def _repr_(self):
+        return f"Projective analytification along {self.scalar_embedding()}"
+
+
+@cached_function
+def _projective_space_analytification_functor(scalar_embedding):
+    return _ProjectiveSpaceAnalytificationFunctor(scalar_embedding)
+
+
 class _AnalyticDiscFamilyEngine:
     r"""Private realization of one selected object of ``ComplexManifolds()/Delta``.
 
@@ -183,15 +228,20 @@ class _AnalyticDiscFamilyEngine:
         ``t`` is the line ``{(x, t)}``.  Domain: the fibre, a complex line
         with coordinate ``x``.  The composite with the family is constant at
         ``t``.  A complex number ``t`` with ``|t| < r`` is read as the point
-        of ``Delta`` it names, through the disc's element constructor.
+        of ``Delta`` it names, through the disc's element constructor; the
+        fibre is named by ``t`` as an element of the complex field ``CC``.
         """
         point = self.analytic_base()(point)
-        (parameter,) = tuple(point.coordinates())
+        (coordinate,) = tuple(point.coordinates())
+        complex_field = _owned_complex_field()
+        parameter = _owned_engine_element(
+            complex_field, _engine_ring(complex_field)(_engine_manifold_expression(coordinate)),
+        )
         fibre = ComplexManifolds().affine_space(
-            1, name=f"X_({parameter})", coordinate_names=("x",),
+            1, name=f"X_{parameter}", coordinate_names=("x",),
         )
         x = fibre.atlas()["standard"].coordinate(0)
-        return fibre.holomorphic_polynomial_map(self.analytic_total_space(), (x, parameter))
+        return fibre.holomorphic_polynomial_map(self.analytic_total_space(), (x, coordinate))
 
     def fibre(self, point):
         r"""The fibre ``X_t`` of the family over a point ``t`` of ``Delta``; its inclusion is :meth:`fibre_inclusion`."""

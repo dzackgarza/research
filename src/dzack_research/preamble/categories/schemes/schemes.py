@@ -3288,13 +3288,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                 open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
                 integral scheme this is the fraction field of its coordinate
                 algebra, so the function field of ``A^1_k`` is ``k[t]``'s
-                ``fraction_field()``, the field ``k(t)``.
+                ``fraction_field()``, the field ``k(t)``.  On ``P^n_k`` the
+                standard chart ``D_+(x_0) = Spec k[x_1/x_0, ..., x_n/x_0]`` is a
+                nonempty affine open, so ``K(P^n_k) = k(x_1/x_0, ..., x_n/x_0)``
+                (Hartshorne, II, Prop. 2.5(b) and Ex. 3.6); for ``n = 1`` this
+                is the rational function field ``k(t)``, ``t = x_1/x_0``.
                 """
                 base = self.scheme_base_ring()
-                match self in Schemes(base).Affine():
-                    case True:
+                match self:
+                    case _ if self in Schemes(base).Affine():
                         return self.coordinate_algebra().fraction_field()
-                    case False:
+                    case _ if self in ProjectiveSpaces(base):
+                        return self.standard_affine_chart(0).function_field()
+                    case _:
                         assert False, (
                             f"function_field on the non-affine integral schemes over {base}, through a "
                             f"nonempty affine open of {self}: not implemented"
@@ -3501,7 +3507,15 @@ class Schemes(OwnedCategoryOverBaseRing):
                 return self.coordinate_algebra().spectrum()
 
             def _repr_(self) -> str:
-                return f"Spectrum of {self.coordinate_algebra()}"
+                r"""``Spec A``; a closed subscheme ``V(f_1, ..., f_k)`` is named by its codomain and equations."""
+                match self:
+                    case _ if self in ClosedSubschemes(self.scheme_base_ring()):
+                        return (
+                            f"Closed subscheme of {self.inclusion().codomain()} defined by "
+                            f"{', '.join(str(equation) for equation in self.defining_equations())}"
+                        )
+                    case _:
+                        return f"Spectrum of {self.coordinate_algebra()}"
 
             def __contains__(self, point) -> bool:
                 r"""Whether ``point`` is a point of ``Spec A``, a prime ideal of ``A``."""
@@ -4663,6 +4677,23 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
     def _repr_object_names(self):
         return f"projective spaces over {self.base_ring()}"
 
+    def analytification(self, scalar_embedding):
+        r"""The analytification functor ``P^n_K |-> CP^n`` along an embedding ``sigma: K -> CC``.
+
+        Domain: the projective spaces over ``K``.  Codomain: compact complex
+        manifolds (Serre, GAGA, Sec. 2); ``P^n_K`` goes to ``CP^n`` with its
+        standard atlas.
+        """
+        assert _owned_ring(scalar_embedding.domain()) is self.base_ring(), (
+            f"cannot analytify the projective spaces over {self.base_ring()} along {scalar_embedding}: "
+            f"the embedding must start at {self.base_ring()}, but it starts at {scalar_embedding.domain()}"
+        )
+        from dzack_research.preamble.categories.schemes.analytic_families import (
+            _projective_space_analytification_functor,
+        )
+
+        return _projective_space_analytification_functor(scalar_embedding)
+
     def super_categories(self):
         return [Schemes(self.base_ring()).Projective().Smooth()]
 
@@ -4807,9 +4838,21 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def _class_group(self):
             return self.picard_to_class_group_morphism().codomain()
 
+        def homogeneous_coordinate_ring(self):
+            r"""The homogeneous coordinate ring ``S = k[x_0, ..., x_n]`` of ``P^n_k = Proj S``.
+
+            Domain: this projective space.  Codomain: the polynomial
+            ``k``-algebra on the homogeneous coordinates ``x_0, ..., x_n``,
+            graded by total degree, with ``S_d = H^0(P^n_k, O(d))`` for
+            ``d >= 0`` (Hartshorne, *Algebraic Geometry*, II.2 and II.5.13).
+            It is the ring of the global sections of ``O(1)``, so its degree-1
+            part is ``H^0(P^n_k, O(1))``.
+            """
+            return self.O(1).global_sections().homogeneous_coordinate_ring()
+
         def homogeneous_coordinate_generators(self):
             r"""Return the chosen homogeneous coordinate generators of this projective space."""
-            return self.O(1).global_sections().homogeneous_coordinate_ring().algebra_generators()
+            return self.homogeneous_coordinate_ring().algebra_generators()
 
         def hyperplane(self, index=0):
             r"""Return the coordinate hyperplane ``V(x_index)``."""

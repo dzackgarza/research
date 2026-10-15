@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
 def _members_of_subset(base_set, candidate):
@@ -607,6 +608,14 @@ class TopologicalSpaces(OwnedCategory):
     @classmethod
     def _repr_object_names(cls):
         return "topological spaces"
+
+    class SubcategoryMethods:
+        def Compact(self):
+            r"""Return this category with the axiom that its objects are compact."""
+            return self._with_axiom("Compact")
+
+    class Compact(CategoryWithAxiom):
+        r"""Compact spaces: every open cover has a finite subcover (Mathlib ``CompactSpace``)."""
 
     class ParentMethods:
         def __init__(self, topology_data, **rest) -> None:
