@@ -199,7 +199,7 @@ For groups G1, G2 the product G1 x G2 has elements (g1, g2), componentwise law, 
 No represented product of infinite owned groups (pairs of owned elements) exists.
 **Consumers:** `G1.direct_product(G2)` for subgroups of lattice orthogonal groups (#397), group pullbacks and subgroup intersections, and the stabilizer of a family `v: I -> L` under `O(L) x Sym_C(I)` itself: only its image `L.O().stabilizer(family)` in `O(L)` is presented, its kernel `K_v` stated in `coloured_vector_families.py`, and families that do not span `L tensor Q` (whose stabilizer contains the pointwise stabilizer of the span) are asserted out.
 **Dependency path:** owned groups -> product group with cone -> orthogonal-sum image in O(L1 + L2) -> pullbacks.
-**Request (not yet filed):** `lean-categories` states the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2) for lattices; check its existing `Grp` limits first.
+**Request:** filed as [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): `lean-categories` states the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2) for lattices; check its existing `Grp` limits first.
 Remediation: `port-group-primitives-with-generators` in [TODO.md](TODO.md).
 
 ### Group colimits do not compose chosen finite presentations
@@ -1399,7 +1399,7 @@ Foundational mathematical gaps belong above even when first noticed as an inconv
 **Evidence.** The generators are computed from that statement, stated in the docstring without a source.
 Searched the formalization corpus API (`formalization-corpus.dzackgarza.com/api/search`, 2026-10-14) for `parabolic`, `flag stabilizer`, `transvection closure`: found only `closure_transvections_eq_top` (yawara__odd-order, `OddOrder/Isaacs/Ch08_PermutationGroups/TransvectionGeneration.lean`), generation of `SL_n` over a field by transvections, which is not the flag-stabilizer statement over a PID; no parabolic/Levi decomposition for GL over a PID found.
 Gaps: search by identifier and word only.
-Request to `lean-categories`: the parabolic subgroup of a flag of saturated submodules of a finite free module over a PID, its Levi decomposition, and generation of its unipotent radical by elementary maps.
+Request to `lean-categories`, filed as [lean-categories#90](https://github.com/dzackgarza/lean-categories/issues/90): the parabolic subgroup of a flag of saturated submodules of a finite free module over a PID, its Levi decomposition, and generation of its unipotent radical by elementary maps.
 
 ## Double cosets in GL(J) for the lines of an isotropic plane
 
@@ -1413,7 +1413,7 @@ B \ GL_2(ZZ) ≅ P^1(QQ) is infinite.
 Remaining: the port call at `isotropic_induction.py:84` does not state the finite index, so it still asserts; port #18 owns establishing it (port-design, *Operations and implementation owners*, finite G-sets row).
 Not executed (DEV-58).
 
-**Formal statements found** (formalization corpus API, 2026-10-14): double cosets `doubleCoset`, `DoubleCoset.Quotient` (leanprover-community__mathlib4, `Mathlib/GroupTheory/DoubleCoset.lean`); `doubleCosetEquivOrbitQuotient`, `preimage_orbit_eq_doubleCoset` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Orbits.lean`), identifying H \ G / K with orbits on G/K; the inversion bijection the inverted route uses (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Inv.lean`); Schreier's lemma `Subgroup.closure_mul_image_eq` (mathlib4, `Mathlib/GroupTheory/Schreier.lean`); cusp orbits `CuspOrbits`, `cosetToCuspOrbit` (mathlib4, `Mathlib/NumberTheory/ModularForms/Cusps.lean`: "Surjection from SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ)) to cusp orbits of 𝒢"); certified coset enumeration `TauCeti.CosetTable.finiteIndex`, `index_le` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/Coset/Table.lean`: "a certified table on k points for a subgroup H shows H.index ≤ k"). Request to `lean-categories`: present these (double cosets as orbit sets, Schreier generators, cusps of a finite-index subgroup as its orbits on P^1(QQ) = B \ GL_2(ZZ)) in its vocabulary, citing them; it has none of them (`rg -i 'double ?coset|cusp|schreier'` over `~/gitclones/lean-categories`).
+**Formal statements found** (formalization corpus API, 2026-10-14): double cosets `doubleCoset`, `DoubleCoset.Quotient` (leanprover-community__mathlib4, `Mathlib/GroupTheory/DoubleCoset.lean`); `doubleCosetEquivOrbitQuotient`, `preimage_orbit_eq_doubleCoset` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Orbits.lean`), identifying H \ G / K with orbits on G/K; the inversion bijection the inverted route uses (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Inv.lean`); Schreier's lemma `Subgroup.closure_mul_image_eq` (mathlib4, `Mathlib/GroupTheory/Schreier.lean`); cusp orbits `CuspOrbits`, `cosetToCuspOrbit` (mathlib4, `Mathlib/NumberTheory/ModularForms/Cusps.lean`: "Surjection from SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ)) to cusp orbits of 𝒢"); certified coset enumeration `TauCeti.CosetTable.finiteIndex`, `index_le` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/Coset/Table.lean`: "a certified table on k points for a subgroup H shows H.index ≤ k"). Request to `lean-categories`, filed as [lean-categories#88](https://github.com/dzackgarza/lean-categories/issues/88): present these (double cosets as orbit sets, Schreier generators, cusps of a finite-index subgroup as its orbits on P^1(QQ) = B \ GL_2(ZZ)) in its vocabulary, citing them; it has none of them (`rg -i 'double ?coset|cusp|schreier'` over `~/gitclones/lean-categories`).
 
 ## A finite presentation of GL_2(ZZ)
 
@@ -1429,7 +1429,7 @@ Neither states the presentation of SL_2(ZZ) or of its extension by e. Hand check
 Sage's `arithgroup_perm.py` docstring (lines 9-28) states s_2^2 = s_3^3 = -1 only, and is engine documentation in any case.
 Not opened: Serre, *Trees* (`Ser80`) and Diamond--Shurman (`DS05`) are in the Zotero library, whose storage is reachable only from the workstation.
 Confidence: the adapter is correct only if the presentation is.
-Request to `lean-categories`: SL_2(ZZ) ≅ the group presented by <S, T | S^4, (TS)^3 = S^2> (the amalgam Z/4 *_{Z/2} Z/6) and GL_2(ZZ) as its extension by diag(1,-1), citing the generation and relation statements above.
+Request to `lean-categories`, filed as [lean-categories#89](https://github.com/dzackgarza/lean-categories/issues/89): SL_2(ZZ) ≅ the group presented by <S, T | S^4, (TS)^3 = S^2> (the amalgam Z/4 *_{Z/2} Z/6) and GL_2(ZZ) as its extension by diag(1,-1), citing the generation and relation statements above.
 
 ## Finiteness of O(L) for split binary lattices is not formalized
 
@@ -1449,7 +1449,7 @@ The source is not in Zotero (the local API at 127.0.0.1:23119 refused connection
 Formalization corpus remote API (2026-10-14, keyword and regex queries for automorphs, stabilizers, square discriminant, hyperbolic plane): TauCeti `NumberTheory/BinaryQuadraticForm/Root.lean` and `Reduction.lean` prove stabilizer orders for positive-definite forms only; `Split/Basic.lean` proves that a form of square discriminant has a primitive isotropic vector and that discriminant 1 is equivalent to xy, with no automorph statement; `ConjugacyClass.lean` `card_stabilizer_ofMatrix` is stated with `Nat.card` and decides no finiteness.
 Not covered: Loogle, LeanSearch, the forum.
 
-**Request to `lean-categories`.** Formalize, from O'Sullivan arXiv:2408.14405v3 §8.1 Cor.
+**Request to `lean-categories`** (filed as [lean-categories#87](https://github.com/dzackgarza/lean-categories/issues/87)). Formalize, from O'Sullivan arXiv:2408.14405v3 §8.1 Cor.
 8.2: for a nondegenerate ZZ-lattice L of rank 2 with -det of its Gram matrix a nonzero square, SO(L) = {±1} and O(L) is finite; and the negative-definite case of `orthogonalGroup_finite` through the sign twist L(-1). Candidate converses, sources still to be opened: O(L) infinite for indefinite rank 2 with -det not a square (Pell, [Lan58, Thm.
 202], [Bue89, Thm.
 3.9]) and for indefinite rank >= 3; for degenerate rank 2 with D = 0, Cor.
