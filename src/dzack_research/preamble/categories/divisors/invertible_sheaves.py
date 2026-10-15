@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
     ModuleGluingData,
     _ModuleGluingSheafEngine,
 )
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     InvertibleSheavesWithChosenTrivialization,
     QuasiCoherentSheafMor,
@@ -304,17 +305,25 @@ class _FiniteAtlasInvertibleSheafEngine:
                 f"atlas {gluing_datum} has the pairs {sorted(expected, key=str)}: a line bundle needs "
                 "exactly one transition function for each pair of charts"
             )
-        self._transition_units = {}
-        for source_index, target_index in expected:
-            ring = gluing_datum.overlap(source_index, target_index).coordinate_algebra()
-            unit = ring(supplied[source_index, target_index])
-            if not unit.is_unit():
+        self._transition_units = {
+            (source_index, target_index): gluing_datum.overlap(source_index, target_index).coordinate_algebra()(
+                supplied[source_index, target_index]
+            )
+            for source_index, target_index in expected
+        }
+        super().__init__(**rest)
+        self.validate_transition_units(check=False)
+
+    @validator
+    def validate_transition_units(self) -> None:
+        r"""Check that every transition function is a unit of its overlap ring (``OWN-22``)."""
+        for (source_index, target_index), unit in self._transition_units.items():
+            if unit.is_unit() is False:
                 raise ValueError(
                     f"the transition function {unit} on the overlap of charts {source_index} and "
-                    f"{target_index} is not a unit of {ring}: line-bundle transition functions must be units"
+                    f"{target_index} is not a unit of {unit.parent()}: line-bundle transition functions "
+                    "must be units"
                 )
-            self._transition_units[source_index, target_index] = unit
-        super().__init__(**rest)
 
     def gluing_datum(self):
         return self._finite_gluing_datum

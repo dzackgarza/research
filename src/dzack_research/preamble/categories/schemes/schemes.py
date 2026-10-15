@@ -263,8 +263,19 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
 
 
 def _engine_affine_spectrum(algebra, base):
-    r"""Sage's ``Spec A`` over ``Spec R`` for the engines of ``A`` and ``R``."""
-    return _SageAffineScheme(_engine_ring(algebra), _engine_ring(base))
+    r"""Sage's ``Spec A`` over ``Spec R`` for the engines of ``A`` and ``R``.
+
+    ``Spec R`` over itself is the terminal ``R``-scheme.  Sage's schemes over
+    ``R`` name ``Spec(R)`` over ``ZZ`` as their base scheme
+    (``Scheme.base_scheme``, ``sage/schemes/generic/scheme.py``), so the
+    terminal scheme computes in that object and the engine structure maps of
+    ``R``-schemes land in it.
+    """
+    match algebra is base:
+        case True:
+            return _SageAffineScheme(_engine_ring(algebra))
+        case False:
+            return _SageAffineScheme(_engine_ring(algebra), _engine_ring(base))
 
 
 def _engine_coercion_agreeing_on(pullback, determining):
