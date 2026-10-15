@@ -5060,7 +5060,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def __init__(
         self, engine: Ring, *, base=None, category=None, constructing_category=None,
-        named_placement=None,
+        named_placement=None, named_cardinality=None,
     ) -> None:
         r"""Construct over the scalar ring the level above declares.
 
@@ -5089,6 +5089,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             OwnedRings() if constructing_category is None else constructing_category
         )
         self._engine = engine
+        # A named construction that presents a known set states its size,
+        # as it states its placement: ``RR`` and ``CC`` have the cardinality
+        # of the continuum, whatever precision the engine computes at.
+        self._named_cardinality = named_cardinality
         self._preamble_ring_display = None
         self._preamble_ring_display_kind = None
         self._local_ring_construction = None
@@ -5180,6 +5184,14 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _selected_local_ring_construction(self):
         r"""Return this native ring's selected local quotient datum, if any."""
         return self._local_ring_construction
+
+    def _cardinality_decision(self):
+        r"""Return the cardinality the named construction states, if it states one."""
+        match self._named_cardinality:
+            case None:
+                return super()._cardinality_decision()
+            case size:
+                return size()
 
     def __call__(self, value):
         r"""Construct an owned ring element without Sage coercion discovery."""
@@ -5819,6 +5831,13 @@ def _algebraic_number_placements() -> tuple[Category, ...]:
     return (*_field_placements(), owned_sets.CountablyInfiniteSets())
 
 
+def _continuum():
+    r"""The cardinality of ``RR`` and of ``CC``, ``2^aleph_0``."""
+    from dzack_research.preamble.categories.sets.cardinals import continuum
+
+    return continuum
+
+
 def _real_or_complex_field_placements() -> tuple[Category, ...]:
     r"""The placement of ``RDF``, ``CDF`` and ``CC``: they present ``RR`` or
     ``CC``, uncountable fields."""
@@ -6211,14 +6230,22 @@ def _owned_real_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision real field ``RDF``."""
     from sage.rings.real_double import RDF as SageRDF
 
-    return _OwnedRingParent(SageRDF, named_placement=_real_or_complex_field_placements)
+    return _OwnedRingParent(
+        SageRDF,
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
+    )
 
 
 def _owned_complex_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision complex field ``CDF``."""
     from sage.rings.complex_double import CDF as SageCDF
 
-    return _OwnedRingParent(SageCDF, named_placement=_real_or_complex_field_placements)
+    return _OwnedRingParent(
+        SageCDF,
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
+    )
 
 
 def _owned_complex_field() -> _OwnedRingParent:
@@ -6444,7 +6471,9 @@ def RealField(precision=53):
 @cached_function
 def _owned_real_field(precision: int) -> _OwnedRingParent:
     field = _OwnedRingParent(
-        _SageRealField(precision), named_placement=_real_or_complex_field_placements
+        _SageRealField(precision),
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
     )
     _set_owned_ring_display(field, f"Real field with {precision} bits precision", kind="real")
     return field
@@ -6459,7 +6488,9 @@ def ComplexField(precision=53):
 @cached_function
 def _owned_complex_field_of_precision(precision: int) -> _OwnedRingParent:
     field = _OwnedRingParent(
-        _SageComplexField(precision), named_placement=_real_or_complex_field_placements
+        _SageComplexField(precision),
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
     )
     _set_owned_ring_display(
         field, f"Complex field with {precision} bits precision", kind="complex"
