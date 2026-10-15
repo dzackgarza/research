@@ -776,10 +776,18 @@ class DifferentiableManifolds(OwnedCategory):
 
 
 class SmoothManifolds(OwnedCategory):
-    r"""Owned smooth real manifolds."""
+    r"""Owned smooth real manifolds.
+
+    A smooth manifold is a ``C^k`` manifold for every ``k``, and it is the
+    orbifold whose charts all have trivial group (Thurston, *The Geometry and
+    Topology of Three-Manifolds*, Ch. 13).  Both forgetful functors send it
+    to the same underlying topological space.
+    """
 
     def super_categories(self):
-        return [DifferentiableManifolds()]
+        from dzack_research.preamble.categories.orbifolds import Orbifolds
+
+        return [DifferentiableManifolds(), Orbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -965,10 +973,16 @@ class RiemannianManifolds(OwnedCategory):
     A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
     a local isometry.  The Mor category with that condition is not presented
     yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+
+    A Riemannian manifold is the Riemannian orbifold whose charts have
+    trivial group, so ``RiemannianOrbifolds()`` is its second immediate
+    supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
     """
 
     def super_categories(self):
-        return [SmoothManifolds()]
+        from dzack_research.preamble.categories.orbifolds import RiemannianOrbifolds
+
+        return [SmoothManifolds(), RiemannianOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -1499,14 +1513,19 @@ class ComplexManifolds(OwnedCategory):
     ``R^{2n}`` and ``R^{2m}``.  A holomorphic atlas is therefore a smooth atlas
     of the underlying real manifold, of real dimension twice the complex
     dimension, and a holomorphic map is smooth.  Forgetting the complex
-    structure is the functor to ``SmoothManifolds()``, the immediate
-    supercategory.
+    structure is the functor to ``SmoothManifolds()``.  A complex manifold is
+    also the complex orbifold whose charts have trivial group, hence a
+    reduced, normal complex analytic space (Grauert--Remmert, *Coherent
+    Analytic Sheaves*, Ch. 1); both routes send it to the same smooth
+    orbifold.
     """
 
     _MorCategory = ComplexManifoldMorCategoryConstruction
 
     def super_categories(self):
-        return [SmoothManifolds()]
+        from dzack_research.preamble.categories.orbifolds import ComplexOrbifolds
+
+        return [SmoothManifolds(), ComplexOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -2115,12 +2134,15 @@ class _SiegelUpperHalfSpace(_ComplexOpenEngine):
         restricts the action of ``Sp_{2g}(RR)`` along the inclusion, so
         ``rho(M)`` is the biholomorphism ``Z |-> (AZ + B)(CZ + D)^{-1}``
         of ``H_g``, and ``(MN) . Z = M . (N . Z)`` makes it a left action.
-        The result is an object of ``GObjects(Gamma, ComplexManifolds())``;
-        its ``orbit_space()`` is ``Gamma\H_g``.
+        ``Sp_{2g}(ZZ)`` is discrete in ``Sp_{2g}(RR)`` and the stabilizer
+        ``U(g)`` is compact, so ``Gamma`` acts properly discontinuously.  The
+        result is an object of
+        ``GObjects(Gamma, ComplexManifolds()).ProperlyDiscontinuous()``; its
+        ``orbit_space()`` is the complex orbifold ``Gamma\H_g``.
         """
         from dzack_research.preamble.categories.group.g_objects import GObjects
 
-        return GObjects(group, ComplexManifolds()).on_space(
+        return GObjects(group, ComplexManifolds()).ProperlyDiscontinuous().on_space(
             self,
             lambda element, point: self._symplectic_transform(group, element, point),
         )
