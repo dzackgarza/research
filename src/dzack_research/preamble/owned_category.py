@@ -1481,7 +1481,7 @@ def _object_of(
             implementation = category.ObjectType
         case (declared_owner, object_engine, element_engine):
             owner = _owned_realization_of_join(declared_owner)
-            assert category is owner or owner in category._set_of_super_categories, (
+            assert category.is_subcategory(owner), (
                 f"cannot construct an object of {category} with the computation class "
                 f"{object_engine.__name__}: that class serves {owner}, and {category} is "
                 f"not a subcategory of {owner}"
