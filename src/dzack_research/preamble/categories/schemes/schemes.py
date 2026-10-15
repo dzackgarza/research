@@ -109,6 +109,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     LocallyRingedMorCategoryConstruction,
+    PresheafObjects,
     QuasiCoherentSheaves,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -1066,12 +1067,20 @@ class SchemeMorphismMethods:
 
         category = VectorBundlesWithConnection(self.codomain()).Integrable()
         bundles = QuasiCoherentSheaves(self.codomain()).FiniteLocallyFree()
+        bundle = _relative_de_rham_cohomology(self, degree, (bundles,))
+        # Forgetting nabla returns E, so (E, nabla) is the presheaf of sections of E,
+        # an object of the fibre [Open(S)^op, D] that holds E.
+        presheaves = PresheafObjects(self.codomain())
+        fibre = presheaves.with_values(bundle.value_category())
         return _object_of(
-            category,
+            owned_category_join((category, fibre)),
             _engine=(category, _GaussManinConnection, None),
             family_morphism=self,
             degree=degree,
-            underlying_vector_bundle=_relative_de_rham_cohomology(self, degree, (bundles,)),
+            underlying_vector_bundle=bundle,
+            fixed_mor_category=category,
+            functor=bundle.open_sections_presheaf(),
+            **presheaves.presheaf_datum(bundle.open_sections_presheaf()),
         )
 
     def __eq__(self, other) -> bool:
