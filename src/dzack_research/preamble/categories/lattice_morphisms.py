@@ -11,7 +11,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
@@ -59,6 +58,7 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules, Mod
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_engine_element,
+    _owned_integers,
     _owned_rationals,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -1184,6 +1184,13 @@ class LatticeIsometryMethods:
         if empty is True:
             return None
         if target.module_rank().is_finite() and target.is_definite():
+            # The search runs over the finite group O(L) of a definite lattice over ZZ
+            # (orthogonalGroup_finite); over QQ they form O(V), not finite in rank at least 2.
+            assert target.base_ring() is _owned_integers(), (
+                f"cannot find an isometry h: {source} -> {target} with h*{self} = {other}*h: "
+                f"the search runs over the finite orthogonal group of a definite lattice over ZZ, "
+                f"and {target} is over {target.base_ring()}"
+            )
             for candidate in mor:
                 if candidate * self == other * candidate:
                     return candidate
@@ -1590,6 +1597,16 @@ class LatticeEmbeddingMor(CategoricalMor):
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
 
+    def _codomain_is_definite_over_integers(self) -> bool:
+        r"""Whether the codomain is a definite ZZ-lattice of finite rank, whose square shells are finite.
+
+        Over ``QQ`` a definite space has infinite square fibres (``x^2 + y^2 = 1``
+        has the rational points ``(3/5, 4/5)``), so embeddings into it are not
+        enumerated shell by shell.
+        """
+        target = self.codomain()
+        return target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite()
+
     def _codomain_is_even_unimodular_indefinite(self) -> bool:
         target = self.codomain()
         if not target.module_rank().is_finite() or not target.is_nondegenerate():
@@ -1716,8 +1733,9 @@ class LatticeEmbeddingMor(CategoricalMor):
         """
         source = self.domain()
         target = self.codomain()
-        assert target.module_rank().is_finite() and target.is_definite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {target} is definite of finite rank"
+        assert target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite(), (
+            f"the embeddings of {source} into {target} are enumerated only when {target} is a definite lattice of "
+            f"finite rank over ZZ, whose square shells are finite; {target} is over {target.base_ring()}"
         )
         assert source.module_rank().is_finite(), f"the embeddings of {source} into {target} are enumerated only when {source} has finite rank"
         match source.is_nondegenerate():
@@ -1739,7 +1757,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         yield from assign(())
 
     def is_empty(self):
-        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
+        if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
             return True
@@ -1763,7 +1781,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return AtomicProposition("is_empty", self)
 
     def an_element(self):
-        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
+        if self._codomain_is_definite_over_integers():
             for embedding in self:
                 return embedding
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
@@ -1796,7 +1814,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             )
         assert False, (
             f"cannot construct an embedding of {self.domain()} into {self.codomain()}: "
-            f"embeddings are constructed only into definite targets, targets of equal "
+            f"embeddings are constructed only into definite targets over ZZ, targets of equal "
             f"rank, indefinite targets OSCAR classifies, and even unimodular indefinite "
             f"targets, and {self.codomain()} is none of these"
         )
@@ -1954,7 +1972,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         r"""``|Isom(L, M)|``, supplied to the ``Sets`` cardinality hook by this realization.
 
         ``O(L)`` is counted from its own data: the finite definite engine
-        for definite ``L``; otherwise the integral matrix group generated by
+        for definite ``L`` over ``ZZ``; for definite ``L`` over another base
+        ring no exact count is computed here (``CAT-01``); otherwise the
+        integral matrix group generated by
         the selected generators of ``O(L)``, whose finiteness and order GAP
         decides.  A nonempty ``Isom(L, M)`` is a torsor under ``O(M)`` by
         postcomposition and has its cardinality; an empty one has none.
@@ -1965,6 +1985,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             if self.domain().module_rank() == 0:
                 return cardinal(1)
             if self.domain().is_definite():
+                self._assert_definite_over_integers("count")
                 return cardinal(int(self._engine_group().order()))
             # The computed family, not group_generators(): realizing the selected
             # epimorphism F -> O(L) constructs a Mor whose placement asks |O(L)|.
@@ -2271,38 +2292,42 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             description=f"g(im({embedding}))=im({embedding})",
         )
 
+    def _assert_definite_over_integers(self, operation: str) -> None:
+        r"""State the hypothesis of the finite routes of ``O(L)``: ``L`` definite of finite rank over ``ZZ``.
+
+        ``O(L)`` is finite for such ``L`` (``lean-categories``
+        ``orthogonalGroup_finite``, ``LeanCategories/Lattices/Valued/Mass.lean:41``,
+        with ``L(-1)`` for negative definite ``L``).  A definite lattice over
+        ``QQ`` is a quadratic space ``V`` whose ``O(V)`` is not finite in rank
+        at least 2 (``O(x^2+y^2)`` contains the rotation ``(3/5, 4/5)``); no
+        exact computation of it is supplied here (``CAT-01``).
+        """
+        lattice = self.domain()
+        assert lattice.base_ring() is _owned_integers() and lattice.module_rank().is_finite() and lattice.is_definite(), (
+            f"cannot {operation} O({lattice}) as a finite group: that computation is supplied for a definite "
+            f"lattice of finite rank over ZZ, and {lattice} is a lattice over {lattice.base_ring()} of rank "
+            f"{lattice.module_rank()}"
+        )
+
     @cached_method
     def _engine_group(self):
         r"""Return Sage's private orthogonal-group engine when it is exact.
 
         The public group remains this Mor of live lattice isometries.  Sage's
-        ``GroupOfIsometries`` is used only to compute the finite definite
-        integral case; its matrices act on row vectors, hence are transposed
-        when converted to this Mor's column-image convention.
+        ``GroupOfIsometries`` is used only to compute the finite group ``O(L)``
+        of a definite lattice of finite rank over ``ZZ``
+        (``orthogonalGroup_finite``); its matrices act on row vectors, hence
+        are transposed when converted to this Mor's column-image convention.
+        Over ``QQ`` the Gram matrix cleared of denominators presents only the
+        integral span of the chosen basis, whose finite group is not ``O(V)``.
         """
         lattice = self.domain()
         if lattice is not self.codomain():
             raise ValueError(f"the isometries {lattice} -> {self.codomain()} are not an orthogonal group O(L): domain and codomain are different lattices")
-        assert lattice.module_rank().is_finite() and lattice.is_definite(), (
-            f"O({lattice}) is computed as a finite group only for definite lattices of finite rank, and {lattice} is not one"
-        )
+        self._assert_definite_over_integers("compute")
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
-        engine_ring = _engine_ring(lattice.base_ring())
-        match engine_ring is SageZZ, engine_ring is SageQQ:
-            case True, _:
-                gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
-            case False, True:
-                rational_gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
-                denominator = SageZZ.one()
-                for entry in rational_gram.list():
-                    denominator = denominator.lcm(SageZZ(entry.denominator()))
-                gram = (denominator * rational_gram).change_ring(SageZZ)
-            case _:
-                raise ValueError(
-                    f"O({lattice}) is computed by the finite definite engine only over ZZ or QQ, "
-                    f"but {lattice} is over {lattice.base_ring()}"
-                )
+        gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram
@@ -2393,8 +2418,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         caller ``Lattices._core_automorphism_generators`` (read by ``CoreMor._initialize_vertex_group``)
         (the lattice implementer of ``CoreMor``'s core contract).
 
-        For definite ``L``, Sage's ``GroupOfIsometries`` computes the
-        generators of the finite group ``O(L)``. For indefinite ``L``,
+        For definite ``L`` over ``ZZ``, Sage's ``GroupOfIsometries`` computes the
+        generators of the finite group ``O(L)``; a definite ``L`` over another
+        base ring reaches the stated frontier. For indefinite ``L``,
         ``sage_indefinite_port`` computes them. Both answers are untrusted
         engine output: each computed isometry is constructed through ``O(L)``
         into an element of ``O(L)``, and the family becomes one finite ordered
@@ -2406,6 +2432,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             # GroupOfIsometries cannot be formed on an empty generating family).
             generators = ()
         elif lattice.is_definite():
+            self._assert_definite_over_integers("compute generators of")
             generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
         else:
             from dzack_research.preamble.categories.lattices import Lattices
@@ -2434,18 +2461,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         isomorphism invariant, so no equality or subgroup decision in the
         owned layer depends on it.
         """
-        lattice = self.domain()
-        assert lattice.is_definite(), f"O({lattice}) has a structure description here only when {lattice} is definite, and {lattice} is indefinite"
+        self._assert_definite_over_integers("describe the structure of")
         return str(self._engine_group().structure_description())
 
     def __iter__(self):
+        r"""Enumerate the finite group ``O(L)`` of a definite lattice over ``ZZ``."""
+        self._assert_definite_over_integers("enumerate")
         return (self._from_engine(element) for element in self._engine_group())
 
     def vector_equivalence_witness(self, left, right):
         r"""Return ``g in O(L)`` with ``g(left)=right``, or ``None``.
 
-        In the finite definite regime this is an exact search through the full
-        owned orthogonal group.  Indefinite vector equivalence belongs to its
+        For a definite lattice over ``ZZ`` this is an exact search through the
+        finite group ``O(L)``; a definite lattice over another base ring reaches
+        the stated frontier.  Indefinite vector equivalence belongs to its
         separate exact computation and is not approximated here.
         """
         lattice = self.domain()
@@ -2468,6 +2497,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 source.Mor(lattice)(lambda _label: right)
             )
             return isometry(category, marked_left, marked_right)
+        self._assert_definite_over_integers("search")
         for automorphism in self:
             if automorphism(left) == right:
                 return automorphism
@@ -2492,6 +2522,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
             category, marked = _pointed_marking(lattice, element)
             return automorphism_group_generators(category, marked)
+        self._assert_definite_over_integers("reduce a stabilizer in")
         stabilizer_elements = tuple(automorphism for automorphism in self if automorphism(element) == element)
         engine_subgroup = self._engine_group().subgroup(tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements))
         return finite_ordered_set(tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens()))
@@ -2499,8 +2530,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
 
-        For a definite lattice the represented shell is finite, and ``O(L)``
-        is finite, so this is an exact finite quotient with no search bound.
+        For a definite lattice over ``ZZ`` the represented shell is finite, and
+        ``O(L)`` is finite, so this is an exact finite quotient with no search
+        bound; a definite lattice over another base ring reaches the stated
+        frontier.
         """
         lattice = self.domain()
         square = lattice.base_ring()(int(square))
@@ -2559,6 +2592,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                     for representative in _primitive_pointed_classes(lattice, primitive_square)
                 )
             return finite_ordered_set(tuple(representatives))
+        self._assert_definite_over_integers("split a square shell into the orbits of")
         remaining = {_framing_tuple(vector): vector for vector in lattice.vectors_of_square(square)}
         representatives = []
         while remaining:

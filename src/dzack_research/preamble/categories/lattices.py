@@ -5029,15 +5029,22 @@ class Lattices(OwnedCategoryOverBaseRing):
         def vectors_of_square(self, square):
             r"""Return the complete square fibre with its lattice inclusion.
 
-            Definite fibres and nonzero split binary fibres are finite and
-            enumerated. Other fibres retain the complete defining locus; the
-            orbits of a nonsplit binary fibre under ``O(L)`` or ``SO(L)`` are
-            :meth:`binary_fixed_norm_representatives`.
+            Definite fibres over ``ZZ`` and nonzero split binary fibres are
+            finite and enumerated. Other fibres retain the complete defining
+            locus; the orbits of a nonsplit binary fibre under ``O(L)`` or
+            ``SO(L)`` are :meth:`binary_fixed_norm_representatives`.  A definite
+            fibre over another base ring is not enumerated here (``CAT-01``):
+            over ``QQ`` the fibre of ``x^2 + y^2`` at ``1`` contains
+            ``(3/5, 4/5)`` and is not finite.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
+                assert self.base_ring() is _owned_integers(), (
+                    f"cannot enumerate the vectors of square {square} in {self!r}: the shell of a definite "
+                    f"lattice is enumerated over ZZ, where it is finite, and {self!r} is over {self.base_ring()}"
+                )
                 return self.finite_subsets()(_vectors_of_square(self, square))
             if (
                 self.module_rank() == 2
@@ -6616,7 +6623,13 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
 
 class DefiniteLattices(OwnedCategoryOverBaseRing):
-    r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
+    r"""Finite-rank definite lattices.
+
+    Over ``ZZ`` their reflective roots are finite in number and enumerated
+    shell by shell.  Over ``QQ`` a definite space of rank at least 2 has
+    infinite square fibres (``x^2 + y^2 = 1`` has ``(3/5, 4/5)``), so finiteness
+    of the roots is not a consequence of definiteness alone.
+    """
 
     def super_categories(self):
         return [Lattices(self.base_ring()).FinitelyGenerated()]
