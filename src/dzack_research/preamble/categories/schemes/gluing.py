@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilyMorphism,
     DescentData,
     DescentDataOnCover,
+    OpenCoveringFamilies,
     Sheaves,
     _CechCoveringFamilies,
 )
@@ -7076,18 +7077,26 @@ class _FiniteAtlasStructureSheafEngine:
 def _finite_atlas_structure_sheaf(atlas, global_section_ring):
     r"""Construct ``O_X`` on ``Open(|X|)`` from the charts of ``atlas`` and ``Gamma(X, O_X)``."""
     scheme = atlas.scheme()
-    sheaves = SheafObjects(scheme)
     presheaf = _FiniteAtlasStructurePresheaf(scheme, global_section_ring)
-    presheaves = PresheafObjects(scheme)
-    fibre = presheaves.with_values(presheaf.codomain())
-    return _object_of(
-        owned_category_join((sheaves, fibre)),
-        _engine=(sheaves, _FiniteAtlasStructureSheafEngine, None),
-        **presheaves.presheaf_datum(presheaf),
-        functor=presheaf,
-        fixed_mor_category=fibre,
-        atlas=atlas,
-        global_section_ring=global_section_ring,
+    coverage = OpenCoveringFamilies(scheme)
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    # O_X glued from the chart structure sheaves satisfies descent for every
+    # open cover (Stacks, Tag 01JA); the comparison inverse is computed on the
+    # cover a caller asks for.
+    descent = DescentData(coverage, presheaf, inverse_for)
+    return coverage.sheaves(presheaf.codomain()).object(
+        presheaf,
+        descent,
+        categories=(SheafObjects(scheme),),
+        construction_data={
+            **PresheafObjects(scheme).presheaf_datum(presheaf),
+            "atlas": atlas,
+            "global_section_ring": global_section_ring,
+        },
+        _engine=_FiniteAtlasStructureSheafEngine,
     )
 
 

@@ -147,7 +147,7 @@ def _total_quotient_sheaf(scheme):
     )
     return _object_of(
         owned_category_join((sheaves, fibre)),
-        _engine=(sheaves, _TotalQuotientSheafEngine, None),
+        _engine=(fibre, _TotalQuotientSheafEngine, None),
         **presheaf_data,
         scheme=scheme,
     )
@@ -159,7 +159,7 @@ def _unit_sheaf(ring_sheaf):
     fibre, presheaf_data = _unpresented_sheaf_placement(ring_sheaf.scheme(), f"the units of {ring_sheaf}")
     return _object_of(
         owned_category_join((sheaves, fibre)),
-        _engine=(sheaves, _UnitSheafEngine, None),
+        _engine=(fibre, _UnitSheafEngine, None),
         **presheaf_data,
         ring_sheaf=ring_sheaf,
     )
@@ -171,7 +171,7 @@ def _regular_unit_sheaf(scheme):
     fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"O_{{{scheme}}}^*")
     return _object_of(
         owned_category_join((sheaves, fibre)),
-        _engine=(sheaves, _RegularUnitSheafEngine, None),
+        _engine=(fibre, _RegularUnitSheafEngine, None),
         **presheaf_data,
         scheme=scheme,
     )
@@ -186,7 +186,7 @@ def _cartier_divisor_quotient_sheaf(scheme):
     fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"K^*/O^* on {scheme}")
     return _object_of(
         owned_category_join((sheaves, fibre)),
-        _engine=(sheaves, _CartierDivisorQuotientSheafEngine, None),
+        _engine=(fibre, _CartierDivisorQuotientSheafEngine, None),
         **presheaf_data,
         numerator_sheaf=total_quotient_units,
         denominator_sheaf=regular_units,

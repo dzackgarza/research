@@ -216,21 +216,34 @@ def _unpresented_sections_presheaf(space, sheaf_name: str, value_category: Categ
 def _unpresented_sheaf_placement(
     space, sheaf_name: str, mor_category: Category | None = None, value_category: Category | None = None
 ):
-    r"""The fibre ``[Open(X)^op, D]`` and its data for a sheaf whose sections on opens are not presented.
+    r"""``Sh(Open(X), D)`` and its data for a sheaf whose sections on opens are not presented.
 
     An object ``(D, F)`` of ``∫ [Open(X)^op, -]`` lies in the fibre over ``D``
-    of the projection to ``Cat``, so it is an object of ``[Open(X)^op, D]`` on
-    ``F``.  ``mor_category`` is the category whose morphisms the sheaf's
-    arrows are, such as ``O_X``-linear maps; by default it is the fibre, whose
-    morphisms are the natural transformations of the sections functors.
+    of the projection to ``Cat``; a sheaf lies in the full subcategory
+    ``Sh(Open(X), D)`` of that fibre, on ``F`` with its descent data for the
+    open covers of ``X``.  The descent comparison on a cover is computed when
+    a caller asks for it.  ``mor_category`` is the category whose morphisms
+    the sheaf's arrows are, such as ``O_X``-linear maps; by default it is the
+    fibre, whose morphisms are the natural transformations of the sections
+    functors.
     """
+    from dzack_research.preamble.categories.abstract_categories.presheaves import (
+        OpenCoveringFamilies,
+    )
+
     presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
     presheaves = PresheafObjects(space)
-    fibre = presheaves.with_values(presheaf.codomain())
-    return fibre, {
+    coverage = OpenCoveringFamilies(space)
+    sheaves = coverage.sheaves(presheaf.codomain())
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    return sheaves, {
         **presheaves.presheaf_datum(presheaf),
         "functor": presheaf,
-        "fixed_mor_category": fibre if mor_category is None else mor_category,
+        "descent_data": DescentData(coverage, presheaf, inverse_for),
+        "fixed_mor_category": sheaves if mor_category is None else mor_category,
     }
 
 
