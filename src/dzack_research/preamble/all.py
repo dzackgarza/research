@@ -272,8 +272,10 @@ from dzack_research.preamble.categories.group.groups import (  # noqa: F401
     TopologicalGroups,
 )
 from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicPolyhedra,
     HyperbolicRationalPoints,
     HyperbolicSpaces,
+    PositiveConeComponents,
 )
 from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     ComplexManifolds,
