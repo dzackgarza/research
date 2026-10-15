@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_mor_category,
     _structure_morphism_rule,
 )
-from dzack_research.preamble.categories.schemes.varieties import Surfaces
+from dzack_research.preamble.categories.schemes.varieties import Curves, Surfaces, Varieties
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -96,9 +96,16 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
     expected_dimension = int(ambient.relative_dimension()) - int(family.cardinality())
     match base:
         case _ if base in OwnedFields():
+            # A homogeneous prime ideal cuts out an integral projective
+            # scheme, which is a projective variety (Hartshorne I.2, II.4).
+            integral = bool(engine.defining_ideal().is_prime())
             match expected_dimension:
-                case 2 if bool(engine.defining_ideal().is_prime()):
+                case 1 if integral:
+                    decided.append(Curves(base).Projective())
+                case 2 if integral:
                     decided.append(Surfaces(base).Projective())
+                case _ if integral:
+                    decided.append(Varieties(base).Projective())
                 case _:
                     pass
         case _:
@@ -464,6 +471,27 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 _integral_singular_cohomology_over_rationals,
             )
             return _integral_singular_cohomology_over_rationals(self, degree)
+
+        def _picard_group(self, base_picard_group=None):
+            r"""``Pic(X)``, the isomorphism classes of invertible ``O_X``-modules, with unit ``[O_X(0)]``."""
+            from dzack_research.preamble.categories.divisors.picard_groups import (
+                _invertible_sheaf_class_group,
+            )
+
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "a complete intersection has no projective-bundle base datum"
+            )
+            return _invertible_sheaf_class_group(self, self.O(0))
+
+        def hyperplane_class(self):
+            r"""``[O_X(1)] = i^*[O_P(1)]`` in ``Pic(X)``, for the inclusion ``i: X -> P^n``.
+
+            ``O_X(1)`` is very ample, so ``(X, [O_X(1)])`` is a polarized
+            variety (Hartshorne, *Algebraic Geometry*, II.5.16.1 and II.7).
+            """
+            picard = self.picard_group()
+            return picard(picard.underlying_set()(self.O(1)))
 
         def _del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
