@@ -1294,7 +1294,84 @@ Source inspection, 2026-10-15: the engine `CartanType` stays private in `definit
 **Consumers:** the sage-indefinite-port frozen comparison against the fixture strings of `k3_modular_strata.json`; `root_system_type_name`; lattice-db root-type fields.
 **Request (not filed):** `lean-categories` states the classification of finite reduced root systems by their irreducible components; search Mathlib `RootPairing`/`RootSystem` first (`FSA-02`). No node: the frozen consumer compares labels, and no operation is blocked.
 
+### Category stubs presented ahead of `lean-categories` (2026-10-16)
+
+On 2026-10-16 the owner directed that these categories be stubbed with their placements and functorial constructions, ahead of formalization: varieties over a ring, curves, surfaces, K3 and del Pezzo surfaces, hypersurfaces, families as slice objects and their analytic fibres, primitive cohomology, Lefschetz operators, residues and logarithmic differentials, graded Lie algebras, pointed spaces and `pi_*` with the Whitehead product and the rational homotopy Lie algebra, categories of elements, `Pic` as a functor, polarized varieties, filtered modules, mixed and pure Hodge structures, polarizations, the Gauss–Manin connection, `HH`, `Gamma \ HH`, `HH^n`, `H_g`, `G/K` by Satake type, Hermitian symmetric domains, derived categories, Riemannian manifolds, Lie groups and the orbit space of a group action on a space.
+**Request (not filed):** `lean-categories` formalizes each notion with its source; the presentations run beside the request. Every citation locator written in these stubs was recalled, not opened, and needs checking against the source: Hatcher Thm 3.11, Félix–Halperin–Thomas §21, Whitehead 1941, Hartshorne II.6 and II.7.6, Voisin §6.2 and §7.1, Deligne *Hodge II*, Mac Lane II.6, Riehl 2.4.1, Dolgachev 2012 Rem 8.1.19, Hidaka–Watanabe 1981, Huybrechts Def 1.1.
+
+### `Mor(X, Y)` of commutative algebras has two incompatible constructions
+
+The category of commutative algebras inherits two constructions of `Mor(X, Y)`, and constructing a homset raises "Category of commutative algebras inherits two incompatible constructions of Mor(X, Y)". Observed 2026-10-16 through `QQ[t].algebra_generator("t")`. **Path:** `divisors/invertible_sheaves.py:1119` -> `schemes/ringed_spaces.py:1553` -> `mor_foundation.py:235` -> `mor_categories.py:1916`. **Consumers blocked:** `ProjectiveSpaces(QQ)(2).anticanonical_line_bundle()`, `fibre()` on families, `is_k3`, `HesseBertiniFamily`, `AnalyticDiscFamily`. **Repair:** one Mor construction at the join of the commutative-ring and algebra branches (`CAT-21`).
+
+### `PositiveConeComponents` is unhashable
+
+A component of the positive cone of a hyperbolic real quadratic space is the object from which `HyperbolicSpaces(component)` constructs `HH^n`. `PositiveConeComponents` is a `Sets().Subobjects()` parent that is unhashable, so the category constructor, which caches on its arguments, raises `TypeError`. `tests/lattices/test_hyperbolic_space.sage` fails on main (2026-10-16). **Consumer:** `HyperbolicSpaces`, and so `HH^n` and its quotients. **Repair:** the subobject parent hashes on its defining inclusion.
+
+### Output-named cohomology and fundamental-group categories (`CAT-28`)
+
+`IntegralTopologicalCohomologyGroups`, `IntegralSingularCohomologyGroups`, `ResolutionIntegralCohomologyGroups`, `ToricIntegralSingularCohomologyGroups`, `GeometricFundamentalGroups`, `ToricFundamentalGroups` (`schemes/geometric_cohomology.py`) and `PicardGroups` (`divisors/picard_groups.py`) are categories declared for the class of objects one construction produces. `H^k(X; ZZ)` is a `ZZ`-module, `pi_1(X, x)` a group and `Pic(X)` an abelian group; each belongs to the category of its kind with the construction as a functor (`X.singular_cohomology(R)`, `Pic` as `Varieties(k).Projective().picard_functor()`). **Tell:** `rg -n 'class \w*(Cohomology|Fundamental|Picard)Groups' src`. `IntegralTopologicalCohomologyGroups.cohomology_algebra` also needs the embedding `sigma : k -> CC` to state its source.
+
+### `TopologicalSpaces` declares `Sets()`
+
+A topological space is a set with a topology, so its underlying set is a functor image, and `TopologicalSpaces().super_categories()` names `Sets()` (`categories/topological_spaces.py`). The red flag in AGENTS.md ("A supercategory entry presents a formalized inclusion") applies; the declaration is honest only if `lean-categories` states `Top -> Set` as the inclusion the tree reads. **Repair:** read the forgetful functor from `lean-categories`, then keep or replace the declaration.
+
+### `TopologicalSpaces` has no coequalizer
+
+The orbit space `G \ X` of a group action is the coequalizer of the action map and the projection `G x X -> X` in `Top`. Only `Sets` presents coequalizers (`set_categories.py:1616`), so `GObjects.orbit_space` and the quotients `Gamma \ HH`, `Gamma \ H_g`, `Gamma \ HH^n` are stubs. **Path:** coequalizer in `Sets` -> quotient topology on it -> coequalizer in `Top` -> orbit spaces.
+
+### `DerivedCategories(R)` has no triangulated parent
+
+`D(R)` is the localization of `CochainComplexes(R)` at quasi-isomorphisms, an `R`-linear triangulated category. The tree presents no category of triangulated categories, so `DerivedCategories(R)` leaves `super_categories` abstract and does not construct; `RΓ(X, F)` lands there. **Request:** `lean-categories` formalizes triangulated `R`-linear categories and the derived category.
+
+### Two spellings of sheaf cohomology
+
+`_AffineModuleSheafEngine.geometric_cohomology(i)` (`schemes/ringed_spaces.py:1211`) and `F.sheaf_cohomology(i)` on `ModuleSheaves(X)` both name `H^i(X, F)`. **Repair:** one spelling, `sheaf_cohomology(i)`, computed through the engine.
+
+### Hodge structures are answered as Hodge numbers
+
+`hodge_structure()` on toric varieties and quartic K3 surfaces returns Hodge-number data (`_ToricHodgeData`, `_QuarticK3HodgeData`), not an object of `MixedHodgeStructures(QQ)`. The engine `is_pure()` answers on total cohomology, which is pure only in each degree: `H^*(P^2)` has weights 0, 2, 4. The homsets of `MixedHodgeStructures(R)` are those of the underlying module and not the maps preserving `W`, `F` and the rational structure. Tate twists, tensor products and duals of Hodge structures are absent, and `VectorBundlesWithConnection(S)` has abstract supercategories.
+
+### Analytification and arrow categories are absent
+
+`X -> X(CC)` (analytification of a variety over `CC`) is absent, so `pointed_space()` on the fundamental-group classes is a stub. No closed-immersion arrow category exists, so the residue `Omega^p_X(log D) -> Omega^{p-1}_D` sits on `EffectiveCartierDivisors(X)`. No comma category exists, so the category of elements `int F` has abstract supercategories. No graded nonassociative algebra category exists, so `GradedAlgebras` and `GradedLieAlgebras` meet only at modules. `Pic` is a stub, so `Varieties(k).Projective().polarized_varieties()` fails at construction when its supercategory `int Pic` is computed.
+
+### Families need base restriction and fibre products
+
+The Hesse pencil is an object of `Schemes(QQ).SliceOver(A^1_QQ)`; the tree presents slices only over affine bases. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3), and `analytic_families.py:260` compares against `float(radius)`, a machine float where the radius is a real number.
+
+### Bounded symmetric domains are placed only as complex manifolds
+
+`ComplexManifolds().BoundedSymmetric()` holds `HH` and the types I–IV, EIII, EVII. A Hermitian symmetric domain is also a Riemannian globally symmetric space of noncompact type, `G/K`, so the axiom places `HH` in only one of its two categories. **Repair:** the join of `ComplexManifolds()` with `RiemannianManifolds().GloballySymmetric()`, with the Hermitian type as its axiom.
+
+### `isinstance` dispatch in derivations
+
+`categories/algebras/derivations.py` routes on `isinstance` at lines 86, 132, 325, 350, 407, 555, 557, 567, 624, 745 (`rg -n isinstance` on 2026-10-16). AGENTS.md (*Dynamic peeking is prohibited*) requires membership routing. **Consumers:** derivations, the de Rham complex.
+
 ## Workflow Papercuts
+
+### The required reading does not fit a worker context
+
+AGENTS.md requires every subagent to read `INTENT.md`, `CONTRIBUTING.md` in full, `TODO.md`, `COMPLAINTS.md` and `docs/preamble-megadoc.md`. On 2026-10-16 their sizes were:
+
+| File | Size |
+| --- | --- |
+| `AGENTS.md` | 251 KB |
+| `INTENT.md` | 103 KB |
+| `CONTRIBUTING.md` | 655 KB |
+| `docs/preamble-megadoc.md` | 687 KB |
+| `TODO.md` | 520 KB |
+| `COMPLAINTS.md` | 190 KB |
+| `schemes/schemes.py` | 311 KB |
+
+Three workers overflowed their context before or after their first edit. **Repair:** an index that names the sections each kind of edit must read.
+
+### `docs/preamble-megadoc.md` is stale
+
+The megadoc predates the category stubs of 2026-10-16. **Repair:** `just preamble-megadoc`.
+
+### Expectation files use names that AGENTS §5 calls aliases
+
+`ProjectiveCurves`, `ProperSurfaces`, `ProjectiveSurfaces`, `DelPezzoSurfaces` and `SmoothQuarticK3CompleteIntersections` are called by protected expectation files (`test_surfaces_construct.sage:15-21`, `test_toric_schemes_construct.sage:13-23`, `test_projective_complete_intersection_methods_construct.sage:48`, `..._integral_cohomology_construct.sage:11`, `..._del_pezzo_construct.sage:12-20`, `test_projective_point_blowup_del_pezzo_construct.sage:10-15`, `test_toric_fixed_point_blowups_construct.sage:16-24`). Each name is a second spelling of an axiom category such as `Surfaces(k).Projective()`, which AGENTS §5 bans, and the expectation files may not be edited. **For the owner to rule.**
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
 
