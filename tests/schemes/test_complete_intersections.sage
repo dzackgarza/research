@@ -144,3 +144,4 @@ def test_two_quadrics_in_p4_meet_in_a_gorenstein_del_pezzo_surface_of_degree_fou
     assert anticanonical.is_ample()
     assert surface.is_gorenstein_del_pezzo()
     assert not surface.is_del_pezzo()
+    assert surface.del_pezzo_degree() == 4

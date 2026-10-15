@@ -413,6 +413,19 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
                     case False:
                         return bool(self._is_gorenstein_del_pezzo())
 
+            def del_pezzo_degree(self):
+                r"""Return the anticanonical self-intersection ``K_X^2`` of a Gorenstein del Pezzo surface.
+
+                Domain: a Gorenstein del Pezzo surface ``X`` over a field, smooth
+                or not, where ``K_X`` is Cartier and ``K_X^2`` is an integer
+                (Hidaka--Watanabe, *Tokyo J. Math.* 4 (1981), 319--330).
+                Codomain: the positive integers.
+                """
+                assert self.is_gorenstein_del_pezzo(), (
+                    f"the degree K_X^2 is defined for Gorenstein del Pezzo surfaces, and {self} is not one"
+                )
+                return self._del_pezzo_degree()
+
     class K3(CategoryWithAxiom):
         r"""K3 surfaces over the base.
 
@@ -431,6 +444,17 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
 
         def _repr_object_names(self):
             return f"K3 surfaces over {self.base_ring()}"
+
+        def _call_(self, surface):
+            r"""Place the Calabi--Yau surface ``surface`` here, as the caller states."""
+            from dzack_research.preamble.refine import refine
+
+            base = self.base_ring()
+            assert surface in Surfaces(base).CalabiYau(), (
+                f"only a Calabi--Yau surface over {base} is a K3 surface, but {surface} is in "
+                f"{surface.category()}"
+            )
+            return refine(surface, self)
 
         class ParentMethods:
             def is_k3(self):
@@ -478,18 +502,13 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
             return refine(surface, self)
 
         class ParentMethods:
-            def del_pezzo_degree(self):
-                r"""Return the anticanonical self-intersection ``(-K_X)^2``."""
-                return self._del_pezzo_degree()
-
             @validator
             def validate_del_pezzo(self) -> None:
                 r"""Check the caller's statement that ``X`` is smooth with ``omega_X^{-1}`` ample."""
-                if not self.is_del_pezzo():
-                    raise ValueError(
-                        f"{self} was placed as a del Pezzo surface, but it is not smooth with ample "
-                        "anticanonical sheaf"
-                    )
+                assert self.is_del_pezzo(), (
+                    f"{self} was placed as a del Pezzo surface, but it is not smooth with ample "
+                    "anticanonical sheaf"
+                )
 
 
 def ProjectiveCurves(base):
