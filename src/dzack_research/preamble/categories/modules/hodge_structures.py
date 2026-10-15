@@ -443,6 +443,31 @@ class HodgeStructures(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [MixedHodgeStructures(self.base_ring())]
 
+    def an_object(self):
+        r"""A polarizable Hodge structure of weight ``n``.
+
+        For even ``n = 2m`` it is the Tate structure ``R(-m)`` (Deligne II
+        (2.1.13)).  For odd ``n = 2m + 1`` it is ``R^2`` of type
+        ``(m + 1, m) + (m, m + 1)``, the type of ``H^1`` of an elliptic curve
+        twisted by ``R(-m)``, polarized as that curve's cup product.
+        """
+        weight = self.weight()
+        half = weight // 2
+        match int(weight % 2):
+            case 0:
+                return MixedHodgeStructures(self.base_ring()).tate_structure(-half)
+            case 1:
+                return _split_mixed_hodge_structure(
+                    self.base_ring(),
+                    (weight, weight),
+                    hodge_number_table=lambda: {
+                        (int(half) + 1, int(half)): NN(1),
+                        (int(half), int(half) + 1): NN(1),
+                    },
+                    polarizable_weights=frozenset((weight,)),
+                    name=f"Hodge structure of type ({half + 1}, {half}) + ({half}, {half + 1}) over {self.base()}",
+                )
+
     class SubcategoryMethods:
         def Polarizable(self) -> Category:
             r"""Hodge structures that admit a polarization (Deligne II (2.1.15))."""

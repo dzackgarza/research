@@ -92,6 +92,25 @@ class _PowerAlgebra:
         return f"{symbol}({self.generating_module()})"
 
 
+class _PowerAlgebraElement:
+    r"""An element of ``Lambda(M)`` or ``Gamma(M)`` as the sum of its homogeneous components.
+
+    The degree-zero piece is ``Lambda^0(M) = Gamma^0(M) = R``, so its component
+    is written as the scalar the augmentation ``Lambda(M) -> R`` reads from it;
+    a component of positive degree is written in its own power module.
+    """
+
+    def _repr_(self):
+        terms = []
+        for degree, component in self.homogeneous_components().items():
+            match degree:
+                case _ if degree == 0:
+                    terms.append(str(self.parent().augmentation()(self)))
+                case _:
+                    terms.append(str(component))
+        return " + ".join(terms) if terms else "0"
+
+
 class PowerAlgebraMorphism:
     r"""A power-construction map, or an exact map with its graded algebra laws.
 

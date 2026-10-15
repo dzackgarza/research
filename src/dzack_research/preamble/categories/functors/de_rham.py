@@ -232,6 +232,10 @@ class _DegreeZeroDGAFunctor(Functor):
         r"""Return the algebra on the actual represented degree-zero piece."""
         return self._degree_zero_data(dga)[0]
 
+    def inclusion(self, dga):
+        r"""The linear inclusion ``B^0 -> B`` of the degree-zero algebra as the degree-zero piece."""
+        return self._degree_zero_data(dga)[1]
+
     def _apply_morphism(self, morphism):
         source_dga = morphism.domain()
         target_dga = morphism.codomain()

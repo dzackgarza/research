@@ -62,6 +62,55 @@ class _SchemeSlice(SliceCategory):
             return self.scheme_category().fiber_product(family, point)
 
 
+def _projective_hypersurface_family(plane, parameter_space, equation, *, name):
+    r"""The family ``f: X -> C`` of hypersurfaces ``X = V(F) <= P^n x C``, with ``f`` the second projection.
+
+    ``P^n`` and ``C`` are ``k``-schemes, ``C`` affine with coordinate algebra
+    ``T``, and ``F`` is an element of ``T[x_0,...,x_n]`` homogeneous of degree
+    ``d`` in the ``x_i``.  The product ``P^n x C`` is glued from the charts
+    ``D_+(x_j) x C``.  On such a chart ``V(F)`` is cut out by the
+    dehomogenization ``F(x_0/x_j,...,x_n/x_j)``, read through the two
+    projections of the chart.  Two dehomogenizations differ on an overlap by
+    the unit ``(x_j/x_i)^d``, so the local closed subschemes glue to ``X``.
+    The fibre of ``f`` over a ``k``-point ``t = a`` of ``C`` is the hypersurface
+    ``V(F(x, a)) <= P^n_k``.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        _evaluate_owned_homogeneous_polynomial_on_coordinates,
+    )
+
+    product = Schemes(plane.scheme_base_ring()).product((plane, parameter_space))
+    datum = product.gluing_datum()
+    presentation_ring = equation.parent()
+
+    def local_hypersurface(label):
+        chart = datum.chart(label)
+        plane_projection = chart.projection(0)
+        index = next(
+            index
+            for index in range(int(plane.relative_dimension()) + 1)
+            if plane.standard_affine_chart(index) is plane_projection.codomain()
+        )
+        coordinates = tuple(
+            plane_projection.coordinate_algebra_morphism()(coordinate)
+            for coordinate in plane.standard_affine_chart_embedding(index).homogeneous_coordinates()
+        )
+        return chart.closed_subscheme(
+            _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                equation,
+                presentation_ring,
+                coordinates,
+                coefficient_map=chart.projection(1).coordinate_algebra_morphism(),
+            )
+        )
+
+    total = product.chartwise_closed_subscheme(
+        {label: local_hypersurface(label) for label in datum.chart_indices()},
+        name=name,
+    )
+    return product.projection(1) * total.inclusion()
+
+
 def _relative_affine_family(parameter_algebra, relative_variables, equations):
     r"""``Spec T[x_1,...,x_n]/(f_1,...,f_r)`` as an object of ``Schemes(T).Affine()``.
 

@@ -284,6 +284,14 @@ from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
+    ComplexAnalyticSpaces,
+)
+from dzack_research.preamble.categories.orbifolds import (  # noqa: F401
+    ComplexOrbifolds,
+    Orbifolds,
+    RiemannianOrbifolds,
+)
 from dzack_research.preamble.categories.modules import (
     BilinearFormModules,
     BilinearMap,

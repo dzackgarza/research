@@ -172,9 +172,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                     f"{derivation} is a derivation of {derivation.domain()}"
                 )
 
-            return self.module_category().Mor(self, derivation.codomain())(
+            target = derivation.parent().target_module()
+            return self.module_category().Mor(self, target)(
                 {
-                    ("d", label): derivation.generator_image(label)
+                    ("d", label): target(derivation.generator_image(label))
                     for label in derivation.parent().generator_labels()
                 }
             )

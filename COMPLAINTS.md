@@ -21,6 +21,22 @@ The stabilizers and transporters of coloured families of lattice vectors (#399, 
 Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism.
 Source inspection only.
 
+### A ring is a module over its base only, never over itself
+
+A ring `A` over `R` constructs into `Modules(R)`, not into `Modules(A)`. The regular module `A^1 = F_A({0})` is a separate free `A`-module, the one `A.regular_module()` returns. So `Der_R(A, A)` needs the target `A^1`, and its values were `r e_0` instead of elements of `A`.
+
+**Evidence (2026-10-16):** for `A = QQ[x]` and `D = d/dx`, `D(x)` printed `[0]`. `S.derivations(S)` for `S = QQ[x, y]` raised `TypeError: an R-derivation A -> M needs M to be a module over A = Rational Field[x, y], but Rational Field[x, y] is a module over Rational Field`. The graded derivation `p` with `x |-> 1, y |-> 0` raised `cannot convert y*[0] into Rational Field[x, y]` on `p(x*y)`.
+
+**Ruling in force, (a):** the values land in `A` through the named isomorphism `A^1 -> A`, `e_0 |-> 1` (`regular_module_isomorphism` in `ring_foundation.py`), and `regular_module()` stays.
+
+**Options for the OWNER TO RULE:**
+- (b) The ring answers `Modules(A)`, and the module layer takes its scalars from the category of the operation.
+- (c) Each ring is its own base, and an `R`-algebra is an `R`-module through restriction of scalars `Res` along `R -> A`.
+
+**Affected consumers:** `Der_R(A, A)` (`algebras/derivations.py`); `Mor_A(Omega_{A/R}, A)` (`algebras/kahler_differentials.py`); the Lie bracket and the contractions (`algebras/cartan_calculus.py`); ideals of `A` as submodules of `A`.
+
+**Repair:** `TODO.md` `ring-modules-over-two-bases`.
+
 ### A realization's class method is unreachable behind a category operation of the same name
 
 The owned runtime puts a category's method classes before the realization class (`refine.RealizationHook`, `_rebuild_parent_class`), so a class method named like a category operation that is not a `RealizationHook` or an abstract contract is never called.
@@ -1314,25 +1330,13 @@ On 2026-10-16 the owner directed that these categories be stubbed with their pla
 
 A scheme `X` is an object of `TopologicalSpaces()` through its Zariski space, so the inherited `singular_cohomology` and `integral_singular_cohomology` are those of the Zariski space. On toric varieties, complete intersections and projective spaces (`schemes.py`, `ProjectiveSpaces.ParentMethods.integral_singular_cohomology`) the same name answers `H^*(X(CC); ZZ)` of the complex points. One name thus means two different spaces according to the subcategory, and a scheme without the override reaches the `TopologicalSpaces` stub for its Zariski space. **Repair:** singular cohomology of the complex points is the composite of the analytification `X -> X(CC)` along an embedding `sigma: k -> CC` with singular cohomology on `TopologicalSpaces`, a method that takes `sigma`; the Zariski-space name stays with `TopologicalSpaces`.
 
-### `DerivedCategories(R)` has no triangulated parent
-
-`D(R)` is the localization of `CochainComplexes(R)` at quasi-isomorphisms, an `R`-linear triangulated category. The tree presents no category of triangulated categories, so `DerivedCategories(R)` leaves `super_categories` abstract and does not construct; `RΓ(X, F)` lands there. **Request:** `lean-categories` formalizes triangulated `R`-linear categories and the derived category.
-
-### Two spellings of sheaf cohomology
-
-`_AffineModuleSheafEngine.geometric_cohomology(i)` (`schemes/ringed_spaces.py:1211`) and `F.sheaf_cohomology(i)` on `ModuleSheaves(X)` both name `H^i(X, F)`. **Repair:** one spelling, `sheaf_cohomology(i)`, computed through the engine.
-
 ### Analytification and arrow categories are absent
 
 `X -> X(CC)` (analytification of a variety over `CC`) is absent, so `pointed_space()` on the fundamental-group classes is a stub. No closed-immersion arrow category exists, so the residue `Omega^p_X(log D) -> Omega^{p-1}_D` sits on `EffectiveCartierDivisors(X)`. No comma category exists, so the category of elements `int F` has abstract supercategories. No graded nonassociative algebra category exists, so `GradedAlgebras` and `GradedLieAlgebras` meet only at modules. `Pic` is a stub, so `Varieties(k).Projective().polarized_varieties()` fails at construction when its supercategory `int Pic` is computed.
 
 ### Families need base restriction and fibre products
 
-The Hesse pencil is an object of `Schemes(QQ).SliceOver(A^1_QQ)`; the tree presents slices only over affine bases. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3), and `analytic_families.py:260` compares against `float(radius)`, a machine float where the radius is a real number.
-
-### Bounded symmetric domains are placed only as complex manifolds
-
-`ComplexManifolds().BoundedSymmetric()` holds `HH` and the types I–IV, EIII, EVII. A Hermitian symmetric domain is also a Riemannian globally symmetric space of noncompact type, `G/K`, so the axiom places `HH` in only one of its two categories. **Repair:** the join of `ComplexManifolds()` with `RiemannianManifolds().GloballySymmetric()`, with the Hermitian type as its axiom.
+The Hesse pencil is an object of `Schemes(QQ).SliceOver(P^1_QQ)` (`HesseBertiniFamily().projective_pencil()`), but its fibre over a rational point of `P^1_QQ` is not computed: the fibre product of schemes is constructed for affine bases, for glued schemes over an affine base and for the scalar base change of `P^n`, not over a glued base. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product of complex manifolds along a submersion. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3).
 
 ### A free module is placed with a chosen finite presentation that it cannot give
 

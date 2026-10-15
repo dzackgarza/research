@@ -1418,6 +1418,33 @@ class LocalizationRings(OwnedCategory):
                 return engine_cover
             return None
 
+        def _inverse_of_bottom_numerator(self, generator):
+            r"""The inverse ``1/m`` of the bottom numerator ``m`` of a generator ``g``.
+
+            Private decoder contract for the inverse-variable realization.  In
+            a tower ``L_k -> ... -> L_0`` write ``g = n_1/d_1`` with
+            ``n_1, d_1`` in ``L_{k-1}``, then ``n_1 = n_2/d_2`` one level down,
+            and so on to ``m`` in the bottom ring.  Then ``g = m e`` with
+            ``e = (...(1/d_j).../d_2)/d_1`` a unit of the source, and the
+            auxiliary variable inverting ``m`` is ``e/g`` here.  For a one-step
+            localization ``m = g`` and ``e = 1``.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeLocalizations,
+            )
+
+            def numerator_and_unit(ring, element):
+                if ring not in LocalizationRings() or ring in PrimeLocalizations():
+                    return ring.one()
+                numerator, denominator = ring.localization_fraction_data(element)
+                return ring.fraction(
+                    numerator_and_unit(ring.localization_source(), numerator),
+                    denominator,
+                )
+
+            source = self.localization_source()
+            return self.fraction(numerator_and_unit(source, generator), generator)
+
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
             assert engine is not None, (
@@ -1446,7 +1473,10 @@ class LocalizationRings(OwnedCategory):
                     else source_engine
                 )
                 source_names = tuple(source_cover.variable_names())
-                inverted = tuple(self.inverted_elements())
+                inverses = tuple(
+                    self._inverse_of_bottom_numerator(generator)
+                    for generator in self.inverted_elements()
+                )
                 result = self.zero()
                 for exponents, coefficient in represented.lift().dict().items():
                     source_monomial = source_cover(coefficient)
@@ -1457,10 +1487,7 @@ class LocalizationRings(OwnedCategory):
                     )
                     for position, exponent in enumerate(exponents[len(source_names) :]):
                         if exponent:
-                            term *= self.fraction(
-                                source.one(),
-                                inverted[position],
-                            ) ** int(exponent)
+                            term *= inverses[position] ** int(exponent)
                     result += term
                 return result
             return self.fraction(
@@ -3697,6 +3724,28 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self
             return self.free_module(1)
 
+        @cached_method
+        def regular_module_isomorphism(self):
+            r"""Return the additive isomorphism ``{}_R R -> R``, ``r e_0 |-> r``.
+
+            It sends the module generator ``e_0`` of :meth:`regular_module` to
+            ``1`` and intertwines the scalar action with left multiplication,
+            ``r (s e_0) |-> r s``.  When the regular module is the ring itself
+            it is the identity.
+            """
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            module = self.regular_module()
+            morphisms = AdditiveGroups().AdditiveCommutative().Mor(module, self)
+            match module is self:
+                case True:
+                    return morphisms.elementwise(lambda element: element)
+                case False:
+                    label = next(iter(module.module_generating_set()))
+                    return morphisms.elementwise(
+                        lambda element: self(module.framing_morphism().lift(element)(label))
+                    )
+
         def _module_basis_along(self, ring_map):
             r"""A basis of ``Res_f(S)`` over ``R`` for ``f = ring_map: R -> S = self``, or ``None``.
 
@@ -5011,7 +5060,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def __init__(
         self, engine: Ring, *, base=None, category=None, constructing_category=None,
-        named_placement=None,
+        named_placement=None, named_cardinality=None,
     ) -> None:
         r"""Construct over the scalar ring the level above declares.
 
@@ -5040,6 +5089,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             OwnedRings() if constructing_category is None else constructing_category
         )
         self._engine = engine
+        # A named construction that presents a known set states its size,
+        # as it states its placement: ``RR`` and ``CC`` have the cardinality
+        # of the continuum, whatever precision the engine computes at.
+        self._named_cardinality = named_cardinality
         self._preamble_ring_display = None
         self._preamble_ring_display_kind = None
         self._local_ring_construction = None
@@ -5131,6 +5184,14 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _selected_local_ring_construction(self):
         r"""Return this native ring's selected local quotient datum, if any."""
         return self._local_ring_construction
+
+    def _cardinality_decision(self):
+        r"""Return the cardinality the named construction states, if it states one."""
+        match self._named_cardinality:
+            case None:
+                return super()._cardinality_decision()
+            case size:
+                return size()
 
     def __call__(self, value):
         r"""Construct an owned ring element without Sage coercion discovery."""
@@ -5272,7 +5333,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine.is_integral_domain()
 
     def _finiteness_decision(self):
-        return self._engine.is_finite()
+        return _engine_finiteness_decision(self._engine)
 
     def _preamble_is_number_field_order(self):
         r"""Whether this ring was constructed as an order (``ZZ`` or ``_order_in``), read from its placement."""
@@ -5562,6 +5623,26 @@ def _engine_field_decision(engine):
                 return None
 
 
+def _engine_finiteness_decision(engine):
+    r"""Return whether the engine's ring is a finite set.
+
+    ``OWN-06`` adapter.  Sage's ``QuotientRing_generic`` has no
+    ``is_finite`` (TRAPS.md).  For ``A = k[x_1, ..., x_n]/I`` over a field
+    ``k``: the unit ideal gives the zero ring, a finite set.  Otherwise
+    ``k -> A`` is injective, and ``A`` is finite exactly when ``k`` is
+    finite and ``dim_k A`` is finite, that is when ``A`` has Krull
+    dimension zero (Atiyah--Macdonald, Ch. 8 and Cor. 5.24 (Zariski)).
+    """
+    match engine:
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
+            engine.cover_ring().base_ring().is_field()
+        ):
+            dimension = engine.defining_ideal().dimension()
+            return bool(dimension == -1 or (engine.cover_ring().base_ring().is_finite() and dimension == 0))
+        case _:
+            return engine.is_finite()
+
+
 def _size_of_finitely_supported_families(coefficients, indeterminates) -> Category:
     r"""The size of a ring of finitely supported coefficient families on monomials or words.
 
@@ -5748,6 +5829,13 @@ def _real_algebraic_placements() -> tuple[Category, ...]:
 def _algebraic_number_placements() -> tuple[Category, ...]:
     r"""The placement of ``QQbar``: a countable field."""
     return (*_field_placements(), owned_sets.CountablyInfiniteSets())
+
+
+def _continuum():
+    r"""The cardinality of ``RR`` and of ``CC``, ``2^aleph_0``."""
+    from dzack_research.preamble.categories.sets.cardinals import continuum
+
+    return continuum
 
 
 def _real_or_complex_field_placements() -> tuple[Category, ...]:
@@ -6142,14 +6230,22 @@ def _owned_real_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision real field ``RDF``."""
     from sage.rings.real_double import RDF as SageRDF
 
-    return _OwnedRingParent(SageRDF, named_placement=_real_or_complex_field_placements)
+    return _OwnedRingParent(
+        SageRDF,
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
+    )
 
 
 def _owned_complex_double_field() -> _OwnedRingParent:
     r"""The canonical owned double-precision complex field ``CDF``."""
     from sage.rings.complex_double import CDF as SageCDF
 
-    return _OwnedRingParent(SageCDF, named_placement=_real_or_complex_field_placements)
+    return _OwnedRingParent(
+        SageCDF,
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
+    )
 
 
 def _owned_complex_field() -> _OwnedRingParent:
@@ -6375,7 +6471,9 @@ def RealField(precision=53):
 @cached_function
 def _owned_real_field(precision: int) -> _OwnedRingParent:
     field = _OwnedRingParent(
-        _SageRealField(precision), named_placement=_real_or_complex_field_placements
+        _SageRealField(precision),
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
     )
     _set_owned_ring_display(field, f"Real field with {precision} bits precision", kind="real")
     return field
@@ -6390,7 +6488,9 @@ def ComplexField(precision=53):
 @cached_function
 def _owned_complex_field_of_precision(precision: int) -> _OwnedRingParent:
     field = _OwnedRingParent(
-        _SageComplexField(precision), named_placement=_real_or_complex_field_placements
+        _SageComplexField(precision),
+        named_placement=_real_or_complex_field_placements,
+        named_cardinality=_continuum,
     )
     _set_owned_ring_display(
         field, f"Complex field with {precision} bits precision", kind="complex"
