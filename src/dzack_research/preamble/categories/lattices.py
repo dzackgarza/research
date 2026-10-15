@@ -6251,10 +6251,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)("U").basis_vector(0)
                 e_0
             """
-            return repr_lincomb(self._lattice_terms(), strip_one=True)
+            return repr_lincomb(
+                [(f"e_{label}", coefficient) for label, coefficient in self._lattice_terms()],
+                strip_one=True,
+            )
 
         def _latex_(self):
-            return repr_lincomb(self._lattice_terms(), is_latex=True, strip_one=True)
+            return repr_lincomb(
+                [(f"e_{{{label}}}", coefficient) for label, coefficient in self._lattice_terms()],
+                is_latex=True,
+                strip_one=True,
+            )
 
         def __mul__(self, other):
             r"""``v * w`` is \(b(v,w)\) for a vector of this lattice, and ``v * r`` the scalar multiple for ``r`` in the base ring.

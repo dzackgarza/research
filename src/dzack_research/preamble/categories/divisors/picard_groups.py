@@ -46,8 +46,28 @@ class _PicardFunctor(Functor):
         return opposite_scheme.underlying_object().picard_group()
 
     def _apply_morphism(self, morphism: Map) -> Map:
-        r"""``f^* : Pic(Y) -> Pic(X)``, ``[L] |-> [f^* L]``, for the arrow ``op(f): op(Y) -> op(X)`` of ``f: X -> Y``."""
-        assert False, "pullback f^* on the Picard functor: not implemented"
+        r"""``f^* : Pic(Y) -> Pic(X)``, ``[L] |-> [f^* L]``, for the arrow ``op(f): op(Y) -> op(X)`` of ``f: X -> Y``.
+
+        ``f^*`` is a group homomorphism, so it is fixed by the images of
+        module generators of ``Pic(Y)``.  For ``Y = P^n_k`` over a field,
+        ``Pic(Y) = ZZ[O(1)]`` (Hartshorne, II.6.4 and II.6.17), and its one
+        module generator ``[O(1)]`` goes to ``[f^* O(1)]``.
+        """
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+        arrow = morphism.underlying_arrow()
+        target_scheme = arrow.codomain()
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        base = target_scheme.scheme_base_ring()
+        assert target_scheme in ProjectiveSpaces(base), (
+            f"cannot pull back Pic({target_scheme}) along {arrow}: f^* is computed on the module generators "
+            f"of Pic(P^n_k), and {target_scheme} is not a projective space over {base}"
+        )
+        pulled_hyperplane = target(target.underlying_set()(arrow.module_pullback(target_scheme.O(1))))
+        return self.codomain().Mor(source, target)(
+            {label: pulled_hyperplane for label in source.module_generating_set()}
+        )
 
     @cached_method
     def category_of_elements(self):
@@ -77,6 +97,16 @@ def _zero_picard_group() -> Parent:
     return _integers().free_module(finite_ordered_set(()))
 
 
+def _hyperplane_picard_group() -> Parent:
+    r"""``ZZ[O(1)]``, the free ``ZZ``-module on the one class ``[O(1)]``.
+
+    This is ``Pic(P^n_k)`` for ``k`` a field (Hartshorne, II.6.4 and
+    II.6.17), and the hyperplane summand of ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``
+    over a general base.
+    """
+    return _integers().free_module(finite_ordered_set(("O(1)",)))
+
+
 def _projective_bundle_picard_group(base_picard_group: Parent) -> Parent:
     r"""``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``, the biproduct of ``Pic(S)`` and the hyperplane summand.
 
@@ -85,9 +115,7 @@ def _projective_bundle_picard_group(base_picard_group: Parent) -> Parent:
     to the hyperplane class ``[O(1)]`` (Hartshorne, II.6.17 and II,
     Exercise 6.1).
     """
-    integers = _integers()
-    hyperplane = integers.free_module(finite_ordered_set(("O(1)",)))
-    return Modules(integers).biproduct((base_picard_group, hyperplane))
+    return Modules(_integers()).biproduct((base_picard_group, _hyperplane_picard_group()))
 
 
 class _InvertibleSheafClass:

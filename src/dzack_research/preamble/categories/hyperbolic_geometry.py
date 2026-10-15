@@ -286,7 +286,7 @@ class PositiveConeComponents(OwnedParameterizedCategory):
             return _hyperbolic_space(self)
 
         def _repr_(self):
-            return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
+            return f"Positive-cone component of {self.lattice()} ⊗ RR containing {self.timelike_vector()}"
 
 
 class HyperbolicSpaces(OwnedParameterizedCategory):
@@ -415,8 +415,62 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
                 construction_data={"space": self, "cone": cone},
             )
 
+        def isometric_action(self, group):
+            r"""Return the ``Gamma``-space ``(HH(C^+), rho)`` of a group ``Gamma`` of isometries of ``L``.
+
+            ``group`` is a subgroup ``Gamma`` of ``O(L)``, for instance the
+            reflection group ``W(L)``.  An isometry ``g`` of ``L`` maps the
+            cone ``{q > 0}`` to itself and permutes its two components, so
+            ``rho(g)`` is the isometry ``x |-> eps g x`` of the hyperboloid,
+            with ``eps = +-1`` the sign that keeps ``g x`` in ``C^+``: this is
+            the action of ``O(L)`` on ``HH(C^+)``, the set of positive lines,
+            through ``O(L) -> PO(L)`` (Ratcliffe, Foundations of Hyperbolic
+            Manifolds, Ch. 3).  It is a left action, and ``-1`` acts
+            trivially.  The result is an object of
+            ``GObjects(Gamma, RiemannianManifolds())``; its ``orbit_space()``
+            is ``Gamma\HH^n``.
+            """
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+            return GObjects(group, RiemannianManifolds()).on_space(
+                self, lambda element, point: self._isometry_image(element, point)
+            )
+
+        def _isometry_image(self, element, point):
+            r"""The point ``eps g x`` for ``g`` an isometry of the lattice and ``x`` a point of the hyperboloid."""
+            frame = self._hyperboloid_frame()
+            lattice = self.lattice()
+            assert element.domain() is lattice and element.codomain() is lattice, (
+                f"{element} does not act on {self}: an isometry of the hyperboloid of {lattice} "
+                f"comes from an isometry of {lattice}, and {element} is a map "
+                f"{element.domain()} -> {element.codomain()}"
+            )
+            vector = frame.vector(tuple(point.coordinates()))
+            images = tuple(
+                frame.coordinates(element(generator)) for generator in frame.generators
+            )
+            image = tuple(
+                sum((vector[source] * images[source][target] for source in range(frame.rank)), RR.zero())
+                for target in range(frame.rank)
+            )
+            match frame.pairing(image, frame.timelike) > RR.zero():
+                case True:
+                    return self.point(frame.chart(image), "hyperboloid")
+                case False:
+                    return self.point(frame.chart(tuple(-entry for entry in image)), "hyperboloid")
+
+        @cached_method
+        def _hyperboloid_frame(self):
+            return _HyperboloidFrame(self.lattice(), self._component.timelike_vector())
+
         def _repr_(self):
-            return f"Hyperbolic space of {self._component}"
+            component = self.positive_cone_component()
+            return (
+                f"Hyperbolic space H^{self.dimension()}: the hyperboloid q = 1 in the "
+                f"positive-cone component of {component.lattice()} ⊗ RR containing "
+                f"{component.timelike_vector()}"
+            )
 
 
 class HyperbolicRationalPoints(OwnedParameterizedCategory):
@@ -625,6 +679,66 @@ def _labelled_positive_cone_component(category, timelike):
         categories=(category,),
         construction_data={"lattice": lattice, "timelike": timelike},
     )
+
+
+class _HyperboloidFrame(SageObject):
+    r"""The coordinates of the chart ``hyperboloid`` of ``HH(C^+)``; a private realization.
+
+    For ``t`` the timelike vector of ``C^+`` and ``w_j = b(t, e_j)``, choose
+    ``k`` with ``w_k != 0``; the vectors ``u_j = w_k e_j - w_j e_k``, ``j != k``,
+    are a basis of ``t^perp``.  A point ``x`` has chart coordinates ``y`` with
+    ``x - (b(x, t)/b(t, t)) t = sum_j y_j u_j``, and conversely
+    ``x = s t + sum_j y_j u_j`` with ``s = sqrt((1 - q(y))/q(t))``.
+    """
+
+    def __init__(self, lattice, timelike) -> None:
+        self.labels = tuple(lattice.module_generating_set())
+        self.generators = tuple(lattice.module_generator(label) for label in self.labels)
+        self.rank = len(self.labels)
+        self.gram = tuple(
+            tuple(RR(lattice.b(left, right)) for right in self.generators) for left in self.generators
+        )
+        self.timelike = self.coordinates(timelike)
+        self.timelike_pairings = tuple(
+            sum((self.timelike[row] * self.gram[row][column] for row in range(self.rank)), RR.zero())
+            for column in range(self.rank)
+        )
+        self.pivot = next(
+            index for index, value in enumerate(self.timelike_pairings) if value != RR.zero()
+        )
+        self.others = tuple(index for index in range(self.rank) if index != self.pivot)
+
+    def coordinates(self, vector):
+        coordinates = vector.to_vector()
+        support = {label: RR(coordinates(label)) for label in coordinates.support().domain()}
+        return tuple(support.get(label, RR.zero()) for label in self.labels)
+
+    def pairing(self, left, right):
+        return sum(
+            (
+                left[row] * self.gram[row][column] * right[column]
+                for row in range(self.rank)
+                for column in range(self.rank)
+            ),
+            RR.zero(),
+        )
+
+    def vector(self, chart_coordinates):
+        w = self.timelike_pairings
+        projection = [RR.zero()] * self.rank
+        for position, index in enumerate(self.others):
+            projection[index] = chart_coordinates[position] * w[self.pivot]
+            projection[self.pivot] -= chart_coordinates[position] * w[index]
+        projection = tuple(projection)
+        height = (
+            (RR.one() - self.pairing(projection, projection)) / self.pairing(self.timelike, self.timelike)
+        ).sqrt()
+        return tuple(height * self.timelike[index] + projection[index] for index in range(self.rank))
+
+    def chart(self, vector):
+        ratio = self.pairing(vector, self.timelike) / self.pairing(self.timelike, self.timelike)
+        projection = tuple(vector[index] - ratio * self.timelike[index] for index in range(self.rank))
+        return tuple(projection[index] / self.timelike_pairings[self.pivot] for index in self.others)
 
 
 def _hyperbolic_space(component):

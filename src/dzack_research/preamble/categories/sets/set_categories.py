@@ -4849,9 +4849,18 @@ class CoproductsOfSets(OwnedCategory):
             return cofactor
 
         def an_element(self):
-            r"""Choose one point from one represented summand."""
-            index = self.index_set().an_element()
-            return self(index, self.cofactor(index).an_element())
+            r"""Choose one point ``(i, x)`` with ``x`` in a nonempty summand ``X_i``.
+
+            ``coprod_i X_i`` is empty exactly when every ``X_i`` is, so the
+            point comes from the first summand decided nonempty: in
+            ``Pic(P^n_k) = Pic(Spec k) + ZZ[O(1)]`` the basis is
+            ``{} coprod {O(1)}``, and its point lies in the second summand.
+            """
+            for index in self.index_set():
+                cofactor = self.cofactor(index)
+                if cofactor.is_empty() is False:
+                    return self(index, cofactor.an_element())
+            assert False, f"cannot choose a point of {self}: no summand is decided nonempty"
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
