@@ -9,6 +9,8 @@ assert at the computational frontier when arbitrary openness is not
 represented.
 """
 
+from itertools import combinations
+
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
@@ -177,11 +179,125 @@ class _FiniteTopologicalSpaceEngine:
             case _:
                 return None
 
+    def _element_constructor_(self, datum):
+        r"""The point of ``X`` that ``datum`` names: a point of ``X``, or the point at a point of ``S``.
+
+        A point of ``S`` is not a point of ``X``, so it is not a member here;
+        the enumeration ``S -> X`` sends it to the point it names.
+        """
+        index = self._index_of(datum)
+        assert index is not None, f"{datum!r} names no point of {self}"
+        return self._point_at(index)
+
     def unstructured_set(self):
         r"""The set ``S`` on which this topology was placed, retained as defining data."""
         return self.index_set()
 
     underlying_set = unstructured_set
+
+
+class _FinalTopologyData(SageObject):
+    r"""The final topology on a set ``Q`` along a set map ``q: UY -> Q``.
+
+    A subset ``V`` of ``Q`` is open exactly when ``q^{-1}(V)`` is open in
+    ``Y``; it is the finest topology on ``Q`` making ``q`` continuous
+    (Mathlib, ``TopologicalSpace.coinduced``).  Openness is asked of ``Y``
+    on the preimage, so it is decided wherever ``Y`` decides it.
+    """
+
+    def __init__(self, source_space, set_projection) -> None:
+        self._source_space = source_space
+        self._set_projection = set_projection
+
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset) -> bool:
+        selected = space.power_set()(subset)
+        projection = self._set_projection
+        preimage = self._source_space.power_set().from_predicate(
+            lambda point: projection(point) in selected
+        )
+        return self._source_space.is_open_subset(preimage)
+
+
+class _FinalTopologySpaceEngine:
+    r"""A set ``Q`` with the final topology along ``q: UY -> Q``.
+
+    The topology is chosen structure on ``Q``, so the space is its own object;
+    its points are the points of ``Q``, which is retained as defining data.
+    """
+
+    def __init__(self, point_set, **rest) -> None:
+        self._point_set = point_set
+        super().__init__(facade=point_set, **rest)
+
+    def unstructured_set(self):
+        r"""The set ``Q`` on which the final topology was placed."""
+        return self._point_set
+
+    underlying_set = unstructured_set
+
+    def __contains__(self, point) -> bool:
+        return point in self._point_set
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, datum):
+        return self._point_set(datum)
+
+    def cardinality(self):
+        return self._point_set.cardinality()
+
+    def _repr_(self) -> str:
+        return f"{self._point_set} with the final topology"
+
+
+def _final_topology_space(source_space, set_projection):
+    r"""Return ``(Q, q, rho)``: ``Q`` the codomain of ``set_projection`` with its final topology.
+
+    ``q: Y -> Q`` is the continuous map whose underlying set map is
+    ``set_projection``, and ``rho`` sends a point of the space ``Q`` to the
+    point of the underlying set it names.  A finite enumerated ``Q`` receives
+    its exact finite topology, whose opens are enumerated; any other ``Q``
+    receives the final topology data, which asks ``Y`` about preimages.
+    """
+    point_set = set_projection.codomain()
+    match Sets().is_provably_finite(point_set) and point_set in EnumeratedSets():
+        case True:
+            members = tuple(point_set)
+            source_power = source_space.power_set()
+            opens = tuple(
+                selected
+                for size in range(len(members) + 1)
+                for selected in combinations(members, size)
+                if source_space.is_open_subset(
+                    source_power.from_predicate(
+                        lambda point, chosen=selected: set_projection(point) in chosen
+                    )
+                )
+                is True
+            )
+            space = TopologicalSpaces()(point_set, opens)
+            set_map = Sets().Mor(source_space, space)(
+                lambda point: space(set_projection(point))
+            )
+            return space, TopologicalSpaces().Mor(source_space, space)._from_continuous_set_map(set_map), (
+                lambda point: point.index()
+            )
+        case False:
+            space = _object_of(
+                TopologicalSpaces(),
+                _engine=(TopologicalSpaces(), _FinalTopologySpaceEngine, None),
+                topology_data=_FinalTopologyData(source_space, set_projection),
+                point_set=point_set,
+            )
+            set_map = Sets().Mor(source_space, space)(set_projection)
+            return space, TopologicalSpaces().Mor(source_space, space)._from_continuous_set_map(set_map), (
+                lambda point: point
+            )
 
 
 class ContinuousMap:
@@ -289,7 +405,11 @@ class TopologicalSpaceMor(CategoricalMor):
     def _from_continuous_set_map(self, set_morphism):
         r"""Construct a map whose continuity follows from a categorical theorem.
 
-        Used only by identity and composition: no arbitrary caller datum enters
+        Used only by identity, composition, and the maps of a final topology:
+        the projection ``q: Y -> Q`` is continuous by the definition of the
+        final topology, and the map ``Q -> Z`` induced by a continuous
+        ``h: Y -> Z`` is continuous because the ``q``-preimage of the preimage
+        of an open ``V`` is ``h^{-1}(V)``.  No arbitrary caller datum enters
         through this route.
         """
         return self.element_class(self, set_morphism)
@@ -351,12 +471,74 @@ class TopologicalSpaces(OwnedCategory):
         # The engine serves the join: it derives the enumeration that the
         # ordered-set level of the join consumes, so it precedes that level.
         finite_spaces = owned_category_join((self, FiniteOrderedSets()))
+        # The space is an object of Top built by Top's constructor; the ordered
+        # set level is its presentation, so its arrows are continuous maps.
         return _object_of(
             finite_spaces,
             _engine=(finite_spaces, _FiniteTopologicalSpaceEngine, _FiniteSpacePoint),
+            _ambient=self,
             topology_data=topology_data,
             point_set=point_set,
         )
+
+    def _categorical_coequalizer(self, left_morphism, right_morphism):
+        return self._categorical_coequalizer_construction(left_morphism, right_morphism).object()
+
+    def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+        r"""The coequalizer ``(Q, q)`` of continuous ``f, g: X -> Y``.
+
+        ``U: Top -> Set`` creates coequalizers: ``Q`` is the coequalizer of
+        the underlying set maps ``Uf, Ug`` with the final topology along
+        ``q: UY -> Q`` (Mathlib, ``TopCat.coequalizer_isOpen_iff``: ``V`` is
+        open exactly when ``q^{-1}(V)`` is open).  The universal pair is
+        ``(Q, q)`` with ``q f = q g``; a continuous ``h: Y -> Z`` with
+        ``h f = h g`` factors as ``h = h' q`` through the set map ``h'`` of the
+        set coequalizer, which is continuous for the final topology.
+        """
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            SelectedColimitConstruction,
+            _parallel_pair_diagram,
+        )
+
+        source = left_morphism.domain()
+        target = left_morphism.codomain()
+        assert right_morphism.domain() is source and right_morphism.codomain() is target, (
+            f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} is "
+            f"{source} -> {target} and {right_morphism} is "
+            f"{right_morphism.domain()} -> {right_morphism.codomain()}"
+        )
+        mor = self.Mor(source, target)
+        assert left_morphism in mor and right_morphism in mor, (
+            f"a coequalizer in {self} needs continuous maps {source} -> {target}, but "
+            f"{left_morphism} or {right_morphism} is not in {mor}"
+        )
+        left_set_map = left_morphism.underlying_set_morphism()
+        right_set_map = right_morphism.underlying_set_morphism()
+        set_construction = Sets()._categorical_coequalizer_construction(left_set_map, right_set_map)
+        set_shape = set_construction.diagram().domain()
+        quotient, projection, point_of_set = _final_topology_space(
+            target, set_construction.costructure_morphism(set_shape.target())
+        )
+        diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
+        shape = diagram.domain()
+        universal_cocone = diagram.Cocones().cocone(
+            quotient,
+            lambda index: projection * left_morphism if index is shape.source() else projection,
+        )
+
+        def factorizer(cocone):
+            apex = cocone.apex()
+            target_map = cocone.costructure_morphism(shape.target()).underlying_set_morphism()
+            set_cocone = set_construction.diagram().Cocones().cocone(
+                apex,
+                lambda index: target_map * left_set_map if index is set_shape.source() else target_map,
+            )
+            set_factor = set_construction.factor(set_cocone).apex_map()
+            return self.Mor(quotient, apex)._from_continuous_set_map(
+                Sets().Mor(quotient, apex)(lambda point: set_factor(point_of_set(point)))
+            )
+
+        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
     def singular_cohomology_functor(self, coefficients):
         r"""The contravariant functor ``H^*(-; R): Top^op -> GradedAlgebras(R, ZZ).Supercommutative()``.
