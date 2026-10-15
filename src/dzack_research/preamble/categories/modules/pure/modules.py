@@ -4652,13 +4652,14 @@ def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
     )
 
 
-@cached_function(key=lambda module, ring_map, **data: (
-    id(module), id(ring_map), tuple(sorted((name, id(value)) for name, value in data.items()))
+@cached_function(key=lambda module, ring_map, *data: (
+    id(module), id(ring_map), tuple(id(value) for value in data)
 ))
 def _restricted_scalars_view(
     module,
     ring_map,
-    *,
+    # Sage's cached_function argument fixer cannot read keyword-only
+    # defaults, so these selected-subobject data are ordinary keywords.
     _subobject_ambient=None,
     _subobject_generator_images=None,
     _subobject_lift=None,
