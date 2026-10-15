@@ -433,6 +433,14 @@ class SmoothQuarticK3CompleteIntersections(OwnedCategoryOverBaseRing):
 
         @cached_method
         def hodge_structure(self):
+            r"""The Hodge structure on ``H^*(X(CC); ZZ)`` of the quartic K3 surface.
+
+            The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of
+            ``MixedHodgeStructures(ZZ)`` whose weight filtration splits with
+            ``Gr^W_k = H^k`` in ``HodgeStructures(ZZ, k)``; ``H^2`` is polarized
+            by the intersection form (Deligne, Théorie de Hodge II, (2.1.1),
+            (2.1.15), (2.3.1)).
+            """
             from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
             return _QuarticK3HodgeData(self)
 

@@ -361,6 +361,12 @@ from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F
     MatrixEndomorphismSpaces,
     MatrixSpaces,
 )
+from dzack_research.preamble.categories.modules.hodge_structures import (  # noqa: F401
+    FilteredModules,
+    HodgeStructures,
+    MixedHodgeStructures,
+    PolarizedHodgeStructures,
+)
 from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
     FiniteCommensurabilityQuotient,
     IntegralStructureAction,

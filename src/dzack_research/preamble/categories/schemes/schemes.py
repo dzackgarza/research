@@ -979,15 +979,28 @@ class SchemeMorphismMethods:
         )
         return bool(self._engine_pullback_with_trivial_base_map().is_surjective())
 
+    def de_rham_cohomology(self, degree):
+        r"""``H^k_dR(X/S) = R^k f_*(Omega^*_{X/S})`` for this arrow ``f: X -> S``.
+
+        The ``k``-th hyperdirect image of the relative de Rham complex, with
+        ``k`` equal to ``degree``.  Its value is an object of
+        ``QuasiCoherentSheaves(S)``.  When ``f`` is smooth and proper over a
+        base of characteristic zero it is a locally free coherent
+        ``O_S``-module (Katz, *Nilpotent connections and the monodromy
+        theorem*, Publ. Math. IHES 39 (1970), introduction and (3.0)).
+        """
+        assert False, "de_rham_cohomology on scheme morphisms: not implemented"
+
     def gauss_manin_connection(self, degree):
         r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
 
-        ``H^k_dR(X/S) = R^k f_*(Omega^*_{X/S})`` is a locally free coherent
+        ``H^k_dR(X/S)`` is ``f.de_rham_cohomology(k)``, a locally free coherent
         ``O_S``-module, and the Gauss-Manin connection is an integrable
         connection on it relative to the base of ``S`` (Katz, *Nilpotent
         connections and the monodromy theorem*, Publ. Math. IHES 39 (1970),
         introduction and (3.0)).  The value is an object of
-        ``VectorBundlesWithConnection(S).Integrable()``.
+        ``VectorBundlesWithConnection(S).Integrable()`` whose underlying
+        locally free module is ``f.de_rham_cohomology(k)``.
         """
         assert False, "gauss_manin_connection on scheme morphisms: not implemented"
 

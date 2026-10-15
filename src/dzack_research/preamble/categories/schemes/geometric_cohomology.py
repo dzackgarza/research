@@ -839,6 +839,10 @@ class _QuarticK3IntegralTopology(SageObject):
 
     @cached_method
     def hodge_structure(self):
+        r"""The Hodge structure on ``H^*(X(CC); ZZ)``, an object of ``MixedHodgeStructures(ZZ)``.
+
+        See ``hodge_structure`` on smooth quartic K3 complete intersections.
+        """
         return _QuarticK3HodgeData(self.scheme())
 
     def middle_cohomology_torsion_free_quotient(self):
@@ -1363,7 +1367,11 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
 
 
 def _toric_hodge_structure(scheme):
-    r"""Return the pure diagonal Hodge data of a smooth complete toric complex realization."""
+    r"""The Hodge numbers of each degree of a smooth complete toric variety.
+
+    The required value of ``X.hodge_structure()`` is an object of
+    ``MixedHodgeStructures(ZZ)``; see ``hodge_structure`` on smooth toric schemes.
+    """
     return _ToricHodgeData(scheme)
 
 
