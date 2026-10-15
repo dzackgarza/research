@@ -598,14 +598,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         @cached_method
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
-
-            target_ring = _base_change_codomain(self, ring_map)
-            if ring_map.is_identity() and not _extra_construction_data:
-                return self
-            return target_ring._fresh_free_module_on(
-                self.module_generating_set(),
-                _extra_construction_data=_extra_construction_data,
-            )
+            return _framed_free_base_change(self, ring_map, _extra_construction_data)
 
         @cached_method
         def vector_space(self):
@@ -680,6 +673,41 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 r"""Return the relation morphism ``0: F(∅) -> M``: a free module has no relations."""
                 relations = _fresh_free_module_on(self.base_ring(), Sets.Δ[-1])
                 return relations.module_category().Mor(relations, self)(lambda label: self.zero())
+
+            def presentation(self):
+                r"""Return the chosen presentation ``0: F_1 = R^(∅) -> F_0 = M`` of this framed free module.
+
+                A finite basis ``(e_s)_{s in S}`` is a generating epimorphism
+                ``R^(S) -> M`` that is an isomorphism, so the framing is a
+                length-zero free resolution, and its truncation-one extension
+                has no relations: ``F_1 = 0`` (``CAT-29``).  This is the chosen
+                finite presentation that places a finite framed free module in
+                ``ModulesWithChosenFinitePresentation(R)``; its cokernel is ``M``
+                with the identity as presentation projection.  A selected
+                resolution that already reaches degree one is read as it is.
+                """
+                selected = self.selected_module_resolution()
+                match selected.truncation():
+                    case 0:
+                        return self._selected_relation_morphism()
+                    case _:
+                        return selected.differential(1)
+
+            @cached_method
+            def base_change(self, ring_map, *, _extra_construction_data=None):
+                r"""Return ``S tensor_R R^(S) = S^(S)`` on the same basis labels.
+
+                The framing is preserved by scalar extension, so the result is
+                the framed free module on the same labels.  This takes
+                precedence over the transport of the chosen presentation from
+                ``ModulesWithChosenFinitePresentation``, whose ``F_0`` is this
+                module itself.
+                """
+                return _framed_free_base_change(self, ring_map, _extra_construction_data)
+
+            def presentation_projection(self):
+                r"""Return the presentation projection ``F_0 -> M``: the framing of ``M``."""
+                return self.framing_morphism()
 
             def fitting_ideal(self, index):
                 r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
@@ -798,7 +826,29 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 is required: for infinite ``S`` the dual ``Hom_R(R^{(S)}, R) = R^S``
                 is not spanned by the ``e_s^*``.
                 """
-                assert False, "dual_basis on FramedFreeModules(R).FinitelyGenerated(): not implemented"
+                ring = self.base_ring()
+                dual = self.dual_module()
+                labels = self.module_generating_set()
+
+                def coordinate_functional(label):
+                    return dual(lambda other: ring.one() if other == label else ring.zero())
+
+                return finite_indexed_family(
+                    labels,
+                    coordinate_functional,
+                    name=f"Dual basis of {dual}",
+                )
+
+
+def _framed_free_base_change(module, ring_map, extra_construction_data):
+    r"""Return ``S tensor_R R^(S)``, the framed free ``S``-module on the labels ``S``."""
+    target_ring = _base_change_codomain(module, ring_map)
+    if ring_map.is_identity() and not extra_construction_data:
+        return module
+    return target_ring._fresh_free_module_on(
+        module.module_generating_set(),
+        _extra_construction_data=extra_construction_data,
+    )
 
 
 def _new_sparse_free_module(

@@ -4122,9 +4122,7 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
             raise TypeError(
                 f"an embedding of orders needs an order as domain and codomain, but got {domain} and {codomain}"
             )
-        from dzack_research.preamble.categories.rings.embeddings import OrderMor
-
-        return OrderMor(domain, codomain)
+        return self.MorCategory().Of(domain, codomain)
 
     class ParentMethods:
         def Mor(self, codomain, category=None):
