@@ -172,7 +172,7 @@ class _FiniteIntegralRepresentation(SageObject):
         ))
 
     def _submodule_key(self, submodule):
-        return self._action.finite_module().submodule_key(submodule)
+        return self._action.finite_module()._submodule_key(submodule)
 
     def _position_of(self, submodule):
         r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``."""
@@ -643,6 +643,7 @@ class FiniteCommensurabilityQuotient(SageObject):
             )
         return forward
 
+    @cached_method
     def quotient_automorphism(self, automorphism):
         r"""Return the induced automorphism of ``F_M``."""
         quotient = self.quotient_module()

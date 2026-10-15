@@ -1942,13 +1942,16 @@ class _GeneralPresentedModule:
             return self(self._free_module.module_generator(labels[position]))
         return self(self._free_module.gen(position))
 
-    def submodule_key(self, subobject):
-        r"""A hashable datum equal for two submodules of this module exactly when they are equal.
+    def _submodule_key(self, subobject):
+        r"""A hashable datum equal for two submodules of this module over ZZ exactly when they are equal.
 
         By the correspondence theorem a submodule is its preimage in the
-        cover, which contains the relations; the engine's echelonized basis
-        of that preimage is unique (Hermite normal form over ZZ).
+        cover, which contains the relations; over ZZ the engine's echelonized
+        basis of that preimage is its Hermite normal form, which is unique.
         """
+        assert self.base_ring() is _owned_integers(), (
+            f"the echelonized basis of a preimage is canonical over ZZ, but {self} is over {self.base_ring()}"
+        )
         assert self._relation_submodule is not None, (
             f"{self} has no engine relation module, so its submodules have no engine preimage to compare"
         )

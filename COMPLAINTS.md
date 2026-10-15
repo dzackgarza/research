@@ -1486,3 +1486,7 @@ No node created.
 
 **Observed** (executed 2026-10-15, sage-indefinite-port `.tmp/probe/bc.py`): for L with Gram ((2, 1), (1, -4)), `L.discriminant_group().unformed_module().base_change(ZZ.fraction_field_map())` reaches `ModulesWithChosenFinitePresentation.base_change` -> `presentation().domain().base_change(ring_map)`; the presentation's domain is the formed lattice, and `form_modules._formed_module_base_change` raises `AssertionError` at `assert self.value_module() is self.base_ring()`. The base change of a presented module should change its presentation as a map of modules, not of the formed objects it was built from.
 Not repaired.
+
+## Submodules of a finitely presented module have no owned equality or hash
+
+`_FiniteIntegralRepresentation` (`categories/rational_integral_stabilizers.py`) registers the residue orbit of a lattice by submodules of `M/dM` and needs to look a submodule up among those found. Subobjects compare by identity, so the lookup goes through the owner's private `_GeneralPresentedModule._submodule_key` (the Hermite normal form of the preimage in the cover, over ZZ) instead of `{submodule: position}`. Desired (STY-132, STY-167): `_richcmp_` and a matching `__hash__` on module subobjects, realized there for finitely presented modules over ZZ, so that equal subobjects are equal keys. Not done: it changes equality for every subobject consumer.
