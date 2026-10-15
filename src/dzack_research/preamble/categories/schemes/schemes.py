@@ -1013,9 +1013,21 @@ class SchemeMorphismMethods:
         connections and the monodromy theorem*, Publ. Math. IHES 39 (1970),
         introduction and (3.0)).  The value is an object of
         ``VectorBundlesWithConnection(S).Integrable()`` whose underlying
-        locally free module is ``f.de_rham_cohomology(k)``.
+        locally free module is ``f.de_rham_cohomology(k)``.  The caller
+        supplies a smooth proper ``f``.
         """
-        assert False, "gauss_manin_connection on scheme morphisms: not implemented"
+        from dzack_research.preamble.categories.modules.connections import (
+            VectorBundlesWithConnection,
+            _GaussManinConnection,
+        )
+
+        category = VectorBundlesWithConnection(self.codomain()).Integrable()
+        return _object_of(
+            category,
+            _engine=(category, _GaussManinConnection, None),
+            family_morphism=self,
+            degree=degree,
+        )
 
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
