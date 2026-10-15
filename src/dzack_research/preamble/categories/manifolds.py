@@ -106,6 +106,8 @@ class ManifoldAtlasTransition(SageObject):
         engine_transition,
         forward_expressions,
         inverse_expressions,
+        source_overlap,
+        target_overlap,
     ) -> None:
         self._source = source
         self._target = target
@@ -118,6 +120,8 @@ class ManifoldAtlasTransition(SageObject):
             inverse_expressions,
             name=f"Coordinate change {target.label()} to {source.label()}",
         )
+        self._source_overlap = source_overlap
+        self._target_overlap = target_overlap
         self._inverse_transition = None
 
     def source(self):
@@ -135,6 +139,19 @@ class ManifoldAtlasTransition(SageObject):
     def inverse_expressions(self):
         return self._inverse_expressions
 
+    def source_overlap(self):
+        r"""The functions on the source chart whose common nonvanishing locus is the overlap.
+
+        The coordinate change is defined on the image of ``U_s \cap U_t`` in
+        the source chart ``U_s``, the open set where every one of these
+        functions is nonzero; the empty family is the whole chart.
+        """
+        return self._source_overlap
+
+    def target_overlap(self):
+        r"""The functions on the target chart whose common nonvanishing locus is the overlap."""
+        return self._target_overlap
+
     def regularity(self):
         return self.manifold().regularity()
 
@@ -146,6 +163,8 @@ class ManifoldAtlasTransition(SageObject):
                 self._engine.inverse(),
                 self.inverse_expressions(),
                 self.forward_expressions(),
+                self.target_overlap(),
+                self.source_overlap(),
             )
             inverse._inverse_transition = self
             self._inverse_transition = inverse
@@ -300,6 +319,16 @@ def _admit_manifold_expression_family(values, *, name):
         tuple(_admit_manifold_expression(value) for value in values),
         name=name,
     )
+
+
+def _engine_nonvanishing_conditions(functions):
+    r"""Lower the open set ``{f != 0 for every f}`` to SageManifolds chart restrictions.
+
+    SageManifolds reads a list of restrictions as their conjunction; the empty
+    family is ``None``, no restriction.
+    """
+    conditions = [_engine_manifold_expression(function) != 0 for function in functions]
+    return conditions or None
 
 
 def _raise_manifold_expression_family(values, *, name):
@@ -563,7 +592,22 @@ class TopologicalManifolds(OwnedCategory):
             target_label,
             forward_expressions,
             inverse_expressions,
+            source_overlap=(),
+            target_overlap=(),
         ):
+            r"""Record the coordinate change between the charts ``U_s`` and ``U_t`` on ``U_s \cap U_t``.
+
+            A transition map of an atlas is the homeomorphism
+            ``phi_t o phi_s^{-1} : phi_s(U_s \cap U_t) -> phi_t(U_s \cap U_t)``
+            (Lee, *Introduction to Smooth Manifolds*, 2nd ed., Ch. 1).  Its
+            domain is the overlap read in the source chart, given by
+            ``source_overlap``: functions on ``U_s`` whose common nonvanishing
+            locus is ``U_s \cap U_t``.  ``target_overlap`` gives the same open
+            set in ``U_t``.  Empty families state that the overlap is the
+            whole chart.  The inverse expressions are the coordinate change
+            ``phi_s o phi_t^{-1}``; construction trusts the caller that the two
+            are mutually inverse on the overlap.
+            """
             source = self.atlas()[source_label]
             target = self.atlas()[target_label]
             forward_expressions = _admit_manifold_expression_family(
@@ -573,6 +617,14 @@ class TopologicalManifolds(OwnedCategory):
             inverse_expressions = _admit_manifold_expression_family(
                 inverse_expressions,
                 name=f"Coordinate change {target_label} to {source_label}",
+            )
+            source_overlap = _admit_manifold_expression_family(
+                source_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {source_label}",
+            )
+            target_overlap = _admit_manifold_expression_family(
+                target_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {target_label}",
             )
             if int(forward_expressions.cardinality()) != self.dimension():
                 raise ValueError(
@@ -592,12 +644,15 @@ class TopologicalManifolds(OwnedCategory):
                     _engine_manifold_expression(expression)
                     for expression in forward_expressions
                 ),
+                restrictions1=_engine_nonvanishing_conditions(source_overlap),
+                restrictions2=_engine_nonvanishing_conditions(target_overlap),
             )
             engine_transition.set_inverse(
                 *(
                     _engine_manifold_expression(expression)
                     for expression in inverse_expressions
-                )
+                ),
+                check=False,
             )
             transition = ManifoldAtlasTransition(
                 source,
@@ -605,6 +660,8 @@ class TopologicalManifolds(OwnedCategory):
                 engine_transition,
                 forward_expressions,
                 inverse_expressions,
+                source_overlap,
+                target_overlap,
             )
             reverse = transition.inverse()
             self._preamble_transitions[source_label, target_label] = transition
@@ -905,28 +962,43 @@ class RiemannianManifolds(OwnedCategory):
 
 
 class HolomorphicMapPresentation:
-    r"""The selected chart presentation defining one represented holomorphic map."""
+    r"""The coordinate representations defining one represented holomorphic map.
 
-    def __init__(self, engine_map, coordinate_expressions, source_label, target_label) -> None:
+    A holomorphic map ``f : X -> Y`` is given by its coordinate representations
+    ``f_{st} = psi_t o f o phi_s^{-1}`` on ``phi_s(U_s cap f^{-1}(V_t))``, for
+    chart pairs ``(s, t)`` whose open sets ``U_s cap f^{-1}(V_t)`` cover ``X``
+    (Lee, *Introduction to Smooth Manifolds*, 2nd ed., Ch. 2).  The domain of
+    each representation, read in ``U_s``, is the common nonvanishing locus of
+    its domain functions; the empty family is all of ``U_s``.
+    """
+
+    def __init__(self, engine_map, representations) -> None:
         self._engine_map = engine_map
-        self._coordinate_expressions = _admit_manifold_expression_family(
-            coordinate_expressions,
-            name="Holomorphic-map coordinate expressions",
-        )
-        self._source_label = source_label
-        self._target_label = target_label
+        self._representations = {
+            pair: (
+                _admit_manifold_expression_family(
+                    expressions,
+                    name=f"Coordinate representation {pair[0]} to {pair[1]}",
+                ),
+                _admit_manifold_expression_family(
+                    domain,
+                    name=f"Domain of the coordinate representation {pair[0]} to {pair[1]}",
+                ),
+            )
+            for pair, (expressions, domain) in representations.items()
+        }
 
     def _engine_map_crossing(self):
         return self._engine_map
 
-    def coordinate_expressions(self):
-        return self._coordinate_expressions
+    def chart_pairs(self):
+        return finite_ordered_set(tuple(self._representations))
 
-    def source_chart_label(self):
-        return self._source_label
+    def coordinate_representation(self, source_label, target_label):
+        return self._representations[source_label, target_label][0]
 
-    def target_chart_label(self):
-        return self._target_label
+    def representation_domain(self, source_label, target_label):
+        return self._representations[source_label, target_label][1]
 
 
 def _engine_holomorphic_map(morphism):
@@ -936,32 +1008,25 @@ def _engine_holomorphic_map(morphism):
     implementation endpoint is :meth:\`HolomorphicMap._engine_holomorphic_map\`.
     Its sole external role is exact composition of represented holomorphic
     maps; the resulting Sage map is immediately raised by
-    :func:\`_holomorphic_map_from_engine\`.
+    :meth:\`ComplexManifoldMor._from_engine_map\`.
     """
     return morphism._engine_holomorphic_map()
 
 
-def _holomorphic_map_from_engine(
-    mor,
-    engine,
-    expressions,
-    source_label,
-    target_label,
-):
-    r"""Raise a private Sage map into the selected owned holomorphic Mor object."""
-    return mor._from_engine_polynomial_map(
-        engine,
-        _raise_manifold_expression_family(
-            expressions,
-            name="Holomorphic-map coordinate expressions",
-        ),
-        source_label,
-        target_label,
+def _substitute_chart_coordinates(expressions, chart, values):
+    r"""Substitute ``values`` for the coordinates of ``chart`` in each expression."""
+    substitutions = {
+        _engine_manifold_expression(variable): _engine_manifold_expression(value)
+        for variable, value in zip(chart.coordinates(), values, strict=True)
+    }
+    return tuple(
+        _raise_manifold_expression(_engine_manifold_expression(expression).subs(substitutions))
+        for expression in expressions
     )
 
 
 class HolomorphicMap:
-    r"""A holomorphic map represented by polynomial formulas in selected complex charts."""
+    r"""A holomorphic map represented by its coordinate representations in selected charts."""
 
     def __init__(self, parent, presentation) -> None:
         self._presentation = presentation
@@ -973,72 +1038,94 @@ class HolomorphicMap:
     def presentation(self):
         return self._presentation
 
-    def coordinate_expressions(self):
-        return self.presentation().coordinate_expressions()
+    def chart_pairs(self):
+        r"""The chart pairs ``(s, t)`` on which a coordinate representation is given."""
+        return self.presentation().chart_pairs()
 
-    def source_chart(self):
-        return self.domain().atlas()[self.presentation().source_chart_label()]
+    def coordinate_representation(self, source_label, target_label):
+        r"""``psi_t o f o phi_s^{-1}``, the coordinates of ``V_t`` as functions on ``U_s``."""
+        return self.presentation().coordinate_representation(source_label, target_label)
 
-    def target_chart(self):
-        return self.codomain().atlas()[self.presentation().target_chart_label()]
+    def representation_domain(self, source_label, target_label):
+        r"""Functions on ``U_s`` whose common nonvanishing locus is ``U_s cap f^{-1}(V_t)``."""
+        return self.presentation().representation_domain(source_label, target_label)
 
     def _engine_holomorphic_map(self):
         return self.presentation()._engine_map_crossing()
 
     def _evaluate_point(self, point):
-        r"""Evaluate the retained chart formulas on one owned source point."""
+        r"""Evaluate a coordinate representation whose domain contains the owned source point.
+
+        Engine adapter: the point's coordinates are substituted in the
+        domain functions, and a representation applies when none vanishes.
+        """
         source_point = self.domain()(point)
-        source_chart = self.source_chart()
-        assert source_point.chart().label() == source_chart.label(), (
-            f"cannot evaluate {self} at {source_point}: its coordinates are in the chart "
-            f"{source_point.chart().label()!r}, while this represented holomorphic map is written in "
-            f"{source_chart.label()!r}"
-        )
-        substitutions = {
-            _engine_manifold_expression(variable): _engine_manifold_expression(value)
-            for variable, value in zip(
-                source_chart.coordinates(),
-                source_point.coordinates(),
-                strict=True,
+        chart = source_point.chart()
+        applicable = tuple(
+            (source_label, target_label)
+            for source_label, target_label in self.chart_pairs()
+            if source_label == chart.label()
+            and all(
+                bool(_engine_manifold_expression(value) != 0)
+                for value in _substitute_chart_coordinates(
+                    self.representation_domain(source_label, target_label),
+                    chart,
+                    source_point.coordinates(),
+                )
             )
-        }
-        values = tuple(
-            _raise_manifold_expression(
-                _engine_manifold_expression(expression).subs(substitutions)
-            )
-            for expression in self.coordinate_expressions()
         )
-        return self.codomain().point(values, self.target_chart().label())
+        assert applicable, (
+            f"cannot evaluate {self} at {source_point}: no coordinate representation of this "
+            f"map is given on a domain containing it in the chart {chart.label()!r}"
+        )
+        source_label, target_label = applicable[0]
+        values = _substitute_chart_coordinates(
+            self.coordinate_representation(source_label, target_label),
+            chart,
+            source_point.coordinates(),
+        )
+        return self.codomain().point(values, target_label)
 
     def __mul__(self, other):
-        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``."""
+        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``.
+
+        On ``U_s cap f^{-1}(V_t) cap f^{-1}g^{-1}(W_u)`` the composite
+        ``g o f`` has the coordinate representation ``g_{tu} o f_{st}``.
+        """
         assert other.codomain() is self.domain(), (
             f"cannot compose {self} with {other}: the codomain {other.codomain()} of the "
             f"first map is not the domain {self.domain()} of the second"
         )
-        engine = _engine_holomorphic_map(self) * _engine_holomorphic_map(other)
-        source = other.source_chart()
-        target = self.target_chart()
-        # SageManifolds returns the coordinate expressions of a map as a tuple
-        # in every dimension (``MultiCoordFunction.expr``).
-        expressions = engine.expr(
-            _engine_manifold_chart(source),
-            _engine_manifold_chart(target),
-        )
-        return _holomorphic_map_from_engine(
-            other.domain().Mor(self.codomain()),
-            engine,
-            expressions,
-            source.label(),
-            target.label(),
+        representations = {}
+        for source_label, middle_label in other.chart_pairs():
+            inner = other.coordinate_representation(source_label, middle_label)
+            middle = self.domain().atlas()[middle_label]
+            for outer_source, target_label in self.chart_pairs():
+                if outer_source != middle_label or (source_label, target_label) in representations:
+                    continue
+                representations[source_label, target_label] = (
+                    _substitute_chart_coordinates(
+                        self.coordinate_representation(middle_label, target_label), middle, inner
+                    ),
+                    tuple(other.representation_domain(source_label, middle_label))
+                    + _substitute_chart_coordinates(
+                        self.representation_domain(middle_label, target_label), middle, inner
+                    ),
+                )
+        return other.domain().Mor(self.codomain())._from_engine_map(
+            _engine_holomorphic_map(self) * _engine_holomorphic_map(other),
+            representations,
         )
 
     def __eq__(self, other) -> bool:
         return (
             element_parent(other) is self.parent()
-            and other.coordinate_expressions() == self.coordinate_expressions()
-            and other.source_chart().label() == self.source_chart().label()
-            and other.target_chart().label() == self.target_chart().label()
+            and tuple(other.chart_pairs()) == tuple(self.chart_pairs())
+            and all(
+                other.coordinate_representation(*pair) == self.coordinate_representation(*pair)
+                and other.representation_domain(*pair) == self.representation_domain(*pair)
+                for pair in self.chart_pairs()
+            )
         )
 
     def __ne__(self, other) -> bool:
@@ -1105,31 +1192,50 @@ class ComplexManifoldMor(CategoricalMor):
             chart1=_engine_manifold_chart(source),
             chart2=_engine_manifold_chart(target),
         )
-        return self._from_engine_polynomial_map(
-            engine, expressions, source.label(), target.label()
-        )
+        return self._from_engine_map(engine, {(source.label(), target.label()): (expressions, ())})
 
-    def _from_engine_polynomial_map(self, engine, expressions, source_label, target_label):
-        presentation = HolomorphicMapPresentation(
-            engine,
-            expressions,
-            source_label,
-            target_label,
+    def rational(self, representations):
+        r"""Construct the holomorphic map with the given rational coordinate representations.
+
+        ``representations`` sends a chart pair ``(s, t)`` to the pair
+        ``(expressions, domain)``: the coordinates of ``V_t`` as rational
+        functions on ``U_s``, and functions on ``U_s`` whose common
+        nonvanishing locus is ``U_s cap f^{-1}(V_t)``.  A rational function
+        is holomorphic where its denominator does not vanish.  Construction
+        trusts the caller that the denominators do not vanish on the stated
+        domains, that the domains cover the source, and that the
+        representations agree on overlaps through the atlas transitions.
+        """
+        engine = _engine_manifold(self.domain()).diff_map(
+            _engine_manifold(self.codomain()),
+            {
+                (
+                    _engine_manifold_chart(self.domain().atlas()[source_label]),
+                    _engine_manifold_chart(self.codomain().atlas()[target_label]),
+                ): tuple(_engine_manifold_expression(expression) for expression in expressions)
+                for (source_label, target_label), (expressions, _domain) in representations.items()
+            },
         )
-        return self.element_class(
-            self,
-            presentation,
-        )
+        return self._from_engine_map(engine, representations)
+
+    def _from_engine_map(self, engine, representations):
+        r"""Raise a private Sage map with its coordinate representations into this Mor object."""
+        return self.element_class(self, HolomorphicMapPresentation(engine, representations))
 
     @cached_method
     def identity(self):
+        r"""The identity, represented on each chart ``U_s`` by its own coordinates."""
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"there is no identity map from {self.domain()} to {self.codomain()}: an "
                 f"identity needs its domain and codomain to be the same complex manifold"
             )
-        chart = self._unique_chart(self.domain())
-        return self.polynomial(chart.coordinates())
+        return self.rational(
+            {
+                (label, label): (self.domain().atlas()[label].coordinates(), ())
+                for label in self.domain().chart_labels()
+            }
+        )
 
 
 class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
@@ -1246,22 +1352,23 @@ class ComplexManifolds(OwnedCategory):
             )
             for i in indices
         }
+        one = _manifold_expression_ring().one()
+
+        def homogeneous(i):
+            # Homogeneous coordinates of a point of U_i, normalized by x_i = 1.
+            affine = iter(charts[i].coordinates())
+            return {k: one if k == i else next(affine) for k in indices}
+
         for i, j in combinations(indices, 2):
-            source = _engine_manifold_chart(charts[i])
-            target = _engine_manifold_chart(charts[j])
-            # Homogeneous coordinates of a point of U_i (x_i = 1), and of U_j (x_j = 1).
-            on_i = list(source[:])
-            on_i.insert(i, 1)
-            on_j = list(target[:])
-            on_j.insert(j, 1)
-            transition = source.transition_map(
-                target,
-                [on_i[k] / on_i[j] for k in indices if k != j],
-                restrictions1=on_i[j] != 0,
-                restrictions2=on_j[i] != 0,
-            )
-            transition.set_inverse(
-                *(on_j[k] / on_j[i] for k in indices if k != i), check=False,
+            on_i = homogeneous(i)
+            on_j = homogeneous(j)
+            manifold.transition_map(
+                f"U{i}",
+                f"U{j}",
+                tuple(on_i[k] / on_i[j] for k in indices if k != j),
+                tuple(on_j[k] / on_j[i] for k in indices if k != i),
+                source_overlap=(on_i[j],),
+                target_overlap=(on_j[i],),
             )
         engine.declare_union(engine.subsets())
         return manifold
