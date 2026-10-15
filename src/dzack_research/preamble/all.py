@@ -340,6 +340,7 @@ from dzack_research.preamble.categories.modules import (
     ModulesWithChosenFinitePresentation,
     ModulesWithConnection,
     ModulesWithFlatConnection,
+    VectorBundlesWithConnection,
     PairingObjects,
     PairedModules,
     ProjectiveModules,
