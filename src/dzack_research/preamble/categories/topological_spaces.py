@@ -399,15 +399,20 @@ class TopologicalSpaces(OwnedCategory):
             covers ``{U_i -> U}`` whose union is ``U`` it is the site of
             ``OpenCoveringFamilies(X)``, on which ``Sh(X, D)`` is the full
             subcategory of ``[Open(X)^op, D]`` satisfying descent (Mathlib,
-            ``TopologicalSpace.Opens`` and ``TopCat.Sheaf``).
+            ``TopologicalSpace.Opens`` and ``TopCat.Sheaf``).  The order is the
+            inclusion order of the power set restricted along the inclusion of
+            the opens into it.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 PosetCategory,
             )
 
+            opens = self.open_subsets()
+            inclusion = opens.inclusion()
+            inclusion_order = inclusion.codomain().inclusion_order()
             return PosetCategory(
-                self.open_subsets(),
-                le=lambda smaller, larger: all(point in larger for point in smaller),
+                opens,
+                le=lambda smaller, larger: inclusion_order.le(inclusion(smaller), inclusion(larger)),
             )
 
         def is_open_subset(self, subset) -> bool:

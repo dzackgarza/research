@@ -64,9 +64,9 @@ class _SchemeTopologyData(SageObject):
         power = space.power_set()
         selected = power(subset)
         match selected:
-            case _ if selected == power.bottom():
+            case _ if power.inclusion_order().le(selected, power.bottom()) is True:
                 return True
-            case _ if selected == power.top():
+            case _ if power.inclusion_order().le(power.top(), selected) is True:
                 return True
             case _:
                 assert False, (
