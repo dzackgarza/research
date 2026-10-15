@@ -53,7 +53,7 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         return "complete linear systems"
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, linear_system_scheme, linear_system_divisor, section_space, **rest) -> None:
@@ -89,10 +89,7 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
             quotient of ``V^*``; this method records that variance explicitly
             rather than applying quotient projectivization directly to ``V``.
             """
-            sections = self.section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
+            return self.section_space().dual_module().projectivization()
 
         @cached_method
         def quotient_projectivization_comparison(self):
@@ -395,7 +392,7 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).linear_system()
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, line_bundle, section_embedding, base_locus, **rest) -> None:
@@ -436,16 +433,28 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             section subspace V.  With the repository's quotient convention
             that is P_quot(V^*), not P_quot(V).
             """
-            sections = self.selected_section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
+            return self.selected_section_space().dual_module().projectivization()
 
         @cached_method
         def quotient_projectivization_comparison(self):
             r"""Return the chartwise isomorphism from P_quot(V^*) to this system."""
             projectivization = self.quotient_projectivization().arrow().domain()
             return projectivization.projective_space_comparison(self)
+
+        def closed_immersion_into_complete_linear_system(self):
+            r"""Return the closed immersion of this system into ``|L| = P(H^0(X, L)^*)``.
+
+            The selected subspace ``i: W -> H^0(X, L)`` dualizes to the surjection
+            ``i^*: H^0(X, L)^* -> W^*``, and a surjection ``E -> F`` of quasi-coherent
+            sheaves induces the closed immersion ``P(F) -> P(E)`` that sends a rank-one
+            quotient of ``F`` to its composite with ``E -> F`` (EGA II, 4.1.2).  The
+            lines of ``W`` are therefore a linear subspace of the lines of
+            ``H^0(X, L)``, and the immersion is an element of ``self.Mor(|L|)``.
+            """
+            assert False, (
+                "closed_immersion_into_complete_linear_system on ProjectiveLinearSystems(R): "
+                "not implemented"
+            )
 
         def restriction_map(self, closed_subscheme):
             return _projective_section_restriction(
@@ -581,7 +590,7 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return projective_line.imposed_multiplicity_linear_system(1, 0, 1)
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, jet_evaluation, **rest) -> None:
