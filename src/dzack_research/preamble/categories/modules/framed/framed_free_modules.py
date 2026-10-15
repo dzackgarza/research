@@ -682,6 +682,29 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 relations = _fresh_free_module_on(self.base_ring(), Sets.Δ[-1])
                 return relations.module_category().Mor(relations, self)(lambda label: self.zero())
 
+            def presentation(self):
+                r"""Return the chosen presentation ``0: F_1 = R^(∅) -> F_0 = M`` of this framed free module.
+
+                A finite basis ``(e_s)_{s in S}`` is a generating epimorphism
+                ``R^(S) -> M`` that is an isomorphism, so the framing is a
+                length-zero free resolution, and its truncation-one extension
+                has no relations: ``F_1 = 0`` (``CAT-29``).  This is the chosen
+                finite presentation that places a finite framed free module in
+                ``ModulesWithChosenFinitePresentation(R)``; its cokernel is ``M``
+                with the identity as presentation projection.  A selected
+                resolution that already reaches degree one is read as it is.
+                """
+                selected = self.selected_module_resolution()
+                match selected.truncation():
+                    case 0:
+                        return self._selected_relation_morphism()
+                    case _:
+                        return selected.differential(1)
+
+            def presentation_projection(self):
+                r"""Return the presentation projection ``F_0 -> M``: the framing of ``M``."""
+                return self.framing_morphism()
+
             def fitting_ideal(self, index):
                 r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
 
@@ -799,7 +822,18 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 is required: for infinite ``S`` the dual ``Hom_R(R^{(S)}, R) = R^S``
                 is not spanned by the ``e_s^*``.
                 """
-                assert False, "dual_basis on FramedFreeModules(R).FinitelyGenerated(): not implemented"
+                ring = self.base_ring()
+                dual = self.dual_module()
+                labels = self.module_generating_set()
+
+                def coordinate_functional(label):
+                    return dual(lambda other: ring.one() if other == label else ring.zero())
+
+                return finite_indexed_family(
+                    labels,
+                    coordinate_functional,
+                    name=f"Dual basis of {dual}",
+                )
 
 
 def _new_sparse_free_module(
