@@ -55,6 +55,8 @@ Its orbit relation is decided by the rank-one perpendicular extension (`definite
    `binary_fixed_norm_representatives` therefore keeps the orbit relation, which is correct without the theorem.
    It does not route through an enumeration of `O(L)`.
 
+**Observed cost (executed 2026-10-15, worktree at `acff01b7d1`):** on `diag(2,-2)` at `n = 2`, whose fibre has two points, `binary_fixed_norm_representatives` took 16.0 s under `O(L)` and 8.2 s under `SO(L)` in one fresh process, after a 20.2 s session import; one size only, so no growth curve, and the cost was not profiled. The split request of item 2 overlaps [lean-categories#87](https://github.com/dzackgarza/lean-categories/issues/87) (O'Sullivan, arXiv:2408.14405v3, Cor. 8.2), recorded below under *Finiteness of O(L) for split binary lattices is not formalized*.
+
 ### `lean-categories` defines integral reflection vectors but not roots of a lattice
 
 Request (not yet filed).
