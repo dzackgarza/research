@@ -697,6 +697,16 @@ class SchemeMorphismMethods:
             return cone_leg
 
         mor = _scheme_composition_mor(self, other)
+        point_coordinates = self._represented_point_coordinates()
+        if (point_coordinates is not None
+                and other.codomain() is other.domain().base_scheme()
+                and other == other.domain().structure_morphism()
+                and self.codomain() in Schemes(self.codomain().scheme_base_ring()).Projective()):
+            # The constant map T -> Spec R -> X at an R-point: its homogeneous
+            # coordinates are the point's coordinates, read as sections on T.
+            return _ProjectiveCoordinateMorphism(
+                mor, tuple(_constant_sections_ring(other.domain())(value) for value in point_coordinates),
+            )
         left_pullback = self._represented_coordinate_pullback()
         right_pullback = other._represented_coordinate_pullback()
         if left_pullback is not None and right_pullback is not None:
@@ -1254,17 +1264,31 @@ def _projective_coordinate_morphism(morphism):
         return _ProjectiveCoordinateMorphism(
             morphism.parent(), tuple(coordinates), point_coordinates=coordinates,
         )
-    source = morphism.domain()
-    base = source.scheme_base_ring()
+    ring = _constant_sections_ring(morphism.domain())
+    if morphism._is_the_identity() and morphism.domain() not in Schemes(morphism.domain().scheme_base_ring()).Affine():
+        # id_X on a projective X is given by the homogeneous coordinates themselves.
+        return _ProjectiveCoordinateMorphism(
+            morphism.parent(), tuple(ring.algebra_generator(name) for name in ring.algebra_generating_set()),
+        )
     native = _engine_scheme_morphism(morphism)
-    if source in Schemes(base).Affine():
-        ring = source.coordinate_algebra()
-    else:
-        ambient, _ = _engine_projective_ambient(_engine_scheme(source))
-        ring = _engine_polynomial_algebra(ambient.coordinate_ring(), base)
     engine = _engine_ring(ring)
     values = tuple(_owned_engine_element(ring, engine(value)) for value in _engine_defining_polynomials(native))
     return _ProjectiveCoordinateMorphism(morphism.parent(), values)
+
+
+def _constant_sections_ring(source):
+    r"""The ring in which coordinate sections on ``source`` are written.
+
+    For affine ``source`` it is the coordinate algebra; for a projective
+    ``source`` it is the homogeneous coordinate ring of its ambient
+    projective space, read modulo the equations by
+    :func:`_projective_section_restriction`.
+    """
+    base = source.scheme_base_ring()
+    if source in Schemes(base).Affine():
+        return source.coordinate_algebra()
+    ambient, _ = _engine_projective_ambient(_engine_scheme(source))
+    return _engine_polynomial_algebra(ambient.coordinate_ring(), base)
 
 
 @cached_function(key=lambda scheme, ring: (id(scheme), id(ring)))
@@ -6318,6 +6342,103 @@ def _projective_space_scalar_base_change(left_map, right_map):
     return None
 
 
+def _multiprojective_closed_fibre(left_map, right_map):
+    r"""``X x_{P^m} Spec R`` for ``X <= P = prod P^{n_i}`` over the factor ``P^m`` and an ``R``-point.
+
+    Let ``f = pr_j o i: X -> P^{n_j}`` with ``i: X -> P`` closed and
+    ``a: Spec R -> P^{n_j}`` the point with coordinates ``a``.  Pasting
+    pullbacks, ``X x_{P^{n_j}} Spec R = X x_P (P x_{P^{n_j}} Spec R)``, and
+    ``P x_{P^{n_j}} Spec R = Q``, the product of the other factors, mapping
+    to ``P`` by ``(id_Q, a)``.  So the fibre is ``V(F(x, a)) <= Q``, the
+    closed subscheme cut out by the equations of ``X`` with the ``j``-th
+    block set to ``a`` (Hartshorne, *Algebraic Geometry*, II.3, the fibre
+    ``X_y``).  A cone ``(S -> X, S -> Spec R)`` factors through it by the
+    other blocks of ``S -> X -> P``.  Returns ``None`` outside this regime.
+    """
+    for family, point, family_on_left in ((left_map, right_map, True), (right_map, left_map, False)):
+        source = family.domain()
+        base = source.scheme_base_ring()
+        coordinates = point._represented_point_coordinates()
+        residue = point.domain()
+        if coordinates is None or residue is not residue.base_scheme() or source not in ClosedSubschemes(base):
+            continue
+        ambient = source.inclusion().codomain()
+        if ambient not in ProductProjectiveSpaces(base):
+            continue
+        factors = ambient.factors()
+        labels = tuple(factors.index_set())
+        selected = next(
+            (label for label in labels
+             if factors[label] is family.codomain() and family == ambient.projection(label) * source.inclusion()),
+            None,
+        )
+        if selected is None:
+            continue
+        others = tuple(label for label in labels if label != selected)
+        remaining = (
+            factors[others[0]] if len(others) == 1
+            else Schemes(base).product(tuple(factors[label] for label in others))
+        )
+        equations = tuple(source.defining_equations())
+        ambient_ring = equations[0].parent()
+        remaining_ring = _constant_sections_ring(remaining)
+        remaining_variables = iter(tuple(remaining_ring.algebra_generator(name) for name in remaining_ring.algebra_generating_set()))
+        point_values = iter(tuple(coordinates))
+        ambient_variables = iter(tuple(ambient_ring.algebra_generating_set()))
+        images = {}
+        for label in labels:
+            for _ in range(int(factors[label].relative_dimension()) + 1):
+                images[next(ambient_variables)] = (
+                    remaining_ring(next(point_values)) if label == selected else next(remaining_variables)
+                )
+        substitution = ambient_ring.Mor(remaining_ring)(images)
+
+        def to_ambient(scheme, remaining_map, scalar_map):
+            r"""``S -> P`` with the remaining blocks from ``S -> Q`` and the ``j``-th from ``a``."""
+            legs = {label: point * scalar_map for label in (selected,)}
+            match len(others):
+                case 1:
+                    legs[others[0]] = remaining_map
+                case _:
+                    for position, label in enumerate(others):
+                        legs[label] = remaining.projection(position) * remaining_map
+            return ambient.from_product_cone(
+                indexed_family(ambient.factors().index_set(), lambda label: legs[label], name=f"Map from {scheme} to {ambient}")
+            )
+
+        def to_source(mor):
+            fibre = mor.domain()
+            return mor(source.corestriction(to_ambient(fibre, fibre.inclusion(), fibre.structure_morphism())))
+
+        def factor(left_cone_map, right_cone_map, family_on_left=family_on_left):
+            to_family = left_cone_map if family_on_left else right_cone_map
+            through_ambient = source.inclusion() * to_family
+            match len(others):
+                case 1:
+                    to_remaining = ambient.projection(others[0]) * through_ambient
+                case _:
+                    to_remaining = remaining.from_product_cone(
+                        indexed_family(
+                            remaining.factors().index_set(),
+                            lambda position: ambient.projection(others[position]) * through_ambient,
+                            name="Remaining blocks of a cone into a fibre",
+                        )
+                    )
+            return fibre.corestriction(to_remaining)
+
+        fibre = remaining.closed_subscheme(
+            *(substitution(equation) for equation in equations),
+            placements=(FiberProductSchemes(base),),
+            fiber_product_construction=SchemeFiberProductConstruction(
+                (left_map, right_map),
+                (to_source, _structure_morphism_rule) if family_on_left else (_structure_morphism_rule, to_source),
+                scheme_factorization=factor,
+            ),
+        )
+        return fibre
+    return None
+
+
 def _scheme_fiber_product(left_map, right_map):
     r"""Return ``X x_S Y`` in the represented affine and scalar-projective regimes."""
     assert left_map.codomain() is right_map.codomain(), (
@@ -6327,6 +6448,9 @@ def _scheme_fiber_product(left_map, right_map):
     projective_base_change = _projective_space_scalar_base_change(left_map, right_map)
     if projective_base_change is not None:
         return projective_base_change
+    multiprojective_fibre = _multiprojective_closed_fibre(left_map, right_map)
+    if multiprojective_fibre is not None:
+        return multiprojective_fibre
 
     left = left_map.domain()
     right = right_map.domain()
@@ -6813,14 +6937,23 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
                         f"inclusion of {self} into {codomain} is not {morphism}"
                     )
                     return factor
-                case _ if codomain in ProjectiveSpaces(base):
+                case _ if codomain in ProjectiveSpaces(base) or codomain in ProductProjectiveSpaces(base):
+                    # A section on T vanishes when it does modulo the equations of T.
                     coordinates = tuple(
                         _projective_coordinate_morphism(morphism).homogeneous_coordinates()
                     )
-                    target_ring = codomain.O(1).global_sections().homogeneous_coordinate_ring()
+                    if codomain in ProjectiveSpaces(base):
+                        target_ring = codomain.O(1).global_sections().homogeneous_coordinate_ring()
+                        equations = tuple(self.homogeneous_defining_equations(target_ring))
+                    else:
+                        equations = tuple(self.defining_equations())
+                        target_ring = equations[0].parent()
+                    on_source = _projective_section_restriction(source, coordinates[0].parent())
                     assert all(
-                        _evaluate_owned_homogeneous_polynomial_on_coordinates(equation, target_ring, coordinates).is_zero()
-                        for equation in self.homogeneous_defining_equations(target_ring)
+                        on_source(
+                            _evaluate_owned_homogeneous_polynomial_on_coordinates(equation, target_ring, coordinates)
+                        ).is_zero()
+                        for equation in equations
                     ), f"{morphism} does not factor through {self}: a homogeneous defining equation does not vanish"
                     return _ProjectiveCoordinateMorphism(_scheme_mor_category(source, self), coordinates)
                 case _:
