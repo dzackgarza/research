@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_mor_category,
     _structure_morphism_rule,
 )
-from dzack_research.preamble.categories.schemes.varieties import Surfaces
+from dzack_research.preamble.categories.schemes.varieties import Curves, Surfaces, Varieties
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -96,9 +96,16 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
     expected_dimension = int(ambient.relative_dimension()) - int(family.cardinality())
     match base:
         case _ if base in OwnedFields():
+            # A homogeneous prime ideal cuts out an integral projective
+            # scheme, which is a projective variety (Hartshorne I.2, II.4).
+            integral = bool(engine.defining_ideal().is_prime())
             match expected_dimension:
-                case 2 if bool(engine.defining_ideal().is_prime()):
+                case 1 if integral:
+                    decided.append(Curves(base).Projective())
+                case 2 if integral:
                     decided.append(Surfaces(base).Projective())
+                case _ if integral:
+                    decided.append(Varieties(base).Projective())
                 case _:
                     pass
         case _:
