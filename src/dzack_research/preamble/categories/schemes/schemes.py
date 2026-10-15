@@ -59,6 +59,7 @@ from sage.schemes.product_projective.space import (
 from sage.schemes.projective.projective_space import (
     ProjectiveSpace as _SageProjectiveSpace,
 )
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -2359,6 +2360,19 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         _derived_construction_parameters = frozenset({"topology_data"})
+
+        def __contains__(self, point) -> bool:
+            return element_parent(point) is self
+
+        def _element_constructor_(self, point):
+            match element_parent(point) is self:
+                case True:
+                    return point
+                case False:
+                    assert False, (
+                        f"{point} is not a point of {self}: points of a scheme glued from affine "
+                        "charts are constructed only from points of its charts"
+                    )
 
         def __init__(
             self, scheme_base_ring, scheme_engine=None, topology_data=None, **rest

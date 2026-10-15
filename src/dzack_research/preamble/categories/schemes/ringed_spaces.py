@@ -7,7 +7,6 @@ from sage.categories.morphism import Morphism
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.structure.element import parent as element_parent
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
@@ -15,6 +14,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
     CategoricalMor,
+    FixedMorCategory,
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -1844,19 +1844,6 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             r"""Return ``CDiv(X)=Gamma(X,K_X^*/O_X^*)``."""
             return self.cartier_divisor_sheaf().global_sections()
 
-        def __contains__(self, point) -> bool:
-            return element_parent(point) is self
-
-        def _element_constructor_(self, point):
-            match element_parent(point) is self:
-                case True:
-                    return point
-                case False:
-                    assert False, (
-                        f"{point} is not a point of {self}: points of a scheme glued from affine "
-                        "charts are constructed only from points of its charts"
-                    )
-
 
 class LocallyRingedMorCategoryConstruction(MorCategoryConstruction):
     r"""The Mor of locally ringed spaces, realized by the domain's presentation.
@@ -1887,6 +1874,16 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
         return [RingedSpaces()]
 
     class ParentMethods:
+        def _locally_ringed_mor_class(self):
+            r"""The arrow class of ``Mor(X, Y)`` in locally ringed spaces.
+
+            A morphism of locally ringed spaces is a continuous map with a
+            local map of sheaves of rings (Stacks, Tag 01HA).  A space whose
+            presentation computes no such maps has the general Mor; a scheme
+            refines this by its affine or gluing presentation.
+            """
+            return FixedMorCategory
+
         def stalk(self, point):
             return self.structure_sheaf().stalk(point)
 
