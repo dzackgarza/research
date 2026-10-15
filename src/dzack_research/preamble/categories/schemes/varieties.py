@@ -540,5 +540,25 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
                 )
 
 
-__all__ = ["Curves", "Surfaces", "Varieties"]
+def ProjectiveCurves(base):
+    r"""Integral projective curves over ``base``: ``Curves(base).Projective()``."""
+    return Curves(base).Projective()
+
+
+def ProperSurfaces(base):
+    r"""Proper integral surfaces over ``base``: ``Surfaces(base).Proper()``."""
+    return Surfaces(base).Proper()
+
+
+def ProjectiveSurfaces(base):
+    r"""Projective integral surfaces over ``base``: ``Surfaces(base).Projective()``."""
+    return Surfaces(base).Projective()
+
+
+def DelPezzoSurfaces(base):
+    r"""Smooth del Pezzo surfaces over ``base``: ``Surfaces(base).DelPezzo()``."""
+    return Surfaces(base).DelPezzo()
+
+
+__all__ = ["Curves", "ProjectiveCurves", "DelPezzoSurfaces", "ProjectiveSurfaces", "ProperSurfaces", "Surfaces", "Varieties"]
 
