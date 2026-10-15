@@ -16,6 +16,7 @@ from sage.matrix.constructor import matrix as _engine_matrix
 from sage.matrix.special import identity_matrix as _engine_identity_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
+from sage.rings.qqbar import QQbar as SageQQbar
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
@@ -35,6 +36,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_complex_field,
     _owned_engine_element,
     _owned_integers,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -211,8 +213,11 @@ def _engine_manifold_chart(chart):
 
 @cached_function
 def _manifold_expression_ring():
-    r"""Return the owned facade of Sage's exact symbolic-expression ring."""
-    return _own_ring(SR)
+    r"""Return the owned facade of Sage's exact symbolic-expression ring.
+
+    Its elements are chart formulas, and print as Sage prints the expression.
+    """
+    return _set_owned_ring_display(SR, "Symbolic Ring", kind="symbolic")
 
 
 def _raise_manifold_expression(value):
@@ -1035,6 +1040,70 @@ def _substitute_chart_coordinates(expressions, chart, values):
     )
 
 
+
+def _is_zero_rational_function(expression):
+    r"""Whether a rational chart expression is the zero function.
+
+    Engine adapter: the numerator of the normalized symbolic expression is
+    read as a polynomial with exact coefficients in ``QQbar``.
+    """
+    return _engine_manifold_expression(expression).numerator().polynomial(SageQQbar).is_zero()
+
+
+def _representations_agree(first_map, first_pair, second_map, second_pair):
+    r"""Whether two holomorphic maps ``X -> Y`` agree where two of their representations are given.
+
+    Read on ``U_s`` for ``first_pair = (s, t)`` and ``second_pair = (s', t')``,
+    the overlap of the two domains is cut out by the domain functions of both
+    representations, the overlap ``U_s cap U_{s'}`` and the preimage of
+    ``V_t cap V_{t'}``; the maps agree on it when
+    ``psi_{t'} psi_t^{-1} o f_{st} = g_{s't'} o phi_{s'} phi_s^{-1}``.  Both
+    sides are rational functions on an open subset of ``C^n``, and the
+    overlap is the nonvanishing locus of finitely many rational functions on
+    it: it is empty when one of them is the zero function, and otherwise a
+    nonempty open set, on which two rational functions agree only if they are
+    equal.
+    """
+    source_label, target_label = first_pair
+    second_source, second_target = second_pair
+    source = first_map.domain()
+    target = first_map.codomain()
+    first = tuple(first_map.coordinate_representation(source_label, target_label))
+    conditions = tuple(first_map.representation_domain(source_label, target_label))
+    if second_source == source_label:
+        second = tuple(second_map.coordinate_representation(second_source, second_target))
+        conditions += tuple(second_map.representation_domain(second_source, second_target))
+    else:
+        change = source.transition(source_label, second_source)
+        middle = source.atlas()[second_source]
+        coordinates = tuple(change.forward_expressions())
+        second = _substitute_chart_coordinates(
+            second_map.coordinate_representation(second_source, second_target),
+            middle,
+            coordinates,
+        )
+        conditions += tuple(change.source_overlap()) + _substitute_chart_coordinates(
+            second_map.representation_domain(second_source, second_target),
+            middle,
+            coordinates,
+        )
+    if second_target != target_label:
+        change = target.transition(target_label, second_target)
+        chart = target.atlas()[target_label]
+        conditions += _substitute_chart_coordinates(change.source_overlap(), chart, first)
+        first = _substitute_chart_coordinates(change.forward_expressions(), chart, first)
+    if any(_is_zero_rational_function(condition) for condition in conditions):
+        return True
+    return all(
+        _is_zero_rational_function(
+            _raise_manifold_expression(
+                _engine_manifold_expression(left) - _engine_manifold_expression(right)
+            )
+        )
+        for left, right in zip(first, second, strict=True)
+    )
+
+
 class HolomorphicMap:
     r"""A holomorphic map represented by its coordinate representations in selected charts."""
 
@@ -1128,14 +1197,17 @@ class HolomorphicMap:
         )
 
     def __eq__(self, other) -> bool:
-        return (
-            element_parent(other) is self.parent()
-            and tuple(other.chart_pairs()) == tuple(self.chart_pairs())
-            and all(
-                other.coordinate_representation(*pair) == self.coordinate_representation(*pair)
-                and other.representation_domain(*pair) == self.representation_domain(*pair)
-                for pair in self.chart_pairs()
-            )
+        r"""Whether ``self`` and ``other`` are the same holomorphic map ``X -> Y``.
+
+        They are when they agree at every point.  Every point lies in the
+        domain of a coordinate representation of each, so they are equal
+        exactly when every representation of one agrees with every
+        representation of the other on the overlap of their domains.
+        """
+        return element_parent(other) is self.parent() and all(
+            _representations_agree(self, first, other, second)
+            for first in self.chart_pairs()
+            for second in other.chart_pairs()
         )
 
     def __ne__(self, other) -> bool:
