@@ -2330,6 +2330,21 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""Whether this scheme is realized by the affine gluing datum it was glued from."""
             return _is_gluing_realization(self._scheme_engine_realization)
 
+        def _repr_(self) -> str:
+            r"""A glued scheme by its base and charts; otherwise the Sage scheme realizing it."""
+            match self._is_glued_from_affine_atlas():
+                case True:
+                    return (
+                        f"Scheme over {self.scheme_base_ring()} glued from the affine charts "
+                        f"{self.gluing_datum().charts()}"
+                    )
+                case False:
+                    match self._scheme_engine_realization:
+                        case None:
+                            return f"Scheme over {self.scheme_base_ring()}"
+                        case engine:
+                            return repr(engine)
+
         def gluing_datum(self):
             r"""The affine gluing datum this scheme was glued from (Stacks, Tag 01JA).
 
@@ -3470,6 +3485,9 @@ class Schemes(OwnedCategoryOverBaseRing):
             def underlying_space(self):
                 r"""The prime spectrum ``Spec A`` underlying the affine scheme ``Spec A``."""
                 return self.coordinate_algebra().spectrum()
+
+            def _repr_(self) -> str:
+                return f"Spectrum of {self.coordinate_algebra()}"
 
             def __contains__(self, point) -> bool:
                 r"""Whether ``point`` is a point of ``Spec A``, a prime ideal of ``A``."""
@@ -4635,6 +4653,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective().Smooth()]
 
     class ParentMethods:
+        def _repr_(self) -> str:
+            return (
+                f"Projective Space of dimension {self.relative_dimension()} over "
+                f"{self.scheme_base_ring()}"
+            )
+
         def variable_names(self):
             r"""The names of the chosen homogeneous coordinates ``x_0, ..., x_n``."""
             return tuple(str(name) for name in _engine_scheme(self).variable_names())
