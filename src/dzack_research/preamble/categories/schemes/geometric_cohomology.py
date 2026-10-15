@@ -423,6 +423,16 @@ class GeometricFundamentalGroups(OwnedCategory):
         def base_point(self):
             return self._base_point
 
+        def pointed_space(self):
+            r"""``(X(CC), x)``, an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
+
+            This group is ``pointed_space().fundamental_group()``, the degree-1
+            value of ``homotopy_groups()`` (``TopologicalSpaceCoslices``).
+            The analytification ``X |-> X(CC)`` into ``TopologicalSpaces()``
+            is not presented, so the pointed space cannot be built yet.
+            """
+            assert False, "pointed_space on GeometricFundamentalGroups: not implemented"
+
         def realization_description(self):
             return self._realization_description
 
@@ -474,6 +484,15 @@ class ToricFundamentalGroups(OwnedCategory):
         def base_point_cone(self):
             r"""Return the maximal cone indexing the selected torus-fixed basepoint."""
             return self._base_point_cone
+
+        def pointed_space(self):
+            r"""``(X(CC), x_sigma)`` at the torus-fixed point of ``base_point_cone()``.
+
+            An object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``; this
+            group is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
+            The analytification into ``TopologicalSpaces()`` is not presented.
+            """
+            assert False, "pointed_space on ToricFundamentalGroups: not implemented"
 
         def realization_description(self):
             return "complex analytic realization under the selected QQ-to-CC embedding"

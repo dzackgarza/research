@@ -73,6 +73,16 @@ class PointedAnalyticFundamentalGroup(SageObject):
     def positive_loop_generator(self):
         return self._generator
 
+    def pointed_space(self):
+        r"""``(space(), base_point())`` as an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
+
+        ``group()`` is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
+        The underlying topological space of a complex manifold is not
+        presented in ``TopologicalSpaces()``, so the pointed space cannot be
+        built yet.
+        """
+        assert False, "pointed_space on PointedAnalyticFundamentalGroup: not implemented"
+
     def _repr_(self) -> str:
         return f"pi_1({self.space()}, {self.base_point()}) = {self.group()}"
 
