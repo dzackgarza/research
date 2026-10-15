@@ -842,6 +842,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         """
         return self.mor_family().base_category()
 
+    def _repr_(self) -> str:
+        r"""Name the category whose arrows these are, not the ``Sets`` runtime spine."""
+        return (
+            f"Set of Morphisms from {self.domain_object()} to {self.codomain_object()} "
+            f"in {self.mor_category()}"
+        )
+
     def identity_at(self, obj: Parent) -> Morphism:
         return self.mor_family().Of(obj, obj).arrow_set().identity()
 
