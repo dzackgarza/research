@@ -9,9 +9,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedCategory,
-)
 from dzack_research.preamble.categories.group.cyclic_subgroups import (
     CyclicGroups,
 )
@@ -257,275 +254,6 @@ def _affine_cover_refinement_cohomology_map(refinement, sheaf, degree):
     r"""Return ``H^degree`` of the refinement cochain map, the comparison on sheaf cohomology."""
     cochain_map = _affine_cover_refinement_cochain_map(refinement, sheaf)
     return CochainComplexes(cochain_map.domain().base_ring()).cohomology(int(degree))(cochain_map)
-
-
-
-class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral cohomology groups of a specified topological realization/theory.
-
-    Each object is ``H^k(X(CC); R)`` for the complex realization
-    ``X(CC) = X.complex_realization(sigma)`` of its scheme ``X`` and
-    ``k = cohomological_degree()``: the degree-``k`` piece
-    ``X(CC).singular_cohomology(R).graded_piece(k)`` of the singular cohomology
-    algebra, an object of ``Modules(R)``.
-    """
-
-    def an_object(self):
-        r"""The degree-zero cohomology of a point with the selected coefficients."""
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        point = Schemes(_owned_rationals()).base_scheme()
-        return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
-            _extra_categories=(self,),
-            _extra_construction_data=_integral_topology_construction_data(
-                point,
-                0,
-                "the complex realization of a point",
-                "topological cohomology",
-            ),
-        )
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "integral cohomology groups of specified topological realizations"
-
-    def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FinitelyPresentedModules,
-        )
-
-        return [FinitelyPresentedModules(self.base_ring())]
-
-    class ParentMethods:
-        def __init__(
-            self,
-            topological_scheme,
-            cohomological_degree,
-            cohomology_topology,
-            realization_description,
-            **rest,
-        ) -> None:
-            self._topological_scheme = topological_scheme
-            self._cohomological_degree = int(cohomological_degree)
-            self._cohomology_topology = cohomology_topology
-            self._realization_description = realization_description
-            super().__init__(**rest)
-
-        def topological_scheme(self):
-            return self._topological_scheme
-
-        def cohomological_degree(self):
-            return self._cohomological_degree
-
-        def cohomology_coefficients(self):
-            return self.base_ring()
-
-        def cohomology_topology(self):
-            return self._cohomology_topology
-
-        def realization_description(self):
-            return self._realization_description
-
-        def cohomology_algebra(self):
-            r"""``H^*(X(CC); R)``, the graded-commutative algebra whose degree piece this is.
-
-            It is ``X(CC).singular_cohomology(R)``, an object of
-            ``GradedAlgebras(R, ZZ).Supercommutative()`` under the cup product
-            (Hatcher, *Algebraic Topology*, Thm 3.11), and this object is its
-            ``graded_piece(cohomological_degree())``.  Forming it needs the
-            embedding ``sigma`` that fixes ``X(CC)``.
-            """
-            assert False, (
-                "cohomology_algebra on IntegralTopologicalCohomologyGroups: not implemented"
-            )
-
-
-class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Ordinary integral singular cohomology of specified complex realizations."""
-
-    def an_object(self):
-        r"""The degree-zero singular cohomology of a point with the selected coefficients."""
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        point = Schemes(_owned_rationals()).base_scheme()
-        return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
-            _extra_categories=(self,),
-            _extra_construction_data=_integral_topology_construction_data(
-                point,
-                0,
-                "the complex realization of a point",
-                "ordinary singular cohomology",
-            ),
-        )
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "ordinary integral singular cohomology groups"
-
-    def super_categories(self):
-        return [IntegralTopologicalCohomologyGroups(self.base_ring())]
-
-
-class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral cohomology computed on a specified resolution/normalization."""
-
-    def an_object(self):
-        r"""The degree-zero cohomology of the identity resolution of a point."""
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        point = Schemes(_owned_rationals()).base_scheme()
-        return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
-            _extra_categories=(self,),
-            _extra_construction_data=_integral_topology_construction_data(
-                point,
-                0,
-                "the identity resolution of the complex realization of a point",
-                "resolution cohomology via the identity resolution",
-            ),
-        )
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "integral resolution cohomology groups"
-
-    def super_categories(self):
-        return [IntegralTopologicalCohomologyGroups(self.base_ring())]
-
-
-class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
-
-    def an_object(self):
-        r"""The degree-zero cohomology of the complex toric projective line."""
-        from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
-
-        projective_line = ToricSchemes(_owned_rationals()).an_object()
-        return self.base_ring()._fresh_free_module_on(
-            finite_ordered_set(("H0",)),
-            _extra_categories=(self,),
-            _extra_construction_data=_integral_topology_construction_data(
-                projective_line,
-                0,
-                "the complex toric realization of the projective line",
-                "ordinary singular cohomology",
-            ),
-        )
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "integral singular cohomology groups of smooth complete toric varieties"
-
-    def super_categories(self):
-        return [IntegralSingularCohomologyGroups(self.base_ring())]
-
-
-class GeometricFundamentalGroups(OwnedCategory):
-    r"""Groups built as ``pi_1(X(CC), x)`` of a specified pointed complex realization.
-
-    An object is a group together with the pointed realization it is the
-    fundamental group of; forgetting that datum leaves the group.
-    """
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "fundamental groups of specified pointed geometric realizations"
-
-    def super_categories(self):
-        return [OwnedGroups()]
-
-    def an_object(self):
-        r"""The infinite cyclic ``pi_1`` of the rational nodal cubic."""
-        return _nodal_cubic_fundamental_group()
-
-    class ParentMethods:
-        def __init__(self, topological_scheme, base_point, realization_description, **rest) -> None:
-            self._topological_scheme = topological_scheme
-            self._base_point = base_point
-            self._realization_description = realization_description
-            super().__init__(**rest)
-
-        def topological_scheme(self):
-            return self._topological_scheme
-
-        def base_point(self):
-            return self._base_point
-
-        def pointed_space(self):
-            r"""``(X(CC), x)``, an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
-
-            This group is ``pointed_space().fundamental_group()``, the degree-1
-            value of ``homotopy_groups()`` (``TopologicalSpaceCoslices``).
-            The analytification ``X |-> X(CC)`` into ``TopologicalSpaces()``
-            is not presented, so the pointed space cannot be built yet.
-            """
-            assert False, "pointed_space on GeometricFundamentalGroups: not implemented"
-
-        def realization_description(self):
-            return self._realization_description
-
-
-def _geometric_fundamental_group(generator, scheme, base_point, realization):
-    r"""``pi_1(X(CC), x)``, built as the cyclic group of ``generator`` placed with its pointed realization."""
-    assert base_point.codomain() is scheme, (
-        f"the base point {base_point} of pi_1({scheme}) must be a point of {scheme}, but it is "
-        f"a point of {base_point.codomain()}"
-    )
-    return CyclicGroups()(
-        generator,
-        placements=(GeometricFundamentalGroups(),),
-        topological_scheme=scheme,
-        base_point=base_point,
-        realization_description=realization,
-    )
-
-
-class ToricFundamentalGroups(OwnedCategory):
-    r"""Groups built as ``pi_1`` of a supported toric complex realization at a torus-fixed point."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "fundamental groups of supported toric complex realizations"
-
-    def super_categories(self):
-        return [OwnedGroups()]
-
-    def an_object(self):
-        r"""The trivial ``pi_1`` of the projective plane."""
-        from dzack_research.preamble.categories.schemes.toric.fans import (
-            RationalPolyhedralFans,
-        )
-
-        cocharacters = _owned_integers().free_module(2)
-        plane = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(_owned_rationals())
-        return plane.fundamental_group()
-
-    class ParentMethods:
-        def __init__(self, topological_scheme, base_point_cone, **rest) -> None:
-            self._topological_scheme = topological_scheme
-            self._base_point_cone = base_point_cone
-            super().__init__(**rest)
-
-        def topological_scheme(self):
-            return self._topological_scheme
-
-        def base_point_cone(self):
-            r"""Return the maximal cone indexing the selected torus-fixed basepoint."""
-            return self._base_point_cone
-
-        def pointed_space(self):
-            r"""``(X(CC), x_sigma)`` at the torus-fixed point of ``base_point_cone()``.
-
-            An object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``; this
-            group is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
-            The analytification into ``TopologicalSpaces()`` is not presented.
-            """
-            assert False, "pointed_space on ToricFundamentalGroups: not implemented"
-
-        def realization_description(self):
-            return "complex analytic realization under the selected QQ-to-CC embedding"
 
 
 def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
@@ -938,40 +666,20 @@ class _QuarticK3HodgeData(SageObject):
         return f"Hodge data of {self.scheme()}"
 
 
+def _free_integral_topology_group(degree, rank):
+    r"""``ZZ^rank``, the free group ``H^degree(X; ZZ)`` that the caller's theorem computes.
 
-def _integral_topology_construction_data(
-    scheme,
-    degree,
-    realization,
-    theory="ordinary singular cohomology",
-):
-    return {
-        "topological_scheme": scheme,
-        "cohomological_degree": int(degree),
-        "cohomology_topology": theory,
-        "realization_description": realization,
-    }
-
-
-def _free_integral_topology_group(
-    scheme,
-    degree,
-    rank,
-    realization,
-    *,
-    category=None,
-    theory="ordinary singular cohomology",
-):
-    integers = _owned_integers()
-    category = IntegralSingularCohomologyGroups(integers) if category is None else category
-    return integers._fresh_free_module_on(
+    ``H^degree(X; ZZ)`` is an object of ``Modules(ZZ)`` and nothing more: the
+    space and the degree are the arguments of the cohomology functor, not data
+    of its value.
+    """
+    return _owned_integers()._fresh_free_module_on(
         finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
-        _extra_categories=(category,),
-        _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization, theory),
     )
 
 
-def _zmod2_integral_topology_group(scheme, degree, realization):
+def _zmod2_integral_topology_group():
+    r"""``ZZ/2``, presented as the cokernel of ``2: ZZ -> ZZ``."""
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _presented_module_from_morphism,
     )
@@ -980,10 +688,68 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
     source = integers.free_module(1)
     target = integers.free_module(1)
     presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
-    return _presented_module_from_morphism(
-        presentation,
-        _extra_categories=(IntegralSingularCohomologyGroups(integers),),
-        _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization),
+    return _presented_module_from_morphism(presentation)
+
+
+@cached_function
+def _projective_space_integral_cohomology_algebra(dimension):
+    r"""``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})`` with ``|alpha| = 2`` (Hatcher [Hat02], Thm. 3.19).
+
+    The graded module is free on ``alpha^0, ..., alpha^n``, each labelled by
+    its degree ``2k``, and the cup product is ``alpha^j alpha^k =
+    alpha^{j+k}``, zero when ``j + k > n``.  It is associative, with unit
+    ``alpha^0``, and commutative because every degree is even, so it is
+    supercommutative (Hatcher, Thm. 3.11).
+    """
+    from dzack_research.preamble.categories.algebras.algebras import (
+        Algebras,
+        _algebra_on_module,
+    )
+    from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+    from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+
+    integers = _owned_integers()
+    degrees = finite_ordered_set(tuple(integers(2 * power) for power in range(dimension + 1)))
+
+    def degree_on_module_generator(module_generator):
+        selected = module_generator.parent()
+        return next(degree for degree in degrees if selected.module_generator(degree) == module_generator)
+
+    construction_data = {"degree_on_module_generator": degree_on_module_generator}
+    module = integers._fresh_free_module_on(
+        degrees,
+        _extra_categories=(GradedModules(integers, integers),),
+        _extra_construction_data=construction_data,
+    )
+
+    def power_of_alpha(degree):
+        match degree <= 2 * dimension:
+            case True:
+                return module.module_generator(degree)
+            case False:
+                return module.zero()
+
+    cup_product = BilinearMap(
+        module,
+        module,
+        module,
+        {(left, right): power_of_alpha(left + right) for left in degrees for right in degrees},
+    )
+    return _algebra_on_module(
+        module,
+        cup_product,
+        placement=(
+            GradedAlgebras(integers, integers).Supercommutative(),
+            Algebras(integers).Commutative(),
+        ),
+        unit=module.module_generator(integers(0)),
+        construction_data=construction_data,
+        law_decisions={
+            "associativity": True,
+            "unit": True,
+            "commutativity": True,
+            "grading": True,
+        },
     )
 
 
@@ -1020,6 +786,18 @@ def NodalCubicNormalization():
     return normalization
 
 
+def _geometric_fundamental_group(generator, scheme, base_point):
+    r"""``pi_1(X(CC), x)``, the cyclic group on ``generator``, an object of ``Groups``.
+
+    The pointed space ``(X(CC), x)`` is the argument of the fundamental-group
+    functor on pointed spaces; the value is a group and records neither.
+    """
+    assert base_point.codomain() is scheme, (
+        f"the base point {base_point} of pi_1 is a point of {base_point.codomain()}, not of {scheme}"
+    )
+    return CyclicGroups()(generator)
+
+
 def _nodal_cubic_fundamental_group(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1`` of the rational nodal cubic, an infinite cyclic group."""
     selected = NodalCubic() if scheme is None else scheme
@@ -1028,22 +806,12 @@ def _nodal_cubic_fundamental_group(scheme=None, base_point=None):
     )
     point = selected.point_morphism((0, 1, 0)) if base_point is None else base_point
     generator = next(iter(OwnedGroups().Free(1).group_generators()))
-    return _geometric_fundamental_group(
-        generator,
-        selected,
-        point,
-        "nodal cubic complex realization S^2 wedge S^1",
-    )
+    return _geometric_fundamental_group(generator, selected, point)
 
 
 def _projective_line_fundamental_group(line, base_point):
     r"""Return the trivial pointed fundamental group of one represented projective line."""
-    return _geometric_fundamental_group(
-        OwnedGroups().C(1).one(),
-        line,
-        base_point,
-        "complex projective line, homeomorphic to S^2",
-    )
+    return _geometric_fundamental_group(OwnedGroups().C(1).one(), line, base_point)
 
 
 class NodalCubicIntegralTopology(SageObject):
@@ -1055,9 +823,6 @@ class NodalCubicIntegralTopology(SageObject):
     ``P^1`` and has ``H^1=0``.  The normalization morphism supplies the actual
     contravariant comparison map between the two selected theories.
     """
-
-    _ordinary_realization = "ordinary singular cohomology of the complex nodal cubic, topologically S^2 wedge S^1"
-    _resolution_realization = "resolution cohomology via the explicit normalization P^1 -> nodal cubic"
 
     def __init__(self, scheme=None) -> None:
         selected = NodalCubic() if scheme is None else scheme
@@ -1116,14 +881,7 @@ class NodalCubicIntegralTopology(SageObject):
             f"singular cohomology of {self.scheme()} is defined in degrees >= 0, not in degree {degree}"
         )
         rank = 1 if degree in (0, 1, 2) else 0
-        return _free_integral_topology_group(
-            self.scheme(),
-            degree,
-            rank,
-            self._ordinary_realization,
-            category=IntegralSingularCohomologyGroups(_owned_integers()),
-            theory="ordinary singular cohomology",
-        )
+        return _free_integral_topology_group(degree, rank)
 
     @cached_method
     def resolution_cohomology(self, degree):
@@ -1133,14 +891,7 @@ class NodalCubicIntegralTopology(SageObject):
             f">= 0, not in degree {degree}"
         )
         rank = 1 if degree in (0, 2) else 0
-        return _free_integral_topology_group(
-            self.scheme(),
-            degree,
-            rank,
-            self._resolution_realization,
-            category=ResolutionIntegralCohomologyGroups(_owned_integers()),
-            theory="resolution cohomology via normalization",
-        )
+        return _free_integral_topology_group(degree, rank)
 
     @cached_method
     def normalization_pullback(self, degree):
@@ -1182,12 +933,7 @@ def _pgl2_fundamental_group(scheme=None, base_point=None):
     )
     point = selected.point_morphism((1, 0, 0, 1)) if base_point is None else base_point
     generator = next(iter(OwnedGroups().C(2).group_generators()))
-    return _geometric_fundamental_group(
-        generator,
-        selected,
-        point,
-        "PGL_2(C) deformation retracted to PU(2) ~= SO(3)",
-    )
+    return _geometric_fundamental_group(generator, selected, point)
 
 
 class PGL2IntegralTopology(SageObject):
@@ -1230,10 +976,10 @@ class PGL2IntegralTopology(SageObject):
             f"degrees 0 through 6, but degree {degree} was requested"
         )
         if degree == 2:
-            return _zmod2_integral_topology_group(self.scheme(), degree, self.realization_description())
+            return _zmod2_integral_topology_group()
         if degree in (0, 3):
-            return _free_integral_topology_group(self.scheme(), degree, 1, self.realization_description())
-        return _free_integral_topology_group(self.scheme(), degree, 0, self.realization_description())
+            return _free_integral_topology_group(degree, 1)
+        return _free_integral_topology_group(degree, 0)
 
     @cached_method
     def rational_cohomology(self, degree):
@@ -1281,27 +1027,12 @@ def _toric_integral_singular_cohomology(scheme, degree):
         f"singular cohomology of {scheme}(CC) is computed in degrees 0 through {2 * dimension} "
         f"(twice its dimension), but degree {degree} was requested"
     )
-    integers = _owned_integers()
-    construction_data = _integral_topology_construction_data(
-        scheme,
-        degree,
-        "complex analytic realization under the selected QQ-to-CC embedding",
-        "singular cohomology of the complex analytic realization",
-    )
     if degree % 2:
-        return integers._fresh_free_module_on(
-            finite_ordered_set(()),
-            _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
-            _extra_construction_data=construction_data,
-        )
+        return _free_integral_topology_group(degree, 0)
 
     codimension = degree // 2
     chow = scheme.chow_group(dimension - codimension)
-    return chow._same_presentation_module(
-        chow.module_generating_set(),
-        _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
-        _extra_construction_data=construction_data,
-    )
+    return chow._same_presentation_module(chow.module_generating_set())
 
 
 def _toric_cycle_class_isomorphism(scheme, codimension):
@@ -1377,12 +1108,7 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
         f"the base point of pi_1({scheme}) must be the torus-fixed point of a maximal cone, but "
         f"{base_point_cone} is not a maximal cone of the fan"
     )
-    return CyclicGroups()(
-        OwnedGroups().C(1).one(),
-        placements=(ToricFundamentalGroups(),),
-        topological_scheme=scheme,
-        base_point_cone=base_point_cone,
-    )
+    return CyclicGroups()(OwnedGroups().C(1).one())
 
 
 def _toric_hodge_structure(scheme):
@@ -1443,18 +1169,17 @@ def _complete_intersection_integral_singular_cohomology(scheme, degree):
     degrees = tuple(int(value) for value in scheme.defining_degrees())
     if (dimension, degrees) == (2, (4,)):
         return scheme.integral_topology().integral_cohomology(degree)
-    realization = "complex analytic realization under the selected QQ-to-CC embedding"
     if degree < 0 or degree > 2 * dimension:
-        return _free_integral_topology_group(scheme, degree, 0, realization)
+        return _free_integral_topology_group(degree, 0)
     if degree != dimension:
-        return _free_integral_topology_group(scheme, degree, 1 - degree % 2, realization)
+        return _free_integral_topology_group(degree, 1 - degree % 2)
     series = PowerSeriesRing(SageZZ, "t", default_prec=dimension + 1)
     t = series.gen()
     normal_chern = prod((1 + equation_degree * t for equation_degree in degrees), start=series.one())
     chern = (1 + t) ** (dimension + len(degrees) + 1) * ~normal_chern
     euler = prod(degrees, start=SageZZ.one()) * chern[dimension]
     middle = (-1) ** dimension * (euler - (dimension + 1) + (1 - dimension % 2))
-    return _free_integral_topology_group(scheme, degree, int(middle), realization)
+    return _free_integral_topology_group(degree, int(middle))
 
 
 class _ComplexRealizationTopologyData(SageObject):
@@ -1519,6 +1244,26 @@ class _ComplexRealizationEngine:
                 )
 
     @cached_method
+    def singular_cohomology(self, coefficients):
+        r"""``H^*(X(CC); R)``, through the theorem that computes it for the category of ``X``.
+
+        Projective space ``P^n`` with ``R = ZZ``: Hatcher, *Algebraic
+        Topology* [Hat02], Thm. 3.19, ``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})``
+        with ``|alpha| = 2``.
+        """
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+        scheme = self.scheme()
+        match scheme:
+            case _ if scheme in ProjectiveSpaces(scheme.scheme_base_ring()) and coefficients is _owned_integers():
+                return _projective_space_integral_cohomology_algebra(int(scheme.dimension()))
+            case _:
+                assert False, (
+                    f"the cup product on H^*({self}; {coefficients}) is computed only for projective "
+                    f"spaces with coefficients in ZZ, and {scheme} is in {scheme.category()}"
+                )
+
+    @cached_method
     def integral_singular_cohomology(self, degree):
         r"""``H^degree(X(CC); ZZ)``, through the theorem that computes it for the category of ``X``.
 
@@ -1543,11 +1288,7 @@ class _ComplexRealizationEngine:
         base = scheme.scheme_base_ring()
         match scheme:
             case _ if scheme in ProjectiveSpaces(base):
-                degree = int(degree)
-                rank = int(0 <= degree <= 2 * int(scheme.dimension()) and degree % 2 == 0)
-                return _free_integral_topology_group(
-                    scheme, degree, rank, "complex analytic realization of projective space"
-                )
+                return self.singular_cohomology(_owned_integers()).graded_piece(degree)
             case _ if scheme in ToricSchemes(base):
                 return _toric_integral_singular_cohomology(scheme, degree)
             case _ if scheme in ProjectiveCompleteIntersections(base):
@@ -1608,18 +1349,12 @@ def _rational_complex_embedding():
 
 
 __all__ = [
-    "GeometricFundamentalGroups",
     "NodalCubicIntegralTopology",
     "NodalCubicNormalization",
     "NodalCubic",
-    "ResolutionIntegralCohomologyGroups",
-    "IntegralTopologicalCohomologyGroups",
     "ProjectiveGeneralLinearGroup2",
     "PGL2IntegralTopology",
-    "IntegralSingularCohomologyGroups",
     "AffineGeometricCohomologyComplexes",
     "ToricGeometricLineBundleCohomologySpaces",
-    "ToricIntegralSingularCohomologyGroups",
-    "ToricFundamentalGroups",
     "ToricWeightCohomologyComplexes",
 ]
