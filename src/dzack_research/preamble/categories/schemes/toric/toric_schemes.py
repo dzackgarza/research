@@ -49,7 +49,6 @@ from dzack_research.preamble.categories.divisors.chow_groups import (
     TorusInvariantCycleGroups,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
 )
@@ -1038,7 +1037,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "
                 "with is_cartier instead"
             )
-            return PicardGroups()(self.character_divisor_morphism().cokernel())
+            return self.character_divisor_morphism().cokernel()
 
         @cached_method
         def _picard_to_class_group_morphism(

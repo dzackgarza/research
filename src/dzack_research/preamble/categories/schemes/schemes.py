@@ -2046,6 +2046,20 @@ class Schemes(OwnedCategoryOverBaseRing):
             )
             return _scheme_base_change_functor(ring_map)
 
+        @cached_method
+        def picard_functor(self):
+            r"""``Pic : C^op -> Mod_ZZ`` on this category ``C`` of schemes.
+
+            ``op(X)`` goes to the Picard group ``Pic(X)`` of isomorphism
+            classes of invertible ``O_X``-modules, an abelian group and so a
+            ``ZZ``-module, and ``op(f)`` for ``f: X -> Y`` goes to the pullback
+            ``f^* : Pic(Y) -> Pic(X)`` (Hartshorne, *Algebraic Geometry*,
+            II.6).
+            """
+            from dzack_research.preamble.categories.divisors.picard_groups import _PicardFunctor
+
+            return _PicardFunctor(self)
+
         def product(self, factors):
             r"""Return $\prod_{i \in I} X_i$ for an indexed family of schemes.
 
@@ -4508,9 +4522,9 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                 f"cannot compute the Picard group of {self}: Pic(A^n) = 0 is used here only over a field, "
                 f"but the base ring is {base}"
             )
-            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+            from dzack_research.preamble.categories.divisors.picard_groups import _zero_picard_group
 
-            return PicardGroups().trivial(self)
+            return _zero_picard_group()
 
         @cached_method
         def _class_group(self):
@@ -4643,10 +4657,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                         "them must be given"
                     )
                     from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-                    from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+                    from dzack_research.preamble.categories.divisors.picard_groups import _zero_picard_group
 
                     base_scheme = self.base_scheme()
-                    base_picard = PicardGroups().trivial(base_scheme)
+                    base_picard = _zero_picard_group()
                     base_class = ClassGroups().trivial(base_scheme)
                     comparison = base_picard.module_category().Mor(base_picard, base_class)({})
                     return _projective_space_picard_to_class_group_morphism(self, base_picard, base_class, comparison)
@@ -4674,9 +4688,20 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     return self.picard_to_class_group_morphism().domain()
                 case _:
-                    from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+                    from dzack_research.preamble.categories.divisors.picard_groups import (
+                        _projective_bundle_picard_group,
+                    )
 
-                    return PicardGroups().projective_bundle(self, base_picard_group)
+                    return _projective_bundle_picard_group(base_picard_group)
+
+        def hyperplane_class(self):
+            r"""``[O(1)]`` in ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``, the image of the hyperplane summand's generator.
+
+            Over a field it generates ``Pic(P^n_k) = ZZ`` (Hartshorne,
+            *Algebraic Geometry*, II.6.17).
+            """
+            picard = self.picard_group()
+            return picard.injection(1)(picard.biproduct_factor(1).module_generator("O(1)"))
 
         @cached_method
         def _picard_intersection_pairing(self):

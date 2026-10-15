@@ -272,17 +272,18 @@ class Functor:
     def category_of_elements(self):
         r"""Return the category of elements ``int F`` of this functor to ``Sets``.
 
-        Its objects are the pairs ``(X, x)`` with ``x`` an element of ``F(X)``;
-        for a presheaf ``F: C^op -> Sets`` a morphism ``(X, x) -> (Y, y)`` is
-        ``f: X -> Y`` with ``F(f)(y) = x``, and for covariant ``F`` it is
-        ``f`` with ``F(f)(x) = y`` (Mac Lane, *Categories for the Working
-        Mathematician*, II.6).
+        Its objects are the pairs ``(X, x)`` with ``x`` an element of ``F(X)``,
+        and a morphism ``(X, x) -> (Y, y)`` is ``f: X -> Y`` with
+        ``F(f)(x) = y`` (Mac Lane, *Categories for the Working
+        Mathematician*, II.6).  This reads ``F`` covariantly on its domain; a
+        presheaf on ``C`` returns its category of elements over ``C``, whose
+        morphisms are the ``f`` with ``F(f)(y) = x``.
         """
         from dzack_research.preamble.categories.abstract_categories.categories_of_elements import (
             _CategoryOfElements,
         )
 
-        return _CategoryOfElements(self)
+        return _CategoryOfElements(self, self.domain())
 
     @cached_method
     def algebras(self):

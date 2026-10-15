@@ -26,9 +26,6 @@ is the first product projection restricted along the inclusion.
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroups,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -345,10 +342,9 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
                 f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
                 "this point-blowup presentation computes its Picard group directly"
             )
-            module = _integers()._fresh_free_module_on(
+            return _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
-            return PicardGroups()(module, scheme=self)
 
         def hyperplane_picard_class(self):
             return self.picard_group().module_generator("H")

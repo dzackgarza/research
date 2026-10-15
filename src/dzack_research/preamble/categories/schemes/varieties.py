@@ -63,22 +63,13 @@ class Varieties(OwnedCategoryOverBaseRing):
             r"""The projective line."""
             return ProjectiveSpaces(self.base_ring())(1)
 
-        def picard_functor(self):
-            r"""``Pic : C^op -> Sets`` on this category ``C`` of projective varieties.
-
-            ``X`` goes to the underlying set of the Picard group ``Pic(X)``
-            of isomorphism classes of invertible ``O_X``-modules, and
-            ``f: X -> Y`` goes to the pullback ``f^* : Pic(Y) -> Pic(X)``
-            (Hartshorne, *Algebraic Geometry*, II.6).
-            """
-            assert False, "picard_functor on Varieties.Projective: not implemented"
-
-        @cached_method
         def polarized_varieties(self):
-            r"""The full subcategory of ``int Pic`` on the pairs ``(X, L)`` with ``L`` ample."""
-            from dzack_research.preamble.categories.schemes.polarized_varieties import _PolarizedVarieties
+            r"""The full subcategory of ``int Pic`` on the pairs ``(X, L)`` with ``L`` ample.
 
-            return _PolarizedVarieties(self.base_ring())
+            ``Pic : C^op -> Mod_ZZ`` is this category's ``picard_functor()``,
+            inherited from the category of schemes it refines.
+            """
+            return self.picard_functor().category_of_elements().Ample()
 
 
 class _DimensionSubcategoryOfVarieties(OwnedCategoryOverBaseRing):
