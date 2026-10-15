@@ -37,7 +37,9 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.logic import ask
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.rings.real import RR
 
 
 class ManifoldAtlasChart(SageObject):
@@ -139,9 +141,8 @@ class ManifoldAtlasTransition(SageObject):
         image = self._engine(
             *(_engine_manifold_expression(coordinate) for coordinate in coordinates)
         )
-        values = image if isinstance(image, (tuple, list)) else (image,)
         return _raise_manifold_expression_family(
-            values,
+            image,
             name=f"Coordinates after {self.source().label()} to {self.target().label()}",
         )
 
@@ -172,11 +173,6 @@ def _engine_manifold_chart(chart):
     Permitted callers are the point, transition, map, and open-submanifold
     adapters in this module.  The raw chart never becomes mathematical output.
     """
-    if not isinstance(chart, ManifoldAtlasChart):
-        raise TypeError(
-            f"{chart!r} is not a chart of a manifold's atlas: coordinates, transition "
-            f"maps and open submanifolds are taken only in a chart of the atlas"
-        )
     return chart._engine_chart()
 
 
@@ -741,32 +737,31 @@ class HolomorphicMap:
         return self.codomain().point(values, self.target_chart().label())
 
     def __mul__(self, other):
-        if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
-            return NotImplemented
+        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``."""
+        assert other.codomain() is self.domain(), (
+            f"cannot compose {self} with {other}: the codomain {other.codomain()} of the "
+            f"first map is not the domain {self.domain()} of the second"
+        )
         engine = _engine_holomorphic_map(self) * _engine_holomorphic_map(other)
         source = other.source_chart()
         target = self.target_chart()
+        # SageManifolds returns the coordinate expressions of a map as a tuple
+        # in every dimension (``MultiCoordFunction.expr``).
         expressions = engine.expr(
             _engine_manifold_chart(source),
             _engine_manifold_chart(target),
         )
-        # Native Sage charts can return the one coordinate either as a
-        # scalar expression or as a tuple; normalize only the scalar case.
-        if self.codomain().dimension() == 1 and not isinstance(expressions, tuple):
-            expressions = (expressions,)
         return _holomorphic_map_from_engine(
             other.domain().Mor(self.codomain()),
             engine,
-            tuple(expressions),
+            expressions,
             source.label(),
             target.label(),
         )
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, HolomorphicMap)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
+            element_parent(other) is self.parent()
             and other.coordinate_expressions() == self.coordinate_expressions()
             and other.source_chart().label() == self.source_chart().label()
             and other.target_chart().label() == self.target_chart().label()
@@ -869,12 +864,21 @@ class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
 
 
 class ComplexManifolds(OwnedCategory):
-    r"""Finite-dimensional complex analytic manifolds with holomorphic atlases."""
+    r"""Finite-dimensional complex analytic manifolds with holomorphic atlases.
+
+    A holomorphic map between open subsets of ``C^n`` and ``C^m`` is real
+    analytic, so in particular ``C^infinity``, as a map between open subsets of
+    ``R^{2n}`` and ``R^{2m}``.  A holomorphic atlas is therefore a smooth atlas
+    of the underlying real manifold, of real dimension twice the complex
+    dimension, and a holomorphic map is smooth.  Forgetting the complex
+    structure is the functor to ``SmoothManifolds()``, the immediate
+    supercategory.
+    """
 
     _MorCategory = ComplexManifoldMorCategoryConstruction
 
     def super_categories(self):
-        return [TopologicalManifolds()]
+        return [SmoothManifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -968,14 +972,14 @@ class ComplexManifolds(OwnedCategory):
         r"""Return the disc ``{|z| < radius}``, or with ``punctured`` the disc ``{0 < |z| < radius}``.
 
         The disc is cut out in the chart of the one-dimensional
-        ``containing_manifold``; omitted, that is a fresh complex line.
+        ``containing_manifold``; omitted, that is a fresh complex line.  The
+        radius is an exact positive real number, an element of ``RR``.
         """
-        radius = float(radius)
-        if radius <= 0:
-            raise ValueError(
-                f"cannot construct the disc {name} of radius {radius}: the radius must be "
-                f"positive"
-            )
+        radius = RR(radius)
+        assert ask(radius > RR.zero()) is True, (
+            f"cannot construct the disc {name} of radius {radius}: the radius must be "
+            f"a positive real number"
+        )
         if containing_manifold is None:
             containing_manifold = self.affine_space(
                 1, name=f"{name}_line", coordinate_names=("z",)
@@ -991,9 +995,9 @@ class ComplexManifolds(OwnedCategory):
         engine_z = _engine_manifold_expression(z)
         match punctured:
             case True:
-                restriction = (abs(engine_z) < radius, engine_z != 0)
+                restriction = (abs(engine_z) < radius.expression(), engine_z != 0)
             case False:
-                restriction = abs(engine_z) < radius
+                restriction = abs(engine_z) < radius.expression()
         return _object_of(
             self,
             _engine=(self, _ComplexDiscEngine, None),
