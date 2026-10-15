@@ -287,7 +287,35 @@ class _FinalTopologySpaceEngine:
         return f"{self._point_set} with the final topology"
 
 
-def _final_topology_space(source_space, set_projection):
+class _OrbitSpaceEngine(_FinalTopologySpaceEngine):
+    r"""The orbit space ``G\X``: the orbit set of ``UX`` with the final topology along ``q``.
+
+    The ``G``-space ``X`` is retained as defining data, so the space is named
+    by the action it is the quotient of.
+    """
+
+    def __init__(self, g_space, **rest) -> None:
+        self._g_space = g_space
+        super().__init__(**rest)
+
+    def g_space(self):
+        r"""The ``G``-space ``X`` whose orbit space this is."""
+        return self._g_space
+
+    def _repr_(self) -> str:
+        from dzack_research.preamble.categories.manifolds import TopologicalManifolds
+
+        g_space = self.g_space()
+        group = g_space.acting_group()
+        match g_space:
+            case _ if g_space in TopologicalManifolds():
+                name = g_space.manifold_name()
+                return f"{group}\\{name}, the orbit space of the {group}-action on {name}"
+            case _:
+                return f"The orbit space of {g_space}"
+
+
+def _final_topology_space(source_space, set_projection, *, category, engine, **engine_data):
     r"""Return ``(Q, q, rho)``: ``Q`` the codomain of ``set_projection`` with its final topology.
 
     ``q: Y -> Q`` is the continuous map whose underlying set map is
@@ -295,6 +323,9 @@ def _final_topology_space(source_space, set_projection):
     point of the underlying set it names.  A finite enumerated ``Q`` receives
     its exact finite topology, whose opens are enumerated; any other ``Q``
     receives the final topology data, which asks ``Y`` about preimages.
+    ``category`` is the subcategory of ``TopologicalSpaces()`` the caller's
+    construction places ``Q`` in, ``engine`` the computation class serving
+    it, and ``engine_data`` the data that class introduces.
     """
     point_set = set_projection.codomain()
     match Sets().is_provably_finite(point_set) and point_set in EnumeratedSets():
@@ -312,6 +343,11 @@ def _final_topology_space(source_space, set_projection):
                 )
                 is True
             )
+            assert category is TopologicalSpaces(), (
+                f"cannot place the finite quotient {point_set} of {source_space} in "
+                f"{category}: a finite space with its enumerated final topology is "
+                f"constructed in {TopologicalSpaces()} only"
+            )
             space = TopologicalSpaces()(point_set, opens)
             set_map = Sets().Mor(source_space, space)(
                 lambda point: space(set_projection(point))
@@ -321,10 +357,11 @@ def _final_topology_space(source_space, set_projection):
             )
         case False:
             space = _object_of(
-                TopologicalSpaces(),
-                _engine=(TopologicalSpaces(), _FinalTopologySpaceEngine, None),
+                category,
+                _engine=(TopologicalSpaces(), engine, None),
                 topology_data=_FinalTopologyData(source_space, set_projection),
                 point_set=point_set,
+                **engine_data,
             )
             set_map = Sets().Mor(source_space, space)(lambda point: space(set_projection(point)))
             return space, TopologicalSpaces().Mor(source_space, space)._from_continuous_set_map(set_map), (
@@ -589,7 +626,10 @@ class TopologicalSpaces(OwnedCategory):
         set_construction = Sets()._categorical_coequalizer_construction(left_set_map, right_set_map)
         set_shape = set_construction.diagram().domain()
         quotient, projection, point_of_set = _final_topology_space(
-            target, set_construction.costructure_morphism(set_shape.target())
+            target,
+            set_construction.costructure_morphism(set_shape.target()),
+            category=self,
+            engine=_FinalTopologySpaceEngine,
         )
         diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
         shape = diagram.domain()

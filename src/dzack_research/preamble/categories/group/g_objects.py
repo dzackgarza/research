@@ -1494,7 +1494,9 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             colimit over ``BG`` is the same universal pair.
             """
             from dzack_research.preamble.categories.topological_spaces import (
+                TopologicalSpaces,
                 _final_topology_space,
+                _OrbitSpaceEngine,
             )
 
             from dzack_research.preamble.categories.group.g_sets import FiniteGSets
@@ -1511,7 +1513,11 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                     )
             orbits = g_set.orbits()
             space, projection, _ = _final_topology_space(
-                self, Sets().Mor(self, orbits)(orbits.orbit_of)
+                self,
+                Sets().Mor(self, orbits)(orbits.orbit_of),
+                category=TopologicalSpaces(),
+                engine=_OrbitSpaceEngine,
+                g_space=self,
             )
             return space, projection
 
