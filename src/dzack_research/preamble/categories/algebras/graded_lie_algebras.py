@@ -2,7 +2,7 @@
 
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.graded_nonassociative_algebras import GradedNonassociativeAlgebras
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.lexicon.algebra import MonoidObject
@@ -64,10 +64,11 @@ class GradedLieAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self._graded_modules)
 
     def super_categories(self):
-        r"""The bracket is an algebra multiplication; the grading is a graded-module datum."""
+        r"""Forgetting the antisymmetry and Jacobi identities leaves a graded nonassociative algebra."""
         return [
-            Algebras(self.base_ring()),
-            self._graded_modules,
+            GradedNonassociativeAlgebras(
+                self.base_ring(), self.grading_monoid(), self.parity_homomorphism()
+            ),
         ]
 
     def _call_(self, graded_module, bracket):

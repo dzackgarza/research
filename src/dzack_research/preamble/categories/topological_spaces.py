@@ -595,9 +595,14 @@ class TopologicalSpaces(OwnedCategory):
         ``f_*: C_*(X) -> C_*(Y)``.  The pullback is a morphism of graded
         algebras, ``f^*(a b) = f^*(a) f^*(b)`` (Hatcher, *Algebraic Topology*,
         §3.2, the naturality preceding Thm 3.11).  Its domain is the opposite
-        category of this category.
+        category of this category.  The object part is computed; the pullback
+        on arrows is not.
         """
-        assert False, "singular_cohomology_functor on TopologicalSpaces: not implemented"
+        from dzack_research.preamble.categories.functors.cohomology import (
+            _singular_cohomology_functor,
+        )
+
+        return _singular_cohomology_functor(coefficients)
 
     @classmethod
     def _repr_object_names(cls):

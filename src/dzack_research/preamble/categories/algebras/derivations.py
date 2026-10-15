@@ -10,13 +10,14 @@ presentation representative.
 import operator
 
 from sage.categories.action import Action
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.structure.element import ModuleElement
+from sage.structure.element import ModuleElement, parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    MorCategories,
     _RestrictedMorCategoryOf,
     RestrictedMorCategoryParent,
 )
@@ -49,6 +50,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family_from_values,
 )
 from dzack_research.preamble.logic import AtomicProposition, Propositions, conjunction
 from dzack_research.preamble.validation import validator
@@ -129,24 +133,11 @@ class Derivation(ModuleElement):
     def __init__(self, parent, generator_images) -> None:
         ModuleElement.__init__(self, parent)
         labels = parent.generator_labels()
-        if isinstance(generator_images, dict):
-            missing = [label for label in labels if label not in generator_images]
-            if missing:
-                raise ValueError(
-                    f"a derivation of {parent.algebra()} needs the image of every algebra generator, but "
-                    f"{missing} are missing"
-                )
-            images = {label: generator_images[label] for label in labels}
-        elif callable(generator_images):
-            images = {label: generator_images(label) for label in labels}
-        else:
-            values = tuple(generator_images)
-            if len(values) != len(labels):
-                raise ValueError(
-                    f"a derivation of {parent.algebra()} needs one image for each of its {len(labels)} generators, "
-                    f"but {len(values)} were given"
-                )
-            images = dict(zip(labels, values, strict=True))
+        # The generator images are a family indexed by the algebra
+        # generators; reading a mapping, a family or positional data as that
+        # family is the indexed-family owner's work.
+        family = finite_indexed_family_from_values(labels, generator_images)
+        images = {label: family.value(label) for label in labels}
         target = parent.target_module()
         self._generator_images = {
             label: target(image) if image.parent() is not target else image
@@ -322,8 +313,11 @@ class Derivation(ModuleElement):
     _rmul_ = _lmul_
 
     def __add__(self, other):
-        if not isinstance(other, Derivation) or other.parent() is not self.parent():
-            return NotImplemented
+        match other:
+            case _ if parent(other) is self.parent():
+                pass
+            case _:
+                return NotImplemented
         return self.parent()(
             {
                 label: self.generator_image(label) + other.generator_image(label)
@@ -347,8 +341,11 @@ class Derivation(ModuleElement):
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, Derivation) or other.parent() is not self.parent():
-            return op == op_NE
+        match other:
+            case _ if parent(other) is self.parent():
+                pass
+            case _:
+                return op == op_NE
         equal = conjunction(
             self.generator_image(label) == other.generator_image(label)
             for label in self.parent().generator_labels()
@@ -402,16 +399,9 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     Element = Derivation
 
-    @staticmethod
-    def __classcall__(cls, family_or_algebra, domain_or_target, codomain=None):
-        if isinstance(family_or_algebra, DerivationCategoryConstruction):
-            return typecall(
-                cls,
-                family_or_algebra,
-                domain_or_target,
-                codomain,
-            )
-        return family_or_algebra.derivations(domain_or_target)
+    # The constructor fixes the presentation transported from the Kahler
+    # classifier; the presented-modules slot starts empty, as on ``OwnedMor``.
+    _selected_module_presentation = None
 
     def __init__(self, family, algebra, restricted_target) -> None:
         target_module = restricted_target.module_over_extension()
@@ -552,30 +542,30 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     def _element_constructor_(self, generator_images, *, check=False):
         r"""Construct the derivation; ``check=True`` runs its validator (``OWN-22``)."""
-        if isinstance(generator_images, Derivation) and generator_images.parent() is self:
-            return generator_images
-        if isinstance(generator_images, Morphism):
-            if (
-                generator_images.domain() is not self.algebra()
-                or generator_images.codomain() is not self.restricted_target_module()
-            ):
+        match generator_images:
+            case _ if parent(generator_images) is self:
+                return generator_images
+            case _ if generator_images in self.arrow_set() and self.accepts(generator_images):
+                selected = generator_images.derivation()
+                if selected.parent() is self:
+                    return selected
+                generator_images = {
+                    label: selected.generator_image(label)
+                    for label in self.generator_labels()
+                }
+            case _ if generator_images in self.arrow_set():
+                raise ValueError(
+                    f"{generator_images} is only a linear map; a derivation must also satisfy the Leibniz rule "
+                    "D(ab) = a D(b) + D(a) b"
+                )
+            case _ if parent(generator_images) in MorCategories():
                 raise ValueError(
                     f"cannot view {generator_images} as a derivation {self.algebra()} -> "
                     f"{self.restricted_target_module()}: it is a map {generator_images.domain()} -> "
                     f"{generator_images.codomain()}"
                 )
-            if not isinstance(generator_images, DerivationUnderlyingLinearMorphism):
-                raise ValueError(
-                    f"{generator_images} is only a linear map; a derivation must also satisfy the Leibniz rule "
-                    "D(ab) = a D(b) + D(a) b"
-                )
-            selected = generator_images.derivation()
-            if selected.parent() is self:
-                return selected
-            generator_images = {
-                label: selected.generator_image(label)
-                for label in self.generator_labels()
-            }
+            case _:
+                pass
         derivation = Derivation(self, generator_images)
         derivation.validate_relations(check=check)
         return derivation
@@ -742,8 +732,11 @@ class GradedDerivation(ModuleElement):
     as_morphism = underlying_linear_morphism
 
     def __add__(self, other):
-        if not isinstance(other, GradedDerivation) or other.parent() is not self.parent():
-            return NotImplemented
+        match other:
+            case _ if parent(other) is self.parent():
+                pass
+            case _:
+                return NotImplemented
         return self.parent()._from_derived_elementwise(
             lambda element: self(element) + other(element),
             self,
@@ -905,20 +898,6 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     Element = GradedDerivation
 
-    @staticmethod
-    def __classcall__(cls, family_or_algebra, domain_or_target, codomain_or_shift=None):
-        if isinstance(family_or_algebra, GradedDerivationCategoryConstruction):
-            return typecall(
-                cls,
-                family_or_algebra,
-                domain_or_target,
-                codomain_or_shift,
-            )
-        return family_or_algebra.graded_derivations(
-            domain_or_target,
-            shift=codomain_or_shift,
-        )
-
     def __init__(self, family, algebra, target) -> None:
         if algebra.base_ring() is not target.base_ring():
             raise ValueError(
@@ -964,30 +943,29 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def _element_constructor_(self, function, *, check=False):
         r"""Construct the graded derivation; ``check=True`` runs its validator (``OWN-22``)."""
-        if isinstance(function, GradedDerivation) and function.parent() is self:
-            return function
-        if isinstance(function, Morphism):
-            if function.domain() is not self.algebra() or function.codomain() is not self.target():
-                raise ValueError(
-                    f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
-                    f"map {function.domain()} -> {function.codomain()}"
+        match function:
+            case _ if parent(function) is self:
+                return function
+            case _ if function in self.arrow_set() and self.accepts(function):
+                derivation = function.derivation()
+                if derivation.parent() is self:
+                    return derivation
+                return self._from_derived_elementwise(
+                    lambda element: derivation(element),
+                    derivation,
                 )
-            if (
-                not isinstance(function, GradedDerivationUnderlyingLinearMorphism)
-                or function.degree_shift() != self.degree_shift()
-            ):
+            case _ if function in self.arrow_set():
                 raise ValueError(
                     f"{function} is only a linear map; a graded derivation of degree {self.degree_shift()} must "
                     "also satisfy the graded Leibniz rule"
                 )
-            derivation = function.derivation()
-            if derivation.parent() is self:
-                return derivation
-            return self._from_derived_elementwise(
-                lambda element: derivation(element),
-                derivation,
-            )
-        return self.elementwise(function, check=check)
+            case _ if parent(function) in MorCategories():
+                raise ValueError(
+                    f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
+                    f"map {function.domain()} -> {function.codomain()}"
+                )
+            case _:
+                return self.elementwise(function, check=check)
 
     def zero(self):
         return self._from_constructed_elementwise(
