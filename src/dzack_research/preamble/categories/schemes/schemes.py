@@ -6418,6 +6418,80 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
 
 
 
+class _LogarithmicDifferentialsSheafEngine:
+    r"""``Omega^p_X(log D)`` for an effective Cartier divisor ``i: D -> X``.
+
+    The defining data are the divisor ``D`` and the degree ``p``.  For ``X``
+    smooth over the base and ``D`` smooth with local equation ``t``, the sheaf
+    is the ``O_X``-submodule of ``j_* Omega^p_U``, ``j: U = X - D -> X``,
+    generated locally by ``Omega^p_X`` and ``Omega^{p-1}_X wedge dt/t``
+    (Deligne, *Theorie de Hodge II*, Publ. Math. IHES 40 (1971), §3.1).
+    """
+
+    def __init__(self, divisor, degree, **rest) -> None:
+        self._divisor = divisor
+        self._degree = degree
+        super().__init__(**rest)
+
+    def divisor(self):
+        r"""The effective Cartier divisor ``i: D -> X``."""
+        return self._divisor
+
+    def degree(self):
+        r"""The form degree ``p``."""
+        return self._degree
+
+    def ringed_space(self):
+        return self.divisor().inclusion().codomain()
+
+    scheme = ringed_space
+
+    def top_degree_twist(self):
+        r"""The twist ``e - n - 1`` with ``Omega^n_X(log D) = O(e - n - 1)`` on ``X = P^n``.
+
+        In top degree ``n`` the local generator is ``dx_1 wedge ... wedge
+        dx_{n-1} wedge dt/t``, so ``Omega^n_X(log D) = Omega^n_X tensor O_X(D)``.
+        On ``P^n`` one has ``Omega^n = O(-n-1)`` (Hartshorne, *Algebraic
+        Geometry*, Example II.8.20.1), and ``O_X(D) = I_D^vee = O(e)`` for the
+        divisor's ideal sheaf ``I_D = O(-e)``.  A section ``g`` of
+        ``O(e - n - 1)`` is the form ``g Omega / f``, with ``f`` the degree-``e``
+        equation of ``D`` and ``Omega`` the Euler form (Griffiths, *On the periods
+        of certain rational integrals I*, Ann. of Math. 90 (1969)).
+        """
+        X = self.scheme()
+        n = X.dimension()
+        assert X in ProjectiveSpaces(X.scheme_base_ring()) and self.degree() == n, (
+            f"Omega^{self.degree()}_X(log D) on {X} is a twist of O_X only in top degree on a "
+            f"projective space; here p = {self.degree()} and X has dimension {n}"
+        )
+        return -self.divisor().ideal_sheaf().degree() - n - 1
+
+    def global_sections(self):
+        r"""``H^0(X, Omega^p_X(log D))``.
+
+        For ``X = P^n`` and ``p = n`` it is ``H^0(P^n, O(e - n - 1))``, the
+        forms ``g Omega / f`` with ``g`` of degree ``e - n - 1``
+        (:meth:`top_degree_twist`).  Every other case needs the logarithmic
+        de Rham complex on an affine cover of ``X`` and its Cech cohomology.
+        """
+        X = self.scheme()
+        match self.degree():
+            case p if X in ProjectiveSpaces(X.scheme_base_ring()) and p == X.dimension():
+                return X.O(self.top_degree_twist()).global_sections()
+            case _:
+                assert False, (
+                    "global_sections on logarithmic differentials: not implemented outside top "
+                    "degree on a projective space"
+                )
+
+    def sheaf_category(self):
+        r"""``QCoh(X)``, the category this sheaf is an object of."""
+        return QuasiCoherentSheaves(self.scheme())
+
+    def _repr_(self):
+        return f"Omega^{self.degree()}_X(log D) for D = {self.divisor()} on X = {self.scheme()}"
+
+
 class EffectiveCartierDivisors(_SchemeSubobjectsOf):
     r"""Effective Cartier divisors ``D -> X`` as closed subobjects of one scheme.
 
@@ -6497,20 +6571,46 @@ class EffectiveCartierDivisors(_SchemeSubobjectsOf):
             ``QuasiCoherentSheaves(X)`` (Deligne, *Theorie de Hodge II*, Publ.
             Math. IHES 40 (1971), §3.1).  Here ``p`` is ``degree``.
             """
-            assert False, "logarithmic_differentials on EffectiveCartierDivisors: not implemented"
+            ambient = self.inclusion().codomain()
+            return QuasiCoherentSheaves(ambient).object(
+                categories=(QuasiCoherentSheaves(ambient).FiniteLocallyFree(),),
+                construction_data={"divisor": self, "degree": degree},
+                _engine=_LogarithmicDifferentialsSheafEngine,
+            )
 
         def residue(self, degree):
-            r"""The Poincare residue ``Res: Omega^p_X(log D) -> i_* Omega^{p-1}_D``.
+            r"""The Poincare residue ``Res: H^0(X, Omega^p_X(log D)) -> H^0(D, Omega^{p-1}_D)``.
 
             Here ``i: D -> X`` is ``self.inclusion()``, and ``X`` and ``D`` are
-            smooth over the base; ``p`` is ``degree``.  Locally
+            smooth over the base; ``p`` is ``degree``.  The sheaf map
+            ``Omega^p_X(log D) -> i_* Omega^{p-1}_D`` is locally
             ``alpha wedge dt/t |-> alpha|_D`` for a local equation ``t`` of
-            ``D``; the map identifies ``Gr^W_1 Omega^*_X(log D)`` with
+            ``D``; it identifies ``Gr^W_1 Omega^*_X(log D)`` with
             ``i_* Omega^*_D[-1]`` (Deligne, op. cit., (3.1.5.2), the case of
-            one component).  Its domain is ``logarithmic_differentials(p)``;
-            both endpoints are objects of ``QuasiCoherentSheaves(X)``.
+            one component).  This method returns its map on global sections.
+
+            For ``X = P^n`` with ``n >= 2``, ``p = n`` and ``D = V(f)`` of degree
+            ``e``, the domain is ``H^0(P^n, O(e - n - 1))`` by ``g |-> g Omega / f``
+            (:meth:`logarithmic_differentials`).  Adjunction gives
+            ``Omega^{n-1}_D = O_D(e - n - 1)`` (Hartshorne, *Algebraic Geometry*,
+            Example II.8.20.3), and under it the residue of ``g Omega / f`` is
+            ``g|_D`` (Griffiths, *On the periods of certain rational integrals I*,
+            Ann. of Math. 90 (1969)).  The restriction
+            ``H^0(P^n, O(e - n - 1)) -> H^0(D, O_D(e - n - 1))`` is surjective,
+            because ``H^1(P^n, O(-n - 1)) = 0`` for ``n >= 2`` (Hartshorne, III.5.1),
+            so its image is all of ``H^0(D, Omega^{n-1}_D)``.
             """
-            assert False, "residue on EffectiveCartierDivisors: not implemented"
+            ambient = self.inclusion().codomain()
+            n = ambient.dimension()
+            match degree:
+                case p if ambient in ProjectiveSpaces(ambient.scheme_base_ring()) and p == n and n >= 2:
+                    twist = self.logarithmic_differentials(p).top_degree_twist()
+                    return ambient.O(twist).restriction_map(self)
+                case _:
+                    assert False, (
+                        "residue on EffectiveCartierDivisors: not implemented outside top degree on "
+                        "a projective space of dimension at least 2"
+                    )
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
