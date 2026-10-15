@@ -369,7 +369,15 @@ class _SparseFreeModuleParent:
         return self._element_constructor_(element)
 
     def _repr_(self):
-        return f"Free module on {self.module_generating_set()} over {self.base_ring()}"
+        r"""Name the basis by its elements, printed as the basis vectors ``[i]`` print."""
+        labels = self.module_generating_set()
+        size = cardinal(labels.cardinality())
+        match (labels in EnumeratedSets(), size.is_finite()):
+            case (True, True) if int(size.finite_value()) <= 12:
+                basis = ", ".join(repr(self.module_generator(label)) for label in labels)
+                return f"Free module on {{{basis}}} over {self.base_ring()}"
+            case _:
+                return f"Free module on {labels} over {self.base_ring()}"
 
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):

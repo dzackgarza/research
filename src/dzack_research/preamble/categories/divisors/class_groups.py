@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     _own_ring,
     _owned_integers,
 )
@@ -27,7 +28,8 @@ class ClassGroups(Category):
     \(\operatorname{coker}(\rho)\) of a principal-divisor morphism
     \(\rho\colon P \to \operatorname{Div}\) (the entry), or the biproduct
     \(\operatorname{Cl}(S) \oplus \mathbb{Z}[H]\) of the projective bundle
-    formula.  This level adds \(X\).
+    formula.  Over a field, \(\operatorname{Cl}(\mathbb{P}^n_k)\) is the free
+    module on the hyperplane class \(\{H\}\).  This level adds \(X\).
     """
 
     def an_object(self):
@@ -67,6 +69,28 @@ class ClassGroups(Category):
     def trivial(self, scheme):
         r"""The zero class group of ``scheme``, the free group on no classes."""
         return self.free(scheme, finite_ordered_set(()))
+
+    def projective_space_over_field(self, projective_space):
+        r"""\(\operatorname{Cl}(\mathbb{P}^n_k) = \mathbb{Z}[H]\) for a field \(k\), free on the hyperplane class.
+
+        A divisor of degree \(d\) is linearly equivalent to \(dH\), and degree
+        is an isomorphism \(\operatorname{Cl}(\mathbb{P}^n_k) \to \mathbb{Z}\)
+        (Hartshorne, II.6.4).  The result is the free module on \(\{H\}\),
+        placed here with ``projective_space`` as its scheme.
+        """
+        base = projective_space.scheme_base_ring()
+        assert base in OwnedFields(), (
+            f"cannot apply Cl(P^n_k) = Z[H] to {projective_space}: the base ring {base} is not a field, "
+            "so Cl(P^n_S) = Cl(S) + Z[H] needs the class group of the base, through projective_bundle"
+        )
+        return _integers()._fresh_free_module_on(
+            finite_ordered_set(("H",)),
+            _extra_categories=(self,),
+            _extra_construction_data={
+                "class_group_scheme": projective_space,
+                "principal_to_weil": None,
+            },
+        )
 
     def projective_bundle(self, projective_space, base_class_group):
         r"""\(\operatorname{Cl}(\mathbb{P}^n_S) = \operatorname{Cl}(S) \oplus \mathbb{Z}[H]\).
