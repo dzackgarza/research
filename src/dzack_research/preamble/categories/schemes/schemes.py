@@ -1006,19 +1006,6 @@ class SchemeMorphismMethods:
         """
         assert False, "gauss_manin_connection on scheme morphisms: not implemented"
 
-    def residue(self, degree):
-        r"""The Poincare residue ``Res: Omega^p_X(log D) -> i_* Omega^{p-1}_D`` of a smooth divisor.
-
-        Here ``i: D -> X`` is this arrow, a closed immersion of a smooth divisor
-        into a smooth scheme, and ``p`` is ``degree``.  Locally
-        ``alpha wedge dt/t |-> alpha|_D`` for a local equation ``t`` of ``D``;
-        the map identifies ``Gr^W_1 Omega^*_X(log D)`` with
-        ``i_* Omega^*_D[-1]`` (Deligne, *Theorie de Hodge II*, Publ. Math.
-        IHES 40 (1971), (3.1.5.2), the case of one component).  Its domain and
-        codomain are objects of ``QuasiCoherentSheaves(X)``.
-        """
-        assert False, "residue on closed immersions of smooth divisors: not implemented"
-
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
 
@@ -6050,6 +6037,31 @@ class EffectiveCartierDivisors(_SchemeSubobjectsOf):
                     )
                 case picard_class:
                     return picard_class
+
+        def logarithmic_differentials(self, degree):
+            r"""``Omega^p_X(log D)``, the ``p``-forms on ``X`` with logarithmic poles along ``D``.
+
+            For ``X`` smooth over the base and ``D`` a smooth divisor with local
+            equation ``t``, it is the ``O_X``-submodule of ``j_* Omega^p_U``,
+            ``j: U = X - D -> X``, generated locally by ``Omega^p_X`` and
+            ``Omega^{p-1}_X wedge dt/t``; it is locally free and an object of
+            ``QuasiCoherentSheaves(X)`` (Deligne, *Theorie de Hodge II*, Publ.
+            Math. IHES 40 (1971), §3.1).  Here ``p`` is ``degree``.
+            """
+            assert False, "logarithmic_differentials on EffectiveCartierDivisors: not implemented"
+
+        def residue(self, degree):
+            r"""The Poincare residue ``Res: Omega^p_X(log D) -> i_* Omega^{p-1}_D``.
+
+            Here ``i: D -> X`` is ``self.inclusion()``, and ``X`` and ``D`` are
+            smooth over the base; ``p`` is ``degree``.  Locally
+            ``alpha wedge dt/t |-> alpha|_D`` for a local equation ``t`` of
+            ``D``; the map identifies ``Gr^W_1 Omega^*_X(log D)`` with
+            ``i_* Omega^*_D[-1]`` (Deligne, op. cit., (3.1.5.2), the case of
+            one component).  Its domain is ``logarithmic_differentials(p)``;
+            both endpoints are objects of ``QuasiCoherentSheaves(X)``.
+            """
+            assert False, "residue on EffectiveCartierDivisors: not implemented"
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):

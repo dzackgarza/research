@@ -518,6 +518,12 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     TopologicalSpaceMor,
     TopologicalSpaces,
 )
+from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
+    TopologicalSpaceCoslices,
+)
+from dzack_research.preamble.categories.algebras.graded_lie_algebras import (  # noqa: F401
+    GradedLieAlgebras,
+)
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
