@@ -41,6 +41,10 @@ class _RestrictedGradedAlgebraElement(GradedDirectSumElement):
             case _:
                 return super()._acted_upon_(actor, self_on_left)
 
+    def _repr_(self):
+        r"""Restriction of scalars keeps each element, so it is written as its element of the original algebra."""
+        return repr(self.parent().realize(self))
+
 
 class _RestrictedGradedAlgebra(_DirectSumOfModules):
     r"""The direct-sum realization retaining restriction's original modules.
