@@ -1916,7 +1916,7 @@ class _RealFormSymmetricSpace:
         return (
             f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
             f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
-            f"{diagram.dynkin_diagram().scaled_cartan_type()} with black nodes "
+            f"{diagram.dynkin_diagram().label()} with black nodes "
             f"{tuple(diagram.black_nodes())} and involution "
             f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
         )
