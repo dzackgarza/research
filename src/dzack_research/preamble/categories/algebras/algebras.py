@@ -4596,7 +4596,8 @@ def _algebra_structure_on(
         law_decisions["commutativity"] = True
     retained_categories = tuple(
         category for category in selected_ring.category().all_super_categories()
-        if category._without_axioms() is OwnedRings() or category._without_axioms() is Sets()
+        if category is OwnedRings()._with_axioms(category.axioms())
+        or category is Sets()._with_axioms(category.axioms())
     )
     category = Cat().meet((algebras, *retained_categories))
     # Conversion specializes both the algebra's data crossing and the

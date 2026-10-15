@@ -223,6 +223,70 @@ def _affine_geometric_cohomology_complex(sheaf, cover=None):
     )
 
 
+@cached_function(key=lambda sheaf: id(sheaf))
+def _projective_space_line_bundle_derived_global_sections(sheaf):
+    r"""``RΓ(P^n_R, O(d))`` for the standard line bundle ``O(d)`` on ``P^n_R``, ``n >= 1``.
+
+    Hartshorne, Theorem III.5.1, with \(S = R[x_0, \dots, x_n]\): the
+    cohomology of \(\mathcal{O}(d)\) is \(H^0 = S_d\), the degree-\(d\)
+    forms; \(H^n = (S_{-d-n-1})^\vee\), the dual module of the degree
+    \(-d-n-1\) forms (the perfect pairing III.5.1(c)); and \(H^i = 0\) for
+    \(0 < i < n\) and \(i > n\).  Both nonzero modules are free, so
+    \(\operatorname{Ext}^{n+1}_R(H^n, H^0) = 0\) and the triangle
+    \(H^0 \to R\Gamma \to H^n[-n] \to\) of the truncations splits:
+    \(R\Gamma \cong H^0 \oplus H^n[-n]\), which is \(Q\) of the complex with
+    those pieces and zero differentials.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+    space = sheaf.projective_space()
+    base = space.scheme_base_ring()
+    dimension = space.relative_dimension()
+    degree = sheaf.degree()
+    assert space in ProjectiveSpaces(base) and sheaf is space.O(degree), (
+        f"RΓ is computed here for the standard line bundle O(d) on a projective space, but {sheaf} "
+        f"is not O({degree}) on {space}"
+    )
+    assert dimension >= 1, (
+        f"Hartshorne III.5.1 states the cohomology of O(d) on P^n for n >= 1, but {space} has dimension "
+        f"{dimension}"
+    )
+    complex_ = CochainComplexes(base)(
+        {
+            0: sheaf.global_sections(),
+            int(dimension): space.O(-degree - dimension - 1).global_sections().dual_module(),
+        },
+        {},
+        name=f"Cohomology of {sheaf} in degrees 0 and {dimension} with zero differentials",
+    )
+    return CochainComplexes(base).localization_at_quasi_isomorphisms()(complex_)
+
+
+@cached_function(key=lambda space: id(space))
+def _projective_space_de_rham_hypercohomology(space):
+    r"""``RΓ(P^n_R, Ω^•_{P^n_R/R})``, an object of ``DerivedCategories(R)``.
+
+    Stacks Project, Tag 0FMJ (Lemma 50.11.4): for \(0 \le i \le n\),
+    \(H^{2i}_{dR}(\mathbf{P}^n_R/R)\) is free of rank one with basis
+    \(c_1^{dR}(\mathcal{O}(1))^i\), and every other de Rham cohomology module
+    is zero.  The hypercohomology is bounded and every cohomology module is
+    free, so each truncation triangle splits (\(\operatorname{Ext}^1_R\) out
+    of a free module vanishes) and the object is \(Q\) of the complex with
+    those modules in degrees \(0, 2, \dots, 2n\) and zero differentials.
+    """
+    base = space.scheme_base_ring()
+    dimension = space.relative_dimension()
+    complex_ = CochainComplexes(base)(
+        {
+            2 * power: base.free_module(finite_ordered_set((f"c_1(O(1))^{power}",)))
+            for power in range(int(dimension) + 1)
+        },
+        {},
+        name=f"de Rham cohomology of {space} with zero differentials",
+    )
+    return CochainComplexes(base).localization_at_quasi_isomorphisms()(complex_)
+
+
 def _affine_geometric_scalar_cohomology_map(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
     complex_ = _affine_geometric_cohomology_complex(sheaf, cover=cover)

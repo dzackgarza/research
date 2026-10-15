@@ -6,8 +6,14 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
+from itertools import combinations
+
 from sage.categories.category_with_axiom import all_axioms
+from sage.combinat.root_system.coxeter_group import CoxeterGroup
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.manifolds.manifold import Manifold as _SageManifold
+from sage.matrix.constructor import matrix as _engine_matrix
+from sage.matrix.special import identity_matrix as _engine_identity_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.element import Element
@@ -28,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_complex_field,
     _owned_engine_element,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -209,6 +216,83 @@ def _engine_manifold_expression(value):
     """
     expression = _admit_manifold_expression(value)
     return _engine_element(_manifold_expression_ring(), expression)
+
+
+def _upper_triangle(n):
+    r"""The index pairs ``(i, j)``, ``i <= j < n``, of the entries of an ``n x n`` symmetric matrix."""
+    return tuple((row, column) for row in range(int(n)) for column in range(row, int(n)))
+
+
+def _symmetric_entry(coordinates, row, column):
+    return coordinates[(min(row, column), max(row, column))]
+
+
+def _skew_entry(coordinates, row, column):
+    match row - column:
+        case 0:
+            return SR.zero()
+        case difference if difference > 0:
+            return -coordinates[(column, row)]
+        case _:
+            return coordinates[(row, column)]
+
+
+def _engine_positive_definite(hermitian):
+    r"""Sylvester's criterion: a Hermitian matrix is positive definite iff each leading principal minor is positive.
+
+    The minors of a Hermitian matrix are real; the conditions compare their
+    real parts with ``0`` so that the engine reads each as a real inequality.
+    """
+    return tuple(
+        hermitian[:size, :size].det().real_part() > 0
+        for size in range(1, hermitian.nrows() + 1)
+    )
+
+
+def _engine_positive_root_count(diagram, vertices):
+    r"""``|Phi_X^+|`` for the subdiagram on ``vertices``: the length of the longest element of ``W_X``."""
+    from dzack_research.preamble.categories.coxeter_diagrams import (
+        _engine_coxeter_matrix_entry,
+    )
+
+    match len(vertices):
+        case 0:
+            return 0
+        case _:
+            group = CoxeterGroup(
+                CoxeterMatrix(
+                    [
+                        [
+                            _engine_coxeter_matrix_entry(diagram.coxeter_entry(left, right))
+                            for right in vertices
+                        ]
+                        for left in vertices
+                    ]
+                ),
+                implementation="reflection",
+            )
+            return group.long_element().length()
+
+
+def _symmetric_space_rank_and_dimension(satake_diagram):
+    r"""The real rank ``dim a_0`` and the dimension ``dim p_0`` of ``G/K`` for the real form of a Satake diagram.
+
+    ``a_0`` is a maximal abelian subspace of ``p_0``; its dimension is the
+    number of ``tau``-orbits of white nodes (Araki, 1962).  The roots
+    vanishing on ``a_0`` are the roots ``Phi_X`` of the black subdiagram, so
+    ``dim n_0 = |Phi^+| - |Phi_X^+|``, and the Iwasawa decomposition
+    ``g_0 = k_0 + a_0 + n_0`` (Helgason, Ch. VI) gives
+    ``dim G/K = dim p_0 = dim a_0 + dim n_0``.
+    """
+    diagram = satake_diagram.dynkin_diagram()
+    tau = satake_diagram.involution()
+    black = tuple(satake_diagram.black_nodes())
+    vertices = tuple(diagram.index_set())
+    white = tuple(vertex for vertex in vertices if vertex not in satake_diagram.black_nodes())
+    rank = len({frozenset((vertex, tau(vertex))) for vertex in white})
+    return rank, rank + _engine_positive_root_count(diagram, vertices) - _engine_positive_root_count(
+        diagram, black
+    )
 
 
 def _admit_manifold_expression_family(values, *, name):
@@ -734,6 +818,13 @@ class RiemannianManifolds(OwnedCategory):
             right translation is a diffeomorphism of ``G``, not a group morphism.
             The smooth structure and the ``G``-invariant metric induced by
             the Killing form of ``g_0`` restricted to ``p_0`` place it here.
+
+            The construction is the smooth manifold on the one global chart
+            ``Exp: p_0 -> G/K``, a diffeomorphism for noncompact type
+            (Helgason, Ch. VI, Theorem 1.1), with coordinates ``x_0, ...``
+            on ``p_0``.  ``dim p_0`` and the real rank are read from the
+            Satake diagram by the Iwasawa decomposition.  The orbit-space
+            route above and the metric are not constructed.
             """
             from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
 
@@ -742,7 +833,34 @@ class RiemannianManifolds(OwnedCategory):
                 f"a noncompact real form of a simple Lie algebra is classified by an object "
                 f"of SatakeDiagrams(), and {satake_diagram} is in {satake_diagram.category()}"
             )
-            assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
+            assert satake_diagram.dynkin_diagram().is_connected(), (
+                f"cannot construct the irreducible symmetric space of {satake_diagram}: an "
+                f"irreducible space comes from a simple Lie algebra, whose Dynkin diagram is "
+                f"connected"
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake_diagram)
+            assert rank >= 1, (
+                f"{satake_diagram} has every node black, so it is the compact real form, and "
+                f"its symmetric space G/K is a point, not of the noncompact type"
+            )
+            engine = _SageManifold(
+                int(dimension), "G/K", structure="smooth", unique_tag=object()
+            )
+            space = _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=int(dimension),
+                manifold_name="G/K",
+                manifold_structure="smooth",
+                differentiability_degree=Infinity,
+                manifold_field="real",
+                satake_diagram=satake_diagram,
+                real_rank=rank,
+            )
+            space.chart("p0", " ".join(f"x{index}" for index in range(int(dimension))))
+            return space
 
         def hyperbolic_space(self, component):
             r"""Return the hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
@@ -753,7 +871,7 @@ class RiemannianManifolds(OwnedCategory):
             ``{x in C^+ : q(x) = 1}`` of dimension ``n``, with the metric
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
-            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(component)``.
+            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -764,7 +882,7 @@ class RiemannianManifolds(OwnedCategory):
                 dimension, "HH", structure="smooth", unique_tag=object()
             )
             return _object_of(
-                HyperbolicSpaces(component),
+                HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
                 manifold_dimension=dimension,
@@ -1085,6 +1203,69 @@ class ComplexManifolds(OwnedCategory):
         manifold.chart("standard", " ".join(coordinate_names))
         return manifold
 
+    def projective_space(self, dimension, name=None):
+        r"""Complex projective space ``CP^n = (C^{n+1} - 0)/C^*``, a compact complex manifold.
+
+        The atlas is the standard one (Griffiths--Harris, *Principles of
+        Algebraic Geometry*, Ch. 0, Sec. 1): ``U_i = {x_i != 0}`` with chart ``x_k/x_i`` (``k != i``), and on
+        ``U_i \cap U_j`` the holomorphic coordinate change
+        ``x_k/x_j = (x_k/x_i)/(x_j/x_i)``.  ``CP^n`` is the image of the
+        compact sphere ``S^{2n+1}`` under the quotient map, so it is compact.
+        The chart labels are ``U0, ..., Un`` and the coordinates are named
+        ``x{k}_over_x{i}``, as on the standard affine charts of ``P^n``.
+        Engine adapter: SageManifolds' open subsets, charts and transition
+        maps, the pattern of its ``RealProjectiveSpace`` with complex field.
+        """
+        dimension = int(dimension)
+        if name is None:
+            name = f"CP^{dimension}"
+        assert dimension > 0, (
+            f"cannot construct the complex projective space {name} of dimension {dimension}: "
+            f"the dimension must be positive"
+        )
+        engine = _SageManifold(
+            dimension, str(name), field="complex", structure="smooth", unique_tag=object(),
+        )
+        manifold = _object_of(
+            self.Compact(),
+            topology_data=_ManifoldTopologyData(engine),
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="complex analytic",
+            differentiability_degree=Infinity,
+            manifold_field="complex",
+        )
+        indices = range(dimension + 1)
+        charts = {
+            i: manifold._register_chart(
+                f"U{i}",
+                engine.open_subset(f"U{i}").chart(
+                    " ".join(f"x{k}_over_x{i}" for k in indices if k != i)
+                ),
+            )
+            for i in indices
+        }
+        for i, j in combinations(indices, 2):
+            source = _engine_manifold_chart(charts[i])
+            target = _engine_manifold_chart(charts[j])
+            # Homogeneous coordinates of a point of U_i (x_i = 1), and of U_j (x_j = 1).
+            on_i = list(source[:])
+            on_i.insert(i, 1)
+            on_j = list(target[:])
+            on_j.insert(j, 1)
+            transition = source.transition_map(
+                target,
+                [on_i[k] / on_i[j] for k in indices if k != j],
+                restrictions1=on_i[j] != 0,
+                restrictions2=on_j[i] != 0,
+            )
+            transition.set_inverse(
+                *(on_j[k] / on_j[i] for k in indices if k != i), check=False,
+            )
+        engine.declare_union(engine.subsets())
+        return manifold
+
     def _open_submanifold_data(self, containing_manifold, name, restriction):
         r"""The construction data of the open subset ``{restriction}`` of ``containing_manifold``, cut out in its one chart."""
         assert containing_manifold in self, (
@@ -1221,27 +1402,74 @@ class ComplexManifolds(OwnedCategory):
             Bounded realization ``{Z in M_{p x q}(C) : 1_q - Z^* Z > 0}``,
             of complex dimension ``pq``, for positive integers ``p`` and
             ``q``.  ``I_{1,1}`` is the disc, biholomorphic to
-            ``upper_half_plane()``.
+            ``upper_half_plane()``.  The positivity of the Hermitian matrix
+            ``1_q - Z^* Z`` is read by Sylvester's criterion: every leading
+            principal minor is positive.
             """
-            assert False, "type_I on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert p >= 1 and q >= 1, (
+                f"I_{{p,q}} is defined for positive integers p and q, not p = {p}, q = {q}"
+            )
+            index_pairs = tuple(
+                (row, column) for row in range(int(p)) for column in range(int(q))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"I_{p}_{q}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(p), int(q), lambda row, column: coordinates[(row, column)]
+            )
+            return self._bounded_open_domain(
+                space,
+                f"I_{p}_{q}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(q)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_II(self, n):
             r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
 
             Bounded realization ``{Z in M_n(C) : Z^t = -Z, 1_n - Z^* Z > 0}``,
-            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``.
+            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``;
+            the coordinates are the entries ``z_{ij}``, ``i < j``.
             """
-            assert False, "type_II on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 2, f"II_n is defined for integers n >= 2, not n = {n}"
+            index_pairs = tuple(
+                (row, column) for row in range(int(n)) for column in range(row + 1, int(n))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"II_{n}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _skew_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"II_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_III(self, n):
             r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
 
             Bounded realization ``{Z in M_n(C) : Z^t = Z, 1_n - Z^* Z > 0}``,
             of complex dimension ``n(n + 1)/2``, for a positive integer
-            ``n``.  The Cayley transform identifies it with
+            ``n``; the coordinates are the entries ``z_{ij}``, ``i <= j``.
+            The Cayley transform identifies it with
             ``siegel_upper_half_space(n)``; ``III_1 = I_{1,1}``.
             """
-            assert False, "type_III on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"III_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"III_{n}", _upper_triangle(n)
+            )
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _symmetric_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"III_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
         def type_IV(self, n):
             r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
@@ -1255,16 +1483,92 @@ class ComplexManifolds(OwnedCategory):
             two components and that choosing one is additional data;
             ``LeanCategories/Lattices/Valued/PeriodDomainData.lean``,
             ``latticePeriodDomainData``).
+
+            The construction is the tube domain
+            ``{z in C^n : Im z in C^+}``, ``C^+ = {y : y_1 > 0, (y, y) > 0}``
+            for ``(y, y) = y_1^2 - y_2^2 - ... - y_n^2``.  Write
+            ``V = U + W`` with ``U`` a hyperbolic plane on ``e, f`` and ``W``
+            of signature ``(1, n - 1)``.  A line with ``(omega, e) != 0`` has
+            the unique representative ``omega = -(z, z)/2 e + f + z``,
+            ``z in W_C``, which is isotropic, and
+            ``(omega, bar omega) = 2 (Im z, Im z)``.  No line of the period
+            domain has ``(omega, e) = 0``: then ``Re omega`` and
+            ``Im omega`` would span a positive definite real ``2``-plane in
+            ``e^perp/e = W``, which has one positive direction.  The two
+            components of ``{(y, y) > 0}`` are the two components of the
+            period domain, and ``y_1 > 0`` chooses one.
             """
-            assert False, "type_IV on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"IV_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"IV_{n}", tuple((0, index) for index in range(int(n)))
+            )
+            imaginary = tuple(
+                coordinates[(0, index)].imag_part() for index in range(int(n))
+            )
+            return self._bounded_open_domain(
+                space,
+                f"IV_{n}",
+                (
+                    imaginary[0] > 0,
+                    imaginary[0] ** 2 - sum(y**2 for y in imaginary[1:]) > 0,
+                ),
+            )
 
         def type_EIII(self):
-            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
-            assert False, "type_EIII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``.
+
+            Built on the Satake diagram of ``E_{6(-14)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``3, 4, 5`` and ``tau``
+            swaps ``1 <-> 6`` and ``3 <-> 5``; real rank ``2``.  The vertices
+            of the session's ``E6`` diagram are Bourbaki's labels minus one.
+            The bounded realization is ``harish_chandra_realization()``.
+            """
+            return self._exceptional_domain("EIII", "E6", (2, 3, 4), (5, 1, 4, 3, 2, 0))
 
         def type_EVII(self):
-            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``."""
-            assert False, "type_EVII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``.
+
+            Built on the Satake diagram of ``E_{7(-25)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``2, 3, 4, 5`` and ``tau``
+            is the identity; real rank ``3``.  The vertices of the session's
+            ``E7`` diagram are Bourbaki's labels minus one.
+            """
+            return self._exceptional_domain("EVII", "E7", (1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6))
+
+        def _exceptional_domain(self, name, cartan_name, black_nodes, involution_images):
+            r"""The Hermitian symmetric domain ``G/K`` of the real form with the given Satake diagram.
+
+            Its complex dimension is ``dim p_0 / 2``; the complex manifold has
+            no chart until its Harish-Chandra realization is constructed.
+            """
+            from dzack_research.preamble.categories.lattices import Lattices
+            from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
+
+            diagram = Lattices(_owned_integers())(cartan_name).dynkin_diagram()
+            satake = SatakeDiagrams()(
+                diagram, black_nodes, diagram.Mor(diagram)(involution_images)
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake)
+            engine = _SageManifold(
+                dimension // 2,
+                name,
+                field="complex",
+                structure="smooth",
+                unique_tag=object(),
+            )
+            return _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=dimension // 2,
+                manifold_name=name,
+                manifold_structure="complex analytic",
+                differentiability_degree=Infinity,
+                manifold_field="complex",
+                satake_diagram=satake,
+                real_rank=rank,
+            )
 
         def upper_half_plane(self, name="HH"):
             r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
@@ -1294,9 +1598,46 @@ class ComplexManifolds(OwnedCategory):
 
             It is ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``, of complex
             dimension ``g(g + 1)/2``, for a positive integer ``g``;
-            ``H_1 = upper_half_plane()``.
+            ``H_1 = upper_half_plane()``.  The coordinates are the entries
+            ``z_{ij}``, ``i <= j``, of ``Z``, and the positive definiteness
+            of the real symmetric matrix ``Im(Z)`` is read by Sylvester's
+            criterion: every leading principal minor is positive.
             """
-            assert False, "siegel_upper_half_space on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert g >= 1, f"H_g is defined for positive integers g, not g = {g}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"H_{g}", _upper_triangle(g)
+            )
+            imaginary = _engine_matrix(
+                SR,
+                int(g),
+                int(g),
+                lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
+            )
+            return self._bounded_open_domain(
+                space, f"H_{g}", _engine_positive_definite(imaginary)
+            )
+
+        def _matrix_coordinate_space(self, name, index_pairs):
+            r"""The complex affine space with one coordinate ``z_i_j`` per index pair, and its engine coordinates."""
+            space = self.base_category().affine_space(
+                len(index_pairs),
+                name=f"{name}_space",
+                coordinate_names=tuple(f"z_{row}_{column}" for row, column in index_pairs),
+            )
+            chart = space.atlas()[tuple(space.chart_labels())[0]]
+            return space, {
+                pair: _engine_manifold_expression(chart.coordinate(index))
+                for index, pair in enumerate(index_pairs)
+            }
+
+        def _bounded_open_domain(self, space, name, restriction):
+            r"""The open subset of ``space`` cut out by ``restriction``, an object of this category."""
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                **complex_manifolds._open_submanifold_data(space, name, restriction),
+            )
 
         class ParentMethods:
             def harish_chandra_realization(self):
@@ -1319,6 +1660,38 @@ class ComplexManifolds(OwnedCategory):
                 the real form ``Lie(Aut(D)^0)``.
                 """
                 assert False, "bergman_metric_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
+
+class _RealFormSymmetricSpace:
+    r"""The symmetric space ``G/K`` of a real form, built on its Satake diagram; a realization, not a category.
+
+    The Satake diagram classifies the real form ``g_0 = Lie(G)`` (Araki,
+    1962), so it is the datum the construction is on; the real rank
+    ``dim a_0`` is read from it.
+    """
+
+    def __init__(self, satake_diagram, real_rank, **rest) -> None:
+        self._satake_diagram = satake_diagram
+        self._real_rank = real_rank
+        super().__init__(**rest)
+
+    def satake_diagram(self):
+        r"""Return the Satake diagram of the real form ``g_0`` of which this is ``G/K``."""
+        return self._satake_diagram
+
+    def real_rank(self):
+        r"""Return ``dim a_0``, the rank of the symmetric space: the number of ``tau``-orbits of white nodes."""
+        return self._real_rank
+
+    def _repr_(self):
+        diagram = self._satake_diagram
+        return (
+            f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
+            f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
+            f"{diagram.dynkin_diagram().scaled_cartan_type()} with black nodes "
+            f"{tuple(diagram.black_nodes())} and involution "
+            f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
+        )
 
 
 class _ComplexOpenEngine:
