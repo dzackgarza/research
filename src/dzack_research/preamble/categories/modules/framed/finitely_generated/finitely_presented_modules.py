@@ -659,16 +659,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             return tensor.from_morphism(self.presentation())
 
-        def _selected_relation_morphism(self):
-            r"""Return the selected relation morphism ``r: F_1 -> F_0`` to module-construction adapters.
-
-            Protected presented-module contract under OWN-05--07. Permitted
-            callers are module, group-module and module-morphism constructors
-            that rebuild owned kernels, quotients, direct constructions, or
-            scalar changes from the selected finite presentation.
-            """
-            return self.presentation()
-
         def _represented_kernel_of_morphism(self, morphism):
             if self not in (morphism.domain(), morphism.codomain()):
                 return NotImplemented
@@ -2140,6 +2130,11 @@ class _GeneralPresentedModule:
             if value.parent() is self:
                 return value
             value = value._representative()
+        match value:
+            # Framing coordinates ``a : S -> R`` name the class of
+            # ``sum_s a(s) e_s``, the image of the cover vector they state.
+            case dict():
+                return self.linear_combination(value)
         match element_parent(value):
             case Parent() as source if source is not self and self._built_on_the_same_data(source):
                 return self._element_on_the_same_data(source, value)
