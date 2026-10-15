@@ -102,12 +102,18 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
 
 
 class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
-    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n, \mathcal{O}(d))\).
+    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n_R, \mathcal{O}(d))\).
 
-    An object is the free module on the degree-\(d\) monomials of a homogeneous
-    coordinate algebra of a projective scheme \(X\).  The free-module level
-    consumes the monomials; this level adds \(X\), the degree \(d\), the
-    coordinate algebra, and the exponent vector of each monomial.
+    For a commutative ring \(R\) and \(S = R[x_0, \dots, x_n]\) graded by total
+    degree, \(\Gamma(\mathbb{P}^n_R, \mathcal{O}(d)) \cong S_d\), the degree-\(d\)
+    homogeneous piece, for every \(d \in \mathbb{Z}\), and \(S_d = 0\) for
+    \(d < 0\) (Hartshorne, Proposition II.5.13).  \(S_d\) is a free \(R\)-module:
+    the monomials \(x^a\) with \(|a| = d\) give the chosen framing
+    \(R^{(\{x^a\})} \cong S_d\).  So an object is a framed free module in
+    ``Modules(R)`` over any \(R\).  The free-module level
+    consumes the monomials; this level adds the projective scheme \(X\), the
+    degree \(d\), the graded coordinate algebra \(S\) whose degree-\(d\) piece
+    this is, and the exponent vector of each monomial.
     """
 
     @classmethod
@@ -119,7 +125,12 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).global_sections()
 
     def super_categories(self):
-        return [VectorSpaces(self.base_ring())]
+        r"""The monomial basis is a chosen framing of a free module over the same ring."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
+        return [FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -604,17 +615,15 @@ def _weak_compositions(total, length):
 
 
 def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordinate_names=None):
-    r"""Return the degree-``d`` homogeneous polynomial space on ``P^n``.
+    r"""Return the degree-``d`` homogeneous piece ``S_d`` of ``S = R[x_0..x_n]`` on ``P^n_R``.
 
     Basis labels are the actual monomials in an owned homogeneous-coordinate
-    polynomial algebra, not anonymous positions.
+    polynomial algebra, not anonymous positions.  No monomial has negative
+    total degree, so for ``d < 0`` the piece is the zero module on the empty
+    framing.
     """
     base = projective_scheme.scheme_base_ring()
     degree = int(degree)
-    assert degree >= 0, (
-        f"no space of homogeneous polynomials of degree {degree} on {projective_scheme}: "
-        "the degree must be nonnegative"
-    )
     width = int(projective_scheme.relative_dimension()) + 1
     names = (
         tuple(f"x{index}" for index in range(width))
@@ -629,7 +638,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     labels = tuple(ring.algebra_generating_set())
     monomials = []
     exponent_data = {}
-    for exponents in _weak_compositions(degree, width):
+    for exponents in _weak_compositions(degree, width) if degree >= 0 else ():
         monomial = ring.one()
         for position, exponent in enumerate(exponents):
             if exponent:
