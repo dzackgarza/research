@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
+    _engine_ring,
     _own_ring,
     _owned_complex_field,
     _owned_engine_element,
@@ -458,11 +459,30 @@ class TopologicalManifolds(OwnedCategory):
             return self._engine_point
 
         def __eq__(self, other) -> bool:
-            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given."""
-            return (
-                element_parent(other) is self.parent()
-                and _engine_manifold_point(other) == self._engine_manifold_point()
-            )
+            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given.
+
+            In one chart ``phi``, which is injective, ``p = p'`` exactly when
+            ``phi(p) = phi(p')``: the coordinates are compared as elements of
+            the coordinate field, which decides the equality of exact numbers.
+            Points given in two charts are compared by the private
+            SageManifolds points, through the transition map.
+            """
+            if element_parent(other) is not self.parent():
+                return False
+            match other.chart().label() == self.chart().label():
+                case True:
+                    relations = tuple(
+                        left == right
+                        for left, right in zip(self.coordinates(), other.coordinates(), strict=True)
+                    )
+                    assert all(relation is True or relation is False for relation in relations), (
+                        f"cannot decide whether {self} and {other} are the same point of "
+                        f"{self.parent()}: the equality of their coordinates in the chart "
+                        f"{self.chart().label()} is undecided"
+                    )
+                    return all(relation is True for relation in relations)
+                case False:
+                    return _engine_manifold_point(other) == self._engine_manifold_point()
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -1082,6 +1102,12 @@ class RiemannianManifolds(OwnedCategory):
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
             Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
+
+            Its one global chart ``hyperboloid`` has the coordinates
+            ``y_0, ..., y_{n-1}`` of the orthogonal projection of ``x`` to
+            ``t^perp``, for ``t`` the timelike vector of ``C^+``: ``x = s t + y``
+            with ``s = sqrt((1 - q(y))/q(t)) > 0`` is a diffeomorphism
+            ``t^perp_RR -> HH(C^+)``, since ``t^perp`` is negative definite.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -1091,7 +1117,7 @@ class RiemannianManifolds(OwnedCategory):
             engine = _SageManifold(
                 dimension, "HH", structure="smooth", unique_tag=object()
             )
-            return _object_of(
+            space = _object_of(
                 HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
@@ -1102,6 +1128,8 @@ class RiemannianManifolds(OwnedCategory):
                 manifold_field="real",
                 component=component,
             )
+            space.chart("hyperboloid", " ".join(f"y{index}" for index in range(dimension)))
+            return space
 
         class ParentMethods:
             def geodesic_symmetry(self, point):
@@ -1918,7 +1946,8 @@ class ComplexManifolds(OwnedCategory):
             )
             return _object_of(
                 self,
-                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=1,
                 **complex_manifolds._open_submanifold_data(
                     line, name, tau.imag_part() > 0
                 ),
@@ -1944,8 +1973,14 @@ class ComplexManifolds(OwnedCategory):
                 int(g),
                 lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
             )
-            return self._bounded_open_domain(
-                space, f"H_{g}", _engine_positive_definite(imaginary)
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=int(g),
+                **complex_manifolds._open_submanifold_data(
+                    space, f"H_{g}", _engine_positive_definite(imaginary)
+                ),
             )
 
         def _matrix_coordinate_space(self, name, index_pairs):
@@ -2019,7 +2054,7 @@ class _RealFormSymmetricSpace:
         return (
             f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
             f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
-            f"{diagram.dynkin_diagram().scaled_cartan_type()} with black nodes "
+            f"{diagram.dynkin_diagram().label()} with black nodes "
             f"{tuple(diagram.black_nodes())} and involution "
             f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
         )
@@ -2052,6 +2087,74 @@ class _ComplexOpenEngine:
         label = tuple(self.chart_labels())[0]
         coordinates = self.atlas()[label].coordinates()
         return self.Mor(self._containing_manifold).polynomial(coordinates)
+
+
+class _SiegelUpperHalfSpace(_ComplexOpenEngine):
+    r"""The Siegel upper half-space ``H_g`` with its symplectic action; a realization, not a category.
+
+    ``Sp_{2g}(RR)`` acts on ``H_g`` by biholomorphisms
+    ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M = [[A, B], [C, D]]`` with
+    ``g x g`` blocks; it is transitive with stabilizer ``U(g)`` at ``iI``,
+    which presents ``H_g`` as ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``
+    (Helgason, Ch. X, §6, Table V).  For ``g = 1`` this is the Möbius
+    action of ``SL_2(RR) = Sp_2(RR)`` on the upper half-plane.
+    """
+
+    def __init__(self, siegel_genus, **rest) -> None:
+        self._siegel_genus = siegel_genus
+        super().__init__(**rest)
+
+    def siegel_genus(self):
+        return self._siegel_genus
+
+    def symplectic_action(self, group):
+        r"""Return the ``Gamma``-space ``(H_g, rho)`` of a group of integral symplectic matrices.
+
+        ``group`` is a group ``Gamma`` of ``2g x 2g`` matrices in
+        ``Sp_{2g}(ZZ)``; ``SL_2(ZZ) = Sp_2(ZZ)`` for ``g = 1``.  ``rho``
+        restricts the action of ``Sp_{2g}(RR)`` along the inclusion, so
+        ``rho(M)`` is the biholomorphism ``Z |-> (AZ + B)(CZ + D)^{-1}``
+        of ``H_g``, and ``(MN) . Z = M . (N . Z)`` makes it a left action.
+        The result is an object of ``GObjects(Gamma, ComplexManifolds())``;
+        its ``orbit_space()`` is ``Gamma\H_g``.
+        """
+        from dzack_research.preamble.categories.group.g_objects import GObjects
+
+        return GObjects(group, ComplexManifolds()).on_space(
+            self,
+            lambda element, point: self._symplectic_transform(group, element, point),
+        )
+
+    def _symplectic_transform(self, group, element, point):
+        r"""The point ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M`` the matrix of ``element``."""
+        from dzack_research.preamble.categories.group.groups import (
+            _matrix_group_element_matrix,
+        )
+
+        g = self._siegel_genus
+        point = self(point)
+        matrix = _matrix_group_element_matrix(group, element)
+        assert matrix.nrows() == 2 * g and matrix.ncols() == 2 * g, (
+            f"{element} does not act on {self}: Sp_{2 * g} acts on the Siegel upper "
+            f"half-space H_{g} by 2g x 2g = {2 * g} x {2 * g} matrices, and its matrix is "
+            f"{matrix.nrows()} x {matrix.ncols()}"
+        )
+        field = _owned_complex_field()
+        engine_field = _engine_ring(field)
+        entries = dict(zip(_upper_triangle(g), tuple(point.coordinates()), strict=True))
+        Z = _engine_matrix(
+            engine_field,
+            g,
+            g,
+            lambda row, column: _engine_element(field, _symmetric_entry(entries, row, column)),
+        )
+        M = matrix.change_ring(engine_field)
+        A, B, C, D = M[:g, :g], M[:g, g:], M[g:, :g], M[g:, g:]
+        W = (A * Z + B) * (C * Z + D).inverse()
+        return self.point(
+            tuple(_owned_engine_element(field, W[row, column]) for row, column in _upper_triangle(g)),
+            point.chart().label(),
+        )
 
 
 class _ComplexDiscEngine(_ComplexOpenEngine):
