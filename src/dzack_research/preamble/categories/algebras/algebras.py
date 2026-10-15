@@ -687,6 +687,12 @@ class _CommutativeUnitalAlgebraParentMethods:
 
         return DeRhamAlgebras(self.base_ring())(self)
 
+    def de_rham_cohomology(self, degree):
+        r"""``H^degree_dR(A/R)``, the image of this algebra under the de Rham cohomology functor."""
+        commutative_algebras = Algebras(self.base_ring()).Associative().Unital().Commutative()
+        return commutative_algebras.de_rham_cohomology(degree)(self)
+
+
 class _AlgebraTensorSquareFunctor(Functor):
     r"""The diagonal tensor-square endofunctor on modules over a commutative ring."""
 
@@ -798,6 +804,9 @@ def _install_selected_algebra_generators(
                     source = module.tensor_algebra()
                 case False:
                     source = module.symmetric_algebra()
+            # The free module on a label set is cached by equality of label
+            # sets, so the free algebra states its maps on its own label set.
+            labels = source.algebra_generating_set()
         case _:
             pass
     generator_morphism = Sets().Mor(labels, algebra)(values.value)
