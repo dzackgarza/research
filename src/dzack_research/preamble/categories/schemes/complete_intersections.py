@@ -248,8 +248,11 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                     by the intersection form (Deligne, Théorie de Hodge II, (2.1.1),
                     (2.1.15), (2.3.1)).
                     """
-                    from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
-                    return _QuarticK3HodgeData(self)
+                    from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                        _quartic_k3_hodge_structure,
+                    )
+
+                    return _quartic_k3_hodge_structure(self)
 
         class ParentMethods:
             def validate_smoothness(self) -> None:
