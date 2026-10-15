@@ -1942,6 +1942,22 @@ class _GeneralPresentedModule:
             return self(self._free_module.module_generator(labels[position]))
         return self(self._free_module.gen(position))
 
+    def submodule_key(self, subobject):
+        r"""A hashable datum equal for two submodules of this module exactly when they are equal.
+
+        By the correspondence theorem a submodule is its preimage in the
+        cover, which contains the relations; the engine's echelonized basis
+        of that preimage is unique (Hermite normal form over ZZ).
+        """
+        assert self._relation_submodule is not None, (
+            f"{self} has no engine relation module, so its submodules have no engine preimage to compare"
+        )
+        inclusion = subobject.inclusion()
+        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
+        lifts = [self(inclusion(generator))._representative() for generator in subobject.module_generators()]
+        preimage = self._free_module.submodule(lifts + list(self._relation_submodule.basis()))
+        return tuple(tuple(row) for row in preimage.echelonized_basis_matrix().rows())
+
     def _cover_coordinates(self, element):
         r"""Coordinates of a representative as an indexed family on the cover basis."""
         lift = self(element)._representative()

@@ -3147,12 +3147,17 @@ class IndexedFreeGroupMorphism(GroupMorphism):
         )
         return self.codomain().subgroup(tuple(self._admitted_generator_image(label) for label in basis))
 
+    @cached_method
+    def _signed_generator_image(self, index, sign):
+        r"""The image of one letter of a reduced word, a basis element to the power ``sign``."""
+        return self._admitted_generator_image(index) ** sign
+
     def _evaluate_reduced_word(self, element):
         codomain = self.codomain()
         return reduce(
             mul,
             (
-                self._admitted_generator_image(index) ** sign
+                self._signed_generator_image(index, sign)
                 for index, sign in _reduced_word_data(self.domain(), element)
             ),
             codomain.one(),

@@ -36,12 +36,14 @@ class OrbitSpanConstructions(OwnedCategoryOverBaseRing):
             group.classifying_category().an_object(), group.classifying_category().an_object()
         )
 
-        def act(element, vector):
-            return action(arrows(element))(vector)
+        # One arrow of BG per acting element: constructing it admits the
+        # element into the group, which is decided once, not per vector.
+        def acting_maps(elements):
+            return tuple(action(arrows(element)) for element in elements)
 
         generators = tuple(seed(vector) for vector in seed.domain().module_generators())
         if group.is_finite() is True:
-            span = ambient.subobject_on(tuple(act(g, vector) for g in group for vector in generators))
+            span = ambient.subobject_on(tuple(act(vector) for act in acting_maps(group) for vector in generators))
         else:
             if containing is None:
                 raise NotImplementedError("an infinite-group orbit span requires a finite containing bound")
@@ -50,13 +52,13 @@ class OrbitSpanConstructions(OwnedCategoryOverBaseRing):
             if not group.has_selected_finite_group_generating_set():
                 raise NotImplementedError("bounded orbit closure requires a finite group generating set")
             steps = tuple(group.group_generators())
-            steps += tuple(~g for g in steps)
+            steps = acting_maps(steps + tuple(~g for g in steps))
             span = ambient.subobject_on(generators)
             while True:
                 current = tuple(span.inclusion()(v) for v in span.module_generators())
                 if any(not containing.is_in_image(v) for v in current):
                     raise ValueError("the orbit-generated submodule leaves the specified containing bound")
-                images = tuple(act(g, v) for g in steps for v in current)
+                images = tuple(act(v) for act in steps for v in current)
                 if all(span.inclusion().is_in_image(v) for v in images):
                     break
                 span = ambient.subobject_on(current + images)

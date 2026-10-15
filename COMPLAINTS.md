@@ -1161,7 +1161,8 @@ If `L tensor QQ_p` is isotropic, it represents every nonzero element of `ZZ_p`. 
 **Existing capability:** the preamble computes the criterion, citing Serre, *A Course in Arithmetic*, Ch. IV, 1.7, Prop.
 4, and Ch. II, 2.2, Cor.
 2 of Thm.
-1\. On `A_2`, `<1>` and `diag(2, 6)` it gives the values in `TRAPS.md` (2026-10-09). **Consumers:** `Genus.anisotropic_primes` and `Genus.local_representations` in rank 1 and 2, and the lattice-db fields `integral.anisotropic_primes` and `integral.local_representations`, whose schema states the rule at primes not dividing `2 det L`. **Coverage boundary:** `lean-categories` has these results over fields:
+
+1. On `A_2`, `<1>` and `diag(2, 6)` it gives the values in `TRAPS.md` (2026-10-09). **Consumers:** `Genus.anisotropic_primes` and `Genus.local_representations` in rank 1 and 2, and the lattice-db fields `integral.anisotropic_primes` and `integral.local_representations`, whose schema states the rule at primes not dividing `2 det L`. **Coverage boundary:** `lean-categories` has these results over fields:
 
 - `exists_repr_of_isotropic` (`ForMathlib/WittCancellation.lean`): an isotropic binary form over a field represents every scalar.
 
@@ -1478,8 +1479,10 @@ Not repaired; reached from sage-indefinite-port `.tmp/probe/binary.py hecke_bina
 
 **Observed.** A formed finitely presented module (e.g. a discriminant module) lies in the join of its formed category and `_SelectedFinitePresentationModules`; `FormModules.FinitelyPresented(.Torsion)` and `ModulesWithChosenFinitePresentation` are unrelated in the declared graph, so whether a formed override (`invariant_factor_form`, `base_change`) precedes the unformed one is decided by Sage's join order (TRAPS.md, "Sage orders the factors of a join category by creation order"), a non-commuting diamond in the sense of CAT-21. Moving the unformed operations to `ModulesWithChosenFinitePresentation` makes the observed linearization correct for both specimens there; it is not guaranteed by inheritance.
 
-**Desired.** A declared category of formed modules with a chosen finite presentation, below both `FormModules.FinitelyPresented` and `ModulesWithChosenFinitePresentation`, whose formed operations override the unformed ones by inheritance. No node created.
+**Desired.** A declared category of formed modules with a chosen finite presentation, below both `FormModules.FinitelyPresented` and `ModulesWithChosenFinitePresentation`, whose formed operations override the unformed ones by inheritance.
+No node created.
 
 ## Base change of a discriminant module's underlying presented module asserts in the formed base change of its cover
 
-**Observed** (executed 2026-10-15, sage-indefinite-port `.tmp/probe/bc.py`): for L with Gram ((2, 1), (1, -4)), `L.discriminant_group().unformed_module().base_change(ZZ.fraction_field_map())` reaches `ModulesWithChosenFinitePresentation.base_change` -> `presentation().domain().base_change(ring_map)`; the presentation's domain is the formed lattice, and `form_modules._formed_module_base_change` raises `AssertionError` at `assert self.value_module() is self.base_ring()`. The base change of a presented module should change its presentation as a map of modules, not of the formed objects it was built from. Not repaired.
+**Observed** (executed 2026-10-15, sage-indefinite-port `.tmp/probe/bc.py`): for L with Gram ((2, 1), (1, -4)), `L.discriminant_group().unformed_module().base_change(ZZ.fraction_field_map())` reaches `ModulesWithChosenFinitePresentation.base_change` -> `presentation().domain().base_change(ring_map)`; the presentation's domain is the formed lattice, and `form_modules._formed_module_base_change` raises `AssertionError` at `assert self.value_module() is self.base_ring()`. The base change of a presented module should change its presentation as a map of modules, not of the formed objects it was built from.
+Not repaired.

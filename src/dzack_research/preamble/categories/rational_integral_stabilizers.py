@@ -126,6 +126,7 @@ class _FiniteIntegralRepresentation(SageObject):
         )
         selected = action.selected_submodule()
         self._submodules = [selected]
+        self._positions = {self._submodule_key(selected): 0}
         self._registering_orbit = True
         augmentation = self.generating_augmentation()
         free = augmentation.domain()
@@ -170,21 +171,12 @@ class _FiniteIntegralRepresentation(SageObject):
             representation(generator) for generator in self.action()._group_generators()
         ))
 
-    def _position_of(self, submodule):
-        r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``.
+    def _submodule_key(self, submodule):
+        return self._action.finite_module().submodule_key(submodule)
 
-        Two submodules are equal exactly when each contains the generators of
-        the other; this compares a candidate with the orbit, not with every
-        point of ``M/dM``.
-        """
-        return next(
-            (
-                position
-                for position, known in enumerate(self._submodules)
-                if submodule.is_contained_in(known) and known.is_contained_in(submodule)
-            ),
-            None,
-        )
+    def _position_of(self, submodule):
+        r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``."""
+        return self._positions.get(self._submodule_key(submodule))
 
     def _move_submodule(self, group_element, submodule):
         quotient = self.action().finite_module()
@@ -205,6 +197,7 @@ class _FiniteIntegralRepresentation(SageObject):
             )
             image_position = len(self._submodules)
             self._submodules.append(candidate)
+            self._positions[self._submodule_key(candidate)] = image_position
         return _owned_integers()(image_position)
 
     def orbit_submodules(self):
