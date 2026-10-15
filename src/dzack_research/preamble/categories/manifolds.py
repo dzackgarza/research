@@ -743,6 +743,37 @@ class RiemannianManifolds(OwnedCategory):
             )
             assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
 
+        def hyperbolic_space(self, component):
+            r"""Return the hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
+
+            ``component`` is an object of ``PositiveConeComponents(L)`` for a
+            lattice ``L`` of signature ``(1, n)``, the component ``C^+`` of
+            ``{x in L_RR : q(x) > 0}``.  The result is the hyperboloid
+            ``{x in C^+ : q(x) = 1}`` of dimension ``n``, with the metric
+            ``-b`` on each tangent space ``x^perp``; it is
+            ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
+            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(component)``.
+            """
+            from dzack_research.preamble.categories.hyperbolic_geometry import (
+                HyperbolicSpaces,
+            )
+
+            dimension = int(component.lattice().module_rank()) - 1
+            engine = _SageManifold(
+                dimension, "HH", structure="smooth", unique_tag=object()
+            )
+            return _object_of(
+                HyperbolicSpaces(component),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=dimension,
+                manifold_name="HH",
+                manifold_structure="smooth",
+                differentiability_degree=Infinity,
+                manifold_field="real",
+                component=component,
+            )
+
         class ParentMethods:
             def geodesic_symmetry(self, point):
                 r"""Return ``s_p``, the involutive isometry of ``M`` with isolated fixed point ``p``.

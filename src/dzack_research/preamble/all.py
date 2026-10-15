@@ -272,6 +272,10 @@ from dzack_research.preamble.categories.group.groups import (  # noqa: F401
     LieGroups,
     TopologicalGroups,
 )
+from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicRationalPoints,
+    HyperbolicSpaces,
+)
 from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     ComplexManifolds,
     DifferentiableManifolds,
