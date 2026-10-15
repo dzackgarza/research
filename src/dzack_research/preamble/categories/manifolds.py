@@ -101,6 +101,8 @@ class ManifoldAtlasTransition(SageObject):
         engine_transition,
         forward_expressions,
         inverse_expressions,
+        source_overlap,
+        target_overlap,
     ) -> None:
         self._source = source
         self._target = target
@@ -113,6 +115,8 @@ class ManifoldAtlasTransition(SageObject):
             inverse_expressions,
             name=f"Coordinate change {target.label()} to {source.label()}",
         )
+        self._source_overlap = source_overlap
+        self._target_overlap = target_overlap
         self._inverse_transition = None
 
     def source(self):
@@ -130,6 +134,19 @@ class ManifoldAtlasTransition(SageObject):
     def inverse_expressions(self):
         return self._inverse_expressions
 
+    def source_overlap(self):
+        r"""The functions on the source chart whose common nonvanishing locus is the overlap.
+
+        The coordinate change is defined on the image of ``U_s \cap U_t`` in
+        the source chart ``U_s``, the open set where every one of these
+        functions is nonzero; the empty family is the whole chart.
+        """
+        return self._source_overlap
+
+    def target_overlap(self):
+        r"""The functions on the target chart whose common nonvanishing locus is the overlap."""
+        return self._target_overlap
+
     def regularity(self):
         return self.manifold().regularity()
 
@@ -141,6 +158,8 @@ class ManifoldAtlasTransition(SageObject):
                 self._engine.inverse(),
                 self.inverse_expressions(),
                 self.forward_expressions(),
+                self.target_overlap(),
+                self.source_overlap(),
             )
             inverse._inverse_transition = self
             self._inverse_transition = inverse
@@ -218,6 +237,16 @@ def _admit_manifold_expression_family(values, *, name):
         tuple(_admit_manifold_expression(value) for value in values),
         name=name,
     )
+
+
+def _engine_nonvanishing_conditions(functions):
+    r"""Lower the open set ``{f != 0 for every f}`` to SageManifolds chart restrictions.
+
+    SageManifolds reads a list of restrictions as their conjunction; the empty
+    family is ``None``, no restriction.
+    """
+    conditions = [_engine_manifold_expression(function) != 0 for function in functions]
+    return conditions or None
 
 
 def _raise_manifold_expression_family(values, *, name):
@@ -481,7 +510,22 @@ class TopologicalManifolds(OwnedCategory):
             target_label,
             forward_expressions,
             inverse_expressions,
+            source_overlap=(),
+            target_overlap=(),
         ):
+            r"""Record the coordinate change between the charts ``U_s`` and ``U_t`` on ``U_s \cap U_t``.
+
+            A transition map of an atlas is the homeomorphism
+            ``phi_t o phi_s^{-1} : phi_s(U_s \cap U_t) -> phi_t(U_s \cap U_t)``
+            (Lee, *Introduction to Smooth Manifolds*, 2nd ed., Ch. 1).  Its
+            domain is the overlap read in the source chart, given by
+            ``source_overlap``: functions on ``U_s`` whose common nonvanishing
+            locus is ``U_s \cap U_t``.  ``target_overlap`` gives the same open
+            set in ``U_t``.  Empty families state that the overlap is the
+            whole chart.  The inverse expressions are the coordinate change
+            ``phi_s o phi_t^{-1}``; construction trusts the caller that the two
+            are mutually inverse on the overlap.
+            """
             source = self.atlas()[source_label]
             target = self.atlas()[target_label]
             forward_expressions = _admit_manifold_expression_family(
@@ -491,6 +535,14 @@ class TopologicalManifolds(OwnedCategory):
             inverse_expressions = _admit_manifold_expression_family(
                 inverse_expressions,
                 name=f"Coordinate change {target_label} to {source_label}",
+            )
+            source_overlap = _admit_manifold_expression_family(
+                source_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {source_label}",
+            )
+            target_overlap = _admit_manifold_expression_family(
+                target_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {target_label}",
             )
             if int(forward_expressions.cardinality()) != self.dimension():
                 raise ValueError(
@@ -510,12 +562,15 @@ class TopologicalManifolds(OwnedCategory):
                     _engine_manifold_expression(expression)
                     for expression in forward_expressions
                 ),
+                restrictions1=_engine_nonvanishing_conditions(source_overlap),
+                restrictions2=_engine_nonvanishing_conditions(target_overlap),
             )
             engine_transition.set_inverse(
                 *(
                     _engine_manifold_expression(expression)
                     for expression in inverse_expressions
-                )
+                ),
+                check=False,
             )
             transition = ManifoldAtlasTransition(
                 source,
@@ -523,6 +578,8 @@ class TopologicalManifolds(OwnedCategory):
                 engine_transition,
                 forward_expressions,
                 inverse_expressions,
+                source_overlap,
+                target_overlap,
             )
             reverse = transition.inverse()
             self._preamble_transitions[source_label, target_label] = transition
@@ -1130,22 +1187,23 @@ class ComplexManifolds(OwnedCategory):
             )
             for i in indices
         }
+        one = _manifold_expression_ring().one()
+
+        def homogeneous(i):
+            # Homogeneous coordinates of a point of U_i, normalized by x_i = 1.
+            affine = iter(charts[i].coordinates())
+            return {k: one if k == i else next(affine) for k in indices}
+
         for i, j in combinations(indices, 2):
-            source = _engine_manifold_chart(charts[i])
-            target = _engine_manifold_chart(charts[j])
-            # Homogeneous coordinates of a point of U_i (x_i = 1), and of U_j (x_j = 1).
-            on_i = list(source[:])
-            on_i.insert(i, 1)
-            on_j = list(target[:])
-            on_j.insert(j, 1)
-            transition = source.transition_map(
-                target,
-                [on_i[k] / on_i[j] for k in indices if k != j],
-                restrictions1=on_i[j] != 0,
-                restrictions2=on_j[i] != 0,
-            )
-            transition.set_inverse(
-                *(on_j[k] / on_j[i] for k in indices if k != i), check=False,
+            on_i = homogeneous(i)
+            on_j = homogeneous(j)
+            manifold.transition_map(
+                f"U{i}",
+                f"U{j}",
+                tuple(on_i[k] / on_i[j] for k in indices if k != j),
+                tuple(on_j[k] / on_j[i] for k in indices if k != i),
+                source_overlap=(on_i[j],),
+                target_overlap=(on_j[i],),
             )
         engine.declare_union(engine.subsets())
         return manifold
