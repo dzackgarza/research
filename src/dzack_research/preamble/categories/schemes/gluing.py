@@ -1004,6 +1004,7 @@ class _FiniteSchemeGluingDatum(SageObject):
         self._triple_transition_maps = []
 
         self._verify_pairwise_transitions()
+        self.validate_transition_inverses(check=False)
         self._scheme = _glued_scheme(self, placements, {} if level_data is None else level_data)
 
     def base_ring(self):
@@ -1107,6 +1108,21 @@ class _FiniteSchemeGluingDatum(SageObject):
                     f"the inverse chart change must be {target_overlap} -> {source_overlap}, but it is "
                     f"{inverse.domain()} -> {inverse.codomain()}"
                 )
+
+    @validator
+    def validate_transition_inverses(self):
+        r"""Each chart change ``phi_ij: U_ij -> U_ji`` and its stated inverse compose to the identities.
+
+        This is the law ``phi_ji phi_ij = id`` of a gluing datum (Hartshorne,
+        *Algebraic Geometry*, Exercise II.2.12).  Construction calls it with
+        ``check=False``.
+        """
+        for source_index, target_index in self.transition_index_set():
+            transition = self.transitions()[source_index, target_index]
+            forward = transition.forward()
+            inverse = transition.inverse().forward()
+            source_overlap = forward.domain()
+            target_overlap = forward.codomain()
             if inverse * forward != source_overlap.categorical_identity_morphism():
                 raise ValueError(
                     f"cannot glue along the chart change from chart {source_index} to chart {target_index}: "
