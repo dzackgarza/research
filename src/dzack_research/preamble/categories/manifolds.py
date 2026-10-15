@@ -753,7 +753,7 @@ class RiemannianManifolds(OwnedCategory):
             ``{x in C^+ : q(x) = 1}`` of dimension ``n``, with the metric
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
-            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(component)``.
+            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -764,7 +764,7 @@ class RiemannianManifolds(OwnedCategory):
                 dimension, "HH", structure="smooth", unique_tag=object()
             )
             return _object_of(
-                HyperbolicSpaces(component),
+                HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
                 manifold_dimension=dimension,
