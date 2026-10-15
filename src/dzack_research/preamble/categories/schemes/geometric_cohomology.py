@@ -668,67 +668,6 @@ def _zmod2_integral_topology_group():
 
 
 @cached_function
-def _projective_space_integral_cohomology_algebra(dimension):
-    r"""``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})`` with ``|alpha| = 2`` (Hatcher [Hat02], Thm. 3.19).
-
-    The graded module is free on ``alpha^0, ..., alpha^n``, each labelled by
-    its degree ``2k``, and the cup product is ``alpha^j alpha^k =
-    alpha^{j+k}``, zero when ``j + k > n``.  It is associative, with unit
-    ``alpha^0``, and commutative because every degree is even, so it is
-    supercommutative (Hatcher, Thm. 3.11).
-    """
-    from dzack_research.preamble.categories.algebras.algebras import (
-        Algebras,
-        _algebra_on_module,
-    )
-    from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-    from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-
-    integers = _owned_integers()
-    degrees = finite_ordered_set(tuple(integers(2 * power) for power in range(dimension + 1)))
-
-    def degree_on_module_generator(module_generator):
-        selected = module_generator.parent()
-        return next(degree for degree in degrees if selected.module_generator(degree) == module_generator)
-
-    construction_data = {"degree_on_module_generator": degree_on_module_generator}
-    module = integers._fresh_free_module_on(
-        degrees,
-        _extra_categories=(GradedModules(integers, integers),),
-        _extra_construction_data=construction_data,
-    )
-
-    def power_of_alpha(degree):
-        match degree <= 2 * dimension:
-            case True:
-                return module.module_generator(degree)
-            case False:
-                return module.zero()
-
-    cup_product = BilinearMap(
-        module,
-        module,
-        module,
-        {(left, right): power_of_alpha(left + right) for left in degrees for right in degrees},
-    )
-    return _algebra_on_module(
-        module,
-        cup_product,
-        placement=(
-            GradedAlgebras(integers, integers).Supercommutative(),
-            Algebras(integers).Commutative(),
-        ),
-        unit=module.module_generator(integers(0)),
-        construction_data=construction_data,
-        law_decisions={
-            "associativity": True,
-            "unit": True,
-            "commutativity": True,
-            "grading": True,
-        },
-    )
-
-
 @cached_function
 def NodalCubic():
     r"""Return the rational nodal cubic ``y^2 z = x^2(x+z)`` in ``P^2``."""
@@ -1232,20 +1171,28 @@ class _ComplexRealizationEngine:
     def singular_cohomology(self, coefficients):
         r"""``H^*(X(CC); R)``, through the theorem that computes it for the category of ``X``.
 
-        Projective space ``P^n`` with ``R = ZZ``: Hatcher, *Algebraic
-        Topology* [Hat02], Thm. 3.19, ``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})``
-        with ``|alpha| = 2``.
+        Projective space ``P^n``: Hatcher, *Algebraic Topology* [Hat02],
+        Thm. 3.19, ``H^*(CP^n; ZZ) = ZZ[alpha]/(alpha^{n+1})`` with
+        ``|alpha| = 2``.  Every ``H^k(CP^n; ZZ)`` is free, so the universal
+        coefficient theorem gives ``H^*(CP^n; R) = R[alpha]/(alpha^{n+1})``
+        for every ring ``R`` ([Hat02], Thm. 3.2).
         """
         from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
         scheme = self.scheme()
         match scheme:
-            case _ if scheme in ProjectiveSpaces(scheme.scheme_base_ring()) and coefficients is _owned_integers():
-                return _projective_space_integral_cohomology_algebra(int(scheme.dimension()))
+            case _ if scheme in ProjectiveSpaces(scheme.scheme_base_ring()):
+                from dzack_research.preamble.categories.algebras.graded_algebras import (
+                    _truncated_polynomial_graded_algebra,
+                )
+
+                return _truncated_polynomial_graded_algebra(
+                    coefficients, 2, int(scheme.dimension())
+                )
             case _:
                 assert False, (
                     f"the cup product on H^*({self}; {coefficients}) is computed only for projective "
-                    f"spaces with coefficients in ZZ, and {scheme} is in {scheme.category()}"
+                    f"spaces, and {scheme} is in {scheme.category()}"
                 )
 
     @cached_method

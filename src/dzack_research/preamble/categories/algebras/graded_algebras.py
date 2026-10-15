@@ -99,6 +99,74 @@ def _rank_one_unit_algebra(category):
     )
 
 
+def _truncated_polynomial_graded_algebra(ring, generator_degree, top_power):
+    r"""``R[x]/(x^{m+1})`` with ``|x| = d``, graded by ``ZZ``.
+
+    The graded module is free on ``x^0, ..., x^m``, each labelled by its
+    degree ``k d``, and the product is ``x^j x^k = x^{j+k}``, zero when
+    ``j + k > m``.  It is associative, with unit ``x^0``, and commutative,
+    since it is a quotient of ``R[x]``.  It is supercommutative: for even
+    ``d`` every degree is even, and for odd ``d`` the defining relation must
+    kill ``x^2``, which the assertion requires.  ``H^*(CP^n; ZZ)`` is the case
+    ``(d, m) = (2, n)`` and ``H^*(S^n; R)`` the case ``(n, 1)`` (Hatcher,
+    *Algebraic Topology* [Hat02], Thm. 3.19 and Ex. 3.7).
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+
+    integers = _owned_integers()
+    assert generator_degree % 2 == 0 or top_power <= 1, (
+        f"R[x]/(x^{top_power + 1}) with x of odd degree {generator_degree} is not supercommutative: "
+        "an odd element must square to zero"
+    )
+    degrees = finite_ordered_set(
+        tuple(integers(generator_degree * power) for power in range(top_power + 1))
+    )
+    top_degree = generator_degree * top_power
+
+    def degree_on_module_generator(module_generator):
+        selected = module_generator.parent()
+        return next(degree for degree in degrees if selected.module_generator(degree) == module_generator)
+
+    construction_data = {"degree_on_module_generator": degree_on_module_generator}
+    module = ring._fresh_free_module_on(
+        degrees,
+        _extra_categories=(GradedModules(ring, integers),),
+        _extra_construction_data=construction_data,
+    )
+
+    def power_of_generator(degree):
+        match degree <= top_degree:
+            case True:
+                return module.module_generator(degree)
+            case False:
+                return module.zero()
+
+    product = BilinearMap(
+        module,
+        module,
+        module,
+        {(left, right): power_of_generator(left + right) for left in degrees for right in degrees},
+    )
+    return _algebra_on_module(
+        module,
+        product,
+        placement=(
+            GradedAlgebras(ring, integers).Supercommutative(),
+            Algebras(ring).Commutative(),
+        ),
+        unit=module.module_generator(integers(0)),
+        construction_data=construction_data,
+        law_decisions={
+            "associativity": True,
+            "unit": True,
+            "commutativity": True,
+            "grading": True,
+        },
+    )
+
+
 def _homogeneous_degree(element):
     r"""Return the degree owned by ``element.parent()``."""
     parent = element.parent()

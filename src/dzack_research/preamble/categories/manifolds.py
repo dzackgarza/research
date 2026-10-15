@@ -915,6 +915,20 @@ class _StandardSphere:
                 )
         return integers.free_module(finite_ordered_set(labels))
 
+    @cached_method
+    def singular_cohomology(self, coefficients):
+        r"""``H^*(S^n; R) = R[s]/(s^2)`` with ``|s| = n``.
+
+        ``H^k(S^n; R)`` is ``R`` for ``k = 0, n`` and zero otherwise (Hatcher,
+        *Algebraic Topology*, Cor. 2.14 and Thm. 3.2), and the cup square of
+        the degree-``n`` class lies in ``H^{2n} = 0``.
+        """
+        from dzack_research.preamble.categories.algebras.graded_algebras import (
+            _truncated_polynomial_graded_algebra,
+        )
+
+        return _truncated_polynomial_graded_algebra(coefficients, int(self.dimension()), 1)
+
     def _fundamental_group_at(self, base_point):
         r"""``pi_1(S^n, x) = 1`` for ``n >= 2`` (Hatcher, Corollary 4.9)."""
         from dzack_research.preamble.categories.group.groups import OwnedGroups
