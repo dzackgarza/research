@@ -490,6 +490,14 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
         def _repr_object_names(self):
             return f"K3 surfaces over {self.base_ring()}"
 
+        def an_object(self):
+            r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3`` [Huy16, Ch. 1, Ex. 1.3]."""
+            from dzack_research.preamble.categories.schemes.complete_intersections import (
+                ProjectiveCompleteIntersections,
+            )
+
+            return ProjectiveCompleteIntersections(self.base_ring()).Smooth().K3().an_object()
+
         def _call_(self, surface):
             r"""Place the Calabi--Yau surface ``surface`` here, as the caller states."""
             from dzack_research.preamble.refine import refine
