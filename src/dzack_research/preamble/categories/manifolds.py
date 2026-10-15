@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
+    _engine_ring,
     _own_ring,
     _owned_complex_field,
     _owned_engine_element,
@@ -458,11 +459,30 @@ class TopologicalManifolds(OwnedCategory):
             return self._engine_point
 
         def __eq__(self, other) -> bool:
-            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given."""
-            return (
-                element_parent(other) is self.parent()
-                and _engine_manifold_point(other) == self._engine_manifold_point()
-            )
+            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given.
+
+            In one chart ``phi``, which is injective, ``p = p'`` exactly when
+            ``phi(p) = phi(p')``: the coordinates are compared as elements of
+            the coordinate field, which decides the equality of exact numbers.
+            Points given in two charts are compared by the private
+            SageManifolds points, through the transition map.
+            """
+            if element_parent(other) is not self.parent():
+                return False
+            match other.chart().label() == self.chart().label():
+                case True:
+                    relations = tuple(
+                        left == right
+                        for left, right in zip(self.coordinates(), other.coordinates(), strict=True)
+                    )
+                    assert all(relation is True or relation is False for relation in relations), (
+                        f"cannot decide whether {self} and {other} are the same point of "
+                        f"{self.parent()}: the equality of their coordinates in the chart "
+                        f"{self.chart().label()} is undecided"
+                    )
+                    return all(relation is True for relation in relations)
+                case False:
+                    return _engine_manifold_point(other) == self._engine_manifold_point()
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -792,6 +812,144 @@ class SmoothManifolds(OwnedCategory):
             manifold_field="real",
         )
 
+    def sphere(self, dimension, name=None):
+        r"""The unit sphere ``S^n = {x in R^{n+1} : |x| = 1}``, a compact smooth manifold of dimension ``n``.
+
+        The atlas is the stereographic one: ``U_N = S^n - {N}`` and
+        ``U_S = S^n - {S}``, projected from the north and the south pole onto
+        the equatorial ``R^n``, with coordinate change ``y = x/|x|^2`` on
+        ``U_N cap U_S``, where ``|x|^2 != 0`` (Lee, *Introduction to Smooth
+        Manifolds*, 2nd ed., Ch. 1).  ``S^n`` is closed and bounded in
+        ``R^{n+1}``, so it is compact.  The chart labels are ``U_N`` and
+        ``U_S``, with coordinates ``x1, ..., xn`` and ``y1, ..., yn``.  Engine
+        adapter: SageManifolds' open subsets, charts and transition maps, the
+        atlas of its ``Sphere``.
+        """
+        dimension = int(dimension)
+        if name is None:
+            name = f"S^{dimension}"
+        assert dimension > 0, (
+            f"cannot construct the sphere {name} of dimension {dimension} as a manifold of "
+            f"positive dimension"
+        )
+        engine = _SageManifold(dimension, str(name), structure="smooth", unique_tag=object())
+        sphere = _object_of(
+            self.Compact(),
+            _engine=(SmoothManifolds(), _StandardSphere, None),
+            topology_data=_ManifoldTopologyData(engine),
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="smooth",
+            differentiability_degree=Infinity,
+            manifold_field="real",
+        )
+        north, south = (
+            sphere._register_chart(
+                label,
+                engine.open_subset(label).chart(
+                    " ".join(f"{letter}{k}" for k in range(1, dimension + 1))
+                ),
+            )
+            for label, letter in (("U_N", "x"), ("U_S", "y"))
+        )
+
+        def inversion(chart):
+            coordinates = chart.coordinates()
+            norm_squared = sum(coordinate**2 for coordinate in coordinates)
+            return tuple(coordinate / norm_squared for coordinate in coordinates), norm_squared
+
+        forward, north_overlap = inversion(north)
+        inverse, south_overlap = inversion(south)
+        sphere.transition_map(
+            "U_N", "U_S", forward, inverse,
+            source_overlap=(north_overlap,), target_overlap=(south_overlap,),
+        )
+        engine.declare_union(engine.subsets())
+        return sphere
+
+
+class _StandardSphere:
+    r"""The unit sphere ``S^n``, with the homotopy groups that are known in closed form; a realization, not a category.
+
+    ``S^n`` is path connected for ``n >= 1``, so ``pi_k(S^n, x)`` does not
+    depend on the base point ``x`` up to isomorphism, and one module per
+    degree serves every base point (Hatcher, *Algebraic Topology*, §4.1).
+    """
+
+    def _homotopy_group_module(self, base_point, degree):
+        r"""``pi_k(S^n, x)`` for ``k < n``, ``k = n``, and ``(n, k) = (2, 3)``.
+
+        ``pi_k(S^n) = 0`` for ``k < n`` (Hatcher, Corollary 4.9);
+        ``pi_n(S^n) = ZZ iota_n``, generated by the class of the identity
+        (Corollary 4.25); ``pi_3(S^2) = ZZ eta``, generated by the Hopf map
+        ``eta: S^3 -> S^2`` (Example 4.51), with ``eta`` the generator of
+        Hopf invariant ``1`` (§4.B).  Every other degree is a frontier.
+        """
+        return self._homotopy_group_in_degree(int(degree))
+
+    @cached_method
+    def _homotopy_group_in_degree(self, degree):
+        sphere_dimension = int(self.dimension())
+        integers = _owned_integers()
+        match degree:
+            case _ if 1 <= degree < sphere_dimension:
+                labels = ()
+            case _ if degree == sphere_dimension:
+                labels = (f"iota_{sphere_dimension}",)
+            case 3 if sphere_dimension == 2:
+                labels = ("eta",)
+            case _:
+                assert False, (
+                    f"pi_{degree}({self}) is not presented: the homotopy groups of S^{sphere_dimension} "
+                    f"are known here in degrees 1 to {sphere_dimension}"
+                    + (" and 3" if sphere_dimension == 2 else "")
+                )
+        return integers.free_module(finite_ordered_set(labels))
+
+    def _fundamental_group_at(self, base_point):
+        r"""``pi_1(S^n, x) = 1`` for ``n >= 2`` (Hatcher, Corollary 4.9)."""
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        assert int(self.dimension()) >= 2, (
+            f"pi_1({self}) is infinite cyclic (Hatcher, Theorem 1.7), and the infinite cyclic group "
+            "is not presented here as a group"
+        )
+        return OwnedGroups().C(1)
+
+    def _whitehead_pairing(self, base_point, left_degree, right_degree):
+        r"""``pi_p(S^n) x pi_q(S^n) -> pi_{p+q-1}(S^n)``, where the factors and the values are known.
+
+        A factor that is zero gives the zero pairing.  On ``S^1`` the product
+        ``pi_1 x pi_1 -> pi_1`` is the commutator, which is trivial because
+        ``pi_1(S^1)`` is abelian.  On ``S^2``, ``[iota_2, iota_2] = 2 eta``:
+        ``[iota_2, iota_2]`` is the attaching map of the 4-cell of ``J(S^2)``,
+        whose Hopf invariant is ``2`` (Hatcher, Example 4.52 and §4.B), the
+        Hopf invariant is a homomorphism ``pi_3(S^2) -> ZZ``
+        (Proposition 4B.1), and ``H(eta) = 1``.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+
+        left_degree, right_degree = int(left_degree), int(right_degree)
+        left = self._homotopy_group_module(base_point, left_degree)
+        right = self._homotopy_group_module(base_point, right_degree)
+        target = self._homotopy_group_module(base_point, left_degree + right_degree - 1)
+        sphere_dimension = int(self.dimension())
+        match (left_degree, right_degree):
+            case _ if left.module_generating_set().is_empty() is True or right.module_generating_set().is_empty() is True:
+                images = {}
+            case (1, 1) if sphere_dimension == 1:
+                images = {("iota_1", "iota_1"): target.zero()}
+            case (2, 2) if sphere_dimension == 2:
+                eta = target.module_generator("eta")
+                images = {("iota_2", "iota_2"): eta + eta}
+            case _:
+                assert False, (
+                    f"the Whitehead product pi_{left_degree} x pi_{right_degree} -> "
+                    f"pi_{left_degree + right_degree - 1} of {self} is not presented"
+                )
+        return BilinearMap(left, right, target, images)
+
 
 class RiemannianManifolds(OwnedCategory):
     r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
@@ -944,6 +1102,12 @@ class RiemannianManifolds(OwnedCategory):
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
             Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
+
+            Its one global chart ``hyperboloid`` has the coordinates
+            ``y_0, ..., y_{n-1}`` of the orthogonal projection of ``x`` to
+            ``t^perp``, for ``t`` the timelike vector of ``C^+``: ``x = s t + y``
+            with ``s = sqrt((1 - q(y))/q(t)) > 0`` is a diffeomorphism
+            ``t^perp_RR -> HH(C^+)``, since ``t^perp`` is negative definite.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -953,7 +1117,7 @@ class RiemannianManifolds(OwnedCategory):
             engine = _SageManifold(
                 dimension, "HH", structure="smooth", unique_tag=object()
             )
-            return _object_of(
+            space = _object_of(
                 HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
@@ -964,6 +1128,8 @@ class RiemannianManifolds(OwnedCategory):
                 manifold_field="real",
                 component=component,
             )
+            space.chart("hyperboloid", " ".join(f"y{index}" for index in range(dimension)))
+            return space
 
         class ParentMethods:
             def geodesic_symmetry(self, point):
@@ -1780,7 +1946,8 @@ class ComplexManifolds(OwnedCategory):
             )
             return _object_of(
                 self,
-                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=1,
                 **complex_manifolds._open_submanifold_data(
                     line, name, tau.imag_part() > 0
                 ),
@@ -1806,8 +1973,14 @@ class ComplexManifolds(OwnedCategory):
                 int(g),
                 lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
             )
-            return self._bounded_open_domain(
-                space, f"H_{g}", _engine_positive_definite(imaginary)
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=int(g),
+                **complex_manifolds._open_submanifold_data(
+                    space, f"H_{g}", _engine_positive_definite(imaginary)
+                ),
             )
 
         def _matrix_coordinate_space(self, name, index_pairs):
@@ -1881,7 +2054,7 @@ class _RealFormSymmetricSpace:
         return (
             f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
             f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
-            f"{diagram.dynkin_diagram().scaled_cartan_type()} with black nodes "
+            f"{diagram.dynkin_diagram().label()} with black nodes "
             f"{tuple(diagram.black_nodes())} and involution "
             f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
         )
@@ -1914,6 +2087,74 @@ class _ComplexOpenEngine:
         label = tuple(self.chart_labels())[0]
         coordinates = self.atlas()[label].coordinates()
         return self.Mor(self._containing_manifold).polynomial(coordinates)
+
+
+class _SiegelUpperHalfSpace(_ComplexOpenEngine):
+    r"""The Siegel upper half-space ``H_g`` with its symplectic action; a realization, not a category.
+
+    ``Sp_{2g}(RR)`` acts on ``H_g`` by biholomorphisms
+    ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M = [[A, B], [C, D]]`` with
+    ``g x g`` blocks; it is transitive with stabilizer ``U(g)`` at ``iI``,
+    which presents ``H_g`` as ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``
+    (Helgason, Ch. X, §6, Table V).  For ``g = 1`` this is the Möbius
+    action of ``SL_2(RR) = Sp_2(RR)`` on the upper half-plane.
+    """
+
+    def __init__(self, siegel_genus, **rest) -> None:
+        self._siegel_genus = siegel_genus
+        super().__init__(**rest)
+
+    def siegel_genus(self):
+        return self._siegel_genus
+
+    def symplectic_action(self, group):
+        r"""Return the ``Gamma``-space ``(H_g, rho)`` of a group of integral symplectic matrices.
+
+        ``group`` is a group ``Gamma`` of ``2g x 2g`` matrices in
+        ``Sp_{2g}(ZZ)``; ``SL_2(ZZ) = Sp_2(ZZ)`` for ``g = 1``.  ``rho``
+        restricts the action of ``Sp_{2g}(RR)`` along the inclusion, so
+        ``rho(M)`` is the biholomorphism ``Z |-> (AZ + B)(CZ + D)^{-1}``
+        of ``H_g``, and ``(MN) . Z = M . (N . Z)`` makes it a left action.
+        The result is an object of ``GObjects(Gamma, ComplexManifolds())``;
+        its ``orbit_space()`` is ``Gamma\H_g``.
+        """
+        from dzack_research.preamble.categories.group.g_objects import GObjects
+
+        return GObjects(group, ComplexManifolds()).on_space(
+            self,
+            lambda element, point: self._symplectic_transform(group, element, point),
+        )
+
+    def _symplectic_transform(self, group, element, point):
+        r"""The point ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M`` the matrix of ``element``."""
+        from dzack_research.preamble.categories.group.groups import (
+            _matrix_group_element_matrix,
+        )
+
+        g = self._siegel_genus
+        point = self(point)
+        matrix = _matrix_group_element_matrix(group, element)
+        assert matrix.nrows() == 2 * g and matrix.ncols() == 2 * g, (
+            f"{element} does not act on {self}: Sp_{2 * g} acts on the Siegel upper "
+            f"half-space H_{g} by 2g x 2g = {2 * g} x {2 * g} matrices, and its matrix is "
+            f"{matrix.nrows()} x {matrix.ncols()}"
+        )
+        field = _owned_complex_field()
+        engine_field = _engine_ring(field)
+        entries = dict(zip(_upper_triangle(g), tuple(point.coordinates()), strict=True))
+        Z = _engine_matrix(
+            engine_field,
+            g,
+            g,
+            lambda row, column: _engine_element(field, _symmetric_entry(entries, row, column)),
+        )
+        M = matrix.change_ring(engine_field)
+        A, B, C, D = M[:g, :g], M[:g, g:], M[g:, :g], M[g:, g:]
+        W = (A * Z + B) * (C * Z + D).inverse()
+        return self.point(
+            tuple(_owned_engine_element(field, W[row, column]) for row, column in _upper_triangle(g)),
+            point.chart().label(),
+        )
 
 
 class _ComplexDiscEngine(_ComplexOpenEngine):

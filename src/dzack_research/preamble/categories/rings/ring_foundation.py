@@ -42,7 +42,6 @@ from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.lazy_attribute import lazy_attribute
-from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -4369,19 +4368,54 @@ def _owned_monomial_text(variable_names, exponent):
 
 
 def _owned_polynomial_text(parent, backend_value) -> str:
+    r"""A polynomial written as Sage writes it: terms in descending term order.
+
+    Sage's reference is ``PolyDict.poly_repr`` (``sage/rings/polynomial/
+    polydict.pyx``), which sorts the exponents by the ring's
+    ``term_order().sortkey`` in reverse; a univariate polynomial is written by
+    descending degree.  Engine-convention dispatch (``OWN-06``): a
+    multivariate engine ring carries a term order, a univariate one does not.
+    Each term is written as ``Polynomial._repr`` (``sage/rings/polynomial/
+    polynomial_element.pyx``) writes it, and ``+ -`` is written ``-``.
+    """
     base = parent.base_ring()
     variables = tuple(parent.variable_names())
+    engine = backend_value.parent()
+    match engine:
+        case MPolynomialRing_base():
+            sortkey = engine.term_order().sortkey
+        case _:
+            sortkey = None
+    atomic = engine.base_ring()._repr_option("element_is_atomic")
+    coefficients = backend_value.dict()
     terms = []
-    for exponent, coefficient in backend_value.dict().items():
-        owned_coefficient = _owned_engine_element(base, coefficient)
-        terms.append((exponent, owned_coefficient))
-    if not terms:
-        return "0"
-    return repr_lincomb(
-        terms,
-        repr_monomial=lambda exponent: _owned_monomial_text(variables, exponent),
-        strip_one=True,
-    )
+    for exponent in sorted(coefficients, key=sortkey, reverse=True):
+        coefficient = _owned_engine_element(base, coefficients[exponent])
+        monomial = _owned_monomial_text(variables, exponent)
+        terms.append(_owned_term_text(coefficient, monomial, atomic))
+    return " + ".join(terms).replace(" + -", " - ") or "0"
+
+
+def _owned_term_text(coefficient, monomial: str, atomic: bool) -> str:
+    r"""The term ``coefficient*monomial`` as Sage's ``Polynomial._repr`` writes it.
+
+    A coefficient ``1`` or ``-1`` leaves the monomial or its negative.  A
+    coefficient whose text past a leading minus holds a ``+`` or ``-`` is a sum
+    and is parenthesized, unless the coefficient ring's elements print
+    atomically or the term is constant: ``(i + 1)*s`` and ``s + i + 1``, while
+    ``-2`` stays bare so that the sum writes ``s - 2``.
+    """
+    if monomial == "1":
+        return repr(coefficient)
+    if coefficient.is_one():
+        return monomial
+    if (-coefficient).is_one():
+        return f"-{monomial}"
+    text = repr(coefficient)
+    unsigned = text.removeprefix("-")
+    if not atomic and ("+" in unsigned or "-" in unsigned):
+        text = f"({text})"
+    return f"{text}*{monomial}"
 
 
 def _owned_ring_element_text(element) -> str:
@@ -4592,6 +4626,26 @@ class _OwnedRingElement(RingElement):
 
     def _repr_(self):
         return _owned_ring_element_text(self)
+
+    def _coeff_repr(self, no_space=True) -> str:
+        r"""This element as a coefficient of a linear combination, its sign outside.
+
+        Sage's ``repr_lincomb`` (``sage/misc/repr.py``) writes ``a - c*m`` when
+        the coefficient text starts with ``-`` or ``c < 0``, and an unordered
+        ring such as ``QQ(i)`` cannot answer ``c < 0``.  ``Element._coeff_repr``
+        (``sage/structure/element.pyx``) parenthesizes ``-2`` because its text
+        holds a ``-``; this one parenthesizes only what is a sum past a leading
+        minus, as ``Polynomial._repr`` does, so ``-2*e`` is written as a
+        subtraction and ``(i+1)*e`` keeps its parentheses.
+        """
+        text = repr(self)
+        unsigned = text.removeprefix("-")
+        atomic = self.parent()._repr_option("element_is_atomic") or not (
+            "+" in unsigned or "-" in unsigned or " " in unsigned
+        )
+        if not atomic:
+            text = f"({text})"
+        return text.replace(" ", "") if no_space else text
 
     def _latex_(self):
         text = _owned_ring_element_text(self).replace("_", r"\_")

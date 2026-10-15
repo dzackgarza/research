@@ -46,8 +46,34 @@ class _PicardFunctor(Functor):
         return opposite_scheme.underlying_object().picard_group()
 
     def _apply_morphism(self, morphism: Map) -> Map:
-        r"""``f^* : Pic(Y) -> Pic(X)``, ``[L] |-> [f^* L]``, for the arrow ``op(f): op(Y) -> op(X)`` of ``f: X -> Y``."""
-        assert False, "pullback f^* on the Picard functor: not implemented"
+        r"""``f^* : Pic(Y) -> Pic(X)``, ``[L] |-> [f^* L]``, for the arrow ``op(f): op(Y) -> op(X)`` of ``f: X -> Y``.
+
+        ``f^*`` is a group homomorphism, so it is fixed by the images of
+        module generators of ``Pic(Y)``.  For ``Y = P^n_k`` over a field,
+        ``Pic(Y) = Pic(Spec k) + ZZ[O(1)]`` with ``Pic(Spec k) = 0``
+        (Hartshorne, II.6.17), and the one module generator ``[O(1)]`` goes to
+        ``[f^* O(1)]``.
+        """
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+        arrow = morphism.underlying_arrow()
+        target_scheme = arrow.codomain()
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        base = target_scheme.scheme_base_ring()
+        assert target_scheme in ProjectiveSpaces(base), (
+            f"cannot pull back Pic({target_scheme}) along {arrow}: f^* is computed on the module generators "
+            f"of Pic(P^n_k), and {target_scheme} is not a projective space over {base}"
+        )
+        assert source.biproduct_factor(0).module_generating_set().is_empty() is True, (
+            f"cannot pull back Pic({target_scheme}) along {arrow}: the base summand {source.biproduct_factor(0)} "
+            "of Pic(P^n_S) = Pic(S) + ZZ[O(1)] has module generators, and their invertible sheaves on S are "
+            "not represented"
+        )
+        pulled_hyperplane = target(target.underlying_set()(arrow.module_pullback(target_scheme.O(1))))
+        return self.codomain().Mor(source, target)(
+            {label: pulled_hyperplane for label in source.module_generating_set()}
+        )
 
     @cached_method
     def category_of_elements(self):

@@ -6,6 +6,7 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.lexicon.algebra import MonoidObject
+from dzack_research.preamble.logic import AtomicProposition
 
 
 class GradedNonassociativeAlgebras(OwnedCategoryOverBaseRing):
@@ -76,9 +77,22 @@ class GradedNonassociativeAlgebras(OwnedCategoryOverBaseRing):
 
         Domain: an object ``A`` of ``GradedModules(R, M, parity)`` and an
         ``R``-linear morphism ``m: A tensor_R A -> A`` of degree zero.
-        Codomain: this category.
+        Codomain: this category.  That ``m`` sends ``A_p (x) A_q`` into
+        ``A_{p+q}`` is the hypothesis this entry takes with ``m``, recorded as
+        the proposition ``respects_grading(m)``.
         """
-        assert False, "construction of a graded nonassociative algebra on GradedNonassociativeAlgebras: not implemented"
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_on_module
+
+        assert graded_module in self._graded_modules, (
+            f"a graded nonassociative algebra in {self} is built on an object of {self._graded_modules}, "
+            f"but {graded_module} is not one"
+        )
+        return _algebra_on_module(
+            graded_module,
+            multiplication,
+            placement=(self,),
+            law_decisions={"grading": AtomicProposition("respects_grading", multiplication)},
+        )
 
 
 __all__ = ["GradedNonassociativeAlgebras"]

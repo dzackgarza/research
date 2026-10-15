@@ -931,10 +931,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         orbit decision ``orbit_relation(x, y)`` realizes ``y in G . x``; its
         absence leaves that relation a proposition.
         """
-        from dzack_research.preamble.categories.topological_spaces import (
-            TopologicalSpaces,
-            _TransportedTopologyData,
-        )
+        from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
         category = self.underlying_category()
         assert category.is_subcategory(TopologicalSpaces()), (
@@ -947,18 +944,20 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 g_spaces = owned_category_join((self, FiniteSets(), EnumeratedSets()))
             case _:
                 g_spaces = self
-        return _object_of(
-            g_spaces,
-            _engine=(g_spaces, _GSpaceOnSpace, None),
-            space=space,
-            orbit_relation=(lambda left, right: Unknown) if orbit_relation is None else orbit_relation,
-            # The points of the G-space are the points of X, and it has the
-            # topology of X.
-            topology_data=_TransportedTopologyData(space),
-            acting_group=self.acting_group(),
-            action=lambda group_element: (lambda point: action(group_element, point)),
-            underlying_category=category,
-            facade=space,
+        # The G-space is X itself with the action added: its points, topology
+        # and every lower structure of X are X's own defining data, and only the
+        # acting group and the action are new.
+        return space._with_structure(
+            (g_spaces,),
+            {
+                "space": space,
+                "orbit_relation": (lambda left, right: Unknown) if orbit_relation is None else orbit_relation,
+                "acting_group": self.acting_group(),
+                "action": lambda group_element: (lambda point: action(group_element, point)),
+                "underlying_category": category,
+                "facade": space,
+            },
+            engine=_GSpaceOnSpace,
         )
 
     def orbit_generated_submodule(self, action, seed, *, containing=None):
