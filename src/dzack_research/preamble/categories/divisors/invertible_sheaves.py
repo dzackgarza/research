@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
     ModuleGluingData,
     _ModuleGluingSheafEngine,
 )
+from dzack_research.preamble.validation import validator
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     InvertibleSheavesWithChosenTrivialization,
     QuasiCoherentSheafMor,
@@ -304,17 +305,25 @@ class _FiniteAtlasInvertibleSheafEngine:
                 f"atlas {gluing_datum} has the pairs {sorted(expected, key=str)}: a line bundle needs "
                 "exactly one transition function for each pair of charts"
             )
-        self._transition_units = {}
-        for source_index, target_index in expected:
-            ring = gluing_datum.overlap(source_index, target_index).coordinate_algebra()
-            unit = ring(supplied[source_index, target_index])
-            if not unit.is_unit():
+        self._transition_units = {
+            (source_index, target_index): gluing_datum.overlap(source_index, target_index).coordinate_algebra()(
+                supplied[source_index, target_index]
+            )
+            for source_index, target_index in expected
+        }
+        super().__init__(**rest)
+        self.validate_transition_units(check=False)
+
+    @validator
+    def validate_transition_units(self) -> None:
+        r"""Check that every transition function is a unit of its overlap ring (``OWN-22``)."""
+        for (source_index, target_index), unit in self._transition_units.items():
+            if unit.is_unit() is False:
                 raise ValueError(
                     f"the transition function {unit} on the overlap of charts {source_index} and "
-                    f"{target_index} is not a unit of {ring}: line-bundle transition functions must be units"
+                    f"{target_index} is not a unit of {unit.parent()}: line-bundle transition functions "
+                    "must be units"
                 )
-            self._transition_units[source_index, target_index] = unit
-        super().__init__(**rest)
 
     def gluing_datum(self):
         return self._finite_gluing_datum
@@ -464,11 +473,17 @@ class _FiniteAtlasInvertibleSheafEngine:
         return self.tensor_power(-1)
 
     def global_sections(self):
-        assert self._section_space is not None, (
-            f"cannot compute the global sections of {self}: they are known only for line bundles "
-            "constructed with their space of sections, such as O(d) on projective space"
-        )
-        return self._section_space
+        r"""Return \(\Gamma(X, L)\) as an object of ``Modules(R)``.
+
+        A bundle constructed with its framed section space, such as \(O(d)\)
+        on \(\mathbb{P}^n_R\), returns it.  Otherwise \(\Gamma(X, L)\) is the
+        equalizer of the restrictions of the chart sections to the overlaps.
+        """
+        match self._section_space:
+            case None:
+                return self.compatible_sections()
+            case section_space:
+                return section_space
 
     sections = global_sections
 
@@ -711,14 +726,12 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                 if self._degree >= 0
                 else ratio.inverse_of_unit() ** int(-self._degree)
             )
-        section_space = (
-            _homogeneous_polynomial_section_space(
-                projective_space,
-                self._degree,
-                coordinate_names=projective_space.variable_names(),
-            )
-            if self._degree >= 0
-            else None
+        # Gamma(P^n_R, O(d)) is the degree-d piece S_d of S = R[x_0..x_n] for
+        # every integer d, and S_d = 0 for d < 0 (Hartshorne, Proposition II.5.13).
+        section_space = _homogeneous_polynomial_section_space(
+            projective_space,
+            self._degree,
+            coordinate_names=projective_space.variable_names(),
         )
         super().__init__(
             atlas,
@@ -899,11 +912,6 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                     f"cannot multiply sections of {self} and {other}: {other} is not O(d) on a "
                     "projective space"
                 )
-        assert self.degree() >= 0 and other.degree() >= 0, (
-            f"cannot multiply sections of {self} and {other}: sections are computed here as homogeneous "
-            f"polynomials, which requires nonnegative degrees, but the degrees are {self.degree()} and "
-            f"{other.degree()}"
-        )
         target_bundle = self.tensor_product(other)
         left = self.global_sections()
         right = other.global_sections()

@@ -787,9 +787,19 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     zero,
                 )
 
-            @cached_method
-            def dual_module(self):
-                return _fresh_free_module_on(self.base_ring(), self.module_generating_set())
+            def dual_basis(self):
+                r"""Return the dual basis ``(e_s^*)_{s in S}`` of ``Hom_R(M, R)``.
+
+                Let ``M`` be free over a commutative ring ``R`` with finite basis
+                ``(e_s)_{s in S}``.  The dual module is the inherited
+                ``M.dual_module() = Hom_R(M, R)``.  The coordinate functionals
+                ``e_s^*`` with ``e_s^*(e_t) = delta_{s,t}`` form a basis of it,
+                indexed by the same finite set ``S``; this is the framing of the
+                dual module induced by the framing of ``M``.  Finiteness of ``S``
+                is required: for infinite ``S`` the dual ``Hom_R(R^{(S)}, R) = R^S``
+                is not spanned by the ``e_s^*``.
+                """
+                assert False, "dual_basis on FramedFreeModules(R).FinitelyGenerated(): not implemented"
 
 
 def _new_sparse_free_module(

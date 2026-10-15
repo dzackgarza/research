@@ -135,6 +135,8 @@ for _scheme_axiom in (
     "Integral",
     "Normal",
     "CalabiYau",
+    "K3",
+    "DelPezzo",
 ):
     if _scheme_axiom not in all_axioms:
         all_axioms.add(_scheme_axiom)
@@ -261,8 +263,19 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
 
 
 def _engine_affine_spectrum(algebra, base):
-    r"""Sage's ``Spec A`` over ``Spec R`` for the engines of ``A`` and ``R``."""
-    return _SageAffineScheme(_engine_ring(algebra), _engine_ring(base))
+    r"""Sage's ``Spec A`` over ``Spec R`` for the engines of ``A`` and ``R``.
+
+    ``Spec R`` over itself is the terminal ``R``-scheme.  Sage's schemes over
+    ``R`` name ``Spec(R)`` over ``ZZ`` as their base scheme
+    (``Scheme.base_scheme``, ``sage/schemes/generic/scheme.py``), so the
+    terminal scheme computes in that object and the engine structure maps of
+    ``R``-schemes land in it.
+    """
+    match algebra is base:
+        case True:
+            return _SageAffineScheme(_engine_ring(algebra))
+        case False:
+            return _SageAffineScheme(_engine_ring(algebra), _engine_ring(base))
 
 
 def _engine_coercion_agreeing_on(pullback, determining):
@@ -978,6 +991,31 @@ class SchemeMorphismMethods:
             f"{self.domain().category()} and the codomain an object of {self.codomain().category()}"
         )
         return bool(self._engine_pullback_with_trivial_base_map().is_surjective())
+
+    def de_rham_cohomology(self, degree):
+        r"""``H^k_dR(X/S) = R^k f_*(Omega^*_{X/S})`` for this arrow ``f: X -> S``.
+
+        The ``k``-th hyperdirect image of the relative de Rham complex, with
+        ``k`` equal to ``degree``.  Its value is an object of
+        ``QuasiCoherentSheaves(S)``.  When ``f`` is smooth and proper over a
+        base of characteristic zero it is a locally free coherent
+        ``O_S``-module (Katz, *Nilpotent connections and the monodromy
+        theorem*, Publ. Math. IHES 39 (1970), introduction and (3.0)).
+        """
+        assert False, "de_rham_cohomology on scheme morphisms: not implemented"
+
+    def gauss_manin_connection(self, degree):
+        r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
+
+        ``H^k_dR(X/S)`` is ``f.de_rham_cohomology(k)``, a locally free coherent
+        ``O_S``-module, and the Gauss-Manin connection is an integrable
+        connection on it relative to the base of ``S`` (Katz, *Nilpotent
+        connections and the monodromy theorem*, Publ. Math. IHES 39 (1970),
+        introduction and (3.0)).  The value is an object of
+        ``VectorBundlesWithConnection(S).Integrable()`` whose underlying
+        locally free module is ``f.de_rham_cohomology(k)``.
+        """
+        assert False, "gauss_manin_connection on scheme morphisms: not implemented"
 
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
@@ -1981,6 +2019,13 @@ class Schemes(OwnedCategoryOverBaseRing):
         return [LocallyRingedSpaces()]
 
     _MorCategory = SchemeMorCategoryConstruction
+
+    @property
+    def _SliceCategory(self):
+        r"""Supply the scheme realization of ``Sch/R`` over ``Y``: families over ``Y``, with their fibres."""
+        from dzack_research.preamble.categories.schemes.families import _SchemeSlice
+
+        return _SchemeSlice
 
     def Mor(self, domain, codomain):
         r"""``Mor_{Sch/R}(X, Y)``, the single Mor selected by its category family."""
@@ -3188,6 +3233,28 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_integral(self):
                 return True
 
+            @cached_method
+            def function_field(self):
+                r"""The function field ``K(X) = O_{X,eta}``, the local ring at the generic point.
+
+                Domain: an integral scheme ``X`` over ``R``.  Codomain: a field,
+                an ``R``-algebra through ``R -> O_{X,eta}`` (Hartshorne,
+                *Algebraic Geometry*, II, Ex. 3.6).  For every nonempty affine
+                open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
+                integral scheme this is the fraction field of its coordinate
+                algebra, so the function field of ``A^1_k`` is ``k[t]``'s
+                ``fraction_field()``, the field ``k(t)``.
+                """
+                base = self.scheme_base_ring()
+                match self in Schemes(base).Affine():
+                    case True:
+                        return self.coordinate_algebra().fraction_field()
+                    case False:
+                        assert False, (
+                            f"function_field on the non-affine integral schemes over {base}, through a "
+                            f"nonempty affine open of {self}: not implemented"
+                        )
+
         def an_object(self):
             r"""The affine line, integral because ``R[x]`` is a domain when ``R`` is."""
             base = self.base_ring()
@@ -3250,9 +3317,61 @@ class Schemes(OwnedCategoryOverBaseRing):
             def anticanonical_bundle(self, *args, **kwargs):
                 return self.anticanonical_line_bundle(*args, **kwargs)
 
+            def de_rham_complex(self):
+                r"""``Ω^•_{X/R}``, the algebraic de Rham complex of this smooth scheme.
+
+                An object of ``Sheaves(zariski_coverage(X),
+                DifferentialGradedAlgebras(R).Supercommutative().Alternating())``:
+                a sheaf of supercommutative differential graded ``R``-algebras
+                whose sections over an affine open ``Spec A`` are
+                ``DeRhamAlgebras(R)(A) = DR_R(A)``.  Its differential is
+                ``R``-linear but not ``O_X``-linear.
+                """
+                assert False, "de_rham_complex on Schemes.Smooth: not implemented"
+
+            def de_rham_hypercohomology(self):
+                r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategories(R)``.
+
+                The hypercohomology of the de Rham complex: the class of the
+                total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg
+                injective resolution of ``Ω^•_{X/R}`` by sheaves of
+                ``R``-modules.
+                """
+                assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
+
+            def de_rham_cohomology(self, degree):
+                r"""``H^degree_dR(X/R) = H^degree(RΓ(X, Ω^•_{X/R}))``, an object of ``Modules(R)``."""
+                return self.de_rham_hypercohomology().cohomology(degree)
+
+            def de_rham_cohomology_algebra(self):
+                r"""``H^*_dR(X/R)``, an object of ``GradedAlgebras(R).Supercommutative()``.
+
+                The graded module ``⊕_k H^k_dR(X/R)`` with the cup product
+                induced by the wedge product of ``Ω^•_{X/R}``; it needs a
+                multiplicative model of ``RΓ(X, Ω^•_{X/R})``, which the
+                derived category alone does not supply.
+                """
+                assert False, "de_rham_cohomology_algebra on Schemes.Smooth: not implemented"
+
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+        def de_rham_cohomology(self, degree):
+            r"""Return ``H^degree_dR(-/R) : Sm_R^op -> Mod_R``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_functor(self.base_ring(), degree)
+
+        def de_rham_cohomology_algebra(self):
+            r"""Return ``H^*_dR(-/R) : Sm_R^op -> GradedAlgebras(R).Supercommutative()``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_algebra_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_algebra_functor(self.base_ring())
 
     class CalabiYau(CategoryWithAxiom):
         r"""Calabi--Yau schemes: smooth and proper, with trivial canonical bundle.
@@ -4362,6 +4481,21 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Affine().FiniteType().Smooth()]
 
     class ParentMethods:
+        def hypersurface(self, f):
+            r"""The hypersurface ``V(f) = Spec k[x_1, ..., x_n]/(f)`` with its closed immersion into ``A^n_k``.
+
+            Domain: a nonconstant polynomial ``f`` of the coordinate algebra
+            ``k[x_1, ..., x_n]`` of this affine space (Hartshorne, *Algebraic
+            Geometry*, I.1).  Codomain: a closed subscheme of ``A^n_k``, a
+            scheme over ``k`` whose inclusion ``V(f) -> A^n_k`` is ``Spec`` of
+            the quotient map ``k[x_1, ..., x_n] -> k[x_1, ..., x_n]/(f)``.
+            """
+            assert f in self.coordinate_algebra(), (
+                f"a hypersurface of {self} is cut out by an element of its coordinate algebra "
+                f"{self.coordinate_algebra()}, but {f} is not one"
+            )
+            return self.closed_subscheme(f)
+
         @cached_method
         def _picard_group(self, base_picard_group=None):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
@@ -4428,9 +4562,9 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
             pass
     match (base in OwnedFields(), dimension):
         case (True, 2):
-            from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+            from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-            decided.append(ProjectiveSurfaces(base))
+            decided.append(Surfaces(base).Projective())
         case _:
             pass
     return _object_of(
@@ -4592,6 +4726,19 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
             return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
 
+        def hypersurface(self, f):
+            r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
+
+            Domain: a nonconstant homogeneous polynomial ``f`` of the
+            homogeneous coordinate ring ``k[x_0, ..., x_n]`` of this projective
+            space (Hartshorne, *Algebraic Geometry*, I.2).  Codomain: a closed
+            subscheme of ``P^n_k``, a projective scheme over ``k`` whose
+            inclusion ``V_+(f) -> P^n_k`` is induced by the graded quotient map
+            ``k[x_0, ..., x_n] -> k[x_0, ..., x_n]/(f)``.  The projective
+            closed-subscheme construction asserts that ``f`` is homogeneous.
+            """
+            return self.closed_subscheme(f)
+
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
             return self.closed_subscheme(homogeneous_element).open_complement()
@@ -4685,7 +4832,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             )
 
         def O(self, degree):
-            r"""Return the standard invertible sheaf ``O(d)`` on this projective space."""
+            r"""Return the standard invertible sheaf ``O(d)`` on this projective space, for any integer ``d``.
+
+            Its global sections are the degree-``d`` piece ``S_d`` of
+            ``S = R[x_0..x_n]``, a free ``R``-module framed by the degree-``d``
+            monomials, and zero for ``d < 0`` (Hartshorne, Proposition II.5.13).
+            """
             from dzack_research.preamble.categories.divisors.invertible_sheaves import (
                 _projective_o,
             )
@@ -5191,9 +5343,9 @@ def _scheme_product(*schemes, placements=(), **level_data):
             dimension = sum(width - 1 for width in widths)
             projective_surface_placement = ()
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                projective_surface_placement = (ProjectiveSurfaces(base),)
+                projective_surface_placement = (Surfaces(base).Projective(),)
             names = tuple(
                 f"x{factor}_{coordinate}"
                 for factor, width in enumerate(widths)
@@ -5374,9 +5526,9 @@ def _mixed_affine_projective_product(factors, base, placements, level_data):
             placements.append(schemes_over_base.Projective())
             dimension = sum(int(factor.relative_dimension()) for factor in schemes)
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                placements.append(ProjectiveSurfaces(base))
+                placements.append(Surfaces(base).Projective())
     return schemes_over_base.glue_affine_atlas(
         tuple(charts[label] for label in chart_labels),
         transitions,
@@ -5901,6 +6053,31 @@ class EffectiveCartierDivisors(_SchemeSubobjectsOf):
                     )
                 case picard_class:
                     return picard_class
+
+        def logarithmic_differentials(self, degree):
+            r"""``Omega^p_X(log D)``, the ``p``-forms on ``X`` with logarithmic poles along ``D``.
+
+            For ``X`` smooth over the base and ``D`` a smooth divisor with local
+            equation ``t``, it is the ``O_X``-submodule of ``j_* Omega^p_U``,
+            ``j: U = X - D -> X``, generated locally by ``Omega^p_X`` and
+            ``Omega^{p-1}_X wedge dt/t``; it is locally free and an object of
+            ``QuasiCoherentSheaves(X)`` (Deligne, *Theorie de Hodge II*, Publ.
+            Math. IHES 40 (1971), §3.1).  Here ``p`` is ``degree``.
+            """
+            assert False, "logarithmic_differentials on EffectiveCartierDivisors: not implemented"
+
+        def residue(self, degree):
+            r"""The Poincare residue ``Res: Omega^p_X(log D) -> i_* Omega^{p-1}_D``.
+
+            Here ``i: D -> X`` is ``self.inclusion()``, and ``X`` and ``D`` are
+            smooth over the base; ``p`` is ``degree``.  Locally
+            ``alpha wedge dt/t |-> alpha|_D`` for a local equation ``t`` of
+            ``D``; the map identifies ``Gr^W_1 Omega^*_X(log D)`` with
+            ``i_* Omega^*_D[-1]`` (Deligne, op. cit., (3.1.5.2), the case of
+            one component).  Its domain is ``logarithmic_differentials(p)``;
+            both endpoints are objects of ``QuasiCoherentSheaves(X)``.
+            """
+            assert False, "residue on EffectiveCartierDivisors: not implemented"
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
@@ -6442,11 +6619,17 @@ class ProjectiveLines(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
-    r"""Schemes with a canonical generic fibre over an integral base."""
+    r"""Schemes over an integral domain ``R``, with their generic fibre.
+
+    The generic fibre of ``X -> Spec R`` is the base change along
+    ``R -> Frac(R)``.  That ``R`` is an integral domain is the category of
+    the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedIntegralDomains()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedIntegralDomains():
-            raise TypeError("a canonical generic fibre requires an integral-domain base")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6454,8 +6637,11 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected integral-domain base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:
@@ -6465,11 +6651,17 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
-    r"""Schemes over a local base with its distinguished closed point."""
+    r"""Schemes over a local ring ``R``, with their special fibre.
+
+    The special fibre of ``X -> Spec R`` is the base change along the residue
+    map ``R -> R/m`` at the closed point.  That ``R`` is local is the category
+    of the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedRings().Local()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedRings().Local():
-            raise TypeError("a canonical special fibre requires a local base ring")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6477,8 +6669,11 @@ class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected local base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:

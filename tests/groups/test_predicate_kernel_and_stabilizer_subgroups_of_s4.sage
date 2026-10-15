@@ -68,3 +68,11 @@ def test_normalizer_retains_its_conjugation_action_functor() -> None:
     assert action.codomain() is Sets()
     assert action(identity)(subgroup) is subgroup
     assert normalizer.inclusion().codomain() is group
+    restricted = normalizer.restricted_stabilizer_action()
+    assert restricted.domain() is normalizer.classifying_category()
+    assert restricted.codomain() is action.codomain()
+    assert restricted(restricted.domain().an_object()) is action(action.domain().an_object())
+    point = restricted.domain().an_object()
+    for element in normalizer:
+        arrow = restricted.domain().Mor(point, point)(element)
+        assert restricted(arrow)(subgroup) == subgroup

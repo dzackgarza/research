@@ -321,6 +321,15 @@ class TopologicalSpaces(OwnedCategory):
 
     _MorCategory = TopologicalSpaceMorCategoryConstruction
 
+    @property
+    def Coslices(self):
+        r"""``X/Top``; for ``X`` the one-point space, the pointed spaces ``*/Top``."""
+        from dzack_research.preamble.categories.pointed_topological_spaces import (
+            TopologicalSpaceCoslices,
+        )
+
+        return TopologicalSpaceCoslices
+
     def super_categories(self):
         return [Sets()]
 
@@ -349,6 +358,19 @@ class TopologicalSpaces(OwnedCategory):
             point_set=point_set,
         )
 
+    def singular_cohomology_functor(self, coefficients):
+        r"""The contravariant functor ``H^*(-; R): Top^op -> GradedAlgebras(R, ZZ).Supercommutative()``.
+
+        It sends a space ``X`` to ``X.singular_cohomology(R)`` and a continuous
+        map ``f: X -> Y`` to the pullback ``f^*: H^*(Y; R) -> H^*(X; R)``, the
+        map induced on cohomology by the cochain map dual to
+        ``f_*: C_*(X) -> C_*(Y)``.  The pullback is a morphism of graded
+        algebras, ``f^*(a b) = f^*(a) f^*(b)`` (Hatcher, *Algebraic Topology*,
+        §3.2, the naturality preceding Thm 3.11).  Its domain is the opposite
+        category of this category.
+        """
+        assert False, "singular_cohomology_functor on TopologicalSpaces: not implemented"
+
     @classmethod
     def _repr_object_names(cls):
         return "topological spaces"
@@ -368,6 +390,26 @@ class TopologicalSpaces(OwnedCategory):
 
         topology = open_subsets
 
+        @cached_method
+        def open_subsets_site(self):
+            r"""``Open(X)``, the poset category of the open subsets of ``X`` ordered by inclusion.
+
+            Its objects are the opens ``U`` of ``X``, with one arrow ``U -> V``
+            exactly when ``U <= V``, and ``X`` is its terminal object.  With the
+            covers ``{U_i -> U}`` whose union is ``U`` it is the site of
+            ``OpenCoveringFamilies(X)``, on which ``Sh(X, D)`` is the full
+            subcategory of ``[Open(X)^op, D]`` satisfying descent (Mathlib,
+            ``TopologicalSpace.Opens`` and ``TopCat.Sheaf``).
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                PosetCategory,
+            )
+
+            return PosetCategory(
+                self.open_subsets(),
+                le=lambda smaller, larger: all(point in larger for point in smaller),
+            )
+
         def is_open_subset(self, subset) -> bool:
             r"""Whether ``subset`` is open in this topology."""
             return self._topology_data().is_open_subset(self, subset)
@@ -375,17 +417,33 @@ class TopologicalSpaces(OwnedCategory):
         def continuous_map(self, codomain, map_):
             return self.Mor(codomain)(map_)
 
-        def integral_singular_cohomology(self, degree):
-            r"""``H^degree(X; ZZ)``, the singular cohomology of this space with integer coefficients.
+        def singular_cohomology(self, coefficients):
+            r"""``H^*(X; R)``, the singular cohomology algebra of this space with coefficients ``R``.
 
-            A realization that computes the group supplies this method; the
-            spaces without such a realization stop here.
+            It is the cohomology of the singular cochain algebra
+            ``C^*(X; R) = Hom_ZZ(C_*(X), R)``, with the coboundary ``delta`` dual
+            to the singular boundary and the cup product of cochains, so the
+            value of ``CohomologyAlgebras(R)`` on that differential graded
+            algebra.  The cup product is graded-commutative on cohomology,
+            ``a b = (-1)^{k l} b a`` for ``a`` of degree ``k`` and ``b`` of
+            degree ``l`` (Hatcher, *Algebraic Topology*, Thm 3.11), although it
+            is not on cochains, so the result is an object of
+            ``GradedAlgebras(R, ZZ).Supercommutative()``, graded by ``ZZ`` and
+            concentrated in degrees ``k >= 0``.  Its degree-``k`` piece
+            ``graded_piece(k)`` is ``H^k(X; R)``, an object of ``Modules(R)``.
             """
-            assert False, (
-                f"the integral singular cohomology H^{degree}({self}; ZZ) is computed only for the "
-                "complex realizations of projective spaces, smooth complete toric varieties and "
-                "smooth projective complete intersections over QQ"
+            assert False, "singular_cohomology on TopologicalSpaces: not implemented"
+
+        def integral_singular_cohomology(self, degree):
+            r"""``H^degree(X; ZZ)``, the degree piece of ``singular_cohomology(ZZ)``.
+
+            A realization that computes the group directly supplies this method.
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _owned_integers,
             )
+
+            return self.singular_cohomology(_owned_integers()).graded_piece(degree)
 
         def betti_number(self, degree):
             r"""``b_k(X) = rank H^k(X; ZZ)``, the ``k``-th Betti number.

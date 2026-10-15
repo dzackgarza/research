@@ -16,7 +16,6 @@ is ``X_{R'} -> X`` and its right projection is the structure morphism.
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -43,7 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_mor_category,
     _structure_morphism_rule,
 )
-from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+from dzack_research.preamble.categories.schemes.varieties import Surfaces
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -99,7 +98,7 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
         case _ if base in OwnedFields():
             match expected_dimension:
                 case 2 if bool(engine.defining_ideal().is_prime()):
-                    decided.append(ProjectiveSurfaces(base))
+                    decided.append(Surfaces(base).Projective())
                 case _:
                     pass
         case _:
@@ -195,6 +194,62 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 f"{ambient.scheme_base_ring()}, not over {self.base_ring()}"
             )
             return _projective_complete_intersection(ambient, equations, placements=(self,))
+
+        class SubcategoryMethods:
+            def K3(self):
+                r"""Return this category with the axiom that its objects are K3 surfaces."""
+                return self._with_axiom("K3")
+
+        class K3(CategoryWithAxiom):
+            r"""Smooth projective complete intersections that are K3 surfaces.
+
+            The objects of ``Surfaces(R).K3()`` (Huybrechts [Huy16], Ch. 1,
+            Def. 1.1) that are complete intersections; a smooth quartic in
+            ``P^3`` is the standard specimen.
+            Applying the category to a complete intersection is the caller's
+            statement that it is a K3 surface.  The integral topology and the
+            Hodge structure are computed by realizations which assert their
+            own regime (a smooth quartic over ``QQ``).
+            """
+
+            def extra_super_categories(self):
+                return [Surfaces(self.base_ring()).K3()]
+
+            def an_object(self):
+                r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``."""
+                ambient = ProjectiveSpaces(self.base_ring())(3)
+                x = tuple(ambient.homogeneous_coordinate_generators())
+                return self(ProjectiveCompleteIntersections(self.base_ring())(ambient, sum(v**4 for v in x)))
+
+            def _call_(self, scheme):
+                r"""Place the complete intersection ``scheme`` here, as the caller states."""
+                from dzack_research.preamble.refine import refine
+
+                base = self.base_ring()
+                assert scheme in ProjectiveCompleteIntersections(base), (
+                    f"only a projective complete intersection over {base} is placed in {self}, but "
+                    f"{scheme} is in {scheme.category()}"
+                )
+                return refine(scheme, self)
+
+            class ParentMethods:
+                @cached_method
+                def integral_topology(self):
+                    from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3IntegralTopology
+                    return _QuarticK3IntegralTopology(self)
+
+                @cached_method
+                def hodge_structure(self):
+                    r"""The Hodge structure on ``H^*(X(CC); ZZ)`` of the quartic K3 surface.
+
+                    The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of
+                    ``MixedHodgeStructures(ZZ)`` whose weight filtration splits with
+                    ``Gr^W_k = H^k`` in ``HodgeStructures(ZZ, k)``; ``H^2`` is polarized
+                    by the intersection form (Deligne, Théorie de Hodge II, (2.1.1),
+                    (2.1.15), (2.3.1)).
+                    """
+                    from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
+                    return _QuarticK3HodgeData(self)
 
         class ParentMethods:
             def validate_smoothness(self) -> None:
@@ -372,25 +427,33 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return self.anticanonical_line_bundle(*args, **kwargs)
 
         def _is_del_pezzo(self) -> bool:
-            r"""Decide the normal-Gorenstein Del Pezzo condition for an integral CI surface.
+            r"""Decide ampleness of ``-K_X`` for a smooth integral CI surface.
 
-            In this represented regime adjunction constructs ``-K_X`` as an
-            actual restricted projective line bundle.  A complete intersection
-            is Gorenstein; normality is the remaining singularity hypothesis,
-            and ampleness is delegated to the anticanonical line bundle.  This
-            includes the normal singular Gorenstein case rather than imposing
-            smoothness.
+            Adjunction constructs ``-K_X`` as an actual restricted projective
+            line bundle; :meth:`Surfaces.Projective.ParentMethods.is_del_pezzo`
+            has already decided smoothness.
             """
             base = self.scheme_base_ring()
-            assert self in ProjectiveSurfaces(base), (
-                f"the complete-intersection Del Pezzo algorithm applies only after {self} is known to "
+            assert self in Surfaces(base).Projective(), (
+                f"the complete-intersection del Pezzo algorithm applies only after {self} is known to "
                 f"be an integral projective surface, but it is in {self.category()}"
             )
-            match bool(self.is_smooth()):
-                case True:
-                    return bool(self.anticanonical_line_bundle().is_ample())
-                case False:
-                    return bool(self.is_normal() and self.anticanonical_line_bundle().is_ample())
+            return bool(self.anticanonical_line_bundle().is_ample())
+
+        def _is_gorenstein_del_pezzo(self) -> bool:
+            r"""Decide the normal Gorenstein del Pezzo condition for an integral CI surface.
+
+            A complete intersection is Gorenstein, so normality is the
+            remaining singularity hypothesis, and ampleness is delegated to
+            the anticanonical line bundle (Hidaka--Watanabe, *Tokyo J. Math.*
+            4 (1981), 319--330).
+            """
+            base = self.scheme_base_ring()
+            assert self in Surfaces(base).Projective(), (
+                f"the complete-intersection Gorenstein del Pezzo algorithm applies only after {self} is "
+                f"known to be an integral projective surface, but it is in {self.category()}"
+            )
+            return bool(self.is_normal() and self.anticanonical_line_bundle().is_ample())
 
         def integral_singular_cohomology(self, degree):
             r"""``H^degree(X(CC); ZZ)``, the cohomology of the complex realization along ``QQ -> CC``."""
@@ -405,36 +468,13 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return coefficient**2 * self.projective_degree()
 
 
-class SmoothQuarticK3CompleteIntersections(OwnedCategoryOverBaseRing):
-    r"""Smooth quartic surfaces in projective three-space over QQ."""
+def SmoothQuarticK3CompleteIntersections(base):
+    r"""Smooth projective complete intersections over ``base`` that are K3 surfaces.
 
-    def super_categories(self):
-        if _engine_ring(self.base_ring()) is not SageQQ:
-            raise TypeError("the selected complex K3 realization is over QQ")
-        return [ProjectiveCompleteIntersections(self.base_ring()).Smooth()]
-
-    def an_object(self):
-        from dzack_research.preamble.categories.schemes.geometric_cohomology import _require_smooth_quartic_k3_complex_realization
-        ambient = ProjectiveSpaces(self.base_ring())(3)
-        x = tuple(ambient.homogeneous_coordinate_generators())
-        return self(ProjectiveCompleteIntersections(self.base_ring())(ambient, sum(v**4 for v in x)))
-
-    def _call_(self, scheme):
-        from dzack_research.preamble.refine import refine
-        from dzack_research.preamble.categories.schemes.geometric_cohomology import _require_smooth_quartic_k3_complex_realization
-        _require_smooth_quartic_k3_complex_realization(scheme)
-        return refine(scheme, self)
-
-    class ParentMethods:
-        @cached_method
-        def integral_topology(self):
-            from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3IntegralTopology
-            return _QuarticK3IntegralTopology(self)
-
-        @cached_method
-        def hodge_structure(self):
-            from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
-            return _QuarticK3HodgeData(self)
+    ``ProjectiveCompleteIntersections(base).Smooth().K3()``; a quartic in
+    ``P^3`` is the specimen the realizations of this category compute with.
+    """
+    return ProjectiveCompleteIntersections(base).Smooth().K3()
 
 
 __all__ = [

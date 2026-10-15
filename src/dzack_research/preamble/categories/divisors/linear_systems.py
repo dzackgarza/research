@@ -53,7 +53,7 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         return "complete linear systems"
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, linear_system_scheme, linear_system_divisor, section_space, **rest) -> None:
@@ -89,10 +89,7 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
             quotient of ``V^*``; this method records that variance explicitly
             rather than applying quotient projectivization directly to ``V``.
             """
-            sections = self.section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
+            return self.section_space().dual_module().projectivization()
 
         @cached_method
         def quotient_projectivization_comparison(self):
@@ -102,12 +99,18 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
 
 
 class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
-    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n, \mathcal{O}(d))\).
+    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n_R, \mathcal{O}(d))\).
 
-    An object is the free module on the degree-\(d\) monomials of a homogeneous
-    coordinate algebra of a projective scheme \(X\).  The free-module level
-    consumes the monomials; this level adds \(X\), the degree \(d\), the
-    coordinate algebra, and the exponent vector of each monomial.
+    For a commutative ring \(R\) and \(S = R[x_0, \dots, x_n]\) graded by total
+    degree, \(\Gamma(\mathbb{P}^n_R, \mathcal{O}(d)) \cong S_d\), the degree-\(d\)
+    homogeneous piece, for every \(d \in \mathbb{Z}\), and \(S_d = 0\) for
+    \(d < 0\) (Hartshorne, Proposition II.5.13).  \(S_d\) is a free \(R\)-module:
+    the monomials \(x^a\) with \(|a| = d\) give the chosen framing
+    \(R^{(\{x^a\})} \cong S_d\).  So an object is a framed free module in
+    ``Modules(R)`` over any \(R\).  The free-module level
+    consumes the monomials; this level adds the projective scheme \(X\), the
+    degree \(d\), the graded coordinate algebra \(S\) whose degree-\(d\) piece
+    this is, and the exponent vector of each monomial.
     """
 
     @classmethod
@@ -119,7 +122,12 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).global_sections()
 
     def super_categories(self):
-        return [VectorSpaces(self.base_ring())]
+        r"""The monomial basis is a chosen framing of a free module over the same ring."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
+        return [FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -384,7 +392,7 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).linear_system()
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, line_bundle, section_embedding, base_locus, **rest) -> None:
@@ -425,16 +433,28 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             section subspace V.  With the repository's quotient convention
             that is P_quot(V^*), not P_quot(V).
             """
-            sections = self.selected_section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
+            return self.selected_section_space().dual_module().projectivization()
 
         @cached_method
         def quotient_projectivization_comparison(self):
             r"""Return the chartwise isomorphism from P_quot(V^*) to this system."""
             projectivization = self.quotient_projectivization().arrow().domain()
             return projectivization.projective_space_comparison(self)
+
+        def closed_immersion_into_complete_linear_system(self):
+            r"""Return the closed immersion of this system into ``|L| = P(H^0(X, L)^*)``.
+
+            The selected subspace ``i: W -> H^0(X, L)`` dualizes to the surjection
+            ``i^*: H^0(X, L)^* -> W^*``, and a surjection ``E -> F`` of quasi-coherent
+            sheaves induces the closed immersion ``P(F) -> P(E)`` that sends a rank-one
+            quotient of ``F`` to its composite with ``E -> F`` (EGA II, 4.1.2).  The
+            lines of ``W`` are therefore a linear subspace of the lines of
+            ``H^0(X, L)``, and the immersion is an element of ``self.Mor(|L|)``.
+            """
+            assert False, (
+                "closed_immersion_into_complete_linear_system on ProjectiveLinearSystems(R): "
+                "not implemented"
+            )
 
         def restriction_map(self, closed_subscheme):
             return _projective_section_restriction(
@@ -570,7 +590,7 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return projective_line.imposed_multiplicity_linear_system(1, 0, 1)
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, jet_evaluation, **rest) -> None:
@@ -604,17 +624,15 @@ def _weak_compositions(total, length):
 
 
 def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordinate_names=None):
-    r"""Return the degree-``d`` homogeneous polynomial space on ``P^n``.
+    r"""Return the degree-``d`` homogeneous piece ``S_d`` of ``S = R[x_0..x_n]`` on ``P^n_R``.
 
     Basis labels are the actual monomials in an owned homogeneous-coordinate
-    polynomial algebra, not anonymous positions.
+    polynomial algebra, not anonymous positions.  No monomial has negative
+    total degree, so for ``d < 0`` the piece is the zero module on the empty
+    framing.
     """
     base = projective_scheme.scheme_base_ring()
     degree = int(degree)
-    assert degree >= 0, (
-        f"no space of homogeneous polynomials of degree {degree} on {projective_scheme}: "
-        "the degree must be nonnegative"
-    )
     width = int(projective_scheme.relative_dimension()) + 1
     names = (
         tuple(f"x{index}" for index in range(width))
@@ -629,7 +647,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     labels = tuple(ring.algebra_generating_set())
     monomials = []
     exponent_data = {}
-    for exponents in _weak_compositions(degree, width):
+    for exponents in _weak_compositions(degree, width) if degree >= 0 else ():
         monomial = ring.one()
         for position, exponent in enumerate(exponents):
             if exponent:

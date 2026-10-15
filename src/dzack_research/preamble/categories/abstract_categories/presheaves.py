@@ -938,6 +938,19 @@ class CoveringFamilies(OwnedCategory):
                 value_category = Sets()
             return Sheaves(self, value_category)
 
+        def terminal_site_object(self) -> Parent:
+            r"""A terminal object ``t`` of the site, where ``Gamma(F) = F(t)``.
+
+            For a presheaf ``F: C^op -> D`` the global sections are the limit
+            of ``F`` over ``C^op``; when ``C`` has a terminal object ``t``,
+            ``t`` is initial in ``C^op`` and that limit is ``F(t)``.  A
+            coverage whose site states its terminal object supplies it.
+            """
+            assert False, (
+                f"terminal object of the site of {self}: not implemented, so global sections "
+                "over it are the limit of the presheaf, which is not computed"
+            )
+
     def _repr_(self) -> str:
         return f"Covering families in {self.site_category()}"
 
@@ -1017,6 +1030,68 @@ class TrivialCoveringFamilies(OwnedCategoryBase):
 
     def _repr_(self) -> str:
         return f"Trivial covering families in {self.site_category()}"
+
+
+class OpenCoveringFamilies(OwnedCategoryBase):
+    r"""Open covers ``{U_i -> U}`` in the site ``Open(X)`` of a topological space ``X``.
+
+    The site is the poset category of the open subsets of ``X`` ordered by
+    inclusion, and a family of opens covers ``U`` when its union is ``U``.
+    ``Sh(X, D)`` is the full subcategory of ``[Open(X)^op, D]`` of the
+    presheaves satisfying descent for these covers (Mathlib,
+    ``Mathlib/Topology/Sheaves/Sheaf.lean``, ``TopCat.Sheaf C X``).  The
+    whole space ``X`` is the terminal object of ``Open(X)``.
+    """
+
+    @staticmethod
+    @cached_function(key=lambda cls, space: (cls, id(space)))
+    def __classcall__(cls, space: Parent):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(space)
+        return typecall(cls, space)
+
+    def __init__(self, space: Parent) -> None:
+        self._space = space
+        OwnedCategoryBase.__init__(self)
+
+    def space(self) -> Parent:
+        return self._space
+
+    def site_category(self) -> Category:
+        return self.space().open_subsets_site()
+
+    def super_categories(self):
+        return [CoveringFamilies(self.site_category())]
+
+    def whole_open(self) -> Parent:
+        r"""``X`` as an object of ``Open(X)``."""
+        return self.site_category()(self.space().power_set().top())
+
+    terminal_site_object = whole_open
+
+    @cached_method(key=lambda self, target: id(target))
+    def family(self, target: Parent):
+        r"""The singleton identity cover ``{U -> U}`` of an open ``U``."""
+        identity = _category_mor_parent(self.site_category(), target, target).identity()
+        return _covering_family(self, target, (identity,), {})
+
+    def open_cover(self, target: Parent, opens):
+        r"""The cover of the open ``target`` by a family of opens ``U_i`` with union ``target``.
+
+        Domain: an object ``U`` of ``Open(X)`` and an indexed family of objects
+        ``U_i`` of ``Open(X)`` with ``U_i <= U`` and union ``U``.  Codomain: the
+        covering family ``{U_i -> U}`` with overlaps ``U_i <- U_i cap U_j -> U_j``.
+        """
+        assert False, (
+            f"open cover of {target} in {self} with overlaps U_i cap U_j: not implemented"
+        )
+
+    def an_object(self):
+        return self.family(self.whole_open())
+
+    def _repr_(self) -> str:
+        return f"Open covering families of {self.space()}"
 
 
 def Coverage(site_category: Category, covering_families: Category) -> Category:
@@ -1590,6 +1665,29 @@ class Sheaves(OwnedCategoryBase):
         def descent_data(self) -> DescentData:
             return self._descent_data
 
+        def sections(self, site_object: Parent) -> Parent:
+            r"""``Gamma(U, F) = F(U)``, an object of the value category ``D``.
+
+            Domain: an object ``U`` of the site ``C``.  ``Gamma(U, -)`` is
+            evaluation at ``U``, read in ``C^op``, on the functor category
+            ``[C^op, D]``, restricted to this full subcategory of sheaves.
+            """
+            coverage = self.descent_data().coverage()
+            site_opposite = coverage.site_category().opposite()
+            evaluation = self.functor_category().evaluation_functor(site_opposite(site_object))
+            return evaluation(self)
+
+        def global_sections(self) -> Parent:
+            r"""``Gamma(F)``, the limit of ``F: C^op -> D``, an object of ``D``.
+
+            When the site ``C`` has a terminal object ``t``, ``t`` is initial
+            in ``C^op`` and the limit is ``F(t)``, so ``Gamma(F)`` is the
+            sections over the terminal object the coverage supplies.  For a
+            space ``X`` with site ``Open(X)`` this is ``F(X)`` (Mathlib,
+            ``TopCat.Sheaf``, ``Mathlib/Topology/Sheaves/Sheaf.lean``).
+            """
+            return self.sections(self.descent_data().coverage().terminal_site_object())
+
         def _repr_(self) -> str:
             return f"Sheaf object ({self.functor()})"
 
@@ -1653,6 +1751,35 @@ class Sheaves(OwnedCategoryBase):
     def identity(self, obj: Parent):
         return self.Mor(obj, obj).identity()
 
+    def sections_functor(self, site_object: Parent) -> Functor:
+        r"""``Gamma(U, -): Sh(C, D) -> D``, for an object ``U`` of the site ``C``.
+
+        The inclusion ``Sh(C, D) -> [C^op, D]`` followed by evaluation at
+        ``U`` read in ``C^op``.
+        """
+        presheaves = self.presheaf_category()
+        evaluation = presheaves.evaluation_functor(self.site_category().opposite()(site_object))
+        return self.inclusion_into(presheaves).then(evaluation)
+
+    def global_sections_functor(self) -> Functor:
+        r"""``Gamma: Sh(C, D) -> D``, sections over the terminal object of the site."""
+        return self.sections_functor(self.coverage().terminal_site_object())
+
+    def extension_from_basis(self, space: Parent) -> Functor:
+        r"""``Sh(B, D) -> Sh(Open(X), D)``, extension of sheaves from a basis.
+
+        Hypotheses: the site ``B`` of this category is a basis of the
+        topology of the topological space ``X``, as a full subcategory of
+        ``Open(X)``, its covering families are the covers in ``B`` of an open
+        of ``B``, and ``D`` has limits.  Domain: this category ``Sh(B, D)``.
+        Codomain: ``Sheaves(OpenCoveringFamilies(X), D)``.  It sends ``F`` to
+        ``U |-> lim_{V in B, V <= U} F(V)``, and it is quasi-inverse to
+        restriction along ``B -> Open(X)``: restriction is an equivalence
+        (comparison lemma; Stacks 009H, Hartshorne II Ex. 1.22, locator to
+        check).
+        """
+        assert False, "extension of sheaves from a basis to Open(X) on Sheaves: not implemented"
+
     def _repr_(self) -> str:
         return f"Sh({self.site_category()}, {self.value_category()}; {self.coverage()})"
 
@@ -1664,6 +1791,7 @@ __all__ = [
     "DescentDataOnCover",
     "DescentEqualizer",
     "DescentEqualizerComparison",
+    "OpenCoveringFamilies",
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",

@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectMorphism,
     TrivialCoveringFamilies,
     trivial_coverage,
+    OpenCoveringFamilies,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     DiscreteCategories,
@@ -268,6 +269,21 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pair,
     signature_pairs,
 )
+from dzack_research.preamble.categories.group.groups import (  # noqa: F401
+    LieGroups,
+    TopologicalGroups,
+)
+from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicRationalPoints,
+    HyperbolicSpaces,
+)
+from dzack_research.preamble.categories.manifolds import (  # noqa: F401
+    ComplexManifolds,
+    DifferentiableManifolds,
+    RiemannianManifolds,
+    SmoothManifolds,
+    TopologicalManifolds,
+)
 from dzack_research.preamble.categories.modules import (
     BilinearFormModules,
     BilinearMap,
@@ -325,6 +341,7 @@ from dzack_research.preamble.categories.modules import (
     ModulesWithChosenFinitePresentation,
     ModulesWithConnection,
     ModulesWithFlatConnection,
+    VectorBundlesWithConnection,
     PairingObjects,
     PairedModules,
     ProjectiveModules,
@@ -339,10 +356,17 @@ from dzack_research.preamble.categories.modules import (
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
+    DerivedCategories,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,
     MatrixSpaces,
+)
+from dzack_research.preamble.categories.modules.hodge_structures import (  # noqa: F401
+    FilteredModules,
+    HodgeStructures,
+    MixedHodgeStructures,
+    PolarizedHodgeStructures,
 )
 from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
     FiniteCommensurabilityQuotient,
@@ -494,6 +518,12 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     ContinuousMap,
     TopologicalSpaceMor,
     TopologicalSpaces,
+)
+from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
+    TopologicalSpaceCoslices,
+)
+from dzack_research.preamble.categories.algebras.graded_lie_algebras import (  # noqa: F401
+    GradedLieAlgebras,
 )
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,

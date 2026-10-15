@@ -269,6 +269,22 @@ class Functor:
         return _CoconeCategory(self)
 
     @cached_method
+    def category_of_elements(self):
+        r"""Return the category of elements ``int F`` of this functor to ``Sets``.
+
+        Its objects are the pairs ``(X, x)`` with ``x`` an element of ``F(X)``;
+        for a presheaf ``F: C^op -> Sets`` a morphism ``(X, x) -> (Y, y)`` is
+        ``f: X -> Y`` with ``F(f)(y) = x``, and for covariant ``F`` it is
+        ``f`` with ``F(f)(x) = y`` (Mac Lane, *Categories for the Working
+        Mathematician*, II.6).
+        """
+        from dzack_research.preamble.categories.abstract_categories.categories_of_elements import (
+            _CategoryOfElements,
+        )
+
+        return _CategoryOfElements(self)
+
+    @cached_method
     def algebras(self):
         r"""Return the category of algebras ``T(X) -> X`` of this endofunctor."""
         from dzack_research.preamble.categories.abstract_categories.arrow_categories import (

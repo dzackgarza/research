@@ -1884,6 +1884,7 @@ class _MorCategoryOf(OwnedCategoryBase):
         # refinement, and a candidate survives when
         # this category states nothing stronger than the class it already is.
         inherited = []
+        declared = []
         for supercategory in _packet_supercategories(self.base_category()):
             if not self._inherits_morphisms_from(supercategory, domain, codomain):
                 continue
@@ -1896,6 +1897,8 @@ class _MorCategoryOf(OwnedCategoryBase):
             if domain not in supercategory or codomain not in supercategory:
                 continue
             candidate = self.family_over(supercategory).Of(domain, codomain)
+            if all(candidate is not known for known in declared):
+                declared.append(candidate)
             if not (
                 fixed_class is FixedMorCategory or isinstance(candidate, fixed_class)
             ):
@@ -1904,7 +1907,12 @@ class _MorCategoryOf(OwnedCategoryBase):
                 inherited.append(candidate)
 
         inherited = _minimal_inherited_homs(inherited)
-        if len(inherited) == 1:
+        # A literal reuse is the Mor of this category only when it lies under
+        # every Mor its supercategories give: a map of associative unital
+        # algebras is a ring map, though a map of unital algebras is not.
+        if len(inherited) == 1 and all(
+            _declared_category_reaches(inherited[0], other) for other in declared
+        ):
             # One inherited Mor of the class this category would have built:
             # the subcategory adds no morphisms, so reuse that object literally
             # rather than fabricating a second parent for the same maps.

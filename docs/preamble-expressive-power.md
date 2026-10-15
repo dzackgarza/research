@@ -250,6 +250,15 @@ finite-presentation quotients. For parallel group maps `a,b: G -> H`,
 their coequalizer is the quotient of `H` by the normal closure of
 `a(g)b(g)^-1`. A generating family of `G` suffices for these relations.
 
+The later 2026-10-14 source delivery supplies group equalizers,
+coequalizers, empty diagrams, finite (co)products involving chosen
+finite presentations, and selected pullback/pushout cones. The product
+and free-product *universal factor maps* now use owned legs and the
+chosen factor embeddings or presentation generators rather than
+requiring a GAP model of their arbitrary cone/cocone apex. Their
+object computation retains the explicitly admitted presentation
+hypotheses. Independent runtime acceptance awaits terminal T.
+
 The group cokernel route at `groups.py:2383-2415` supplies a quotient group
 and projection for finite codomains and for subgroup inclusions into abelian
 groups. It rejects other cases, including the general chosen-presentation
@@ -319,6 +328,15 @@ cardinality for nonenumerated generated relations, including computing
 the finite parity quotient from black-box maps on an infinite source,
 remain outstanding. The construction does not assert a finite class
 count without a certified classification.
+
+For the source-defined integer translations `t_d(n)=n+d`, selected
+displacement data now provide that classification without sampling:
+`coeq(id_ZZ,t_d)=ZZ/(d)` as sets, and a wide family of selected
+translations is `ZZ/(d_i-d_0)_i`. The ordinary ring quotient computes
+the ideal, congruence classes, cardinality and chosen representative
+for universal factorization. The unresolved statement above concerns
+only arbitrary black-box set callbacks and unrelated infinite generated
+equivalence relations, for which no translation law is certified.
 
 For a represented small groupoid `C`, its class set is the coequalizer
 of source and target on its arrows:

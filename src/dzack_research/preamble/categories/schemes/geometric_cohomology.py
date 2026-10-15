@@ -173,6 +173,16 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             target = self.geometric_sheaf().global_sections()
             return source.module_category().Mor(source, target).identity()
 
+        def derived_global_sections(self):
+            r"""``RΓ(X, F)`` as ``Q`` of this complex, an object of ``DerivedCategories(R)``.
+
+            An affine Čech complex of a quasi-coherent sheaf on an affine
+            scheme is an acyclic resolution computing ``Γ(X, -)``, so its
+            image under the localization ``Q : Ch(R) -> D(R)`` represents
+            ``RΓ(X, F)``.
+            """
+            return CochainComplexes(self.base_ring()).localization_at_quasi_isomorphisms()(self)
+
 
 def _affine_geometric_cohomology_complex(sheaf, cover=None):
     r"""Return the one-chart affine complex computing ``H^*(X,sheaf)``.
@@ -251,7 +261,14 @@ def _affine_cover_refinement_cohomology_map(refinement, sheaf, degree):
 
 
 class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral cohomology groups of a specified topological realization/theory."""
+    r"""Integral cohomology groups of a specified topological realization/theory.
+
+    Each object is ``H^k(X(CC); R)`` for the complex realization
+    ``X(CC) = X.complex_realization(sigma)`` of its scheme ``X`` and
+    ``k = cohomological_degree()``: the degree-``k`` piece
+    ``X(CC).singular_cohomology(R).graded_piece(k)`` of the singular cohomology
+    algebra, an object of ``Modules(R)``.
+    """
 
     def an_object(self):
         r"""The degree-zero cohomology of a point with the selected coefficients."""
@@ -309,6 +326,19 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
 
         def realization_description(self):
             return self._realization_description
+
+        def cohomology_algebra(self):
+            r"""``H^*(X(CC); R)``, the graded-commutative algebra whose degree piece this is.
+
+            It is ``X(CC).singular_cohomology(R)``, an object of
+            ``GradedAlgebras(R, ZZ).Supercommutative()`` under the cup product
+            (Hatcher, *Algebraic Topology*, Thm 3.11), and this object is its
+            ``graded_piece(cohomological_degree())``.  Forming it needs the
+            embedding ``sigma`` that fixes ``X(CC)``.
+            """
+            assert False, (
+                "cohomology_algebra on IntegralTopologicalCohomologyGroups: not implemented"
+            )
 
 
 class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
@@ -423,6 +453,16 @@ class GeometricFundamentalGroups(OwnedCategory):
         def base_point(self):
             return self._base_point
 
+        def pointed_space(self):
+            r"""``(X(CC), x)``, an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
+
+            This group is ``pointed_space().fundamental_group()``, the degree-1
+            value of ``homotopy_groups()`` (``TopologicalSpaceCoslices``).
+            The analytification ``X |-> X(CC)`` into ``TopologicalSpaces()``
+            is not presented, so the pointed space cannot be built yet.
+            """
+            assert False, "pointed_space on GeometricFundamentalGroups: not implemented"
+
         def realization_description(self):
             return self._realization_description
 
@@ -474,6 +514,15 @@ class ToricFundamentalGroups(OwnedCategory):
         def base_point_cone(self):
             r"""Return the maximal cone indexing the selected torus-fixed basepoint."""
             return self._base_point_cone
+
+        def pointed_space(self):
+            r"""``(X(CC), x_sigma)`` at the torus-fixed point of ``base_point_cone()``.
+
+            An object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``; this
+            group is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
+            The analytification into ``TopologicalSpaces()`` is not presented.
+            """
+            assert False, "pointed_space on ToricFundamentalGroups: not implemented"
 
         def realization_description(self):
             return "complex analytic realization under the selected QQ-to-CC embedding"
@@ -809,6 +858,10 @@ class _QuarticK3IntegralTopology(SageObject):
 
     @cached_method
     def hodge_structure(self):
+        r"""The Hodge structure on ``H^*(X(CC); ZZ)``, an object of ``MixedHodgeStructures(ZZ)``.
+
+        See ``hodge_structure`` on smooth quartic K3 complete intersections.
+        """
         return _QuarticK3HodgeData(self.scheme())
 
     def middle_cohomology_torsion_free_quotient(self):
@@ -1333,7 +1386,11 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
 
 
 def _toric_hodge_structure(scheme):
-    r"""Return the pure diagonal Hodge data of a smooth complete toric complex realization."""
+    r"""The Hodge numbers of each degree of a smooth complete toric variety.
+
+    The required value of ``X.hodge_structure()`` is an object of
+    ``MixedHodgeStructures(ZZ)``; see ``hodge_structure`` on smooth toric schemes.
+    """
     return _ToricHodgeData(scheme)
 
 

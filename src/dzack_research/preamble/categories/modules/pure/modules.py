@@ -2488,6 +2488,29 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, ring.regular_module())
 
         @cached_method
+        def projectivization(self):
+            r"""Return ``P(M) = Proj_R(Sym_R(M)) -> Spec R``, Grothendieck's projectivization.
+
+            The points of ``P(M)`` with values in an ``R``-algebra ``T`` are the
+            invertible quotients of ``M tensor_R T`` (EGA II, 4.1.1 and 4.2.3), so a
+            ``k``-point of ``P(V)`` over a field ``k`` is a one-dimensional quotient of
+            ``V``, equivalently a hyperplane of ``V`` or a line of the dual ``V^*``.
+            For ``V`` free of rank ``n+1`` this is ``P^n_k``, whose homogeneous
+            coordinates are a basis of ``V`` itself, since ``Sym(V) = k[x_0, ..., x_n]``.
+
+            ``P(M)`` is the projectivization of the quasi-coherent sheaf ``M~`` on
+            ``Spec R``, so it is computed by that sheaf's ``projectivization()``.
+            """
+            ring = self.base_ring()
+            assert ring in OwnedRings().Commutative(), (
+                f"P({self}) = Proj Sym(M) needs Spec R, which exists only for a commutative ring, and "
+                f"R = {ring} is not known to be commutative"
+            )
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+            return Schemes(ring).base_scheme().associated_module_sheaf(self).projectivization()
+
+        @cached_method
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
             return _restricted_scalars_view(self, ring_map)

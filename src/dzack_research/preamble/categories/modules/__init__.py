@@ -82,6 +82,8 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
                                'ModulesWithFlatConnection'),
  'ModulesWithConnection': ('dzack_research.preamble.categories.modules.connections',
                            'ModulesWithConnection'),
+ 'VectorBundlesWithConnection': ('dzack_research.preamble.categories.modules.connections',
+                                 'VectorBundlesWithConnection'),
  'GroupModuleMor': ('dzack_research.preamble.categories.modules.group_modules',
                        'GroupModuleMor'),
  'FiniteFreeGroupRepresentations': ('dzack_research.preamble.categories.modules.group_modules', 'FiniteFreeGroupRepresentations'),
@@ -134,6 +136,8 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
  'BilinearMap': ('dzack_research.preamble.categories.modules.pure.modules', 'BilinearMap'),
  'TensorProductModules': ('dzack_research.preamble.categories.modules.pure.modules',
                           'TensorProductModules'),
+ 'DerivedCategories': ('dzack_research.preamble.categories.modules.derived_categories',
+                       'DerivedCategories'),
 }
 
 __all__ = ['BilinearMap',
@@ -194,6 +198,7 @@ __all__ = ['BilinearMap',
  'ModulesOverCommutativeRings',
  'ModulesWithFlatConnection',
  'ModulesWithConnection',
+ 'VectorBundlesWithConnection',
  'ModulesWithChosenFinitePresentation',
  'ModuleSubobjects',
  'Modules',
@@ -213,6 +218,7 @@ __all__ = ['BilinearMap',
  'SymmetricPowerModules',
  'TensorPowerModules',
  'ModuleResolutions',
+ 'DerivedCategories',
 ]
 
 def __getattr__(name):

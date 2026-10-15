@@ -215,6 +215,34 @@ class ModuleSheaves(OwnedParameterizedCategory):
         r"""Return the represented cokernel in sheaves of ``O_X``-modules."""
         return sheaf_morphism.cokernel()
 
+    def derived_global_sections(self):
+        r"""``RΓ(X, -) : Mod(O_X) -> D(Γ(X, O_X))``, the right derived functor of global sections.
+
+        Domain: sheaves of ``O_X``-modules on ``X``.  Codomain:
+        ``DerivedCategories(Γ(X, O_X))``.  On an object, ``RΓ(X, F)`` is the
+        class of ``Γ(X, I^•)`` for an injective resolution ``F -> I^•``,
+        which exists because ``Mod(O_X)`` has enough injectives; its
+        ``i``-th cohomology is ``H^i(X, F)``.
+        """
+        assert False, "derived_global_sections on ModuleSheaves: not implemented"
+
+    class ParentMethods:
+        def derived_global_sections(self):
+            r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
+
+            The image of this sheaf ``F`` under
+            ``ModuleSheaves(X).derived_global_sections()``.
+            """
+            assert False, "derived_global_sections on ModuleSheaves: not implemented"
+
+        def sheaf_cohomology(self, degree):
+            r"""``H^degree(X, F) = H^degree(RΓ(X, F))``, an object of ``Modules(Γ(X, O_X))``."""
+            return self.derived_global_sections().cohomology(degree)
+
+        def total_sheaf_cohomology(self):
+            r"""``⊕_i H^i(X, F)``, an object of ``GradedModules(Γ(X, O_X))`` with ``H^i(X, F)`` in degree ``i``."""
+            return self.derived_global_sections().graded_cohomology()
+
 
 def _represented_sheaf_mor(domain, codomain):
     r"""The selected represented sheaf Mor shared by these endpoints.
@@ -380,10 +408,16 @@ class _StructureSheafEngine:
     scheme = ringed_space
 
     def global_sections(self):
-        r"""Return ``Gamma(X,O_X)=O(X)`` for the represented affine scheme."""
-        return self.ringed_space().coordinate_algebra()
+        r"""Return ``Gamma(X,O_X)=O(X)``, the ring, for the represented affine scheme.
 
-    sections = global_sections
+        ``O_X`` is a sheaf of commutative rings, so ``Gamma(X, O_X)`` is the
+        ring ``O(X)``.  This representation builds ``O_X`` valued in
+        ``Modules(O(X))``, where evaluation at ``id_X`` gives the regular
+        module instead, so the ring answer stays here until ``O_X`` is built
+        valued in commutative rings and this method retires into
+        ``Sheaves.ParentMethods.global_sections``.
+        """
+        return self.ringed_space().coordinate_algebra()
 
     def sections_on_distinguished_open(self, distinguished_open):
         r"""Return ``O_X(D(f)) = O(D(f))`` for a represented distinguished open."""
@@ -721,6 +755,8 @@ class ZariskiCoveringFamilies(OwnedParameterizedCategory):
         r"""The terminal object ``id_X`` of ``Sch_R/X``."""
         return self.site_category().an_object()
 
+    terminal_site_object = slice_target
+
     def super_categories(self):
         return [CoveringFamilies(self.site_category())]
 
@@ -835,6 +871,8 @@ class DistinguishedAffineCovers(OwnedCategory):
     def slice_target(self):
         r"""The terminal slice object ``id_X`` shared by covers in this fibre."""
         return self.site_category().an_object()
+
+    terminal_site_object = slice_target
 
     def super_categories(self):
         scheme = self.scheme()

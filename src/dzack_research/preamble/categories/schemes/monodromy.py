@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
+from dzack_research.preamble.rings.real import RR
 
 
 class PointedAnalyticFundamentalGroup(SageObject):
@@ -72,6 +73,16 @@ class PointedAnalyticFundamentalGroup(SageObject):
 
     def positive_loop_generator(self):
         return self._generator
+
+    def pointed_space(self):
+        r"""``(space(), base_point())`` as an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
+
+        ``group()`` is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
+        The underlying topological space of a complex manifold is not
+        presented in ``TopologicalSpaces()``, so the pointed space cannot be
+        built yet.
+        """
+        assert False, "pointed_space on PointedAnalyticFundamentalGroup: not implemented"
 
     def _repr_(self) -> str:
         return f"pi_1({self.space()}, {self.base_point()}) = {self.group()}"
@@ -110,7 +121,7 @@ class LegendreMonodromyFamily(SageObject):
             coordinate_names=("t",),
         )
         smooth_stratum = ComplexManifolds().disc(
-            0.75, "Legendre_punctured_disc", containing_manifold=analytic_line,
+            RR(3) / RR(4), "Legendre_punctured_disc", containing_manifold=analytic_line,
             punctured=True,
         )
         base_point = smooth_stratum.point((0.5,))
