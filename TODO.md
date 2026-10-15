@@ -384,7 +384,27 @@ Repair the existing public construction routes and inherited methods before prov
     into finite diagram limits and colimits, pullback cones and pushout
     cocones at the shared owner. Set quotients must admit infinite relation
     diagrams, including those with finite quotients; class sets compose
-    these general quotient maps.
+    these general quotient maps. The translation quotient `ZZ/(d)` is
+    computed inside the general `Sets` coequalizer
+    (`categories/sets/set_categories.py`, `Sets.coequalizer_construction`
+    and `coequalizer_of_family_construction`), selected by
+    `target is _own_ring(SageZZ)` and `isinstance(..., OwnedSetMorphism)`
+    on the stored `selected_integer_translation_step()`. This contradicts
+    `AGENTS.md`, *What optimization is for*: "give the structure its own
+    category and let placement pick the algorithm, never ... special-case
+    inside a general method"; and *Dynamic peeking is prohibited*, which
+    bans `isinstance` in mathematical preamble code. Specimen: the
+    coequalizer of `id_ZZ` and `Sets().integer_translation(2)` reaches
+    `ZZ/(2)` only through these identity and class checks. Policy search:
+    `CONTRIBUTING.md`, *Preamble design philosophy* ("General
+    undecidability does not invalidate an available specialized
+    algorithm") admits the algorithm, not its placement; `STY-130`
+    recovers a special case "as the axioms, subcategories, or algorithmic
+    cases it formalizes", not by object identity. Repair: the translation is the action of
+    the subgroup `dZZ` of `(ZZ,+)` on `ZZ`, and its quotient is the orbit
+    set of that action. Route the case to the existing orbit-set owner
+    (`group/g_sets.py`, `_OrbitSet`) by placement, and remove the
+    special case from `Sets`.
   - Correct category placement and transport of preserved structure through
     the same construction. Retain actual actions, morphisms, functors and
     embedded subobjects as defining data. The `StabilizerSubgroups` action
