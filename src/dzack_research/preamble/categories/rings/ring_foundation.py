@@ -4369,11 +4369,26 @@ def _owned_monomial_text(variable_names, exponent):
 
 
 def _owned_polynomial_text(parent, backend_value) -> str:
+    r"""A polynomial written as Sage writes it: terms in descending term order.
+
+    Sage's reference is ``PolyDict.poly_repr`` (``sage/rings/polynomial/
+    polydict.pyx``), which sorts the exponents by the ring's
+    ``term_order().sortkey`` in reverse; a univariate polynomial is written by
+    descending degree.  Engine-convention dispatch (``OWN-06``): a
+    multivariate engine ring carries a term order, a univariate one does not.
+    """
     base = parent.base_ring()
     variables = tuple(parent.variable_names())
+    engine = backend_value.parent()
+    match engine:
+        case MPolynomialRing_base():
+            sortkey = engine.term_order().sortkey
+        case _:
+            sortkey = None
+    coefficients = backend_value.dict()
     terms = []
-    for exponent, coefficient in backend_value.dict().items():
-        owned_coefficient = _owned_engine_element(base, coefficient)
+    for exponent in sorted(coefficients, key=sortkey, reverse=True):
+        owned_coefficient = _owned_engine_element(base, coefficients[exponent])
         terms.append((exponent, owned_coefficient))
     if not terms:
         return "0"
