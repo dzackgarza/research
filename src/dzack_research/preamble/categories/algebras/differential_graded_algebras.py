@@ -55,7 +55,16 @@ class DegreewiseLinearMorphism(ModuleMorphism):
 
 
 class DifferentialComponentMorphism(DegreewiseLinearMorphism):
-    r"""A degreewise component of a represented DGA differential."""
+    r"""A degreewise component of a represented DGA differential.
+
+    A differential of a differential graded ``R``-algebra is by definition an
+    ``R``-linear map of degree ``+1``, and constructing the algebra is the
+    caller's statement of that law (``OWN-22``), so each component is linear
+    by construction.
+    """
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
