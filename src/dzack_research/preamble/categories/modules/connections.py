@@ -437,14 +437,9 @@ class Connection(Element):
     def _call_(self, element):
         return self.__call__(element)
 
-    @cached_method
     def underlying_linear_morphism(self):
-        target = self.parent().codomain_object()
-        return ConnectionUnderlyingLinearMorphism(
-            self.parent().arrow_set(),
-            self,
-            lambda element: target(self(element.underlying_element())),
-        )
+        r"""The image of this connection under ``Conn(E) -> Mor_R(E, E tensor_A Omega^1)``."""
+        return self.parent().inclusion()(self)
 
     as_morphism = underlying_linear_morphism
 
@@ -541,12 +536,8 @@ class Connection(Element):
 class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
     r"""The selected underlying linear morphism of one algebraic connection."""
 
-    def __init__(self, parent, connection, function) -> None:
-        self._connection = connection
+    def __init__(self, parent, function) -> None:
         super().__init__(parent, function, elementwise=True)
-
-    def connection(self):
-        return self._connection
 
     def _elementwise_linearity_derivation(self):
         return True
@@ -585,10 +576,29 @@ class ConnectionSpace(RestrictedMorCategoryParent):
             restricted_source,
             restricted_target,
         )
+        # The inclusion is injective and its arrows are constructed here, so
+        # its image is recorded together with its section.  The Leibniz rule
+        # is not decided for an arbitrary R-linear map, so an arrow belongs to
+        # this restricted Mor when it lies in that recorded image.
+        self._underlying_arrows = {}
+        self._inclusion_preimages = {}
         self._inclusion = SetMorphism(
             Sets().Mor(self, self.arrow_set()),
-            lambda connection: connection.underlying_linear_morphism(),
+            self._underlying_arrow,
         )
+
+    def _underlying_arrow(self, connection):
+        arrow = self._underlying_arrows.get(id(connection))
+        if arrow is not None:
+            return arrow
+        target = self.codomain_object()
+        arrow = ConnectionUnderlyingLinearMorphism(
+            self.arrow_set(),
+            lambda element: target(connection(element.underlying_element())),
+        )
+        self._underlying_arrows[id(connection)] = arrow
+        self._inclusion_preimages[id(arrow)] = connection
+        return arrow
 
     def module(self):
         return self._module
@@ -604,6 +614,17 @@ class ConnectionSpace(RestrictedMorCategoryParent):
 
     def inclusion(self):
         return self._inclusion
+
+    def inclusion_image_contains(self, arrow) -> bool:
+        r"""Whether ``arrow`` is the image of a connection under :meth:`inclusion`."""
+        return id(arrow) in self._inclusion_preimages
+
+    def inclusion_preimage(self, arrow):
+        r"""The connection whose underlying ``R``-linear map is ``arrow``."""
+        assert self.inclusion_image_contains(arrow), (
+            f"{arrow} is not the underlying R-linear map of a connection in {self}"
+        )
+        return self._inclusion_preimages[id(arrow)]
 
     def _element_constructor_(self, generator_images, *, check=False):
         r"""The connection given by its values on the module generators (``CON-17``).
@@ -622,12 +643,7 @@ class ConnectionSpace(RestrictedMorCategoryParent):
                     f"{generator_images} is not known to satisfy the Leibniz rule, so it is not a connection "
                     f"in {self}; construct it from the images of the module generators instead"
                 )
-                connection = generator_images.connection()
-                match connection.parent() is self:
-                    case True:
-                        return connection
-                    case False:
-                        return self(lambda label: connection.generator_image(label))
+                return self.inclusion_preimage(generator_images)
         match generator_images:
             case Mapping() | tuple() | list():
                 values = finite_indexed_family_from_values(labels, generator_images)
@@ -648,7 +664,14 @@ class ConnectionCategoryConstruction(_RestrictedMorCategoryOf):
         return ConnectionSpace
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, ConnectionUnderlyingLinearMorphism)
+        r"""Whether ``arrow`` is the underlying ``R``-linear map of a connection.
+
+        The Leibniz rule is not decided for an arbitrary ``R``-linear map, so
+        admission reads construction: ``arrow`` lies in the image of the
+        inclusion of the connection space with its endpoints.
+        """
+        connections = self._cached_between(arrow.domain(), arrow.codomain())
+        return connections is not None and connections.inclusion_image_contains(arrow)
 
 
 @cached_function(key=lambda module: id(module))
@@ -678,7 +701,6 @@ class ConnectionMorphism(Element):
         self._horizontality_premises = horizontality_premises
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
             parent.arrow_set(),
-            self,
             parent.arrow_set()(images),
         )
 
@@ -803,8 +825,7 @@ class ConnectionMorphism(Element):
 class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
     r"""The selected underlying module morphism of one horizontal map."""
 
-    def __init__(self, parent, connection_morphism, underlying) -> None:
-        self._connection_morphism = connection_morphism
+    def __init__(self, parent, underlying) -> None:
         self._underlying_source_morphism = underlying
         super().__init__(
             parent,
@@ -815,14 +836,17 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
     def _elementwise_linearity_derivation(self):
         return self._underlying_source_morphism.linearity_decision()
 
-    def connection_morphism(self):
-        return self._connection_morphism
-
 
 class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
     def __init__(self, family, domain, codomain) -> None:
+        # Horizontality of an arbitrary linear map is decided only on module
+        # generators under a chosen finite presentation, so an arrow of the
+        # underlying linear Mor belongs here when it is the underlying map of
+        # a horizontal map constructed here; that image is recorded with its
+        # section.
+        self._inclusion_preimages = {}
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError(
                 f"there are no morphisms of modules with connection {domain} -> {codomain}: both must be "
@@ -845,20 +869,32 @@ class ConnectionMor(RestrictedMorCategoryParent):
             case selected if selected is self:
                 return images
             case selected if selected is self.arrow_set() and self.accepts(images):
-                structured = images.connection_morphism()
-                match structured.parent() is self:
-                    case True:
-                        return structured
-                    case False:
-                        pass
-        morphism = self.element_class(self, images)
+                return self.inclusion_preimage(images)
+        morphism = self._recorded(self.element_class(self, images))
         morphism.validate_linearity(check=check)
         morphism.validate_horizontality(check=check)
         return morphism
 
     def _from_horizontal_morphism(self, underlying, premises=()):
         r"""The arrow on ``underlying``, horizontal when every premise is horizontal."""
-        return self.element_class(self, underlying, horizontality_premises=premises)
+        return self._recorded(
+            self.element_class(self, underlying, horizontality_premises=premises)
+        )
+
+    def _recorded(self, morphism):
+        self._inclusion_preimages[id(morphism.underlying_linear_morphism())] = morphism
+        return morphism
+
+    def inclusion_image_contains(self, arrow) -> bool:
+        r"""Whether ``arrow`` is the underlying linear map of a horizontal map here."""
+        return id(arrow) in self._inclusion_preimages
+
+    def inclusion_preimage(self, arrow):
+        r"""The horizontal map whose underlying linear map is ``arrow``."""
+        assert self.inclusion_image_contains(arrow), (
+            f"{arrow} is not the underlying linear map of a horizontal map in {self}"
+        )
+        return self._inclusion_preimages[id(arrow)]
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
@@ -876,7 +912,13 @@ class ConnectionMorphismCategoryConstruction(_RestrictedMorCategoryOf):
         return ConnectionMor
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, HorizontalConnectionUnderlyingMorphism)
+        r"""Whether ``arrow`` is the underlying linear map of a horizontal map.
+
+        Admission reads construction: ``arrow`` lies in the recorded image of
+        the forgetful map from the horizontal maps with its endpoints.
+        """
+        horizontal = self._cached_between(arrow.domain(), arrow.codomain())
+        return horizontal is not None and horizontal.inclusion_image_contains(arrow)
 
 
 
