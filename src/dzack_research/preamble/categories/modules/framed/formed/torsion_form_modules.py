@@ -9,6 +9,14 @@ descent before equipping the module with the form.
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
+# Private engine adapter (OWN-06): Sage's ``sage.groups.fqf_orthogonal._isom_fqf(A)``
+# returns generator matrices of O(A) for a finite quadratic module A by
+# exhaustive extension of partial isometries; it is called here on one primary
+# part at a time (any p).  No public Sage routine supplies generators of the
+# orthogonal group of a primary part.
+from sage.groups.fqf_orthogonal import _isom_fqf as _engine_isom_fqf
+from sage.matrix.constructor import matrix as _engine_matrix
+from sage.rings.finite_rings.finite_field_constructor import GF as _engine_GF
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -22,8 +30,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+from dzack_research.preamble.tensors._finite_form_engine import _engine_odd_orthogonal_generators
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
+    OwnedGroups,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _module_invariant_factor_form,
@@ -1121,6 +1131,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             form,
             category=OwnedFiniteGroups(),
         )
+        # O(q) is an object of the category of groups (ARC-07; finiteness is a
+        # property axiom, kept in category()): group actions on finite sets
+        # read this ambient category.
+        self._constructing_category = OwnedGroups()
         realize_owned_category(self)
         self.select_group_generators(self._computed_group_generators)
 
@@ -1178,7 +1192,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     @cached_method
     def _engine_group(self):
         r"""Return the private Sage orthogonal-group parent."""
-        return self._engine_module().orthogonal_group()
+        return _engine_orthogonal_group(self._engine_module())
 
     def _to_engine(self, automorphism):
         r"""Lower a live automorphism under the owned-group engine contract.
@@ -1579,3 +1593,54 @@ __all__ = [
     "TorsionFormIsometry",
     "TorsionFormOrthogonalGroup",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Engine orthogonal groups of finite quadratic modules (private)
+# ---------------------------------------------------------------------------
+
+
+
+def _engine_orthogonal_group(T):
+    r"""Sage's ``O(T)`` for a finite quadratic module ``T``, from generators of its primary parts.
+
+    ``O(T)`` is the product of the ``O(T_p)``.  An elementary ``T_p`` with
+    ``p`` odd has ``q`` determined by ``b``, and ``O(T_p)`` is the orthogonal
+    group of the Gram matrix of ``p b`` over ``GF(p)``: GAP's
+    ``GO(epsilon, n, p)`` conjugated onto that matrix by an explicit isometry
+    of diagonalized forms.  The other primary parts use Sage's search
+    ``_isom_fqf`` on that part alone.  Sage's ``orthogonal_group()`` without
+    generators searches all of ``T`` (TRAPS.md).  The isometry of diagonalized
+    forms is computed here because GAP's ``forms`` package, which provides
+    ``BaseChangeToCanonical``, is not installed in the engine (TRAPS.md).
+    """
+    exponent = SageZZ(T.annihilator().gen())
+    generators = []
+    for p in exponent.prime_divisors():
+        part = T.primary_part(p)
+        gens = part.smith_form_gens()
+        n = len(gens)
+        if p != 2 and all(x == p for x in part.invariants()):
+            field = _engine_GF(p)
+            gram = _engine_matrix(field, n, n, [field(p * gens[i].b(gens[j]).lift()) for i in range(n) for j in range(n)])
+            matrices, _order = _engine_odd_orthogonal_generators(gram, p)
+        else:
+            matrices = _engine_isom_fqf(part)
+        for m in matrices:
+            images = [sum((SageZZ(m[i, j]) * gens[j] for j in range(n)), part.zero()) for i in range(n)]
+            generators.append(_extend(T, part, gens, p, exponent, images))
+    return T.orthogonal_group(gens=generators)
+
+
+def _extend(T, part, gens, p, exponent, images):
+    power = p ** exponent.valuation(p)
+    cofactor = exponent // power
+    idempotent = SageZZ(cofactor * cofactor.inverse_mod(power))
+    result = []
+    for x in T.gens():
+        component = idempotent * x
+        coordinates = part(component).vector()
+        assert sum((SageZZ(c) * T(g) for c, g in zip(coordinates, gens, strict=True)), T.zero()) == component
+        moved = sum((SageZZ(c) * T(image) for c, image in zip(coordinates, images, strict=True)), T.zero())
+        result.append(moved + x - component)
+    return T.hom(result)
