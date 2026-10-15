@@ -350,7 +350,7 @@ class TopologicalSpaces(OwnedCategory):
         )
 
     def singular_cohomology_functor(self, coefficients):
-        r"""The contravariant functor ``H^*(-; R): Top^op -> GradedAlgebras(R).Supercommutative()``.
+        r"""The contravariant functor ``H^*(-; R): Top^op -> GradedAlgebras(R, ZZ).Supercommutative()``.
 
         It sends a space ``X`` to ``X.singular_cohomology(R)`` and a continuous
         map ``f: X -> Y`` to the pullback ``f^*: H^*(Y; R) -> H^*(X; R)``, the
@@ -399,7 +399,8 @@ class TopologicalSpaces(OwnedCategory):
             ``a b = (-1)^{k l} b a`` for ``a`` of degree ``k`` and ``b`` of
             degree ``l`` (Hatcher, *Algebraic Topology*, Thm 3.11), although it
             is not on cochains, so the result is an object of
-            ``GradedAlgebras(R).Supercommutative()``.  Its degree-``k`` piece
+            ``GradedAlgebras(R, ZZ).Supercommutative()``, graded by ``ZZ`` and
+            concentrated in degrees ``k >= 0``.  Its degree-``k`` piece
             ``graded_piece(k)`` is ``H^k(X; R)``, an object of ``Modules(R)``.
             """
             assert False, "singular_cohomology on TopologicalSpaces: not implemented"
