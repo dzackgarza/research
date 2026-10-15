@@ -3504,9 +3504,21 @@ class Schemes(OwnedCategoryOverBaseRing):
                 a sheaf of supercommutative differential graded ``R``-algebras
                 whose sections over an affine open ``Spec A`` are
                 ``DeRhamAlgebras(R)(A) = DR_R(A)``.  Its differential is
-                ``R``-linear but not ``O_X``-linear.
+                ``R``-linear but not ``O_X``-linear.  For affine ``X`` it is
+                constructed on the distinguished affine basis
+                ``distinguished_affine_coverage(X)``, which determines the
+                sheaf on ``X`` (Stacks, Tag 009O).
                 """
-                assert False, "de_rham_complex on Schemes.Smooth: not implemented"
+                from dzack_research.preamble.categories.schemes.ringed_spaces import (
+                    _affine_de_rham_complex,
+                )
+
+                base = self.scheme_base_ring()
+                match self:
+                    case _ if self in Schemes(base).Affine():
+                        return _affine_de_rham_complex(self)
+                    case _:
+                        assert False, "de_rham_complex on Schemes.Smooth: not implemented"
 
             def de_rham_hypercohomology(self):
                 r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategories(R)``.
@@ -5165,6 +5177,19 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return self.O(-int(self.relative_dimension()) - 1)
 
         @cached_method
+        @cached_method
+        def structure_sheaf(self):
+            r"""``O_X`` on ``Open(|P^n_R|)``, glued from the standard affine charts ``D_+(x_i)``.
+
+            Its global sections are ``Gamma(P^n_R, O) = S_0 = R`` for
+            ``S = R[x_0..x_n]`` (Hartshorne, Proposition II.5.13).
+            """
+            from dzack_research.preamble.categories.schemes.gluing import (
+                _finite_atlas_structure_sheaf,
+            )
+
+            return _finite_atlas_structure_sheaf(self.standard_affine_atlas(), self.scheme_base_ring())
+
         def standard_affine_atlas(self):
             r"""Return the verified standard affine atlas on this exact projective space."""
             from dzack_research.preamble.categories.schemes.gluing import (

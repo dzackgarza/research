@@ -450,6 +450,7 @@ _lazy_import(
         "Schemes",
         "SchemesOverIntegralDomains",
         "SchemesOverLocalRings",
+        "PresheafObjects",
         "SheafObjects",
         "SheafedSpaces",
         "SideDecoration",
