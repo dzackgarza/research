@@ -4762,7 +4762,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             )
 
         def O(self, degree):
-            r"""Return the standard invertible sheaf ``O(d)`` on this projective space."""
+            r"""Return the standard invertible sheaf ``O(d)`` on this projective space, for any integer ``d``.
+
+            Its global sections are the degree-``d`` piece ``S_d`` of
+            ``S = R[x_0..x_n]``, a free ``R``-module framed by the degree-``d``
+            monomials, and zero for ``d < 0`` (Hartshorne, Proposition II.5.13).
+            """
             from dzack_research.preamble.categories.divisors.invertible_sheaves import (
                 _projective_o,
             )
