@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_integers,
@@ -264,15 +265,15 @@ class VectorBundlesWithConnection(OwnedParameterizedCategory):
     ``(E, nabla)`` are an object of ``ModulesWithConnection(A)``.
 
     Forgetting ``nabla`` lands in the locally free ``O_X``-modules of finite
-    rank, the subcategory of ``QuasiCoherentSheaves(X)`` cut out by local
-    freeness.  That subcategory is the one immediate supercategory; it is
-    declared once ``QuasiCoherentSheaves(X)`` states local freeness as an
-    axiom, so :meth:`super_categories` stays abstract (``CAT-15``).
+    rank, ``QuasiCoherentSheaves(X).FiniteLocallyFree()``, the one immediate
+    supercategory (``CAT-15``).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "vector bundles with connection"
+    def super_categories(self):
+        return [QuasiCoherentSheaves(self.scheme()).FiniteLocallyFree()]
+
+    def _repr_object_names(self):
+        return f"vector bundles with connection on {self.scheme()}"
 
     def scheme(self):
         r"""The scheme ``X`` on which the bundles live."""
@@ -308,11 +309,13 @@ class VectorBundlesWithConnection(OwnedParameterizedCategory):
         map, so this axiom declares no morphisms of its own.
         """
 
-        @classmethod
-        def _repr_object_names(cls):
-            return "vector bundles with integrable connection"
+        def _repr_object_names(self):
+            return f"vector bundles with integrable connection on {self.base_category().scheme()}"
 
         class ParentMethods:
+            def is_integrable(self) -> bool:
+                return True
+
             def de_rham_complex(self):
                 r"""The de Rham complex ``Omega^*_{X/S} tensor E`` of ``(E, nabla)``.
 
@@ -345,6 +348,54 @@ VectorBundlesWithConnection.__dict__["Integrable"]._base_category_class_and_axio
     VectorBundlesWithConnection,
     "Integrable",
 )
+
+
+class _GaussManinConnection:
+    r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
+
+    The defining data are the arrow ``f`` and the degree ``k``.  The bundle is
+    the hyperdirect image ``R^k f_*(Omega^*_{X/S})`` and ``nabla_GM`` is the
+    Gauss-Manin connection relative to the base of ``S``; it is integrable
+    (Katz, *Nilpotent connections and the monodromy theorem*, Publ. Math.
+    IHES 39 (1970), (3.0)).  The caller supplies a smooth proper ``f``.
+    """
+
+    def __init__(self, family_morphism, degree, **rest) -> None:
+        self._family_morphism = family_morphism
+        self._degree = degree
+        super().__init__(**rest)
+
+    def family_morphism(self):
+        r"""The smooth proper arrow ``f: X -> S``."""
+        return self._family_morphism
+
+    def degree(self):
+        r"""The cohomological degree ``k``."""
+        return self._degree
+
+    def scheme(self):
+        return self.family_morphism().codomain()
+
+    def underlying_vector_bundle(self):
+        r"""``R^k f_*(Omega^*_{X/S})``, an object of ``QuasiCoherentSheaves(S).FiniteLocallyFree()``."""
+        return self.family_morphism().de_rham_cohomology(self.degree())
+
+    def connection(self):
+        r"""``nabla_GM: H^k_dR(X/S) -> Omega^1_{S/T} tensor H^k_dR(X/S)``, for ``T`` the base of ``S``.
+
+        Katz and Oda compute ``nabla_GM`` as the connecting map of the
+        filtration of ``Omega^*_X`` by pullbacks of forms on ``S`` (Katz,
+        Oda, *On the differentiation of de Rham cohomology classes with
+        respect to parameters*, J. Math. Kyoto Univ. 8 (1968)).
+        """
+        assert False, "connection on the Gauss-Manin connection of a scheme morphism: not implemented"
+
+    def _repr_(self) -> str:
+        f = self.family_morphism()
+        return (
+            f"Gauss-Manin connection on H^{self.degree()}_dR(X/S) of the family "
+            f"X = {f.domain()} over S = {f.codomain()}"
+        )
 
 
 class Connection(Element):

@@ -554,7 +554,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     (``OWN-22``).
     """
 
-    _mor_placement: Category | None = None
+    _mor_placement: Category
 
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
@@ -614,21 +614,59 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             postorder.append(mor)
 
         visit(self)
-        # A Mor class also inherits the arrow methods of its Python ancestors,
-        # which are the Mor categories of its supercategories.  Each provider
-        # takes the position of the last Mor category that supplies it, so
-        # ``OwnedSetMorphism`` reached through the class of ``RingMor`` still
-        # follows the module level of a graded algebra arrow.
-        providers = {}
-        for mor in reversed(postorder):
+
+        # A Mor class also supplies the arrow methods of its Python ancestors,
+        # in their MRO order.  A provider precedes the next one its own class
+        # lists, and every provider of a Mor category precedes each provider
+        # that only a declared supercategory supplies.  Two Mor categories of
+        # one class (an algebra Mor over two categories of algebras) supply
+        # the same providers and add no order between them.  The providers
+        # are then sorted topologically (Kahn, Comm. ACM 5 (1962) 558), ties
+        # going to the first supplier in reverse postorder.
+        def own_providers(mor):
+            found = []
             for ancestor in type(mor).__mro__:
                 if ancestor is CategoricalMor:
                     break
                 provider = ancestor.__dict__.get("ElementMethods")
-                if isinstance(provider, type):
-                    providers.pop(provider, None)
-                    providers[provider] = None
-        providers = list(providers)
+                if isinstance(provider, type) and provider not in found:
+                    found.append(provider)
+            return found
+
+        first_supplier = {}
+        successors = {}
+        for position, mor in enumerate(reversed(postorder)):
+            own = own_providers(mor)
+            for provider in own:
+                first_supplier.setdefault(provider, position)
+                successors.setdefault(provider, set())
+            for earlier, later in zip(own, own[1:]):
+                successors[earlier].add(later)
+            for super_category in mor.super_categories():
+                if not isinstance(super_category, CategoricalMor):
+                    continue
+                for later in own_providers(super_category):
+                    if later not in own:
+                        for earlier in own:
+                            successors[earlier].add(later)
+        predecessor_count = dict.fromkeys(successors, 0)
+        for later_set in successors.values():
+            for later in later_set:
+                predecessor_count[later] += 1
+        providers = []
+        ready = [p for p, count in predecessor_count.items() if count == 0]
+        while ready:
+            ready.sort(key=first_supplier.__getitem__)
+            provider = ready.pop(0)
+            providers.append(provider)
+            for later in successors[provider]:
+                predecessor_count[later] -= 1
+                if predecessor_count[later] == 0:
+                    ready.append(later)
+        assert len(providers) == len(successors), (
+            f"the arrow providers of {self} have no order in which every Mor "
+            "category precedes its supercategories"
+        )
 
         bases = []
         for candidate in (
@@ -718,7 +756,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         _init_mor_category_class(self)
         # Host ``Homset`` initialization.  It stores the endpoints and runs
         # ``Parent.__init__`` once, in Sage's ``Sets`` Mor category, and
-        # ``_init_category_`` records the placement over it.
+        # ``_init_category_`` records the placement over it.  A Mor object is
+        # a set of arrows, so a caller that supplies no richer placement
+        # places it in ``Sets()``.
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
         self._mor_placement = category
         SageHomset.__init__(self, domain, codomain, category=SageSets())
         with construction_scope(self) as reached:
@@ -744,13 +788,9 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         recorded as the join of that category with the caller's placement.
         """
         Parent._init_category_(self, category)
-        match self._mor_placement:
-            case None:
-                pass
-            case placement:
-                SageCategoryObject._init_category_(
-                    self, owned_category_join((category, placement))
-                )
+        SageCategoryObject._init_category_(
+            self, owned_category_join((category, self._mor_placement))
+        )
 
     @validator
     def validate_placement(self) -> None:

@@ -286,7 +286,7 @@ class PositiveConeComponents(OwnedParameterizedCategory):
             return _hyperbolic_space(self)
 
         def _repr_(self):
-            return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
+            return f"Positive-cone component of {self.lattice()} ⊗ RR containing {self.timelike_vector()}"
 
 
 class HyperbolicSpaces(OwnedParameterizedCategory):
@@ -416,7 +416,12 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
             )
 
         def _repr_(self):
-            return f"Hyperbolic space of {self._component}"
+            component = self.positive_cone_component()
+            return (
+                f"Hyperbolic space H^{self.dimension()}: the hyperboloid q = 1 in the "
+                f"positive-cone component of {component.lattice()} ⊗ RR containing "
+                f"{component.timelike_vector()}"
+            )
 
 
 class HyperbolicRationalPoints(OwnedParameterizedCategory):
