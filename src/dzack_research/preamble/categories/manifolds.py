@@ -7,6 +7,8 @@ represented atlas transition.
 """
 
 from sage.categories.category_with_axiom import all_axioms
+from sage.combinat.root_system.coxeter_group import CoxeterGroup
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.matrix.constructor import matrix as _engine_matrix
 from sage.matrix.special import identity_matrix as _engine_identity_matrix
@@ -30,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_complex_field,
     _owned_engine_element,
+    _owned_integers,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -241,6 +244,52 @@ def _engine_positive_definite(hermitian):
     return tuple(
         hermitian[:size, :size].det().real_part() > 0
         for size in range(1, hermitian.nrows() + 1)
+    )
+
+
+def _engine_positive_root_count(diagram, vertices):
+    r"""``|Phi_X^+|`` for the subdiagram on ``vertices``: the length of the longest element of ``W_X``."""
+    from dzack_research.preamble.categories.coxeter_diagrams import (
+        _engine_coxeter_matrix_entry,
+    )
+
+    match len(vertices):
+        case 0:
+            return 0
+        case _:
+            group = CoxeterGroup(
+                CoxeterMatrix(
+                    [
+                        [
+                            _engine_coxeter_matrix_entry(diagram.coxeter_entry(left, right))
+                            for right in vertices
+                        ]
+                        for left in vertices
+                    ]
+                ),
+                implementation="reflection",
+            )
+            return group.long_element().length()
+
+
+def _symmetric_space_rank_and_dimension(satake_diagram):
+    r"""The real rank ``dim a_0`` and the dimension ``dim p_0`` of ``G/K`` for the real form of a Satake diagram.
+
+    ``a_0`` is a maximal abelian subspace of ``p_0``; its dimension is the
+    number of ``tau``-orbits of white nodes (Araki, 1962).  The roots
+    vanishing on ``a_0`` are the roots ``Phi_X`` of the black subdiagram, so
+    ``dim n_0 = |Phi^+| - |Phi_X^+|``, and the Iwasawa decomposition
+    ``g_0 = k_0 + a_0 + n_0`` (Helgason, Ch. VI) gives
+    ``dim G/K = dim p_0 = dim a_0 + dim n_0``.
+    """
+    diagram = satake_diagram.dynkin_diagram()
+    tau = satake_diagram.involution()
+    black = tuple(satake_diagram.black_nodes())
+    vertices = tuple(diagram.index_set())
+    white = tuple(vertex for vertex in vertices if vertex not in satake_diagram.black_nodes())
+    rank = len({frozenset((vertex, tau(vertex))) for vertex in white})
+    return rank, rank + _engine_positive_root_count(diagram, vertices) - _engine_positive_root_count(
+        diagram, black
     )
 
 
@@ -767,6 +816,13 @@ class RiemannianManifolds(OwnedCategory):
             right translation is a diffeomorphism of ``G``, not a group morphism.
             The smooth structure and the ``G``-invariant metric induced by
             the Killing form of ``g_0`` restricted to ``p_0`` place it here.
+
+            The construction is the smooth manifold on the one global chart
+            ``Exp: p_0 -> G/K``, a diffeomorphism for noncompact type
+            (Helgason, Ch. VI, Theorem 1.1), with coordinates ``x_0, ...``
+            on ``p_0``.  ``dim p_0`` and the real rank are read from the
+            Satake diagram by the Iwasawa decomposition.  The orbit-space
+            route above and the metric are not constructed.
             """
             from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
 
@@ -775,7 +831,34 @@ class RiemannianManifolds(OwnedCategory):
                 f"a noncompact real form of a simple Lie algebra is classified by an object "
                 f"of SatakeDiagrams(), and {satake_diagram} is in {satake_diagram.category()}"
             )
-            assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
+            assert satake_diagram.dynkin_diagram().is_connected(), (
+                f"cannot construct the irreducible symmetric space of {satake_diagram}: an "
+                f"irreducible space comes from a simple Lie algebra, whose Dynkin diagram is "
+                f"connected"
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake_diagram)
+            assert rank >= 1, (
+                f"{satake_diagram} has every node black, so it is the compact real form, and "
+                f"its symmetric space G/K is a point, not of the noncompact type"
+            )
+            engine = _SageManifold(
+                int(dimension), "G/K", structure="smooth", unique_tag=object()
+            )
+            space = _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=int(dimension),
+                manifold_name="G/K",
+                manifold_structure="smooth",
+                differentiability_degree=Infinity,
+                manifold_field="real",
+                satake_diagram=satake_diagram,
+                real_rank=rank,
+            )
+            space.chart("p0", " ".join(f"x{index}" for index in range(int(dimension))))
+            return space
 
         def hyperbolic_space(self, component):
             r"""Return the hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
@@ -1367,12 +1450,60 @@ class ComplexManifolds(OwnedCategory):
             )
 
         def type_EIII(self):
-            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
-            assert False, "type_EIII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``.
+
+            Built on the Satake diagram of ``E_{6(-14)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``3, 4, 5`` and ``tau``
+            swaps ``1 <-> 6`` and ``3 <-> 5``; real rank ``2``.  The vertices
+            of the session's ``E6`` diagram are Bourbaki's labels minus one.
+            The bounded realization is ``harish_chandra_realization()``.
+            """
+            return self._exceptional_domain("EIII", "E6", (2, 3, 4), (5, 1, 4, 3, 2, 0))
 
         def type_EVII(self):
-            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``."""
-            assert False, "type_EVII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``.
+
+            Built on the Satake diagram of ``E_{7(-25)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``2, 3, 4, 5`` and ``tau``
+            is the identity; real rank ``3``.  The vertices of the session's
+            ``E7`` diagram are Bourbaki's labels minus one.
+            """
+            return self._exceptional_domain("EVII", "E7", (1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6))
+
+        def _exceptional_domain(self, name, cartan_name, black_nodes, involution_images):
+            r"""The Hermitian symmetric domain ``G/K`` of the real form with the given Satake diagram.
+
+            Its complex dimension is ``dim p_0 / 2``; the complex manifold has
+            no chart until its Harish-Chandra realization is constructed.
+            """
+            from dzack_research.preamble.categories.lattices import Lattices
+            from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
+
+            diagram = Lattices(_owned_integers())(cartan_name).dynkin_diagram()
+            satake = SatakeDiagrams()(
+                diagram, black_nodes, diagram.Mor(diagram)(involution_images)
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake)
+            engine = _SageManifold(
+                dimension // 2,
+                name,
+                field="complex",
+                structure="smooth",
+                unique_tag=object(),
+            )
+            return _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=dimension // 2,
+                manifold_name=name,
+                manifold_structure="complex analytic",
+                differentiability_degree=Infinity,
+                manifold_field="complex",
+                satake_diagram=satake,
+                real_rank=rank,
+            )
 
         def upper_half_plane(self, name="HH"):
             r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
@@ -1464,6 +1595,38 @@ class ComplexManifolds(OwnedCategory):
                 the real form ``Lie(Aut(D)^0)``.
                 """
                 assert False, "bergman_metric_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
+
+class _RealFormSymmetricSpace:
+    r"""The symmetric space ``G/K`` of a real form, built on its Satake diagram; a realization, not a category.
+
+    The Satake diagram classifies the real form ``g_0 = Lie(G)`` (Araki,
+    1962), so it is the datum the construction is on; the real rank
+    ``dim a_0`` is read from it.
+    """
+
+    def __init__(self, satake_diagram, real_rank, **rest) -> None:
+        self._satake_diagram = satake_diagram
+        self._real_rank = real_rank
+        super().__init__(**rest)
+
+    def satake_diagram(self):
+        r"""Return the Satake diagram of the real form ``g_0`` of which this is ``G/K``."""
+        return self._satake_diagram
+
+    def real_rank(self):
+        r"""Return ``dim a_0``, the rank of the symmetric space: the number of ``tau``-orbits of white nodes."""
+        return self._real_rank
+
+    def _repr_(self):
+        diagram = self._satake_diagram
+        return (
+            f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
+            f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
+            f"{diagram.dynkin_diagram().scaled_cartan_type()} with black nodes "
+            f"{tuple(diagram.black_nodes())} and involution "
+            f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
+        )
 
 
 class _ComplexOpenEngine:
