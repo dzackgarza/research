@@ -10,20 +10,68 @@ affine scheme's own operations, and the slice object is
 the scheme.
 """
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceCategory
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+
+class _SchemeSlice(SliceCategory):
+    r"""The slice ``Sch_R/Y``: families ``f: X -> Y`` of ``R``-schemes over ``Y``, with their fibres.
+
+    This is the implementation of ``Schemes(R).SliceOver(Y)`` that the
+    ``SliceCategory`` cache selects, not a second category.  An object is a
+    scheme ``X`` with its chosen morphism ``f: X -> Y``; a one-parameter
+    family is an object of the slice over a curve ``C``.  The fibre over a
+    point is the fibre product with the point (Hartshorne, *Algebraic
+    Geometry*, II.3, the fibre ``X_y = X x_Y Spec k(y)``).
+    """
+
+    @staticmethod
+    def __classcall__(cls, base_category, base_object):
+        return SliceCategory(base_category, base_object)
+
+    @classmethod
+    def _slice_category_class_for(cls, base_category, base_object):
+        return cls
+
+    class ParentMethods:
+        def fibre(self, point):
+            r"""The fibre ``X_y = X x_Y Spec K`` of the family ``f: X -> Y`` over the point ``Spec K -> Y``.
+
+            Domain: a morphism ``y: Spec K -> Y`` from the spectrum of a field
+            ``K``.  The scheme-theoretic fibre over a point ``y`` of ``Y`` is
+            the case ``K = k(y)`` with ``y`` the canonical morphism; a
+            ``k``-rational point is ``Y.point_morphism(coordinates)``.
+            Codomain: the fibre product ``X x_Y Spec K``, an object of
+            ``Schemes(R)`` with its two projections.
+            """
+            family = self.arrow()
+            base = family.codomain()
+            assert point.codomain() is base, (
+                f"the fibre of {family} is taken over a point of its base {base}, but {point} ends at "
+                f"{point.codomain()}"
+            )
+            residue = point.domain()
+            assert residue in Schemes(residue.scheme_base_ring()).Affine(), (
+                f"a point of {base} is a morphism from the spectrum of a field, but {point} starts at {residue}"
+            )
+            assert residue.coordinate_algebra() in OwnedFields(), (
+                f"a point of {base} is a morphism from the spectrum of a field, but {point} starts at "
+                f"Spec {residue.coordinate_algebra()}"
+            )
+            return self.scheme_category().fiber_product(family, point)
 
 
 def _relative_affine_family(parameter_algebra, relative_variables, equations):
     r"""``Spec T[x_1,...,x_n]/(f_1,...,f_r)`` as an object of ``Schemes(T).Affine()``.
 
-    ``equations`` is either a family of elements of the presentation ring
-    ``T[x_1,...,x_n]`` or a function of that ring returning one, since the
+    ``equations`` is a function of the presentation ring ``T[x_1,...,x_n]``
+    returning the family ``f_1, ..., f_r`` of its elements, since the
     presentation ring does not exist before this construction names it.
     """
     presentation_ring = parameter_algebra.polynomial_ring(relative_variables)
-    stated = equations(presentation_ring) if callable(equations) else equations
     total_algebra = presentation_ring.quotient_by_relations(
-        tuple(presentation_ring(equation) for equation in stated)
+        tuple(presentation_ring(equation) for equation in equations(presentation_ring))
     )
     return total_algebra.affine_spectrum(base_ring=parameter_algebra)
 

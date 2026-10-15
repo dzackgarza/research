@@ -1984,6 +1984,13 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     _MorCategory = SchemeMorCategoryConstruction
 
+    @property
+    def _SliceCategory(self):
+        r"""Supply the scheme realization of ``Sch/R`` over ``Y``: families over ``Y``, with their fibres."""
+        from dzack_research.preamble.categories.schemes.families import _SchemeSlice
+
+        return _SchemeSlice
+
     def Mor(self, domain, codomain):
         r"""``Mor_{Sch/R}(X, Y)``, the single Mor selected by its category family."""
         return self.MorCategory().Of(domain, codomain)
