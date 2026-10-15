@@ -1665,6 +1665,29 @@ class Sheaves(OwnedCategoryBase):
         def descent_data(self) -> DescentData:
             return self._descent_data
 
+        def sections(self, site_object: Parent) -> Parent:
+            r"""``Gamma(U, F) = F(U)``, an object of the value category ``D``.
+
+            Domain: an object ``U`` of the site ``C``.  ``Gamma(U, -)`` is
+            evaluation at ``U``, read in ``C^op``, on the functor category
+            ``[C^op, D]``, restricted to this full subcategory of sheaves.
+            """
+            coverage = self.descent_data().coverage()
+            site_opposite = coverage.site_category().opposite()
+            evaluation = self.functor_category().evaluation_functor(site_opposite(site_object))
+            return evaluation(self)
+
+        def global_sections(self) -> Parent:
+            r"""``Gamma(F)``, the limit of ``F: C^op -> D``, an object of ``D``.
+
+            When the site ``C`` has a terminal object ``t``, ``t`` is initial
+            in ``C^op`` and the limit is ``F(t)``, so ``Gamma(F)`` is the
+            sections over the terminal object the coverage supplies.  For a
+            space ``X`` with site ``Open(X)`` this is ``F(X)`` (Mathlib,
+            ``TopCat.Sheaf``, ``Mathlib/Topology/Sheaves/Sheaf.lean``).
+            """
+            return self.sections(self.descent_data().coverage().terminal_site_object())
+
         def _repr_(self) -> str:
             return f"Sheaf object ({self.functor()})"
 
@@ -1727,6 +1750,20 @@ class Sheaves(OwnedCategoryBase):
 
     def identity(self, obj: Parent):
         return self.Mor(obj, obj).identity()
+
+    def sections_functor(self, site_object: Parent) -> Functor:
+        r"""``Gamma(U, -): Sh(C, D) -> D``, for an object ``U`` of the site ``C``.
+
+        The inclusion ``Sh(C, D) -> [C^op, D]`` followed by evaluation at
+        ``U`` read in ``C^op``.
+        """
+        presheaves = self.presheaf_category()
+        evaluation = presheaves.evaluation_functor(self.site_category().opposite()(site_object))
+        return self.inclusion_into(presheaves).then(evaluation)
+
+    def global_sections_functor(self) -> Functor:
+        r"""``Gamma: Sh(C, D) -> D``, sections over the terminal object of the site."""
+        return self.sections_functor(self.coverage().terminal_site_object())
 
     def _repr_(self) -> str:
         return f"Sh({self.site_category()}, {self.value_category()}; {self.coverage()})"

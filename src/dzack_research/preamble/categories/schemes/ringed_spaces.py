@@ -408,10 +408,16 @@ class _StructureSheafEngine:
     scheme = ringed_space
 
     def global_sections(self):
-        r"""Return ``Gamma(X,O_X)=O(X)`` for the represented affine scheme."""
-        return self.ringed_space().coordinate_algebra()
+        r"""Return ``Gamma(X,O_X)=O(X)``, the ring, for the represented affine scheme.
 
-    sections = global_sections
+        ``O_X`` is a sheaf of commutative rings, so ``Gamma(X, O_X)`` is the
+        ring ``O(X)``.  This representation builds ``O_X`` valued in
+        ``Modules(O(X))``, where evaluation at ``id_X`` gives the regular
+        module instead, so the ring answer stays here until ``O_X`` is built
+        valued in commutative rings and this method retires into
+        ``Sheaves.ParentMethods.global_sections``.
+        """
+        return self.ringed_space().coordinate_algebra()
 
     def sections_on_distinguished_open(self, distinguished_open):
         r"""Return ``O_X(D(f)) = O(D(f))`` for a represented distinguished open."""
@@ -749,6 +755,8 @@ class ZariskiCoveringFamilies(OwnedParameterizedCategory):
         r"""The terminal object ``id_X`` of ``Sch_R/X``."""
         return self.site_category().an_object()
 
+    terminal_site_object = slice_target
+
     def super_categories(self):
         return [CoveringFamilies(self.site_category())]
 
@@ -863,6 +871,8 @@ class DistinguishedAffineCovers(OwnedCategory):
     def slice_target(self):
         r"""The terminal slice object ``id_X`` shared by covers in this fibre."""
         return self.site_category().an_object()
+
+    terminal_site_object = slice_target
 
     def super_categories(self):
         scheme = self.scheme()
