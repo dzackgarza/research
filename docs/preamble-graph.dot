@@ -9,7 +9,10 @@ digraph preamble {
     label="Abstract Category Theory &amp; Universal Constructions"; fontsize=13; color="#cbd5e1"; style=rounded;
     "Cat" [label="Cat", fillcolor="#dbeafe"];
     "ChamberSystems" [label="ChamberSystems", fillcolor="#dbeafe"];
+    "ComplexAnalyticSpaces" [label="ComplexAnalyticSpaces", fillcolor="#dbeafe"];
+    "ComplexAnalyticSpaces.Normal" [label="ComplexAnalyticSpaces.Normal", fillcolor="#dbeafe"];
     "ComplexManifolds" [label="ComplexManifolds", fillcolor="#dbeafe"];
+    "ComplexOrbifolds" [label="ComplexOrbifolds", fillcolor="#dbeafe"];
     "CoxeterDiagrams" [label="CoxeterDiagrams", fillcolor="#dbeafe"];
     "DifferentiableManifolds" [label="DifferentiableManifolds", fillcolor="#dbeafe"];
     "Digraphs" [label="Digraphs", fillcolor="#dbeafe"];
@@ -20,8 +23,10 @@ digraph preamble {
     "LabelledGraphs" [label="LabelledGraphs", fillcolor="#dbeafe"];
     "MorCategories" [label="MorCategories", fillcolor="#dbeafe"];
     "Objects" [label="Objects", fillcolor="#dbeafe"];
+    "Orbifolds" [label="Orbifolds", fillcolor="#dbeafe"];
     "PrimitiveIsotropicSubobjects" [label="PrimitiveIsotropicSubobjects(R)", fillcolor="#dbeafe"];
     "RiemannianManifolds" [label="RiemannianManifolds", fillcolor="#dbeafe"];
+    "RiemannianOrbifolds" [label="RiemannianOrbifolds", fillcolor="#dbeafe"];
     "RootedCoxeterDiagrams" [label="RootedCoxeterDiagrams", fillcolor="#dbeafe"];
     "SatakeDiagrams" [label="SatakeDiagrams", fillcolor="#dbeafe"];
     "SmoothManifolds" [label="SmoothManifolds", fillcolor="#dbeafe"];
@@ -48,6 +53,7 @@ digraph preamble {
     "BiproductModules" [label="BiproductModules(R)", fillcolor="#fae8ff"];
     "CochainComplexes" [label="CochainComplexes(R)", fillcolor="#fae8ff"];
     "CohomologyModules" [label="CohomologyModules(R)", fillcolor="#fae8ff"];
+    "DerivedCategories" [label="DerivedCategories(R)", fillcolor="#fae8ff"];
     "DiscriminantBilinearModules" [label="DiscriminantBilinearModules(R)", fillcolor="#fae8ff"];
     "DiscriminantModules" [label="DiscriminantModules(R)", fillcolor="#fae8ff"];
     "DiscriminantQuadraticModules" [label="DiscriminantQuadraticModules(R)", fillcolor="#fae8ff"];
@@ -67,6 +73,8 @@ digraph preamble {
     "GeneralModules" [label="GeneralModules(R)", fillcolor="#fae8ff"];
     "IntegerGradedModules" [label="IntegerGradedModules(R)", fillcolor="#fae8ff"];
     "InternalMorModules" [label="InternalMorModules(R)", fillcolor="#fae8ff"];
+    "LinearCategories" [label="LinearCategories(R)", fillcolor="#fae8ff"];
+    "LinearCategories.Additive" [label="LinearCategories.Additive", fillcolor="#fae8ff"];
     "LinearMorModules" [label="LinearMorModules(R)", fillcolor="#fae8ff"];
     "LocalizedModules" [label="LocalizedModules(R)", fillcolor="#fae8ff"];
     "MatrixEndomorphismSpaces" [label="MatrixEndomorphismSpaces(R)", fillcolor="#fae8ff"];
@@ -90,6 +98,7 @@ digraph preamble {
     "QuadraticFormModules.FinitelyPresented.Torsion" [label="QuadraticFormModules.FinitelyPresented.Torsion", fillcolor="#fae8ff"];
     "RestrictedScalarsModules" [label="RestrictedScalarsModules(R)", fillcolor="#fae8ff"];
     "TensorProductModules" [label="TensorProductModules(R)", fillcolor="#fae8ff"];
+    "TriangulatedCategories" [label="TriangulatedCategories(R)", fillcolor="#fae8ff"];
     "VectorSpaces" [label="VectorSpaces(R)", fillcolor="#fae8ff"];
   }
   subgraph cluster_4 {
@@ -222,8 +231,6 @@ digraph preamble {
     "HomogeneousPolynomialSectionSpaces" [label="HomogeneousPolynomialSectionSpaces(R)", fillcolor="#ede9fe"];
     "ImposedMultiplicityLinearSystems" [label="ImposedMultiplicityLinearSystems(R)", fillcolor="#ede9fe"];
     "LineBundleCohomologySpaces" [label="LineBundleCohomologySpaces(R)", fillcolor="#ede9fe"];
-    "PicardGroups" [label="PicardGroups", fillcolor="#ede9fe"];
-    "ProjectiveBundlePicardGroups" [label="ProjectiveBundlePicardGroups", fillcolor="#ede9fe"];
     "ProjectiveJetSpaces" [label="ProjectiveJetSpaces(R)", fillcolor="#ede9fe"];
     "ProjectiveLinearSystems" [label="ProjectiveLinearSystems(R)", fillcolor="#ede9fe"];
     "SectionRings" [label="SectionRings(R)", fillcolor="#ede9fe"];
@@ -316,8 +323,13 @@ digraph preamble {
   "CommutativeAlgebraPushouts" -> "Algebras.Associative.Unital.Commutative";
   "CommutativeIdeals" -> "ModuleSubobjects";
   "CommutatorLieAlgebras" -> "Algebras.Lie";
-  "CompleteLinearSystems" -> "ProjectiveSpaces";
+  "CompleteLinearSystems" -> "ProjectiveLinearSystems";
+  "ComplexAnalyticSpaces" -> "LocallyRingedSpaces";
+  "ComplexAnalyticSpaces.Normal" -> "ComplexAnalyticSpaces";
+  "ComplexManifolds" -> "ComplexOrbifolds";
   "ComplexManifolds" -> "SmoothManifolds";
+  "ComplexOrbifolds" -> "ComplexAnalyticSpaces.Normal";
+  "ComplexOrbifolds" -> "Orbifolds";
   "CoproductsOfSets" -> "Sets";
   "CoxeterDiagrams" -> "LabelledGraphs";
   "CoxeterGroups" -> "FreeGroupQuotients";
@@ -328,6 +340,7 @@ digraph preamble {
   "DefiniteLattices" -> "BilinearFormModules.FinitelyPresented";
   "DefiniteLattices" -> "FreeFormModules.FinitelyGenerated";
   "DefiniteLattices" -> "Lattices";
+  "DerivedCategories" -> "Objects";
   "DifferentiableManifolds" -> "TopologicalManifolds";
   "DifferentialGradedAlgebras" -> "CochainComplexes";
   "Digraphs" -> "Sets.Finite";
@@ -392,7 +405,7 @@ digraph preamble {
   "GroupsWithChosenFinitePresentation" -> "OwnedGroups.FinitelyPresentedAsGroup";
   "HomogeneousPolynomialSectionSpaces" -> "FramedFreeModules";
   "HyperbolicLattices" -> "Lattices";
-  "ImposedMultiplicityLinearSystems" -> "ProjectiveSpaces";
+  "ImposedMultiplicityLinearSystems" -> "ProjectiveLinearSystems";
   "InternalMorModules" -> "LinearMorModules";
   "IsotropicReductions" -> "Lattices";
   "KahlerDifferentialModules" -> "Modules";
@@ -404,6 +417,8 @@ digraph preamble {
   "LieGroups" -> "SmoothManifolds";
   "LieGroups" -> "TopologicalGroups";
   "LineBundleCohomologySpaces" -> "VectorSpaces";
+  "LinearCategories" -> "Cat";
+  "LinearCategories.Additive" -> "LinearCategories";
   "LinearMorModules" -> "Modules";
   "LocalizedModules" -> "Modules";
   "LocallyRingedSpaces" -> "RingedSpaces";
@@ -445,6 +460,7 @@ digraph preamble {
   "NondegenerateGenericFibreFormModules" -> "Modules.FinitelyGenerated";
   "NumberFieldsWithChosenPrimitiveElement" -> "OwnedNumberFields";
   "ObjectSetsOfDiscreteCategories" -> "SetsWithPartialMaps";
+  "Orbifolds" -> "TopologicalSpaces";
   "OrderedEnumeratedSets" -> "EnumeratedSets";
   "OrderedRings" -> "OwnedRings";
   "Orders" -> "Algebras.Associative.Unital.Commutative";
@@ -506,16 +522,13 @@ digraph preamble {
   "PairingObjects" -> "Modules";
   "PartiallyOrderedSets" -> "Sets";
   "PermutationGroups" -> "OwnedGroups";
-  "PicardGroups" -> "Modules";
   "PowerSets" -> "Sets";
   "PredicateSubrings" -> "OwnedRings";
   "PrimeSpectra" -> "PartiallyOrderedSets";
   "PrimeSpectra" -> "TopologicalSpaces";
   "PrimitiveIsotropicSubobjects" -> "ModuleSubobjects";
   "ProfiniteGroups" -> "TopologicalGroups";
-  "ProjectiveBundlePicardGroups" -> "BiproductModules";
-  "ProjectiveBundlePicardGroups" -> "PicardGroups";
-  "ProjectiveJetSpaces" -> "VectorSpaces";
+  "ProjectiveJetSpaces" -> "FramedFreeModules";
   "ProjectiveLinearSystems" -> "ProjectiveSpaces";
   "ProjectiveSpaces" -> "Schemes.Projective";
   "ProjectiveSpaces" -> "Schemes.Proper.Smooth";
@@ -526,7 +539,9 @@ digraph preamble {
   "QuadraticFormModules.FinitelyPresented.Torsion" -> "QuadraticFormModules.FinitelyPresented";
   "RestrictedScalarsAlgebras" -> "Algebras";
   "RestrictedScalarsModules" -> "Modules";
+  "RiemannianManifolds" -> "RiemannianOrbifolds";
   "RiemannianManifolds" -> "SmoothManifolds";
+  "RiemannianOrbifolds" -> "Orbifolds";
   "RingedSpaces" -> "SheafedSpaces";
   "RootLattices" -> "BilinearFormModules.Even";
   "RootLattices" -> "BilinearFormModules.FinitelyPresented";
@@ -553,8 +568,9 @@ digraph preamble {
   "Sets.Finite" -> "Sets.Countable";
   "Sets.Infinite" -> "Sets";
   "SetsWithPartialMaps" -> "Objects";
-  "SheafedSpaces" -> "Objects";
+  "SheafedSpaces" -> "TopologicalSpaces";
   "SmoothManifolds" -> "DifferentiableManifolds";
+  "SmoothManifolds" -> "Orbifolds";
   "SymmetricAlgebras" -> "Algebras.Associative.Unital.Commutative";
   "SymmetricGroups" -> "PermutationGroups";
   "TensorProductModules" -> "Modules";
@@ -563,6 +579,7 @@ digraph preamble {
   "TopologicalSpaces" -> "Sets";
   "TorusInvariantCycleGroups" -> "AlgebraicCycleGroups";
   "TotallyOrderedSets" -> "PartiallyOrderedSets";
+  "TriangulatedCategories" -> "LinearCategories.Additive";
   "VectorSpaces" -> "Modules";
   "VinbergInvariantMatrices" -> "LabelledGraphs";
   "WeilDivisorGroups" -> "DivisorGroups";
