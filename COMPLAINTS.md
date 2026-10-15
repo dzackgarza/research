@@ -1363,6 +1363,14 @@ The framed duplicate of `dual_module` is retired into `Modules(R)`, so `M.dual_m
 
 A complete linear system is `P(H^0(X, L))` and an imposed-multiplicity system is `P(W)` for `W` the kernel of a jet evaluation; both are linear systems `P(W)`, `W <= H^0(X, L)`. `CompleteLinearSystems` and `ImposedMultiplicityLinearSystems` store their own data and not the line bundle and section embedding of `ProjectiveLinearSystems` (`OWN-14`), so `closed_immersion_into_complete_linear_system` (a stub) exists only there. All three are constructed as projective spaces on a framing of `W`; for a general `L` the space `W` has no chosen basis, and the unframed `P(W)` is an object of `RelativeProjectivizations(R)`, whose parent is `Schemes(R)` and not `Schemes(R).Projective()`.
 
+### Sheaves on a space are built on bases, not on `Open(X)`
+
+A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). So the immediate parent of `SheafObjects(X)` is `Sheaves(OpenCoveringFamilies(|X|), Sets())`, and that of `ModuleSheaves(X)` is the module-valued sheaf category on the same site. The represented sheaves are built elsewhere: `O_X` on `distinguished_affine_coverage(X)` valued in `Modules(O(X))`, gluing sheaves on Čech sites, and `M~` with no functor and no descent datum (`QuasiCoherentSheaves`, `schemes/ringed_spaces.py`). The comparison lemma (restriction `Sh(Open(X), D) -> Sh(B, D)` is an equivalence for a basis `B`; Stacks 009H, locator to check) is stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` (`TopologicalSpaces...open_subsets_site()`) -> `OpenCoveringFamilies(X)` -> the extension functor -> every represented sheaf an object of `Sh(Open(X), D)` -> the honest supercategories. **Consequences:** `O_X.global_sections()` keeps a method returning the ring `O(X)`, where the general `Sheaves.ParentMethods.global_sections()` would return the regular module, and `M~` keeps its own section methods.
+
+### The power set is not ordered by inclusion
+
+`P(S)` is a poset under inclusion, and `PowerSets` declares only `Sets()` (`sets/set_categories.py:3041`). So `open_subsets_site()` decides `U <= V` by enumerating the points of `U` (`topological_spaces.py`), which is correct only for the finite enumerated topologies the tree presents. **Repair:** `PowerSets` presents the inclusion order; `Open(X)` is the subposet of the opens.
+
 ## Workflow Papercuts
 
 ### The required reading does not fit a worker context
