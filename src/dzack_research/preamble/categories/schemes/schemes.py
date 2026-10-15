@@ -1044,7 +1044,7 @@ class SchemeMorphismMethods:
         ``O_S``-module (Katz, *Nilpotent connections and the monodromy
         theorem*, Publ. Math. IHES 39 (1970), introduction and (3.0)).
         """
-        assert False, "de_rham_cohomology on scheme morphisms: not implemented"
+        return _relative_de_rham_cohomology(self, degree, ())
 
     def gauss_manin_connection(self, degree):
         r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
@@ -1064,11 +1064,13 @@ class SchemeMorphismMethods:
         )
 
         category = VectorBundlesWithConnection(self.codomain()).Integrable()
+        bundles = QuasiCoherentSheaves(self.codomain()).FiniteLocallyFree()
         return _object_of(
             category,
             _engine=(category, _GaussManinConnection, None),
             family_morphism=self,
             degree=degree,
+            underlying_vector_bundle=_relative_de_rham_cohomology(self, degree, (bundles,)),
         )
 
     def __eq__(self, other) -> bool:
@@ -3813,17 +3815,25 @@ class Schemes(OwnedCategoryOverBaseRing):
                 r"""Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
 
                 \(D(f)=\operatorname{Spec}A[1/f]\), and the localization map
-                \(A\to A[1/f]\) is the pullback of the open immersion.
+                \(A\to A[1/f]\) is the pullback of the open immersion.  For a
+                scheme over \(R\), \(A[1/f]\) is an \(R\)-algebra through
+                \(R\to A\to A[1/f]\), so the localization map is a morphism
+                of \(R\)-algebras, as every morphism of
+                affine \(R\)-schemes is on coordinate algebras.
                 """
                 algebra = self.coordinate_algebra()
                 element = algebra(element)
                 localized = algebra.localization(element)
+                base = self.scheme_base_ring()
+                localization = localized.localization_map()
                 return _affine_scheme(
                     localized,
-                    self.scheme_base_ring(),
+                    base,
                     (OpenImmersions(self),),
                     inclusion_codomain=self,
-                    inclusion_datum=localized.localization_map(),
+                    inclusion_datum=Algebras(base).Associative().Unital().Commutative().Mor(algebra, localized)(
+                        localization
+                    ),
                 )
 
             def basic_open(self, element):
@@ -5963,6 +5973,139 @@ def _structure_morphism_rule(mor):
     return mor(mor.domain().structure_morphism())
 
 
+class _RelativeDeRhamCohomologySheafEngine:
+    r"""``R^k f_*(Omega^*_{X/S})``, the ``k``-th hyperdirect image of the relative de Rham complex.
+
+    The defining data are the arrow ``f: X -> S`` and the degree ``k``.  The
+    sheaf is the one associated to the presheaf ``V |-> H^k(f^{-1}(V),
+    Omega^*_{X/S})`` of hypercohomology groups (Katz, *Nilpotent connections
+    and the monodromy theorem*, Publ. Math. IHES 39 (1970), (3.0)).
+    """
+
+    def __init__(self, family_morphism, degree, **rest) -> None:
+        self._family_morphism = family_morphism
+        self._degree = degree
+        super().__init__(**rest)
+
+    def family_morphism(self):
+        r"""The arrow ``f: X -> S``."""
+        return self._family_morphism
+
+    def degree(self):
+        r"""The cohomological degree ``k``."""
+        return self._degree
+
+    def ringed_space(self):
+        return self.family_morphism().codomain()
+
+    scheme = ringed_space
+
+    def global_sections(self):
+        r"""``H^k_dR(X/S)(S)``; for affine ``S`` it is the hypercohomology ``H^k(X, Omega^*_{X/S})``.
+
+        For affine ``S``, ``R^k f_*`` of a complex of quasi-coherent sheaves
+        has global sections the hypercohomology of the complex on ``X``
+        (Hartshorne, *Algebraic Geometry*, III.8.5, for each sheaf of the
+        complex).  This needs the relative de Rham complex of ``X`` over
+        ``S`` and its Cech hypercohomology on an affine cover of ``X``.
+        """
+        assert False, "global_sections on relative de Rham cohomology sheaves: not implemented"
+
+    def sheaf_category(self):
+        r"""``QCoh(S)``, the category this sheaf is an object of."""
+        return QuasiCoherentSheaves(self.scheme())
+
+    def _repr_(self):
+        f = self.family_morphism()
+        return f"R^{self.degree()} f_*(Omega^*_(X/S)) for f: {f.domain()} -> {f.codomain()}"
+
+
+@cached_function(key=lambda family, degree, categories: (id(family), degree, categories))
+def _relative_de_rham_cohomology(family, degree, categories):
+    r"""``H^k_dR(X/S) = R^k f_*(Omega^*_{X/S})`` in ``QCoh(S)`` joined with ``categories``.
+
+    ``categories`` states a placement the caller's hypotheses establish: for
+    a smooth proper ``f`` over a base of characteristic zero the sheaf is
+    locally free of finite rank (Katz, *Nilpotent connections and the
+    monodromy theorem*, Publ. Math. IHES 39 (1970), (3.0)).
+    """
+    return QuasiCoherentSheaves(family.codomain()).object(
+        categories=categories,
+        construction_data={"family_morphism": family, "degree": degree},
+        _engine=_RelativeDeRhamCohomologySheafEngine,
+    )
+
+
+def _localization_base_change_pushout(left_pullback, right_pullback):
+    r"""Realize ``B tensor_A S^{-1}A`` as ``B[phi(S)^{-1}]`` for the localization map ``rho: A -> S^{-1}A``.
+
+    Let ``phi: A -> B`` be the other leg and ``lambda: B -> B[phi(S)^{-1}]``
+    the localization map.  The map ``lambda phi`` sends ``S`` to units, so it
+    induces ``phi': S^{-1}A -> B[phi(S)^{-1}]`` with ``phi' rho = lambda phi``,
+    and ``(lambda, phi')`` is a cocone.  It is universal: for a cocone
+    ``(u: B -> T, v: S^{-1}A -> T)``, ``u phi = v rho`` sends ``S`` to units,
+    so ``u`` factors uniquely through ``lambda`` by the universal property of
+    localization, and the factorization agrees with ``v`` on ``S^{-1}A``
+    because both composites with ``rho`` are ``u phi`` and ``rho`` is an
+    epimorphism of rings.  On spectra this is the preimage
+    ``f^{-1}(D(s)) = D(f^# s)`` of a distinguished open (Hartshorne,
+    *Algebraic Geometry*, II.3.3, step 3).  The localization leg is
+    recognized as the localization map of its codomain by its values on the
+    chosen algebra generators of ``A``, which determine a map out of ``A``.
+    ``None`` states that the span is not of this shape.
+    """
+    base = left_pullback.domain()
+    assert right_pullback.domain() is base, (
+        f"cannot form the pushout of {left_pullback} and {right_pullback}: they must start at one "
+        f"ring, but they start at {base} and {right_pullback.domain()}"
+    )
+
+    def is_localization_map(leg):
+        localized = leg.codomain()
+        match localized:
+            case _ if (localized in LocalizationRings()
+                       and localized.localization_source() is base
+                       and base.is_framed_algebra()):
+                canonical = localized.localization_map()
+                return all(leg(generator) == canonical(generator) for generator in base.finite_algebra_generators())
+            case _:
+                return False
+
+    def realize(other_pullback, localization_pullback, localization_on_right):
+        if not is_localization_map(localization_pullback):
+            return None
+        other = other_pullback.codomain()
+        localized = localization_pullback.codomain()
+        scalars = other.base_ring()
+        algebras = Algebras(scalars).Associative().Unital().Commutative()
+        pushout = other.localization(
+            *(other_pullback(element) for element in localized.inverted_elements())
+        )
+        other_to_pushout = algebras.Mor(other, pushout)(pushout.localization_map())
+        localized_to_pushout = algebras.Mor(localized, pushout)(
+            localized.induced_morphism(pushout.localization_map() * other_pullback)
+        )
+        maps = (
+            (other_to_pushout, localized_to_pushout)
+            if localization_on_right
+            else (localized_to_pushout, other_to_pushout)
+        )
+
+        def factor(left_to_target, right_to_target):
+            assert left_to_target.codomain() is right_to_target.codomain(), (
+                f"cannot factor through the pushout {pushout}: the maps {left_to_target} and "
+                f"{right_to_target} must land in one ring, but they land in {left_to_target.codomain()} "
+                f"and {right_to_target.codomain()}"
+            )
+            other_to_target = left_to_target if localization_on_right else right_to_target
+            return algebras.Mor(pushout, other_to_target.codomain())(pushout.induced_morphism(other_to_target))
+
+        return pushout, maps[0], maps[1], factor
+
+    represented = realize(left_pullback, right_pullback, True)
+    return represented if represented is not None else realize(right_pullback, left_pullback, False)
+
+
 def _quotient_base_change_pushout(left_pullback, right_pullback):
     r"""Realize ``A tensor_T Q`` as ``A/IA`` for a surjection ``T -> Q`` with kernel ``I``.
 
@@ -6174,7 +6317,9 @@ def _scheme_fiber_product(left_map, right_map):
             left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
             cocone_factorization = algebra_pushout.from_cocone
         case _:
-            quotient_base_change = _quotient_base_change_pushout(left_pullback, right_pullback)
+            quotient_base_change = _localization_base_change_pushout(left_pullback, right_pullback)
+            if quotient_base_change is None:
+                quotient_base_change = _quotient_base_change_pushout(left_pullback, right_pullback)
             match quotient_base_change:
                 case None:
                     algebra_pushout = commutative_algebras.pushout(left_pullback, right_pullback)

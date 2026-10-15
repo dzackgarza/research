@@ -360,9 +360,10 @@ class _GaussManinConnection:
     IHES 39 (1970), (3.0)).  The caller supplies a smooth proper ``f``.
     """
 
-    def __init__(self, family_morphism, degree, **rest) -> None:
+    def __init__(self, family_morphism, degree, underlying_vector_bundle, **rest) -> None:
         self._family_morphism = family_morphism
         self._degree = degree
+        self._underlying_vector_bundle = underlying_vector_bundle
         super().__init__(**rest)
 
     def family_morphism(self):
@@ -378,7 +379,7 @@ class _GaussManinConnection:
 
     def underlying_vector_bundle(self):
         r"""``R^k f_*(Omega^*_{X/S})``, an object of ``QuasiCoherentSheaves(S).FiniteLocallyFree()``."""
-        return self.family_morphism().de_rham_cohomology(self.degree())
+        return self._underlying_vector_bundle
 
     def connection(self):
         r"""``nabla_GM: H^k_dR(X/S) -> Omega^1_{S/T} tensor H^k_dR(X/S)``, for ``T`` the base of ``S``.
