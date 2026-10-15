@@ -77,9 +77,8 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
             )
         return _de_rham_algebra_from_source(algebra)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebraic de Rham algebras"
+    def _repr_object_names(self):
+        return f"algebraic de Rham algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [DifferentialGradedAlgebras(self.base_ring()).Supercommutative().Alternating()]

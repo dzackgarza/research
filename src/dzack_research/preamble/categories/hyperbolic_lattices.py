@@ -429,9 +429,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
     returning the same object with the reflection algorithms available on it.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "hyperbolic lattices"
+    def _repr_object_names(self):
+        return f"hyperbolic lattices over {self.base_ring()}"
 
     def an_object(self):
         r"""The hyperbolic plane \(U\), of signature \((1,1)\)."""

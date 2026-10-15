@@ -180,9 +180,8 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     base_ring(modulus),
                 )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "fraction-field quotients"
+    def _repr_object_names(self):
+        return f"fraction-field quotients over {self.base_ring()}"
 
     def super_categories(self):
 

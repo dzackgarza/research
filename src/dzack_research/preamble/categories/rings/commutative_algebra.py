@@ -4550,9 +4550,8 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         r"""The formal power series ring in one variable."""
         return self.base_ring().power_series_ring("t")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "formal power-series rings"
+    def _repr_object_names(self):
+        return f"formal power-series rings over {self.base_ring()}"
 
     def super_categories(self):
         return [

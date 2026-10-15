@@ -1181,9 +1181,8 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "free algebras"
+    def _repr_object_names(self):
+        return f"free algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Algebras(self.base_ring()).Associative().Unital()]
@@ -1233,9 +1232,8 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "graded free algebras"
+    def _repr_object_names(self):
+        return f"graded free algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1418,9 +1416,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "tensor algebras"
+    def _repr_object_names(self):
+        return f"tensor algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1570,9 +1567,8 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "symmetric algebras"
+    def _repr_object_names(self):
+        return f"symmetric algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
@@ -1753,9 +1749,8 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.exterior_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "alternating algebras"
+    def _repr_object_names(self):
+        return f"alternating algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
@@ -1996,9 +1991,8 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object().divided_power_algebra()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "divided power algebras"
+    def _repr_object_names(self):
+        return f"divided power algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]

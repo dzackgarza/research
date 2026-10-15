@@ -6629,9 +6629,8 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
         lattice = Lattices(self.base_ring()).an_object()
         return Lattices(self.base_ring()).biproduct((lattice, lattice))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen lattice biproducts"
+    def _repr_object_names(self):
+        return f"chosen lattice biproducts over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -7280,9 +7279,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         plane = Lattices(self.base_ring())("U")
         return (plane + plane).basis_vector(0).isotropic_reduction()
 
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "isotropic reductions"
+    def _repr_object_names(self) -> str:
+        return f"isotropic reductions over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
@@ -8170,9 +8168,8 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Lattices.root_lattice("H", 3)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "noncrystallographic root lattices"
+    def _repr_object_names(self):
+        return f"noncrystallographic root lattices over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring()).FinitelyGenerated().Nondegenerate().Even()]

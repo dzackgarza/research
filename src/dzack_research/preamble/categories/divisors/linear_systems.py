@@ -48,9 +48,8 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         projective_line = ToricSchemes(self.base_ring()).an_object()
         return projective_line.complete_linear_system(projective_line.hyperplane_divisor())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "complete linear systems"
+    def _repr_object_names(self):
+        return f"complete linear systems over {self.base_ring()}"
 
     def super_categories(self):
         return [ProjectiveSpaces(self.base_ring())]
@@ -113,9 +112,8 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     this is, and the exponent vector of each monomial.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "homogeneous polynomial section spaces"
+    def _repr_object_names(self):
+        return f"homogeneous polynomial section spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The linear forms on the projective line over the base ring."""
@@ -296,9 +294,8 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     each monomial, and the variable block of each factor.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "multihomogeneous polynomial section spaces"
+    def _repr_object_names(self):
+        return f"multihomogeneous polynomial section spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The bidegree-(1,1) sections on a product of two projective lines."""
@@ -383,9 +380,8 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective parameter spaces of represented section subspaces of ``O(d)``."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "projective linear systems"
+    def _repr_object_names(self):
+        return f"projective linear systems over {self.base_ring()}"
 
     def an_object(self):
         r"""The complete projective linear system of O(1) on the projective line."""
@@ -498,9 +494,8 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
     local quotient \(\mathcal{O}_{\mathbb{P},p}/\mathfrak{m}_p^r\).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "projective jet spaces"
+    def _repr_object_names(self):
+        return f"projective jet spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The first jet of O(1) at a coordinate point of the projective line."""
@@ -580,9 +575,8 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
 class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective parameter spaces of sections satisfying one jet condition."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "linear systems with imposed multiplicity"
+    def _repr_object_names(self):
+        return f"linear systems with imposed multiplicity over {self.base_ring()}"
 
     def an_object(self):
         r"""Sections of O(1) on the projective line vanishing at one coordinate point."""

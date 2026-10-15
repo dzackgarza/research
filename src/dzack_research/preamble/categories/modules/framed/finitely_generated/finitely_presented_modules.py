@@ -314,9 +314,8 @@ def _fix_lazy_selected_module_presentation(module, base_ring, realization_factor
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a represented selected finite-presentation backend"
+    def _repr_object_names(self):
+        return f"modules with a represented selected finite-presentation backend over {self.base_ring()}"
 
     def super_categories(self):
         return [ModulesWithChosenFinitePresentation(self.base_ring())]

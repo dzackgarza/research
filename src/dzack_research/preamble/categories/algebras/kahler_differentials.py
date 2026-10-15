@@ -47,9 +47,8 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             )
         return _cached_kahler_differentials(algebra)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "Kähler differential modules"
+    def _repr_object_names(self):
+        return f"Kähler differential modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]

@@ -151,9 +151,8 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             law_decisions=law_decisions,
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "differential graded algebras"
+    def _repr_object_names(self):
+        return f"differential graded algebras over {self.base_ring()}"
 
     def super_categories(self):
 

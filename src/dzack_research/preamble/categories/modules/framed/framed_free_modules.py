@@ -384,9 +384,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         """
         return self.base_ring().free_module(1)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "framed free modules"
+    def _repr_object_names(self):
+        return f"framed free modules over {self.base_ring()}"
 
     def super_categories(self):
         r"""The chosen free basis refines free modules over the same ring.

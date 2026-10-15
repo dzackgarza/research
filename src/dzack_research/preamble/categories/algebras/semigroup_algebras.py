@@ -39,9 +39,8 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [AlgebrasWithChosenFinitePresentation(self.base_ring()).Commutative()]
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "affine semigroup algebras"
+    def _repr_object_names(self):
+        return f"affine semigroup algebras over {self.base_ring()}"
 
     class ParentMethods:
         def _cardinality_decision(self):

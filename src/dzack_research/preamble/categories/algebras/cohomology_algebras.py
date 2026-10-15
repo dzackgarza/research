@@ -99,9 +99,8 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
             )
         return _cohomology_algebra_from_dga(dga)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cohomology algebras"
+    def _repr_object_names(self):
+        return f"cohomology algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring())]

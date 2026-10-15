@@ -125,9 +125,8 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             _realization=_realization,
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cochain complexes"
+    def _repr_object_names(self):
+        return f"cochain complexes over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -186,9 +185,8 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         r"""The degree-zero cohomology of a one-term complex."""
         return CochainComplexes(self.base_ring()).an_object().cohomology(0)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cohomology modules"
+    def _repr_object_names(self):
+        return f"cohomology modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]

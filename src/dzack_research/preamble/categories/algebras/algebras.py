@@ -1129,9 +1129,8 @@ class Algebras(OwnedCategoryOverBaseRing):
         """
         return _scalar_module(self.base_ring())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebras"
+    def _repr_object_names(self):
+        return f"algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring()), Magmas()]
@@ -2954,9 +2953,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         plane = Sets().free_module(ring)(finite_ordinal_set(2))
         return Modules(ring).Mor(plane, plane)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix algebras"
+    def _repr_object_names(self):
+        return f"matrix algebras over {self.base_ring()}"
 
     def super_categories(self):
         if self.base_ring() not in OwnedRings().Commutative():
@@ -3028,9 +3026,8 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
         return _dual_numbers_example(self.base_ring())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebras with a chosen finite presentation"
+    def _repr_object_names(self):
+        return f"algebras with a chosen finite presentation over {self.base_ring()}"
 
     def super_categories(self):
         return [

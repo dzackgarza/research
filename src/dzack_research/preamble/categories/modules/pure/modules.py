@@ -1220,9 +1220,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
         _categorical_coproduct_morphism = _categorical_product_morphism
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules"
+    def _repr_object_names(self):
+        return f"modules over {self.base_ring()}"
 
     def an_object(self):
         r"""The free module of rank one, which is the base ring itself."""
@@ -3132,9 +3131,8 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
         free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "linear Mor modules"
+    def _repr_object_names(self):
+        return f"linear Mor modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3182,9 +3180,8 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
         free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "internal Mor modules"
+    def _repr_object_names(self):
+        return f"internal Mor modules over {self.base_ring()}"
 
     def super_categories(self):
         return [LinearMorModules(self.base_ring())]
@@ -3330,9 +3327,8 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         r"""The ideal (2), a submodule of the base ring."""
         return self.base_ring().ideal(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "module subobjects"
+    def _repr_object_names(self):
+        return f"module subobjects over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3510,9 +3506,8 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "vector spaces"
+    def _repr_object_names(self):
+        return f"vector spaces over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3545,9 +3540,8 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
     presence is not evidence that an arbitrary framed module carries it.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a chosen component presentation"
+    def _repr_object_names(self):
+        return f"modules with a chosen component presentation over {self.base_ring()}"
 
     def an_object(self):
         from dzack_research.preamble.categories.modules.word_modules import (
@@ -3584,9 +3578,8 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a chosen finite presentation"
+    def _repr_object_names(self):
+        return f"modules with a chosen finite presentation over {self.base_ring()}"
 
     def __call__(self, morphism, category=None, **construction_data):
         r"""Construct the presented module even when ``morphism`` is itself in this category.
@@ -4245,9 +4238,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             ring.Mor(ring)(lambda element: element)
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "restricted-scalars modules"
+    def _repr_object_names(self):
+        return f"restricted-scalars modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -4889,9 +4881,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
         free = Modules(self.base_ring()).an_object()
         return Modules(self.base_ring()).tensor_product((free, free))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen tensor-product modules"
+    def _repr_object_names(self):
+        return f"chosen tensor-product modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -5407,9 +5398,8 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         free = Modules(self.base_ring()).an_object()
         return Modules(self.base_ring()).biproduct((free, free))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen module biproducts"
+    def _repr_object_names(self):
+        return f"chosen module biproducts over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
@@ -5698,9 +5688,8 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix Mor objects"
+    def _repr_object_names(self):
+        return f"matrix Mor objects over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -6203,9 +6192,8 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
                 free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix endomorphism objects"
+    def _repr_object_names(self):
+        return f"matrix endomorphism objects over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.group.additive_mors import (

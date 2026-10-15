@@ -40,9 +40,8 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
     therefore refuses to construct until that placement is formalized.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "objects of the derived category"
+    def _repr_object_names(self):
+        return f"objects of the derived category over {self.base_ring()}"
 
     def cohomology(self, degree):
         r"""``H^degree : D(R) -> Mod_R``, the factorization of cochain cohomology through ``Q``."""
