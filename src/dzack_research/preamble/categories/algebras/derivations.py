@@ -655,7 +655,13 @@ class DerivationSpace(RestrictedMorCategoryParent):
     scalar_action = algebra_action
 
     def _repr_(self):
-        return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
+        algebra = self.algebra()
+        match self.target_module():
+            case target if target is algebra.regular_module():
+                # Der_R(A) = Der_R(A, A): the values lie in A itself.
+                return f"Der_{algebra.base_ring()}({algebra})"
+            case target:
+                return f"Der_{algebra.base_ring()}({algebra}, {target})"
 
 
 class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
@@ -768,7 +774,7 @@ class GradedDerivation(ModuleElement):
         return self.parent().degree_shift()
 
     def _repr_(self):
-        return f"Degree-{self.degree_shift()} graded derivation of {self.algebra()}"
+        return f"Degree {self.degree_shift()} graded derivation of {self.algebra()}"
 
     def graded_commutator(self, other):
         r"""Return the graded commutator with another endo-derivation."""
@@ -1205,7 +1211,7 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def _repr_(self):
         return (
-            f"Degree-{self.degree_shift()} graded derivations "
+            f"Degree {self.degree_shift()} graded derivations "
             f"{self.algebra()} -> {self.target()}"
         )
 
