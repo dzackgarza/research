@@ -19,6 +19,9 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
+from dzack_research.preamble.categories.modules.hodge_structures import (
+    _split_mixed_hodge_structure,
+)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -36,10 +39,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    NN,
-    Sets,
-)
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 
@@ -528,59 +528,6 @@ class ToricFundamentalGroups(OwnedCategory):
             return "complex analytic realization under the selected QQ-to-CC embedding"
 
 
-def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
-    r"""Return ``(h^{p,q})_{p+q=degree}`` as an owned indexed family.
-
-    The index is a finite owned subset of ``NN x NN`` and every value is a
-    point of ``NN``.  Thus the grading pair and the Hodge number both remain
-    mathematical set elements rather than Python tuple/integer payloads.
-    """
-    bidegrees = Sets().product((NN, NN))
-    labels = finite_ordered_set(tuple(bidegrees((NN(p), NN(degree - p))) for p in p_values if 0 <= degree - p <= q_bound))
-    return finite_indexed_family(
-        labels,
-        lambda bidegree: NN(hodge_data.hodge_number(int(bidegree[0]), int(bidegree[1]))),
-        name=f"Hodge numbers in degree {degree}",
-    )
-
-
-class _ToricHodgeData(SageObject):
-    r"""Pure Hodge numbers tied to the live integral cohomology of one toric realization."""
-
-    def __init__(self, scheme) -> None:
-        _require_smooth_complete_rational_toric_realization(scheme)
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-    def is_pure(self) -> bool:
-        return True
-
-    def integral_cohomology(self, degree):
-        return self.scheme().integral_singular_cohomology(degree)
-
-    def hodge_number(self, p, q):
-        p = int(p)
-        q = int(q)
-        dimension = int(self.scheme().dimension())
-        if p < 0 or q < 0 or p > dimension or q > dimension or p != q:
-            return NN(0)
-        return NN(self.integral_cohomology(2 * p).module_rank())
-
-    def degree_hodge_numbers(self, degree):
-        degree = int(degree)
-        dimension = int(self.scheme().dimension())
-        assert 0 <= degree <= 2 * dimension, (
-            f"the Hodge numbers of {self.scheme()} are defined in degrees 0 through "
-            f"{2 * dimension} (twice its dimension), but degree {degree} was requested"
-        )
-        return _degree_hodge_number_family(self, degree, range(degree + 1), dimension)
-
-    def _repr_(self):
-        return f"Pure toric Hodge data of {self.scheme()}"
-
-
 def _toric_weight_cohomology_complex(scheme, divisor, weight):
     r"""Return the finite complex computing ``H^*(X,O_X(D))_weight``.
 
@@ -862,7 +809,7 @@ class _QuarticK3IntegralTopology(SageObject):
 
         See ``hodge_structure`` on smooth quartic K3 complete intersections.
         """
-        return _QuarticK3HodgeData(self.scheme())
+        return _quartic_k3_hodge_structure(self.scheme())
 
     def middle_cohomology_torsion_free_quotient(self):
         r"""K3 middle cohomology is already torsion-free."""
@@ -873,69 +820,34 @@ class _QuarticK3IntegralTopology(SageObject):
 
 
 
-class _QuarticK3HodgeData(SageObject):
-    r"""Pure Hodge data of the selected smooth quartic K3 realization.
+def _quartic_k3_hodge_structure(scheme):
+    r"""``H^*(X(CC); ZZ)`` of a smooth quartic K3 surface ``X``, split by degree.
 
-    Adjunction gives ``K_X = O_X``.  The represented restriction of the unique
-    constant section computes ``h^(2,0)=h^0(K_X)``.  Hodge symmetry gives
-    ``h^(0,2)``, and the integral K3 lattice supplies ``b_2=22``, so the
-    remaining middle dimension is ``h^(1,1)``.  Thus the off-diagonal terms are
-    attached to the live canonical bundle and integral cohomology rather than a
-    toric diagonal template.
+    ``Gr^W_k = H^k``, of rank ``1, 0, 22, 0, 1``.  Adjunction gives
+    ``K_X = O_X``, and ``X`` is proper and geometrically integral, so
+    ``h^{2,0} = h^0(K_X) = h^0(O_X) = 1``; Hodge symmetry gives
+    ``h^{0,2} = 1``, and ``h^{1,1} = b_2 - 2``.  Every weight is polarizable:
+    ``H^2`` by the intersection form, ``H^0`` and ``H^4`` by ``ZZ(0)`` and
+    ``ZZ(-2)``.
     """
-
-    def __init__(self, scheme) -> None:
-        _require_smooth_quartic_k3_complex_realization(scheme)
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-    def is_pure(self) -> bool:
-        return True
-
-    def integral_topology(self):
-        return self.scheme().integral_topology()
-
-    def integral_cohomology(self, degree):
-        return self.integral_topology().integral_cohomology(degree)
-
-    @cached_method
-    def holomorphic_two_form_space(self):
-        canonical = self.scheme().canonical_line_bundle()
-        return canonical.represented_global_section_image()
-
-    def hodge_number(self, p, q):
-        p = int(p)
-        q = int(q)
-        if p < 0 or q < 0 or p > 2 or q > 2:
-            return NN(0)
-        if (p, q) == (0, 0) or (p, q) == (2, 2):
-            return NN(1)
-        if p + q != 2:
-            return NN(0)
-        holomorphic = int(self.holomorphic_two_form_space().dimension())
-        if (p, q) in ((2, 0), (0, 2)):
-            return NN(holomorphic)
-        middle_rank = int(self.integral_cohomology(2).module_rank())
-        return NN(middle_rank - 2 * holomorphic)
-
-    def degree_hodge_numbers(self, degree):
-        degree = int(degree)
-        assert 0 <= degree <= 4, (
-            f"the Hodge numbers of the K3 surface {self.scheme()} are defined in degrees 0 "
-            f"through 4, but degree {degree} was requested"
-        )
-        return _degree_hodge_number_family(self, degree, range(3), 2)
-
-    def middle_betti_number(self):
-        return self.integral_cohomology(2).module_rank()
-
-    def polarization_class(self):
-        return self.integral_topology().hyperplane_first_chern_class()
-
-    def _repr_(self) -> str:
-        return f"Hodge data of {self.scheme()}"
+    _require_smooth_quartic_k3_complex_realization(scheme)
+    topology = scheme.integral_topology()
+    ranks = tuple(int(topology.integral_cohomology(degree).module_rank()) for degree in range(5))
+    weights = tuple(degree for degree in range(5) for _ in range(ranks[degree]))
+    middle_rank = ranks[2]
+    return _split_mixed_hodge_structure(
+        _owned_integers(),
+        weights,
+        hodge_number_table=lambda: {
+            (0, 0): NN(1),
+            (2, 0): NN(1),
+            (0, 2): NN(1),
+            (1, 1): NN(middle_rank - 2),
+            (2, 2): NN(1),
+        },
+        polarizable_weights=frozenset(weights),
+        name="H^*(X(CC); ZZ) of a smooth quartic K3 surface X",
+    )
 
 
 
@@ -1386,12 +1298,21 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
 
 
 def _toric_hodge_structure(scheme):
-    r"""The Hodge numbers of each degree of a smooth complete toric variety.
+    r"""``H^*(X(CC); ZZ)`` of a smooth complete toric variety ``X``, split by degree.
 
-    The required value of ``X.hodge_structure()`` is an object of
-    ``MixedHodgeStructures(ZZ)``; see ``hodge_structure`` on smooth toric schemes.
+    ``Gr^W_k = H^k``.  By Jurkiewicz–Danilov ``H^*`` is free, zero in odd
+    degree, and ``H^{2p}`` is spanned by the classes of torus-invariant
+    cycles, so ``H^{2p}`` is a sum of copies of ``ZZ(-p)`` and the structure
+    is Hodge–Tate.
     """
-    return _ToricHodgeData(scheme)
+    _require_smooth_complete_rational_toric_realization(scheme)
+    dimension = int(scheme.dimension())
+    weights = tuple(
+        degree
+        for degree in range(2 * dimension + 1)
+        for _ in range(int(scheme.integral_singular_cohomology(degree).module_rank()))
+    )
+    return _split_mixed_hodge_structure(_owned_integers(), weights, name=f"H^*({scheme}(CC); ZZ)")
 
 
 def _complete_intersection_integral_singular_cohomology(scheme, degree):
