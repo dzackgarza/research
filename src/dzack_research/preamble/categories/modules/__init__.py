@@ -138,6 +138,10 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
                           'TensorProductModules'),
  'DerivedCategories': ('dzack_research.preamble.categories.modules.derived_categories',
                        'DerivedCategories'),
+ 'LinearCategories': ('dzack_research.preamble.categories.modules.linear_categories',
+                      'LinearCategories'),
+ 'TriangulatedCategories': ('dzack_research.preamble.categories.modules.linear_categories',
+                            'TriangulatedCategories'),
 }
 
 __all__ = ['BilinearMap',
@@ -219,6 +223,8 @@ __all__ = ['BilinearMap',
  'TensorPowerModules',
  'ModuleResolutions',
  'DerivedCategories',
+ 'LinearCategories',
+ 'TriangulatedCategories',
 ]
 
 def __getattr__(name):

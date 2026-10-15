@@ -210,9 +210,26 @@ class ModuleSheaves(OwnedParameterizedCategory):
             r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
 
             The image of this sheaf ``F`` under
-            ``ModuleSheaves(X).derived_global_sections()``.
+            ``ModuleSheaves(X).derived_global_sections()``.  Computed for the
+            standard line bundles ``O(d)`` on ``P^n_R``, ``n >= 1``, from
+            Hartshorne, Theorem III.5.1, and for a quasi-coherent sheaf on an
+            affine scheme from its one-chart Čech complex, which is acyclic
+            (Stacks, Tag 01XB).
             """
-            assert False, "derived_global_sections on ModuleSheaves: not implemented"
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _projective_space_line_bundle_derived_global_sections,
+            )
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces, Schemes
+
+            space = self.scheme()
+            base = space.scheme_base_ring()
+            match space:
+                case _ if space in ProjectiveSpaces(base) and self in InvertibleSheavesWithChosenTrivialization(space):
+                    return _projective_space_line_bundle_derived_global_sections(self)
+                case _ if space in Schemes(base).Affine() and self in QuasiCoherentSheaves(space):
+                    return self.geometric_cohomology_complex().derived_global_sections()
+                case _:
+                    assert False, "derived_global_sections on ModuleSheaves: not implemented"
 
         def sheaf_cohomology(self, degree):
             r"""``H^degree(X, F) = H^degree(RΓ(X, F))``, an object of ``Modules(Γ(X, O_X))``."""
@@ -1196,10 +1213,6 @@ class _AffineModuleSheafEngine:
         )
 
         return _affine_geometric_cohomology_complex(self, cover=cover)
-
-    def geometric_cohomology(self, degree):
-        r"""Return the represented affine cohomology in ``degree``."""
-        return self.geometric_cohomology_complex().cohomology(int(degree))
 
     def geometric_scalar_cohomology_map(self, degree, scalar, *, cover=None):
         r"""Return the cohomology map induced by scalar multiplication."""

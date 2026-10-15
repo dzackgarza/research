@@ -3737,6 +3737,26 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
             return _TensorMorAdjunction(self)
 
+        def presentation(self):
+            r"""Return the selected relation morphism ``F_1 -> F_0``."""
+            selected = self.selected_module_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.differential(1)
+                case _:
+                    raise TypeError(
+                        f"{self} has no selected relation map F_1 -> F_0: its chosen module resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
+
+        def _rank_decision(self):
+            r"""``rank_R M = rank_R coker(r)`` for the chosen presentation ``r: F_1 -> F_0``.
+
+            The presentation is exact, ``F_1 -> F_0 -> M -> 0``, so ``M`` is
+            isomorphic to ``coker(r)``, and rank is an isomorphism invariant.
+            """
+            return self.presentation().cokernel().module_rank()
+
         @cached_method
         def presentation_object(self):
             r"""Return this module's selected presentation as an arrow object."""

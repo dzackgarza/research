@@ -1,4 +1,4 @@
-r"""Analytic-disc families and a supported affine analytification bridge.
+r"""Analytic-disc families and the analytification of affine and projective spaces.
 
 The analytic objects here are genuine complex manifolds with the topology of
 open subsets of ``C^n``.  The comparison is deliberately narrow: an affine
@@ -34,10 +34,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
+    ProjectiveSpaces,
     Schemes,
+    _evaluate_owned_homogeneous_polynomial_on_coordinates,
     _polynomial_exponents,
+    _projective_coordinate_morphism,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.rings.real import RR
 
 
@@ -128,6 +131,100 @@ def _affine_space_analytification_functor(scalar_embedding):
     return _AffineSpaceAnalytificationFunctor(scalar_embedding)
 
 
+class _ProjectiveSpaceAnalytificationFunctor(Functor):
+    r"""Analytification ``P^n_K -> CP^n`` along an embedding ``sigma: K -> CC``.
+
+    ``(P^n_K)^an`` is the complex manifold of ``C``-points of the base change
+    ``P^n_K x_{K,sigma} C``, which is ``CP^n`` with the standard atlas
+    (Serre, GAGA, Sec. 2; SGA 1, Exp. XII, 1.1).  The chart ``D_+(x_i)`` of
+    ``P^n_K`` goes to the chart ``U_i = {x_i != 0}`` with the same coordinates
+    ``x_k/x_i``.  ``P^n_K`` is proper, so its analytification is compact.
+    """
+
+    def __init__(self, scalar_embedding) -> None:
+        self._scalar_embedding = scalar_embedding
+        source = _owned_ring(scalar_embedding.domain())
+        target = _owned_ring(scalar_embedding.codomain())
+        assert _engine_ring(target) is SageCC, (
+            f"analytification along {scalar_embedding} needs an embedding into the complex "
+            f"numbers CC, but its codomain is {target}"
+        )
+        super().__init__(ProjectiveSpaces(source), ComplexManifolds().Compact())
+
+    def scalar_embedding(self):
+        return self._scalar_embedding
+
+    @cached_method
+    def _apply_object(self, projective_space):
+        return ComplexManifolds().projective_space(
+            int(projective_space.relative_dimension()), name=f"({projective_space})^an",
+        )
+
+    @cached_method
+    def _apply_morphism(self, morphism):
+        r"""A morphism ``P^n_K -> P^m_K`` goes to the holomorphic map given chartwise by its homogeneous polynomials.
+
+        A morphism ``f = [F_0 : ... : F_m]`` is given by homogeneous
+        polynomials of one degree with no common zero (Hartshorne II.7.1;
+        Stacks, Tag 01ND).  On ``U_i = {x_i != 0}`` its analytification has,
+        into ``V_j = {y_j != 0}``, the coordinate representation
+        ``y_k/y_j = F_k/F_j`` with ``x_i = 1``, defined where ``F_j`` does not
+        vanish.  These open sets cover ``U_i`` because the ``F_j`` have no
+        common zero.  A chart pair on which ``F_j`` restricts to zero has
+        empty domain and is not listed.
+        """
+        assert morphism.domain() in self.domain() and morphism.codomain() in self.domain(), (
+            f"analytification over {self.domain().base_ring()} cannot be applied to {morphism}: "
+            f"its domain {morphism.domain()} and codomain {morphism.codomain()} must both be "
+            f"projective spaces in {self.domain()}"
+        )
+        source = morphism.domain()
+        analytic_source = self.object_image(source)
+        analytic_target = self.object_image(morphism.codomain())
+        sections = tuple(_projective_coordinate_morphism(morphism).homogeneous_coordinates())
+        representations = {}
+        for i in range(int(source.relative_dimension()) + 1):
+            chart_coordinates = tuple(
+                _projective_coordinate_morphism(
+                    source.standard_affine_chart_embedding(i)
+                ).homogeneous_coordinates()
+            )
+            algebra = chart_coordinates[0].parent()
+            local_sections = tuple(
+                _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                    section, section.parent(), chart_coordinates
+                )
+                for section in sections
+            )
+            analytic_chart = analytic_source.atlas()[f"U{i}"]
+            expressions = tuple(
+                _polynomial_chart_expression(
+                    algebra, local_section, analytic_chart, self.scalar_embedding()
+                )
+                for local_section in local_sections
+            )
+            for j, denominator in enumerate(expressions):
+                if local_sections[j] == algebra.zero():
+                    continue
+                representations[f"U{i}", f"U{j}"] = (
+                    tuple(
+                        numerator / denominator
+                        for k, numerator in enumerate(expressions)
+                        if k != j
+                    ),
+                    (denominator,),
+                )
+        return analytic_source.Mor(analytic_target).rational(representations)
+
+    def _repr_(self):
+        return f"Projective analytification along {self.scalar_embedding()}"
+
+
+@cached_function
+def _projective_space_analytification_functor(scalar_embedding):
+    return _ProjectiveSpaceAnalytificationFunctor(scalar_embedding)
+
+
 class _AnalyticDiscFamilyEngine:
     r"""Private realization of one selected object of ``ComplexManifolds()/Delta``.
 
@@ -183,25 +280,34 @@ class _AnalyticDiscFamilyEngine:
         ``t`` is the line ``{(x, t)}``.  Domain: the fibre, a complex line
         with coordinate ``x``.  The composite with the family is constant at
         ``t``.  A complex number ``t`` with ``|t| < r`` is read as the point
-        of ``Delta`` it names, through the disc's element constructor.
+        of ``Delta`` it names, through the disc's element constructor; the
+        fibre is named by ``t`` as an element of the complex field ``CC``.
         """
         point = self.analytic_base()(point)
-        (parameter,) = tuple(point.coordinates())
+        (coordinate,) = tuple(point.coordinates())
+        complex_field = _owned_complex_field()
+        parameter = _owned_engine_element(
+            complex_field, _engine_ring(complex_field)(_engine_manifold_expression(coordinate)),
+        )
         fibre = ComplexManifolds().affine_space(
-            1, name=f"X_({parameter})", coordinate_names=("x",),
+            1, name=f"X_{parameter}", coordinate_names=("x",),
         )
         x = fibre.atlas()["standard"].coordinate(0)
-        return fibre.holomorphic_polynomial_map(self.analytic_total_space(), (x, parameter))
+        return fibre.holomorphic_polynomial_map(self.analytic_total_space(), (x, coordinate))
 
     def fibre(self, point):
         r"""The fibre ``X_t`` of the family over a point ``t`` of ``Delta``; its inclusion is :meth:`fibre_inclusion`."""
         return self.fibre_inclusion(point).domain()
 
     def comparison_maps(self):
-        total_inclusion = self.analytic_total_space().open_inclusion()
-        base_inclusion = self.analytic_base().open_inclusion()
-        product = Sets().product((total_inclusion.parent(), base_inclusion.parent()))
-        return product((total_inclusion, base_inclusion))
+        r"""The open inclusions ``X_Delta -> X^an`` and ``Delta -> B^an``, the horizontal legs of the comparison square."""
+        return finite_family(
+            (
+                self.analytic_total_space().open_inclusion(),
+                self.analytic_base().open_inclusion(),
+            ),
+            name=f"Comparison maps of {self}",
+        )
 
     def comparison_square_commutes(self) -> bool:
         total_inclusion, base_inclusion = self.comparison_maps()

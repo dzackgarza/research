@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
+    ModuleSubobjectConstruction,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     _fix_selected_module_resolution,
@@ -272,6 +273,13 @@ class Derivation(ModuleElement):
 
     def _call_(self, element):
         return self.__call__(element)
+
+    def _repr_(self):
+        images = ", ".join(
+            f"{label} |-> {self.generator_image(label)}"
+            for label in self.parent().generator_labels()
+        )
+        return f"Derivation of {self.domain()} with {images}"
 
     def lie_bracket(self, other):
         r"""Return the Lie bracket of two vector fields on one algebra."""
@@ -573,6 +581,18 @@ class DerivationSpace(RestrictedMorCategoryParent):
     def zero(self):
         return self({label: self.target_module().zero() for label in self.generator_labels()})
 
+    def _an_element_(self):
+        r"""A module generator of ``Der_R(A,M)`` from its chosen presentation, else ``0``.
+
+        For ``A = R[x]`` and ``M = A`` the generator is ``d/dx``, since
+        ``Der_R(R[x], R[x]) = R[x] d/dx`` is free of rank one.
+        """
+        match self:
+            case _ if self in ModulesWithChosenFinitePresentation(self.algebra()):
+                return self.module_generator(next(iter(self.module_generating_set())))
+            case _:
+                return self.zero()
+
     def algebra_multiple(self, scalar, derivation):
         if derivation.parent() is not self:
             derivation = self(derivation)
@@ -611,7 +631,7 @@ class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
         return DerivationSpace
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, DerivationUnderlyingLinearMorphism)
+        return self._accepts_by_placement(arrow)
 
 
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
@@ -712,6 +732,9 @@ class GradedDerivation(ModuleElement):
 
     def degree_shift(self):
         return self.parent().degree_shift()
+
+    def _repr_(self):
+        return f"Degree-{self.degree_shift()} graded derivation of {self.algebra()}"
 
     def graded_commutator(self, other):
         r"""Return the graded commutator with another endo-derivation."""
@@ -910,19 +933,21 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
         ring = algebra.base_ring()
         self._preamble_base_ring = ring
+        # The ModuleSubobjects datum: the canonical inclusion of the
+        # derivations into the underlying graded linear Mor.  The restricted
+        # Mor constructor does not thread construction data, so the datum is
+        # fixed here, before the category is realized.
+        self._module_subobject_construction = ModuleSubobjectConstruction(
+            inclusion_factory=lambda space: space.Mono(space.arrow_set())._subobject_inclusion(
+                lambda derivation: derivation.underlying_linear_morphism(),
+            ),
+        )
         RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
             target,
             category=Cat().meet((Modules(ring), ModuleSubobjects(ring))),
-        )
-
-    @cached_method
-    def inclusion(self):
-        r"""Return the canonical inclusion into the underlying graded linear Mor."""
-        return self.Mono(self.arrow_set())._subobject_inclusion(
-            lambda derivation: derivation.underlying_linear_morphism(),
         )
 
     def base_ring(self):
@@ -971,6 +996,15 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         return self._from_constructed_elementwise(
             lambda _element: self.target().zero()
         )
+
+    def _an_element_(self):
+        r"""The zero map, a graded derivation of every degree.
+
+        A nonzero element needs a construction for the given algebra, such
+        as the contraction ``i_X`` of a vector field for degree ``-1`` on a
+        de Rham algebra (``Derivation.interior_product``).
+        """
+        return self.zero()
 
     def elementwise(self, function, *, check=False):
         r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
@@ -1033,13 +1067,10 @@ class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
         return GradedDerivationSpace
 
     def accepts(self, arrow) -> bool:
-        return (
-            isinstance(arrow, GradedDerivationUnderlyingLinearMorphism)
-            and arrow.degree_shift() == self.degree_shift()
-        )
+        return self._accepts_by_placement(arrow)
 
 
-@cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))
+@cached_function(key=lambda algebra, target=None, shift=0: (id(algebra), id(algebra if target is None else target), int(shift)))
 def _graded_derivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra

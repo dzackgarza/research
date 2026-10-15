@@ -62,7 +62,7 @@ def test_a_quasi_coherent_sheaf_on_an_affine_line_has_no_higher_cohomology() -> 
     line = AffineSchemes(QQ)(ring)
     sheaf = QuasiCoherentSheaves(line).associated_sheaf(ring.free_module(2))
 
-    assert sheaf.geometric_cohomology(1).dimension() == 0
+    assert sheaf.sheaf_cohomology(1).is_zero()
 
 
 def test_the_hodge_numbers_of_the_projective_plane_are_those_of_its_cohomology_ring() -> None:
