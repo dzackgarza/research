@@ -94,11 +94,18 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
     )
     decided = [ProjectiveCompleteIntersections(base)]
     expected_dimension = int(ambient.relative_dimension()) - int(family.cardinality())
+    # Integrality is placement (CON-07), never computed here (OWN-22): the
+    # caller states Schemes(k).Integral(), or states smoothness, and a smooth
+    # complete intersection of positive dimension is connected (Hartshorne,
+    # Exercise III.5.5), hence integral.  An integral projective scheme over a
+    # field is a projective variety (Hartshorne I.2, II.4).
+    stated_integral = any(category.is_subcategory(Schemes(base).Integral()) for category in placements)
+    stated_smooth = any(
+        category.is_subcategory(ProjectiveCompleteIntersections(base).Smooth()) for category in placements
+    )
+    integral = stated_integral or (stated_smooth and expected_dimension >= 1)
     match base:
         case _ if base in OwnedFields():
-            # A homogeneous prime ideal cuts out an integral projective
-            # scheme, which is a projective variety (Hartshorne I.2, II.4).
-            integral = bool(engine.defining_ideal().is_prime())
             match expected_dimension:
                 case 1 if integral:
                     decided.append(Curves(base).Projective())
@@ -161,16 +168,18 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         x, _y = line.homogeneous_coordinate_generators()
         return self(line, x)
 
-    def _call_(self, ambient, *equations):
+    def _call_(self, ambient, *equations, placements=()):
         r"""``V_+(f_1, ..., f_r) <= P^n_R`` for a regular sequence of homogeneous equations.
 
-        The equations are given one by one or as one finite family.
+        The equations are given one by one or as one finite family.  A caller
+        that knows the scheme integral states ``Schemes(R).Integral()`` in
+        ``placements``.
         """
         assert ambient.scheme_base_ring() is self.base_ring(), (
             f"cannot construct a complete intersection of {self} in {ambient}: it lies over "
             f"{ambient.scheme_base_ring()}, not over {self.base_ring()}"
         )
-        return _projective_complete_intersection(ambient, equations)
+        return _projective_complete_intersection(ambient, equations, placements=placements)
 
     def _repr_object_names(self):
         return f"projective complete intersections over {self.base_ring()}"
@@ -226,7 +235,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``."""
                 ambient = ProjectiveSpaces(self.base_ring())(3)
                 x = tuple(ambient.homogeneous_coordinate_generators())
-                return self(ProjectiveCompleteIntersections(self.base_ring())(ambient, sum(v**4 for v in x)))
+                return self(ProjectiveCompleteIntersections(self.base_ring()).Smooth()(ambient, sum(v**4 for v in x)))
 
             def _call_(self, scheme):
                 r"""Place the complete intersection ``scheme`` here, as the caller states."""
