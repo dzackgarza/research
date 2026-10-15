@@ -1154,6 +1154,140 @@ class ComplexManifolds(OwnedCategory):
             r"""Whether this construction retains an ambient open inclusion."""
             return self.open_inclusion() is not None
 
+    class SubcategoryMethods:
+        def BoundedSymmetric(self):
+            r"""The axiom: biholomorphic to a bounded symmetric domain.
+
+            A bounded domain ``D`` in ``C^N`` is symmetric when each
+            ``p in D`` is an isolated fixed point of an involutive
+            biholomorphism of ``D`` (Helgason, Ch. VIII, §7).  The property
+            is invariant under biholomorphism, so it is a property of a
+            complex manifold, stated by an axiom on ``ComplexManifolds()``.
+            Its objects are the Hermitian symmetric spaces of the
+            noncompact type with their complex structure (Helgason,
+            Ch. VIII, §7, the Harish-Chandra realization).
+            """
+            return self._with_axiom("BoundedSymmetric")
+
+    class BoundedSymmetric(CategoryWithAxiom):
+        r"""Complex manifolds biholomorphic to a bounded symmetric domain (Helgason, Ch. VIII, §7).
+
+        Each object is a product of irreducible ones, and an irreducible
+        object is ``G/K`` for ``G`` the identity component of its
+        biholomorphism group, a noncompact simple Lie group whose real form
+        has a Satake diagram of Hermitian type (Helgason, Ch. X, §6,
+        Table V).  The irreducible ones are the four classical families
+        ``I_{p,q}``, ``II_n``, ``III_n``, ``IV_n`` and the two exceptional
+        domains ``EIII`` and ``EVII``.  The Bergman metric is invariant
+        under every biholomorphism and makes the domain a Riemannian
+        globally symmetric space of noncompact type.
+        """
+
+        def type_I(self, p, q):
+            r"""Return ``I_{p,q} = SU(p, q)/S(U(p) x U(q))``, Cartan type AIII.
+
+            Bounded realization ``{Z in M_{p x q}(C) : 1_q - Z^* Z > 0}``,
+            of complex dimension ``pq``, for positive integers ``p`` and
+            ``q``.  ``I_{1,1}`` is the disc, biholomorphic to
+            ``upper_half_plane()``.
+            """
+            assert False, "type_I on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_II(self, n):
+            r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
+
+            Bounded realization ``{Z in M_n(C) : Z^t = -Z, 1_n - Z^* Z > 0}``,
+            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``.
+            """
+            assert False, "type_II on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_III(self, n):
+            r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
+
+            Bounded realization ``{Z in M_n(C) : Z^t = Z, 1_n - Z^* Z > 0}``,
+            of complex dimension ``n(n + 1)/2``, for a positive integer
+            ``n``.  The Cayley transform identifies it with
+            ``siegel_upper_half_space(n)``; ``III_1 = I_{1,1}``.
+            """
+            assert False, "type_III on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_IV(self, n):
+            r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
+
+            For a real quadratic space ``V`` of signature ``(2, n)`` it is
+            one connected component of
+            ``{[omega] in P(V_C) : (omega, omega) = 0, (omega, bar omega) > 0}``,
+            the space of oriented positive definite real ``2``-planes in
+            ``V``, of complex dimension ``n``, for a positive integer ``n``
+            (lean-categories FOUNDATIONS, Definition 61.3, which states the
+            two components and that choosing one is additional data;
+            ``LeanCategories/Lattices/Valued/PeriodDomainData.lean``,
+            ``latticePeriodDomainData``).
+            """
+            assert False, "type_IV on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_EIII(self):
+            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
+            assert False, "type_EIII on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_EVII(self):
+            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``."""
+            assert False, "type_EVII on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def upper_half_plane(self, name="HH"):
+            r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
+
+            It is ``SL_2(RR)/SO(2)``, the domain ``I_{1,1} = III_1``, by the
+            Cayley transform ``tau -> (tau - i)/(tau + i)`` onto the disc.
+            The construction is the open subset of a fresh complex line
+            cut out by ``Im(tau) > 0`` in its chart.
+            """
+            complex_manifolds = self.base_category()
+            line = complex_manifolds.affine_space(
+                1, name=f"{name}_line", coordinate_names=("tau",)
+            )
+            tau = _engine_manifold_expression(
+                line.atlas()[tuple(line.chart_labels())[0]].coordinate(0)
+            )
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                **complex_manifolds._open_submanifold_data(
+                    line, name, tau.imag_part() > 0
+                ),
+            )
+
+        def siegel_upper_half_space(self, g):
+            r"""Return ``H_g = {Z in M_g(C) : Z^t = Z, Im(Z) > 0}``, the Siegel upper half-space.
+
+            It is ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``, of complex
+            dimension ``g(g + 1)/2``, for a positive integer ``g``;
+            ``H_1 = upper_half_plane()``.
+            """
+            assert False, "siegel_upper_half_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        class ParentMethods:
+            def harish_chandra_realization(self):
+                r"""Return the biholomorphism onto a bounded symmetric domain in ``C^N``.
+
+                Domain ``D``; codomain the open subset of
+                ``ComplexManifolds().affine_space(N)`` that it realizes,
+                ``N`` the complex dimension of ``D`` (Helgason, Ch. VIII,
+                §7).
+                """
+                assert False, "harish_chandra_realization on ComplexManifolds.BoundedSymmetric: not implemented"
+
+            def bergman_metric_space(self):
+                r"""Return ``(D, g_B)``, ``D`` with its Bergman metric.
+
+                The result is an object of
+                ``RiemannianManifolds().GloballySymmetric()`` of noncompact
+                type; for irreducible ``D`` it is
+                ``noncompact_type(satake_diagram)`` for the Satake diagram of
+                the real form ``Lie(Aut(D)^0)``.
+                """
+                assert False, "bergman_metric_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
 
 class _ComplexOpenEngine:
     r"""Native chart-restriction realization at ComplexManifolds, not a category.
