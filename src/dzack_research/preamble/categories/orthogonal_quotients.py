@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import NN, Set, Sets
 
 
@@ -352,16 +353,24 @@ def _finite_supergroup_elements(subgroup):
 
     A predicate subgroup with no character data has no finite quotient of
     ``O(L)`` describing it, so the only thing that describes it is the group
-    itself.  Listing it is a finite computation exactly when ``O(L)`` is
-    finite, which for a lattice is definiteness.
+    itself.  The listing runs through the enumeration of ``O(L)``, which is
+    supplied for a definite lattice of finite rank over ``ZZ``, where ``O(L)``
+    is finite (``lean-categories`` ``orthogonalGroup_finite``).  A definite
+    lattice over ``QQ`` is a quadratic space whose ``O(V)`` is not finite in
+    rank at least 2, so definiteness alone does not make the listing finite.
     """
     supergroup = subgroup.supergroup()
     lattice = supergroup.domain()
     assert lattice.is_definite(), (
         f"cannot list the elements of {subgroup}: it is cut out by a predicate that "
         f"is not a character kernel, so its elements must be listed inside O(L), "
-        f"and O(L) is finite only for a definite lattice, which {lattice} is not.  "
+        f"and {lattice} is not definite.  "
         + _MISSING_ARITHMETIC_GENERATING_SET
+    )
+    assert lattice.base_ring() is _owned_integers(), (
+        f"cannot list the elements of {subgroup}: it is cut out by a predicate that "
+        f"is not a character kernel, so its elements must be listed inside O(L), and "
+        f"O(L) is enumerated for a definite lattice over ZZ, while {lattice} is over {lattice.base_ring()}"
     )
     return tuple(
         automorphism for automorphism in supergroup if automorphism in subgroup

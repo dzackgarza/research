@@ -262,6 +262,13 @@ def _minimum(lattice):
 
 
 def _vectors_of_square(lattice, square):
+    r"""The finite shell ``{v in L : b(v, v) = square}`` of a definite lattice over ``ZZ``.
+
+    Sage's ``IntegralLattice.short_vectors`` enumerates integral coordinate
+    vectors; over ``QQ`` that is only the shell of the integral span of the
+    chosen basis, not the rational fibre.  Its one caller,
+    ``Lattices.ParentMethods.vectors_of_square``, asserts that hypothesis.
+    """
     sign, positive_gram = _positive_gram(lattice)
     square = lattice.base_ring()(square)
     target = sign * square
