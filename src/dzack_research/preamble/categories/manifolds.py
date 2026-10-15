@@ -6,6 +6,7 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
@@ -39,7 +40,12 @@ from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.logic import ask
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.rings.real import RR
+
+for _manifold_axiom in ("GloballySymmetric", "BoundedSymmetric"):
+    if _manifold_axiom not in all_axioms:
+        all_axioms.add(_manifold_axiom)
 
 
 class ManifoldAtlasChart(SageObject):
@@ -630,6 +636,94 @@ class SmoothManifolds(OwnedCategory):
         )
 
 
+class RiemannianManifolds(OwnedCategory):
+    r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
+
+    The metric ``g`` is a smooth section of ``Sym^2 T^*M`` that is positive
+    definite on every tangent space ``T_p M`` (Helgason, *Differential
+    Geometry, Lie Groups, and Symmetric Spaces*, Ch. I, §9; Mathlib
+    ``Mathlib/Topology/VectorBundle/Riemannian.lean``, ``RiemannianBundle``).
+    A smooth manifold admits many metrics, so the metric is chosen data and
+    this is a data subcategory of ``SmoothManifolds()``, its immediate
+    supercategory: forgetting ``g`` returns the smooth manifold ``M``.
+
+    A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
+    a local isometry.  The Mor category with that condition is not presented
+    yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+    """
+
+    def super_categories(self):
+        return [SmoothManifolds()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "Riemannian manifolds"
+
+    def an_object(self):
+        r"""The Euclidean line ``(R, dx^2)``."""
+        assert False, "an_object on RiemannianManifolds: not implemented"
+
+    def _call_(self, manifold, metric):
+        r"""Return ``(M, g)`` for a smooth manifold ``M`` and a Riemannian metric ``g`` on it.
+
+        ``metric`` is a smooth positive definite section of ``Sym^2 T^*M``.
+        The construction stores ``M`` and ``g`` and computes nothing.
+        """
+        assert manifold in SmoothManifolds(), (
+            f"cannot equip {manifold} with the Riemannian metric {metric}: a Riemannian "
+            f"metric is defined on a smooth manifold, and {manifold} is in "
+            f"{manifold.category()}"
+        )
+        assert False, "construction of an object of RiemannianManifolds: not implemented"
+
+    class SubcategoryMethods:
+        def GloballySymmetric(self):
+            r"""The axiom: every point is an isolated fixed point of an involutive isometry.
+
+            ``(M, g)`` is a Riemannian globally symmetric space when it is a
+            connected analytic Riemannian manifold and each ``p in M`` is an
+            isolated fixed point of an involutive isometry ``s_p`` of ``(M, g)``
+            (Helgason, Ch. IV, §3, Definition; a Riemannian manifold is
+            connected by Helgason's Ch. I, §9 definition).
+            """
+            return self._with_axiom("GloballySymmetric")
+
+    class ParentMethods:
+        def riemannian_metric(self):
+            r"""Return the chosen metric ``g``, a positive definite section of ``Sym^2 T^*M``."""
+            assert False, "riemannian_metric on RiemannianManifolds: not implemented"
+
+        def isometry_group(self):
+            r"""Return ``I(M, g)``, the group of isometries ``f: M -> M`` with ``f^* g = g``.
+
+            With the compact open topology it is a locally compact
+            topological transformation group of ``M`` (Helgason, Ch. IV,
+            Theorem 2.5(a)), an object of ``TopologicalGroups()``.  On a
+            Riemannian globally symmetric space it is a Lie transformation
+            group of ``M`` (Helgason, Ch. IV, Lemma 3.2), an object of
+            ``LieGroups()``.
+            """
+            assert False, "isometry_group on RiemannianManifolds: not implemented"
+
+    class GloballySymmetric(CategoryWithAxiom):
+        r"""Riemannian globally symmetric spaces (Helgason, Ch. IV, §3).
+
+        A connected analytic Riemannian manifold ``(M, g)`` in which each point ``p``
+        is an isolated fixed point of an involutive isometry ``s_p``, the
+        geodesic symmetry at ``p``.
+        """
+
+        class ParentMethods:
+            def geodesic_symmetry(self, point):
+                r"""Return ``s_p``, the involutive isometry of ``M`` with isolated fixed point ``p``.
+
+                Domain and codomain are ``M``; ``s_p`` reverses every geodesic
+                through ``p`` and its differential at ``p`` is ``-1`` on
+                ``T_p M``.
+                """
+                assert False, "geodesic_symmetry on RiemannianManifolds.GloballySymmetric: not implemented"
+
+
 class HolomorphicMapPresentation:
     r"""The selected chart presentation defining one represented holomorphic map."""
 
@@ -1082,6 +1176,7 @@ __all__ = [
     "HolomorphicMap",
     "ManifoldAtlasChart",
     "ManifoldAtlasTransition",
+    "RiemannianManifolds",
     "SmoothManifolds",
     "TopologicalManifolds",
 ]

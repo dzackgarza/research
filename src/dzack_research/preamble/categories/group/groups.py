@@ -5975,6 +5975,59 @@ class TopologicalGroups(OwnedCategory):
             return True if self in ProfiniteGroups() else AtomicProposition("is_profinite", self)
 
 
+class LieGroups(OwnedCategory):
+    r"""Real Lie groups: group objects in the category of smooth manifolds.
+
+    A Lie group is a smooth manifold ``G`` with a group structure whose
+    multiplication ``G x G -> G`` and inversion ``G -> G`` are smooth; a
+    morphism is a smooth group homomorphism (Mathlib
+    ``Mathlib/Geometry/Manifold/Algebra/LieGroup.lean``, ``LieGroup``;
+    lean-categories ``LeanCategories/Topology/LieFunctorData.lean``,
+    ``SmoothLieGroupData``).  Helgason, *Differential Geometry, Lie Groups,
+    and Symmetric Spaces*, Ch. II, §1, states the definition with an
+    analytic manifold and an analytic map ``(s, t) -> s t^{-1}``.
+
+    Forgetting the group law gives the smooth manifold ``G``; forgetting the
+    smooth structure gives the topological group ``G`` with the manifold
+    topology, since smooth maps are continuous.  The two declarations name
+    these two immediate forgetful functors.  Both composites to ``Sets()``
+    return the same underlying set of ``G``, which is the join the
+    declaration states.
+    """
+
+    def an_object(self):
+        r"""The circle group ``SO(2)``."""
+        assert False, "an_object on LieGroups: not implemented"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.manifolds import SmoothManifolds
+
+        return [SmoothManifolds(), TopologicalGroups()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "Lie groups"
+
+    def _call_(self, manifold, multiplication, inversion):
+        r"""Return the Lie group ``(G, m, i)`` on the smooth manifold ``G``.
+
+        ``multiplication`` is a smooth map ``m: G x G -> G`` and
+        ``inversion`` a smooth map ``i: G -> G`` satisfying the group axioms.
+        The construction stores the data and checks nothing.
+        """
+        assert False, "construction of an object of LieGroups: not implemented"
+
+    class ParentMethods:
+        def lie_algebra(self):
+            r"""Return ``Lie(G)``, the real Lie algebra of left-invariant vector fields on ``G``.
+
+            Its underlying vector space is the tangent space ``T_e G`` at the
+            identity (Helgason, Ch. II, §1).  This is the object part of the
+            Lie functor from ``LieGroups()`` to real Lie algebras.
+            """
+            assert False, "lie_algebra on LieGroups: not implemented"
+
+
 class GroupsWithChosenFreeBasis(OwnedCategory):
     r"""Free groups carrying the chosen set they are free on.
 
