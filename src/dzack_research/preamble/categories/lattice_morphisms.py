@@ -2123,12 +2123,17 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         return self.lattice().positive_cone_subgroup()
 
     def centralizer(self, isometry):
-        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup."""
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            CentralizerSubgroups,
+        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup.
+
+        Its group generators are computed on first request, by gluing the
+        centralizers on the cyclotomic summands of ``isometry``
+        (``lattice_centralizers.arithmetic_centralizer``).
+        """
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            arithmetic_centralizer,
         )
 
-        return CentralizerSubgroups(self)(isometry)
+        return arithmetic_centralizer(self, isometry)
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""
