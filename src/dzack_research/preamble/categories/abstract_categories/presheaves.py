@@ -1776,6 +1776,7 @@ __all__ = [
     "DescentDataOnCover",
     "DescentEqualizer",
     "DescentEqualizerComparison",
+    "OpenCoveringFamilies",
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",
