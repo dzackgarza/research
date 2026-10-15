@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CosliceCategory,
     _WalkingArrowFunctorCategory,
@@ -2907,7 +2908,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             to one over \(K'\), so
             \(\mathrm{sn}_{K'}(g\otimes K')=\varphi_*\,\mathrm{sn}_K(g)\) for
             \(g\in O(V)\), with \(\varphi_*\) the square-class functor
-            ``CommutativeRings().square_class_group()``.  The morphism returned
+            ``Monoids().Commutative().square_class_group()``.  The morphism returned
             is \(g\mapsto\varphi_*\,\mathrm{sn}_K(g\otimes K)\) on \(O(L)\): it
             is \(\mathrm{sn}_K\) of \(O(V)\) itself when \(R=K\), and along the
             real place \(\mathbb Q\to\mathbb R\) it is the real spinor norm
@@ -2968,7 +2969,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     assert field_map.domain() is field, (
                         f"the spinor norm of {self!r} is carried along a map out of Frac(R) = {field}, but {field_map} starts at {field_map.domain()}"
                     )
-                    change_of_field = CommutativeRings().square_class_group()(field_map)
+                    change_of_field = Monoids().Commutative().square_class_group()(field_map)
                     return self.Aut().Mor(change_of_field.codomain())(
                         lambda isometry: change_of_field(spinor_norm_class(isometry)),
                     )
@@ -3006,8 +3007,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.rings.real import RR
 
             real_place = field.Mor(RR)(lambda rational: RR(rational))
+            real_spinor_norm = self.spinor_norm(real_place)
             return _spinor_norm_kernel(
-                self.spinor_norm(real_place),
+                real_spinor_norm.codomain().sign_isomorphism() * real_spinor_norm,
                 "sn_RR(g) = 1",
                 character_data={"spinor_kernel": True},
             )
@@ -6872,15 +6874,9 @@ def _spinor_norm_multiplier(field, form_multiplier):
 
 def _spinor_norm_kernel(spinor_norm, description, *, character_data=None):
     r"""Return \(\ker\mathrm{sn}=\mathrm{sn}^{-1}(\{[1]\})\), retaining \(\mathrm{sn}\) as its preimage morphism."""
-    square_classes = spinor_norm.codomain()
-    trivial = square_classes.predicate_subgroup(
-        lambda square_class: square_class.is_one(),
-        "the trivial square class",
-    )
     return PreimageSubgroups(spinor_norm.domain())(
         spinor_norm,
-        trivial,
-        predicate=lambda isometry: spinor_norm(isometry).is_one(),
+        spinor_norm.codomain().subgroup(()),
         description=description,
         character_data=character_data,
     )

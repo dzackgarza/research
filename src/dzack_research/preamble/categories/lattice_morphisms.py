@@ -1888,7 +1888,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             category=Cat().meet(tuple(categories)) if categories else None,
         )
         if domain is codomain:
-            self._select_computed_group_resolution()
+            self._initialize_vertex_group()
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the isometry; ``check=True`` runs its validators (``OWN-22``)."""
@@ -1966,7 +1966,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 return cardinal(1)
             if self.domain().is_definite():
                 return cardinal(int(self._engine_group().order()))
-            generated = self._engine_subgroup_from_generators(tuple(self.group_generators()))
+            # The computed family, not group_generators(): realizing the selected
+            # epimorphism F -> O(L) constructs a Mor whose placement asks |O(L)|.
+            generated = self._engine_subgroup_from_generators(tuple(self._computed_group_generators()))
             if generated.is_finite():
                 return cardinal(int(generated.order()))
             return aleph(0)
@@ -2326,7 +2328,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         r"""Return generators of ``O(L)``, computed by a backend, as a finite ordered set of ``O(L)``.
 
         Protected realization hook (``OWN-05``): owner ``LatticeIsometryMor``;
-        callers ``_select_computed_group_resolution`` and ``Lattices._core_automorphism_generators``
+        caller ``Lattices._core_automorphism_generators`` (read by ``CoreMor._initialize_vertex_group``)
         (the lattice implementer of ``CoreMor``'s core contract).
 
         For definite ``L``, Sage's ``GroupOfIsometries`` computes the
@@ -2360,14 +2362,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             lambda position: generators[int(position)],
             name=f"Orthogonal-group generators of {lattice}",
         )
-
-    def _select_computed_group_resolution(self) -> None:
-        r"""Select the generating epimorphism from the free group on the computed generators of ``O(L)``.
-
-        Selecting computes nothing; the generators are computed when
-        ``group_generators()`` first reads the selected resolution.
-        """
-        self.select_group_generators(self._computed_group_generators)
 
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.

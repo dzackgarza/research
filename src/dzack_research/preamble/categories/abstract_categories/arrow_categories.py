@@ -2275,12 +2275,25 @@ class CoreMor(CategoricalMor):
             placement = category if placement is None else Cat().meet((placement, category))
         CategoricalMor.__init__(self, family, domain, codomain, category=placement)
         if domain is codomain:
-            # Aut(X) selects the generating family its base category computes
-            # (the protected core contract); selecting computes nothing until
-            # group_generators() first reads it.
-            self.select_group_generators(
-                lambda: self.core_category().base_category()._core_automorphism_generators(self)
-            )
+            self._initialize_vertex_group()
+
+    def _initialize_vertex_group(self) -> None:
+        r"""Make ``Aut(X)`` the vertex group of the core groupoid (protected; ``OWN-05``).
+
+        Its ambient category (``ARC-07``) is that of groups, and it selects the
+        generating family its base category computes (the core contract);
+        selecting computes nothing until ``group_generators()`` first reads it.
+        Callers: ``CoreMor.__init__`` and specialized core Mors that do not
+        initialize through it (``LatticeIsometryMor``).
+        """
+        # A module-level import of groups here is circular (observed: ImportError
+        # on ModuleMorphismMethods while loading the preamble), so it is read here.
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        self._constructing_category = OwnedGroups()
+        self.select_group_generators(
+            lambda: self.core_category().base_category()._core_automorphism_generators(self)
+        )
 
     @staticmethod
     def _vertex_group_placement(domain: Parent, codomain: Parent) -> Category | None:
