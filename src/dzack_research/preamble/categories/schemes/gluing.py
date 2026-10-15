@@ -6625,6 +6625,78 @@ def _chartwise_closed_subscheme(
     )
 
 
+def _glued_fiber_product_over_affine_base(left_map, right_map):
+    r"""``X x_Y Y'`` for ``X`` glued from affine charts ``U_i`` and affine ``Y``, ``Y'``.
+
+    The fibre product is local on ``X`` (Hartshorne, *Algebraic Geometry*,
+    II.3.3, steps 3 and 7; Stacks, Tag 01JR).  Its charts are the affine
+    fibre products ``V_i = U_i x_Y Y'`` of the restrictions ``U_i -> X -> Y``.
+    The overlap of ``V_i`` with ``V_j`` is the preimage of the overlap
+    ``U_ij = D(e) <= U_i``, which is ``D(p_i^* e) <= V_i`` for the projection
+    ``p_i: V_i -> U_i``.  The chart change ``V_ij -> V_ji`` is the
+    factorization through ``V_j`` of the cone ``(phi_ij p_i, q_i)``, with
+    ``phi_ij: U_ij -> U_ji`` the chart change of ``X`` and ``q_i: V_i -> Y'``,
+    corestricted to ``V_ji``.  The projections glue from ``V_i -> U_i -> X``
+    and ``q_i``.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        FiberProductSchemes,
+        SchemeFiberProductConstruction,
+        _scheme_fiber_product,
+        _scheme_isomorphism,
+    )
+
+    datum = left_map.domain().gluing_datum()
+    labels = tuple(datum.chart_indices())
+    charts = {
+        label: _scheme_fiber_product(left_map * datum.chart_embedding(label), right_map)
+        for label in labels
+    }
+
+    def chart_overlap(source, target):
+        chart = charts[source]
+        base_overlap = datum.overlap(source, target)
+        element = datum.chart(source).coordinate_algebra()(base_overlap.distinguished_open_element())
+        return chart.distinguished_open(chart.left_projection().coordinate_algebra_morphism()(element))
+
+    overlaps = {
+        (source, target): chart_overlap(source, target)
+        for source in labels
+        for target in labels
+        if source != target
+    }
+
+    def transition(source, target):
+        inclusion = overlaps[source, target].inclusion()
+        into_base_overlap = datum.overlap(source, target).corestriction(
+            charts[source].left_projection() * inclusion
+        )
+        changed = datum.transition_between(source, target).forward() * into_base_overlap
+        into_target_chart = charts[target].from_pullback_cone(
+            datum.overlap(target, source).inclusion() * changed,
+            charts[source].right_projection() * inclusion,
+        )
+        return overlaps[target, source].corestriction(into_target_chart)
+
+    transitions = tuple(
+        _scheme_isomorphism(transition(source, target), transition(target, source))
+        for source, target in combinations(labels, 2)
+    )
+    base = left_map.domain().scheme_base_ring()
+    return Schemes(base).glue_affine_atlas(
+        tuple(charts[label] for label in labels),
+        transitions,
+        placements=(FiberProductSchemes(base),),
+        fiber_product_construction=SchemeFiberProductConstruction(
+            (left_map, right_map),
+            (
+                tuple(datum.chart_embedding(label) * charts[label].left_projection() for label in labels),
+                tuple(charts[label].right_projection() for label in labels),
+            ),
+        ),
+    )
+
+
 def _glued_chartwise_distinguished_open(
     datum,
     fine_indices,
