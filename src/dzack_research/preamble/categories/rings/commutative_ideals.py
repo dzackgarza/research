@@ -1228,8 +1228,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self._finite_engine_ideal_family("associated_primes")
 
         def _repr_(self):
-            listed = ", ".join(str(generator) for generator in self.ideal_generators())
-            return f"Ideal ({listed}) of {self.ring()}"
+            return _ideal_name(self.ring(), self.ideal_generators())
+
+
+def _ideal_name(ring, ideal_generators):
+    r"""Name the ideal of ``ring`` by its ideal generators, as ``Ideal (3) of Integer Ring``."""
+    listed = ", ".join(str(generator) for generator in ideal_generators)
+    return f"Ideal ({listed}) of {ring}"
 
 
 def _require_same_ring(left, right):
@@ -1754,6 +1759,10 @@ def _placed_commutative_ideal(source, generators, placement=None):
                     ),
                 },
             )
+        # A principal ideal of a domain is also a framed free module, and the
+        # two categories are joined with the framed modules first; the ideal
+        # is named as an ideal.
+        ideal.rename(_ideal_name(source, ideal.ideal_generators()))
         return ideal
 
     syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)

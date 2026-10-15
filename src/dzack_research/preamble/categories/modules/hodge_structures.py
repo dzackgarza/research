@@ -158,8 +158,8 @@ def _split_mixed_hodge_structure(
     if name is None:
         listed = ", ".join(str(weight) for weight in sorted(support))
         name = f"Mixed Hodge structure of rank {len(weights)} over {base_ring} with weights {{{listed}}}"
-    # The free-module parent class defines ``_repr_``, and a parent class
-    # precedes its category's ``ParentMethods``; Sage's ``rename`` names it.
+    # The framed free modules precede the Hodge structures in the joined
+    # category, so their ``_repr_`` is found first; Sage's ``rename`` names it.
     structure.rename(name)
     return structure
 

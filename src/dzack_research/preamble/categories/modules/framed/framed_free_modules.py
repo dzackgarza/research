@@ -368,17 +368,6 @@ class _SparseFreeModuleParent:
         r"""A free module on ``I`` is its own framing source, and the framing is the identity."""
         return self._element_constructor_(element)
 
-    def _repr_(self):
-        r"""Name the basis by its elements, printed as the basis vectors ``[i]`` print."""
-        labels = self.module_generating_set()
-        size = cardinal(labels.cardinality())
-        match (labels in EnumeratedSets(), size.is_finite()):
-            case (True, True) if int(size.finite_value()) <= 12:
-                basis = ", ".join(repr(self.module_generator(label)) for label in labels)
-                return f"Free module on {{{basis}}} over {self.base_ring()}"
-            case _:
-                return f"Free module on {labels} over {self.base_ring()}"
-
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical basis map."""
@@ -476,6 +465,17 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return self.parent()._framing_lift(self)
 
     class ParentMethods:
+        def _repr_(self):
+            r"""Name the basis by its elements, printed as the basis vectors ``[i]`` print."""
+            labels = self.module_generating_set()
+            size = cardinal(labels.cardinality())
+            match (labels in EnumeratedSets(), size.is_finite()):
+                case (True, True) if int(size.finite_value()) <= 12:
+                    basis = ", ".join(repr(self.module_generator(label)) for label in labels)
+                    return f"Free module on {{{basis}}} over {self.base_ring()}"
+                case _:
+                    return f"Free module on {labels} over {self.base_ring()}"
+
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
