@@ -525,6 +525,9 @@ from dzack_research.preamble.categories.pointed_topological_spaces import (  # n
 from dzack_research.preamble.categories.algebras.graded_lie_algebras import (  # noqa: F401
     GradedLieAlgebras,
 )
+from dzack_research.preamble.categories.algebras.graded_nonassociative_algebras import (  # noqa: F401
+    GradedNonassociativeAlgebras,
+)
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
