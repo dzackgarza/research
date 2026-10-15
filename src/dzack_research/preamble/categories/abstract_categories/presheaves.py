@@ -1765,6 +1765,21 @@ class Sheaves(OwnedCategoryBase):
         r"""``Gamma: Sh(C, D) -> D``, sections over the terminal object of the site."""
         return self.sections_functor(self.coverage().terminal_site_object())
 
+    def extension_from_basis(self, space: Parent) -> Functor:
+        r"""``Sh(B, D) -> Sh(Open(X), D)``, extension of sheaves from a basis.
+
+        Hypotheses: the site ``B`` of this category is a basis of the
+        topology of the topological space ``X``, as a full subcategory of
+        ``Open(X)``, its covering families are the covers in ``B`` of an open
+        of ``B``, and ``D`` has limits.  Domain: this category ``Sh(B, D)``.
+        Codomain: ``Sheaves(OpenCoveringFamilies(X), D)``.  It sends ``F`` to
+        ``U |-> lim_{V in B, V <= U} F(V)``, and it is quasi-inverse to
+        restriction along ``B -> Open(X)``: restriction is an equivalence
+        (comparison lemma; Stacks 009H, Hartshorne II Ex. 1.22, locator to
+        check).
+        """
+        assert False, "extension of sheaves from a basis to Open(X) on Sheaves: not implemented"
+
     def _repr_(self) -> str:
         return f"Sh({self.site_category()}, {self.value_category()}; {self.coverage()})"
 
