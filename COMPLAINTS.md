@@ -1457,15 +1457,31 @@ Not covered: Loogle, LeanSearch, the forum.
 
 **Present placement.** `_orthogonal_group_is_finite_by_theorem` (`categories/lattice_morphisms.py`) routes the split binary case citing the arXiv source pending the request (owner ruling 2026-10-14). Node: `isotropic-binary-orthogonal-groups-are-finite`, which records the conflict with `CON-07`'s wording.
 
-## Orthogonal groups of definite QQ-lattices were placed finite
+## `lean-categories` does not state that O(V) is infinite for a definite rational space
 
-**Desired mathematics.** For a definite quadratic space V over QQ of dimension at least 2, O(V) is infinite: O(x^2 + y^2) contains the rotation with matrix ((3/5, -4/5), (4/5, 3/5)), of infinite order (its eigenvalues (3 ± 4i)/5 are not roots of unity, since (3 + 4i)/5 is not an algebraic integer).
-Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalGroup_finite`, positive definite).
+**Desired mathematics.** For a definite quadratic space V over QQ of dimension at least 2, O(V) is infinite and countable: O(x^2 + y^2) contains the rotation with matrix ((3/5, -4/5), (4/5, 3/5)), of infinite order (its eigenvalues (3 ± 4i)/5 are not roots of unity, since (3 + 4i)/5 is not an algebraic integer), and O(V) lies in the countable GL_n(QQ).
+In dimension 1, O(<a>) = {±1}.
+Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalGroup_finite`, `LeanCategories/Lattices/Valued/Mass.lean:41`, positive definite, `FiniteProjectiveLatticeCat ℤ ℤ`).
 
-**Evidence (source).** `LatticeIsometryMor.__init__` placed Aut(L) in `OwnedFiniteGroups` for definite L whose base ring is ZZ or QQ; the placement now reads `_orthogonal_group_is_finite_by_theorem`, which routes only ZZ. The same false belief, "definite implies O finite whatever the base ring", remains on the computation routes of `LatticeIsometryMor`: `_engine_group` has a QQ branch that clears denominators of the Gram matrix and hands the resulting ZZ-lattice to Sage's `IntegralLattice`, so it computes O of the integral span of the chosen basis, a finite subgroup of the infinite O(V); `cardinality`, `__iter__`, `_computed_group_generators`, `structure_description`, `vector_equivalence_witness`, `vector_stabilizer_generators` and `vector_orbit_representatives` route on `is_definite()` alone and reach it for QQ-lattices.
-Tell: `rg -n "is_definite\(\)" src/dzack_research/preamble/categories/lattice_morphisms.py`. Not executed.
+**Present state (source).** Every route of `LatticeIsometryMor` that computes O(L) as a finite group (`_engine_group`, `cardinality`, `__iter__`, `group_generators`, `structure_description`, the vector equivalence, stabilizer and orbit routes), `equivariant_isometry_to`, the shell enumeration of `LatticeEmbeddingMor`, `vectors_of_square` and `orthogonal_quotients._finite_supergroup_elements` now assert the hypothesis "definite of finite rank over ZZ"; a definite QQ-lattice reaches that `CAT-01` frontier instead of the finite group of its integral span.
+`cardinality()` of O(V) therefore asserts rather than answering `aleph_0`: that answer needs the theorem above, which `lean-categories` does not state (searched 2026-10-15: `rg` over `LeanCategories/` at `e1d422eb` for infinite orthogonal groups; one corpus query; Loogle, LeanSearch and the forum not searched).
 
-**Node.** `rational-definite-orthogonal-groups-are-not-finite`.
+**Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable. No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
+Specimens: `tests/lattices/test_rational_definite_orthogonal_groups.sage`, unexecuted under T.
+
+## The minimum of a definite QQ-lattice is computed on its integral span
+
+For a definite lattice L of finite rank over ZZ, min{q(v) : v != 0} is attained and its shell is finite. Over QQ the space V = <1> + <1> has q((1/n) e_0) = 1/n^2, so the infimum over nonzero vectors is 0 and is not attained.
+`definite_lattices._minimum` (read by `minimum()`) hands the Gram matrix to Sage's `IntegralLattice(...).minimum()` for any definite lattice, so for `Lattices(QQ)(2)` it answers 1, the minimum of the integral span of the chosen basis (source reading, not executed).
+`shortest_vectors()` (`vectors_of_square(minimum())`) now reaches the `vectors_of_square` frontier over QQ, and `is_voronoi_perfect` reads `shortest_vectors()`.
+Same false belief as the entry above ("definite implies the integral-span computation is the answer, whatever the base ring").
+**Node.** `rational-definite-minima-are-not-integral-minima`.
+
+## Indefinite QQ-lattices reach the port's integral orthogonal-group algorithm
+
+`LatticeIsometryMor._computed_group_generators` and `_cardinality_decision` send every indefinite lattice of finite rank, whatever its base ring, to `sage_indefinite_port.indefinite.marked_lattices.automorphism_group_generators(Lattices(R), L)`. The port's assigned algorithm is the recursive indefinite O(L) of an integral lattice (`AGENTS.md`, *Concrete boundary with sage-indefinite-port*). For a QQ-lattice the group is O(V) of the quadratic space: O(U tensor QQ) contains diag(2, 1/2), which preserves no integral span of the chosen basis.
+Evidence: source routing only (`lattice_morphisms.py`, `_computed_group_generators`, the `else` branch); what the port does on a QQ-lattice was not run.
+**Node.** `rational-indefinite-orthogonal-groups-are-not-the-port-integral-group`.
 
 ## The dual lattice of a unimodular lattice has integer norms without the field-element interface
 
