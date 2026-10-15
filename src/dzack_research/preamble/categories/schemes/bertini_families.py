@@ -176,6 +176,26 @@ class _HessePencil:
         preimage = self.arrow().inverse_image(self.good_parameter_locus())
         return self.category().object(self.arrow() * preimage.inclusion())
 
+    @cached_method
+    def projective_pencil(self):
+        r"""The pencil over its whole parameter line, as an object of ``Sch_QQ/P^1_QQ``.
+
+        The members of ``<x^3+y^3+z^3, xyz>`` are ``s(x^3+y^3+z^3) - 3t xyz``
+        for ``[s:t] in P^1_QQ`` (Artebani--Dolgachev, *The Hesse pencil of
+        plane cubic curves*, arXiv:math/0611590, section 2).  The total space
+        is the closed subscheme ``V(s(x^3+y^3+z^3) - 3t xyz) <= P^2_QQ x P^1_QQ``
+        of bidegree ``(3, 1)``, and the family is its second projection.  Over
+        the chart ``s != 0`` it is the affine family :meth:`arrow`; the
+        member ``[0:1]`` is the triangle ``xyz = 0``.
+        """
+        base = self.base_field()
+        line = ProjectiveSpaces(base)(1, names=("s", "t"))
+        product = Schemes(base).product((self._plane, line))
+        ring = product.O(3, 1).global_sections().homogeneous_coordinate_ring()
+        x, y, z, s, t = (ring.algebra_generator(name) for name in ("x0_0", "x0_1", "x0_2", "x1_0", "x1_1"))
+        total = product.closed_subscheme(s * (x**3 + y**3 + z**3) - ring(3) * t * x * y * z)
+        return Schemes(base).SliceOver(line).object(product.projection(1) * total.inclusion())
+
     def good_locus_restriction_map(self):
         r"""The inclusion ``f^{-1}(U) -> X`` as a morphism of ``Sch_QQ/A^1_QQ``."""
         restricted = self.restriction_to_good_locus()
