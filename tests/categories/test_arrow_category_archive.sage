@@ -32,3 +32,26 @@ def test_injections_and_isomorphisms_of_a_two_element_set() -> None:
     assert injections.Mor(points, points).cardinality() == 2
     assert Sets().Core().Mor(points, points).cardinality() == 2
     assert swap * swap == maps.identity()
+
+
+def test_the_bijections_of_a_three_element_set_number_six() -> None:
+    r"""``Aut_Set(X) = Sym(X)`` has ``3! = 6`` elements for a three-element ``X``,
+    and no bijection joins sets of two and three elements.  The vertex group
+    ``Aut_Set(X)`` is a group, so its cardinality is asked through the group and
+    set placements and reaches the core Mor's count of bijections."""
+    three, two = Sets.Δ[2], Sets.Δ[1]
+
+    assert Sets().Core().Mor(three, three).cardinality() == 6
+    assert Sets().Core().Mor(two, three).cardinality() == 0
+
+
+def test_the_identity_two_arrow_of_an_automorphism_of_a_two_element_set() -> None:
+    r"""``Aut_Set(X)`` is also the discrete category whose objects are the
+    bijections ``X -> X``; the identity 2-arrow of the swap composes to itself."""
+    points = Sets.Δ[1]
+    maps = Sets().Mor(points, points)
+    swap = maps(lambda point: points[1 - int(point)])
+    automorphisms = Sets().Core().Mor(points, points)
+    two_identity = automorphisms.identity_2(automorphisms(swap, swap))
+
+    assert two_identity * two_identity == two_identity

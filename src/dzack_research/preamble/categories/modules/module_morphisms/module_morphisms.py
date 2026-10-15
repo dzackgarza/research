@@ -2922,16 +2922,6 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                 _model, _inclusion, presentation = _internal_mor_model_data(self)
                 return presentation
 
-    def linear_combination(self, coefficients):
-        result = self.zero()
-        for label, coefficient in coefficients.items():
-            if (self.base_ring()(coefficient) == self.base_ring().zero()) is not True:
-                result = result + self.scalar_multiple(
-                    coefficient,
-                    self.module_generator(label),
-                )
-        return result
-
     def _repr_(self):
         return f"Mor({self.domain()}, {self.codomain()})"
 
@@ -3438,17 +3428,6 @@ class ModuleAutomorphismGroup(CoreMor):
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)
-
-    @cached_method
-    def identity(self):
-        module = self.domain()
-        identity = module.module_category().Mor(module, module).identity()
-        return self._from_known_inverse_pair(identity, identity)
-
-    def one(self, *args, **kwargs):
-        return self.identity(*args, **kwargs)
-    def identity_automorphism(self, *args, **kwargs):
-        return self.identity(*args, **kwargs)
 
     def module(self):
         return self.domain()

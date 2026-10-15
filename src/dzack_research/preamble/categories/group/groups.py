@@ -355,6 +355,40 @@ def _subgroup_from_gap(group, gap_subgroup):
             assert False, f"{group} does not construct subgroups from GAP data in this engine"
 
 
+def _group_cardinality(group):
+    r"""``|G|`` from the placement of the group ``G``.
+
+    Protected computation of the groups owner (``OWN-05``).  Callers: the
+    default of ``OwnedGroups.ParentMethods._cardinality_decision``, and a
+    realization of that hook which decides only a case of its own and
+    leaves every other group to this computation (``CoreMor``, which counts
+    the bijections of finite sets).  A realization hook replaces the default
+    body, so such a realization reaches the group cases only through here.
+
+    A finite group is counted by its engine.  A free group on a basis ``S``
+    is trivial for empty ``S`` and otherwise has ``max(aleph_0, |S|)``
+    elements, its reduced words.  An infinite finitely generated group is a
+    quotient of a free group of finite rank, so it is countably infinite.  A
+    subcategory whose datum determines more supplies its own answer.
+    """
+    match group:
+        case _ if group in OwnedFiniteGroups():
+            return cardinal(_finite_order(group))
+        case _ if group in GroupsWithChosenFreeBasis():
+            basis_cardinality = group.free_basis().cardinality()
+            if basis_cardinality == cardinal(0):
+                return cardinal(1)
+            return Cardinalities().supremum(aleph(0), basis_cardinality)
+        case _ if group in OwnedInfiniteGroups() and group in OwnedGroups().FinitelyGeneratedAsMagma():
+            return aleph(0)
+        case _:
+            assert False, (
+                f"cannot compute the cardinality of the group {group}: it is not known to be finite, "
+                f"it has no chosen free basis, and it is not known to be infinite and finitely "
+                f"generated (it is in {group.category()})"
+            )
+
+
 def _finite_order(group):
     r"""Return the order of a finite group as an owned integer."""
     match group:
@@ -4897,29 +4931,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             does from its selected generators, supplies this hook on its own
             class; this body is the answer when no realization decides.
 
-            A finite group is counted by its engine.  A free group on a basis
-            ``S`` is trivial for empty ``S`` and otherwise has
-            ``max(aleph_0, |S|)`` elements, its reduced words.  An infinite
-            finitely generated group is a quotient of a free group of finite
-            rank, so it is countably infinite.  A subcategory whose datum
-            determines more supplies its own answer.
+            The computation is :func:`_group_cardinality`.
             """
-            match self:
-                case _ if self in OwnedFiniteGroups():
-                    return cardinal(_finite_order(self))
-                case _ if self in GroupsWithChosenFreeBasis():
-                    basis_cardinality = self.free_basis().cardinality()
-                    if basis_cardinality == cardinal(0):
-                        return cardinal(1)
-                    return Cardinalities().supremum(aleph(0), basis_cardinality)
-                case _ if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
-                    return aleph(0)
-                case _:
-                    assert False, (
-                        f"cannot compute the cardinality of the group {self}: it is not known to be finite, "
-                        f"it has no chosen free basis, and it is not known to be infinite and finitely "
-                        f"generated (it is in {self.category()})"
-                    )
+            return _group_cardinality(self)
 
         def order(self):
             r"""The set cardinality, read as an integer when finite."""

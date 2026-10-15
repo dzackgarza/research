@@ -2241,25 +2241,48 @@ class _WideSubcategory(OwnedCategoryBase):
 class CoreMor(CategoricalMor):
     Element = CategoricalIsomorphism
 
-    def cardinality(self):
-        r"""The number of bijections between two finite sets.
+    def _cardinality_decision(self):
+        r"""``|Iso_C(X, Y)|``, this realization of the ``Sets`` and ``OwnedGroups`` cardinality hook.
 
-        For finite sets of cardinality m and n this is m! if m=n,
-        and zero otherwise; no chosen ordering is part of this statement.
+        For finite sets of cardinality m and n the bijections number m! if
+        m=n and zero otherwise; no chosen ordering is part of this statement.
+        Any other vertex group ``Aut_C(X)`` is counted as a group
+        (``_group_cardinality``), which this realization would otherwise
+        replace.  Any other core Mor supplies no count (``None``).
         """
         from math import factorial
 
+        from dzack_research.preamble.categories.group.groups import OwnedGroups, _group_cardinality
         from dzack_research.preamble.categories.sets.cardinals import cardinal
         from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
 
         source, target = self.domain(), self.codomain()
-        if (
-            self.core_category().base_category() is Sets()
-            and source in FiniteSets() and target in FiniteSets()
-        ):
-            m, n = int(source.cardinality()), int(target.cardinality())
-            return cardinal(factorial(m) if m == n else 0)
-        raise TypeError("the cardinality of this core Mor is not determined by finite-set bijections")
+        match self:
+            case _ if (
+                self.core_category().base_category() is Sets()
+                and source in FiniteSets() and target in FiniteSets()
+            ):
+                m, n = int(source.cardinality()), int(target.cardinality())
+                return cardinal(factorial(m) if m == n else 0)
+            case _ if self in OwnedGroups():
+                return _group_cardinality(self)
+            case _:
+                return None
+
+    def cardinality(self):
+        r"""``|Iso_C(X, Y)|`` for a core Mor with distinct endpoints.
+
+        Such a Mor is placed in no owned category of sets, so this is its
+        cardinality operation; a vertex group ``Aut_C(X)`` reaches the same
+        count through ``Sets``' ``cardinality`` and this realization's
+        ``_cardinality_decision``.
+        """
+        count = self._cardinality_decision()
+        assert count is not None, (
+            f"cannot compute the cardinality of {self}: the bijections are counted only between finite "
+            f"sets, and {self.domain()} -> {self.codomain()} is a core Mor of {self.core_category().base_category()}"
+        )
+        return count
 
     def __init__(
         self,
