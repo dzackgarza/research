@@ -469,7 +469,7 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
         def _repr_(self):
             component = self.positive_cone_component()
             return (
-                f"Hyperbolic space H^{self.dimension()}: the hyperboloid q = 1 in the "
+                f"Hyperbolic space HH^{self.dimension()}: the hyperboloid q = 1 in the "
                 f"positive-cone component of {component.lattice()} ⊗ RR containing "
                 f"{component.timelike_vector()}"
             )

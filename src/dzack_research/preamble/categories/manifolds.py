@@ -1129,14 +1129,14 @@ class RiemannianManifolds(OwnedCategory):
 
             dimension = int(component.lattice().module_rank()) - 1
             engine = _SageManifold(
-                dimension, "HH", structure="smooth", unique_tag=object()
+                dimension, f"HH^{dimension}", structure="smooth", unique_tag=object()
             )
             space = _object_of(
                 HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
                 manifold_dimension=dimension,
-                manifold_name="HH",
+                manifold_name=f"HH^{dimension}",
                 manifold_structure="smooth",
                 differentiability_degree=Infinity,
                 manifold_field="real",

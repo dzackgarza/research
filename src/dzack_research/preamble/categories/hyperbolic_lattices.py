@@ -579,7 +579,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots=max_roots,
                 max_decompositions=max_decompositions,
             )
-            return self.O().subgroup([self.reflection(root) for root in roots])
+            return self.O().subgroup(
+                [self.reflection(root) for root in roots],
+                description=f"W({self})",
+            )
 
         def weyl_group(self, controlling_vector=None, *, max_roots=None, max_decompositions=None):
             r"""Return the reflection/Weyl subgroup \(W(L)\leq O(L)\).
