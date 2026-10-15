@@ -603,6 +603,68 @@ class _AffineStructurePresheaf(Functor):
         return f"Affine structure presheaf of {self.scheme()}"
 
 
+@cached_function(key=lambda scheme: id(scheme))
+def _affine_de_rham_complex(scheme):
+    r"""``Ω^•_{X/R}`` on the distinguished affine basis of an affine ``X``.
+
+    The presheaf ``U -> DR_R(O(U))`` composes the coordinate algebra with the
+    de Rham functor ``DR_R : CAlg_R -> SCDGA_R``.  It is a sheaf on the basis:
+    each ``Ω^p_{X/R}`` is quasi-coherent with ``Ω^p_{A_f/R} = (Ω^p_{A/R})_f``
+    (Stacks, Tags 00RT and 01UM), and a sheaf on a basis determines the sheaf
+    on ``X`` (Stacks, Tag 009O).
+    """
+    from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+
+    coverage = distinguished_affine_coverage(scheme)
+    presheaf = _AffineDeRhamPresheaf(scheme)
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    descent = DescentData(coverage, presheaf, inverse_for)
+    return coverage.sheaves(_de_rham_functor(scheme.scheme_base_ring()).codomain()).object(
+        presheaf,
+        descent,
+        categories=(SheafObjects(scheme),),
+    )
+
+
+class _AffineDeRhamPresheaf(Functor):
+    r"""``U -> DR_R(O(U))`` on the represented affine slice over an affine ``X``.
+
+    An arrow ``V -> U`` over ``X`` acts by ``DR_R`` of its coordinate
+    pullback ``O(U) -> O(V)``, an ``R``-algebra morphism.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        base = scheme.scheme_base_ring()
+        assert scheme in Schemes(base).Affine(), (
+            f"the de Rham presheaf on affine schemes over X is constructed only for affine X, "
+            f"but {scheme} is in {scheme.category()}"
+        )
+        self._scheme = scheme
+        self._de_rham_functor = _de_rham_functor(base)
+        site = distinguished_affine_coverage(scheme).site_category()
+        Functor.__init__(self, site.opposite(), self._de_rham_functor.codomain())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        affine = opposite_object.underlying_object().arrow().domain()
+        return self._de_rham_functor(affine.coordinate_algebra())
+
+    def _apply_morphism(self, opposite_arrow):
+        triangle = opposite_arrow.underlying_arrow()
+        return self._de_rham_functor(triangle.left().coordinate_algebra_morphism())
+
+    def _repr_(self):
+        return f"Affine de Rham presheaf of {self.scheme()}"
+
+
 def _is_distinguished_open_of(open_subscheme, ambient) -> bool:
     from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
 
@@ -617,6 +679,7 @@ def _localization_restriction_map(source, target):
 
     from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
+    OwnedRings,
 )
 
     if source is target:
@@ -648,7 +711,7 @@ def _localization_restriction_map(source, target):
         denominator = target_unit(element.denominator())
         return numerator * denominator.inverse_of_unit()
 
-    return source.Mor(target)(restrict)
+    return source.Mor(target, category=OwnedRings())(restrict)
 
 
 class DistinguishedAffineCoverRefinement(CoveringFamilyMorphism):

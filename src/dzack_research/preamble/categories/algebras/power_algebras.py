@@ -61,6 +61,10 @@ class _PowerAlgebra:
                 return self.scalar_multiple(value, self.one())
             case _ if source is self.generating_module():
                 return self.from_component(1, value)
+            case _ if source is self.unformed_module():
+                # The algebra is built on the graded module M: an element of
+                # M passes by the module-level coercion of that construction.
+                return super()._element_constructor_(value)
             case dict():
                 return super()._element_constructor_(value)
             case _ if value in self.base_ring():
