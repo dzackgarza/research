@@ -1259,6 +1259,15 @@ The manifold categories construct their objects from a dimension and a name thro
 **Consumers:** `C(k, X, Y)` and every operation of `_DifferentiableMap`. **Coverage boundary:** `lean-categories` was not searched for the real line as a manifold.
 Remediation: `the-real-line-is-a-smooth-manifold` in [TODO.md](TODO.md).
 
+### The type of a finite root system is answered as a label
+
+The type of a finite root system is its isomorphism class, a finite multiset of irreducible types (`A_n`, `D_n`, `E_6`, `E_7`, `E_8` in the simply-laced case).
+`RootLattices.root_system_type_name()` and `Lattices.norm_two_root_types()` (`categories/lattices.py`) answer it as a label string (`A2xA1`, `E8+E8+A1`); no owned object presents the isomorphism classes of finite root systems, their components or their sum, and the two operations spell one notion two ways.
+Source inspection, 2026-10-15: the engine `CartanType` stays private in `definite_lattices._norm_two_simple_system` and `_lattice._root_system_type_name`; `CoxeterDiagrams.component_scaled_cartan_types` returns a family of engine-derived pairs.
+**Dependency path:** finite root system -> its irreducible components -> the free commutative monoid on irreducible types -> the type as an element of it.
+**Consumers:** the sage-indefinite-port frozen comparison against the fixture strings of `k3_modular_strata.json`; `root_system_type_name`; lattice-db root-type fields.
+**Request (not filed):** `lean-categories` states the classification of finite reduced root systems by their irreducible components; search Mathlib `RootPairing`/`RootSystem` first (`FSA-02`). No node: the frozen consumer compares labels, and no operation is blocked.
+
 ## Workflow Papercuts
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite

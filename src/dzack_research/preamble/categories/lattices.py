@@ -91,6 +91,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _kissing_number,
     _lll_reduction,
     _minimum,
+    _norm_two_root_types,
     _packing_density,
     _packing_radius,
     _reflective_root_system_components,
@@ -5233,6 +5234,45 @@ class Lattices(OwnedCategoryOverBaseRing):
             the order of its simple roots that the diagram of the type fixes.
             """
             return _reflective_root_system_components(self)
+
+        @cached_method
+        def norm_two_root_types(self) -> str:
+            r"""Return the type of the root system \(\{v\in L : |b(v,v)| = 2\}\) of an even definite lattice over ``ZZ``.
+
+            The value is the label of the type: each irreducible component is
+            spelled by its letter and rank, and the components are joined by
+            ``+``, ``E`` before ``D`` before ``A`` and decreasing rank within
+            one letter, as ``E8+E8+A1`` and ``E7+D10``.  The empty root system
+            is the empty sum ``""``.  No owned object presents the types of
+            finite root systems, so the label is the answer, as for
+            :meth:`root_system_type_name` of a root lattice.
+
+            The norm-two vectors of an integral lattice generate a direct sum
+            of root lattices (Witt's theorem, Conway--Sloane, *SPLAG*, Ch. 4,
+            §3).  On an even lattice they are all its reflective roots of
+            norm two; the reflective root system of
+            :meth:`reflective_root_system_components` can also contain roots
+            of norm four, which this type omits.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: (Lattices(ZZ)("E8") + Lattices(ZZ)("E8") + Lattices(ZZ)("A1")).norm_two_root_types()
+                'E8+E8+A1'
+            """
+            assert self.base_ring() is _owned_integers(), (
+                f"the norm-two root type of {self} is computed for lattices over ZZ, but {self} is a lattice over {self.base_ring()}"
+            )
+            assert self.module_rank().is_finite(), (
+                f"the norm-two vectors of {self} form a finite root system only for a lattice of finite rank, but {self} has rank {self.module_rank()}"
+            )
+            assert self.is_definite(), (
+                f"the norm-two vectors of {self} form a finite root system only when the lattice is definite, but {self} has signature {self.signature_pair()}"
+            )
+            assert self.is_even() is True, (
+                f"the norm-two root type is stated for even lattices, but {self} is not known to be even: an odd lattice also has reflective roots of norm one"
+            )
+            return _norm_two_root_types(self)
 
         def reduction_cell(self, inequalities, *, equations=()):
             r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.
