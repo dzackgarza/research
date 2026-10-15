@@ -327,6 +327,35 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
     def _repr_object_names(self):
         return f"surfaces over {self.base_ring()}"
 
+    class ParentMethods:
+        def is_del_pezzo(self) -> bool:
+            r"""Decide whether the surface ``X`` is smooth and projective with ``omega_X^{-1}`` ample.
+
+            Domain: a surface ``X`` over a field.  Codomain: a truth value.
+            A del Pezzo surface is projective [Dol12, Rem. 8.1.19], so the
+            decision is made on projective surfaces by
+            :meth:`Surfaces.Projective.ParentMethods.is_del_pezzo`; a surface
+            not placed projective reaches this stub.
+            """
+            assert False, f"is_del_pezzo on Surfaces: not implemented for {self} outside projective surfaces"
+
+        def _is_del_pezzo(self) -> bool:
+            r"""Ampleness of ``-K_X`` on a smooth projective surface; realizations supply it.
+
+            This default sorts after every realization category (complete
+            intersections, projective spaces, point blowups), so it is reached
+            only by a surface whose realization decides nothing.
+            """
+            assert False, f"ampleness of -K_X on Surfaces: not implemented for {self}"
+
+        def _is_gorenstein_del_pezzo(self) -> bool:
+            r"""Normality, the Gorenstein property and ampleness of ``-K_X`` on a singular projective surface."""
+            assert False, f"the Gorenstein del Pezzo condition on Surfaces: not implemented for {self}"
+
+        def _del_pezzo_degree(self):
+            r"""The self-intersection ``K_X^2`` of a Gorenstein del Pezzo surface; realizations supply it."""
+            assert False, f"K_X^2 on Surfaces: not implemented for {self}"
+
     class SubcategoryMethods:
         def K3(self):
             r"""Return this category with the axiom that its objects are K3 surfaces."""
@@ -376,9 +405,9 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
         Each realization (projective space, complete intersection, toric
         surface, point blowup) supplies the private hooks ``_is_del_pezzo``
         (ampleness of ``-K_X`` on a smooth surface), ``_is_gorenstein_del_pezzo``
-        and ``_del_pezzo_degree`` on its own category.  No default is declared
-        here: an axiom category sorts ahead of those categories, so a default
-        would shadow them.
+        and ``_del_pezzo_degree`` on its own category.  Their assert-gated
+        defaults live on ``Surfaces``: this axiom category sorts ahead of the
+        realization categories, so a default here would shadow them.
         """
 
         def an_object(self):
