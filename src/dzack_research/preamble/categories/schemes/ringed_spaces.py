@@ -44,23 +44,16 @@ if "Invertible" not in all_axioms:
     all_axioms.add("Invertible")
 
 
-class _SchemeUnderlyingSpaceTopologyData(SageObject):
-    r"""The topology of ``|X|`` retained by the represented ringed space ``X``.
+class _SchemeTopologyData(SageObject):
+    r"""The Zariski topology of a scheme ``X`` glued from affine charts.
 
-    The public topology is the collection of open subsets of ``|X|``.  The
-    ringed-space layer already owns open immersions and Zariski coverings, but
-    it does not yet own a pointwise decision procedure turning an arbitrary
-    subset of a non-affine scheme into an open immersion.  The topology is
-    therefore represented as the exact subobject of the power set cut out by
-    openness, with arbitrary membership assertion-gated until such a
-    presentation is supplied.  The empty and whole opens are unconditional.
+    The open subsets of ``X`` are the subsets ``U`` whose preimage in every
+    chart ``U_i = Spec A_i`` is open (Stacks, Lemma 26.14.1, Tag 01JB).  The topology is the
+    subobject of the power set of ``X`` cut out by openness.  Openness is
+    decided for the empty set and the whole space, and is assertion-gated
+    otherwise until a subset can be presented through its traces on the
+    charts.
     """
-
-    def __init__(self, ringed_space) -> None:
-        self._ringed_space = ringed_space
-
-    def ringed_space(self):
-        return self._ringed_space
 
     def open_subsets(self, space):
         return space.power_set().condition_set(
@@ -71,57 +64,33 @@ class _SchemeUnderlyingSpaceTopologyData(SageObject):
         power = space.power_set()
         selected = power(subset)
         match selected:
-            case _ if selected == power.bottom():
+            case _ if power.inclusion_order().le(selected, power.bottom()) is True:
                 return True
-            case _ if selected == power.top():
+            case _ if power.inclusion_order().le(power.top(), selected) is True:
                 return True
             case _:
                 assert False, (
-                    f"whether {subset} is open in {space} is decided only for the empty set, the "
-                    f"whole space, and subsets of the spectrum of an affine scheme; {space} is "
-                    "the space of a non-affine scheme"
+                    f"whether {subset} is open in {space} is decided only for the empty set and "
+                    f"the whole space; {space} is a scheme glued from affine charts"
                 )
 
 
-class _SchemeUnderlyingSpaceEngine:
-    r"""Private realization of ``|X|`` as an object of ``TopologicalSpaces``."""
+class _AffineSchemeTopologyData(SageObject):
+    r"""The Zariski topology of ``X = Spec A``, read from the prime spectrum of ``A``.
 
-    def __init__(self, ringed_space, **rest) -> None:
-        self._ringed_space = ringed_space
-        super().__init__(**rest)
+    The points of ``Spec A`` are the prime ideals of ``A`` (Stacks, Definition
+    10.17.1, Tag 00DZ), and the opens of ``X`` are the opens of that prime
+    spectrum.
+    """
 
-    def ringed_space(self):
-        return self._ringed_space
+    def __init__(self, coordinate_algebra) -> None:
+        self._coordinate_algebra = coordinate_algebra
 
-    scheme = ringed_space
+    def open_subsets(self, space):
+        return self._coordinate_algebra.spectrum().open_subsets()
 
-    def __contains__(self, point) -> bool:
-        return element_parent(point) is self
-
-    is_parent_of = __contains__
-
-    def _element_constructor_(self, point):
-        match element_parent(point) is self:
-            case True:
-                return point
-            case False:
-                assert False, (
-                    f"{point} is not a point of {self}: points of the space of the non-affine "
-                    f"scheme {self.ringed_space()} are constructed only from points of its affine charts"
-                )
-
-    def _repr_(self) -> str:
-        return f"Underlying topological space of {self.ringed_space()}"
-
-
-@cached_function(key=lambda ringed_space: id(ringed_space))
-def _scheme_underlying_space(ringed_space):
-    return _object_of(
-        TopologicalSpaces(),
-        _engine=(TopologicalSpaces(), _SchemeUnderlyingSpaceEngine, None),
-        topology_data=_SchemeUnderlyingSpaceTopologyData(ringed_space),
-        ringed_space=ringed_space,
-    )
+    def is_open_subset(self, space, subset) -> bool:
+        return self._coordinate_algebra.spectrum().is_open_subset(subset)
 
 
 class SheafObjects(OwnedParameterizedCategory):
@@ -153,12 +122,11 @@ class SheafObjects(OwnedParameterizedCategory):
 
 
 class SheafedSpaces(OwnedCategory):
-    r"""Represented spaces equipped with a chosen sheaf.
+    r"""Sheafed spaces ``(X, F)``: a topological space ``X`` with a sheaf ``F`` on ``Open(X)``.
 
-    A sheafed-space object retains its underlying space as construction data;
-    it is not identified with that underlying point-set parent.  Consequently
-    this category remains an object-level owner, while ``underlying_space()``
-    returns the actual object of ``TopologicalSpaces``.
+    Forgetting the sheaf is the functor to ``TopologicalSpaces``.  A sheafed
+    space is therefore constructed on its own points and opens, and its
+    underlying space is the image of that functor.
     """
 
     @classmethod
@@ -166,10 +134,19 @@ class SheafedSpaces(OwnedCategory):
         return "sheafed spaces"
 
     def super_categories(self):
-        return [Objects()]
+        return [TopologicalSpaces()]
 
     def an_object(self):
         return RingedSpaces().an_object()
+
+    class ParentMethods:
+        def underlying_space(self):
+            r"""``|X|``, the image of ``(X, F)`` under the forgetful functor to ``TopologicalSpaces``.
+
+            Forgetting the sheaf leaves the space ``X`` itself, with its own
+            points and opens.
+            """
+            return self
 
 
 
@@ -1828,9 +1805,18 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             r"""Return ``CDiv(X)=Gamma(X,K_X^*/O_X^*)``."""
             return self.cartier_divisor_sheaf().global_sections()
 
-        @cached_method
-        def underlying_space(self):
-            return _scheme_underlying_space(self)
+        def __contains__(self, point) -> bool:
+            return element_parent(point) is self
+
+        def _element_constructor_(self, point):
+            match element_parent(point) is self:
+                case True:
+                    return point
+                case False:
+                    assert False, (
+                        f"{point} is not a point of {self}: points of a scheme glued from affine "
+                        "charts are constructed only from points of its charts"
+                    )
 
 
 class LocallyRingedMorCategoryConstruction(MorCategoryConstruction):

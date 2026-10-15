@@ -2301,16 +2301,32 @@ class Schemes(OwnedCategoryOverBaseRing):
         ).scheme()
 
     class ParentMethods:
-        def __init__(self, scheme_base_ring, scheme_engine=None, **rest) -> None:
-            r"""``R`` and the private Sage scheme realizing this scheme.
+        _derived_construction_parameters = frozenset({"topology_data"})
+
+        def __init__(
+            self, scheme_base_ring, scheme_engine=None, topology_data=None, **rest
+        ) -> None:
+            r"""``R``, the Zariski topology of ``X``, and the private Sage scheme realizing ``X``.
 
             The realization is private computation state, not a mathematical
             datum: a scheme glued from charts is presented without one, and
-            omits it.
+            omits it.  The Zariski topology is the topology of the space ``X``
+            itself, supplied to the topological-space level.  An affine scheme
+            ``Spec A`` supplies the topology of the prime spectrum of ``A``; a
+            scheme glued from charts has the glued topology.
             """
+            from dzack_research.preamble.categories.schemes.ringed_spaces import (
+                _SchemeTopologyData,
+            )
+
             self._scheme_base_ring = scheme_base_ring
             self._scheme_engine_realization = scheme_engine
-            super().__init__(base=scheme_base_ring, **rest)
+            match topology_data:
+                case None:
+                    zariski_topology = _SchemeTopologyData()
+                case _:
+                    zariski_topology = topology_data
+            super().__init__(base=scheme_base_ring, topology_data=zariski_topology, **rest)
 
         def _scheme_engine(self):
             r"""The private Sage scheme realizing this scheme (``OWN-06``)."""
@@ -2327,6 +2343,21 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _is_glued_from_affine_atlas(self) -> bool:
             r"""Whether this scheme is realized by the affine gluing datum it was glued from."""
             return _is_gluing_realization(self._scheme_engine_realization)
+
+        def _repr_(self) -> str:
+            r"""A glued scheme by its base and charts; otherwise the Sage scheme realizing it."""
+            match self._is_glued_from_affine_atlas():
+                case True:
+                    return (
+                        f"Scheme over {self.scheme_base_ring()} glued from the affine charts "
+                        f"{self.gluing_datum().charts()}"
+                    )
+                case False:
+                    match self._scheme_engine_realization:
+                        case None:
+                            return f"Scheme over {self.scheme_base_ring()}"
+                        case engine:
+                            return repr(engine)
 
         def gluing_datum(self):
             r"""The affine gluing datum this scheme was glued from (Stacks, Tag 01JA).
@@ -3444,9 +3475,17 @@ class Schemes(OwnedCategoryOverBaseRing):
                 )
                 return product.closed_subscheme(equations)
 
+            _derived_construction_parameters = frozenset({"topology_data"})
+
             def __init__(self, coordinate_algebra, **rest) -> None:
+                from dzack_research.preamble.categories.schemes.ringed_spaces import (
+                    _AffineSchemeTopologyData,
+                )
+
                 self._coordinate_algebra = coordinate_algebra
-                super().__init__(**rest)
+                super().__init__(
+                    topology_data=_AffineSchemeTopologyData(coordinate_algebra), **rest
+                )
 
             def coordinate_algebra(self):
                 r"""``A = Gamma(X, O_X)``, the coordinate algebra of ``X = Spec A``."""
@@ -3460,6 +3499,17 @@ class Schemes(OwnedCategoryOverBaseRing):
             def underlying_space(self):
                 r"""The prime spectrum ``Spec A`` underlying the affine scheme ``Spec A``."""
                 return self.coordinate_algebra().spectrum()
+
+            def _repr_(self) -> str:
+                return f"Spectrum of {self.coordinate_algebra()}"
+
+            def __contains__(self, point) -> bool:
+                r"""Whether ``point`` is a point of ``Spec A``, a prime ideal of ``A``."""
+                return point in self.underlying_space()
+
+            def _element_constructor_(self, datum):
+                r"""The point of ``Spec A`` that ``datum`` names, a prime ideal of ``A``."""
+                return self.underlying_space()(datum)
 
             def _prime_point(self, point):
                 r"""``point`` as an element of ``Spec A``: a prime point, or the prime it is given by."""
@@ -4617,6 +4667,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective().Smooth()]
 
     class ParentMethods:
+        def _repr_(self) -> str:
+            return (
+                f"Projective Space of dimension {self.relative_dimension()} over "
+                f"{self.scheme_base_ring()}"
+            )
+
         def variable_names(self):
             r"""The names of the chosen homogeneous coordinates ``x_0, ..., x_n``."""
             return tuple(str(name) for name in _engine_scheme(self).variable_names())
