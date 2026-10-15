@@ -5009,8 +5009,21 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             that knows ``f`` irreducible states ``Schemes(k).Integral()`` in
             ``placements``: then ``(f)`` is a homogeneous prime and ``V_+(f)`` is
             integral.
+
+            ``V_+(f)`` is an effective Cartier divisor: on the chart ``D_+(x_i)``
+            it is cut out by the single nonzerodivisor ``f / x_i^e``, with ``e``
+            the degree of ``f``, so its ideal sheaf is ``O(-e)`` and its Picard
+            class is ``[O(e)] = e [O(1)]`` (Hartshorne, Proposition II.6.4 and
+            Corollary II.6.17).
             """
-            return self.closed_subscheme(f, placements=placements)
+            degree = self.homogeneous_coordinate_ring().homogeneous_degree(f)
+            hyperplane_class = next(iter(self.picard_group().module_generators()))
+            return self.closed_subscheme(
+                f,
+                placements=(EffectiveCartierDivisors(self), *placements),
+                effective_cartier_ideal_sheaf=self.O(-degree),
+                effective_cartier_picard_class=degree * hyperplane_class,
+            )
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""

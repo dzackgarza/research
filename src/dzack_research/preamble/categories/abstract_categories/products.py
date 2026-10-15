@@ -148,7 +148,7 @@ class PosetMor(CategoricalMor):
     def poset_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.poset_category()
         return cardinal(
             1
@@ -347,7 +347,7 @@ class FiniteOrdinalMor(CategoricalMor):
     def ordinal_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return cardinal(1 if self.domain().position() <= self.codomain().position() else 0)
 
     @cached_method
@@ -612,7 +612,7 @@ class ParallelPairMor(CategoricalMor):
     def parallel_pair_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.parallel_pair_category()
         if self.domain() is self.codomain():
             return cardinal(1)
@@ -824,7 +824,7 @@ class ParallelFamilyMor(CategoricalMor):
     def parallel_family_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.parallel_family_category()
         if self.domain() is self.codomain():
             return cardinal(1)
