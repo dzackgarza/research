@@ -1463,7 +1463,7 @@ Not covered: Loogle, LeanSearch, the forum.
 In dimension 1, O(<a>) = {±1}.
 Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalGroup_finite`, `LeanCategories/Lattices/Valued/Mass.lean:41`, positive definite, `FiniteProjectiveLatticeCat ℤ ℤ`).
 
-**Present state (source).** Every route of `LatticeIsometryMor` that computes O(L) as a finite group (`_engine_group`, `cardinality`, `__iter__`, `group_generators`, `structure_description`, the vector equivalence, stabilizer and orbit routes), `equivariant_isometry_to`, the shell enumeration of `LatticeEmbeddingMor`, `vectors_of_square` and `orthogonal_quotients._finite_supergroup_elements` now assert the hypothesis "definite of finite rank over ZZ"; a definite QQ-lattice reaches that `CAT-01` frontier instead of the finite group of its integral span.
+**Present state (source).** Every route of `LatticeIsometryMor` that computes O(L) as a finite group (`_engine_group`, `cardinality`, `__iter__`, `group_generators`, `structure_description`, the vector equivalence, stabilizer and orbit routes), `equivariant_isometry_to`, the shell enumeration of `LatticeEmbeddingMor` and `orthogonal_quotients._finite_supergroup_elements` now assert the hypothesis "definite of finite rank over ZZ"; a definite QQ-lattice reaches that `CAT-01` frontier instead of the finite group of its integral span. `vectors_of_square` enumerates only over ZZ; over QQ it returns the complete fibre as a condition set (`STY-129`).
 `cardinality()` of O(V) therefore asserts rather than answering `aleph_0`: that answer needs the theorem above, which `lean-categories` does not state (searched 2026-10-15: `rg` over `LeanCategories/` at `e1d422eb` for infinite orthogonal groups; one corpus query; Loogle, LeanSearch and the forum not searched).
 
 **Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable. No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
@@ -1473,7 +1473,7 @@ Specimens: `tests/lattices/test_rational_definite_orthogonal_groups.sage`, unexe
 
 For a definite lattice L of finite rank over ZZ, min{q(v) : v != 0} is attained and its shell is finite. Over QQ the space V = <1> + <1> has q((1/n) e_0) = 1/n^2, so the infimum over nonzero vectors is 0 and is not attained.
 `definite_lattices._minimum` (read by `minimum()`) hands the Gram matrix to Sage's `IntegralLattice(...).minimum()` for any definite lattice, so for `Lattices(QQ)(2)` it answers 1, the minimum of the integral span of the chosen basis (source reading, not executed).
-`shortest_vectors()` (`vectors_of_square(minimum())`) now reaches the `vectors_of_square` frontier over QQ, and `is_voronoi_perfect` reads `shortest_vectors()`.
+`shortest_vectors()` (`vectors_of_square(minimum())`) therefore returns, over QQ, the complete fibre at the wrong value 1, which is not a set of shortest vectors (there are none), and `is_voronoi_perfect` reads `shortest_vectors()`.
 Same false belief as the entry above ("definite implies the integral-span computation is the answer, whatever the base ring").
 **Node.** `rational-definite-minima-are-not-integral-minima`.
 
