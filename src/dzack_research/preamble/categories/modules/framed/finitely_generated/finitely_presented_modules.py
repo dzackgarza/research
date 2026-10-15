@@ -2130,6 +2130,11 @@ class _GeneralPresentedModule:
             if value.parent() is self:
                 return value
             value = value._representative()
+        match value:
+            # Framing coordinates ``a : S -> R`` name the class of
+            # ``sum_s a(s) e_s``, the image of the cover vector they state.
+            case dict():
+                return self.linear_combination(value)
         match element_parent(value):
             case Parent() as source if source is not self and self._built_on_the_same_data(source):
                 return self._element_on_the_same_data(source, value)

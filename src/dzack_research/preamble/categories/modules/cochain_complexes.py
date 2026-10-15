@@ -223,12 +223,18 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
-            coordinates = self._framing_lift(self(cohomology_class))
-            projection = self.cokernel_projection()
-            cycles = projection.domain()
-            representative = cycles.linear_combination(
-                {label: coordinates(label) for label in coordinates.support().domain()}
-            )
+            lift = self._framing_lift(self(cohomology_class))
+            cycles = self.cokernel_projection().domain()
+            # When the presentation's codomain is the cycle module itself, the
+            # chosen preimage under ``Z^p ->> H^p`` already is a cycle; a free
+            # cover on the cycle generators states its framing coordinates.
+            match lift.parent():
+                case source if source is cycles:
+                    representative = lift
+                case _:
+                    representative = cycles.linear_combination(
+                        {label: lift(label) for label in lift.support().domain()}
+                    )
             return cycles.inclusion()(representative)
 
         def class_of_cycle(self, cycle):
