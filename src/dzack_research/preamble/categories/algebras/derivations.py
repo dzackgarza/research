@@ -611,7 +611,7 @@ class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
         return DerivationSpace
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, DerivationUnderlyingLinearMorphism)
+        return self._accepts_by_placement(arrow)
 
 
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
@@ -1033,10 +1033,7 @@ class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
         return GradedDerivationSpace
 
     def accepts(self, arrow) -> bool:
-        return (
-            isinstance(arrow, GradedDerivationUnderlyingLinearMorphism)
-            and arrow.degree_shift() == self.degree_shift()
-        )
+        return self._accepts_by_placement(arrow)
 
 
 @cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))
