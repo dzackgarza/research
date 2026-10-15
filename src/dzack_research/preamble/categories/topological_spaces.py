@@ -405,8 +405,23 @@ class TopologicalSpaceMor(CategoricalMor):
         r"""Continuity of ``set_map: UX -> UY``, decided from its definition.
 
         For each open set ``V`` of ``Y``, the preimage ``f^{-1}(V)`` is formed
-        as a subset of ``X``, and ``X`` is asked whether it is open.
+        as a subset of ``X``, and ``X`` is asked whether it is open.  When
+        ``X`` is finite and every point of ``X`` is open, ``X`` is discrete,
+        so every subset of ``X`` is open and every map out of ``X`` is
+        continuous (Munkres, *Topology*, §12 and §18).
         """
+        source = self.domain()
+        match source in FiniteSets() and source in EnumeratedSets():
+            case True if all(
+                source.is_open_subset(
+                    source.power_set().from_predicate(lambda point, chosen=chosen: point == chosen)
+                )
+                is True
+                for chosen in source
+            ):
+                return True
+            case _:
+                pass
         target_opens = self.codomain().open_subsets()
         assert target_opens in FiniteSets() and target_opens in EnumeratedSets(), (
             f"cannot decide whether {set_map} is continuous: continuity is decided "
@@ -744,6 +759,43 @@ class TopologicalSpaces(OwnedCategory):
             assert False, (
                 f"{self} is not known to have the homotopy type of a finite CW complex, so its "
                 "Euler characteristic is not defined by Hatcher, Thm. 2.44"
+            )
+
+        def _homotopy_group_module(self, base_point, degree):
+            r"""``pi_degree(X, x)`` for ``degree >= 1``, an object of ``Modules(ZZ)`` when the group is abelian.
+
+            Protected contract of :class:`TopologicalSpaces`.  The owner is
+            this category; a realization engine that knows the homotopy
+            groups of its space overrides it.  The only caller is
+            ``TopologicalSpaceCoslices.ParentMethods``, which assembles the
+            homotopy Lie algebra of the pointed space ``(X, x)``.  Repeated
+            calls with one degree return the same module.
+            """
+            assert False, (
+                f"the homotopy group pi_{degree}({self}, {base_point}) is not known to this space"
+            )
+
+        def _fundamental_group_at(self, base_point):
+            r"""``pi_1(X, x)``, an object of ``Groups``.
+
+            Protected contract of :class:`TopologicalSpaces`, with the owner
+            and caller of :meth:`_homotopy_group_module`.
+            """
+            assert False, f"the fundamental group pi_1({self}, {base_point}) is not known to this space"
+
+        def _whitehead_pairing(self, base_point, left_degree, right_degree):
+            r"""The Whitehead product ``pi_p(X, x) x pi_q(X, x) -> pi_{p+q-1}(X, x)``, a bilinear map.
+
+            Protected contract of :class:`TopologicalSpaces`, with the owner
+            and caller of :meth:`_homotopy_group_module`.  Its factors and
+            codomain are the modules that :meth:`_homotopy_group_module`
+            returns.  The product is ``[alpha, beta] = (alpha v beta) o w``
+            for the attaching map ``w: S^{p+q-1} -> S^p v S^q`` of the top
+            cell of ``S^p x S^q`` (Hatcher, *Algebraic Topology*, Example 4.52).
+            """
+            assert False, (
+                f"the Whitehead product pi_{left_degree} x pi_{right_degree} -> "
+                f"pi_{left_degree + right_degree - 1} of ({self}, {base_point}) is not known to this space"
             )
 
 

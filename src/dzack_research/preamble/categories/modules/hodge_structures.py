@@ -249,6 +249,10 @@ class MixedHodgeStructures(OwnedCategoryOverBaseRing):
 
     _MorCategory = MixedHodgeStructureMorCategoryConstruction
 
+    def an_object(self):
+        r"""The Tate structure ``R(1)``, pure of weight ``-2`` and type ``(-1, -1)`` (Deligne II (2.1.13))."""
+        return self.tate_structure(1)
+
     def tate_structure(self, n):
         r"""The Tate structure ``R(n)``: ``R`` of weight ``-2n`` and type ``(-n, -n)``.
 

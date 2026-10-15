@@ -1,5 +1,7 @@
 r"""Topological spaces under a fixed space, and the homotopy groups of pointed spaces."""
 
+from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import CosliceCategory
 
 
@@ -38,19 +40,91 @@ class TopologicalSpaceCoslices(CosliceCategory):
             """
             assert False, "homotopy_groups on TopologicalSpaceCoslices: not implemented"
 
+        def base_point(self):
+            r"""``b = i(*)``, the image of the point of the one-point space under the chosen arrow ``i: * -> B``."""
+            arrow = self.arrow()
+            source = arrow.domain()
+            assert source.cardinality() == 1, (
+                f"{self} has no base point: its chosen arrow starts at {source}, not at the one-point space"
+            )
+            return arrow(source.an_element())
+
         def fundamental_group(self):
-            r"""``pi_1(B, b)``: the degree-1 value of ``homotopy_groups()``, an object of ``Groups``."""
-            assert False, "fundamental_group on TopologicalSpaceCoslices: not implemented"
+            r"""``pi_1(B, b)``, an object of ``Groups``: the degree-0 part of :meth:`homotopy_lie_algebra` as a group."""
+            return self.arrow().codomain()._fundamental_group_at(self.base_point())
+
+        @cached_method
+        def homotopy_lie_algebra(self):
+            r"""``pi_*(B, b)`` under the Whitehead product, an object of ``GradedLieAlgebras(ZZ)``.
+
+            The grading is the shifted one: degree ``n >= 0`` holds
+            ``pi_{n+1}(B, b)``, and negative degrees are zero, so the Whitehead
+            product ``pi_p x pi_q -> pi_{p+q-1}`` has degree zero (Felix,
+            Halperin and Thomas, *Rational Homotopy Theory*, GTM 205, §21).
+            The bracket of ``a in pi_p`` and ``b in pi_q`` is
+            ``(-1)^p [a, b]_W``.  The Whitehead product is graded symmetric,
+            ``[b, a]_W = (-1)^{pq} [a, b]_W`` (Hatcher, *Algebraic Topology*,
+            Example 4.52), and the sign ``(-1)^p`` turns this into the Koszul
+            rule ``[x, y] = -(-1)^{|x||y|} [y, x]`` for ``|x| = p - 1`` and
+            ``|y| = q - 1``.  Degree 0 is ``pi_1(B, b)``, a ``ZZ``-module only
+            when it is abelian; as a group it is :meth:`fundamental_group`.
+            """
+            from dzack_research.preamble.categories.algebras.graded_algebras import (
+                _graded_multiplication_from_components,
+            )
+            from dzack_research.preamble.categories.algebras.graded_lie_algebras import GradedLieAlgebras
+            from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+            from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            space = self.arrow().codomain()
+            point = self.base_point()
+            integers = _owned_integers()
+
+            def piece(degree):
+                match degree >= 0:
+                    case True:
+                        return space._homotopy_group_module(point, degree + 1)
+                    case False:
+                        return integers.free_module(finite_ordered_set(()))
+
+            module = GradedModules(integers)(
+                indexed_family(integers, piece, name=f"Homotopy groups pi_(*+1) of {self}")
+            )
+
+            def bracket_on_components(s, x, t, y):
+                pairing = space._whitehead_pairing(point, s + 1, t + 1)
+                return integers(-1) ** (s + 1) * pairing(pairing.domain().pure_tensor(x, y))
+
+            bracket = _graded_multiplication_from_components(module, bracket_on_components)
+            algebra = GradedLieAlgebras(integers)(module, bracket)
+            # The direct-sum parent class defines ``_repr_`` and precedes its
+            # category's ``ParentMethods``; Sage's ``rename`` names it.
+            algebra.rename(f"Homotopy Lie algebra pi_*(B, b) of {space} under the Whitehead product")
+            return algebra
 
         def whitehead_product(self, alpha, beta):
-            r"""``[alpha, beta] in pi_{p+q-1}(B, b)`` for ``alpha in pi_p``, ``beta in pi_q``, ``p, q >= 1``.
+            r"""``[alpha, beta]_W in pi_{p+q-1}(B, b)`` for ``alpha in pi_p``, ``beta in pi_q``, ``p, q >= 1``.
 
             The class of ``S^{p+q-1} -> S^p v S^q -> B``, the attaching map of the
             top cell of ``S^p x S^q`` followed by ``alpha v beta`` (Whitehead,
-            Ann. of Math. 42 (1941)).  For
-            ``p = q = 1`` it is the commutator in ``pi_1``.
+            Ann. of Math. 42 (1941); Hatcher, op. cit., Example 4.52).  For
+            ``p = q = 1`` it is the commutator in ``pi_1``.  ``alpha`` and
+            ``beta`` are elements of the homotopy Lie algebra: a class of ``pi_p`` is
+            an element of degree ``p - 1`` of :meth:`homotopy_lie_algebra`, and the
+            product extends bilinearly.
             """
-            assert False, "whitehead_product on TopologicalSpaceCoslices: not implemented"
+            algebra = self.homotopy_lie_algebra()
+            integers = algebra.base_ring()
+            beta = algebra(beta)
+            return sum(
+                (
+                    integers(-1) ** (degree + 1) * (algebra.from_component(degree, component) * beta)
+                    for degree, component in algebra(alpha).homogeneous_components().items()
+                ),
+                algebra.zero(),
+            )
 
         def rational_homotopy_lie_algebra(self):
             r"""``pi_{*+1}(B, b) tensor QQ`` under the Whitehead product, an object of ``GradedLieAlgebras(QQ)``.

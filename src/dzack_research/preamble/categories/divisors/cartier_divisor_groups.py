@@ -639,7 +639,6 @@ class CartierDivisorGroups(Category):
             zero=sections.zero(),
             negation=sections.negate,
             scalar_action=sections.scale,
-            verify=False,
         )
 
     class ParentMethods:
