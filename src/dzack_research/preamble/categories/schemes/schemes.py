@@ -804,25 +804,66 @@ class SchemeMorphismMethods:
 
         return _slice_base_change_adjunction(self)
 
-    def inverse_image(self, closed_subscheme):
-        r"""``f^{-1}(Z) = X x_Y Z`` as a closed subscheme of ``X``.
+    def inverse_image(self, subscheme):
+        r"""``f^{-1}(Z) = X x_Y Z`` as a closed or open subscheme of ``X``.
 
         For ``Z = V(I) <= Spec B`` and ``f: Spec A -> Spec B`` this is
-        ``V(f^#(I) A)``.
+        ``V(f^#(I) A)``.  For an open ``U = D(g) <= Spec B`` it is the open
+        ``D(f^# g) <= X``: a point ``p`` maps into ``D(g)`` exactly when
+        ``g`` does not vanish at ``f(p)``, that is when ``f^# g`` does not
+        vanish at ``p``.  On ``X`` glued from affine charts ``U_i`` this is
+        ``D((f iota_i)^# g) <= U_i`` on each chart, glued along the atlas
+        of ``X``.  An open immersion is a monomorphism, and a morphism
+        ``T -> X`` whose composite with ``f`` lands in ``U`` factors through
+        ``f^{-1}(U)``, so ``f^{-1}(U)`` with its inclusion and ``f``
+        restricted is the fibre product ``X x_Y U``.
         """
-        assert closed_subscheme.inclusion().codomain() is self.codomain(), (
-            f"cannot form the inverse image of {closed_subscheme} under {self}: it is a closed "
-            f"subscheme of {closed_subscheme.inclusion().codomain()}, not of the codomain {self.codomain()}"
+        assert subscheme.inclusion().codomain() is self.codomain(), (
+            f"cannot form the inverse image of {subscheme} under {self}: it is a "
+            f"subscheme of {subscheme.inclusion().codomain()}, not of the codomain {self.codomain()}"
         )
-        base = self.domain().scheme_base_ring()
-        assert self.domain() in Schemes(base).Affine() and self.codomain() in Schemes(base).Affine(), (
-            f"cannot form the inverse image of {closed_subscheme} under {self}: this computation "
-            f"requires affine schemes over {base}, but the domain is an object of "
-            f"{self.domain().category()} and the codomain an object of {self.codomain().category()}"
-        )
-        pullback = self.coordinate_algebra_morphism()
-        equations = tuple(pullback(equation) for equation in closed_subscheme.defining_equations())
-        return self.domain().closed_subscheme(equations)
+        domain = self.domain()
+        base = domain.scheme_base_ring()
+        match subscheme:
+            case _ if subscheme in OpenImmersions(self.codomain()):
+                assert subscheme.is_distinguished_open() is True, (
+                    f"cannot form the inverse image of {subscheme} under {self}: it is computed here for a "
+                    f"distinguished open D(g) of an affine scheme, and {subscheme} is not known to be one"
+                )
+                element = self.codomain().coordinate_algebra()(subscheme.distinguished_open_element())
+                if domain._is_glued_from_affine_atlas():
+                    from dzack_research.preamble.categories.schemes.gluing import (
+                        _glued_chartwise_distinguished_open,
+                    )
+
+                    datum = domain.gluing_datum()
+                    labels = tuple(datum.chart_indices())
+                    return _glued_chartwise_distinguished_open(
+                        datum,
+                        labels,
+                        {label: label for label in labels},
+                        {
+                            label: datum.chart(label).distinguished_open(
+                                (self * datum.chart_embedding(label)).coordinate_algebra_morphism()(element)
+                            )
+                            for label in labels
+                        },
+                        name=f"Inverse image of {subscheme} under {self}",
+                    )
+                assert domain in Schemes(base).Affine(), (
+                    f"cannot form the inverse image of {subscheme} under {self}: the domain must be affine "
+                    f"or glued from affine charts, but it is an object of {domain.category()}"
+                )
+                return domain.distinguished_open(self.coordinate_algebra_morphism()(element))
+            case _:
+                assert domain in Schemes(base).Affine() and self.codomain() in Schemes(base).Affine(), (
+                    f"cannot form the inverse image of {subscheme} under {self}: this computation "
+                    f"requires affine schemes over {base}, but the domain is an object of "
+                    f"{domain.category()} and the codomain an object of {self.codomain().category()}"
+                )
+                pullback = self.coordinate_algebra_morphism()
+                equations = tuple(pullback(equation) for equation in subscheme.defining_equations())
+                return domain.closed_subscheme(equations)
 
     def fixed_subscheme(self):
         r"""``X^f = Eq(f, id_X)``, the fixed subscheme of an endomorphism.

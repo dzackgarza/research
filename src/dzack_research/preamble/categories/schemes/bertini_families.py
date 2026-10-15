@@ -4,16 +4,17 @@ The Hesse pencil on ``P^2`` is spanned by
 
 ``x^3+y^3+z^3`` and ``xyz``.
 
-On the affine parameter chart used here the family is
+On the affine parameter line ``A^1_QQ = Spec QQ[t]`` the family is
 ``x^3+y^3+z^3-3txyz=0``.  In characteristic zero the Jacobian equations have a
 projective solution exactly when ``t^3=1``.  Thus the theorem's conclusion is
-the represented open ``D(t^3-1)`` in the parameter scheme, not a claim that
+the represented open ``D(t^3-1)`` in the parameter line, not a claim that
 every member is smooth.  The fibre ``t=0`` is the Fermat cubic and is smooth;
 ``t=1`` is an explicit singular member of the same family.
 
-The family is an object of the slice ``Sch_T/Spec T`` over the parameter
-ring ``T = QQ[t]``: the cubic ``X`` with its structure morphism
-``X -> Spec T``.
+The family is an object of the slice ``Sch_QQ/A^1_QQ``: the closed subscheme
+``X = V(x^3+y^3+z^3-3txyz) <= P^2_QQ x A^1_QQ`` with the second projection
+``f: X -> A^1_QQ``.  Its fibre over the rational point ``t = a`` is the
+fibre product ``X x_{A^1} Spec QQ``.
 
 The pencil has base points.  One rational base point ``[1:-1:0]`` is retained
 with its actual value and first-jet evaluation maps, so the application keeps
@@ -27,16 +28,23 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_rati
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
-from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+from dzack_research.preamble.categories.schemes.families import _projective_hypersurface_family
+from dzack_research.preamble.categories.schemes.schemes import (
+    AffineSpaces,
+    ProjectiveSpaces,
+    Schemes,
+    _evaluate_owned_homogeneous_polynomial_on_coordinates,
+)
 from dzack_research.preamble.validation import validator
 
 
 class _HessePencil:
-    r"""Private realization of the Hesse family as an object of ``Sch_T/Spec T``.
+    r"""Private realization of the Hesse family as an object of ``Sch_QQ/A^1_QQ``.
 
-    The slice object itself retains the family ``X -> Spec T``.  This engine
-    adds the pencil on the reference plane ``P^2_QQ`` that the family
-    specializes, with its selected base point.
+    The slice object itself retains the family ``f: X -> A^1_QQ``.  This
+    engine adds the plane ``P^2_QQ``, the equation of ``X`` in
+    ``QQ[t][x,y,z]``, and the pencil on ``P^2_QQ`` with its selected base
+    point.
     """
 
     def __init__(
@@ -44,6 +52,8 @@ class _HessePencil:
         *,
         base_field,
         parameter,
+        plane,
+        equation,
         line_bundle,
         linear_system,
         fermat_section,
@@ -53,6 +63,8 @@ class _HessePencil:
     ) -> None:
         self._base_field = base_field
         self._parameter = parameter
+        self._plane = plane
+        self._equation = equation
         self._line_bundle = line_bundle
         self._linear_system = linear_system
         self._fermat_section = fermat_section
@@ -73,7 +85,8 @@ class _HessePencil:
         return self.arrow().codomain()
 
     def family(self):
-        return self.arrow().domain()
+        r"""The family as an object of ``Sch_QQ/A^1_QQ``; its morphism ``X -> A^1_QQ`` is :meth:`arrow`."""
+        return self
 
     def linear_system(self):
         return self._linear_system
@@ -126,12 +139,24 @@ class _HessePencil:
         return value**3 != self.base_field().one()
 
     def member(self, value):
-        r"""The member over the rational point ``t = value``: the base change of ``X`` along ``T -> QQ``, ``t |-> value``."""
+        r"""The plane cubic ``V(x^3+y^3+z^3-3a xyz) <= P^2_QQ`` for ``a = value``.
+
+        It is the equation of ``X`` with ``t`` specialized to ``a``, as an
+        object of ``ProjectiveCompleteIntersections(QQ)``.  The fibre
+        :meth:`fibre` over the point ``t = a`` is the same curve presented as
+        a fibre product.
+        """
         value = self.base_field()(value)
-        specialization = self.parameter_ring().Mor(self.base_field())(
-            {"t": value}
+        plane = self._plane
+        ring = self._line_bundle.global_sections().homogeneous_coordinate_ring()
+        specialization = self.parameter_ring().Mor(self.base_field())({"t": value})
+        specialized = _evaluate_owned_homogeneous_polynomial_on_coordinates(
+            self._equation,
+            self._equation.parent(),
+            tuple(ring.algebra_generator(name) for name in ("x", "y", "z")),
+            coefficient_map=ring.algebra_structure_morphism() * specialization,
         )
-        return self.family().base_change(specialization)
+        return ProjectiveCompleteIntersections(self.base_field())(plane, specialized)
 
     @cached_method
     def general_member(self):
@@ -143,11 +168,19 @@ class _HessePencil:
 
     @cached_method
     def restriction_to_good_locus(self):
-        ring_map = self.good_parameter_locus().inclusion().coordinate_algebra_morphism()
-        return self.family().base_change(ring_map)
+        r"""The restriction ``f^{-1}(U) -> U -> A^1_QQ`` of the family to ``U = D(t^3-1)``.
+
+        ``f^{-1}(U) <= X`` is the fibre product ``X x_{A^1} U``, an object of
+        ``Sch_QQ/A^1_QQ`` through ``f`` restricted to it.
+        """
+        preimage = self.arrow().inverse_image(self.good_parameter_locus())
+        return self.category().object(self.arrow() * preimage.inclusion())
 
     def good_locus_restriction_map(self):
-        return self.restriction_to_good_locus().base_change_projection()
+        r"""The inclusion ``f^{-1}(U) -> X`` as a morphism of ``Sch_QQ/A^1_QQ``."""
+        restricted = self.restriction_to_good_locus()
+        preimage = restricted.arrow().domain()
+        return self.category().Mor(restricted, self)(preimage.inclusion())
 
     def theorem_hypotheses(self) -> bool:
         r"""The selected Hesse/Bertini calculation uses characteristic zero."""
@@ -162,32 +195,31 @@ class _HessePencil:
         )
 
     def _repr_(self) -> str:
-        return f"Hesse-Bertini family over {self.parameter_ring()} with good locus {self.good_parameter_locus()}"
+        return f"Hesse-Bertini family over {self.parameter_scheme()} with good locus {self.good_parameter_locus()}"
 
 
 def HesseBertiniFamily(check=False):
-    r"""Return the Hesse cubic pencil as an object of ``Sch_T/Spec T`` for ``T = QQ[t]``.
+    r"""Return the Hesse cubic pencil as an object of ``Sch_QQ/A^1_QQ``.
 
-    The object is the cubic ``X = V(x^3+y^3+z^3-3txyz) <= P^2_T`` with its
-    structure morphism ``X -> Spec T``, together with the pencil
+    The object is ``X = V(x^3+y^3+z^3-3txyz) <= P^2_QQ x A^1_QQ`` with the
+    second projection ``f: X -> A^1_QQ``, together with the pencil
     ``<x^3+y^3+z^3, xyz> <= H^0(P^2_QQ, O(3))`` and its base point
     ``[1:-1:0]``.
     """
     base = _owned_rationals()
-    parameter = base.polynomial_ring("t")
+    line = AffineSpaces(base)(1, names=("t",))
+    parameter = line.coordinate_algebra()
     t = parameter.algebra_generator("t")
-    plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
-    relative_sections = plane.O(3).global_sections()
-    relative_ring = relative_sections.homogeneous_coordinate_ring()
+    plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
+    relative_ring = parameter.polynomial_ring(("x", "y", "z"))
     x = relative_ring.algebra_generator("x")
     y = relative_ring.algebra_generator("y")
     z = relative_ring.algebra_generator("z")
     scalar = relative_ring.algebra_structure_morphism()
     equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-    family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane, equation)
+    family = _projective_hypersurface_family(plane, line, equation, name="Hesse pencil")
 
-    reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
-    bundle = reference_plane.O(3)
+    bundle = plane.O(3)
     sections = bundle.global_sections()
     ring = sections.homogeneous_coordinate_ring()
     rx = ring.algebra_generator("x")
@@ -196,17 +228,19 @@ def HesseBertiniFamily(check=False):
     fermat = sections.section_from_homogeneous_polynomial(rx**3 + ry**3 + rz**3)
     product = sections.section_from_homogeneous_polynomial(rx * ry * rz)
 
-    pencil = family.scheme_category().slice_category().object(
-        family.structure_morphism(),
+    pencil = Schemes(base).SliceOver(line).object(
+        family,
         _engine=_HessePencil,
         construction_data={
             "base_field": base,
             "parameter": t,
+            "plane": plane,
+            "equation": equation,
             "line_bundle": bundle,
             "linear_system": bundle.linear_system((fermat, product)),
             "fermat_section": fermat,
             "product_section": product,
-            "basepoint": reference_plane.point_morphism((base.one(), -base.one(), base.zero())),
+            "basepoint": plane.point_morphism((base.one(), -base.one(), base.zero())),
         },
     )
     pencil.validate_basepoint(check=check)
