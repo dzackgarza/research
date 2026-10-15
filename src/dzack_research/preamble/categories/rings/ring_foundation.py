@@ -1419,6 +1419,33 @@ class LocalizationRings(OwnedCategory):
                 return engine_cover
             return None
 
+        def _inverse_of_bottom_numerator(self, generator):
+            r"""The inverse ``1/m`` of the bottom numerator ``m`` of a generator ``g``.
+
+            Private decoder contract for the inverse-variable realization.  In
+            a tower ``L_k -> ... -> L_0`` write ``g = n_1/d_1`` with
+            ``n_1, d_1`` in ``L_{k-1}``, then ``n_1 = n_2/d_2`` one level down,
+            and so on to ``m`` in the bottom ring.  Then ``g = m e`` with
+            ``e = (...(1/d_j).../d_2)/d_1`` a unit of the source, and the
+            auxiliary variable inverting ``m`` is ``e/g`` here.  For a one-step
+            localization ``m = g`` and ``e = 1``.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeLocalizations,
+            )
+
+            def numerator_and_unit(ring, element):
+                if ring not in LocalizationRings() or ring in PrimeLocalizations():
+                    return ring.one()
+                numerator, denominator = ring.localization_fraction_data(element)
+                return ring.fraction(
+                    numerator_and_unit(ring.localization_source(), numerator),
+                    denominator,
+                )
+
+            source = self.localization_source()
+            return self.fraction(numerator_and_unit(source, generator), generator)
+
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
             assert engine is not None, (
@@ -1447,7 +1474,10 @@ class LocalizationRings(OwnedCategory):
                     else source_engine
                 )
                 source_names = tuple(source_cover.variable_names())
-                inverted = tuple(self.inverted_elements())
+                inverses = tuple(
+                    self._inverse_of_bottom_numerator(generator)
+                    for generator in self.inverted_elements()
+                )
                 result = self.zero()
                 for exponents, coefficient in represented.lift().dict().items():
                     source_monomial = source_cover(coefficient)
@@ -1458,10 +1488,7 @@ class LocalizationRings(OwnedCategory):
                     )
                     for position, exponent in enumerate(exponents[len(source_names) :]):
                         if exponent:
-                            term *= self.fraction(
-                                source.one(),
-                                inverted[position],
-                            ) ** int(exponent)
+                            term *= inverses[position] ** int(exponent)
                     result += term
                 return result
             return self.fraction(

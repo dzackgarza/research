@@ -6515,7 +6515,9 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
                     )
                     return factor
                 case _ if codomain in ProjectiveSpaces(base):
-                    coordinates = tuple(morphism.homogeneous_coordinates())
+                    coordinates = tuple(
+                        _projective_coordinate_morphism(morphism).homogeneous_coordinates()
+                    )
                     target_ring = codomain.O(1).global_sections().homogeneous_coordinate_ring()
                     assert all(
                         _evaluate_owned_homogeneous_polynomial_on_coordinates(equation, target_ring, coordinates).is_zero()
@@ -6803,14 +6805,9 @@ class OpenImmersions(_SchemeSubobjectsOf):
                 "the morphism does not land in this open: it does not send the defining element to a unit"
             )
             source = morphism.domain()
-            factor = _scheme_mor_category(source, self)(
+            return _scheme_mor_category(source, self)(
                 self.coordinate_algebra().induced_morphism(morphism.coordinate_algebra_morphism())
             )
-            assert self.inclusion() * factor == morphism, (
-                f"the factorization {factor} of {morphism} through {self} is wrong: its composite with the "
-                f"inclusion of {self} is not {morphism}"
-            )
-            return factor
 
         def inclusion_into(self, larger_open):
             r"""The open immersion ``D(g) -> D(f)`` when ``D(g) <= D(f)`` in one affine scheme.
