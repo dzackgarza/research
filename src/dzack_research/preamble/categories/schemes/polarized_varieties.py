@@ -81,9 +81,16 @@ class _PicardCategoryOfElements(_CategoryOfElements):
 
                 The first Chern class of ``L`` in the integral singular
                 cohomology of the analytification ``X(CC)`` (Voisin, *Hodge
-                Theory and Complex Algebraic Geometry I*, §7.1).
+                Theory and Complex Algebraic Geometry I*, §7.1).  It is the
+                image of the unit ``1 in H^0`` under ``L_h``, since
+                ``h cup 1 = h``.
                 """
-                assert False, "polarization_class on polarized varieties: not implemented"
+                variety = self.underlying_object()
+                unit_degree = variety.integral_singular_cohomology(0)
+                unit = next(iter(unit_degree.module_generating_set()))
+                return _lefschetz_component(variety, self.polarization(), 0, 1)(
+                    unit_degree.module_generator(unit)
+                )
 
         class Smooth(CategoryWithAxiom):
             r"""The polarized pairs ``(X, L)`` with ``X`` smooth."""
@@ -103,24 +110,148 @@ class _PicardCategoryOfElements(_CategoryOfElements):
             class ParentMethods:
                 r"""A smooth projective variety ``X`` with its chosen ample class ``L``."""
 
-                def lefschetz_operator(self):
-                    r"""``L_h = h cup (-) : H^*(X(CC); QQ) -> H^{*+2}(X(CC); QQ)``.
+                def lefschetz_operator(self, degree, power=1):
+                    r"""``L_h^power = h^power cup (-) : H^degree(X(CC); ZZ) -> H^{degree+2 power}(X(CC); ZZ)``.
 
-                    Cup product with the polarization class ``h = c_1(L)``, a
-                    degree-2 endomorphism of the graded ``QQ``-module
-                    ``H^*(X(CC); QQ)``.  For ``X`` smooth of dimension ``n`` the
-                    hard Lefschetz theorem states that
-                    ``L_h^{n-k} : H^k -> H^{2n-k}`` is an isomorphism for
-                    ``k <= n`` (Voisin, op. cit., §6.2).
+                    Cup product with the ``power``-th power of the
+                    polarization class ``h = c_1(L)``, the component in
+                    degree ``degree`` of the degree-2 endomorphism ``L_h`` of
+                    the graded ``ZZ``-module ``H^*(X(CC); ZZ)``.  For ``X``
+                    smooth of dimension ``n`` the hard Lefschetz theorem
+                    states that ``L_h^{n-k} : H^k -> H^{2n-k}`` becomes an
+                    isomorphism after ``QQ tensor_ZZ (-)`` for ``k <= n``
+                    (Voisin, op. cit., §6.2).
                     """
-                    assert False, "lefschetz_operator on smooth polarized varieties: not implemented"
+                    return _lefschetz_component(
+                        self.underlying_object(), self.polarization(), degree, power
+                    )
 
                 def primitive_cohomology(self, k):
-                    r"""``H^k_prim = ker(L_h^{n-k+1} : H^k -> H^{2n-k+2})`` for ``k <= n = dim X``.
+                    r"""``H^k_prim = ker(L_h^{n-k+1} : H^k -> H^{2n-k+2})`` for ``0 <= k <= n = dim X``.
 
-                    A ``QQ``-submodule of ``H^k(X(CC); QQ)``, returned as the
-                    kernel inclusion.  The Lefschetz decomposition is
-                    ``H^k = sum_r L_h^r H^{k-2r}_prim`` (Voisin, op. cit.,
-                    §6.2).
+                    The kernel of ``L_h^{n-k+1}`` on ``H^k(X(CC); ZZ)``, a
+                    subobject with its inclusion.  ``QQ`` is flat over
+                    ``ZZ``, so ``QQ tensor_ZZ H^k_prim`` is the rational
+                    primitive cohomology, and the Lefschetz decomposition is
+                    ``H^k(X(CC); QQ) = sum_r L_h^r H^{k-2r}_prim``
+                    (Voisin, op. cit., §6.2).
                     """
-                    assert False, "primitive_cohomology on smooth polarized varieties: not implemented"
+                    variety = self.underlying_object()
+                    dimension = int(variety.dimension())
+                    assert 0 <= int(k) <= dimension, (
+                        f"primitive cohomology H^{k}_prim of {variety} is defined for 0 <= k <= dim X = "
+                        f"{dimension}"
+                    )
+                    return self.lefschetz_operator(k, dimension - int(k) + 1).kernel()
+
+
+def _polarization_multiple(variety, polarization):
+    r"""The integer ``m`` with ``L = m [O(1)]``, for ``X`` a projective space or a projective complete intersection.
+
+    On ``P^n_k`` over a field, ``Pic(P^n_k) = ZZ [O(1)]`` (Hartshorne,
+    *Algebraic Geometry*, II.6.17), and ``m`` is the coordinate of ``L`` on the
+    hyperplane summand.  On a complete intersection ``X`` the represented
+    class is ``[O_X(m)] = i^* [O_P(m)]``, and ``m`` is the twist of the
+    ambient line bundle it is pulled back from.
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+    from dzack_research.preamble.categories.schemes.complete_intersections import (
+        ProjectiveCompleteIntersections,
+    )
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+    base = variety.scheme_base_ring()
+    match variety:
+        case _ if variety in ProjectiveSpaces(base):
+            assert base in OwnedFields(), (
+                f"c_1 of a class in Pic({variety}) is read from Pic(P^n_k) = ZZ [O(1)], which needs a "
+                f"field base, but the base is {base}"
+            )
+            picard = variety.picard_group()
+            hyperplane = picard.biproduct_factor(1)
+            return hyperplane.dual_basis()["O(1)"](picard.projection(1)(polarization))
+        case _ if variety in ProjectiveCompleteIntersections(base):
+            return polarization.underlying_element().representative().ambient_line_bundle().degree()
+        case _:
+            assert False, (
+                f"c_1 of a class in Pic({variety}) is computed only for projective spaces and projective "
+                f"complete intersections, and {variety} is in {variety.category()}"
+            )
+
+
+def _lefschetz_component(variety, polarization, degree, power):
+    r"""``h^power cup (-) : H^degree(X(CC); ZZ) -> H^{degree + 2 power}(X(CC); ZZ)`` for ``h = c_1(L)``.
+
+    ``L = m [O(1)]`` and ``h = m i^* alpha`` for the generator ``alpha`` of
+    ``H^2(P^N; ZZ)``.  Every nonzero cohomology group met here is free of
+    rank one with its given generator ``g_k``:
+
+    - ``X = P^n``: ``g_{2j} = alpha^j`` and ``alpha^j cup alpha^r =
+      alpha^{j+r}`` (Hatcher, *Algebraic Topology*, Thm. 3.19), so ``g_k``
+      goes to ``m^power g_{k + 2 power}``.
+    - ``X`` a smooth complete intersection of dimension ``n`` and degree
+      ``d``: by the Lefschetz hyperplane theorem ``g_k = i^* alpha^{k/2}`` for
+      even ``k < n``, and by Poincare duality ``g_k`` for even ``k > n`` is
+      dual to the generator of ``H_{2n-k}(X) = H_{2n-k}(P^N)`` (Dimca,
+      *Singularities and Topology of Hypersurfaces*, Ch. 5, §3; Lazarsfeld,
+      *Positivity I*, 3.1.17).  The projection formula makes cup with
+      ``i^* alpha`` the identity on these generators away from the middle
+      degree, and ``(i^* alpha)^n = d g_{2n}``.  So ``g_k`` goes to
+      ``m^power g_{k + 2 power}`` when ``k`` and ``k + 2 power`` lie on one
+      side of ``n``, and to ``d m^power g_{k + 2 power}`` when ``k < n <
+      k + 2 power``.
+
+    A group of rank zero at either end gives the zero map.  The middle group
+    ``H^n`` of an even-dimensional complete intersection has a basis that no
+    represented class identifies with ``i^* alpha^{n/2}``, so a map into or
+    out of it is not constructed.
+    """
+    from dzack_research.preamble.categories.schemes.complete_intersections import (
+        ProjectiveCompleteIntersections,
+    )
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+    degree = int(degree)
+    power = int(power)
+    assert power >= 0, f"L_h^{power} is defined for a nonnegative power, not {power}"
+    target_degree = degree + 2 * power
+    source = variety.integral_singular_cohomology(degree)
+    target = variety.integral_singular_cohomology(target_degree)
+    source_labels = source.module_generating_set()
+    target_labels = target.module_generating_set()
+    match (int(source.module_rank()), int(target.module_rank())):
+        case (0, _) | (_, 0):
+            return source.Mor(target)({label: target.zero() for label in source_labels})
+        case (1, 1):
+            pass
+        case ranks:
+            assert False, (
+                f"h^{power} cup (-) : H^{degree} -> H^{target_degree} of {variety} is constructed between groups "
+                f"of rank one, but the ranks are {ranks}: the cup product on the middle cohomology of an "
+                "unmarked complete intersection is not constructed"
+            )
+    base = variety.scheme_base_ring()
+    multiple = _polarization_multiple(variety, polarization)
+    factor = multiple**power
+    match variety:
+        case _ if variety in ProjectiveSpaces(base):
+            pass
+        case _ if variety in ProjectiveCompleteIntersections(base).Smooth():
+            dimension = int(variety.dimension())
+            assert dimension not in (degree, target_degree), (
+                f"h^{power} cup (-) : H^{degree} -> H^{target_degree} of {variety} meets the middle degree "
+                f"{dimension}: the cup product on the middle cohomology of an unmarked complete "
+                "intersection is not constructed"
+            )
+            match degree < dimension < target_degree:
+                case True:
+                    factor = factor * variety.projective_degree()
+                case False:
+                    pass
+        case _:
+            assert False, (
+                f"h cup (-) on H^*({variety}(CC); ZZ) is computed only for projective spaces and smooth "
+                f"projective complete intersections, and {variety} is in {variety.category()}"
+            )
+    target_generator = target.module_generator(next(iter(target_labels)))
+    return source.Mor(target)({label: factor * target_generator for label in source_labels})

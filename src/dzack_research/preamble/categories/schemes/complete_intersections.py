@@ -465,6 +465,27 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             )
             return _integral_singular_cohomology_over_rationals(self, degree)
 
+        def _picard_group(self, base_picard_group=None):
+            r"""``Pic(X)``, the isomorphism classes of invertible ``O_X``-modules, with unit ``[O_X(0)]``."""
+            from dzack_research.preamble.categories.divisors.picard_groups import (
+                _invertible_sheaf_class_group,
+            )
+
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "a complete intersection has no projective-bundle base datum"
+            )
+            return _invertible_sheaf_class_group(self, self.O(0))
+
+        def hyperplane_class(self):
+            r"""``[O_X(1)] = i^*[O_P(1)]`` in ``Pic(X)``, for the inclusion ``i: X -> P^n``.
+
+            ``O_X(1)`` is very ample, so ``(X, [O_X(1)])`` is a polarized
+            variety (Hartshorne, *Algebraic Geometry*, II.5.16.1 and II.7).
+            """
+            picard = self.picard_group()
+            return picard(picard.underlying_set()(self.O(1)))
+
         def _del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
             coefficient = self.anticanonical_twist_degree()
