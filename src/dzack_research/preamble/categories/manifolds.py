@@ -389,12 +389,17 @@ class TopologicalManifolds(OwnedCategory):
         )
 
     class ElementMethods(Element):
-        r"""A point of a manifold, given by its coordinates in a labelled chart."""
+        r"""A point of a manifold, given by its coordinates in a labelled chart.
+
+        A chart is a homeomorphism onto an open subset of ``K^n``, so the
+        coordinates of a point are elements of the coordinate field ``K``.
+        """
 
         def __init__(self, parent: Parent, coordinates, chart_label) -> None:
             Element.__init__(self, parent)
-            self._coordinates = _admit_manifold_expression_family(
-                coordinates,
+            field = parent.coordinate_field()
+            self._coordinates = finite_family(
+                tuple(field(coordinate) for coordinate in coordinates),
                 name=f"Coordinates of point of {parent}",
             )
             self._chart_label = chart_label
@@ -432,7 +437,8 @@ class TopologicalManifolds(OwnedCategory):
             return hash(id(self.parent()))
 
         def _repr_(self):
-            return f"Point {self.coordinates()} of {self.manifold()}"
+            coordinates = ", ".join(str(coordinate) for coordinate in self.coordinates())
+            return f"Point ({coordinates}) in the chart {self._chart_label} of {self.manifold()}"
 
     class ParentMethods:
         def __init__(
@@ -474,6 +480,10 @@ class TopologicalManifolds(OwnedCategory):
 
         def base_field_type(self):
             return self._preamble_manifold_field
+
+        def coordinate_field(self):
+            r"""The field ``RR``: a chart of a real manifold is a homeomorphism onto an open subset of ``RR^n``."""
+            return RR
 
         def regularity(self):
             degree = self._preamble_differentiability_degree
@@ -1349,6 +1359,10 @@ class ComplexManifolds(OwnedCategory):
 
         def real_dimension(self):
             return 2 * int(self.dimension())
+
+        def coordinate_field(self):
+            r"""The field ``CC``: a holomorphic chart is a biholomorphism onto an open subset of ``CC^n``."""
+            return _owned_complex_field()
 
         def is_analytic(self) -> bool:
             return True
