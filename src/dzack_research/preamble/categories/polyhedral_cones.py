@@ -729,14 +729,20 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
 def _engine_ray_triangulation(lattice, rays):
     r"""Private adapter (``OWN-06``): the simplices of a triangulation of a pointed cone's rays.
 
-    Engine: Sage's ``PointConfiguration`` on the rays as projective points
-    (``projective=True``), whose ``triangulate()`` returns simplices as tuples
-    of point positions.  Each ray is lowered once, through its owned
-    coordinate function ``to_vector()`` and the ring adapter
-    ``_engine_element``.  Returned: the finite ordered set of simplices, each a
-    finite ordered set of the rays (owned lattice elements) it contains.
+    Engine: Sage's ``PointConfiguration`` on the rays scaled onto the affine
+    hyperplane ``c(x) = 1``, ``c`` the sum of the rays of the dual cone, which
+    is positive on every ray of a pointed cone; the triangulations of the
+    cone are those of these points (Sage's ``projective=True`` input accepts
+    only points with last coordinate one, TRAPS.md).  ``triangulate()``
+    returns simplices as tuples of point positions.  Each ray is lowered once,
+    through its owned coordinate function ``to_vector()`` and the ring
+    adapter ``_engine_element``.  Returned: the finite ordered set of
+    simplices, each a finite ordered set of the rays (owned lattice elements)
+    it contains.
     """
+    from sage.geometry.cone import Cone
     from sage.geometry.triangulation.point_configuration import PointConfiguration
+    from sage.modules.free_module_element import vector as engine_vector
 
     ring = lattice.base_ring()
     labels = tuple(lattice.module_generating_set())
@@ -745,9 +751,15 @@ def _engine_ray_triangulation(lattice, rays):
         [SageQQ(_engine_element(ring, ray.to_vector()(label))) for label in labels]
         for ray in points
     ]
+    functional = sum((engine_vector(SageQQ, ray) for ray in Cone(rows).dual().rays()), engine_vector(SageQQ, [0] * len(labels)))
+    heights = [engine_vector(SageQQ, row) * functional for row in rows]
+    assert all(height > 0 for height in heights), (
+        f"the rays {rows} do not span a pointed cone: the sum of the dual rays is not positive on all of them"
+    )
+    affine = [[entry / height for entry in row] for row, height in zip(rows, heights, strict=True)]
     return finite_ordered_set(tuple(
         finite_ordered_set(tuple(points[position] for position in simplex))
-        for simplex in PointConfiguration(rows, projective=True).triangulate()
+        for simplex in PointConfiguration(affine).triangulate()
     ))
 
 
