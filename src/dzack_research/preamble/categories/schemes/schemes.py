@@ -1013,9 +1013,21 @@ class SchemeMorphismMethods:
         connections and the monodromy theorem*, Publ. Math. IHES 39 (1970),
         introduction and (3.0)).  The value is an object of
         ``VectorBundlesWithConnection(S).Integrable()`` whose underlying
-        locally free module is ``f.de_rham_cohomology(k)``.
+        locally free module is ``f.de_rham_cohomology(k)``.  The caller
+        supplies a smooth proper ``f``.
         """
-        assert False, "gauss_manin_connection on scheme morphisms: not implemented"
+        from dzack_research.preamble.categories.modules.connections import (
+            VectorBundlesWithConnection,
+            _GaussManinConnection,
+        )
+
+        category = VectorBundlesWithConnection(self.codomain()).Integrable()
+        return _object_of(
+            category,
+            _engine=(category, _GaussManinConnection, None),
+            family_morphism=self,
+            degree=degree,
+        )
 
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
@@ -1914,6 +1926,51 @@ def _integral_placement(ring) -> bool:
     the placement of ``A`` is read, and no primality is decided here.
     """
     return ring in OwnedIntegralDomains()
+
+
+def _function_field_on_atlas(atlas, equations):
+    r"""``K(X) = Frac(A)`` for the first nonempty open ``Spec A = X cap U_i`` over the charts of ``atlas``.
+
+    ``X`` is integral, and meets the chart ``U_i -> Y`` of ``atlas`` in the
+    closed subscheme of ``U_i`` cut out by the pullbacks of ``equations``
+    along the chart's homogeneous coordinates; no equations means ``X = Y``.
+    That intersection is empty exactly when the pulled-back equations
+    generate the unit ideal.  A nonempty open of an integral scheme is
+    integral (Mathlib ``AlgebraicGeometry.isIntegral_of_isOpenImmersion``),
+    so its coordinate ring is a domain (Stacks, Tag 01OK) whose fraction
+    field is ``K(X)`` (Mathlib
+    ``AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen``).
+    """
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        _quotient_by_algebra_elements_backend,
+    )
+
+    for label in atlas.chart_index_set():
+        algebra = atlas.chart(label).coordinate_algebra()
+        coordinates = tuple(
+            _projective_coordinate_morphism(atlas.member(label).domain().arrow()).homogeneous_coordinates()
+        )
+        local_equations = tuple(
+            _evaluate_owned_homogeneous_polynomial_on_coordinates(equation, equation.parent(), coordinates)
+            for equation in equations
+        )
+        match local_equations:
+            case () if algebra in OwnedIntegralDomains():
+                return algebra.fraction_field()
+            case ():
+                empty = algebra.one() == algebra.zero()
+            case _:
+                empty = algebra.ideal(*local_equations).contains_ambient_element(algebra.one())
+        if empty is True:
+            continue
+        domain, _quotient_map = _quotient_by_algebra_elements_backend(
+            algebra, local_equations, extra_categories=(OwnedIntegralDomains(),)
+        )
+        return domain.fraction_field()
+    assert False, (
+        f"an integral scheme has a nonempty affine open, but its pullback to every chart of {atlas} "
+        "is empty"
+    )
 
 
 def _affine_scheme(algebra, base, placements=(), **level_data):
@@ -3285,25 +3342,38 @@ class Schemes(OwnedCategoryOverBaseRing):
                 Domain: an integral scheme ``X`` over ``R``.  Codomain: a field,
                 an ``R``-algebra through ``R -> O_{X,eta}`` (Hartshorne,
                 *Algebraic Geometry*, II, Ex. 3.6).  For every nonempty affine
-                open ``Spec A`` of ``X``, ``K(X) = Frac(A)``; on an affine
-                integral scheme this is the fraction field of its coordinate
-                algebra, so the function field of ``A^1_k`` is ``k[t]``'s
-                ``fraction_field()``, the field ``k(t)``.  On ``P^n_k`` the
-                standard chart ``D_+(x_0) = Spec k[x_1/x_0, ..., x_n/x_0]`` is a
-                nonempty affine open, so ``K(P^n_k) = k(x_1/x_0, ..., x_n/x_0)``
-                (Hartshorne, II, Prop. 2.5(b) and Ex. 3.6); for ``n = 1`` this
-                is the rational function field ``k(t)``, ``t = x_1/x_0``.
+                open ``U = Spec A`` of ``X``, ``K(X) = Frac(A)`` (Mathlib
+                ``AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen``).
+                The open is read from the scheme's own construction: an affine
+                scheme is its own open; a scheme with a selected finite affine
+                atlas, such as ``P^n_k`` with its standard charts, uses a chart of
+                that atlas; a projective closed subscheme ``Z = V_+(f_1, ..., f_k)``
+                of such a scheme ``Y`` meets the chart ``U_i -> Y`` in
+                ``V(f_1|U_i, ..., f_k|U_i) <= U_i``, the pullbacks of the
+                equations along the chart's homogeneous coordinates (Stacks,
+                Tag 01M3).  So ``K(P^n_k) = k(x_1/x_0, ..., x_n/x_0)``, and the
+                plane cubic ``V_+(x_0^3 + x_1^3 + x_2^3)`` has the function field
+                ``Frac(k[a, b]/(1 + a^3 + b^3))`` of its chart ``x_0 != 0``.
                 """
                 base = self.scheme_base_ring()
                 match self:
                     case _ if self in Schemes(base).Affine():
                         return self.coordinate_algebra().fraction_field()
-                    case _ if self in ProjectiveSpaces(base):
-                        return self.standard_affine_chart(0).function_field()
+                    case _ if self.has_selected_finite_affine_atlas():
+                        return _function_field_on_atlas(self.selected_finite_affine_atlas(), ())
+                    case _ if (
+                        self in ClosedSubschemes(base)
+                        and self in Schemes(base).Projective()
+                        and self.inclusion().codomain().has_selected_finite_affine_atlas()
+                    ):
+                        return _function_field_on_atlas(
+                            self.inclusion().codomain().selected_finite_affine_atlas(),
+                            tuple(self.defining_equations()),
+                        )
                     case _:
                         assert False, (
-                            f"function_field on the non-affine integral schemes over {base}, through a "
-                            f"nonempty affine open of {self}: not implemented"
+                            f"function_field on the integral schemes over {base} with neither an affine "
+                            f"presentation nor a selected affine atlas, such as {self}: not implemented"
                         )
 
         def an_object(self):
@@ -3386,9 +3456,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                 The hypercohomology of the de Rham complex: the class of the
                 total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg
                 injective resolution of ``Ω^•_{X/R}`` by sheaves of
-                ``R``-modules.
+                ``R``-modules.  Computed for projective spaces ``P^n_R`` from
+                Stacks Project, Tag 0FMJ.
                 """
-                assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
+                from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                    _projective_space_de_rham_hypercohomology,
+                )
+
+                base = self.scheme_base_ring()
+                match self:
+                    case _ if self in ProjectiveSpaces(base):
+                        return _projective_space_de_rham_hypercohomology(self)
+                    case _:
+                        assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
 
             def de_rham_cohomology(self, degree):
                 r"""``H^degree_dR(X/R) = H^degree(RΓ(X, Ω^•_{X/R}))``, an object of ``Modules(R)``."""
@@ -4858,7 +4938,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
             return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
 
-        def hypersurface(self, f):
+        def hypersurface(self, f, placements=()):
             r"""The hypersurface ``V_+(f) = Proj k[x_0, ..., x_n]/(f)`` with its closed immersion into ``P^n_k``.
 
             Domain: a nonconstant homogeneous polynomial ``f`` of the
@@ -4867,9 +4947,12 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             subscheme of ``P^n_k``, a projective scheme over ``k`` whose
             inclusion ``V_+(f) -> P^n_k`` is induced by the graded quotient map
             ``k[x_0, ..., x_n] -> k[x_0, ..., x_n]/(f)``.  The projective
-            closed-subscheme construction asserts that ``f`` is homogeneous.
+            closed-subscheme construction asserts that ``f`` is homogeneous.  A caller
+            that knows ``f`` irreducible states ``Schemes(k).Integral()`` in
+            ``placements``: then ``(f)`` is a homogeneous prime and ``V_+(f)`` is
+            integral.
             """
-            return self.closed_subscheme(f)
+            return self.closed_subscheme(f, placements=placements)
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
@@ -5812,8 +5895,10 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
                 case _ if scheme_factorization is not None:
                     factorization = scheme_factorization(left_map, right_map)
                 case _ if cocone_factorization is not None:
-                    factorization = LocallyRingedSpaces().Mor(left_map.domain(), self)(
-                        cocone_factorization(left_map.coordinate_algebra_morphism(), right_map.coordinate_algebra_morphism())
+                    factorization = _affine_morphism_from_pullback(
+                        left_map.domain(),
+                        self,
+                        cocone_factorization(left_map.coordinate_algebra_morphism(), right_map.coordinate_algebra_morphism()),
                     )
                 case _:
                     algebra_pushout = construction.algebra_pushout()
@@ -5837,14 +5922,21 @@ def _structure_morphism_rule(mor):
 
 
 def _quotient_base_change_pushout(left_pullback, right_pullback):
-    r"""Realize ``A tensor_T T/I`` as ``A/IA`` in the represented quotient regime.
+    r"""Realize ``A tensor_T Q`` as ``A/IA`` for a surjection ``T -> Q`` with kernel ``I``.
 
     This is the affine algebra realization for base change along a quotient of
     the scalar ring, used when the general algebra pushout does not own the
-    span because ``T/I`` has no selected algebra framing.  The quotient
-    presentation supplies the pushout object, its two canonical maps, and the
-    universal cocone factorization.  ``None`` states that the span is not of
-    this shape.
+    span because ``Q`` has no selected algebra framing.  Two surjections have a
+    represented kernel: the quotient map ``T -> T/I``, and an ``R``-point
+    ``e: T -> R`` of an ``R``-algebra ``T`` with finitely many chosen algebra
+    generators ``t``.  The kernel of ``e`` is generated by the ``t - e(t)``:
+    they lie in it, and ``T/(t - e(t))`` is generated as an ``R``-algebra by
+    the images of the ``t``, which are scalars, so ``R -> T/(t - e(t))`` is
+    surjective and ``e`` is its inverse.  Then ``A tensor_T T/I = A/IA``,
+    since ``A tensor_T -`` is right exact on ``I -> T -> T/I -> 0``.  The
+    presentation of ``A/IA`` supplies the pushout object, its two canonical
+    maps, and the universal cocone factorization.  ``None`` states that the
+    span is not of this shape.
     """
     base = left_pullback.domain()
     assert right_pullback.domain() is base, (
@@ -5852,14 +5944,28 @@ def _quotient_base_change_pushout(left_pullback, right_pullback):
         f"ring, but they start at {base} and {right_pullback.domain()}"
     )
 
+    def kernel_generators(quotient_pullback):
+        quotient = quotient_pullback.codomain()
+        match quotient:
+            case _ if quotient in QuotientRings() and quotient.quotient_source() is base:
+                return tuple(quotient.defining_ideal().ideal_generators())
+            case _ if quotient is base.base_ring() and base.is_framed_algebra():
+                return tuple(
+                    generator - base(quotient_pullback(generator))
+                    for generator in base.finite_algebra_generators()
+                )
+            case _:
+                return None
+
     def realize(other_pullback, quotient_pullback, quotient_on_right):
         other = other_pullback.codomain()
         quotient = quotient_pullback.codomain()
-        if quotient not in QuotientRings() or quotient.quotient_source() is not base:
+        kernel = kernel_generators(quotient_pullback)
+        if kernel is None:
             return None
-        if other not in AlgebrasWithChosenFinitePresentation(base):
+        if other not in AlgebrasWithChosenFinitePresentation(other.base_ring()):
             return None
-        equations = tuple(other_pullback(generator) for generator in quotient.defining_ideal().ideal_generators())
+        equations = tuple(other_pullback(generator) for generator in kernel)
         pushout, other_to_pushout = other._quotient_by_algebra_elements(equations)
         engine_quotient_to_pushout = _engine_ring(pushout).coerce_map_from(_engine_ring(quotient))
         assert engine_quotient_to_pushout is not None, (
@@ -5987,6 +6093,13 @@ def _scheme_fiber_product(left_map, right_map):
     left = left_map.domain()
     right = right_map.domain()
     base_scheme = left_map.codomain()
+    affine_over_base = Schemes(left.scheme_base_ring()).Affine()
+    if left._is_glued_from_affine_atlas() and right in affine_over_base and base_scheme in affine_over_base:
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _glued_fiber_product_over_affine_base,
+        )
+
+        return _glued_fiber_product_over_affine_base(left_map, right_map)
     # Scalar base change includes noncanonical maps and endomorphisms of R.
     # Choose it before the coproduct shortcut for two R-linear structure maps.
     for scheme_leg, scalar_leg, on_left in ((left_map, right_map, True), (right_map, left_map, False)):

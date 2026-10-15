@@ -3,6 +3,7 @@ r"""Positive-cone components and their projectivized hyperbolic geometry."""
 from itertools import count, product
 from math import gcd
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -285,16 +286,19 @@ class PositiveConeComponents(OwnedParameterizedCategory):
             return _hyperbolic_space(self)
 
         def _repr_(self):
-            return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
+            return f"Positive-cone component of {self.lattice()} ⊗ RR containing {self.timelike_vector()}"
 
 
 class HyperbolicSpaces(OwnedParameterizedCategory):
-    r"""The hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
+    r"""Hyperbolic spaces of dimension ``n``.
 
-    For a lattice ``L`` of signature ``(1, n)`` and a chosen component
-    ``C^+`` of ``{x in L_RR : q(x) > 0}``, ``HH(C^+)`` is the hyperboloid
-    ``{x in C^+ : q(x) = 1}``, a smooth manifold of dimension ``n`` with the
-    metric ``-b`` on each tangent space ``x^perp``.  It is
+    An object is a complete simply connected Riemannian ``n``-manifold of
+    constant sectional curvature ``-1``.  Any two are isometric (the
+    Killing--Hopf theorem), so the family is parameterized by the dimension
+    ``n >= 1`` alone.  Each hyperboloid model ``HH(C^+)`` is an object: for a
+    lattice ``L`` of signature ``(1, n)`` and a chosen component ``C^+`` of
+    ``{x in L_RR : q(x) > 0}``, ``HH(C^+)`` is ``{x in C^+ : q(x) = 1}`` with
+    the metric ``-b`` on each tangent space ``x^perp``.  It is
     ``SO_0(1, n)/SO(n)``, a Riemannian globally symmetric space of the
     noncompact type (Helgason, Ch. X, §6, Table V, type BDI with ``q = 1``),
     and ``RiemannianManifolds().GloballySymmetric()`` is the immediate
@@ -302,24 +306,40 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
     points, the separate object ``rational_points()``.
     """
 
-    def parameter_category(self):
-        component = self.parameter()
-        return PositiveConeComponents(component.lattice())
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        assert dimension >= 1, (
+            f"a hyperbolic space has dimension at least 1, and {dimension} is not"
+        )
+        return Category.__classcall__(cls, dimension)
 
-    def positive_cone_component(self):
-        return self.base()
+    def dimension(self):
+        return self.parameter()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "hyperbolic spaces"
+    def _repr_object_names(self):
+        return f"hyperbolic spaces of dimension {self.dimension()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.manifolds import RiemannianManifolds
 
         return [RiemannianManifolds().GloballySymmetric()]
 
+    @cached_method
     def an_object(self):
-        return _hyperbolic_space(self.positive_cone_component())
+        r"""Return the standard ``H^n``, the hyperboloid of ``I_{1,n}`` in its reference positive-cone component."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        lattice = Lattices.IPQ(1, self.dimension())
+        return PositiveConeComponents(lattice).an_object().projectivization()
+
+    def _call_(self, component):
+        r"""Return the hyperboloid model ``HH(C^+)`` of a positive-cone component of rank ``n + 1``."""
+        assert component.lattice().module_rank() == self.dimension() + 1, (
+            f"{component} spans a hyperbolic space of dimension "
+            f"{component.lattice().module_rank() - 1}, not {self.dimension()}"
+        )
+        return component.projectivization()
 
     class ParentMethods:
         def __init__(self, component, **rest) -> None:
@@ -396,7 +416,12 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
             )
 
         def _repr_(self):
-            return f"Hyperbolic space of {self._component}"
+            component = self.positive_cone_component()
+            return (
+                f"Hyperbolic space H^{self.dimension()}: the hyperboloid q = 1 in the "
+                f"positive-cone component of {component.lattice()} ⊗ RR containing "
+                f"{component.timelike_vector()}"
+            )
 
 
 class HyperbolicRationalPoints(OwnedParameterizedCategory):
@@ -514,8 +539,7 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
     """
 
     def parameter_category(self):
-        space = self.parameter()
-        return HyperbolicSpaces(space.positive_cone_component())
+        return HyperbolicSpaces(self.parameter().dimension())
 
     def hyperbolic_space(self):
         return self.base()

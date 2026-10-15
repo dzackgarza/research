@@ -272,8 +272,10 @@ from dzack_research.preamble.categories.group.groups import (  # noqa: F401
     TopologicalGroups,
 )
 from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicPolyhedra,
     HyperbolicRationalPoints,
     HyperbolicSpaces,
+    PositiveConeComponents,
 )
 from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     ComplexManifolds,
@@ -355,6 +357,8 @@ from dzack_research.preamble.categories.modules import (
     TorsionQuadraticFormModules,
     VectorSpaces,
     DerivedCategories,
+    LinearCategories,
+    TriangulatedCategories,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,

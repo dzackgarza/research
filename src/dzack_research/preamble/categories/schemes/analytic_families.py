@@ -1,4 +1,4 @@
-r"""Analytic-disc families and a supported affine analytification bridge.
+r"""Analytic-disc families and the analytification of affine and projective spaces.
 
 The analytic objects here are genuine complex manifolds with the topology of
 open subsets of ``C^n``.  The comparison is deliberately narrow: an affine
@@ -15,7 +15,11 @@ not satisfy.
 
 from sage.all import CC as SageCC
 from sage.all import QQ as SageQQ
+from sage.all import QQbar as SageQQbar
+from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.structure.element import parent as element_parent
+from sage.symbolic.ring import SR as SageSR
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import (
@@ -36,23 +40,78 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     ProjectiveSpaces,
     Schemes,
+    _evaluate_owned_homogeneous_polynomial_on_coordinates,
     _polynomial_exponents,
+    _projective_coordinate_morphism,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.real import RR
 
 
+def _exact_algebraic_embedding(source_ring, scalar_embedding):
+    r"""The embedding ``K -> QQbar`` through which ``sigma : K -> CC`` factors.
+
+    A number field ``K`` has finitely many embeddings ``K -> QQbar``, and
+    ``sigma`` is one of them followed by ``QQbar -> CC``: the one sending the
+    generator of ``K`` to the algebraic number nearest ``sigma`` of it, which is
+    how Sage identifies the embedding of ``NumberField(f, embedding=...)``.
+    Over ``QQ`` it is the unique embedding.  The coefficients of an
+    analytified map are their exact images under it.
+
+    Engine adapter (``OWN-06``): read the private Sage field of ``K`` and
+    return the private Sage embedding into ``QQbar``.
+    """
+    engine_source = _engine_ring(source_ring)
+    assert engine_source in SageNumberFields(), (
+        f"cannot keep the coefficients of an analytification along {scalar_embedding} "
+        f"exact: their exact images are computed for number fields, and {source_ring} is "
+        f"not a number field"
+    )
+    engine_target = _engine_ring(scalar_embedding.codomain())
+    generator_image = engine_target(
+        _engine_element(
+            scalar_embedding.codomain(),
+            scalar_embedding(_owned_engine_element(source_ring, engine_source.gen())),
+        )
+    )
+    return min(
+        engine_source.embeddings(SageQQbar),
+        key=lambda embedding: abs(SageCC(embedding(engine_source.gen())) - generator_image),
+    )
+
+
+def _exact_coefficient_expression(algebraic_number):
+    r"""Write an algebraic number as an exact symbolic constant.
+
+    Engine adapter: Sage's symbolic ring holds a rational number exactly, and
+    an irrational algebraic number exactly as its radical expression.
+    ``radical_expression`` returns the algebraic number itself, outside the
+    symbolic ring, when it finds none.
+    """
+    if algebraic_number in SageQQ:
+        return SageSR(SageQQ(algebraic_number))
+    expression = algebraic_number.radical_expression()
+    assert element_parent(expression) is SageSR, (
+        f"cannot write the coefficient {algebraic_number} of an analytified map exactly: "
+        f"it has no expression by radicals"
+    )
+    return expression
+
+
 def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     r"""Raise one algebra polynomial to the corresponding complex chart formula.
+
+    Each coefficient ``c`` becomes the exact algebraic number ``sigma(c)``, so
+    that analytification preserves identities and composites exactly; it is
+    read in ``CC`` only when a point is substituted.
 
     Engine adapter (``OWN-06``): read the private Sage polynomial of an owned
     algebra element and write the Sage symbolic chart expression.
     """
     backend = _engine_element(algebra, algebra(polynomial))
     source_ring = algebra.base_ring()
-    target_ring = scalar_embedding.codomain()
     engine_source = _engine_ring(source_ring)
-    engine_target = _engine_ring(target_ring)
+    exact_embedding = _exact_algebraic_embedding(source_ring, scalar_embedding)
     variables = tuple(
         _engine_manifold_expression(variable)
         for variable in chart.coordinates()
@@ -60,8 +119,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     result = 0
     for exponent, coefficient in backend.monomial_coefficients().items():
         powers = _polynomial_exponents(exponent, len(variables))
-        owned_coefficient = _owned_engine_element(source_ring, engine_source(coefficient))
-        term = engine_target(_engine_element(target_ring, scalar_embedding(owned_coefficient)))
+        term = _exact_coefficient_expression(exact_embedding(engine_source(coefficient)))
         for variable, power in zip(variables, powers, strict=True):
             if power:
                 term *= variable**power
@@ -158,11 +216,61 @@ class _ProjectiveSpaceAnalytificationFunctor(Functor):
             int(projective_space.relative_dimension()), name=f"({projective_space})^an",
         )
 
+    @cached_method
     def _apply_morphism(self, morphism):
-        r"""A morphism ``P^n_K -> P^m_K`` goes to the holomorphic map given chartwise by its homogeneous polynomials."""
-        assert False, (
-            f"analytification of the morphism {morphism} on {self.domain()}: not implemented"
+        r"""A morphism ``P^n_K -> P^m_K`` goes to the holomorphic map given chartwise by its homogeneous polynomials.
+
+        A morphism ``f = [F_0 : ... : F_m]`` is given by homogeneous
+        polynomials of one degree with no common zero (Hartshorne II.7.1;
+        Stacks, Tag 01ND).  On ``U_i = {x_i != 0}`` its analytification has,
+        into ``V_j = {y_j != 0}``, the coordinate representation
+        ``y_k/y_j = F_k/F_j`` with ``x_i = 1``, defined where ``F_j`` does not
+        vanish.  These open sets cover ``U_i`` because the ``F_j`` have no
+        common zero.  A chart pair on which ``F_j`` restricts to zero has
+        empty domain and is not listed.
+        """
+        assert morphism.domain() in self.domain() and morphism.codomain() in self.domain(), (
+            f"analytification over {self.domain().base_ring()} cannot be applied to {morphism}: "
+            f"its domain {morphism.domain()} and codomain {morphism.codomain()} must both be "
+            f"projective spaces in {self.domain()}"
         )
+        source = morphism.domain()
+        analytic_source = self.object_image(source)
+        analytic_target = self.object_image(morphism.codomain())
+        sections = tuple(_projective_coordinate_morphism(morphism).homogeneous_coordinates())
+        representations = {}
+        for i in range(int(source.relative_dimension()) + 1):
+            chart_coordinates = tuple(
+                _projective_coordinate_morphism(
+                    source.standard_affine_chart_embedding(i)
+                ).homogeneous_coordinates()
+            )
+            algebra = chart_coordinates[0].parent()
+            local_sections = tuple(
+                _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                    section, section.parent(), chart_coordinates
+                )
+                for section in sections
+            )
+            analytic_chart = analytic_source.atlas()[f"U{i}"]
+            expressions = tuple(
+                _polynomial_chart_expression(
+                    algebra, local_section, analytic_chart, self.scalar_embedding()
+                )
+                for local_section in local_sections
+            )
+            for j, denominator in enumerate(expressions):
+                if local_sections[j] == algebra.zero():
+                    continue
+                representations[f"U{i}", f"U{j}"] = (
+                    tuple(
+                        numerator / denominator
+                        for k, numerator in enumerate(expressions)
+                        if k != j
+                    ),
+                    (denominator,),
+                )
+        return analytic_source.Mor(analytic_target).rational(representations)
 
     def _repr_(self):
         return f"Projective analytification along {self.scalar_embedding()}"
@@ -248,6 +356,7 @@ class _AnalyticDiscFamilyEngine:
         return self.fibre_inclusion(point).domain()
 
     def comparison_maps(self):
+        r"""The open inclusions ``X_Delta -> X^an`` and ``Delta -> B^an``, the horizontal legs of the comparison square."""
         total_inclusion = self.analytic_total_space().open_inclusion()
         base_inclusion = self.analytic_base().open_inclusion()
         product = Sets().product((total_inclusion.parent(), base_inclusion.parent()))

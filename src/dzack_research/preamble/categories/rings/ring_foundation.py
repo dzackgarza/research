@@ -1615,7 +1615,14 @@ class LocalizationRings(OwnedCategory):
             return left_image.equality_status(right_image)
 
         def _repr_(self):
-            return f"Localization of {self.localization_source()} at {self.localization_submonoid()}"
+            # (R-{0})^-1 R is Frac(R), and is named as the fraction field.
+            source = self.localization_source()
+            submonoid = self.localization_submonoid()
+            match submonoid._structure_data().get("kind"):
+                case "nonzero_elements":
+                    return f"Fraction Field of {source}"
+                case _:
+                    return f"Localization of {source} at {submonoid}"
 
         def localization_source(self):
             return self._localization_source
@@ -4392,10 +4399,8 @@ def _owned_ring_element_text(element) -> str:
     kind = parent._preamble_ring_display_kind
     if kind == "modular":
         return f"[{int(value.lift())}]"
-    if kind == "real":
-        return repr(float(value))
-    if kind == "complex":
-        return repr(complex(value))
+    if kind == "real" or kind == "complex" or kind == "symbolic":
+        return str(value)
     if parent._preamble_is_number_field():
         polynomial = value.polynomial()
         owned_parent = _own_ring(polynomial.parent())

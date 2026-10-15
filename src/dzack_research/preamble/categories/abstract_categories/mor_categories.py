@@ -555,7 +555,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     (``OWN-22``).
     """
 
-    _mor_placement: Category | None = None
+    _mor_placement: Category
 
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
@@ -702,7 +702,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         _init_mor_category_class(self)
         # Host ``Homset`` initialization.  It stores the endpoints and runs
         # ``Parent.__init__`` once, in Sage's ``Sets`` Mor category, and
-        # ``_init_category_`` records the placement over it.
+        # ``_init_category_`` records the placement over it.  A Mor object is
+        # a set of arrows, so a caller that supplies no richer placement
+        # places it in ``Sets()``.
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
         self._mor_placement = category
         SageHomset.__init__(self, domain, codomain, category=SageSets())
         with construction_scope(self) as reached:
@@ -728,13 +734,9 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         recorded as the join of that category with the caller's placement.
         """
         Parent._init_category_(self, category)
-        match self._mor_placement:
-            case None:
-                pass
-            case placement:
-                SageCategoryObject._init_category_(
-                    self, owned_category_join((category, placement))
-                )
+        SageCategoryObject._init_category_(
+            self, owned_category_join((category, self._mor_placement))
+        )
 
     @validator
     def validate_placement(self) -> None:
