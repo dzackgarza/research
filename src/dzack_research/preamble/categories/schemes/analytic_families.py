@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _polynomial_exponents,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.rings.real import RR
 
 
 def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
@@ -181,13 +182,10 @@ class _AnalyticDiscFamilyEngine:
         ``(x, t) |-> t``, to the preimage of ``Delta``, so its fibre over
         ``t`` is the line ``{(x, t)}``.  Domain: the fibre, a complex line
         with coordinate ``x``.  The composite with the family is constant at
-        ``t``.
+        ``t``.  A complex number ``t`` with ``|t| < r`` is read as the point
+        of ``Delta`` it names, through the disc's element constructor.
         """
-        base = self.analytic_base()
-        assert point in base, (
-            f"the fibre of {self.analytic_family_morphism()} is taken over a point of its base "
-            f"{base}, but {point} is a point of {point.parent()}"
-        )
+        point = self.analytic_base()(point)
         (parameter,) = tuple(point.coordinates())
         fibre = ComplexManifolds().affine_space(
             1, name=f"X_({parameter})", coordinate_names=("x",),
@@ -257,7 +255,7 @@ def AnalyticDiscFamily(radius=1):
     analytic_total = ComplexManifolds().open_submanifold(
         analytic_total_ambient,
         "X_Delta",
-        abs(engine_total_parameter) < float(radius),
+        abs(engine_total_parameter) < RR(radius).expression(),
     )
     restricted_parameter = analytic_total.atlas()["standard"].coordinate(1)
     analytic_family = analytic_total.holomorphic_polynomial_map(

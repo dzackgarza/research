@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
+    _owned_complex_field,
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -1362,6 +1363,22 @@ class _ComplexDiscEngine(_ComplexOpenEngine):
 
     def is_punctured(self) -> bool:
         return self._punctured
+
+    def _element_constructor_(self, datum, chart_label="standard"):
+        r"""Return the point ``z`` of the disc for a complex number ``z``, or the point with coordinates ``datum``.
+
+        A point of the disc ``{|z| < r}`` is a complex number ``z`` with
+        ``|z| < r``, and ``z != 0`` when the disc is punctured: its one
+        coordinate in the chart cut out of the line.  The chart restriction
+        decides membership.
+        """
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in _owned_complex_field():
+                return super()._element_constructor_((datum,), chart_label)
+            case _:
+                return super()._element_constructor_(datum, chart_label)
 
 
 __all__ = [
