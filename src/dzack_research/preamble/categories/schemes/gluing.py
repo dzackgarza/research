@@ -61,6 +61,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SheafObjects,
     ZariskiCoveringFamilies,
     zariski_coverage,
+    _unpresented_sheaf_placement,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
@@ -6331,10 +6332,13 @@ class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
                 f"cannot pull {sheaf} back along the refinement {self.refinement()}: it is a sheaf on "
                 f"{sheaf.atlas_datum()}, not on the coarse atlas {self.refinement().coarse_datum()}"
             )
+        fine_scheme = self.refinement().fine_scheme()
+        fibre, presheaf_data = _unpresented_sheaf_placement(fine_scheme, f"f^{{-1}} of {sheaf}", self)
         return _object_of(
-            self,
+            owned_category_join((self, fibre)),
             source_sheaf=sheaf,
-            _engine=_FiniteAtlasInverseImageModuleSheafEngine,
+            _engine=(self, _FiniteAtlasInverseImageModuleSheafEngine, None),
+            **presheaf_data,
         )
 
     def __call__(self, *args, **kwargs):
