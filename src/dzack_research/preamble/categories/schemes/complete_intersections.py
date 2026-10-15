@@ -232,7 +232,17 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 return [Surfaces(self.base_ring()).K3()]
 
             def an_object(self):
-                r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``."""
+                r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``, when ``2`` is a unit of ``R``.
+
+                The partial derivatives are ``4 x_i^3``, so the quartic is smooth over
+                ``R`` exactly when ``2`` is invertible in ``R``; in characteristic ``2``
+                it is ``(x_0 + x_1 + x_2 + x_3)^4``, the fourfold plane.
+                """
+                base = self.base_ring()
+                assert base(2).is_unit(), (
+                    f"the Fermat quartic is smooth over {base} only when 2 is a unit of {base}; "
+                    f"an object of {self} over a base where 2 is not a unit: not implemented"
+                )
                 ambient = ProjectiveSpaces(self.base_ring())(3)
                 x = tuple(ambient.homogeneous_coordinate_generators())
                 return self(ProjectiveCompleteIntersections(self.base_ring()).Smooth()(ambient, sum(v**4 for v in x)))

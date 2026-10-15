@@ -491,7 +491,7 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
             return f"K3 surfaces over {self.base_ring()}"
 
         def an_object(self):
-            r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3`` [Huy16, Ch. 1, Ex. 1.3]."""
+            r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3`` [Huy16, Ch. 1, Ex. 1.3], when ``2`` is a unit of the base."""
             from dzack_research.preamble.categories.schemes.complete_intersections import (
                 ProjectiveCompleteIntersections,
             )
