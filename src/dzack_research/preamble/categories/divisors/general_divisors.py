@@ -17,7 +17,10 @@ divisor group.
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.picard_groups import _projective_bundle_picard_group
+from dzack_research.preamble.categories.divisors.picard_groups import (
+    _hyperplane_picard_group,
+    _projective_bundle_picard_group,
+)
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
@@ -115,6 +118,26 @@ def _principal_weil_divisor(group, rational_function):
         f"divisors of {group}"
     )
     return group.linear_combination(coefficients)
+
+
+def _projective_space_over_field_picard_to_class_group_morphism(projective_space):
+    r"""\(\operatorname{Pic}(\mathbb{P}^n_k) \to \operatorname{Cl}(\mathbb{P}^n_k)\) for a field ``k``.
+
+    ``Pic(P^n_k) = ZZ[O(1)]`` and ``Cl(P^n_k) = Cl(Spec k) + ZZ[H]`` with
+    ``Cl(Spec k) = 0`` (Hartshorne, II.6.4 and II.6.17).  The map sends
+    ``[O(1)]`` to the hyperplane class ``H``; it is an isomorphism because
+    ``P^n_k`` is regular (Hartshorne, II.6.16).
+    """
+    picard = _hyperplane_picard_group()
+    classes = ClassGroups().projective_bundle(
+        projective_space,
+        ClassGroups().trivial(projective_space.base_scheme()),
+    )
+    class_hyperplane = classes.biproduct_factor(1)
+    weil_hyperplane = classes.injection(1)(
+        class_hyperplane.module_generator(class_hyperplane.module_generating_set()[0])
+    )
+    return picard.module_category().Mor(picard, classes)({"O(1)": weil_hyperplane})
 
 
 def _projective_space_picard_to_class_group_morphism(
