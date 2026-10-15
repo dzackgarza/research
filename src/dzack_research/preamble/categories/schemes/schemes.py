@@ -135,6 +135,8 @@ for _scheme_axiom in (
     "Integral",
     "Normal",
     "CalabiYau",
+    "K3",
+    "DelPezzo",
 ):
     if _scheme_axiom not in all_axioms:
         all_axioms.add(_scheme_axiom)
@@ -4428,9 +4430,9 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
             pass
     match (base in OwnedFields(), dimension):
         case (True, 2):
-            from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+            from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-            decided.append(ProjectiveSurfaces(base))
+            decided.append(Surfaces(base).Projective())
         case _:
             pass
     return _object_of(
@@ -5191,9 +5193,9 @@ def _scheme_product(*schemes, placements=(), **level_data):
             dimension = sum(width - 1 for width in widths)
             projective_surface_placement = ()
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                projective_surface_placement = (ProjectiveSurfaces(base),)
+                projective_surface_placement = (Surfaces(base).Projective(),)
             names = tuple(
                 f"x{factor}_{coordinate}"
                 for factor, width in enumerate(widths)
@@ -5374,9 +5376,9 @@ def _mixed_affine_projective_product(factors, base, placements, level_data):
             placements.append(schemes_over_base.Projective())
             dimension = sum(int(factor.relative_dimension()) for factor in schemes)
             if base in OwnedFields() and dimension == 2:
-                from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                placements.append(ProjectiveSurfaces(base))
+                placements.append(Surfaces(base).Projective())
     return schemes_over_base.glue_affine_atlas(
         tuple(charts[label] for label in chart_labels),
         transitions,
@@ -6442,11 +6444,17 @@ class ProjectiveLines(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
-    r"""Schemes with a canonical generic fibre over an integral base."""
+    r"""Schemes over an integral domain ``R``, with their generic fibre.
+
+    The generic fibre of ``X -> Spec R`` is the base change along
+    ``R -> Frac(R)``.  That ``R`` is an integral domain is the category of
+    the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedIntegralDomains()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedIntegralDomains():
-            raise TypeError("a canonical generic fibre requires an integral-domain base")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6454,8 +6462,11 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected integral-domain base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:
@@ -6465,11 +6476,17 @@ class SchemesOverIntegralDomains(OwnedCategoryOverBaseRing):
 
 
 class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
-    r"""Schemes over a local base with its distinguished closed point."""
+    r"""Schemes over a local ring ``R``, with their special fibre.
+
+    The special fibre of ``X -> Spec R`` is the base change along the residue
+    map ``R -> R/m`` at the closed point.  That ``R`` is local is the category
+    of the parameter, refused at the boundary.
+    """
+
+    def parameter_category(self):
+        return OwnedRings().Local()
 
     def super_categories(self):
-        if self.base_ring() not in OwnedRings().Local():
-            raise TypeError("a canonical special fibre requires a local base ring")
         return [Schemes(self.base_ring())]
 
     def an_object(self):
@@ -6477,8 +6494,11 @@ class SchemesOverLocalRings(OwnedCategoryOverBaseRing):
 
     def _call_(self, scheme):
         from dzack_research.preamble.refine import refine
-        if scheme not in Schemes(self.base_ring()):
-            raise TypeError("a scheme must have the selected local base")
+
+        base = self.base_ring()
+        assert scheme in Schemes(base), (
+            f"only a scheme over {base} is placed in {self}, but {scheme} is in {scheme.category()}"
+        )
         return refine(scheme, self)
 
     class ParentMethods:

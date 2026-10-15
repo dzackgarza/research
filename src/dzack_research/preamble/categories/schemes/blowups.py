@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
-from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+from dzack_research.preamble.categories.schemes.varieties import Surfaces
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -203,9 +203,9 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
     Over a field, the graph-closure realization has the declared projective
     surface placement, and its blowdown retains its exact endpoints::
 
-        sage: from dzack_research.preamble.all import QQ, ProjectivePointBlowups, ProjectiveSurfaces
+        sage: from dzack_research.preamble.all import QQ, ProjectivePointBlowups, Surfaces
         sage: B = ProjectivePointBlowups(QQ).an_object()
-        sage: B in ProjectivePointBlowups(QQ) and B in ProjectiveSurfaces(QQ)
+        sage: B in ProjectivePointBlowups(QQ) and B in Surfaces(QQ).Projective()
         True
         sage: B.blowup_morphism().domain() is B
         True
@@ -221,7 +221,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         categories = [Blowups(base), Schemes(base).Smooth()]
         match base in OwnedFields():
             case True:
-                categories.append(ProjectiveSurfaces(base))
+                categories.append(Surfaces(base).Projective())
             case False:
                 pass
         return categories

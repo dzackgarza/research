@@ -78,7 +78,6 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
-    ProjectiveSurfaces,
     Surfaces,
     Varieties,
 )
@@ -2031,7 +2030,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
                 pass
     match (base in OwnedFields(), int(fan.dimension()), fan.is_complete()):
         case (True, 2, True):
-            decided.append(ProjectiveSurfaces(base))
+            decided.append(Surfaces(base).Projective())
         case _:
             pass
     engine_base = _engine_ring(base)
