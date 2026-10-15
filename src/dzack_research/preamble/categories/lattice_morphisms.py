@@ -2046,17 +2046,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         lattice = self.codomain()
         if self.domain() is lattice and element_parent(source) is lattice and element_parent(target) is lattice:
             return self.vector_equivalence_witness(source, target)
-        if self.domain() is lattice and element_parent(source) is not self and element_parent(target) is not self:
-            from dzack_research.preamble.categories.coloured_vector_families import _transporter
+        from dzack_research.preamble.categories.coloured_vector_families import _is_family_in, _transporter
 
+        if _is_family_in(source, self.domain()) and _is_family_in(target, self.codomain()):
             return _transporter(self, source, target)
-        for candidate in (source, target):
-            if element_parent(candidate) is not self:
-                raise ValueError(
-                    f"no transporter from {source} to {target} in {self.acting_group()}: "
-                    f"{candidate} is neither a vector of {lattice} nor an isometry "
-                    f"{self.domain()} -> {self.codomain()}"
-                )
+        if element_parent(source) is not self or element_parent(target) is not self:
+            raise ValueError(
+                f"no transporter from {source} to {target} in {self}: they must be two vectors of "
+                f"{lattice} (when L = M), a family of vectors of {self.domain()} and one of "
+                f"{self.codomain()}, or two isometries {self.domain()} -> {self.codomain()}"
+            )
         codomain = self.codomain()
         return self.acting_group()(lambda label: target(source.lift(codomain.module_generator(label))))
 
