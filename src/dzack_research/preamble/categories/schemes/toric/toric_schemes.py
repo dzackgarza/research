@@ -1559,7 +1559,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
         @cached_method
         def hodge_structure(self):
-            r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
+            r"""The Hodge structure on ``H^*(X(CC); ZZ)``.
+
+            The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of
+            ``MixedHodgeStructures(ZZ)`` whose weight filtration splits with
+            ``Gr^W_k = H^k`` in ``HodgeStructures(ZZ, k)`` (Deligne, Théorie de
+            Hodge II, (2.1.1), (2.3.1)).
+            """
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
                 _toric_hodge_structure,
             )
