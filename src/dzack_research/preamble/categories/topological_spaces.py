@@ -321,6 +321,15 @@ class TopologicalSpaces(OwnedCategory):
 
     _MorCategory = TopologicalSpaceMorCategoryConstruction
 
+    @property
+    def Coslices(self):
+        r"""``X/Top``; for ``X`` the one-point space, the pointed spaces ``*/Top``."""
+        from dzack_research.preamble.categories.pointed_topological_spaces import (
+            TopologicalSpaceCoslices,
+        )
+
+        return TopologicalSpaceCoslices
+
     def super_categories(self):
         return [Sets()]
 
