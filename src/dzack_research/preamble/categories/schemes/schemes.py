@@ -5106,6 +5106,19 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return self.O(-int(self.relative_dimension()) - 1)
 
         @cached_method
+        @cached_method
+        def structure_sheaf(self):
+            r"""``O_X`` on ``Open(|P^n_R|)``, glued from the standard affine charts ``D_+(x_i)``.
+
+            Its global sections are ``Gamma(P^n_R, O) = S_0 = R`` for
+            ``S = R[x_0..x_n]`` (Hartshorne, Proposition II.5.13).
+            """
+            from dzack_research.preamble.categories.schemes.gluing import (
+                _finite_atlas_structure_sheaf,
+            )
+
+            return _finite_atlas_structure_sheaf(self.standard_affine_atlas(), self.scheme_base_ring())
+
         def standard_affine_atlas(self):
             r"""Return the verified standard affine atlas on this exact projective space."""
             from dzack_research.preamble.categories.schemes.gluing import (

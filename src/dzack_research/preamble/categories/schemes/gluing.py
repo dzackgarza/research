@@ -60,6 +60,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
     SheafObjects,
     ZariskiCoveringFamilies,
+    PresheafObjects,
     zariski_coverage,
     _unpresented_sheaf_placement,
 )
@@ -6928,6 +6929,91 @@ def _glued_chartwise_subscheme(
         ),
         _object_engine=_engine,
         **dict(construction_data or {}),
+    )
+
+
+class _FiniteAtlasStructurePresheaf(Functor):
+    r"""``O_X: Open(X)^op -> CRing`` of a scheme glued from a finite affine atlas.
+
+    ``O_X(X) = Gamma(X, O_X)``, the equalizer of the restrictions
+    ``prod_i O(U_i) => prod_{i,j} O(U_i cap U_j)`` (Hartshorne, Exercise
+    II.1.22).  The opens of ``X`` other than ``X`` are not yet presented
+    through their traces on the charts, so their sections are not computed.
+    """
+
+    def __init__(self, scheme, global_section_ring) -> None:
+        self._scheme = scheme
+        self._global_section_ring = global_section_ring
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), OwnedRings().Commutative())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        subset = opposite_object.underlying_object().value()
+        assert subset is self.scheme().power_set().top(), (
+            f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; only the whole space is "
+            "computed, since an open of a glued scheme is not yet presented through its traces on the charts"
+        )
+        return self._global_section_ring
+
+    def _apply_morphism(self, opposite_arrow):
+        source = self(opposite_arrow.domain())
+        return source.Mor(self(opposite_arrow.codomain())).identity()
+
+    def _repr_(self):
+        return f"Structure presheaf of {self.scheme()} on its opens"
+
+
+class _FiniteAtlasStructureSheafEngine:
+    r"""``O_X`` glued from the structure sheaves of the charts of a finite affine atlas.
+
+    The charts ``U_i = Spec A_i`` carry ``O_{U_i}``, and the transition
+    isomorphisms ``phi_ij`` of the atlas identify them on the overlaps; the
+    glued sheaf restricts to ``O_{U_i}`` on each chart (Hartshorne, Exercise
+    II.1.22; Stacks, Tag 01JA).
+    """
+
+    def __init__(self, atlas, global_section_ring, **rest) -> None:
+        self._atlas = atlas
+        self._global_section_ring = global_section_ring
+        super().__init__(**rest)
+
+    def atlas(self):
+        return self._atlas
+
+    def scheme(self):
+        return self.atlas().scheme()
+
+    ringed_space = scheme
+
+    def chart_structure_sheaf(self, index):
+        r"""``O_X|_{U_i} = O_{U_i}``, the structure sheaf of the chart at ``index``."""
+        return self.atlas().chart(index).structure_sheaf()
+
+    def global_sections(self):
+        r"""``Gamma(X, O_X)``, a commutative ring."""
+        return self._global_section_ring
+
+    def _repr_(self):
+        return f"Structure sheaf O_{{{self.scheme()}}} glued from its affine charts"
+
+
+def _finite_atlas_structure_sheaf(atlas, global_section_ring):
+    r"""Construct ``O_X`` on ``Open(|X|)`` from the charts of ``atlas`` and ``Gamma(X, O_X)``."""
+    scheme = atlas.scheme()
+    sheaves = SheafObjects(scheme)
+    presheaf = _FiniteAtlasStructurePresheaf(scheme, global_section_ring)
+    presheaves = PresheafObjects(scheme)
+    fibre = presheaves.fibre(presheaf.codomain())
+    return _object_of(
+        owned_category_join((sheaves, fibre)),
+        _engine=(sheaves, _FiniteAtlasStructureSheafEngine, None),
+        **presheaves.presheaf_datum(presheaf),
+        functor=presheaf,
+        fixed_mor_category=fibre,
+        atlas=atlas,
+        global_section_ring=global_section_ring,
     )
 
 
