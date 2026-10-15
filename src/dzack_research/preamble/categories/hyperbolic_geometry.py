@@ -426,14 +426,16 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
             the action of ``O(L)`` on ``HH(C^+)``, the set of positive lines,
             through ``O(L) -> PO(L)`` (Ratcliffe, Foundations of Hyperbolic
             Manifolds, Ch. 3).  It is a left action, and ``-1`` acts
-            trivially.  The result is an object of
-            ``GObjects(Gamma, RiemannianManifolds())``; its ``orbit_space()``
-            is ``Gamma\HH^n``.
+            trivially.  ``O(L)`` is discrete in ``O(L tensor RR)`` and the
+            stabilizer of a point of ``HH^n`` is compact, so ``Gamma`` acts
+            properly discontinuously.  The result is an object of
+            ``GObjects(Gamma, RiemannianManifolds()).ProperlyDiscontinuous()``;
+            its ``orbit_space()`` is the Riemannian orbifold ``Gamma\HH^n``.
             """
             from dzack_research.preamble.categories.group.g_objects import GObjects
             from dzack_research.preamble.categories.manifolds import RiemannianManifolds
 
-            return GObjects(group, RiemannianManifolds()).on_space(
+            return GObjects(group, RiemannianManifolds()).ProperlyDiscontinuous().on_space(
                 self, lambda element, point: self._isometry_image(element, point)
             )
 
