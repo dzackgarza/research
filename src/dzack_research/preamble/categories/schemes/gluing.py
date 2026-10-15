@@ -7005,7 +7005,7 @@ def _finite_atlas_structure_sheaf(atlas, global_section_ring):
     sheaves = SheafObjects(scheme)
     presheaf = _FiniteAtlasStructurePresheaf(scheme, global_section_ring)
     presheaves = PresheafObjects(scheme)
-    fibre = presheaves.fibre(presheaf.codomain())
+    fibre = presheaves.with_values(presheaf.codomain())
     return _object_of(
         owned_category_join((sheaves, fibre)),
         _engine=(sheaves, _FiniteAtlasStructureSheafEngine, None),

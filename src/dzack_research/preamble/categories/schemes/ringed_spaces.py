@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilyMorphism,
     DescentData,
 )
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.functors.core import Functor, IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
@@ -96,14 +96,23 @@ class _AffineSchemeTopologyData(SageObject):
 
 
 class PresheafObjects(OwnedParameterizedCategory):
-    r"""Presheaves on a topological space ``X``: the coslice ``Open(X)^op / Cat``.
+    r"""Presheaves on a topological space ``X``: the Grothendieck construction ``∫_{D in Cat} [Open(X)^op, D]``.
 
     An object is a pair ``(D, F)`` of a category ``D`` and a functor
-    ``F: Open(X)^op -> D``, the arrow of ``Cat`` out of ``Open(X)^op`` that the
-    coslice ``Open(X)^op / Cat`` takes as its objects (Mathlib
-    ``TopCat.Presheaf``, which fixes ``D``; here ``D`` varies).  The value
-    category is the image under the projection ``Open(X)^op / Cat -> Cat``,
-    and :meth:`fibre` is the fibre of that projection over one ``D``.
+    ``F: Open(X)^op -> D`` (Mathlib ``TopCat.Presheaf``, which fixes ``D``;
+    here ``D`` varies).  A morphism ``(D, F) -> (D', F')`` is a pair
+    ``(G, alpha)`` of a functor ``G: D -> D'`` and a natural transformation
+    ``alpha: G F => F'``; composition is ``(G', alpha') (G, alpha) =
+    (G' G, alpha' . G' alpha)``.  This is the Grothendieck construction of
+    the functor ``Cat -> Cat``, ``D -> [Open(X)^op, D]``, ``G -> G_*``
+    (Mathlib ``CategoryTheory.Grothendieck``).  The projection to
+    ``Cat`` sends ``(D, F)`` to ``D``; its fibre over ``D`` is the functor
+    category ``[Open(X)^op, D]`` (:meth:`with_values`), whose morphisms are
+    the pairs ``(id_D, alpha)``.  The coslice ``Open(X)^op / Cat`` is the
+    wide subcategory of the pairs ``(G, id)``, so it is no supercategory.
+
+    No Grothendieck construction of a ``Cat``-valued functor is presented
+    in the tree, so this category declares no supercategory.
     """
 
     def parameter_category(self):
@@ -119,32 +128,54 @@ class PresheafObjects(OwnedParameterizedCategory):
         r"""``Open(X)``, the poset category of the opens of ``X``."""
         return self.space().open_subsets_site()
 
-    def coslice(self) -> Category:
-        r"""``Open(X)^op / Cat``: arrows of ``Cat`` out of ``Open(X)^op``."""
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            CosliceCategory,
-        )
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-        return CosliceCategory(Cat(), Cat().object(self.site().opposite()))
-
     def super_categories(self):
-        return [self.coslice()]
+        return []
 
-    def fibre(self, value_category: Category) -> Category:
-        r"""``[Open(X)^op, D]``, the fibre over ``D`` of the projection ``Open(X)^op / Cat -> Cat``.
+    def with_values(self, value_category: Category) -> Category:
+        r"""``[Open(X)^op, D]``, the fibre over ``D`` of the projection ``∫ [Open(X)^op, -] -> Cat``.
 
         Its objects are the presheaves on ``X`` with values in ``D``; its
-        morphisms are the natural transformations, the 2-cells of ``Cat``
-        lying over ``id_D``.
+        morphisms are the pairs ``(id_D, alpha)``, the natural
+        transformations.
         """
         return self.site().presheaves(value_category)
 
-    def presheaf_datum(self, presheaf: Functor):
-        r"""The datum ``(D, F)`` of this coslice level for ``F: Open(X)^op -> D``."""
+    def value_change(self, value_functor: Functor) -> Functor:
+        r"""``G_*: [Open(X)^op, D] -> [Open(X)^op, D']``, ``F -> G F``, for ``G: D -> D'``.
+
+        The action on arrows of the functor whose Grothendieck construction
+        this category is: the presheaf bifunctor on ``(id_{Open(X)}, G)``.
+        """
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-        return {"coslice_arrows": {self.coslice(): Cat().arrow(presheaf)}}
+        return Cat().presheaf_transport(IdentityFunctor(self.site()), value_functor)
+
+    def morphism(self, source, target, value_functor: Functor, transformation):
+        r"""``(G, alpha): (D, F) -> (D', F')`` for ``G: D -> D'`` and ``alpha: G F => F'``."""
+        assert False, "morphism (G, alpha) of presheaves on PresheafObjects: not implemented"
+
+    def presheaf_datum(self, presheaf: Functor):
+        r"""The datum ``F: Open(X)^op -> D`` of an object ``(D, F)`` of this category."""
+        assert presheaf.domain() is self.site().opposite(), (
+            f"a presheaf on {self.space()} is a functor on Open(X)^op, but {presheaf} is a "
+            f"functor on {presheaf.domain()}"
+        )
+        return {"open_sections_presheaf": presheaf}
+
+    class ParentMethods:
+        r"""A presheaf ``(D, F)`` on ``X``, with its functor ``F: Open(X)^op -> D``."""
+
+        def __init__(self, open_sections_presheaf: Functor, **rest) -> None:
+            self._open_sections_presheaf = open_sections_presheaf
+            super().__init__(**rest)
+
+        def open_sections_presheaf(self) -> Functor:
+            r"""``F: Open(X)^op -> D``, ``U -> F(U)``, with the restriction maps."""
+            return self._open_sections_presheaf
+
+        def value_category(self) -> Category:
+            r"""``D``, the image of ``(D, F)`` under the projection to ``Cat``."""
+            return self._open_sections_presheaf.codomain()
 
 
 class _UnpresentedSectionsPresheaf(Functor):
@@ -182,18 +213,12 @@ def _unpresented_sections_presheaf(space, sheaf_name: str, value_category: Categ
     return _UnpresentedSectionsPresheaf(space, values, sheaf_name)
 
 
-def _unpresented_sheaf_datum(space, sheaf_name: str, value_category: Category | None = None):
-    r"""The coslice datum ``(D, F)`` of a sheaf whose sections on the opens of ``space`` are not presented."""
-    presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
-    return PresheafObjects(space).presheaf_datum(presheaf)
-
-
 def _unpresented_sheaf_placement(
     space, sheaf_name: str, mor_category: Category | None = None, value_category: Category | None = None
 ):
     r"""The fibre ``[Open(X)^op, D]`` and its data for a sheaf whose sections on opens are not presented.
 
-    An object ``(D, F)`` of ``Open(X)^op / Cat`` lies in the fibre over ``D``
+    An object ``(D, F)`` of ``∫ [Open(X)^op, -]`` lies in the fibre over ``D``
     of the projection to ``Cat``, so it is an object of ``[Open(X)^op, D]`` on
     ``F``.  ``mor_category`` is the category whose morphisms the sheaf's
     arrows are, such as ``O_X``-linear maps; by default it is the fibre, whose
@@ -201,7 +226,7 @@ def _unpresented_sheaf_placement(
     """
     presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
     presheaves = PresheafObjects(space)
-    fibre = presheaves.fibre(presheaf.codomain())
+    fibre = presheaves.with_values(presheaf.codomain())
     return fibre, {
         **presheaves.presheaf_datum(presheaf),
         "functor": presheaf,
@@ -214,7 +239,7 @@ class SheafObjects(OwnedParameterizedCategory):
 
     An object ``(D, F)`` satisfies descent for the open coverings of ``X``
     (Mathlib ``TopCat.Sheaf``).  For one ``D`` these are the objects of
-    :meth:`fibre`, ``Sh(Open(X), D)``.  Sections are computed on the basis
+    :meth:`with_values`, ``Sh(Open(X), D)``.  Sections are computed on the basis
     opens that a sheaf's realization presents.
     """
 
@@ -230,7 +255,7 @@ class SheafObjects(OwnedParameterizedCategory):
     def super_categories(self):
         return [PresheafObjects(self.space())]
 
-    def fibre(self, value_category: Category) -> Category:
+    def with_values(self, value_category: Category) -> Category:
         r"""``Sh(Open(X), D)``, the sheaves in the fibre over ``D`` of the projection to ``Cat``."""
         from dzack_research.preamble.categories.abstract_categories.presheaves import (
             OpenCoveringFamilies,
@@ -751,8 +776,39 @@ def _affine_de_rham_complex(scheme):
         presheaf,
         descent,
         categories=(SheafObjects(scheme),),
-        construction_data=_unpresented_sheaf_datum(scheme, f"Omega^*_{{{scheme}}}", values),
+        construction_data=PresheafObjects(scheme).presheaf_datum(_AffineOpenDeRhamPresheaf(scheme)),
     )
+
+
+class _AffineOpenDeRhamPresheaf(Functor):
+    r"""``Ω^•_{X/R}: Open(X)^op -> SCDGA_R`` of an affine ``X = Spec A``, on the basis opens.
+
+    ``U -> DR_R(O_X(U))``: the de Rham functor ``DR_R`` composed with the
+    structure presheaf, so ``X -> DR_R(A)``, ``D(f) -> DR_R(A_f)``, and a
+    restriction is ``DR_R`` of the localization map (Stacks, Tag 00RT:
+    ``Ω_{S^{-1}A/R} = S^{-1} Ω_{A/R}``).  Sections over an open that is not a
+    basis open are not computed.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+
+        self._scheme = scheme
+        self._structure_presheaf = _AffineOpenStructurePresheaf(scheme)
+        self._de_rham_functor = _de_rham_functor(scheme.scheme_base_ring())
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), self._de_rham_functor.codomain())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        return self._de_rham_functor(self._structure_presheaf(opposite_object))
+
+    def _apply_morphism(self, opposite_arrow):
+        return self._de_rham_functor(self._structure_presheaf(opposite_arrow))
+
+    def _repr_(self):
+        return f"De Rham presheaf of {self.scheme()} on its opens"
 
 
 class _AffineDeRhamPresheaf(Functor):
