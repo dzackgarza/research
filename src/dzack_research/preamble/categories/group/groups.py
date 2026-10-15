@@ -327,10 +327,13 @@ def _matrix_group_element_matrix(group, element):
     r"""Return the private exact matrix of one owned matrix-group element.
 
     Protected group contract (\`OWN-05\`--\`OWN-07\`).  The permitted
-    external caller is the Eichler determinant-model lattice adapter for its
-    represented \`SL_2(ZZ)\` action.  The group owner validates and lowers the
-    owned element; only the exact matrix required by that adapter crosses, and
-    its entries are immediately raised into the lattice's owned scalar ring.
+    external callers are the Eichler determinant-model lattice adapter for its
+    represented \`SL_2(ZZ)\` action, and the Siegel upper half-space
+    realization in \`manifolds.py\` for the action of a group of integral
+    symplectic matrices by \`Z |-> (AZ + B)(CZ + D)^{-1}\`.  The group owner
+    validates and lowers the owned element; only the exact matrix required by
+    that adapter crosses, and the adapter raises its result into owned data
+    at once: lattice scalars, or the complex coordinates of a point.
     """
     represented = group._to_engine(group(element))
     matrix = getattr(represented, "matrix", None)

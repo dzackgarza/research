@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
+    _engine_ring,
     _own_ring,
     _owned_complex_field,
     _owned_engine_element,
@@ -1601,7 +1602,8 @@ class ComplexManifolds(OwnedCategory):
             )
             return _object_of(
                 self,
-                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=1,
                 **complex_manifolds._open_submanifold_data(
                     line, name, tau.imag_part() > 0
                 ),
@@ -1627,8 +1629,14 @@ class ComplexManifolds(OwnedCategory):
                 int(g),
                 lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
             )
-            return self._bounded_open_domain(
-                space, f"H_{g}", _engine_positive_definite(imaginary)
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=int(g),
+                **complex_manifolds._open_submanifold_data(
+                    space, f"H_{g}", _engine_positive_definite(imaginary)
+                ),
             )
 
         def _matrix_coordinate_space(self, name, index_pairs):
@@ -1735,6 +1743,74 @@ class _ComplexOpenEngine:
         label = tuple(self.chart_labels())[0]
         coordinates = self.atlas()[label].coordinates()
         return self.Mor(self._containing_manifold).polynomial(coordinates)
+
+
+class _SiegelUpperHalfSpace(_ComplexOpenEngine):
+    r"""The Siegel upper half-space ``H_g`` with its symplectic action; a realization, not a category.
+
+    ``Sp_{2g}(RR)`` acts on ``H_g`` by biholomorphisms
+    ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M = [[A, B], [C, D]]`` with
+    ``g x g`` blocks; it is transitive with stabilizer ``U(g)`` at ``iI``,
+    which presents ``H_g`` as ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``
+    (Helgason, Ch. X, §6, Table V).  For ``g = 1`` this is the Möbius
+    action of ``SL_2(RR) = Sp_2(RR)`` on the upper half-plane.
+    """
+
+    def __init__(self, siegel_genus, **rest) -> None:
+        self._siegel_genus = siegel_genus
+        super().__init__(**rest)
+
+    def siegel_genus(self):
+        return self._siegel_genus
+
+    def symplectic_action(self, group):
+        r"""Return the ``Gamma``-space ``(H_g, rho)`` of a group of integral symplectic matrices.
+
+        ``group`` is a group ``Gamma`` of ``2g x 2g`` matrices in
+        ``Sp_{2g}(ZZ)``; ``SL_2(ZZ) = Sp_2(ZZ)`` for ``g = 1``.  ``rho``
+        restricts the action of ``Sp_{2g}(RR)`` along the inclusion, so
+        ``rho(M)`` is the biholomorphism ``Z |-> (AZ + B)(CZ + D)^{-1}``
+        of ``H_g``, and ``(MN) . Z = M . (N . Z)`` makes it a left action.
+        The result is an object of ``GObjects(Gamma, ComplexManifolds())``;
+        its ``orbit_space()`` is ``Gamma\H_g``.
+        """
+        from dzack_research.preamble.categories.group.g_objects import GObjects
+
+        return GObjects(group, ComplexManifolds()).on_space(
+            self,
+            lambda element, point: self._symplectic_transform(group, element, point),
+        )
+
+    def _symplectic_transform(self, group, element, point):
+        r"""The point ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M`` the matrix of ``element``."""
+        from dzack_research.preamble.categories.group.groups import (
+            _matrix_group_element_matrix,
+        )
+
+        g = self._siegel_genus
+        point = self(point)
+        matrix = _matrix_group_element_matrix(group, element)
+        assert matrix.nrows() == 2 * g and matrix.ncols() == 2 * g, (
+            f"{element} does not act on {self}: Sp_{2 * g} acts on the Siegel upper "
+            f"half-space H_{g} by 2g x 2g = {2 * g} x {2 * g} matrices, and its matrix is "
+            f"{matrix.nrows()} x {matrix.ncols()}"
+        )
+        field = _owned_complex_field()
+        engine_field = _engine_ring(field)
+        entries = dict(zip(_upper_triangle(g), tuple(point.coordinates()), strict=True))
+        Z = _engine_matrix(
+            engine_field,
+            g,
+            g,
+            lambda row, column: _engine_element(field, _symmetric_entry(entries, row, column)),
+        )
+        M = matrix.change_ring(engine_field)
+        A, B, C, D = M[:g, :g], M[:g, g:], M[g:, :g], M[g:, g:]
+        W = (A * Z + B) * (C * Z + D).inverse()
+        return self.point(
+            tuple(_owned_engine_element(field, W[row, column]) for row, column in _upper_triangle(g)),
+            point.chart().label(),
+        )
 
 
 class _ComplexDiscEngine(_ComplexOpenEngine):
