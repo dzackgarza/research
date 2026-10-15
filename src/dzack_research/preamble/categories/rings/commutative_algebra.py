@@ -109,6 +109,11 @@ class _PrimeSpectrumTopologyData:
         )
 
     def is_open_subset(self, spectrum, subset) -> bool:
+        # ``D(f)`` is the complement of the closed set ``V(f)`` (Stacks 00E0,
+        # Lemma 10.17.2(11)), hence open.
+        match subset:
+            case _ if subset in DistinguishedOpenSubobjects(spectrum):
+                return True
         power = spectrum.power_set()
         selected = power(subset)
         match selected:
