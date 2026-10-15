@@ -6,6 +6,7 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
@@ -37,7 +38,14 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.logic import ask
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.rings.real import RR
+
+for _manifold_axiom in ("GloballySymmetric", "BoundedSymmetric"):
+    if _manifold_axiom not in all_axioms:
+        all_axioms.add(_manifold_axiom)
 
 
 class ManifoldAtlasChart(SageObject):
@@ -139,9 +147,8 @@ class ManifoldAtlasTransition(SageObject):
         image = self._engine(
             *(_engine_manifold_expression(coordinate) for coordinate in coordinates)
         )
-        values = image if isinstance(image, (tuple, list)) else (image,)
         return _raise_manifold_expression_family(
-            values,
+            image,
             name=f"Coordinates after {self.source().label()} to {self.target().label()}",
         )
 
@@ -172,11 +179,6 @@ def _engine_manifold_chart(chart):
     Permitted callers are the point, transition, map, and open-submanifold
     adapters in this module.  The raw chart never becomes mathematical output.
     """
-    if not isinstance(chart, ManifoldAtlasChart):
-        raise TypeError(
-            f"{chart!r} is not a chart of a manifold's atlas: coordinates, transition "
-            f"maps and open submanifolds are taken only in a chart of the atlas"
-        )
     return chart._engine_chart()
 
 
@@ -634,6 +636,155 @@ class SmoothManifolds(OwnedCategory):
         )
 
 
+class RiemannianManifolds(OwnedCategory):
+    r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
+
+    The metric ``g`` is a smooth section of ``Sym^2 T^*M`` that is positive
+    definite on every tangent space ``T_p M`` (Helgason, *Differential
+    Geometry, Lie Groups, and Symmetric Spaces*, Ch. I, §9; Mathlib
+    ``Mathlib/Topology/VectorBundle/Riemannian.lean``, ``RiemannianBundle``).
+    A smooth manifold admits many metrics, so the metric is chosen data and
+    this is a data subcategory of ``SmoothManifolds()``, its immediate
+    supercategory: forgetting ``g`` returns the smooth manifold ``M``.
+
+    A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
+    a local isometry.  The Mor category with that condition is not presented
+    yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+    """
+
+    def super_categories(self):
+        return [SmoothManifolds()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "Riemannian manifolds"
+
+    def an_object(self):
+        r"""The Euclidean line ``(R, dx^2)``."""
+        assert False, "an_object on RiemannianManifolds: not implemented"
+
+    def _call_(self, manifold, metric):
+        r"""Return ``(M, g)`` for a smooth manifold ``M`` and a Riemannian metric ``g`` on it.
+
+        ``metric`` is a smooth positive definite section of ``Sym^2 T^*M``.
+        The construction stores ``M`` and ``g`` and computes nothing.
+        """
+        assert manifold in SmoothManifolds(), (
+            f"cannot equip {manifold} with the Riemannian metric {metric}: a Riemannian "
+            f"metric is defined on a smooth manifold, and {manifold} is in "
+            f"{manifold.category()}"
+        )
+        assert False, "construction of an object of RiemannianManifolds: not implemented"
+
+    class SubcategoryMethods:
+        def GloballySymmetric(self):
+            r"""The axiom: every point is an isolated fixed point of an involutive isometry.
+
+            ``(M, g)`` is a Riemannian globally symmetric space when it is a
+            connected analytic Riemannian manifold and each ``p in M`` is an
+            isolated fixed point of an involutive isometry ``s_p`` of ``(M, g)``
+            (Helgason, Ch. IV, §3, Definition; a Riemannian manifold is
+            connected by Helgason's Ch. I, §9 definition).
+            """
+            return self._with_axiom("GloballySymmetric")
+
+    class ParentMethods:
+        def riemannian_metric(self):
+            r"""Return the chosen metric ``g``, a positive definite section of ``Sym^2 T^*M``."""
+            assert False, "riemannian_metric on RiemannianManifolds: not implemented"
+
+        def isometry_group(self):
+            r"""Return ``I(M, g)``, the group of isometries ``f: M -> M`` with ``f^* g = g``.
+
+            With the compact open topology it is a locally compact
+            topological transformation group of ``M`` (Helgason, Ch. IV,
+            Theorem 2.5(a)), an object of ``TopologicalGroups()``.  On a
+            Riemannian globally symmetric space it is a Lie transformation
+            group of ``M`` (Helgason, Ch. IV, Lemma 3.2), an object of
+            ``LieGroups()``.
+            """
+            assert False, "isometry_group on RiemannianManifolds: not implemented"
+
+    class GloballySymmetric(CategoryWithAxiom):
+        r"""Riemannian globally symmetric spaces (Helgason, Ch. IV, §3).
+
+        A connected analytic Riemannian manifold ``(M, g)`` in which each point ``p``
+        is an isolated fixed point of an involutive isometry ``s_p``, the
+        geodesic symmetry at ``p``.
+        """
+
+        def noncompact_type(self, satake_diagram):
+            r"""Return the irreducible symmetric space ``G/K`` of noncompact type of a real form.
+
+            ``satake_diagram`` is an object of ``SatakeDiagrams()`` with a
+            connected Dynkin diagram, classifying a noncompact real form
+            ``g_0`` of a complex simple Lie algebra.  ``G`` is a connected Lie
+            group with Lie algebra ``g_0`` and finite centre, ``K`` a maximal
+            compact subgroup, and ``(g_0, theta)`` with ``theta`` a Cartan
+            involution is an orthogonal symmetric Lie algebra of the
+            noncompact type (Helgason, Ch. V, §1, Definition; the
+            irreducible spaces of this type are listed in Ch. X, §6,
+            Table V).
+
+            ``G/K`` is the orbit space of the right action of ``K`` on ``G``:
+            the coequalizer in ``TopologicalSpaces()`` of the action and the
+            projection ``K x G -> G``, returned by ``orbit_space()`` on the
+            object of ``GObjects(K, SmoothManifolds())`` with ``k . g = g k^{-1}``;
+            right translation is a diffeomorphism of ``G``, not a group morphism.
+            The smooth structure and the ``G``-invariant metric induced by
+            the Killing form of ``g_0`` restricted to ``p_0`` place it here.
+            """
+            from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
+
+            assert satake_diagram in SatakeDiagrams(), (
+                f"cannot construct the symmetric space of noncompact type of {satake_diagram}: "
+                f"a noncompact real form of a simple Lie algebra is classified by an object "
+                f"of SatakeDiagrams(), and {satake_diagram} is in {satake_diagram.category()}"
+            )
+            assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
+
+        def hyperbolic_space(self, component):
+            r"""Return the hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
+
+            ``component`` is an object of ``PositiveConeComponents(L)`` for a
+            lattice ``L`` of signature ``(1, n)``, the component ``C^+`` of
+            ``{x in L_RR : q(x) > 0}``.  The result is the hyperboloid
+            ``{x in C^+ : q(x) = 1}`` of dimension ``n``, with the metric
+            ``-b`` on each tangent space ``x^perp``; it is
+            ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
+            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(component)``.
+            """
+            from dzack_research.preamble.categories.hyperbolic_geometry import (
+                HyperbolicSpaces,
+            )
+
+            dimension = int(component.lattice().module_rank()) - 1
+            engine = _SageManifold(
+                dimension, "HH", structure="smooth", unique_tag=object()
+            )
+            return _object_of(
+                HyperbolicSpaces(component),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=dimension,
+                manifold_name="HH",
+                manifold_structure="smooth",
+                differentiability_degree=Infinity,
+                manifold_field="real",
+                component=component,
+            )
+
+        class ParentMethods:
+            def geodesic_symmetry(self, point):
+                r"""Return ``s_p``, the involutive isometry of ``M`` with isolated fixed point ``p``.
+
+                Domain and codomain are ``M``; ``s_p`` reverses every geodesic
+                through ``p`` and its differential at ``p`` is ``-1`` on
+                ``T_p M``.
+                """
+                assert False, "geodesic_symmetry on RiemannianManifolds.GloballySymmetric: not implemented"
+
+
 class HolomorphicMapPresentation:
     r"""The selected chart presentation defining one represented holomorphic map."""
 
@@ -741,32 +892,31 @@ class HolomorphicMap:
         return self.codomain().point(values, self.target_chart().label())
 
     def __mul__(self, other):
-        if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
-            return NotImplemented
+        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``."""
+        assert other.codomain() is self.domain(), (
+            f"cannot compose {self} with {other}: the codomain {other.codomain()} of the "
+            f"first map is not the domain {self.domain()} of the second"
+        )
         engine = _engine_holomorphic_map(self) * _engine_holomorphic_map(other)
         source = other.source_chart()
         target = self.target_chart()
+        # SageManifolds returns the coordinate expressions of a map as a tuple
+        # in every dimension (``MultiCoordFunction.expr``).
         expressions = engine.expr(
             _engine_manifold_chart(source),
             _engine_manifold_chart(target),
         )
-        # Native Sage charts can return the one coordinate either as a
-        # scalar expression or as a tuple; normalize only the scalar case.
-        if self.codomain().dimension() == 1 and not isinstance(expressions, tuple):
-            expressions = (expressions,)
         return _holomorphic_map_from_engine(
             other.domain().Mor(self.codomain()),
             engine,
-            tuple(expressions),
+            expressions,
             source.label(),
             target.label(),
         )
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, HolomorphicMap)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
+            element_parent(other) is self.parent()
             and other.coordinate_expressions() == self.coordinate_expressions()
             and other.source_chart().label() == self.source_chart().label()
             and other.target_chart().label() == self.target_chart().label()
@@ -869,12 +1019,21 @@ class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
 
 
 class ComplexManifolds(OwnedCategory):
-    r"""Finite-dimensional complex analytic manifolds with holomorphic atlases."""
+    r"""Finite-dimensional complex analytic manifolds with holomorphic atlases.
+
+    A holomorphic map between open subsets of ``C^n`` and ``C^m`` is real
+    analytic, so in particular ``C^infinity``, as a map between open subsets of
+    ``R^{2n}`` and ``R^{2m}``.  A holomorphic atlas is therefore a smooth atlas
+    of the underlying real manifold, of real dimension twice the complex
+    dimension, and a holomorphic map is smooth.  Forgetting the complex
+    structure is the functor to ``SmoothManifolds()``, the immediate
+    supercategory.
+    """
 
     _MorCategory = ComplexManifoldMorCategoryConstruction
 
     def super_categories(self):
-        return [TopologicalManifolds()]
+        return [SmoothManifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -968,14 +1127,14 @@ class ComplexManifolds(OwnedCategory):
         r"""Return the disc ``{|z| < radius}``, or with ``punctured`` the disc ``{0 < |z| < radius}``.
 
         The disc is cut out in the chart of the one-dimensional
-        ``containing_manifold``; omitted, that is a fresh complex line.
+        ``containing_manifold``; omitted, that is a fresh complex line.  The
+        radius is an exact positive real number, an element of ``RR``.
         """
-        radius = float(radius)
-        if radius <= 0:
-            raise ValueError(
-                f"cannot construct the disc {name} of radius {radius}: the radius must be "
-                f"positive"
-            )
+        radius = RR(radius)
+        assert ask(radius > RR.zero()) is True, (
+            f"cannot construct the disc {name} of radius {radius}: the radius must be "
+            f"a positive real number"
+        )
         if containing_manifold is None:
             containing_manifold = self.affine_space(
                 1, name=f"{name}_line", coordinate_names=("z",)
@@ -991,9 +1150,9 @@ class ComplexManifolds(OwnedCategory):
         engine_z = _engine_manifold_expression(z)
         match punctured:
             case True:
-                restriction = (abs(engine_z) < radius, engine_z != 0)
+                restriction = (abs(engine_z) < radius.expression(), engine_z != 0)
             case False:
-                restriction = abs(engine_z) < radius
+                restriction = abs(engine_z) < radius.expression()
         return _object_of(
             self,
             _engine=(self, _ComplexDiscEngine, None),
@@ -1025,6 +1184,140 @@ class ComplexManifolds(OwnedCategory):
         def is_open_submanifold(self) -> bool:
             r"""Whether this construction retains an ambient open inclusion."""
             return self.open_inclusion() is not None
+
+    class SubcategoryMethods:
+        def BoundedSymmetric(self):
+            r"""The axiom: biholomorphic to a bounded symmetric domain.
+
+            A bounded domain ``D`` in ``C^N`` is symmetric when each
+            ``p in D`` is an isolated fixed point of an involutive
+            biholomorphism of ``D`` (Helgason, Ch. VIII, §7).  The property
+            is invariant under biholomorphism, so it is a property of a
+            complex manifold, stated by an axiom on ``ComplexManifolds()``.
+            Its objects are the Hermitian symmetric spaces of the
+            noncompact type with their complex structure (Helgason,
+            Ch. VIII, §7, the Harish-Chandra realization).
+            """
+            return self._with_axiom("BoundedSymmetric")
+
+    class BoundedSymmetric(CategoryWithAxiom):
+        r"""Complex manifolds biholomorphic to a bounded symmetric domain (Helgason, Ch. VIII, §7).
+
+        Each object is a product of irreducible ones, and an irreducible
+        object is ``G/K`` for ``G`` the identity component of its
+        biholomorphism group, a noncompact simple Lie group whose real form
+        has a Satake diagram of Hermitian type (Helgason, Ch. X, §6,
+        Table V).  The irreducible ones are the four classical families
+        ``I_{p,q}``, ``II_n``, ``III_n``, ``IV_n`` and the two exceptional
+        domains ``EIII`` and ``EVII``.  The Bergman metric is invariant
+        under every biholomorphism and makes the domain a Riemannian
+        globally symmetric space of noncompact type.
+        """
+
+        def type_I(self, p, q):
+            r"""Return ``I_{p,q} = SU(p, q)/S(U(p) x U(q))``, Cartan type AIII.
+
+            Bounded realization ``{Z in M_{p x q}(C) : 1_q - Z^* Z > 0}``,
+            of complex dimension ``pq``, for positive integers ``p`` and
+            ``q``.  ``I_{1,1}`` is the disc, biholomorphic to
+            ``upper_half_plane()``.
+            """
+            assert False, "type_I on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_II(self, n):
+            r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
+
+            Bounded realization ``{Z in M_n(C) : Z^t = -Z, 1_n - Z^* Z > 0}``,
+            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``.
+            """
+            assert False, "type_II on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_III(self, n):
+            r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
+
+            Bounded realization ``{Z in M_n(C) : Z^t = Z, 1_n - Z^* Z > 0}``,
+            of complex dimension ``n(n + 1)/2``, for a positive integer
+            ``n``.  The Cayley transform identifies it with
+            ``siegel_upper_half_space(n)``; ``III_1 = I_{1,1}``.
+            """
+            assert False, "type_III on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_IV(self, n):
+            r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
+
+            For a real quadratic space ``V`` of signature ``(2, n)`` it is
+            one connected component of
+            ``{[omega] in P(V_C) : (omega, omega) = 0, (omega, bar omega) > 0}``,
+            the space of oriented positive definite real ``2``-planes in
+            ``V``, of complex dimension ``n``, for a positive integer ``n``
+            (lean-categories FOUNDATIONS, Definition 61.3, which states the
+            two components and that choosing one is additional data;
+            ``LeanCategories/Lattices/Valued/PeriodDomainData.lean``,
+            ``latticePeriodDomainData``).
+            """
+            assert False, "type_IV on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_EIII(self):
+            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
+            assert False, "type_EIII on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def type_EVII(self):
+            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``."""
+            assert False, "type_EVII on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        def upper_half_plane(self, name="HH"):
+            r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
+
+            It is ``SL_2(RR)/SO(2)``, the domain ``I_{1,1} = III_1``, by the
+            Cayley transform ``tau -> (tau - i)/(tau + i)`` onto the disc.
+            The construction is the open subset of a fresh complex line
+            cut out by ``Im(tau) > 0`` in its chart.
+            """
+            complex_manifolds = self.base_category()
+            line = complex_manifolds.affine_space(
+                1, name=f"{name}_line", coordinate_names=("tau",)
+            )
+            tau = _engine_manifold_expression(
+                line.atlas()[tuple(line.chart_labels())[0]].coordinate(0)
+            )
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                **complex_manifolds._open_submanifold_data(
+                    line, name, tau.imag_part() > 0
+                ),
+            )
+
+        def siegel_upper_half_space(self, g):
+            r"""Return ``H_g = {Z in M_g(C) : Z^t = Z, Im(Z) > 0}``, the Siegel upper half-space.
+
+            It is ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``, of complex
+            dimension ``g(g + 1)/2``, for a positive integer ``g``;
+            ``H_1 = upper_half_plane()``.
+            """
+            assert False, "siegel_upper_half_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
+        class ParentMethods:
+            def harish_chandra_realization(self):
+                r"""Return the biholomorphism onto a bounded symmetric domain in ``C^N``.
+
+                Domain ``D``; codomain the open subset of
+                ``ComplexManifolds().affine_space(N)`` that it realizes,
+                ``N`` the complex dimension of ``D`` (Helgason, Ch. VIII,
+                §7).
+                """
+                assert False, "harish_chandra_realization on ComplexManifolds.BoundedSymmetric: not implemented"
+
+            def bergman_metric_space(self):
+                r"""Return ``(D, g_B)``, ``D`` with its Bergman metric.
+
+                The result is an object of
+                ``RiemannianManifolds().GloballySymmetric()`` of noncompact
+                type; for irreducible ``D`` it is
+                ``noncompact_type(satake_diagram)`` for the Satake diagram of
+                the real form ``Lie(Aut(D)^0)``.
+                """
+                assert False, "bergman_metric_space on ComplexManifolds.BoundedSymmetric: not implemented"
 
 
 class _ComplexOpenEngine:
@@ -1078,6 +1371,7 @@ __all__ = [
     "HolomorphicMap",
     "ManifoldAtlasChart",
     "ManifoldAtlasTransition",
+    "RiemannianManifolds",
     "SmoothManifolds",
     "TopologicalManifolds",
 ]

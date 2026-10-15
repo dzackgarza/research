@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
+from dzack_research.preamble.rings.real import RR
 
 
 class PointedAnalyticFundamentalGroup(SageObject):
@@ -110,7 +111,7 @@ class LegendreMonodromyFamily(SageObject):
             coordinate_names=("t",),
         )
         smooth_stratum = ComplexManifolds().disc(
-            0.75, "Legendre_punctured_disc", containing_manifold=analytic_line,
+            RR(3) / RR(4), "Legendre_punctured_disc", containing_manifold=analytic_line,
             punctured=True,
         )
         base_point = smooth_stratum.point((0.5,))

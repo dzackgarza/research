@@ -1354,6 +1354,36 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                         f"in {category}, and the preamble constructs it only for G-sets"
                     )
 
+        def orbit_space(self):
+            r"""The orbit space ``G\X``, the coequalizer in ``TopologicalSpaces()``.
+
+            ``X`` is a topological space and ``G`` acts by homeomorphisms;
+            the action ``a: G x X -> X`` and the projection
+            ``pr_2: G x X -> X`` are the parallel pair, and ``G\X`` is the
+            universal pair ``(G\X, q)`` with ``q a = q pr_2``.  Its underlying
+            set is the orbit set ``orbits()`` and its topology is the final
+            topology of ``q: X -> G\X``.  For a discrete group ``Gamma``
+            acting properly discontinuously on a manifold, ``Gamma\X`` is in
+            general an orbifold, not a manifold (lean-categories
+            FOUNDATIONS, Definition 61.4), so the result is placed in
+            ``TopologicalSpaces()`` and nowhere lower.  The arithmetic
+            quotients ``Gamma\HH``, ``Gamma\H_g`` and ``Gamma\HH^n`` are this
+            construction on ``GObjects(Gamma, C)`` for ``C`` the category of
+            the symmetric space; so is ``G/K`` for the right action of ``K``
+            on ``G``, written as the left action ``k . g = g k^{-1}``.
+            """
+            from dzack_research.preamble.categories.topological_spaces import (
+                TopologicalSpaces,
+            )
+
+            category = self.underlying_category()
+            assert category.is_subcategory(TopologicalSpaces()), (
+                f"cannot form the orbit space of {self} under {self.acting_group()}: the "
+                f"orbit space is a coequalizer in topological spaces, and {category} is "
+                f"not a category of topological spaces"
+            )
+            assert False, "orbit_space on GObjects: not implemented"
+
         def orbits_presented_by(self, covering):
             r"""The orbit set ``X/G`` presented by a finite set of points meeting every orbit.
 

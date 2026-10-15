@@ -228,7 +228,18 @@ class PositiveConeComponents(OwnedParameterizedCategory):
 
 
 class HyperbolicSpaces(OwnedParameterizedCategory):
-    r"""Projectivizations of chosen positive-cone components."""
+    r"""The hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
+
+    For a lattice ``L`` of signature ``(1, n)`` and a chosen component
+    ``C^+`` of ``{x in L_RR : q(x) > 0}``, ``HH(C^+)`` is the hyperboloid
+    ``{x in C^+ : q(x) = 1}``, a smooth manifold of dimension ``n`` with the
+    metric ``-b`` on each tangent space ``x^perp``.  It is
+    ``SO_0(1, n)/SO(n)``, a Riemannian globally symmetric space of the
+    noncompact type (Helgason, Ch. X, §6, Table V, type BDI with ``q = 1``),
+    and ``RiemannianManifolds().GloballySymmetric()`` is the immediate
+    supercategory.  The rays of positive rational vectors are its rational
+    points, the separate object ``rational_points()``.
+    """
 
     def parameter_category(self):
         component = self.parameter()
@@ -242,10 +253,115 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
         return "hyperbolic spaces"
 
     def super_categories(self):
-        return [TopologicalSpaces()]
+        from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+        return [RiemannianManifolds().GloballySymmetric()]
 
     def an_object(self):
         return _hyperbolic_space(self.positive_cone_component())
+
+    class ParentMethods:
+        def __init__(self, component, **rest) -> None:
+            self._component = component
+            super().__init__(**rest)
+
+        def positive_cone_component(self):
+            return self._component
+
+        def lattice(self):
+            return self._component.lattice()
+
+        def riemannian_metric(self):
+            r"""Return the metric ``-b`` restricted to each tangent space ``x^perp`` of the hyperboloid."""
+            assert False, "riemannian_metric on HyperbolicSpaces: not implemented"
+
+        @cached_method
+        def rational_points(self):
+            r"""Return the topological space of rays of positive rational vectors of the component."""
+            return _object_of(
+                HyperbolicRationalPoints(self._component),
+                topology_data=_HyperbolicTopologyData(),
+                component=self._component,
+            )
+
+        def rational_point(self, vector):
+            r"""Return the rational point on the ray of ``vector``, a positive vector of the component."""
+            return self.rational_points()(vector)
+
+        def ideal_point(self, vector):
+            r"""Return the point at infinity on the ray of the isotropic ``vector``.
+
+            An ideal point of the projectivized component is an isotropic ray
+            of its closure, which is the one-dimensional rational polyhedral
+            cone it spans.
+            """
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                RationalPolyhedralCones,
+            )
+
+            lattice = self.lattice()
+            vector = lattice(vector)
+            assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
+                f"{vector} does not define an ideal point of {self}: an ideal point is the "
+                f"ray of a nonzero isotropic vector in the closure of {self._component}, "
+                f"and {vector} has square {lattice.q(vector)}"
+            )
+            primitive = _primitive_on_selected_ray(
+                lattice, vector, self._component.timelike_vector()
+            )
+            return RationalPolyhedralCones(lattice).from_rays((primitive,))
+
+        def projectivize_cone(self, cone):
+            r"""Return the hyperbolic polyhedron of rational points on the rays of ``cone``."""
+            if cone.ambient_lattice() is not self.lattice():
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: the cone lies in "
+                    f"{cone.ambient_lattice()}, not in {self.lattice()}"
+                )
+            if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: a hyperbolic polyhedron comes "
+                    f"from a cone in the closure of {self._component}, and {cone} is not "
+                    f"contained in it"
+                )
+            points = self.rational_points()
+            subset = points.condition_set(
+                lambda point: cone.contains(point.representative())
+            )
+            return Sets().Subobjects(points).object(
+                subset.inclusion(),
+                categories=(HyperbolicPolyhedra(self),),
+                construction_data={"space": self, "cone": cone},
+            )
+
+        def _repr_(self):
+            return f"Hyperbolic space of {self._component}"
+
+
+class HyperbolicRationalPoints(OwnedParameterizedCategory):
+    r"""The rays of positive rational vectors of a chosen positive-cone component.
+
+    A point is the ray ``RR_{>0} v`` of a vector ``v`` of ``L`` with
+    ``q(v) > 0`` in ``C^+``, represented by its primitive lattice vector; it
+    meets the hyperboloid of ``HH(C^+)`` in ``v / sqrt(q(v))``.
+    """
+
+    def parameter_category(self):
+        component = self.parameter()
+        return PositiveConeComponents(component.lattice())
+
+    def positive_cone_component(self):
+        return self.base()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "spaces of rational hyperbolic points"
+
+    def super_categories(self):
+        return [TopologicalSpaces()]
+
+    def an_object(self):
+        return _hyperbolic_space(self.positive_cone_component()).rational_points()
 
     class ElementMethods(Element):
         r"""A rational point of a hyperbolic space: the ray of a positive vector of the component."""
@@ -320,57 +436,21 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
         def rational_point(self, vector):
             return self(vector)
 
-        def ideal_point(self, vector):
-            r"""Return the point at infinity on the ray of the isotropic ``vector``.
-
-            An ideal point of the projectivized component is an isotropic ray
-            of its closure, which is the one-dimensional rational polyhedral
-            cone it spans.
-            """
-            from dzack_research.preamble.categories.polyhedral_cones import (
-                RationalPolyhedralCones,
-            )
-
-            lattice = self.lattice()
-            vector = lattice(vector)
-            assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
-                f"{vector} does not define an ideal point of {self}: an ideal point is the "
-                f"ray of a nonzero isotropic vector in the closure of {self._component}, "
-                f"and {vector} has square {lattice.q(vector)}"
-            )
-            primitive = _primitive_on_selected_ray(
-                lattice, vector, self._component.timelike_vector()
-            )
-            return RationalPolyhedralCones(lattice).from_rays((primitive,))
-
-        def projectivize_cone(self, cone):
-            if cone.ambient_lattice() is not self.lattice():
-                raise ValueError(
-                    f"cannot projectivize {cone} into {self}: the cone lies in "
-                    f"{cone.ambient_lattice()}, not in {self.lattice()}"
-                )
-            if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
-                raise ValueError(
-                    f"cannot projectivize {cone} into {self}: a hyperbolic polyhedron comes "
-                    f"from a cone in the closure of {self._component}, and {cone} is not "
-                    f"contained in it"
-                )
-            category = HyperbolicPolyhedra(self)
-            subset = self.condition_set(
-                lambda point: cone.contains(point.representative())
-            )
-            return Sets().Subobjects(self).object(
-                subset.inclusion(),
-                categories=(category,),
-                construction_data={"space": self, "cone": cone},
-            )
+        def hyperbolic_space(self):
+            r"""Return ``HH(C^+)``, the hyperbolic space whose rational points these are."""
+            return self._component.projectivization()
 
         def _repr_(self):
-            return f"Hyperbolic projectivization of {self._component}"
+            return f"Rational points of the hyperbolic space of {self._component}"
 
 
 class HyperbolicPolyhedra(OwnedParameterizedCategory):
-    r"""Projectivized rational polyhedral cones in a chosen hyperbolic space."""
+    r"""Projectivized rational polyhedral cones in a chosen hyperbolic space.
+
+    An object is the subset of the rational points of ``HH(C^+)`` lying on
+    the rays of a rational polyhedral cone in the closure of ``C^+``, with
+    its inclusion.
+    """
 
     def parameter_category(self):
         space = self.parameter()
@@ -384,7 +464,7 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
         return "hyperbolic polyhedra"
 
     def super_categories(self):
-        return [Sets().Subobjects(self.hyperbolic_space())]
+        return [Sets().Subobjects(self.hyperbolic_space().rational_points())]
 
     def an_object(self):
         from dzack_research.preamble.categories.polyhedral_cones import (
@@ -465,15 +545,14 @@ def _positive_cone_component(lattice, timelike):
 
 
 def _hyperbolic_space(component):
-    return _object_of(
-        HyperbolicSpaces(component),
-        topology_data=_HyperbolicTopologyData(),
-        component=component,
-    )
+    from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+    return RiemannianManifolds().GloballySymmetric().hyperbolic_space(component)
 
 
 __all__ = [
     "HyperbolicPolyhedra",
+    "HyperbolicRationalPoints",
     "HyperbolicSpaces",
     "PositiveConeComponents",
 ]
