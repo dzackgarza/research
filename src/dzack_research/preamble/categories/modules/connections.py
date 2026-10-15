@@ -546,8 +546,8 @@ class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
 class ConnectionSpace(RestrictedMorCategoryParent):
     Element = Connection
 
-    def __init__(self, family, restricted_source, restricted_target) -> None:
-        module = restricted_source.module_over_extension()
+    def __init__(self, family, domain, codomain, *, category) -> None:
+        module = domain.module_over_extension()
         algebra = module.base_ring()
         if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
@@ -558,7 +558,7 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         self._algebra = algebra
         self._one_forms = algebra.kahler_differentials()
 
-        self._target_module = restricted_target.module_over_extension()
+        self._target_module = codomain.module_over_extension()
         expected_target = Modules(module.base_ring()).tensor_product(
             (module, self._one_forms)
         )
@@ -573,8 +573,9 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         RestrictedMorCategoryParent.__init__(
             self,
             family,
-            restricted_source,
-            restricted_target,
+            domain,
+            codomain,
+            category=category,
         )
         # The inclusion is injective and its arrows are constructed here, so
         # its image is recorded together with its section.  The Leibniz rule
@@ -840,7 +841,7 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
 class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
-    def __init__(self, family, domain, codomain) -> None:
+    def __init__(self, family, domain, codomain, *, category) -> None:
         # Horizontality of an arbitrary linear map is decided only on module
         # generators under a chosen finite presentation, so an arrow of the
         # underlying linear Mor belongs here when it is the underlying map of
@@ -857,6 +858,7 @@ class ConnectionMor(RestrictedMorCategoryParent):
             family,
             domain,
             codomain,
+            category=category,
         )
 
     def _element_constructor_(self, images, *, check=False):
