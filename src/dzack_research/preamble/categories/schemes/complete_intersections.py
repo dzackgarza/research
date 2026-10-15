@@ -460,16 +460,6 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return coefficient**2 * self.projective_degree()
 
 
-def SmoothQuarticK3CompleteIntersections(base):
-    r"""Smooth projective complete intersections over ``base`` that are K3 surfaces.
-
-    ``ProjectiveCompleteIntersections(base).Smooth().K3()``; a quartic in
-    ``P^3`` is the specimen the realizations of this category compute with.
-    """
-    return ProjectiveCompleteIntersections(base).Smooth().K3()
-
-
 __all__ = [
     "ProjectiveCompleteIntersections",
-    "SmoothQuarticK3CompleteIntersections",
 ]
