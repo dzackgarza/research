@@ -1,4 +1,4 @@
-r"""The affine algebraic de Rham functor and its degree-zero adjunction."""
+r"""The algebraic de Rham functor, its degree-zero adjunction, and de Rham cohomology of smooth schemes."""
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -279,6 +279,80 @@ class _DeRhamAdjunction(Adjunction):
         return f"Algebraic de Rham/degree-zero adjunction over {self.base_ring()}"
 
 
+class _SmoothSchemeDeRhamCohomologyFunctor(Functor):
+    r"""``H^k_dR(-/R) : Sm_R^op -> Mod_R``, degree ``k`` of de Rham hypercohomology.
+
+    On a smooth scheme ``X`` over ``R`` the value is
+    ``H^k(RΓ(X, Ω^•_{X/R}))``, the ``k``-th hypercohomology of the de Rham
+    complex.  A morphism ``f : X -> Y`` of smooth ``R``-schemes acts by the
+    pullback ``f^* : H^k_dR(Y/R) -> H^k_dR(X/R)`` induced by
+    ``f^{-1} Ω^•_{Y/R} -> Ω^•_{X/R}``.
+    """
+
+    def __init__(self, base_ring, degree) -> None:
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        self._base_ring = _owned_ring(base_ring)
+        self._degree = int(degree)
+        super().__init__(
+            Schemes(self._base_ring).Smooth().opposite(),
+            Modules(self._base_ring),
+        )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def degree(self):
+        return self._degree
+
+    def _apply_object(self, scheme):
+        return scheme.de_rham_cohomology(self.degree())
+
+    def _apply_morphism(self, morphism):
+        r"""The pullback ``f^* : H^k_dR(Y/R) -> H^k_dR(X/R)`` of ``f : X -> Y``."""
+        assert False, "de_rham_cohomology on Schemes.Smooth morphisms: not implemented"
+
+    def _repr_(self):
+        return f"H^{{{self.degree()}}}_dR(-/{self.base_ring()}) on smooth schemes"
+
+
+class _SmoothSchemeDeRhamCohomologyAlgebraFunctor(Functor):
+    r"""``H^*_dR(-/R) : Sm_R^op -> SCGA_R``, de Rham hypercohomology with its cup product.
+
+    On a smooth scheme ``X`` over ``R`` the value is
+    ``⊕_k H^k(RΓ(X, Ω^•_{X/R}))``, a supercommutative ``ZZ``-graded
+    ``R``-algebra whose product is induced by the wedge product of
+    ``Ω^•_{X/R}``.  Morphisms act by pullback.  On ``X = Spec A`` it is the
+    cohomology algebra of ``DR_R(A)``, because quasi-coherent sheaves on an
+    affine scheme have no higher cohomology.
+    """
+
+    def __init__(self, base_ring) -> None:
+        from dzack_research.preamble.categories.algebras.graded_algebras import (
+            GradedAlgebras,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        self._base_ring = _owned_ring(base_ring)
+        super().__init__(
+            Schemes(self._base_ring).Smooth().opposite(),
+            GradedAlgebras(self._base_ring).Supercommutative(),
+        )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _apply_object(self, scheme):
+        return scheme.de_rham_cohomology_algebra()
+
+    def _apply_morphism(self, morphism):
+        r"""The graded algebra pullback ``f^* : H^*_dR(Y/R) -> H^*_dR(X/R)`` of ``f : X -> Y``."""
+        assert False, "de_rham_cohomology_algebra on Schemes.Smooth morphisms: not implemented"
+
+    def _repr_(self):
+        return f"H^*_dR(-/{self.base_ring()}) on smooth schemes"
+
+
 @cached_function
 def _de_rham_functor(base_ring) -> _DeRhamFunctor:
     return _DeRhamFunctor(base_ring)
@@ -292,6 +366,20 @@ def _degree_zero_dga_functor(base_ring) -> _DegreeZeroDGAFunctor:
 @cached_function
 def _de_rham_adjunction(base_ring) -> _DeRhamAdjunction:
     return _DeRhamAdjunction(base_ring)
+
+
+@cached_function
+def _smooth_scheme_de_rham_cohomology_functor(
+    base_ring, degree
+) -> _SmoothSchemeDeRhamCohomologyFunctor:
+    return _SmoothSchemeDeRhamCohomologyFunctor(base_ring, degree)
+
+
+@cached_function
+def _smooth_scheme_de_rham_cohomology_algebra_functor(
+    base_ring,
+) -> _SmoothSchemeDeRhamCohomologyAlgebraFunctor:
+    return _SmoothSchemeDeRhamCohomologyAlgebraFunctor(base_ring)
 
 
 __all__ = []

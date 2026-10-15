@@ -268,6 +268,21 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pair,
     signature_pairs,
 )
+from dzack_research.preamble.categories.group.groups import (  # noqa: F401
+    LieGroups,
+    TopologicalGroups,
+)
+from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicRationalPoints,
+    HyperbolicSpaces,
+)
+from dzack_research.preamble.categories.manifolds import (  # noqa: F401
+    ComplexManifolds,
+    DifferentiableManifolds,
+    RiemannianManifolds,
+    SmoothManifolds,
+    TopologicalManifolds,
+)
 from dzack_research.preamble.categories.modules import (
     BilinearFormModules,
     BilinearMap,
@@ -325,6 +340,7 @@ from dzack_research.preamble.categories.modules import (
     ModulesWithChosenFinitePresentation,
     ModulesWithConnection,
     ModulesWithFlatConnection,
+    VectorBundlesWithConnection,
     PairingObjects,
     PairedModules,
     ProjectiveModules,
@@ -339,6 +355,7 @@ from dzack_research.preamble.categories.modules import (
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
+    DerivedCategories,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,

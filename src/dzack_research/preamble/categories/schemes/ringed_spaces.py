@@ -215,6 +215,34 @@ class ModuleSheaves(OwnedParameterizedCategory):
         r"""Return the represented cokernel in sheaves of ``O_X``-modules."""
         return sheaf_morphism.cokernel()
 
+    def derived_global_sections(self):
+        r"""``RΓ(X, -) : Mod(O_X) -> D(Γ(X, O_X))``, the right derived functor of global sections.
+
+        Domain: sheaves of ``O_X``-modules on ``X``.  Codomain:
+        ``DerivedCategories(Γ(X, O_X))``.  On an object, ``RΓ(X, F)`` is the
+        class of ``Γ(X, I^•)`` for an injective resolution ``F -> I^•``,
+        which exists because ``Mod(O_X)`` has enough injectives; its
+        ``i``-th cohomology is ``H^i(X, F)``.
+        """
+        assert False, "derived_global_sections on ModuleSheaves: not implemented"
+
+    class ParentMethods:
+        def derived_global_sections(self):
+            r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
+
+            The image of this sheaf ``F`` under
+            ``ModuleSheaves(X).derived_global_sections()``.
+            """
+            assert False, "derived_global_sections on ModuleSheaves: not implemented"
+
+        def sheaf_cohomology(self, degree):
+            r"""``H^degree(X, F) = H^degree(RΓ(X, F))``, an object of ``Modules(Γ(X, O_X))``."""
+            return self.derived_global_sections().cohomology(degree)
+
+        def total_sheaf_cohomology(self):
+            r"""``⊕_i H^i(X, F)``, an object of ``GradedModules(Γ(X, O_X))`` with ``H^i(X, F)`` in degree ``i``."""
+            return self.derived_global_sections().graded_cohomology()
+
 
 def _represented_sheaf_mor(domain, codomain):
     r"""The selected represented sheaf Mor shared by these endpoints.

@@ -979,6 +979,31 @@ class SchemeMorphismMethods:
         )
         return bool(self._engine_pullback_with_trivial_base_map().is_surjective())
 
+    def gauss_manin_connection(self, degree):
+        r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
+
+        ``H^k_dR(X/S) = R^k f_*(Omega^*_{X/S})`` is a locally free coherent
+        ``O_S``-module, and the Gauss-Manin connection is an integrable
+        connection on it relative to the base of ``S`` (Katz, *Nilpotent
+        connections and the monodromy theorem*, Publ. Math. IHES 39 (1970),
+        introduction and (3.0)).  The value is an object of
+        ``VectorBundlesWithConnection(S).Integrable()``.
+        """
+        assert False, "gauss_manin_connection on scheme morphisms: not implemented"
+
+    def residue(self, degree):
+        r"""The Poincare residue ``Res: Omega^p_X(log D) -> i_* Omega^{p-1}_D`` of a smooth divisor.
+
+        Here ``i: D -> X`` is this arrow, a closed immersion of a smooth divisor
+        into a smooth scheme, and ``p`` is ``degree``.  Locally
+        ``alpha wedge dt/t |-> alpha|_D`` for a local equation ``t`` of ``D``;
+        the map identifies ``Gr^W_1 Omega^*_X(log D)`` with
+        ``i_* Omega^*_D[-1]`` (Deligne, *Theorie de Hodge II*, Publ. Math.
+        IHES 40 (1971), (3.1.5.2), the case of one component).  Its domain and
+        codomain are objects of ``QuasiCoherentSheaves(X)``.
+        """
+        assert False, "residue on closed immersions of smooth divisors: not implemented"
+
     def __eq__(self, other) -> bool:
         r"""Decide equality on represented pullbacks, else on the native realizations.
 
@@ -3250,9 +3275,61 @@ class Schemes(OwnedCategoryOverBaseRing):
             def anticanonical_bundle(self, *args, **kwargs):
                 return self.anticanonical_line_bundle(*args, **kwargs)
 
+            def de_rham_complex(self):
+                r"""``Ω^•_{X/R}``, the algebraic de Rham complex of this smooth scheme.
+
+                An object of ``Sheaves(zariski_coverage(X),
+                DifferentialGradedAlgebras(R).Supercommutative().Alternating())``:
+                a sheaf of supercommutative differential graded ``R``-algebras
+                whose sections over an affine open ``Spec A`` are
+                ``DeRhamAlgebras(R)(A) = DR_R(A)``.  Its differential is
+                ``R``-linear but not ``O_X``-linear.
+                """
+                assert False, "de_rham_complex on Schemes.Smooth: not implemented"
+
+            def de_rham_hypercohomology(self):
+                r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategories(R)``.
+
+                The hypercohomology of the de Rham complex: the class of the
+                total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg
+                injective resolution of ``Ω^•_{X/R}`` by sheaves of
+                ``R``-modules.
+                """
+                assert False, "de_rham_hypercohomology on Schemes.Smooth: not implemented"
+
+            def de_rham_cohomology(self, degree):
+                r"""``H^degree_dR(X/R) = H^degree(RΓ(X, Ω^•_{X/R}))``, an object of ``Modules(R)``."""
+                return self.de_rham_hypercohomology().cohomology(degree)
+
+            def de_rham_cohomology_algebra(self):
+                r"""``H^*_dR(X/R)``, an object of ``GradedAlgebras(R).Supercommutative()``.
+
+                The graded module ``⊕_k H^k_dR(X/R)`` with the cup product
+                induced by the wedge product of ``Ω^•_{X/R}``; it needs a
+                multiplicative model of ``RΓ(X, Ω^•_{X/R})``, which the
+                derived category alone does not supply.
+                """
+                assert False, "de_rham_cohomology_algebra on Schemes.Smooth: not implemented"
+
         def an_object(self):
             r"""The affine line, which is smooth over the base ring."""
             return AffineSpaces(self.base_ring())(1)
+
+        def de_rham_cohomology(self, degree):
+            r"""Return ``H^degree_dR(-/R) : Sm_R^op -> Mod_R``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_functor(self.base_ring(), degree)
+
+        def de_rham_cohomology_algebra(self):
+            r"""Return ``H^*_dR(-/R) : Sm_R^op -> GradedAlgebras(R).Supercommutative()``."""
+            from dzack_research.preamble.categories.functors.de_rham import (
+                _smooth_scheme_de_rham_cohomology_algebra_functor,
+            )
+
+            return _smooth_scheme_de_rham_cohomology_algebra_functor(self.base_ring())
 
     class CalabiYau(CategoryWithAxiom):
         r"""Calabi--Yau schemes: smooth and proper, with trivial canonical bundle.

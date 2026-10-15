@@ -1,10 +1,14 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
-from sage.categories.morphism import Morphism, SetMorphism
+from collections.abc import Mapping
+
+from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     _RestrictedMorCategoryOf,
@@ -31,14 +35,24 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
 )
 
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family_from_values,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_integers,
 )
-from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.logic import AtomicProposition, ask, conjunction
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.validation import validator
+
+# ``Integrable`` is the property that the curvature of the selected connection
+# vanishes.  ``Flat`` already names the flat-module axiom of ``Modules(R)``, so
+# the connection property takes the name of its integrability condition.
+if "Integrable" not in all_axioms:
+    all_axioms.add("Integrable")
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -86,37 +100,78 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         )
 
     def _call_(self, connection):
-        r"""Equip the source module with the selected connection."""
-        if not isinstance(connection, Connection):
-            raise TypeError(
-                f"an object of {self} is constructed from a connection E -> E tensor_A Omega^1, "
-                f"but got {connection!r}"
-            )
-        source = connection.module()
-        algebra = connection.algebra()
-        if algebra is not self.algebra():
-            raise ValueError(
-                f"{connection} cannot equip an object of {self}: it is a connection over {algebra}, "
-                f"not over {self.algebra()}"
-            )
-        assert source.has_selected_module_resolution(), (
-            f"{connection} cannot equip {source} with a connection: the connection is given by its values on "
-            f"module generators, so {source} must have chosen generators over {algebra}, but it is in "
-            f"{source.category()}"
-        )
-        categories = [self]
-        match connection.is_flat():
-            case True:
-                categories.append(ModulesWithFlatConnection(algebra))
-            case _:
-                pass
-        return source._module_with_structure(
-            tuple(categories),
-            {
-                "source_connection": connection,
-                "unformed_module": source,
-            },
-        )
+        r"""Equip the source module with the selected connection.
+
+        The object is placed here and nowhere stronger: whether the connection
+        is integrable is a property asked of the object
+        (:meth:`ParentMethods.is_flat_connection`), never a placement that
+        construction computes (``CON-07``, ``OWN-22``).
+        """
+        return _equip_with_connection(self, connection)
+
+    class SubcategoryMethods:
+        def algebra(self):
+            return self.base_category().algebra()
+
+        def Integrable(self) -> Category:
+            r"""Modules whose selected connection has zero curvature.
+
+            A connection ``nabla: E -> E tensor_A Omega^1_{A/R}`` is integrable
+            (flat) when its curvature ``nabla^2: E -> E tensor_A Omega^2_{A/R}``
+            vanishes (Katz, *Nilpotent connections and the monodromy theorem*,
+            Publ. Math. IHES 39 (1970), §1.0).
+            """
+            return self._with_axiom("Integrable")
+
+    class Integrable(CategoryWithAxiom):
+        r"""Modules with connection whose curvature ``nabla^2`` vanishes.
+
+        Full: a horizontal map between integrable connections is a horizontal
+        map, so this axiom declares no Mor family of its own.
+        """
+
+        def an_object(self):
+            r"""A free rank-one module over the algebra, with the zero connection.
+
+            The zero connection has zero curvature.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+            module = self.algebra().free_module(finite_ordinal_set(1))
+            connections = module.connections()
+            return self(connections(lambda _label: connections.target_module().zero()))
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "modules with flat connection"
+
+        def _call_(self, connection):
+            r"""Equip the source module with ``connection``, placed here.
+
+            The caller states that the connection is integrable; construction
+            computes nothing (``CON-07``, ``OWN-22``).
+            """
+            return _equip_with_connection(self, connection)
+
+        def __contains__(self, candidate):
+            r"""Placement, else the proposition that the curvature vanishes, asked (``CON-07``).
+
+            The answer goes to the caller and never changes the object's
+            placement.
+            """
+            base = self.base_category()
+            match candidate:
+                case _ if Category.__contains__(self, candidate):
+                    return True
+                case _ if Category.__contains__(base, candidate):
+                    return ask(candidate.connection().is_flat()) is True
+                case _:
+                    return False
+
+        class ParentMethods:
+            def is_flat_connection(self) -> bool:
+                r"""``True``: the curvature vanishes by placement."""
+                return True
 
     class ParentMethods:
         def __init__(self, source_connection, unformed_module, **rest) -> None:
@@ -146,100 +201,168 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             r"""Return the selected connection datum on :meth:`unformed_module`."""
             return self._preamble_source_connection
 
+        def is_flat_connection(self):
+            r"""Whether the curvature ``nabla^2`` of :meth:`connection` vanishes.
+
+            Decided on the chosen finite generators where they exist, else the
+            proposition ``is_flat`` (:meth:`Connection.is_flat`).
+            """
+            return self.connection().is_flat()
 
         def _Hom_(self, codomain, category=None):
             return self.Mor(codomain, category=category)
 
 
-class ModulesWithFlatConnection(OwnedParameterizedCategory):
-    r"""Modules whose selected connection has zero curvature."""
+def _equip_with_connection(category, connection):
+    r"""The module of ``connection`` equipped with it, as an object of ``category``."""
+    source = connection.module()
+    algebra = connection.algebra()
+    assert element_parent(connection) is source.connections(), (
+        f"an object of {category} is constructed from a connection E -> E tensor_A Omega^1 on E, "
+        f"but {connection!r} is not an element of {source.connections()}"
+    )
+    assert algebra is category.algebra(), (
+        f"{connection} cannot equip an object of {category}: it is a connection over {algebra}, "
+        f"not over {category.algebra()}"
+    )
+    assert source.has_selected_module_resolution(), (
+        f"{connection} cannot equip {source} with a connection: the connection is given by its values on "
+        f"module generators, so {source} must have chosen generators over {algebra}, but it is in "
+        f"{source.category()}"
+    )
+    return source._module_with_structure(
+        (category,),
+        {
+            "source_connection": connection,
+            "unformed_module": source,
+        },
+    )
 
-    def an_object(self):
-        r"""A free rank-one module over the algebra, with the zero connection.
 
-        The zero connection is flat, so this object is a specimen of both this
-        category and its flat refinement.
-        """
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+# ``Integrable`` is an owned axiom unknown to Sage's axiom names; register the
+# nested refinement explicitly, as for ``Algebras.Lie``.
+ModulesWithConnection.__dict__["Integrable"]._base_category_class_and_axiom = (
+    ModulesWithConnection,
+    "Integrable",
+)
 
-        module = self.algebra().free_module(finite_ordinal_set(1))
-        connections = module.connections()
-        return ModulesWithConnection(self.algebra())(
-            connections(lambda _label: connections.target_module().zero())
-        )
+ModulesWithFlatConnection = ModulesWithConnection.Integrable
+
+
+class VectorBundlesWithConnection(OwnedParameterizedCategory):
+    r"""Vector bundles on a scheme ``X`` over ``S`` with an ``S``-connection.
+
+    An object is a pair ``(E, nabla)``: ``E`` a locally free ``O_X``-module of
+    finite rank, and ``nabla: E -> Omega^1_{X/S} tensor_{O_X} E`` a map of
+    abelian sheaves satisfying the Leibniz rule
+    ``nabla(g e) = dg tensor e + g nabla(e)`` for local sections ``g`` of
+    ``O_X`` and ``e`` of ``E``.  A morphism is a horizontal ``O_X``-linear map
+    (Katz, *Nilpotent connections and the monodromy theorem*, Publ. Math.
+    IHES 39 (1970), (1.0)).  ``S`` is the base scheme of ``X``.
+
+    On an affine ``X = Spec A`` over ``S = Spec R`` the global sections of
+    ``(E, nabla)`` are an object of ``ModulesWithConnection(A)``.
+
+    Forgetting ``nabla`` lands in the locally free ``O_X``-modules of finite
+    rank, the subcategory of ``QuasiCoherentSheaves(X)`` cut out by local
+    freeness.  That subcategory is the one immediate supercategory; it is
+    declared once ``QuasiCoherentSheaves(X)`` states local freeness as an
+    axiom, so :meth:`super_categories` stays abstract (``CAT-15``).
+    """
 
     @classmethod
     def _repr_object_names(cls):
-        return "modules with flat connection"
+        return "vector bundles with connection"
 
-    def algebra(self):
+    def scheme(self):
+        r"""The scheme ``X`` on which the bundles live."""
         return self.base()
 
-    def parameter_category(self):
-        r"""The commutative algebras over the parameter's own base."""
-        return Algebras(self.parameter().base_ring()).Associative().Unital().Commutative()
+    def base_scheme(self):
+        r"""The base ``S`` of ``X``, relative to which ``nabla`` differentiates."""
+        return self.scheme().base_scheme()
 
-    def super_categories(self):
-        return [ModulesWithConnection(self.algebra())]
+    def _call_(self, bundle, connection):
+        r"""The pair ``(E, nabla)`` of a locally free ``O_X``-module and an ``S``-connection on it."""
+        assert False, "construction of a vector bundle with connection on VectorBundlesWithConnection: not implemented"
+
+    class SubcategoryMethods:
+        def scheme(self):
+            return self.base_category().scheme()
+
+        def Integrable(self) -> Category:
+            r"""Vector bundles whose connection has zero curvature.
+
+            The curvature of ``nabla`` is the ``O_X``-linear map
+            ``K = nabla_1 o nabla: E -> Omega^2_{X/S} tensor E``; ``nabla`` is
+            integrable when ``K = 0`` (Katz 1970, (1.0)).  The integrable
+            objects form Katz's category ``MIC(X/S)`` restricted to locally
+            free ``E`` (Katz 1970, (1.2)).
+            """
+            return self._with_axiom("Integrable")
+
+    class Integrable(CategoryWithAxiom):
+        r"""Vector bundles with an integrable ``S``-connection.
+
+        Full: a horizontal map between integrable connections is a horizontal
+        map, so this axiom declares no morphisms of its own.
+        """
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "vector bundles with integrable connection"
+
+        class ParentMethods:
+            def de_rham_complex(self):
+                r"""The de Rham complex ``Omega^*_{X/S} tensor E`` of ``(E, nabla)``.
+
+                Integrability ``K = 0`` makes the extensions
+                ``nabla_i: Omega^i tensor E -> Omega^{i+1} tensor E`` square to
+                zero, so they form a complex of abelian sheaves on ``X``
+                (Katz 1970, (1.0), (1.3)).
+                """
+                assert False, "de_rham_complex on VectorBundlesWithConnection.Integrable: not implemented"
 
     class ParentMethods:
-        def is_flat_connection(self) -> bool:
-            return True
+        def underlying_vector_bundle(self):
+            r"""The locally free ``O_X``-module ``E``, an object of ``QuasiCoherentSheaves(X)``."""
+            assert False, "underlying_vector_bundle on VectorBundlesWithConnection: not implemented"
+
+        def connection(self):
+            r"""The ``S``-connection ``nabla: E -> Omega^1_{X/S} tensor_{O_X} E``."""
+            assert False, "connection on VectorBundlesWithConnection: not implemented"
+
+        def curvature(self):
+            r"""The ``O_X``-linear curvature ``K: E -> Omega^2_{X/S} tensor_{O_X} E`` (Katz 1970, (1.0))."""
+            assert False, "curvature on VectorBundlesWithConnection: not implemented"
+
+        def is_integrable(self):
+            r"""Whether the curvature ``K`` vanishes, else the proposition that it does."""
+            assert False, "is_integrable on VectorBundlesWithConnection: not implemented"
+
+
+VectorBundlesWithConnection.__dict__["Integrable"]._base_category_class_and_axiom = (
+    VectorBundlesWithConnection,
+    "Integrable",
+)
 
 
 class Connection(Element):
     r"""An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``."""
 
-    def __init__(self, parent, generator_images) -> None:
+    def __init__(self, parent, generator_values) -> None:
+        r"""The connection with value ``generator_values(s)`` on the module generator ``s``.
+
+        ``generator_values`` is an indexed family on the module generating
+        set; :meth:`ConnectionSpace._element_constructor_` reads the caller's
+        callable or table into it (``CON-17``).
+        """
         Element.__init__(self, parent)
         labels = self.module().module_generating_set()
         target = self.target_module()
 
-        if isinstance(generator_images, dict):
-            size = labels.cardinality()
-            if not size.is_finite():
-                raise TypeError(
-                    f"a connection on {self.module()} given as a dictionary of generator images needs "
-                    f"finitely many module generators, but its generating set has cardinality {size}; "
-                    f"give the images as a function of the generator instead"
-                )
-            missing = [label for label in labels if label not in generator_images]
-            if missing:
-                raise ValueError(
-                    f"a connection on {self.module()} needs an image for every module generator, "
-                    f"but none is given for {missing}"
-                )
-            raw_image = generator_images.__getitem__
-        elif callable(generator_images):
-            raw_image = generator_images
-        elif isinstance(generator_images, (tuple, list)):
-            size = labels.cardinality()
-            finite_size = int(size.finite_value()) if size.is_finite() else None
-            if finite_size is None:
-                raise TypeError(
-                    f"a connection on {self.module()} given as a sequence of generator images needs "
-                    f"finitely many module generators, but its generating set has cardinality {size}"
-                )
-            if len(generator_images) != finite_size:
-                raise ValueError(
-                    f"a connection on {self.module()} needs one image for each of its {finite_size} "
-                    f"module generators, but {len(generator_images)} were given"
-                )
-            by_position = {
-                position: generator_images[position]
-                for position in range(len(generator_images))
-            }
-            def raw_image(label):
-                return by_position[int(labels.ranking_map()(label))]
-        else:
-            raise TypeError(
-                f"a connection on {self.module()} is given by the images of its module generators, as a "
-                f"function, a dictionary or a sequence, but got {generator_images!r}"
-            )
-
         def image(label):
-            normalized = labels(label)
-            value = raw_image(normalized)
+            value = generator_values.value(labels(label))
             return value if value.parent() is target else target(value)
 
         self._generator_images = indexed_family(
@@ -314,14 +437,9 @@ class Connection(Element):
     def _call_(self, element):
         return self.__call__(element)
 
-    @cached_method
     def underlying_linear_morphism(self):
-        target = self.parent().codomain_object()
-        return ConnectionUnderlyingLinearMorphism(
-            self.parent().arrow_set(),
-            self,
-            lambda element: target(self(element.underlying_element())),
-        )
+        r"""The image of this connection under ``Conn(E) -> Mor_R(E, E tensor_A Omega^1)``."""
+        return self.parent().inclusion()(self)
 
     as_morphism = underlying_linear_morphism
 
@@ -418,12 +536,8 @@ class Connection(Element):
 class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
     r"""The selected underlying linear morphism of one algebraic connection."""
 
-    def __init__(self, parent, connection, function) -> None:
-        self._connection = connection
+    def __init__(self, parent, function) -> None:
         super().__init__(parent, function, elementwise=True)
-
-    def connection(self):
-        return self._connection
 
     def _elementwise_linearity_derivation(self):
         return True
@@ -431,17 +545,6 @@ class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
 
 class ConnectionSpace(RestrictedMorCategoryParent):
     Element = Connection
-
-    @staticmethod
-    def __classcall__(cls, family_or_module, restricted_source=None, restricted_target=None):
-        if isinstance(family_or_module, ConnectionCategoryConstruction):
-            return typecall(
-                cls,
-                family_or_module,
-                restricted_source,
-                restricted_target,
-            )
-        return family_or_module.connections()
 
     def __init__(self, family, restricted_source, restricted_target) -> None:
         module = restricted_source.module_over_extension()
@@ -473,10 +576,29 @@ class ConnectionSpace(RestrictedMorCategoryParent):
             restricted_source,
             restricted_target,
         )
+        # The inclusion is injective and its arrows are constructed here, so
+        # its image is recorded together with its section.  The Leibniz rule
+        # is not decided for an arbitrary R-linear map, so an arrow belongs to
+        # this restricted Mor when it lies in that recorded image.
+        self._underlying_arrows = {}
+        self._inclusion_preimages = {}
         self._inclusion = SetMorphism(
             Sets().Mor(self, self.arrow_set()),
-            lambda connection: connection.underlying_linear_morphism(),
+            self._underlying_arrow,
         )
+
+    def _underlying_arrow(self, connection):
+        arrow = self._underlying_arrows.get(id(connection))
+        if arrow is not None:
+            return arrow
+        target = self.codomain_object()
+        arrow = ConnectionUnderlyingLinearMorphism(
+            self.arrow_set(),
+            lambda element: target(connection(element.underlying_element())),
+        )
+        self._underlying_arrows[id(connection)] = arrow
+        self._inclusion_preimages[id(arrow)] = connection
+        return arrow
 
     def module(self):
         return self._module
@@ -493,28 +615,41 @@ class ConnectionSpace(RestrictedMorCategoryParent):
     def inclusion(self):
         return self._inclusion
 
+    def inclusion_image_contains(self, arrow) -> bool:
+        r"""Whether ``arrow`` is the image of a connection under :meth:`inclusion`."""
+        return id(arrow) in self._inclusion_preimages
+
+    def inclusion_preimage(self, arrow):
+        r"""The connection whose underlying ``R``-linear map is ``arrow``."""
+        assert self.inclusion_image_contains(arrow), (
+            f"{arrow} is not the underlying R-linear map of a connection in {self}"
+        )
+        return self._inclusion_preimages[id(arrow)]
+
     def _element_constructor_(self, generator_images, *, check=False):
-        if isinstance(generator_images, Connection) and generator_images.parent() is self:
-            return generator_images
-        if isinstance(generator_images, Morphism):
-            if (
-                generator_images.domain() is not self.domain_object()
-                or generator_images.codomain() is not self.codomain_object()
-            ):
-                raise ValueError(
-                    f"{generator_images} is a map {generator_images.domain()} -> {generator_images.codomain()}, "
-                    f"but a connection in {self} is a map {self.domain_object()} -> {self.codomain_object()}"
-                )
-            if not isinstance(generator_images, ConnectionUnderlyingLinearMorphism):
-                raise ValueError(
+        r"""The connection given by its values on the module generators (``CON-17``).
+
+        The values arrive as a callable on the generating set, as a table
+        keyed by the generators, or as a finite sequence in the order of the
+        generating set.  An arrow of the underlying ``R``-linear Mor is a
+        connection when this restricted Mor admits it.
+        """
+        labels = self.module().module_generating_set()
+        match element_parent(generator_images):
+            case selected if selected is self:
+                return generator_images
+            case selected if selected is self.arrow_set():
+                assert self.accepts(generator_images), (
                     f"{generator_images} is not known to satisfy the Leibniz rule, so it is not a connection "
                     f"in {self}; construct it from the images of the module generators instead"
                 )
-            connection = generator_images.connection()
-            if connection.parent() is self:
-                return connection
-            return self(lambda label: connection.generator_image(label))
-        connection = Connection(self, generator_images)
+                return self.inclusion_preimage(generator_images)
+        match generator_images:
+            case Mapping() | tuple() | list():
+                values = finite_indexed_family_from_values(labels, generator_images)
+            case _:
+                values = indexed_family(labels, generator_images)
+        connection = Connection(self, values)
         connection.validate_relations(check=check)
         return connection
 
@@ -529,7 +664,14 @@ class ConnectionCategoryConstruction(_RestrictedMorCategoryOf):
         return ConnectionSpace
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, ConnectionUnderlyingLinearMorphism)
+        r"""Whether ``arrow`` is the underlying ``R``-linear map of a connection.
+
+        The Leibniz rule is not decided for an arbitrary ``R``-linear map, so
+        admission reads construction: ``arrow`` lies in the image of the
+        inclusion of the connection space with its endpoints.
+        """
+        connections = self._cached_between(arrow.domain(), arrow.codomain())
+        return connections is not None and connections.inclusion_image_contains(arrow)
 
 
 @cached_function(key=lambda module: id(module))
@@ -559,7 +701,6 @@ class ConnectionMorphism(Element):
         self._horizontality_premises = horizontality_premises
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
             parent.arrow_set(),
-            self,
             parent.arrow_set()(images),
         )
 
@@ -684,8 +825,7 @@ class ConnectionMorphism(Element):
 class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
     r"""The selected underlying module morphism of one horizontal map."""
 
-    def __init__(self, parent, connection_morphism, underlying) -> None:
-        self._connection_morphism = connection_morphism
+    def __init__(self, parent, underlying) -> None:
         self._underlying_source_morphism = underlying
         super().__init__(
             parent,
@@ -696,27 +836,17 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
     def _elementwise_linearity_derivation(self):
         return self._underlying_source_morphism.linearity_decision()
 
-    def connection_morphism(self):
-        return self._connection_morphism
-
 
 class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
-    @staticmethod
-    def __classcall__(cls, family_or_domain, domain_or_codomain, codomain=None):
-        if isinstance(family_or_domain, ConnectionMorphismCategoryConstruction):
-            return typecall(
-                cls,
-                family_or_domain,
-                domain_or_codomain,
-                codomain,
-            )
-        return ModulesWithConnection(family_or_domain.base_ring()).Mor(
-            family_or_domain, domain_or_codomain
-        )
-
     def __init__(self, family, domain, codomain) -> None:
+        # Horizontality of an arbitrary linear map is decided only on module
+        # generators under a chosen finite presentation, so an arrow of the
+        # underlying linear Mor belongs here when it is the underlying map of
+        # a horizontal map constructed here; that image is recorded with its
+        # section.
+        self._inclusion_preimages = {}
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError(
                 f"there are no morphisms of modules with connection {domain} -> {codomain}: both must be "
@@ -730,20 +860,41 @@ class ConnectionMor(RestrictedMorCategoryParent):
         )
 
     def _element_constructor_(self, images, *, check=False):
-        if isinstance(images, ConnectionMorphism) and images.parent() is self:
-            return images
-        if isinstance(images, HorizontalConnectionUnderlyingMorphism):
-            structured = images.connection_morphism()
-            if structured.parent() is self:
-                return structured
-        morphism = self.element_class(self, images)
+        r"""The horizontal map given by its module-map data (``CON-17``).
+
+        An arrow of the underlying linear Mor that this restricted Mor admits
+        is the underlying map of a horizontal map, which is returned.
+        """
+        match element_parent(images):
+            case selected if selected is self:
+                return images
+            case selected if selected is self.arrow_set() and self.accepts(images):
+                return self.inclusion_preimage(images)
+        morphism = self._recorded(self.element_class(self, images))
         morphism.validate_linearity(check=check)
         morphism.validate_horizontality(check=check)
         return morphism
 
     def _from_horizontal_morphism(self, underlying, premises=()):
         r"""The arrow on ``underlying``, horizontal when every premise is horizontal."""
-        return self.element_class(self, underlying, horizontality_premises=premises)
+        return self._recorded(
+            self.element_class(self, underlying, horizontality_premises=premises)
+        )
+
+    def _recorded(self, morphism):
+        self._inclusion_preimages[id(morphism.underlying_linear_morphism())] = morphism
+        return morphism
+
+    def inclusion_image_contains(self, arrow) -> bool:
+        r"""Whether ``arrow`` is the underlying linear map of a horizontal map here."""
+        return id(arrow) in self._inclusion_preimages
+
+    def inclusion_preimage(self, arrow):
+        r"""The horizontal map whose underlying linear map is ``arrow``."""
+        assert self.inclusion_image_contains(arrow), (
+            f"{arrow} is not the underlying linear map of a horizontal map in {self}"
+        )
+        return self._inclusion_preimages[id(arrow)]
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
@@ -761,7 +912,13 @@ class ConnectionMorphismCategoryConstruction(_RestrictedMorCategoryOf):
         return ConnectionMor
 
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, HorizontalConnectionUnderlyingMorphism)
+        r"""Whether ``arrow`` is the underlying linear map of a horizontal map.
+
+        Admission reads construction: ``arrow`` lies in the recorded image of
+        the forgetful map from the horizontal maps with its endpoints.
+        """
+        horizontal = self._cached_between(arrow.domain(), arrow.codomain())
+        return horizontal is not None and horizontal.inclusion_image_contains(arrow)
 
 
 
@@ -999,4 +1156,5 @@ __all__ = [
     "ConnectionSpace",
     "ModulesWithConnection",
     "ModulesWithFlatConnection",
+    "VectorBundlesWithConnection",
 ]
