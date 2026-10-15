@@ -67,7 +67,8 @@ class _PowerAlgebra:
                 return super()._element_constructor_(value)
             case dict():
                 return super()._element_constructor_(value)
-            case _ if value in self.base_ring():
+            case _ if self.base_ring().is_parent_of(value) is True:
+                # Membership is a proposition; only a decided one routes here.
                 return self.scalar_multiple(self.base_ring()(value), self.one())
             case _:
                 return super()._element_constructor_(value)

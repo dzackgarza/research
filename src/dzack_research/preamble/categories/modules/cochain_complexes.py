@@ -557,7 +557,7 @@ class CochainMorphismMethods:
         source = self.domain().graded_piece(degree)
         target = self.codomain().graded_piece(degree)
         mor = ModuleMorCategoryConstruction(
-            GeneralModules(self.domain().base_ring())
+            Modules(self.domain().base_ring())
         ).Of(source, target)
         return mor(self._raw_component(degree))
 
