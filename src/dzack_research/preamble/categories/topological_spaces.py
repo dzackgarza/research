@@ -381,6 +381,26 @@ class TopologicalSpaces(OwnedCategory):
 
         topology = open_subsets
 
+        @cached_method
+        def open_subsets_site(self):
+            r"""``Open(X)``, the poset category of the open subsets of ``X`` ordered by inclusion.
+
+            Its objects are the opens ``U`` of ``X``, with one arrow ``U -> V``
+            exactly when ``U <= V``, and ``X`` is its terminal object.  With the
+            covers ``{U_i -> U}`` whose union is ``U`` it is the site of
+            ``OpenCoveringFamilies(X)``, on which ``Sh(X, D)`` is the full
+            subcategory of ``[Open(X)^op, D]`` satisfying descent (Mathlib,
+            ``TopologicalSpace.Opens`` and ``TopCat.Sheaf``).
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                PosetCategory,
+            )
+
+            return PosetCategory(
+                self.open_subsets(),
+                le=lambda smaller, larger: all(point in larger for point in smaller),
+            )
+
         def is_open_subset(self, subset) -> bool:
             r"""Whether ``subset`` is open in this topology."""
             return self._topology_data().is_open_subset(self, subset)
