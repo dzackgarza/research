@@ -666,6 +666,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             else None
         )
 
+    def _repr_(self):
+        r"""``P/(r_1, ..., r_k)``: the quotient named by its chosen presentation."""
+        display = self._preamble_ring_display
+        if display is not None:
+            return display
+        relations = ", ".join(repr(relation) for relation in self.relations())
+        return f"{self.presentation_ring()}/({relations})"
+
 
 
 
