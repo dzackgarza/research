@@ -5186,12 +5186,27 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 generating_morphism=generating_morphism,
             )
 
+        @RealizationHook
+        def _centralizer_construction(self, element):
+            r"""Supply a selected construction of ``Z_self(element)``, or None.
+
+            Protected construction contract under OWN-05. Only centralizer
+            calls this hook. A realization may return the centralizer
+            subgroup with a generating datum it selects (``O(L)`` glues it
+            from the cyclotomic summands of ``element``); None selects the
+            general predicate subgroup.
+            """
+            return None
+
         def centralizer(self, element):
             r"""Return the subgroup of elements commuting with ``element``."""
             from dzack_research.preamble.categories.group.predicate_subgroups import (
                 CentralizerSubgroups,
             )
 
+            selected = self._centralizer_construction(element)
+            if selected is not None:
+                return selected
             return CentralizerSubgroups(self)(element)
 
         @RealizationHook

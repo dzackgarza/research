@@ -924,9 +924,11 @@ class SetMorCategory(CategoricalMor):
         domain: Parent,
         codomain: Parent,
     ) -> None:
+        # Placement reads the endpoints' placements; constructing a Mor runs
+        # no finiteness or cardinality decision (OWN-22).
         placement = (
             FinitelySupportedFunctionSets()
-            if Sets().is_provably_finite(domain)
+            if domain in FiniteSets()
             else FunctionSets()
         )
         placement = owned_category_join((
@@ -1935,8 +1937,9 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             supplies no exact cardinal computation.  ``None`` makes no
             assertion about finiteness or emptiness.
 
-            Permitted callers are ``cardinality``, the finite-endpoint
-            queries in ``Cardinalities.set_power_category``, and the
+            Permitted callers are ``cardinality``, the size that
+            ``Cardinalities.set_power_category`` reads from an endpoint
+            presented by an enumeration from an index set, and the
             cardinality suppliers of set, ring, algebra and module
             constructions reading their retained parameters, and their
             finiteness decisions. These callers retain only established
@@ -3606,7 +3609,16 @@ class _ConditionSetEngine:
             raise NotImplementedError(
                 f"cannot enumerate {self}: {universe} has no selected enumeration"
             )
-        for point in universe:
+        return self._points_satisfying(universe)
+
+    def _points_satisfying(self, points):
+        r"""The points of an enumeration of ``X`` at which ``P`` holds, in that order.
+
+        Private to this subset construction and its group specialization:
+        ``points`` enumerates the universe ``X``; filtering it by the
+        predicate enumerates ``{x in X : P(x)}``.
+        """
+        for point in points:
             member = self.is_parent_of(point)
             assert member is True or member is False, (
                 f"cannot enumerate {self}: membership of {point!r} remains undecided"

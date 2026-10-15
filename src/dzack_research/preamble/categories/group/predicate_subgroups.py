@@ -199,8 +199,26 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         # group closure is a premise of this subgroup construction.
         __contains__ = _ConditionSetEngine.__contains__
         is_parent_of = __contains__
-        __iter__ = _ConditionSetEngine.__iter__
+        _points_satisfying = _ConditionSetEngine._points_satisfying
         _retain_admitted_member = _ConditionSetEngine._retain_admitted_member
+
+        def __iter__(self):
+            r"""Enumerate ``{g in G : P(g)}`` by filtering an enumeration of ``G``.
+
+            A finite group is enumerated by its realization (GAP's for an
+            engine group, Sage's ``GroupOfIsometries`` for ``O(L)`` of a
+            definite lattice over ``ZZ``), so a predicate subgroup of a
+            finite group is that enumeration filtered by ``P``; a
+            realization without one states its own frontier.  Any other
+            supergroup is enumerated by the set owner's rule, from a chosen
+            enumeration of ``G``.
+            """
+            group = self.supergroup()
+            match group:
+                case _ if group in OwnedFiniteGroups():
+                    return self._points_satisfying(group)
+                case _:
+                    return _ConditionSetEngine.__iter__(self)
 
         def _element_constructor_(self, datum):
             r"""Read ambient group literals, then use the set owner's predicate admission."""
@@ -338,11 +356,14 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return AtomicProposition("is_finite", self)
 
         def _cardinality_decision(self):
-            r"""``|H|``: from the retained character data, else by counting a finite supergroup.
+            r"""``|H|``: from the retained character data, from selected generators, else by counting.
 
             With complete finite-character data ``H`` is the preimage of a
             subgroup of a finite quotient, so ``|H| = |G| |image of H| /
-            |image of G|``.  Otherwise, in a finite ``G``, ``H`` is the set of
+            |image of G|``.  In a finite ``G``, a selected generating family
+            of ``H`` (its constructing owner's claim, trusted under
+            ``OWN-22``) gives ``|H|`` as the order of the engine subgroup it
+            generates.  Otherwise, in a finite ``G``, ``H`` is the set of
             elements satisfying the predicate, counted exactly in one pass over
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
@@ -362,6 +383,11 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 f"{self.supergroup()} has order {supergroup_cardinality}, which is not finite, "
                 f"and the subgroup is not known as the preimage of a subgroup of a finite quotient"
             )
+            if _retains_group_resolution(self):
+                generated = self.supergroup()._engine_subgroup_from_generators(
+                    tuple(self.group_generators())
+                )
+                return cardinal(int(generated.order()))
             return cardinal(sum(1 for _element in self))
 
         @cached_method

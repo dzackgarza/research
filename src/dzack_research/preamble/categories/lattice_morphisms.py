@@ -1989,8 +1989,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             if self.domain().is_definite():
                 self._assert_definite_over_integers("count")
                 return cardinal(int(self._engine_group().order()))
-            # The computed family, not group_generators(): realizing the selected
-            # epimorphism F -> O(L) constructs a Mor whose placement asks |O(L)|.
             generated = self._engine_subgroup_from_generators(tuple(self._computed_group_generators()))
             if generated.is_finite():
                 return cardinal(int(generated.order()))
@@ -2124,11 +2122,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         r"""Return the positive-cone-preserving subgroup when defined."""
         return self.lattice().positive_cone_subgroup()
 
-    def centralizer(self, isometry):
-        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup.
+    def _centralizer_construction(self, isometry):
+        r"""Realization of the groups' centralizer hook: ``Z_{O(L)}(isometry)`` with its generators selected.
 
-        Its group generators are computed on first request, by gluing the
-        centralizers on the cyclotomic summands of ``isometry``
+        Implementer side of ``OwnedGroups.ParentMethods._centralizer_construction``
+        (``OWN-05``), called only by ``centralizer``.  The subgroup is the
+        predicate subgroup ``{g : g f = f g}``; its group generators are
+        computed on first request, by gluing the centralizers on the
+        cyclotomic summands of ``isometry``
         (``lattice_centralizers.arithmetic_centralizer``).
         """
         from dzack_research.preamble.categories.lattice_centralizers import (

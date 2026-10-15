@@ -21,12 +21,12 @@ The stabilizers and transporters of coloured families of lattice vectors (#399, 
 Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism.
 Source inspection only.
 
-### Generating data of a predicate subgroup of a finite O(L) cannot be read
+### A realization's class method is unreachable behind a category operation of the same name
 
-Observed (executed, 2026-10-14, branch `port/families-of-lattice-vectors`): for `L = Lattices(ZZ)("A2")` and the family of its simple roots, `L.O().stabilizer(family).group_generators()` raises `NotImplementedError: cannot enumerate {g in O(L) : ...}: O(L) has no selected enumeration`. Path: the stabilizer is `L.O().predicate_subgroup(..., generating_morphism=...)`; realizing the selected resolution builds `free.Mor(subgroup)`, whose `SetMorCategory.__init__` asks `set_power_category` for the cardinality of the subgroup (`sets/cardinals.py:453`), and a predicate subgroup of a group placed in `OwnedFiniteGroups` decides its cardinality by iterating itself (`predicate_subgroups.py`, `_cardinality_decision`), which needs an enumeration of `O(L)` that the definite `LatticeIsometryMor` does not supply.
-Two defects: constructing a Mor computes a cardinality (`OWN-22`), and a finite `O(L)` has no enumeration reachable by its predicate subgroups.
-The same path serves every `StabilizerSubgroups` with a generating morphism.
-Indefinite specimens (`<1> + <1> + <-1>`) are unaffected; the banked definite specimens in `tests/lattices/test_vector_family_stabilizers.sage` reach it at T.
+The owned runtime puts a category's method classes before the realization class (`refine.RealizationHook`, `_rebuild_parent_class`), so a class method named like a category operation that is not a `RealizationHook` or an abstract contract is never called.
+Observed (executed, 2026-10-15): `LatticeIsometryMor.centralizer`, which selects the generators of `Z_{O(L)}(f)` glued from cyclotomic summands (`lattice_centralizers.arithmetic_centralizer`), was shadowed by `OwnedGroups.ParentMethods.centralizer`; `L.O().centralizer(-1)` was the bare predicate subgroup, whose generators were the canonical cover `F(U(Z)) ->> Z`, and reading them on `D4` passed over all 1152 elements of `O(D4)` (more than 60 s, profiled). The centralizer now reaches the realization through the hook `_centralizer_construction`, as the normalizer does through `_normalizer_construction`.
+Population tell (not yet run beyond this pair): for each realization class, the names in its class dictionary that a category of its objects defines in `ParentMethods` without `RealizationHook` or `abstract_method`. Only `LatticeIsometryMor` against `OwnedGroups.ParentMethods` was checked; `_cardinality_decision`, `_engine_group` and `_engine_subgroup_from_generators` are hooks there.
+Repair: `realization-methods-reach-their-category-operations` in [TODO.md](TODO.md).
 
 ### Port consumers of binary fibres and cone marks must move (port #33, #15)
 
