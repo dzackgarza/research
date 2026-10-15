@@ -3698,6 +3698,28 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return self
             return self.free_module(1)
 
+        @cached_method
+        def regular_module_isomorphism(self):
+            r"""Return the additive isomorphism ``{}_R R -> R``, ``r e_0 |-> r``.
+
+            It sends the module generator ``e_0`` of :meth:`regular_module` to
+            ``1`` and intertwines the scalar action with left multiplication,
+            ``r (s e_0) |-> r s``.  When the regular module is the ring itself
+            it is the identity.
+            """
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            module = self.regular_module()
+            morphisms = AdditiveGroups().AdditiveCommutative().Mor(module, self)
+            match module is self:
+                case True:
+                    return morphisms.elementwise(lambda element: element)
+                case False:
+                    label = next(iter(module.module_generating_set()))
+                    return morphisms.elementwise(
+                        lambda element: self(module.framing_morphism().lift(element)(label))
+                    )
+
         def _module_basis_along(self, ring_map):
             r"""A basis of ``Res_f(S)`` over ``R`` for ``f = ring_map: R -> S = self``, or ``None``.
 

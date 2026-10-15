@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjectConstruction,
@@ -149,19 +150,19 @@ class Derivation(ModuleElement):
         return self.parent().algebra()
 
     def codomain(self):
-        return self.parent().target_module()
+        return self.parent().value_isomorphism().codomain()
 
     def restricted_codomain(self):
         return self.parent().restricted_target_module()
 
     def generator_image(self, label):
-        return self._generator_images[label]
+        return self.parent().value_isomorphism()(self._generator_images[label])
 
     def _evaluate_coefficients(self, coefficients):
-        target = self.codomain()
+        target = self.parent().target_module()
         return sum(
             (
-                target.scalar_multiple(coefficient, self.generator_image(label))
+                target.scalar_multiple(coefficient, self._generator_images[label])
                 for label, coefficient in zip(
                     self.parent().generator_labels(), coefficients, strict=True
                 )
@@ -222,6 +223,10 @@ class Derivation(ModuleElement):
                 )
 
     def __call__(self, element):
+        return self.parent().value_isomorphism()(self._module_value(element))
+
+    def _module_value(self, element):
+        r"""The value ``D(a)`` in the target module ``M``."""
         algebra = self.domain()
         if algebra in LocalizationRings():
             source = algebra.localization_source()
@@ -249,7 +254,7 @@ class Derivation(ModuleElement):
                 source.one(),
                 denominator,
             )
-            target = self.codomain()
+            target = self.parent().target_module()
             first = target.scalar_multiple(
                 denominator_inverse,
                 numerator_derivative,
@@ -310,7 +315,7 @@ class Derivation(ModuleElement):
         return DerivationUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
-            lambda element: self.restricted_codomain()(self(element)),
+            lambda element: self.restricted_codomain()(self._module_value(element)),
         )
 
     as_morphism = underlying_linear_morphism
@@ -531,6 +536,25 @@ class DerivationSpace(RestrictedMorCategoryParent):
     def generator_labels(self):
         return self._generator_labels
 
+    @cached_method
+    def value_isomorphism(self):
+        r"""The isomorphism ``M -> V`` from the target module to the object derivations take values in.
+
+        For ``Der_R(A, A)`` the target module is the regular module ``{}_A A`` and
+        ``V = A`` through ``r e_0 |-> r``
+        (the ring's ``regular_module_isomorphism``), so
+        ``d/dx(x) = 1`` in ``A``.  For any other ``A``-module ``M``, ``V = M``.
+        """
+        target = self.target_module()
+        algebra = self.algebra()
+        match target is algebra.regular_module():
+            case True:
+                return algebra.regular_module_isomorphism()
+            case False:
+                return AdditiveGroups().AdditiveCommutative().Mor(target, target).elementwise(
+                    lambda element: element
+                )
+
     def _kahler_classifier_module(self):
         return self._preamble_kahler_classifier_module
 
@@ -610,7 +634,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
         target = self.target_module()
         return self(
             {
-                label: target.scalar_multiple(scalar, derivation.generator_image(label))
+                label: target.scalar_multiple(scalar, target(derivation.generator_image(label)))
                 for label in self.generator_labels()
             }
         )
