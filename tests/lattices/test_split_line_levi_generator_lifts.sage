@@ -25,6 +25,11 @@ def test_every_complement_generator_has_a_pointwise_line_lift(name, scale, sign)
     family = tuple(quotient_group.group_generators())
     order = {"A1": 2, "A2": 12, "E8": 696729600}[name]
 
+    assert isotropic.q() == 0
+    assert isotropic.is_primitive()
+    assert reduction.isotropic_embedding()(
+        reduction.isotropic_sublattice().module_generators()[0]
+    ) == isotropic
     assert reduction.is_isometric(complement) is True
     assert quotient_group.subgroup(family).cardinality() == order
     for generator in family:
