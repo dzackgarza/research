@@ -3050,9 +3050,9 @@ class GroupMorphism:
         if source in GroupsWithChosenFreeBasis():
             return right.postcompose(self)
         if (
-            source.has_selected_group_resolution()
+            (right._gap_homomorphism is not None or right._generator_images is not None)
+            and source.has_selected_group_resolution()
             and source.group_generating_set() in FiniteSets()
-            and (right._gap_homomorphism is not None or right._generator_images is not None)
         ):
             return source.Mor(self.codomain())(
                 {generator: self(right(generator)) for generator in source.group_generators()}
