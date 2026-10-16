@@ -662,7 +662,51 @@ class SchemeMorphismMethods:
         return self._point_coordinates
 
     def _call_(self, point):
-        r"""Evaluate at a point ``T -> X`` of the domain: the composite ``T -> Y``."""
+        r"""Evaluate a prime point or compose a scheme-valued point.
+
+        On affine prime points, ``Spec(f)`` acts by contraction along ``f``.
+        A scheme-valued point ``T -> X`` maps to its composite ``T -> Y``.
+        The prime-point construction is the contravariant spectrum functor,
+        not a choice of a residue-field-valued point.
+
+        Unexecuted affine open-inclusion specimen (localization prime
+        correspondence, Atiyah--Macdonald, Proposition 3.11)::
+
+            sage: from dzack_research.preamble.all import *
+            sage: A = QQ['x']; x = A.algebra_generator('x')
+            sage: X = AffineSchemes(QQ)(A)
+            sage: U = X.distinguished_open(x)
+            sage: B = U.coordinate_algebra()
+            sage: p = U(B.ideal(B(x - A.one())))
+            sage: U.inclusion()(p) == X(A.ideal(x - A.one()))
+            True
+            sage: U.inclusion().evaluate_at(p) == U.inclusion()(p)
+            True
+        """
+        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeSpectra
+
+        if element_parent(point) in PrimeSpectra():
+            source = self.domain()
+            target = self.codomain()
+            if element_parent(point) is not source.underlying_space():
+                raise ValueError(f"{point} is not a prime point of the domain {source}")
+            match source, target:
+                case _ if (
+                    source in Schemes(source.scheme_base_ring()).Affine()
+                    and target in Schemes(target.scheme_base_ring()).Affine()
+                ):
+                    ring_map = self.coordinate_algebra_morphism()
+                    spectrum = OwnedRings().Commutative().prime_spectrum_functor()
+                    opposite = spectrum.domain()
+                    arrow = opposite.Mor(
+                        opposite(ring_map.codomain()), opposite(ring_map.domain())
+                    )(ring_map)
+                    return spectrum.on_morphism(arrow)(point)
+                case _:
+                    assert False, (
+                        f"the image of {point} along {self} requires the prime-point map "
+                        "of the glued scheme realization"
+                    )
         return self.compose(point)
 
     def _projected_cone_leg(self, before):
@@ -749,6 +793,10 @@ class SchemeMorphismMethods:
         by its homogeneous coordinate blocks to the block of its factor; every
         other represented morphism composes with the point.
         """
+        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeSpectra
+
+        if element_parent(point) in PrimeSpectra():
+            return self._call_(point)
         domain = self.domain()
         base = domain.scheme_base_ring()
         coordinates = point._represented_point_coordinates()
