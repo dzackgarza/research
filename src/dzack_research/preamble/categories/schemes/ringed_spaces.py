@@ -528,6 +528,16 @@ class AlgebraSheaves(OwnedParameterizedCategory):
 
     _MorCategory = AlgebraSheafMorCategoryConstruction
 
+    def object(self, presheaf, *, categories=(), construction_data=None, _engine):
+        r"""Construct an algebra sheaf from its sections on the open site."""
+        fibre, presheaf_data = _open_sheaf_placement(self.scheme(), presheaf, self)
+        return _object_of(
+            owned_category_join((self, fibre, *tuple(categories))),
+            _engine=(self, _engine, None),
+            **presheaf_data,
+            **dict(construction_data or {}),
+        )
+
     def an_object(self):
         return self.scheme().structure_sheaf()
 
@@ -541,7 +551,7 @@ class _StructureSheafEngine:
         super().__init__(**rest)
 
     def presheaf(self):
-        r"""The actual module-valued presheaf underlying ``O_X`` on the represented affine site."""
+        r"""The ring-valued sections functor underlying ``O_X`` on its open site."""
         return self.functor()
 
     @cached_method(key=lambda self, cover: id(cover))
@@ -619,12 +629,7 @@ class _StructureSheafEngine:
 
         if target_open is ambient:
             if source_open is not ambient:
-                raise ValueError(
-                    f"there is no restriction map from {source_open} to the larger open {ambient}: "
-                    "restriction goes from an open set to an open subset of it"
-                )
-
-
+                return remember(_localization_restriction_map(source_sections, self.global_sections()))
             return remember(source_sections.Mor(source_sections).identity())
         if not _is_distinguished_open_of(target_open, ambient):
             raise ValueError(
@@ -666,29 +671,14 @@ class _StructureSheafEngine:
 
 
 def _structure_sheaf(ringed_space):
-    r"""Construct ``O_X`` by the shared sheaf entry from its affine-site presheaf and descent rule."""
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-    coverage = distinguished_affine_coverage(ringed_space)
-    value_category = Modules(ringed_space.coordinate_algebra())
-    presheaf = _AffineStructurePresheaf(ringed_space)
-
-    def inverse_for(equalizer):
-        return equalizer.canonical_map().inverse()
-
-    descent = DescentData(coverage, presheaf, inverse_for)
-    return coverage.sheaves(value_category).object(
-        presheaf,
-        descent,
+    r"""Construct ``O_X`` from its ring-valued sections on the open site."""
+    return AlgebraSheaves(ringed_space).object(
+        _AffineOpenStructurePresheaf(ringed_space),
         categories=(
-            AlgebraSheaves(ringed_space),
             QuasiCoherentSheaves(ringed_space),
             QuasiCoherentSheaves(ringed_space).Invertible(),
         ),
-        construction_data={
-            "ringed_space": ringed_space,
-            **PresheafObjects(ringed_space).presheaf_datum(_AffineOpenStructurePresheaf(ringed_space)),
-        },
+        construction_data={"ringed_space": ringed_space},
         _engine=_StructureSheafEngine,
     )
 
@@ -932,19 +922,20 @@ def _localization_restriction_map(source, target):
 
     if source is target:
         return source.Mor(source).identity()
-    if source not in LocalizationRings() or target not in LocalizationRings():
+    if source not in LocalizationRings():
         raise TypeError(
             f"restriction from D(f) to D(g) is computed between localizations of the coordinate "
             f"ring, but the rings are {source} and {target}"
         )
-    if source.localization_source() is not target.localization_source():
+    if target is source.localization_source():
+        target_unit = target.Mor(target).identity()
+    elif target in LocalizationRings() and source.localization_source() is target.localization_source():
+        target_unit = target.localization_map()
+    else:
         raise ValueError(
-            f"restriction from D(f) to D(g) needs both to be opens of one affine scheme, but "
-            f"{source} is a localization of {source.localization_source()} and {target} is a "
-            f"localization of {target.localization_source()}"
+            f"restriction from {source} to {target} requires the coordinate ring "
+            f"{source.localization_source()} or a localization of that ring"
         )
-
-    target_unit = target.localization_map()
     generators = tuple(source.localization_submonoid().monoid_generators())
     if any(not target_unit(generator).is_unit() for generator in generators):
         raise ValueError(
@@ -1576,9 +1567,13 @@ class _AffineModuleSheafEngine:
             if source_open is ambient
             else self.sections_on_distinguished_open(source_open)
         )
-        if target_open is ambient:
+        if target_open is ambient and source_open is ambient:
             return source_sections.module_category().Mor(source_sections, source_sections).identity()
-        target_sections = self.sections_on_distinguished_open(target_open)
+        target_sections = (
+            self.global_sections()
+            if target_open is ambient
+            else self.sections_on_distinguished_open(target_open)
+        )
 
         if source_open is ambient:
             localization = target_sections.localization_functor()
@@ -1603,7 +1598,9 @@ class _AffineModuleSheafEngine:
             )
             target_value = target_sections.scalar_multiple(
                 inverse_denominator,
-                target_sections.fraction(section.numerator()),
+                section.numerator()
+                if target_open is ambient
+                else target_sections.fraction(section.numerator()),
             )
             return restricted_target.wrap(target_value)
 

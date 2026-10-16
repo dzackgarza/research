@@ -1321,6 +1321,12 @@ The fibre product of schemes is constructed for affine bases, for glued schemes 
 
 ### Sheaves on a space are built on bases, not on `Open(X)`
 
+The affine structure, associated-module and descended-algebra constructors now
+retain open-site sections functors. Whole-space and distinguished-open values
+come from the coordinate ring, module localization and algebra localization.
+Their mathematical execution remains pending under the source-phase rule.
+The unresolved extension and finite-atlas obligations below retain this owner.
+
 A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). `PresheafObjects(X)` is the Grothendieck construction `∫_D [Open(X)^op, D]` with fibres `with_values(D)`, and `SheafObjects(X)` declares it (`schemes/ringed_spaces.py`); `PresheafObjects(X)` declares no supercategory, because no category of Grothendieck constructions of a `Cat`-valued functor is presented. The affine structure sheaf is still built on `distinguished_affine_coverage(X)` valued in `Modules(O(X))` (`_structure_sheaf`, `schemes/ringed_spaces.py`), and `M~` has no functor and no descent datum (`QuasiCoherentSheaves`). The comparison lemma (restriction `Sh(Open(X), D) -> Sh(B, D)` is an equivalence for a basis `B`; Stacks 009H, locator to check) is stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` (`TopologicalSpaces...open_subsets_site()`) -> `OpenCoveringFamilies(X)` -> the extension functor -> every represented sheaf an object of `Sh(Open(X), D)` -> the honest supercategories. **Consequences:** `O_X.global_sections()` keeps a method returning the ring `O(X)`, where the general `Sheaves.ParentMethods.global_sections()` would return the regular module, and `M~` keeps its own section methods.
 
 Finite-atlas chart sections require maps from chart images into the power set.

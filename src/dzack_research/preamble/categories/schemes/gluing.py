@@ -5873,17 +5873,10 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
 
         @cached_method
         def sheaf(self):
-            r"""Return the glued sheaf, an object of ``Sh(Čech site, unital associative O(X)-algebras)``."""
-            sheaves = self.cover().cech_coverage().sheaves(
-                Algebras(self.scheme().coordinate_algebra()).Associative().Unital()
-            )
-            return sheaves.object(
-                self.descent_presheaf(),
-                self.descent_data(),
-                categories=(
-                    AlgebraSheaves(self.scheme()),
-                    QuasiCoherentSheaves(self.scheme()),
-                ),
+            r"""Return the descended algebra sheaf on the open site of ``X``."""
+            return AlgebraSheaves(self.scheme()).object(
+                _AffineAlgebraOpenPresheaf(self),
+                categories=(QuasiCoherentSheaves(self.scheme()),),
                 construction_data={"algebra_gluing_datum": self},
                 _engine=_AlgebraGluingSheafEngine,
             )
@@ -5905,6 +5898,67 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
 
         def _repr_(self):
             return f"Algebra gluing datum on {self.cover()}"
+
+
+class _AffineAlgebraOpenPresheaf(Functor):
+    r"""Sections of an affine quasi-coherent algebra on whole and basis opens.
+
+    For an ``A``-algebra ``B``, sections on ``D(f)`` are ``A_f tensor_A B``,
+    read as an ``A``-algebra. Localization carries multiplication and unit;
+    no commutativity of ``B`` is required (Stacks Project, Tag 01I8).
+    """
+
+    def __init__(self, datum):
+        self._datum = datum
+        self._ring = datum.scheme().coordinate_algebra()
+        self._structure = datum.scheme().structure_sheaf().open_sections_presheaf()
+        Functor.__init__(
+            self,
+            self._structure.domain(),
+            Algebras(self._ring).Associative().Unital(),
+        )
+
+    @cached_method
+    def _extended_algebra(self, open_object):
+        ring = self._structure(open_object)
+        algebra = self._datum.compatible_sections()
+        if ring is self._ring:
+            return algebra
+        adjunction = self.codomain().base_change_adjunction(ring.localization_map())
+        return adjunction.left_adjoint()(algebra)
+
+    def _apply_object(self, open_object):
+        ring = self._structure(open_object)
+        algebra = self._extended_algebra(open_object)
+        if ring is self._ring:
+            return algebra
+        adjunction = self.codomain().base_change_adjunction(ring.localization_map())
+        return adjunction.right_adjoint()(algebra)
+
+    def _apply_morphism(self, arrow):
+        source = self(arrow.domain())
+        target = self(arrow.codomain())
+        if source is target:
+            return self.codomain().Mor(source, target).identity()
+        source_ring = self._structure(arrow.domain())
+        target_ring = self._structure(arrow.codomain())
+        original = self._datum.compatible_sections().unformed_module()
+        extended_target = self._extended_algebra(arrow.codomain())
+
+        def restrict(element):
+            if source_ring is self._ring:
+                numerator = original(source(element))
+                denominator = self._ring.one()
+            else:
+                fraction = source.unformed_module()(element).underlying_element()
+                numerator = fraction.numerator()
+                denominator = fraction.denominator()
+            if target_ring is self._ring:
+                return target(original.scalar_multiple(denominator.inverse_of_unit(), numerator))
+            fraction = extended_target.unformed_module().fraction(numerator, denominator)
+            return target(extended_target(fraction))
+
+        return self.codomain().Mor(source, target)._from_constructed_element_map(restrict)
 
 
 class _AlgebraGluingCechPresheaf(Functor):
