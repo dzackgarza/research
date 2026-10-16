@@ -38,7 +38,7 @@ The poset is drawn in `docs/preamble-graph.html` (pan and zoom), from `docs/prea
 | :--- | ---: |
 | categories in the poset | 313 |
 | of those, built and interrogated | 233 |
-| operations, each written once at its owner | 2033 |
+| operations, each written once at its owner | 2021 |
 | functors | 4, 2 of them with a domain and codomain resolved here |
 | adjunctions | 1 |
 
@@ -199,7 +199,7 @@ is that last placement; ``Cat`` is not built on the owned base, which
 would ask for ``Cat()`` while ``Cat`` is under construction.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:291`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:293`
 
 - **probed as** `Cat: categories with functors as morphisms`
 
@@ -213,7 +213,7 @@ would ask for ``Cat()`` while ``Cat`` is under construction.
 
 - **specimens** `Ord`
 
-**Operations introduced here** (68 on objects)
+**Operations introduced here** (67 on objects)
 
 *on objects*
 
@@ -300,8 +300,6 @@ would ask for ``Cat()`` while ``Cat`` is under construction.
 - `MonomorphismArrowCategory() -> 'Category'`
 
   - Return the full arrow subcategory on represented monomorphisms.
-
-- `Mor(source: 'Parent', target: 'Parent') -> 'Category'`
 
 - `MorCategory() -> 'Category'`
 
@@ -461,7 +459,7 @@ would ask for ``Cat()`` while ``Cat`` is under construction.
 
 Chamber systems with type-preserving adjacency-preserving morphisms.
 
-- **defined at** `src/dzack_research/preamble/categories/chamber_systems.py:140`
+- **defined at** `src/dzack_research/preamble/categories/chamber_systems.py:142`
 
 - **probed as** `Category of chamber systems`
 
@@ -483,9 +481,9 @@ Chamber systems with type-preserving adjacency-preserving morphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -494,7 +492,7 @@ Chamber systems with type-preserving adjacency-preserving morphisms.
 
 The category of represented discrete categories.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:326`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:329`
 
 - **probed as** `Category of discrete categories`
 
@@ -516,7 +514,7 @@ The category of represented discrete categories.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 68 |  |  |
+| [`Cat`](#cat-cat) | 67 |  |  |
 
 #### `MorCategories` {#cat-morcategories}
 
@@ -527,7 +525,7 @@ Its objects are the categories ``Hom_C(A,B)``, each built by the ``Of``
 entry of the Mor family of its base category ``C``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py:1551`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py:1579`
 
 - **probed as** `Category of mor categories`
 
@@ -553,13 +551,13 @@ entry of the Mor family of its base category ``C``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 68 |  |  |
+| [`Cat`](#cat-cat) | 67 |  |  |
 
 #### `TopologicalSpaces` {#cat-topologicalspaces}
 
 Sets equipped with a topology, with continuous maps as morphisms.
 
-- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:548`
+- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:550`
 
 - **probed as** `Category of topological spaces`
 
@@ -617,9 +615,9 @@ Sets equipped with a topology, with continuous maps as morphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -663,9 +661,9 @@ smooth manifold is the orbifold whose charts have trivial group, so
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -675,7 +673,7 @@ smooth manifold is the orbifold whose charts have trivial group, so
 
 Owned finite-dimensional topological manifolds.
 
-- **defined at** `src/dzack_research/preamble/categories/manifolds.py:389`
+- **defined at** `src/dzack_research/preamble/categories/manifolds.py:392`
 
 - **probed as** `Category of topological manifolds`
 
@@ -745,9 +743,9 @@ Owned finite-dimensional topological manifolds.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -763,7 +761,7 @@ manifolds form the represented subcategory below and therefore belong here
 as well.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/manifolds.py:728`
+- **defined at** `src/dzack_research/preamble/categories/manifolds.py:731`
 
 - **probed as** `Category of differentiable manifolds`
 
@@ -788,9 +786,9 @@ as well.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -800,7 +798,7 @@ as well.
 
 Finite directed graphs with graph homomorphisms.
 
-- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:241`
+- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:243`
 
 - **probed as** `Category of finite directed graphs`
 
@@ -824,8 +822,8 @@ Finite directed graphs with graph homomorphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -874,9 +872,9 @@ stabilizer ``Gamma_p`` (Thurston, Ch. 13).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -887,7 +885,7 @@ stabilizer ``Gamma_p`` (Thurston, Ch. 13).
 
 Finite undirected graphs, viewed as symmetric directed graphs.
 
-- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:277`
+- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:279`
 
 - **probed as** `Category of finite graphs`
 
@@ -911,8 +909,8 @@ Finite undirected graphs, viewed as symmetric directed graphs.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -922,7 +920,7 @@ Finite undirected graphs, viewed as symmetric directed graphs.
 
 Finite digraphs with selected vertex and edge labels.
 
-- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:313`
+- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:315`
 
 - **probed as** `Category of labelled finite directed graphs`
 
@@ -946,8 +944,8 @@ Finite digraphs with selected vertex and edge labels.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -990,9 +988,9 @@ A morphism is a morphism of locally ``C``-ringed spaces.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1012,7 +1010,7 @@ Topology of Three-Manifolds*, Ch. 13).  Both forgetful functors send it
 to the same underlying topological space.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/manifolds.py:778`
+- **defined at** `src/dzack_research/preamble/categories/manifolds.py:781`
 
 - **probed as** `Category of smooth manifolds`
 
@@ -1037,9 +1035,9 @@ to the same underlying topological space.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1068,9 +1066,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1084,7 +1082,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Finite undirected graphs with selected vertex and edge labels.
 
-- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:369`
+- **defined at** `src/dzack_research/preamble/categories/graph_categories.py:371`
 
 - **probed as** `Category of labelled finite graphs`
 
@@ -1108,8 +1106,8 @@ Finite undirected graphs with selected vertex and edge labels.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1119,7 +1117,7 @@ Finite undirected graphs with selected vertex and edge labels.
 
 Finite Coxeter diagrams: labelled graphs encoding a symmetric angle matrix.
 
-- **defined at** `src/dzack_research/preamble/categories/coxeter_diagrams.py:318`
+- **defined at** `src/dzack_research/preamble/categories/coxeter_diagrams.py:324`
 
 - **probed as** `Category of Coxeter diagrams`
 
@@ -1329,8 +1327,8 @@ Finite Coxeter diagrams: labelled graphs encoding a symmetric angle matrix.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1358,7 +1356,7 @@ trivial group, so ``RiemannianOrbifolds()`` is its second immediate
 supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/manifolds.py:981`
+- **defined at** `src/dzack_research/preamble/categories/manifolds.py:984`
 
 - **probed as** `Category of Riemannian manifolds`
 
@@ -1389,9 +1387,9 @@ supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1533,8 +1531,8 @@ vertex and edge labels; that is the immediate owned placement used here.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1582,9 +1580,9 @@ is a complex orbifold whose charts have trivial group.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1672,8 +1670,8 @@ the request is recorded in ``COMPLAINTS.md``.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`CoxeterDiagrams`](#cat-coxeterdiagrams) | 51 |  |  |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1734,8 +1732,8 @@ and :meth:`ParentMethods.dynkin_diagram` returns ``D`` itself.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`CoxeterDiagrams`](#cat-coxeterdiagrams) | 51 |  |  |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`RootedCoxeterDiagrams`](#cat-rootedcoxeterdiagrams) | 11 |  |  |
@@ -1838,10 +1836,10 @@ torsion free.  Both are checked by the ambient lattice's admission method.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -1866,7 +1864,7 @@ Analytic Sheaves*, Ch. 1); both routes send it to the same smooth
 orbifold.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/manifolds.py:1528`
+- **defined at** `src/dzack_research/preamble/categories/manifolds.py:1532`
 
 - **probed as** `Category of complex analytic manifolds`
 
@@ -1911,9 +1909,9 @@ orbifold.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -2025,12 +2023,12 @@ returning the same object with the reflection algorithms available on it.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -2081,7 +2079,7 @@ functor, not recognized afterwards from methods on an arbitrary object::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:717`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:705`
 
 - **not placed**: `CoveringFamilies(site_category: 'Category')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2161,7 +2159,7 @@ genuine in-place presentation parent, ``Cat/C``, supplied by
 descent category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1113`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1101`
 
 - **not placed**: `DescentDataOnCover(coverage: 'Category', covering_family)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2205,7 +2203,7 @@ source and target of every selected biproduct structure arrow::
 
 A diagram category whose index category represents a directed order.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:107`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:108`
 
 - **not placed**: `DirectedSystem(index_category: 'Category', target_category: 'Category')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2236,17 +2234,13 @@ underlying sets supplied as different objects::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:135`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:137`
 
 - **not placed**: `DiscreteCategory(object_set: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
-**Operations introduced here** (3 on objects)
+**Operations introduced here** (2 on objects)
 
 *on objects*
-
-- `Mor(codomain)`
-
-  - Return the Mor in this discrete category to ``codomain``.
 
 - `discrete_category() -> 'DiscreteCategory'`
 
@@ -2381,7 +2375,7 @@ points, the separate object ``rational_points()``.
 
 The diagram category `[J^op,C]` for inverse systems indexed by `J`.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:111`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:112`
 
 - **not placed**: `InverseSystem(index_category: 'Category', target_category: 'Category')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2423,7 +2417,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:1448`
+- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:1609`
 
 - **not placed**: `LatticeMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2440,7 +2434,7 @@ presheaves satisfying descent for these covers (Mathlib,
 whole space ``X`` is the terminal object of ``Open(X)``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1035`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1023`
 
 - **not placed**: `OpenCoveringFamilies(space: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2456,7 +2450,7 @@ sequence.  ``le`` may be supplied when the owned set carries its order only
 by construction rather than by element comparison.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:187`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/products.py:189`
 
 - **not placed**: `PosetCategory(ordered_set, le=None)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2506,7 +2500,7 @@ those covering arrows; this is part of the resolution datum, not a
 theorem inferred from an arbitrary category's name.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/resolutions.py:355`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/resolutions.py:345`
 
 - **not placed**: `Resolutions(base_category: 'Category', projective_class: 'Category', truncation=0, level_category=None, augmentation_family=None)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2582,7 +2576,7 @@ datum as the one datum this level adds.  Its morphisms are the natural
 transformations of the presheaf category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1614`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1602`
 
 - **not placed**: `Sheaves(coverage: 'Category', value_category: 'Category')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2638,7 +2632,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:1512`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:1504`
 
 - **not placed**: `SubobjectMor(family: 'MorCategoryConstruction', domain: 'Parent', codomain: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2700,7 +2694,7 @@ supercategory of this Mor is ``Mor_Set(X, Y)``
 exactly when it is continuous (``CON-17``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:423`
+- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:424`
 
 - **not placed**: `TopologicalSpaceMor(family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2718,7 +2712,7 @@ exactly when it is continuous (``CON-17``).
 
 Singleton identity covers, the trivial coverage on `C`.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:996`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:984`
 
 - **not placed**: `TrivialCoveringFamilies(site_category: 'Category')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -2728,7 +2722,7 @@ Singleton identity covers, the trivial coverage on `C`.
 
 Take the object set of a represented discrete category.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:378`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/functors.py:381`
 
 - **acts** Category of discrete categories → Category of sets
 
@@ -2755,7 +2749,7 @@ The endpoint represents that exact category; it does not select another
 fixed Mor.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:44`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:45`
 
 - **built by** `CategoryObject(category_of_categories: 'Cat', represented_category: 'Category', **rest)`
 
@@ -2771,9 +2765,17 @@ fixed Mor.
 
 An isomorphism represented by mutually inverse arrows.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py:1355`
+```text
+The defining datum is the forward arrow ``f: X -> Y``; the inverse
+``f^{-1}: Y -> X`` is determined by it.  It is supplied as a zero-argument
+computation, asked on the first request and cached (``OWN-22``): a known
+inverse is the constant computation, and a composite ``g f`` supplies
+``f^{-1} g^{-1}`` without composing it at construction.
+```
 
-- **built by** `CategoricalIsomorphism(parent: 'Parent', forward: 'Morphism', inverse: 'Morphism', *, verify: 'bool' = False)`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/mor_categories.py:1368`
+
+- **built by** `CategoricalIsomorphism(parent: 'Parent', forward: 'Morphism', inverse_computation: 'Callable[[], Morphism]', *, verify: 'bool' = False)`
 
 **Operations**
 
@@ -2795,7 +2797,7 @@ An isomorphism represented by mutually inverse arrows.
 
 A live functor regarded as a morphism in `Cat`.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:81`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:82`
 
 - **built by** `CategoryFunctorMorphism(parent: 'CategoryFunctorMor', functor: 'Functor')`
 
@@ -2814,7 +2816,7 @@ of the walking arrow, the components at ``0`` and ``1`` are the left edge
 the square ``g left = right f``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:115`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:116`
 
 - **built by** `CommutativeSquare(parent: 'NaturalTransformationMor', transformation: 'NaturalTransformation')`
 
@@ -2844,29 +2846,23 @@ the square ``g left = right f``.
 
 Compatibility shell for private lattice-embedding realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:555`
+- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:724`
 
 - **built by** `LatticeEmbedding(parent, images, *, elementwise=False)`
-
-**Operations**
-
-- `is_injective() -> 'bool'`
-
-  - True: membership in the embedding Mor states it (``OWN-22``).
 
 #### `LatticeIsometry` <sub>MORPHISM</sub>
 
 Compatibility shell for private lattice-isometry realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:1444`
+- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:1605`
 
-- **built by** `LatticeIsometry(parent, images)`
+- **built by** `LatticeIsometry(parent, images, *, inverse_computation=None)`
 
 #### `LatticeMorphism` <sub>MORPHISM</sub>
 
 Compatibility shell for private lattice-arrow realizations not yet graph-generated.
 
-- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:393`
+- **defined at** `src/dzack_research/preamble/categories/lattice_morphisms.py:403`
 
 - **built by** `LatticeMorphism(parent, images, *, elementwise=False)`
 
@@ -2874,7 +2870,7 @@ Compatibility shell for private lattice-arrow realizations not yet graph-generat
 
 A natural transformation as a morphism in a functor category.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:1260`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/cat.py:1265`
 
 - **built by** `NaturalTransformationMorphism(parent: 'NaturalTransformationMor', transformation: 'NaturalTransformation')`
 
@@ -2894,7 +2890,7 @@ A natural transformation as a morphism in a functor category.
 
 An arrow of `C^op` represented by the reverse arrow in `C`.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py:28`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py:29`
 
 - **built by** `OppositeMorphism(parent: 'OppositeMor', underlying_arrow: 'Morphism')`
 
@@ -2906,7 +2902,7 @@ An arrow of `C^op` represented by the reverse arrow in `C`.
 
 A pair of morphisms in a product category.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py:216`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/category_constructions.py:213`
 
 - **built by** `ProductMorphism(parent: 'ProductMor', first: 'Morphism', second: 'Morphism')`
 
@@ -2920,7 +2916,7 @@ A pair of morphisms in a product category.
 
 A map of chosen truncated resolutions.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/resolutions.py:81`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/resolutions.py:82`
 
 - **built by** `ResolutionMorphism(parent, components, *, target_morphism=None)`
 
@@ -2942,7 +2938,7 @@ laws.  Undecided laws remain on their selected slice squares, rather than
 turning every same-parent factor datum into an established unique map.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:1407`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py:1399`
 
 - **built by** `SubobjectMorphism(parent: 'SubobjectMor', factor_morphism: 'Morphism', *, verify: 'bool' = False, _slice_square=None)`
 
@@ -2964,7 +2960,7 @@ turning every same-parent factor datum into an established unique map.
 
 A continuous map, retaining its underlying set morphism.
 
-- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:372`
+- **defined at** `src/dzack_research/preamble/categories/topological_spaces.py:373`
 
 - **built by** `ContinuousMap(parent, set_morphism)`
 
@@ -3044,7 +3040,7 @@ two-member cover but has canonical descent data for the trivial coverage::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1426`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1414`
 
 - **built by** `DescentData(coverage: 'Category', presheaf, inverse_for: 'Callable[[DescentEqualizer], Morphism | DescentEqualizerComparison]', *, equalizer_for=None)`
 
@@ -3073,7 +3069,7 @@ constructions of the value category, and the comparison is an owned
 morphism between their owned objects.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1219`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1207`
 
 - **built by** `DescentEqualizer(coverage: 'Category', presheaf, covering_family: 'Parent', *, equalizer_selector=None)`
 
@@ -3114,7 +3110,7 @@ The record retains the Čech construction beside the already-owned
 :class:`CategoricalIsomorphism`; it does not classify a new kind of object.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1400`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1388`
 
 - **built by** `DescentEqualizerComparison(equalizer: 'DescentEqualizer', inverse: 'Morphism')`
 
@@ -3147,7 +3143,7 @@ quotient and action needed by the external integralization theorem while
 keeping the later lift back into ``G`` as a separate obligation.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rational_integral_stabilizers.py:550`
+- **defined at** `src/dzack_research/preamble/categories/rational_integral_stabilizers.py:543`
 
 - **built by** `FiniteCommensurabilityQuotient(rational_group, reference_inclusion, modulus)`
 
@@ -3224,7 +3220,7 @@ that action. Under a justified stable containing bound, the least invariant
 module ``M`` supplies the finite residue quotient ``M/dM``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rational_integral_stabilizers.py:262`
+- **defined at** `src/dzack_research/preamble/categories/rational_integral_stabilizers.py:255`
 
 - **built by** `IntegralStructureAction(rational_group, lattice_inclusion)`
 
@@ -3308,7 +3304,7 @@ their inclusions, the finite index of their orthogonal sum, and the glue
 anti-isometry presenting the extension.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattice_centralizers.py:838`
+- **defined at** `src/dzack_research/preamble/categories/lattice_centralizers.py:763`
 
 - **built by** `IsometryPrimitiveExtension(isometry)`
 
@@ -3473,7 +3469,7 @@ whose objects are built in it, so the coverage is that subcategory and
 no family is admitted by an after-the-fact predicate or registry.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1097`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1085`
 
 - **built by** `Coverage(site_category: 'Category', covering_families: 'Category') -> 'Category'`
 
@@ -3501,7 +3497,7 @@ so \(1/2\) and \((1+\sqrt 5)/4\) belong, being \(\cos(\pi/3)\) and
 
 Return \((p,q)\) as an object of :func:`signature_pairs`.
 
-- **defined at** `src/dzack_research/preamble/categories/_lattice.py:1370`
+- **defined at** `src/dzack_research/preamble/categories/_lattice.py:1323`
 
 - **built by** `signature_pair(positive, negative)`
 
@@ -3515,7 +3511,7 @@ its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry is a
 cardinal and the pair is an object of the product category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/_lattice.py:1359`
+- **defined at** `src/dzack_research/preamble/categories/_lattice.py:1312`
 
 - **built by** `signature_pairs()`
 
@@ -3523,7 +3519,7 @@ cardinal and the pair is an object of the product category.
 
 Return the trivial coverage consisting only of identity singleton covers.
 
-- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1173`
+- **defined at** `src/dzack_research/preamble/categories/abstract_categories/presheaves.py:1161`
 
 - **built by** `trivial_coverage(site_category: 'Category') -> 'Category'`
 
@@ -3561,7 +3557,7 @@ theorems about the supplied datum, established where it is constructed,
 not re-checked here.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/functors/core.py:731`
+- **defined at** `src/dzack_research/preamble/categories/functors/core.py:749`
 
 - **built by** `Adjunction(left_adjoint: 'Functor', right_adjoint: 'Functor')`
 
@@ -3710,6 +3706,10 @@ functor to the category of injections when applied to a noninjective map::
 
   - Return the declared faithfulness decision.
 
+- `map_isomorphism(isomorphism)`
+
+  - The isomorphism F(f), with inverse F(f^{-1}) (Mathlib Functor.mapIso).
+
 - `morphism_image(morphism: 'Map') -> 'Map'`
 
   - The image ``F(f): F(A) -> F(B)`` of an arrow ``f: A -> B`` of the domain.
@@ -3775,7 +3775,7 @@ functor to the category of injections when applied to a noninjective map::
     TypeError: the image is not a morphism of the functor's codomain
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/functors/core.py:421`
+- **defined at** `src/dzack_research/preamble/categories/functors/core.py:439`
 
 - **built by** `IdentityFunctor(category: 'Category')`
 
@@ -3802,7 +3802,7 @@ the objects of the common domain.  Naturality is the equation
 the family that its constructor states, not a check performed per arrow.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/functors/core.py:536`
+- **defined at** `src/dzack_research/preamble/categories/functors/core.py:554`
 
 - **built by** `NaturalTransformation(source: 'Functor', target: 'Functor', component: 'Callable[[Parent], Morphism]')`
 
@@ -3925,7 +3925,7 @@ EXAMPLES::
     \mathrm{Lattices}(\mathbb{Z}) \in \mathrm{Cat}
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:1441`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:1442`
 
 - **probed as** `Lattices(Integer Ring)`
 
@@ -3937,17 +3937,13 @@ EXAMPLES::
 
 - **build an object** `Lattices(R)(data: 'object', *args: 'object', **options: 'object') -> 'Lattices.ParentMethods'`
 
-**Operations introduced here** (205 on objects, 22 on elements)
+**Operations introduced here** (204 on objects, 22 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Operations generic to every lattice element.
-
-- `Aut()`
-
-  - Return ``Isom(L,L)``, the orthogonal automorphism Mor.
 
 - `BKZ(block_size=20)`
 
@@ -4782,11 +4778,11 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -4811,7 +4807,7 @@ quotient; the kernel of that action together with the restriction to
 \(I\) is the unipotent radical.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:7272`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:7341`
 
 - **probed as** `Category of isotropic reductions over Integer Ring`
 
@@ -4945,12 +4941,12 @@ quotient; the kernel of that action together with the restriction to
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -4972,7 +4968,7 @@ infinite square fibres (``x^2 + y^2 = 1`` has ``(3/5, 4/5)``), so finiteness
 of the roots is not a consequence of definiteness alone.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:6781`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:6850`
 
 - **probed as** `Category of definite lattices`
 
@@ -4998,13 +4994,13 @@ of the roots is not a consequence of definiteness alone.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5023,7 +5019,7 @@ Nondegenerate even integral lattices with 2-elementary discriminant group.
 This is a refinement of lattices, not a property of arbitrary even forms.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:6822`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:6891`
 
 - **probed as** `Category of even two elementary lattices`
 
@@ -5049,13 +5045,13 @@ This is a refinement of lattices, not a property of arbitrary even forms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5070,7 +5066,7 @@ This is a refinement of lattices, not a property of arbitrary even forms.
 
 Finite noncrystallographic root lattices over their exact coefficient order.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:8172`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:8239`
 
 - **probed as** `Category of noncrystallographic root lattices over Integer Ring`
 
@@ -5104,13 +5100,13 @@ Finite noncrystallographic root lattices over their exact coefficient order.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5125,7 +5121,7 @@ Finite noncrystallographic root lattices over their exact coefficient order.
 
 Negative-definite ADE root lattices with a chosen simple-root framing.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:8245`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:8312`
 
 - **probed as** `Category of root lattices`
 
@@ -5183,13 +5179,13 @@ Negative-definite ADE root lattices with a chosen simple-root framing.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5206,7 +5202,7 @@ Negative-definite ADE root lattices with a chosen simple-root framing.
 
 Raised when an operation requiring a primitive lattice vector is given a nonprimitive one.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:487`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:488`
 
 - **built by** `NotPrimitiveError(...)`
 
@@ -5216,7 +5212,7 @@ Raised when an operation requiring a primitive lattice vector is given a nonprim
 
 `Lattices(R).Even()`, under the name the session catalogue uses.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:6876`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:6945`
 
 - **built by** `EvenLattices(base_ring)`
 
@@ -5224,7 +5220,7 @@ Raised when an operation requiring a primitive lattice vector is given a nonprim
 
 `Lattices(R).FinitelyGenerated()`, under the name the session catalogue uses.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:6866`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:6935`
 
 - **built by** `FiniteRankLattices(base_ring)`
 
@@ -5232,7 +5228,7 @@ Raised when an operation requiring a primitive lattice vector is given a nonprim
 
 `Lattices(R).Nondegenerate()`, under the name the session catalogue uses.
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:6871`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:6940`
 
 - **built by** `NondegenerateLattices(base_ring)`
 
@@ -5240,7 +5236,7 @@ Raised when an operation requiring a primitive lattice vector is given a nonprim
 
 Return \((r,a,\delta)\) as a point of \(\mathbb N^3\).
 
-- **defined at** `src/dzack_research/preamble/categories/lattices.py:216`
+- **defined at** `src/dzack_research/preamble/categories/lattices.py:217`
 
 - **built by** `nikulin_invariants(rank, discriminant_length, delta)`
 
@@ -5373,7 +5369,7 @@ and so a functor, never a supercategory (``CAT-16``).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 68 |  |  |
+| [`Cat`](#cat-cat) | 67 |  |  |
 
 #### `LinearCategories.Additive` {#cat-linearcategories-additive}
 
@@ -5403,7 +5399,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 68 |  |  |
+| [`Cat`](#cat-cat) | 67 |  |  |
 | [`LinearCategories(R)`](#cat-linearcategories) | 1 |  |  |
 
 #### `TriangulatedCategories(R)` {#cat-triangulatedcategories}
@@ -5454,7 +5450,7 @@ class of 1-morphisms is part of the definition.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 68 |  |  |
+| [`Cat`](#cat-cat) | 67 |  |  |
 
 #### `ModulesOverCommutativeRings` {#cat-modulesovercommutativerings}
 
@@ -5468,7 +5464,7 @@ Objects are modules ``M`` together with their commutative scalar ring
 give the cocartesian/cartesian transports of the represented fibration.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:355`
+- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:338`
 
 - **probed as** `Category of modules over commutative rings`
 
@@ -5492,9 +5488,9 @@ give the cocartesian/cartesian transports of the represented fibration.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5505,7 +5501,7 @@ give the cocartesian/cartesian transports of the represented fibration.
 
 Modules over a ring, on the owned additive and scalar spines.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:240`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:241`
 
 - **probed as** `Category of modules over Integer Ring`
 
@@ -5517,25 +5513,13 @@ Modules over a ring, on the owned additive and scalar spines.
 
 - **build an object** `Modules(R)(x, *args, **opts)`
 
-**Operations introduced here** (81 on objects, 1 on elements)
+**Operations introduced here** (78 on objects, 1 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
-
-- `Aut()`
-
-  - Return ``Aut_R(M)``, the automorphisms of this module.
-
-- `End()`
-
-  - Return ``End_R(M)``, the endomorphism ring of this module.
-
-- `Mono(codomain)`
-
-  - Return the declared injective linear maps into ``codomain``.
 
 - `annihilator()`
 
@@ -5821,9 +5805,9 @@ Modules over a ring, on the owned additive and scalar spines.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5845,7 +5829,7 @@ a representative ``z'`` in ``C'``.  The cycle quotient of ``C`` itself is
 the case ``C' = C`` with ``r = s`` the identity.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:181`
+- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:183`
 
 - **probed as** `Category of cohomology modules over Integer Ring`
 
@@ -5881,10 +5865,10 @@ the case ``C' = C`` with ``r = s`` the identity.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5919,10 +5903,10 @@ the case ``C' = C`` with ``r = s`` the identity.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5972,10 +5956,10 @@ is an ``R``-linear map ``f`` with ``f(F^p M) subseteq F^p N``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6052,10 +6036,10 @@ equality is the defining quotient relation ``x-y in aR``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6121,10 +6105,10 @@ Modules presented by an abelian group and a ring morphism `rho : R -> End(A)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6136,7 +6120,7 @@ Modules presented by an abelian group and a ring morphism `rho : R -> End(A)`.
 
 Represented Mor parents closed under pointwise `R`-linear operations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3123`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3127`
 
 - **probed as** `Category of linear Mor modules over Integer Ring`
 
@@ -6148,7 +6132,7 @@ Represented Mor parents closed under pointwise `R`-linear operations.
 
 - **build an object** `LinearMorModules(R)(x, *args, **opts)`
 
-**Operations introduced here** (8 on objects)
+**Operations introduced here** (9 on objects)
 
 *on objects*
 
@@ -6157,6 +6141,10 @@ Represented Mor parents closed under pointwise `R`-linear operations.
   - Represented Mor parents closed under pointwise ``R``-linear operations.
 
 - `as_morphism(element)`
+
+- `automorphism_action(source_action, target_action)`
+
+  - The action on Hom(M,N) induced by supplied actions on M and N.
 
 - `base_ring()`
 
@@ -6178,10 +6166,10 @@ Represented Mor parents closed under pointwise `R`-linear operations.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6264,10 +6252,10 @@ Modules represented as `S^{-1}M` for a chosen localization `S^{-1}R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6279,7 +6267,7 @@ Modules represented as `S^{-1}M` for a chosen localization `S^{-1}R`.
 
 Modules carrying a chosen monomorphism into another module.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3323`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3374`
 
 - **probed as** `Category of module subobjects over Integer Ring`
 
@@ -6349,10 +6337,10 @@ Modules carrying a chosen monomorphism into another module.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6381,10 +6369,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 90 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 87 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6413,10 +6401,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 84 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 81 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6445,10 +6433,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 81 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 78 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6459,7 +6447,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Modules over an integral domain, with their canonical generic fibre.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3081`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3085`
 
 - **probed as** `Category of modules over integral domains`
 
@@ -6489,10 +6477,10 @@ Modules over an integral domain, with their canonical generic fibre.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6503,7 +6491,7 @@ Modules over an integral domain, with their canonical generic fibre.
 
 Module objects carrying one represented pairing `X tensor_R Y -> W`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1079`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1065`
 
 - **probed as** `Category of pairing-bearing module objects over Integer Ring`
 
@@ -6563,10 +6551,10 @@ Module objects carrying one represented pairing `X tensor_R Y -> W`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6591,7 +6579,7 @@ data belong to the actual pair ``(M, f)`` and are retained as
 ``restriction_data``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4247`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4298`
 
 - **probed as** `Category of restricted-scalars modules over Integer Ring`
 
@@ -6651,10 +6639,10 @@ data belong to the actual pair ``(M, f)`` and are retained as
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6666,7 +6654,7 @@ data belong to the actual pair ``(M, f)`` and are retained as
 
 Modules carrying a selected tensor-product universal object.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4909`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4964`
 
 - **probed as** `Category of chosen tensor-product modules over Integer Ring`
 
@@ -6704,10 +6692,10 @@ Modules carrying a selected tensor-product universal object.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6718,7 +6706,7 @@ Modules carrying a selected tensor-product universal object.
 
 Vector spaces over a field.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3500`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3551`
 
 - **probed as** `Category of vector spaces over Integer Ring`
 
@@ -6750,10 +6738,10 @@ Vector spaces over a field.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6764,7 +6752,7 @@ Vector spaces over a field.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:5428`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:5483`
 
 - **probed as** `Category of chosen module biproducts over Integer Ring`
 
@@ -6838,10 +6826,10 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6853,7 +6841,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:47`
+- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:49`
 
 - **probed as** `Category of cochain complexes over Integer Ring`
 
@@ -6891,12 +6879,12 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -6942,10 +6930,10 @@ Degree-two divided powers, classifying quadratic maps.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6965,7 +6953,7 @@ datum and answers ``unformed_module()`` with it, and elements pass
 between the two by coercion, ``F(m)`` and ``M(f)``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1410`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1396`
 
 - **probed as** `Category of form modules over Integer Ring`
 
@@ -6984,10 +6972,6 @@ between the two by coercion, ``F(m)`` and ``M(f)``.
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
-
-- `Mono(codomain)`
-
-  - Return the form-preserving monomorphisms into ``codomain``.
 
 - `O()` <sub>cached</sub>
 
@@ -7117,6 +7101,10 @@ between the two by coercion, ``F(m)`` and ``M(f)``.
 
   - Return the module the form was stated on: the datum this module is built on.
 
+- `validate_form_placement()`
+
+  - Check the declared form properties against the defining pairing.
+
 - `vector_of_sign(sign)`
 
   - Return a vector whose selected norm has sign ``-1`` or ``1``, or ``None``.
@@ -7147,10 +7135,10 @@ between the two by coercion, ``F(m)`` and ``M(f)``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7178,7 +7166,7 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 - `ElementType(parent, value) -> None`
 
-  - File: /home/dzack/gitclones/sage-dev-allopts/src/sage/structure/element.pyx (starting at line 2367)
+  - File: /home/sage/sage/src/sage/structure/element.pyx (starting at line 2367)
 
 - `an_element()`
 
@@ -7220,10 +7208,10 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -7236,7 +7224,7 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 Modules graded by the totally ordered additive group of integers.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:682`
+- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:678`
 
 - **probed as** `Category of integer graded modules`
 
@@ -7264,12 +7252,12 @@ Modules graded by the totally ordered additive group of integers.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -7279,7 +7267,7 @@ Modules graded by the totally ordered additive group of integers.
 
 The canonical full enriched Mor modules `Hom_R(M,N)`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3172`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3223`
 
 - **probed as** `Category of internal Mor modules over Integer Ring`
 
@@ -7307,13 +7295,13 @@ The canonical full enriched Mor modules `Hom_R(M,N)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
-| [`LinearMorModules(R)`](#cat-linearmormodules) | 7 |  |  |
+| [`LinearMorModules(R)`](#cat-linearmormodules) | 8 |  |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
 | [`AdditiveGroups`](#cat-additivegroups) | 2 |  |  |
@@ -7400,10 +7388,10 @@ value in ``FilteredModules`` of the extended base.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7432,10 +7420,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 93 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 90 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7464,10 +7452,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 84 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 81 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7478,7 +7466,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2302`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2314`
 
 - **probed as** `Category of modules with a bilinear form over Integer Ring`
 
@@ -7510,11 +7498,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7544,11 +7532,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7622,10 +7610,10 @@ Free modules equipped with the canonical basis map.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7649,7 +7637,7 @@ category over precisely the same scalar ring::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3560`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3611`
 
 - **probed as** `Category of modules with a chosen finite presentation over Integer Ring`
 
@@ -7717,10 +7705,10 @@ category over precisely the same scalar ring::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7731,7 +7719,7 @@ category over precisely the same scalar ring::
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2769`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2781`
 
 - **probed as** `Category of modules with a quadratic form over Integer Ring`
 
@@ -7759,11 +7747,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7793,11 +7781,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7828,11 +7816,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -7863,10 +7851,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7943,10 +7931,10 @@ Cokernels `A_L = coker(L -> L^#)` of nondegenerate finite lattices.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7975,11 +7963,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7995,7 +7983,7 @@ Finite nondegenerate formed modules over an integral domain.
 Their scalar extensions to the fraction field have invertible Gram forms.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2233`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2245`
 
 - **probed as** `Category of nondegenerate generic fibre form modules`
 
@@ -8021,11 +8009,11 @@ Their scalar extensions to the fraction field have invertible Gram forms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8037,7 +8025,7 @@ Their scalar extensions to the fraction field have invertible Gram forms.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:3211`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:3223`
 
 - **probed as** `Category of free form modules over Integer Ring`
 
@@ -8075,11 +8063,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -8110,11 +8098,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8147,11 +8135,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 19 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -8181,11 +8169,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8216,11 +8204,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8245,7 +8233,7 @@ EXAMPLES::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:5696`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:5751`
 
 - **probed as** `Category of matrix Mor objects over Integer Ring`
 
@@ -8335,7 +8323,7 @@ EXAMPLES::
 
 - `rows()`
 
-- `smith_form()`
+- `smith_form()` <sub>cached</sub>
 
   - Return the named product ``(D,U,V)`` from invariant-factor presentation normalization.
 
@@ -8355,15 +8343,15 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | `Element` |  | 9 |  |
-| [`LinearMorModules(R)`](#cat-linearmormodules) | 7 |  |  |
+| [`LinearMorModules(R)`](#cat-linearmormodules) | 8 |  |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
 | [`AdditiveGroups`](#cat-additivegroups) | 2 |  |  |
@@ -8391,11 +8379,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8426,12 +8414,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
 | [`QuadraticFormModules(R)`](#cat-quadraticformmodules) | 46 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8461,12 +8449,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`FreeFormModules(R)`](#cat-freeformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -8546,11 +8534,11 @@ Discriminant modules with `K/R`-valued bilinear form.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`DiscriminantModules(R)`](#cat-discriminantmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -8636,12 +8624,12 @@ Even-lattice discriminant modules with quadratic form in `K/2R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
 | [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
 | [`QuadraticFormModules(R)`](#cat-quadraticformmodules) | 45 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`DiscriminantBilinearModules(R)`](#cat-discriminantbilinearmodules) | 12 |  |  |
 | [`DiscriminantModules(R)`](#cat-discriminantmodules) | 11 |  |  |
@@ -8671,7 +8659,7 @@ EXAMPLES::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:6198`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:6259`
 
 - **probed as** `Category of matrix endomorphism objects over Integer Ring`
 
@@ -8703,19 +8691,19 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
 | [`MatrixSpaces(R)`](#cat-matrixspaces) | 10 | 22 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
-| [`LinearMorModules(R)`](#cat-linearmormodules) | 7 |  |  |
+| [`LinearMorModules(R)`](#cat-linearmormodules) | 8 |  |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -8730,7 +8718,7 @@ EXAMPLES::
 
 Finite free modular group representations over a positive-characteristic field.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1732`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1744`
 
 - **could not be built**: AttributeError: 'BrauerCharacterRepresentations' object has no attribute 'subcategory_class'
 
@@ -8780,7 +8768,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:704`
+- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:706`
 
 - **not placed**: `CochainMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -8912,7 +8900,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:983`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:968`
 
 - **not placed**: `FiberedFormedModuleMor(domain, codomain, ring_map)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -8940,7 +8928,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 
 Group-algebra modules finite free over their coefficient field or ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1667`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1679`
 
 - **could not be built**: AttributeError: 'FiniteFreeGroupRepresentations' object has no attribute 'subcategory_class'
 
@@ -8948,7 +8936,7 @@ Group-algebra modules finite free over their coefficient field or ring.
 
 Modules admitting a finite generating set.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2566`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2570`
 
 - **not placed**: `FinitelyGeneratedModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -8996,7 +8984,7 @@ Modules admitting a finite generating set.
 
 Modules admitting a finite presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2684`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2688`
 
 - **not placed**: `FinitelyPresentedModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9020,7 +9008,7 @@ Modules admitting a finite presentation.
 
 Finitely presented torsion modules over a PID.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2763`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2767`
 
 - **not placed**: `FinitelyPresentedTorsionModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9074,7 +9062,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:709`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:708`
 
 - **not placed**: `FormedModuleMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9106,7 +9094,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 
 Modules admitting a basis.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2960`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2964`
 
 - **not placed**: `FreeModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9151,23 +9139,15 @@ requires a monoid; shifts and parity require their additional data.
 The default indexing set is the additive group of integers.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:436`
+- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:430`
 
 - **not placed**: `GradedModules(base_ring, grading_monoid: sage.structure.parent.Parent, parity_key)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 - **below** [`CochainComplexes(R)`](#cat-cochaincomplexes), [`IntegerGradedModules(R)`](#cat-integergradedmodules)
 
-**Operations introduced here** (12 on objects, 3 on elements)
+**Operations introduced here** (10 on objects, 3 on elements)
 
 *on objects*
-
-- `Aut()`
-
-  - Automorphisms preserving the chosen degree decomposition.
-
-- `End()`
-
-  - Endomorphisms preserving the chosen degree decomposition.
 
 - `combine_degrees(left, right)`
 
@@ -9225,7 +9205,7 @@ For noncommutative coefficients ``ZZ`` need not be the full scalar
 structure: central scalars commute with all equivariant endomorphisms.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1139`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1142`
 
 - **not placed**: `GroupModuleMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9399,7 +9379,7 @@ map, so this axiom declares no Mor family of its own.
 
 Finite free group representations in characteristic zero.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1685`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1697`
 
 - **could not be built**: AttributeError: 'OrdinaryCharacterRepresentations' object has no attribute 'subcategory_class'
 
@@ -9426,7 +9406,7 @@ given as the parameter names its regular module.  Equipping ``X`` with
 a pairing ``X (x) X -> W`` is :class:`FormModules`.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1211`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1197`
 
 - **not placed**: `PairedModules(parameter: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9457,7 +9437,7 @@ preserves ``Q``, so this data subcategory is not full.
 
 Direct summands of free modules.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3010`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3014`
 
 - **not placed**: `ProjectiveModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9481,7 +9461,7 @@ Direct summands of free modules.
 
 All semilinear arrows between two modules over commutative rings.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:238`
+- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:239`
 
 - **not placed**: `SemilinearModuleMor(family: '_MorCategoryOf', domain: 'Parent', codomain: 'Parent', *, category: 'Category | None' = None)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9517,7 +9497,7 @@ All semilinear arrows between two modules over commutative rings.
 
 Modules with a symmetric bilinear form.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2420`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2432`
 
 - **not placed**: `SymmetricBilinearFormModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9565,7 +9545,7 @@ Modules with a symmetric bilinear form.
 
 Finitely presented torsion modules with a bilinear form.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2628`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2640`
 
 - **not placed**: `TorsionBilinearFormModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9585,7 +9565,7 @@ Finitely presented torsion modules with a bilinear form.
 
 Modules whose generic fibre vanishes.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3062`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3066`
 
 - **not placed**: `TorsionModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9593,7 +9573,7 @@ Modules whose generic fibre vanishes.
 
 Finitely presented torsion modules with a quadratic form.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2821`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:2833`
 
 - **not placed**: `TorsionQuadraticFormModules(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -9806,7 +9786,7 @@ supercategory (``CAT-15``).
 
 The projection `(R,M) |-> R` from modules over varying rings.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:339`
+- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:322`
 
 - **acts** Category of modules over commutative rings → Category of commutative rings
 
@@ -9894,7 +9874,7 @@ An `A`-linear map horizontal for the selected connections.
 
 Compatibility shell for private tensor-product arrow realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py:3198`
+- **defined at** `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py:3256`
 
 - **built by** `BilinearFormMorphism(parent, images, *, elementwise=False, scalar_extension_of=None, scalar_extension_functor=None, lift=None, linearity_premises=None, bilinear_evaluation=None)`
 
@@ -9902,7 +9882,7 @@ Compatibility shell for private tensor-product arrow realizations.
 
 Compatibility shell for private cochain-arrow realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:700`
+- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:702`
 
 - **built by** `CochainMorphism(parent, components, *, cochain_premises=None)`
 
@@ -9910,7 +9890,7 @@ Compatibility shell for private cochain-arrow realizations.
 
 Compatibility shell for private equivariant-module arrow realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1135`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:1138`
 
 - **built by** `GroupModuleMorphism(parent, images, *, elementwise=False, lift=None, equivariance_decision=None, equivariance_premises=None, selected_lift_exact=False, linearity_premises=None)`
 
@@ -9918,7 +9898,7 @@ Compatibility shell for private equivariant-module arrow realizations.
 
 Compatibility shell for private tensor-product arrow realizations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py:3198`
+- **defined at** `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py:3256`
 
 - **built by** `PairingMorphism(parent, images, *, elementwise=False, scalar_extension_of=None, scalar_extension_functor=None, lift=None, linearity_premises=None, bilinear_evaluation=None)`
 
@@ -9926,7 +9906,7 @@ Compatibility shell for private tensor-product arrow realizations.
 
 An explicit isomorphism of finite framed torsion modules preserving a form.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py:156`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py:158`
 
 - **built by** `TorsionFormIsometry(parent, forward, inverse, *, quadratic: bool, check: bool = False)`
 
@@ -9952,7 +9932,7 @@ An explicit isomorphism of finite framed torsion modules preserving a form.
 
 The degree-`+1` differential of a represented cochain complex.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:276`
+- **defined at** `src/dzack_research/preamble/categories/modules/cochain_complexes.py:278`
 
 - **built by** `CochainDifferential(complex_)`
 
@@ -9989,7 +9969,7 @@ scalar-valued finite-free formed objects supported by ``FormModules(R)``'s
 construction rather than being represented by a semilinear fiction.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:820`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:805`
 
 - **built by** `FiberedFormedModuleMorphism(parent, module_morphism, value_morphism)`
 
@@ -10015,7 +9995,7 @@ construction rather than being represented by a semilinear fiction.
 
 A form-preserving morphism whose module map is a monomorphism.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:490`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:491`
 
 - **built by** `FormEmbedding(parent, module_morphism, value_morphism, *, quadratic: bool | None = None, denominator_clearing=None)`
 
@@ -10063,7 +10043,7 @@ This does not imply injectivity: the zero map on a nonzero module with
 zero form, together with the identity value map, preserves that form.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:346`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:347`
 
 - **built by** `FormedModuleMorphism(parent, module_morphism, value_morphism)`
 
@@ -10103,7 +10083,7 @@ read off them.  Outside those degrees everything is the zero module and the
 zero map, which is what makes the resolution finite.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3884`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3935`
 
 - **built by** `FreeResolution(_module: 'Parent', _degrees: 'Parent', _terms: 'IndexedFamily', _differentials: 'IndexedFamily', _augmentation: 'ModuleMorphism', _zero_term: 'Parent')`
 
@@ -10198,7 +10178,7 @@ If ``sigma : R -> S``, the defining map is the equivalent ``R``-linear map
 adjunction when that represented scalar extension is available.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:46`
+- **defined at** `src/dzack_research/preamble/categories/modules/fibered_modules.py:47`
 
 - **built by** `SemilinearModuleMorphism(parent, scalar_map, restricted_morphism=None, *, evaluator=None)`
 
@@ -10241,7 +10221,7 @@ morphism.  Consequently its ordinary module-Mor admission is the one
 authority that checks every selected tensor relation.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4809`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:4864`
 
 - **built by** `BilinearMap(left, right, codomain, generator_images)`
 
@@ -10249,7 +10229,7 @@ authority that checks every selected tensor relation.
 
 `FramedFreeModules(R).FinitelyGenerated()`, under the name the session catalogue uses.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3114`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:3118`
 
 - **built by** `FinitelyGeneratedFreeModules(base_ring)`
 
@@ -10431,10 +10411,10 @@ modules need not be finitely generated.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -10454,7 +10434,7 @@ coercion.  A unit, associativity, commutativity and the Lie identities are
 axioms above this node.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:1118`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:1112`
 
 - **probed as** `Category of algebras over Integer Ring`
 
@@ -10594,10 +10574,10 @@ axioms above this node.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10627,11 +10607,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10672,11 +10652,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10724,11 +10704,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 35 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10766,11 +10746,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 36 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10808,11 +10788,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10861,11 +10841,11 @@ direction is the functor, not an edge.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10895,12 +10875,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10934,12 +10914,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10955,7 +10935,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1184`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1185`
 
 - **probed as** `Category of free algebras over Integer Ring`
 
@@ -10981,12 +10961,12 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11073,12 +11053,12 @@ original module, multiplication and unit.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11118,12 +11098,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11193,12 +11173,12 @@ is an augmented algebra.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11222,7 +11202,7 @@ polynomial algebra. Commutativity belongs to the actual construction,
 rather than to the presence of finite generators and relations.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3050`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3044`
 
 - **probed as** `Category of algebras with a chosen finite presentation over Integer Ring`
 
@@ -11270,12 +11250,12 @@ rather than to the presence of finite generators and relations.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11291,7 +11271,7 @@ rather than to the presence of finite generators and relations.
 
 Graded algebras `H^*(B)` represented from a DGA `B`.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:77`
+- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:78`
 
 - **probed as** `Category of cohomology algebras over Integer Ring`
 
@@ -11313,14 +11293,14 @@ Graded algebras `H^*(B)` represented from a DGA `B`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11361,14 +11341,14 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11384,7 +11364,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Tensor algebras of represented modules.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1417`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1418`
 
 - **probed as** `Category of tensor algebras over Integer Ring`
 
@@ -11436,14 +11416,14 @@ Tensor algebras of represented modules.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11459,7 +11439,7 @@ Tensor algebras of represented modules.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:70`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:71`
 
 - **probed as** `Category of differential graded algebras over Integer Ring`
 
@@ -11513,14 +11493,14 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`CochainComplexes(R)`](#cat-cochaincomplexes) | 5 |  |  |
@@ -11562,14 +11542,14 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11585,7 +11565,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1235`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1236`
 
 - **probed as** `Category of graded free algebras over Integer Ring`
 
@@ -11627,14 +11607,14 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11669,7 +11649,7 @@ See Mathlib ``LinearAlgebra/ExteriorAlgebra/Basic``: the quotient,
 ``ι_sq_zero``, ``lift``, ``map`` and ``algebraMapInv``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1729`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1730`
 
 - **probed as** `Category of alternating algebras over Integer Ring`
 
@@ -11691,14 +11671,14 @@ See Mathlib ``LinearAlgebra/ExteriorAlgebra/Basic``: the quotient,
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11741,12 +11721,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11763,7 +11743,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Commutative `R`-algebras equipped as selected binary coproducts.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3410`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3404`
 
 - **probed as** `Category of commutative algebra coproducts`
 
@@ -11805,12 +11785,12 @@ Commutative `R`-algebras equipped as selected binary coproducts.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11827,7 +11807,7 @@ Commutative `R`-algebras equipped as selected binary coproducts.
 
 Commutative `R`-algebras equipped as selected pushouts of one span.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3504`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3498`
 
 - **probed as** `Category of commutative algebra pushouts`
 
@@ -11859,12 +11839,12 @@ Commutative `R`-algebras equipped as selected pushouts of one span.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11920,14 +11900,14 @@ supercommutative differential graded ``R``-algebra.  On a smooth scheme
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`DifferentialGradedAlgebras(R)`](#cat-differentialgradedalgebras) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11945,7 +11925,7 @@ supercommutative differential graded ``R``-algebra.  On a smooth scheme
 
 Divided-power algebras `Gamma(M)` with their canonical grading.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1992`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1993`
 
 - **probed as** `Category of divided power algebras over Integer Ring`
 
@@ -11975,14 +11955,14 @@ Divided-power algebras `Gamma(M)` with their canonical grading.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 7 |  |  |
@@ -12000,7 +11980,7 @@ Divided-power algebras `Gamma(M)` with their canonical grading.
 
 Symmetric algebras of represented modules.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1568`
+- **defined at** `src/dzack_research/preamble/categories/algebras/free_algebras.py:1569`
 
 - **probed as** `Category of symmetric algebras over Integer Ring`
 
@@ -12048,14 +12028,14 @@ Symmetric algebras of represented modules.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 7 |  |  |
@@ -12072,7 +12052,7 @@ Symmetric algebras of represented modules.
 
 Finite matrix endomorphism Mor objects with their canonical algebra structure.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2976`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2970`
 
 - **probed as** `Category of matrix algebras over Integer Ring`
 
@@ -12094,19 +12074,19 @@ Finite matrix endomorphism Mor objects with their canonical algebra structure.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
 | [`MatrixSpaces(R)`](#cat-matrixspaces) | 10 | 22 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
-| [`LinearMorModules(R)`](#cat-linearmormodules) | 7 |  |  |
+| [`LinearMorModules(R)`](#cat-linearmormodules) | 8 |  |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`MatrixEndomorphismSpaces(R)`](#cat-matrixendomorphismspaces) | 2 | 1 |  |
@@ -12122,7 +12102,7 @@ Finite matrix endomorphism Mor objects with their canonical algebra structure.
 
 Shared equality protocol for represented algebra Mor parents.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:4212`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:4220`
 
 - **not placed**: `AlgebraMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12172,7 +12152,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:190`
+- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:191`
 
 - **not placed**: `CohomologyAlgebraMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12186,7 +12166,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 
 Commutative graded integral domains with homogeneous fraction charts.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:514`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:516`
 
 - **not placed**: `CommutativeGradedIntegralDomains(base_ring, graded_modules: sage.structure.parent.Parent)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12240,7 +12220,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:522`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:523`
 
 - **not placed**: `DGAMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12265,7 +12245,7 @@ essential: the derivation module is canonically an ``A``-module, whereas
 its inclusion into the existing ``R``-linear Mor is only ``R``-linear.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:404`
+- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:405`
 
 - **not placed**: `DerivationSpace(family, domain, codomain, *, category, base=None)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12278,7 +12258,7 @@ A property: the presentation exists and none is chosen.
 ``AlgebrasWithChosenFinitePresentation`` is the data category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2383`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2377`
 
 - **not placed**: `FinitelyPresentedAlgebras(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12320,7 +12300,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 (``OWN-22``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:237`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:238`
 
 - **not placed**: `GradedAlgebraMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12340,7 +12320,7 @@ case. This is the nLab definition of a graded algebra; Stacks Project
 tag 00JL is the special case \(M = \mathbb{N}\).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:306`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:308`
 
 - **not placed**: `GradedAlgebras(base_ring, graded_modules: sage.structure.parent.Parent)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12372,7 +12352,7 @@ preserves both. No projection to the unit-degree piece, centrality of
 that piece, connectedness, or grading law for the augmentation is stated.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/augmented_algebras.py:316`
+- **defined at** `src/dzack_research/preamble/categories/algebras/augmented_algebras.py:319`
 
 - **not placed**: `GradedAugmentedAlgebras(base_ring, grading_monoid)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12394,7 +12374,7 @@ recorded none has no supercommutative refinement.  Sage's
 ``Supercommutative`` axiom states the same rule for ``ZZ/2``-gradings.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:377`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:379`
 
 - **not placed**: `GradedCommutativeAlgebras(base_category)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12418,7 +12398,7 @@ map, and every ``A``-linear map ``Omega^1 -> A`` extends.  So
 space has the presentation of ``Der_R(A)``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:980`
+- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:982`
 
 - **not placed**: `GradedDerivationSpace(family, domain, codomain, *, category, base=None)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12508,7 +12488,7 @@ is the bracket itself, so the algebra Mor already has the right
 morphisms, the linear maps preserving it.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2546`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:2540`
 
 - **not placed**: `LieAlgebras(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12539,7 +12519,7 @@ commutative.  The condition is independent of the sign rule over
 rings with 2-torsion.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:405`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:407`
 
 - **not placed**: `StrictlyGradedCommutativeAlgebras(base_category: 'SageCategory')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -12555,7 +12535,7 @@ The public codomain of a derivation remains the original ``A``-module
 the canonical ``Hom_R(A, Res_R(M))`` containing this derivation subobject.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:127`
+- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:128`
 
 - **built by** `Derivation(parent, generator_images)`
 
@@ -12593,7 +12573,7 @@ the canonical ``Hom_R(A, Res_R(M))`` containing this derivation subobject.
 
 A represented degree-one square-zero graded derivation.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:318`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:319`
 
 - **built by** `Differential(algebra, function)`
 
@@ -12618,7 +12598,7 @@ actual ``R``-linear morphism, lying in a represented submodule of
 ``Hom_R(A,M)``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:694`
+- **defined at** `src/dzack_research/preamble/categories/algebras/derivations.py:696`
 
 - **built by** `GradedDerivation(parent, function)`
 
@@ -12672,7 +12652,7 @@ usual kernel/image algorithms; otherwise the component remains a genuine
 morphism with exact evaluation but no fabricated finite presentation.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:29`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:30`
 
 - **built by** `DegreewiseLinearMorphism(domain, codomain, function)`
 
@@ -12691,7 +12671,7 @@ caller's statement of that law (``OWN-22``), so each component is linear
 by construction.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:57`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:58`
 
 - **built by** `DifferentialComponentMorphism(domain, codomain, function)`
 
@@ -12701,7 +12681,7 @@ by construction.
 
 An `R`-algebra morphism specified by the images of algebra generators.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3587`
+- **defined at** `src/dzack_research/preamble/categories/algebras/algebras.py:3581`
 
 - **built by** `AlgebraMorphism(parent, images, *, _construction_premises=None, _transported_morphism=None)`
 
@@ -12715,7 +12695,7 @@ An `R`-algebra morphism specified by the images of algebra generators.
 
 The graded algebra morphism induced on cohomology by a DGA morphism.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:119`
+- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:120`
 
 - **built by** `CohomologyAlgebraMorphism(parent, dga_morphism)`
 
@@ -12825,7 +12805,7 @@ required to carry exactly the ``u_ij^n`` transition data of ``L^n``.
 
 A graded algebra morphism commuting with the selected differentials.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:428`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:429`
 
 - **built by** `DGAMorphism(parent, morphism, *, differential_compatibility=None, check=False)`
 
@@ -12841,7 +12821,7 @@ A graded algebra morphism commuting with the selected differentials.
 
 An algebra morphism preserving the selected grading.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:176`
+- **defined at** `src/dzack_research/preamble/categories/algebras/graded_algebras.py:177`
 
 - **built by** `GradedAlgebraMorphism(parent, images, *, degree_preservation=None, degree_preservation_premises=None, **options)`
 
@@ -12858,7 +12838,7 @@ A morphism ``f: A -> B`` is an algebra morphism satisfying
 with its scalar-algebra implementation; both entries retain one category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/augmented_algebras.py:42`
+- **defined at** `src/dzack_research/preamble/categories/algebras/augmented_algebras.py:43`
 
 - **built by** `AugmentedAlgebras(base_ring)`
 
@@ -12866,7 +12846,7 @@ with its scalar-algebra implementation; both entries retain one category.
 
 Read homogeneous cohomology classes in their constructed algebra.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:113`
+- **defined at** `src/dzack_research/preamble/categories/algebras/cohomology_algebras.py:114`
 
 - **built by** `CohomologyAlgebraElement(parent, components)`
 
@@ -12913,7 +12893,7 @@ The computed join `DifferentialGradedAlgebras(R).Supercommutative().Alternating(
 The specification names the category; the join has no class of its own.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:310`
+- **defined at** `src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py:311`
 
 - **built by** `StrictlyCommutativeDifferentialGradedAlgebras(base_ring)`
 
@@ -13038,9 +13018,9 @@ Ordered by depth: the least structured first.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13101,9 +13081,9 @@ Ordered by depth: the least structured first.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13144,9 +13124,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13178,9 +13158,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13219,9 +13199,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 6 | 2 |  |
@@ -13255,9 +13235,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 6 | 2 |  |
@@ -13295,9 +13275,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 7 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13329,9 +13309,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -13379,9 +13359,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13404,7 +13384,7 @@ Sage's ``Mor`` reaches them by the same construction as every other
 category; ``Cat.ParentMethods`` names these same functions.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/magmas.py:748`
+- **defined at** `src/dzack_research/preamble/categories/group/magmas.py:752`
 
 - **probed as** `Category of additive groups`
 
@@ -13436,9 +13416,9 @@ category; ``Cat.ParentMethods`` names these same functions.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -13492,9 +13472,9 @@ category; ``Cat.ParentMethods`` names these same functions.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13504,7 +13484,7 @@ category; ``Cat.ParentMethods`` names these same functions.
 
 Groups whose notebook-facing group interface is owned by the preamble.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3963`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:4334`
 
 - **probed as** `Category of groups`
 
@@ -13520,10 +13500,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13546,17 +13526,13 @@ Groups whose notebook-facing group interface is owned by the preamble.
 
 - **build an object** `OwnedGroups(x, *args, **opts)`
 
-**Operations introduced here** (49 on objects, 2 on elements)
+**Operations introduced here** (48 on objects, 2 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
-
-- `Aut()` <sub>cached</sub>
-
-- `End()`
 
 - `centralizer(element)`
 
@@ -13698,6 +13674,10 @@ Groups whose notebook-facing group interface is owned by the preamble.
 
 - `selected_group_resolution()`
 
+- `semidirect_product(action)`
+
+  - Return ``self ⋊ G`` from a homomorphism ``G -> Aut(self)``.
+
 - `subgroup(generators, description=None)`
 
   - Return the subgroup of ``self`` generated by ``generators``, named ``description`` when given.
@@ -13732,9 +13712,9 @@ Groups whose notebook-facing group interface is owned by the preamble.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13763,9 +13743,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -13790,7 +13770,7 @@ how the two relate to the resolution category of ``CAT-29`` is recorded
 in ``COMPLAINTS.md``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6732`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7156`
 
 - **probed as** `Category of presented groups`
 
@@ -13814,10 +13794,10 @@ in ``COMPLAINTS.md``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13841,7 +13821,7 @@ its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the requ
 ``COMPLAINTS.md``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6529`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6953`
 
 - **probed as** `Category of general linear groups`
 
@@ -13867,10 +13847,10 @@ its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the requ
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13899,9 +13879,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13980,10 +13960,10 @@ and the methods below consume it.  Elements act on the left, so
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13994,7 +13974,7 @@ and the methods below consume it.  Elements act on the left, so
 
 Owned groups equipped with a represented compatible topology.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6025`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6449`
 
 - **probed as** `Category of topological groups`
 
@@ -14030,10 +14010,10 @@ Owned groups equipped with a represented compatible topology.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14081,9 +14061,9 @@ pointwise product of two homomorphisms another homomorphism.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -14105,7 +14085,7 @@ category presents its objects and states no arrows of its own; the maps
 of presentations are ``FreeGroupQuotients().Mor(W, W')``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6574`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6998`
 
 - **probed as** `Category of Coxeter groups`
 
@@ -14131,10 +14111,10 @@ of presentations are ``FreeGroupQuotients().Mor(W, W')``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14163,10 +14143,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14193,10 +14173,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14246,10 +14226,10 @@ class beside its category.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14276,7 +14256,7 @@ request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
 group, by its action on ``Omega``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6381`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6805`
 
 - **probed as** `Category of symmetric groups`
 
@@ -14304,10 +14284,10 @@ group, by its action on ``Omega``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14345,10 +14325,10 @@ Groups (G_K=\operatorname{Aut}_K(\bar K)) with a chosen base point.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14377,10 +14357,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 52 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 51 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14409,10 +14389,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14423,7 +14403,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Finitely presented groups with a chosen finite presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6767`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7191`
 
 - **probed as** `Category of groups with chosen finite presentation`
 
@@ -14467,10 +14447,10 @@ Finitely presented groups with a chosen finite presentation.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14519,10 +14499,10 @@ is computed by walking that generator.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 51 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14551,7 +14531,7 @@ return the same underlying set of ``G``, which is the join the
 declaration states.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6090`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:6514`
 
 - **probed as** `Category of Lie groups`
 
@@ -14577,11 +14557,11 @@ declaration states.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14617,10 +14597,10 @@ The procyclic absolute Galois groups of finite fields.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 51 | 2 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14658,12 +14638,12 @@ Endomorphism algebras over their selected commutative scalar ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14680,15 +14660,15 @@ Endomorphism algebras over their selected commutative scalar ring.
 
 The represented finite objects of `GObjects(G, Sets())`.
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:93`
+- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:88`
 
 - **not placed**: `FiniteGSets(group)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
-**Operations introduced here** (16 on objects)
+**Operations introduced here** (17 on objects)
 
 *on objects*
 
-- `action_of(group_element)`
+- `action_of(group_element)` <sub>cached</sub>
 
   - Evaluate the retained group map to obtain the permutation of ``X``.
 
@@ -14738,6 +14718,10 @@ The represented finite objects of `GObjects(G, Sets())`.
 
   - The point set's own enumeration, read on this $G$-set.
 
+- `setwise_stabilizer(subset)`
+
+  - Return ``{g : g.S = S}`` by the finite orbit of ``S``.
+
 - `transporter(source, target)`
 
   - Return the unique transporter between two points of a torsor.
@@ -14760,7 +14744,7 @@ selected generators when present, or every element when the group is
 represented as finite.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:698`
+- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:701`
 
 - **not placed**: `GObjectMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -14804,7 +14788,7 @@ forgetful functor supplies the exact underlying arrow endpoints::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:840`
+- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:844`
 
 - **not placed**: `GObjects(group, category)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -14928,7 +14912,7 @@ that commutes with the actions, so its arrow is the ``GObjects(G, Sets())``
 arrow threaded through the arrow of ``FiniteSets().Mor``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:741`
+- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:784`
 
 - **not placed**: `GSetMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -14936,7 +14920,7 @@ arrow threaded through the arrow of ``FiniteSets().Mor``.
 
 The canonical owned `Mor(G,H)`.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3808`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:4170`
 
 - **not placed**: `GroupAutomorphismGroup(mor_family, group)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -14956,7 +14940,7 @@ The canonical owned `Mor(G,H)`.
 
 The canonical owned `Mor(G,H)`.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3570`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3918`
 
 - **not placed**: `GroupMor(mor_family, domain, codomain, *, category=None, pointwise=True)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15042,7 +15026,7 @@ The canonical owned `Mor(G,H)`.
 
 The canonical Mor object out of the free group on a chosen set.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3489`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3835`
 
 - **not placed**: `IndexedFreeGroupMor(mor_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15066,7 +15050,7 @@ The canonical Mor object out of the free group on a chosen set.
 
 Actions of one internal group object by morphisms GxX->X.
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:453`
+- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:456`
 
 - **not placed**: `InternalGroupActions(group_object)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15080,7 +15064,7 @@ e:1->G, and i:G->G satisfying the group diagrams.  This is distinct
 from GObjects: an action of an external abstract group is a functor BG->C.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:208`
+- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:210`
 
 - **not placed**: `InternalGroupObjects(category)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15207,7 +15191,7 @@ The datum is the containing group ``G``; the subgroup's elements are
 elements of ``G``, so the inclusion is the identity on elements.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7028`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7452`
 
 - **not placed**: `Subgroups(parameter: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15235,7 +15219,7 @@ elements of ``G``, so the inclusion is the identity on elements.
 
 The owned category of free transitive `G`-sets.
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:1336`
+- **defined at** `src/dzack_research/preamble/categories/group/g_sets.py:1365`
 
 - **not placed**: `Torsors(parameter: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
@@ -15386,7 +15370,7 @@ morphism stores; it is evaluated on reduced words.  The free group on an
 arbitrary set has no elementwise GAP model, so no GAP morphism is used.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3235`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:3575`
 
 - **built by** `IndexedFreeGroupMorphism(parent, generator_morphism, **premises)`
 
@@ -15474,7 +15458,7 @@ the generated arrow type, whose initialization joins GroupMorphism.
 
 The category of abelian groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7270`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7723`
 
 - **built by** `AbelianGroups()`
 
@@ -15539,7 +15523,7 @@ The category of finite abelian groups.
 One category cut out by two axioms, not a third class beside them.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7275`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7728`
 
 - **built by** `FiniteAbelianGroups()`
 
@@ -15594,7 +15578,7 @@ predicate subgroup cut out by membership in that set.
 
 The category of finite groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7260`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7713`
 
 - **built by** `FiniteGroups()`
 
@@ -15602,7 +15586,7 @@ The category of finite groups.
 
 The category of finitely generated groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7250`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7703`
 
 - **built by** `FinitelyGeneratedGroups()`
 
@@ -15610,7 +15594,7 @@ The category of finitely generated groups.
 
 The category of finitely presented groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7255`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7708`
 
 - **built by** `FinitelyPresentedGroups()`
 
@@ -15626,7 +15610,7 @@ Construct the choice-independent global Frobenius datum.
 
 Return the category of internal group objects in category.
 
-- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:578`
+- **defined at** `src/dzack_research/preamble/categories/group/g_objects.py:581`
 
 - **built by** `Grp(category)`
 
@@ -15673,7 +15657,7 @@ owned field ``E`` with exactly one embedding of ``K``.
 
 The category of abelian groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7270`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7723`
 
 - **built by** `OwnedAbelianGroups()`
 
@@ -15685,7 +15669,7 @@ The category of finite abelian groups.
 One category cut out by two axioms, not a third class beside them.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7275`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7728`
 
 - **built by** `OwnedFiniteAbelianGroups()`
 
@@ -15693,7 +15677,7 @@ One category cut out by two axioms, not a third class beside them.
 
 The category of finite groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7260`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7713`
 
 - **built by** `OwnedFiniteGroups()`
 
@@ -15701,7 +15685,7 @@ The category of finite groups.
 
 The category of finitely generated groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7250`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7703`
 
 - **built by** `OwnedFinitelyGeneratedGroups()`
 
@@ -15709,7 +15693,7 @@ The category of finitely generated groups.
 
 The category of finitely presented groups.
 
-- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7255`
+- **defined at** `src/dzack_research/preamble/categories/group/groups.py:7708`
 
 - **built by** `OwnedFinitelyPresentedGroups()`
 
@@ -15937,9 +15921,9 @@ The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -15986,9 +15970,9 @@ are ``NonUnitalRingHom`` (Algebra/Ring/Hom/Defs).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -16017,9 +16001,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 8 |  |  |
@@ -16151,10 +16135,10 @@ Ideals of `R`: subobjects of the rank-one `R`-module `R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -16166,7 +16150,7 @@ Ideals of `R`: subobjects of the rank-one `R`-module `R`.
 
 Rngs on the owned operation spine.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/semirings.py:431`
+- **defined at** `src/dzack_research/preamble/categories/rings/semirings.py:435`
 
 - **probed as** `Category of owned rngs`
 
@@ -16194,9 +16178,9 @@ Rngs on the owned operation spine.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -16209,7 +16193,7 @@ Rngs on the owned operation spine.
 
 Semirings on the owned operation spine.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/semirings.py:312`
+- **defined at** `src/dzack_research/preamble/categories/rings/semirings.py:316`
 
 - **probed as** `Category of owned semirings`
 
@@ -16241,9 +16225,9 @@ Semirings on the owned operation spine.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16256,7 +16240,7 @@ Semirings on the owned operation spine.
 
 Unital rings whose notebook-facing ring interface is owned here.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:2321`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:2342`
 
 - **probed as** `Category of owned rings`
 
@@ -16268,15 +16252,13 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 - **build an object** `OwnedRings(x, *args, **opts)`
 
-**Operations introduced here** (22 on objects)
+**Operations introduced here** (21 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Unital rings whose notebook-facing ring interface is owned here.
-
-- `Mor(codomain, category=None)`
 
 - `adic_completion(ideal, precision=20)`
 
@@ -16358,9 +16340,9 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16381,7 +16363,7 @@ A ring can support several orders (a real quadratic field has two), so
 the order is a chosen datum.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:3976`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:3998`
 
 - **probed as** `Category of owned ordered rings`
 
@@ -16397,10 +16379,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16446,10 +16428,10 @@ the order is a chosen datum.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16488,10 +16470,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16534,10 +16516,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16571,10 +16553,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16601,7 +16583,7 @@ nothing else, is why a level would otherwise need a hand-written parent
 class beside its category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:808`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:829`
 
 - **probed as** `Category of predicate subrings`
 
@@ -16633,10 +16615,10 @@ class beside its category.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16677,10 +16659,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16714,10 +16696,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 23 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16751,10 +16733,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16788,10 +16770,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 23 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16813,7 +16795,7 @@ The inherited arrows are unital ring maps; no continuity condition is
 imposed on this category's ``Mor``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4068`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4090`
 
 - **probed as** `Category of owned adically complete rings`
 
@@ -16829,10 +16811,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16887,10 +16869,10 @@ imposed on this category's ``Mor``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17002,10 +16984,10 @@ Adic completions equipped with a source ring and its chosen completion ideal.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17040,10 +17022,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17079,10 +17061,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17122,10 +17104,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17159,10 +17141,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17205,10 +17187,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 43 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17269,12 +17251,12 @@ the formal variables need not generate the completed ring as an algebra.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17317,10 +17299,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 51 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17479,10 +17461,10 @@ maps between them are the ring maps and this category inherits the ring
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 49 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17533,11 +17515,11 @@ Number fields carrying the primitive element selected by their presentation.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 49 |  |  |
 | [`OwnedNumberFields`](#cat-ownednumberfields) | 18 | 9 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17562,7 +17544,7 @@ The class is the home of the operations of orders (their embeddings, the
 adjunction with number fields, maximality); it adds no condition.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4137`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4159`
 
 - **probed as** `Category of owned orders`
 
@@ -17578,12 +17560,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
+| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
+| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17591,9 +17573,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | [`Monoids`](#cat-monoids) | 4 | 2 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
-| [`OwnedOrders`](#cat-ownedorders) | 3 |  |  |
 | `_CommutativeUnitalAlgebraParentMethods` | 3 |  |  |
 | [`AdditiveGroups`](#cat-additivegroups) | 2 |  |  |
+| [`OwnedOrders`](#cat-ownedorders) | 2 |  |  |
 | [`OwnedSemirings`](#cat-ownedsemirings) | 2 |  |  |
 | [`OwnedRngs`](#cat-ownedrngs) | 1 |  |  |
 
@@ -17619,15 +17601,13 @@ adjunction with number fields, maximality); it adds no condition.
 
 - **build an object** `OwnedOrders(x, *args, **opts)`
 
-**Operations introduced here** (3 on objects)
+**Operations introduced here** (2 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I §12).
-
-- `Mor(codomain, category=None)`
 
 - `is_maximal() -> bool`
 
@@ -17637,12 +17617,12 @@ adjunction with number fields, maximality); it adds no condition.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
+| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
+| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17675,7 +17655,7 @@ Distinguished open subsets of one prime spectrum, retaining `f`.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4261`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4284`
 
 - **abstract declaration base**: not a concrete category to instantiate
 
@@ -17891,7 +17871,7 @@ An owned ring parent with one private computational realization.
 
 The session shorthand for commutative Artinian rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4058`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4080`
 
 - **built by** `ArtinianRings()`
 
@@ -17904,7 +17884,7 @@ The session name for ``OwnedRings().Commutative()``: commutativity is an
 axiom on the operation, and this is the category it cuts out.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:6520`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:6543`
 
 - **built by** `CommutativeRings()`
 
@@ -17912,7 +17892,7 @@ axiom on the operation, and this is the category it cuts out.
 
 `OwnedRings().Commutative().Local().Complete()`, the session name for complete local rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4122`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4144`
 
 - **built by** `CompleteLocalRings()`
 
@@ -17932,7 +17912,7 @@ axiom on the operation, and this is the category it cuts out.
 
 `OwnedRings().Division()`, the session name for division rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4127`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4149`
 
 - **built by** `DivisionRings()`
 
@@ -17940,7 +17920,7 @@ axiom on the operation, and this is the category it cuts out.
 
 `OwnedRings().Division().Commutative()`, the session name for fields.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4132`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4154`
 
 - **built by** `Fields()`
 
@@ -17954,7 +17934,7 @@ axiom on the operation, and this is the category it cuts out.
 
 The nontrivial commutative rings satisfying the zero-product axiom.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:3996`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4018`
 
 - **built by** `IntegralDomains()`
 
@@ -17962,7 +17942,7 @@ The nontrivial commutative rings satisfying the zero-product axiom.
 
 `OwnedRings().Commutative().Local()`, the session name for local rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4063`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4085`
 
 - **built by** `LocalRings()`
 
@@ -17970,7 +17950,7 @@ The nontrivial commutative rings satisfying the zero-product axiom.
 
 The session shorthand for commutative Noetherian rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4053`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4075`
 
 - **built by** `NoetherianRings()`
 
@@ -17978,7 +17958,7 @@ The session shorthand for commutative Noetherian rings.
 
 `OwnedRings().Division()`, the session name for division rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4127`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4149`
 
 - **built by** `OwnedDivisionRings()`
 
@@ -17986,7 +17966,7 @@ The session shorthand for commutative Noetherian rings.
 
 `OwnedRings().Division().Commutative()`, the session name for fields.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4132`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4154`
 
 - **built by** `OwnedFields()`
 
@@ -17994,7 +17974,7 @@ The session shorthand for commutative Noetherian rings.
 
 `OwnedRings().Division().Commutative().Prime()`, the session name for prime fields.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4215`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4238`
 
 - **built by** `PrimeFields()`
 
@@ -18002,7 +17982,7 @@ The session shorthand for commutative Noetherian rings.
 
 The integral domains in which every ideal is principal.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4001`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:4023`
 
 - **built by** `PrincipalIdealDomains()`
 
@@ -18048,7 +18028,7 @@ Return the owned finite-precision real represented by `value`.
 
 The binomial coefficient \(\binom{x}{m}\), for a natural number \(m\).
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:6515`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:6538`
 
 - **built by** `binomial(x, m)`
 
@@ -18231,9 +18211,9 @@ underlying space is the image of that functor.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18281,9 +18261,9 @@ Ringed spaces `(X,O_X)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18324,9 +18304,9 @@ Ringed spaces whose stalks are local rings.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18483,9 +18463,9 @@ presented without one.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18517,9 +18497,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 34 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18551,9 +18531,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 34 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18585,9 +18565,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 41 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18619,9 +18599,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 39 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18653,9 +18633,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 35 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18694,9 +18674,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 42 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18728,9 +18708,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 45 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18770,9 +18750,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 52 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18898,9 +18878,9 @@ Projective spaces `P^n_R` with chosen homogeneous coordinates `x_0, ..., x_n`.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -19732,7 +19712,7 @@ for every scheme, affine or not::
 
 The distinguished-open coverage in `AffSch_R/X`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:1476`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:1478`
 
 - **built by** `distinguished_affine_coverage(scheme) -> sage.categories.category.Category`
 
@@ -19768,7 +19748,7 @@ Return a rational quintic with two affine nodes and one point at infinity.
 
 The represented finite Zariski coverage of `Sch_R/X`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:1110`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:1112`
 
 - **built by** `zariski_coverage(scheme) -> sage.categories.category.Category`
 
@@ -19868,10 +19848,10 @@ module on the hyperplane class \(\{H\}\).  This level adds \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -19965,10 +19945,10 @@ one owned Cartier divisor group::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`GeneralModules(R)`](#cat-generalmodules) | 6 | 2 |  |
@@ -20022,10 +20002,10 @@ free-module level consumes the framing; this level adds \(X\), \(D\) and
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20081,10 +20061,10 @@ level adds \(X\) and \(k\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20138,10 +20118,10 @@ presented-module level; this level adds \(X\) and \(k\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20183,10 +20163,10 @@ datum of its own.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20228,10 +20208,10 @@ Formal divisors with coefficients in a specified ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20310,10 +20290,10 @@ this is, and the exponent vector of each monomial.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20382,10 +20362,10 @@ local quotient \(\mathcal{O}_{\mathbb{P},p}/\mathfrak{m}_p^r\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20419,10 +20399,10 @@ Free groups on the torus-orbit closures of one dimension on a toric scheme.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20495,10 +20475,10 @@ consumed by the free-module level; this level adds the scheme \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20587,9 +20567,9 @@ This level adds the inclusion ``i``, from which ``W`` is its domain and
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20650,10 +20630,10 @@ system.
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | [`ProjectiveLinearSystems(R)`](#cat-projectivelinearsystems) | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20704,10 +20684,10 @@ level adds ``e``.
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | [`ProjectiveLinearSystems(R)`](#cat-projectivelinearsystems) | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20786,14 +20766,14 @@ on, given either as \(L\) itself or as a Cartier divisor \(D\) with
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
-| [`Sets`](#cat-sets) | 18 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
+| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -21013,7 +20993,7 @@ Ordered by depth: the least structured first.
 
 The thin category associated to the represented cardinal order.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:392`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:394`
 
 - **probed as** `Card: cardinalities with a unique morphism kappa -> lambda exactly when kappa <= lambda`
 
@@ -21097,7 +21077,7 @@ remain object operations because they are not that commutative semiring
 structure.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1322`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1338`
 
 - **probed as** `Ord: ordinals with a unique morphism alpha -> beta exactly when alpha <= beta`
 
@@ -21171,7 +21151,7 @@ owned set parent must also be a Sage set parent at the implementation
 boundary.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:1095`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:1106`
 
 - **probed as** `Category of sets`
 
@@ -21185,25 +21165,13 @@ boundary.
 
 - **specimens** `Propositions`
 
-**Operations introduced here** (19 on objects)
+**Operations introduced here** (16 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned category of sets.
-
-- `Aut()`
-
-  - The automorphisms of this set in its selected category.
-
-- `End()`
-
-  - The endomorphisms in the category selected by this set's Mor.
-
-- `Mor(codomain: 'Parent', category: 'Category | None' = None) -> 'Category'`
-
-  - ``A.Mor(B) := A.ambient_category().Mor(A, B)``.
 
 - `ambient_category() -> 'Category'`
 
@@ -21315,7 +21283,7 @@ Unverified specimens for unhashable labels and empty products::
     True
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:4116`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:4135`
 
 - **probed as** `Category of cartesian products of sets`
 
@@ -21359,9 +21327,9 @@ Unverified specimens for unhashable labels and empty products::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21370,7 +21338,7 @@ Unverified specimens for unhashable labels and empty products::
 
 Dependent coproducts (disjoint unions) of families of sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:4759`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:4778`
 
 - **probed as** `Category of coproducts of sets`
 
@@ -21414,9 +21382,9 @@ Dependent coproducts (disjoint unions) of families of sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21425,7 +21393,7 @@ Dependent coproducts (disjoint unions) of families of sets.
 
 Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\).
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3514`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3533`
 
 - **probed as** `Category of finite power sets`
 
@@ -21451,9 +21419,9 @@ Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21486,9 +21454,9 @@ Mor objects \(\operatorname{Hom}(X,Y)\), which are sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21506,7 +21474,7 @@ is a chosen datum on the set, so this is a data category, not an axiom on
 presented (TODO ``partially-ordered-sets-have-monotone-maps``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5715`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5734`
 
 - **probed as** `Category of partially ordered sets`
 
@@ -21542,9 +21510,9 @@ presented (TODO ``partially-ordered-sets-have-monotone-maps``).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21559,7 +21527,7 @@ when \(A\subseteq B\) (the order of the Boolean algebra ``Set X``, Mathlib
 ``Set.instBooleanAlgebra`` in ``Mathlib/Order/BooleanAlgebra/Set.lean``).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3034`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3053`
 
 - **probed as** `Category of power sets`
 
@@ -21619,9 +21587,9 @@ when \(A\subseteq B\) (the order of the Boolean algebra ``Set X``, Mathlib
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21648,7 +21616,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 20 |  |  |
+| [`Sets`](#cat-sets) | 17 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
@@ -21679,8 +21647,8 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -21720,9 +21688,9 @@ category and a set.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21749,7 +21717,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 20 |  |  |
+| [`Sets`](#cat-sets) | 17 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
@@ -21760,7 +21728,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Sets equipped with a total order.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5802`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5821`
 
 - **probed as** `Category of totally ordered sets`
 
@@ -21784,9 +21752,9 @@ Sets equipped with a total order.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21802,7 +21770,7 @@ point of Y support is measured against, so these are the function sets
 on which finite support is a theorem rather than a hypothesis.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3362`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:3381`
 
 - **probed as** `Category of finitely supported function sets`
 
@@ -21824,9 +21792,9 @@ on which finite support is a theorem rather than a hypothesis.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21835,7 +21803,7 @@ on which finite support is a theorem rather than a hypothesis.
 
 Well-ordered sets with order-preserving maps.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5946`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:5966`
 
 - **probed as** `Category of well ordered sets`
 
@@ -21863,9 +21831,9 @@ Well-ordered sets with order-preserving maps.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
+| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21882,7 +21850,7 @@ every object here a well-ordered set; ``order_type`` is the order type of
 that standard target.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:306`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:312`
 
 - **probed as** `Category of enumerated sets`
 
@@ -21930,8 +21898,8 @@ that standard target.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -21970,8 +21938,8 @@ category.  Prefixes and print names do not define a new category of sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22032,8 +22000,8 @@ enumeration transports from \(I\), which ``EnumeratedSets`` answers.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22077,8 +22045,8 @@ integer index, and indexing takes the corresponding natural number.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22117,8 +22085,8 @@ Infinite enumerated sets ranked by \(\mathbb N\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22178,8 +22146,8 @@ and enters through it.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22201,7 +22169,7 @@ category is not ``Ord``: its objects are represented finite ordered
 sets, not ordinal order types.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:408`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:414`
 
 - **probed as** `Category of augmented simplex category`
 
@@ -22227,8 +22195,8 @@ sets, not ordinal order types.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22258,7 +22226,7 @@ X\) sends each point to itself, so its image is \(A\); that construction
 supplies it as its premise ``subset_of_codomain``.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2626`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2641`
 
 - **built by** `SetInjection(parent, function, *, injectivity_decision=None, subset_of_codomain=False)`
 
@@ -22294,7 +22262,7 @@ surjections -- supplies it as its premise ``surjectivity_decision``;
 otherwise :meth:`is_surjective` decides it on the map's own data.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2809`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2824`
 
 - **built by** `SetSurjection(parent, function, *, surjectivity_decision=None)`
 
@@ -22385,7 +22353,7 @@ Methods can be added to enumerations, and members can have their own
 attributes -- see the documentation for details.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:292`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:293`
 
 - **built by** `CardinalComparison(*values)`
 
@@ -22395,7 +22363,7 @@ attributes -- see the documentation for details.
 
 The category of countable sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2478`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2493`
 
 - **built by** `CountableSets() -> 'Category'`
 
@@ -22403,7 +22371,7 @@ The category of countable sets.
 
 The category of countably infinite sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2483`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2498`
 
 - **built by** `CountablyInfiniteSets() -> 'Category'`
 
@@ -22411,7 +22379,7 @@ The category of countably infinite sets.
 
 The category of finite sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2468`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2483`
 
 - **built by** `FiniteSets() -> 'Category'`
 
@@ -22440,7 +22408,7 @@ The enumerated set \(\{H_n : n\in\mathbb N\}\subset\mathrm{SR}\).
 
 The category of infinite sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2473`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2488`
 
 - **built by** `InfiniteSets() -> 'Category'`
 
@@ -22478,7 +22446,7 @@ the set of its points and is returned unchanged, without enumerating it:
 a finite field, for example, has no chosen order to forget.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2606`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2621`
 
 - **built by** `Set(source: 'Parent | Iterable[SourcePointT]') -> 'Sets().ObjectType'`
 
@@ -22499,13 +22467,13 @@ evaluated \(\operatorname{sinc}\).
 
 The category of uncountable sets.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2488`
+- **defined at** `src/dzack_research/preamble/categories/sets/set_categories.py:2503`
 
 - **built by** `UncountableSets() -> 'Category'`
 
 #### `aleph` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1793`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1809`
 
 - **built by** `aleph(index: 'Ordinal | SupportsInt') -> 'Cardinal'`
 
@@ -22513,7 +22481,7 @@ The category of uncountable sets.
 
 Notation for `Cardinalities()(value)`: `value` itself when it is a cardinal.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1786`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1802`
 
 - **built by** `cardinal(value: 'Cardinal | SupportsInt | AnInfinity') -> 'Cardinal'`
 
@@ -22521,19 +22489,19 @@ Notation for `Cardinalities()(value)`: `value` itself when it is a cardinal.
 
 The finite ordered set a finite set or finitely many points present.
 
-- **defined at** `src/dzack_research/preamble/categories/sets/finite_ordered_sets.py:752`
+- **defined at** `src/dzack_research/preamble/categories/sets/finite_ordered_sets.py:765`
 
 - **built by** `finite_ordered_set(elements: 'Parent | Iterable[PointT]') -> 'FiniteOrderedSets().ObjectType'`
 
 #### `omega` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1774`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1790`
 
 - **built by** `omega(index: 'Ordinal | SupportsInt') -> 'Ordinal'`
 
 #### `ordinal` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1770`
+- **defined at** `src/dzack_research/preamble/categories/sets/cardinals.py:1786`
 
 - **built by** `ordinal(value: 'Ordinal | SupportsInt') -> 'Ordinal'`
 
@@ -22611,7 +22579,7 @@ type and index ranks are those of that module: the parent is the tensor
 space, so the element states neither again.
 ```
 
-- **defined at** `src/dzack_research/preamble/tensors/tensor.py:251`
+- **defined at** `src/dzack_research/preamble/tensors/tensor.py:245`
 
 - **built by** `Tensor()`
 
@@ -22746,7 +22714,7 @@ EXAMPLES::
     ((\mathbb{Z}^{2})^{*})^{\otimes 2}
 ```
 
-- **defined at** `src/dzack_research/preamble/tensors/tensor.py:2234`
+- **defined at** `src/dzack_research/preamble/tensors/tensor.py:2233`
 
 - **built by** `TensorModule(base_ring, upper_ranks, lower_ranks)`
 
@@ -22766,7 +22734,7 @@ dimensions and ``qs`` lower-index dimensions.  Hence vectors and covectors
 are different constructor calls even though both have one index.
 ```
 
-- **defined at** `src/dzack_research/preamble/tensors/tensor.py:2502`
+- **defined at** `src/dzack_research/preamble/tensors/tensor.py:2501`
 
 - **built by** `tensor(base_ring: sage.structure.parent.Parent, upper_ranks, lower_ranks, components=None, **kwds) -> dzack_research.preamble.tensors.tensor.Tensor`
 
@@ -22996,7 +22964,7 @@ TESTS::
       sage: TestSuite(Sets()).run()
 ```
 
-- **defined at** `/home/dzack/gitclones/sage-dev-allopts/.venv/lib/python3.14/site-packages/sage/categories/sets_cat.py:102`
+- **defined at** `/home/sage/sage/src/sage/categories/sets_cat.py:102`
 
 - **probed as** `Category of sets`
 
@@ -23030,7 +22998,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 #### `NodalCubic` <sub>FUNCTION</sub>
 
-File: /home/dzack/research/src/dzack_research/preamble/categories/schemes/geometric_cohomology.py (starting at line 670) Return the rational nodal cubic `y^2 z = x^2(x+z)` in `P^2`.
+File: /home/dzack/research/.tmp/wt-foreign/src/dzack_research/preamble/categories/schemes/geometric_cohomology.py (starting at line 670) Return the rational nodal cubic `y^2 z = x^2(x+z)` in `P^2`.
 
 - **built by** `NodalCubic(...)`
 
