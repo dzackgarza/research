@@ -79,7 +79,7 @@ class SemilinearModuleMorphism:
             case None, None:
                 raise TypeError(
                     f"a semilinear map {domain} -> {codomain} needs its defining linear map "
-                    f"{domain} -> {restricted} or a construction-derived evaluator"
+                    f"{domain} -> Res_{{{scalar_map}}}({codomain}) or a construction-derived evaluator"
                 )
             case None, _:
                 pass
