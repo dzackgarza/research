@@ -5422,6 +5422,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             else:
                 candidates = self.vectors_of_square(square)
+                # Here enumeration is the entire fibre (definite, or a
+                # nonzero square in a split binary form). Its orbit relation
+                # is the supplied group action on that finite set, without
+                # reconstructing perpendicular extension torsors for each
+                # pair of points.
+                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+                return FiniteGSets(group)(candidates, lambda isometry, point: isometry(point)).orbits()
 
             def same_orbit(left, right, *, special_only):
                 if left == right:
