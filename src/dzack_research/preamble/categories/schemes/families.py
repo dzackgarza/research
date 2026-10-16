@@ -10,6 +10,8 @@ affine scheme's own operations, and the slice object is
 the scheme.
 """
 
+from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceCategory
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -35,6 +37,7 @@ class _SchemeSlice(SliceCategory):
         return cls
 
     class ParentMethods:
+        @cached_method
         def fibre(self, point):
             r"""The fibre ``X_y = X x_Y Spec K`` of the family ``f: X -> Y`` over the point ``Spec K -> Y``.
 

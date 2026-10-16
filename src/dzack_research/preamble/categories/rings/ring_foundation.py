@@ -6285,9 +6285,11 @@ def _owned_complex_double_field() -> _OwnedRingParent:
     )
 
 
-def _owned_complex_field() -> _OwnedRingParent:
-    r"""The canonical owned 53-bit complex field ``CC``."""
-    return _owned_complex_field_of_precision(53)
+def _owned_complex_field():
+    r"""The canonical exact complex field ``CC``."""
+    from dzack_research.preamble.rings.complex import CC
+
+    return CC
 
 
 def _owned_ring(ring):

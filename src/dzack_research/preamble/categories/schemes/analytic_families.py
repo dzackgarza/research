@@ -328,6 +328,7 @@ class _AnalyticDiscFamilyEngine:
     def analytic_family_object(self):
         return self
 
+    @cached_method
     def fibre_inclusion(self, point):
         r"""The inclusion ``X_t -> X_Delta``, ``x |-> (x, t)``, of the fibre over a point ``t`` of ``Delta``.
 
