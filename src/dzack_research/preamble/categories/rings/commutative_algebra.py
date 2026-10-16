@@ -130,7 +130,32 @@ class _PrimeSpectrumTopologyData:
 
 
 class PrimeSpectra(OwnedCategory):
-    r"""The prime spectra \(\operatorname{Spec}R\), ordered by inclusion."""
+    r"""The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
+
+    Unexecuted specialization specimen over a local ring. The primes
+    ``(x)`` and ``(y)`` of ``QQ[x,y]_(x,y)`` are distinct and incomparable;
+    both specialize to ``(x,y)`` (the localization prime correspondence,
+    Atiyah--Macdonald, Proposition 3.11; Stacks, Tag 00E0)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: A = QQ['x', 'y']
+        sage: x = A.algebra_generator('x'); y = A.algebra_generator('y')
+        sage: R = A.localize_at_prime(A.ideal(x, y))
+        sage: spectrum = R.spectrum()
+        sage: px = spectrum(R.ideal(R(x)))
+        sage: py = spectrum(R.ideal(R(y)))
+        sage: closed = spectrum(R.ideal(R(x), R(y)))
+        sage: px == py
+        False
+        sage: px.specializes_to(py)
+        False
+        sage: py.specializes_to(px)
+        False
+        sage: px.specializes_to(closed) and py.specializes_to(closed)
+        True
+        sage: R.ideal(R(x)) in spectrum
+        True
+    """
 
     def an_object(self):
         r"""\(\operatorname{Spec}\mathbb{Z}\)."""
@@ -398,22 +423,26 @@ class PrimeSpectra(OwnedCategory):
             return function.valuation(uniformizer)
 
         def specializes_to(self, other) -> bool:
+            r"""Whether this prime is contained in the target prime.
+
+            The specialization order uses the actual ideals of the ring
+            (Stacks, Tag 00E0), including localized ideals whose private
+            computation field has a different ideal lattice.
+            """
             if other.parent() is not self.parent():
                 raise ValueError(
                     f"specialization is a relation between points of one spectrum, but {self} lies in "
                     f"{self.parent()} and {other} lies in {other.parent()}"
                 )
-            ring = self.parent().ring()
-            return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
+            return self.ideal().is_contained_in(other.ideal())
 
         def _richcmp_(self, other, op):
-            if other.parent() is not self.parent() or other.parent() is not self.parent():
+            if element_parent(other) is not self.parent():
                 return NotImplemented
             from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
 
-            ring = self.parent().ring()
-            left_ideal = _engine_ideal(ring, self.ideal())
-            right_ideal = _engine_ideal(ring, other.ideal())
+            left_ideal = self.ideal()
+            right_ideal = other.ideal()
             if op == op_EQ:
                 return left_ideal == right_ideal
             if op == op_NE:
@@ -421,12 +450,12 @@ class PrimeSpectra(OwnedCategory):
             if op == op_LE:
                 return self.specializes_to(other)
             if op == op_LT:
-                return left_ideal != right_ideal and self.specializes_to(other)
+                return conjunction((left_ideal != right_ideal, self.specializes_to(other)))
             return NotImplemented
 
         def __hash__(self):
             r"""Hash the prime ideal equality compares, so a point may key a cache."""
-            return hash(_engine_ideal(self.parent().ring(), self.ideal()))
+            return hash(self.ideal())
 
         def _repr_(self):
             return f"Point {self.ideal()} of {self.parent()}"
@@ -480,7 +509,7 @@ class PrimeSpectra(OwnedCategory):
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):
                 return candidate.parent() is self
-            ideal = _engine_ideal(self.ring(), candidate)
+            ideal = _owned_ideal(self.ring(), candidate)
             return bool(ideal.is_prime())
 
         def le(self, left, right) -> bool:
