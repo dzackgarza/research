@@ -815,6 +815,14 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         sage: generator = local.module_generator(next(iter(local.module_generating_set())))
         sage: restriction(section).underlying_element() == local.scalar_multiple(y*y, generator)
         True
+        sage: first = site(atlas.chart_open_subset(0))
+        sage: overlap = site(atlas.chart_open_subset(0, atlas.overlap(0, 1)))
+        sage: F = bundle.open_sections_presheaf()
+        sage: first_arrow = opposite.Mor(opposite(whole), opposite(first))(site.Mor(first, whole)())
+        sage: first_overlap = opposite.Mor(opposite(first), opposite(overlap))(site.Mor(overlap, first)())
+        sage: second_overlap = opposite.Mor(opposite(chart), opposite(overlap))(site.Mor(overlap, chart)())
+        sage: F.on_morphism(first_overlap)(F.on_morphism(first_arrow)(section)) == F.on_morphism(second_overlap)(restriction(section))
+        True
     """
 
     # The standard atlas and the transition units are computed here from the
