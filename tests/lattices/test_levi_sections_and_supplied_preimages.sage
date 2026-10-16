@@ -64,3 +64,20 @@ def test_the_split_two_plane_preimage_uses_the_supplied_kernel_and_cosets():
     assert all(any(preimage.inclusion()(value) == parabolic(expected) for value in family) for expected in kernel_family)
     assert all(preimage.inclusion()(value)(e) in (e, -e) for value in family)
     assert target.subgroup(tuple(target(levi(preimage.inclusion()(value))) for value in family)).cardinality() == quotient.cardinality()
+
+
+def test_the_given_two_plane_transvections_construct_their_subgroup():
+    lattice = NamedLattices.U + NamedLattices.U
+    e, _f, a, b = lattice.module_generators()
+    parabolic = e.isotropic_reduction().levi_action().domain()
+    first = parabolic(lattice.eichler_transvection(e, a))
+    second = parabolic(lattice.eichler_transvection(e, b))
+
+    subgroup = parabolic.subgroup((first, second))
+    inclusion = subgroup.inclusion()
+    generators = tuple(subgroup.group_generators())
+
+    assert generators == (first, second)
+    assert inclusion(subgroup.one()) == parabolic.one()
+    assert first * second == second * first
+    assert all(inclusion(generator)(e) == e for generator in generators)
