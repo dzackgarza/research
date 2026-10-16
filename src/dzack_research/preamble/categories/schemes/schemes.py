@@ -7011,6 +7011,17 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             )
             return codomain.O(degree).restrict_to(self)
 
+        def _picard_group(self):
+            r"""Invertible sheaf classes, with ``O_Z(0)`` as projective tensor unit."""
+            codomain = self.inclusion().codomain()
+            if codomain in ProjectiveSpaces(self.scheme_base_ring()):
+                from dzack_research.preamble.categories.divisors.picard_groups import (
+                    _invertible_sheaf_class_group,
+                )
+
+                return _invertible_sheaf_class_group(self, self.O(0))
+            return super()._picard_group()
+
         def fundamental_cycle(self):
             r"""Return this closed subscheme's cycle with generic local multiplicities."""
             from dzack_research.preamble.categories.divisors.chow_groups import (
