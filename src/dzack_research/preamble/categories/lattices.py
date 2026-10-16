@@ -2690,11 +2690,22 @@ class Lattices(OwnedCategoryOverBaseRing):
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
 
-            return self.Aut().predicate_subgroup(
+            orthogonal = self.Aut()
+            special = orthogonal.predicate_subgroup(
                 lambda automorphism: automorphism.determinant() == 1,
                 "det(g)=1",
                 character_data={"determinant_kernel": True},
             )
+
+            def generators():
+                signs = Groups.C(2)
+                determinant = orthogonal.Mor(signs).elementwise(
+                    lambda isometry: signs.one() if isometry.determinant() == 1 else signs.group_generators()[0]
+                )
+                return determinant.kernel().group_generators()
+
+            special.select_group_generators(generators)
+            return special
 
         def SO(self, *args, **kwargs):
             return self.special_orthogonal_group(*args, **kwargs)
