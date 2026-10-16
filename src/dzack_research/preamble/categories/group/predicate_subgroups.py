@@ -366,6 +366,11 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
             """
+            if _retains_group_resolution(self) and not self.contains_character_kernel():
+                generated = self.supergroup()._engine_subgroup_from_generators(
+                    tuple(self.group_generators())
+                )
+                return cardinal(generated.order())
             supergroup_cardinality = self.supergroup().cardinality()
             if self.contains_character_kernel():
                 quotient = self.finite_character_quotient()
@@ -381,11 +386,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 f"{self.supergroup()} has order {supergroup_cardinality}, which is not finite, "
                 f"and the subgroup is not known as the preimage of a subgroup of a finite quotient"
             )
-            if _retains_group_resolution(self):
-                generated = self.supergroup()._engine_subgroup_from_generators(
-                    tuple(self.group_generators())
-                )
-                return cardinal(int(generated.order()))
             return cardinal(sum(1 for _element in self))
 
         @cached_method
