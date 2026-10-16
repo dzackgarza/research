@@ -337,13 +337,13 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return _integers()(multiplicity)
 
         @cached_method
-        def _picard_group(self, base_picard_group=None):
-            assert base_picard_group is None, (
-                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
-                "this point-blowup presentation computes its Picard group directly"
-            )
+        def _picard_group(self):
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+
             return _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
+                _extra_categories=(PicardGroups(),),
+                _extra_construction_data={"picard_scheme": self},
             )
 
         def hyperplane_picard_class(self):

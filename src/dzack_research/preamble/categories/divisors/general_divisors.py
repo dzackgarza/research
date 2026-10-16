@@ -160,7 +160,7 @@ def _projective_space_picard_to_class_group_morphism(
         f"Pic(S) -> Cl(S) has codomain {base_picard_to_class.codomain()}, not the base class "
         f"group {base_class_group}"
     )
-    picard = projective_space.picard_group(base_picard_group)
+    picard = PicardGroups().projective_bundle(projective_space, base_picard_group)
     classes = ClassGroups().projective_bundle(projective_space, base_class_group)
     picard_hyperplane = picard.biproduct_factor(1)
     class_hyperplane = classes.biproduct_factor(1)

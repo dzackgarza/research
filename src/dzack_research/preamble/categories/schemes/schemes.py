@@ -4769,12 +4769,8 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             return self.closed_subscheme(f)
 
         @cached_method
-        def _picard_group(self, base_picard_group=None):
+        def _picard_group(self):
             r"""Return ``Pic(A^n_k) = 0`` over a field."""
-            assert base_picard_group is None, (
-                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
-                "the affine-space computation has no projective-bundle base datum"
-            )
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
                 f"cannot compute the Picard group of {self}: Pic(A^n) = 0 is used here only over a field, "
@@ -4947,25 +4943,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     return _projective_space_picard_to_class_group_morphism(self, *supplied)
 
-        def _picard_group(self, base_picard_group=None):
-            r"""Return the represented Picard group of this projective space.
-
-            With no supplied base Picard group, use the field-base divisor-class
-            theory.  Supplying ``Pic(S)`` invokes the projective bundle formula
-            ``Pic(P^n_S) = Pic(S) direct_sum ZZ[O(1)]``.
-            """
-            match base_picard_group:
-                case None:
-                    base = self.scheme_base_ring()
-                    assert base in OwnedFields(), (
-                        f"cannot compute Pic({self}) without a supplied base Picard group: the represented "
-                        f"default route uses Pic({self}) -> Cl({self}) over a field, but the base is {base}"
-                    )
-                    return self.picard_to_class_group_morphism().domain()
-                case _:
-                    from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
-
-                    return PicardGroups().projective_bundle(self, base_picard_group)
+        def _picard_group(self):
+            r"""Return ``Pic(P^n_k) = ZZ[O(1)]`` over a field."""
+            base = self.scheme_base_ring()
+            assert base in OwnedFields(), (
+                f"the represented computation of Pic({self}) uses a field base, but the base is {base}; "
+                "construct the projective-bundle decomposition from Pic(S) at PicardGroups().projective_bundle"
+            )
+            return self.picard_to_class_group_morphism().domain()
 
         def hyperplane_class(self):
             r"""``[O(1)]``, the module generator of ``Pic(P^n_k) = ZZ[O(1)]`` over a field ``k``.

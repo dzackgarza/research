@@ -499,16 +499,12 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             )
             return _integral_singular_cohomology_over_rationals(self, degree)
 
-        def _picard_group(self, base_picard_group=None):
+        def _picard_group(self):
             r"""``Pic(X)``, the isomorphism classes of invertible ``O_X``-modules, with unit ``[O_X(0)]``."""
             from dzack_research.preamble.categories.divisors.picard_groups import (
                 _invertible_sheaf_class_group,
             )
 
-            assert base_picard_group is None, (
-                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
-                "a complete intersection has no projective-bundle base datum"
-            )
             return _invertible_sheaf_class_group(self, self.O(0))
 
         def hyperplane_class(self):
