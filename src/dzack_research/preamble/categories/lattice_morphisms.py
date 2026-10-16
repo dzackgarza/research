@@ -741,16 +741,8 @@ class LatticeIsometryMethods:
                 domain = parent.domain()
                 codomain = parent.codomain()
                 forward = domain.module_category().Mor(domain, codomain)(images.forward())
-                values = _represented_value_module(domain)
-                target_values = _represented_value_module(codomain)
-                if target_values is not values:
-                    raise TypeError(
-                        f"a lattice isometry {domain} -> {codomain} needs both forms valued in one module, "
-                        f"but they take values in {values} and {target_values}"
-                    )
-                self._value_morphism = values.module_category().Mor(values, values).identity()
                 self._underlying_module_isomorphism = images
-                ModuleMorphismMethods.__init__(self, parent, forward)
+                super().__init__(parent, forward)
                 return
         self._underlying_module_isomorphism = None
         super().__init__(parent, images)
