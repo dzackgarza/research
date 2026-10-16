@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjectConstruction,
@@ -125,11 +124,13 @@ def _differentiate_representative(algebra, representative, variables):
 
 
 class Derivation(ModuleElement):
-    r"""An actual ``R``-linear arrow ``A -> Res_R(M)`` satisfying Leibniz.
+    r"""An ``R``-derivation ``D: A -> M`` into an ``A``-module ``M`` (Stacks, Tag 00RN).
 
-    The public codomain of a derivation remains the original ``A``-module
-    ``M``.  :meth:`underlying_linear_morphism` is the corresponding element of
-    the canonical ``Hom_R(A, Res_R(M))`` containing this derivation subobject.
+    ``D`` is additive, kills the image of the structure morphism
+    ``f: R -> A`` and satisfies ``D(ab) = a D(b) + b D(a)``; its values lie
+    in ``M`` itself.  :meth:`underlying_linear_morphism` is ``D`` as an
+    element of the ``R``-module ``Mor_R(A, Res_f(M))``, of which
+    ``Der_R(A, M)`` is a submodule.
     """
 
     def __init__(self, parent, generator_images) -> None:
@@ -150,13 +151,13 @@ class Derivation(ModuleElement):
         return self.parent().algebra()
 
     def codomain(self):
-        return self.parent().value_isomorphism().codomain()
+        return self.parent().target_module()
 
     def restricted_codomain(self):
         return self.parent().restricted_target_module()
 
     def generator_image(self, label):
-        return self.parent().value_isomorphism()(self._generator_images[label])
+        return self._generator_images[label]
 
     def _evaluate_coefficients(self, coefficients):
         target = self.parent().target_module()
@@ -223,7 +224,7 @@ class Derivation(ModuleElement):
                 )
 
     def __call__(self, element):
-        return self.parent().value_isomorphism()(self._module_value(element))
+        return self._module_value(element)
 
     def _module_value(self, element):
         r"""The value ``D(a)`` in the target module ``M``."""
@@ -320,6 +321,23 @@ class Derivation(ModuleElement):
 
     as_morphism = underlying_linear_morphism
 
+    @cached_method
+    def linear_endomorphism(self):
+        r"""A vector field ``X`` in ``Der_R(A) = Der_R(A, A^1)`` as an element of ``End_R(A)``.
+
+        ``X`` is an element of ``Mor_R(A, Res_f(A^1))``; composing with the
+        isomorphism ``Res_f(A^1) -> A``, ``a e_0 |-> a``, of ``R``-modules
+        gives the ``R``-linear endomorphism of ``A`` that the Lie bracket
+        ``[X, Y] = XY - YX`` and contraction ``i_X`` compose.
+        """
+        algebra = self.domain()
+        assert self.codomain() is algebra.regular_module(), (
+            f"{self} is a derivation into {self.codomain()}; only a derivation into the regular module "
+            f"{algebra.regular_module()} of {algebra} is an endomorphism of {algebra}"
+        )
+        identification = self.restricted_codomain().regular_module_identification()
+        return identification * self.underlying_linear_morphism()
+
     def _lmul_(self, scalar):
         return self.parent().algebra_multiple(scalar, self)
 
@@ -402,12 +420,16 @@ class _DerivationAlgebraAction(Action):
 
 
 class DerivationSpace(RestrictedMorCategoryParent):
-    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Mor inclusion.
+    r"""The ``A``-module ``Der_R(A, M)`` of ``R``-derivations into an ``A``-module ``M``.
 
-    The actual subobject of ``Hom_R(A,Res_R M)`` is
-    ``Res_R Der_R(A,M)``.  Keeping these two scalar structures distinct is
-    essential: the derivation module is canonically an ``A``-module, whereas
-    its inclusion into the existing ``R``-linear Mor is only ``R``-linear.
+    For ``f: R -> A`` the structure morphism, an ``R``-derivation
+    ``D: A -> M`` is an ``R``-linear map ``A -> Res_f(M)`` with
+    ``D(ab) = a D(b) + b D(a)`` (Stacks, Tag 00RN).  So ``Res_f Der_R(A, M)``
+    is the ``R``-submodule of ``Mor_R(A, Res_f(M))`` cut out by the Leibniz
+    rule, and ``(a D)(b) = a D(b)`` makes ``Der_R(A, M)`` an ``A``-module.
+    The two scalar structures stay distinct: the inclusion into the
+    ``R``-linear Mor is only ``R``-linear.  ``Der_R(A) = Der_R(A, A^1)``
+    takes values in the regular module ``A^1``.
     """
 
     Element = Derivation
@@ -418,7 +440,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     @staticmethod
     def __classcall__(cls, family, algebra, restricted_target):
-        r"""``Der_R(A,M)`` is an ``A``-module, with the presentation of ``Hom_A(Omega_{A/R}, M)`` when that has one."""
+        r"""``Der_R(A,M)`` is an ``A``-module, with the presentation of ``Mor_A(Omega_{A/R}, M)`` when that has one."""
         target_module = restricted_target.module_over_extension()
         differentials = algebra.kahler_differentials()
         classifiers = differentials.module_category().Mor(differentials, target_module)
@@ -451,13 +473,12 @@ class DerivationSpace(RestrictedMorCategoryParent):
         )
         self._generator_labels = labels
 
-        algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
         self._restricted_target = restricted_target
         differentials = algebra.kahler_differentials()
         classifiers = differentials.module_category().Mor(differentials, target_module)
         self._preamble_kahler_classifier_module = classifiers
-        # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
+        # Der_R(A,M) is the subcategory of Mor_R(A,Res_f M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
         RestrictedMorCategoryParent.__init__(
             self,
@@ -535,25 +556,6 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     def generator_labels(self):
         return self._generator_labels
-
-    @cached_method
-    def value_isomorphism(self):
-        r"""The isomorphism ``M -> V`` from the target module to the object derivations take values in.
-
-        For ``Der_R(A, A)`` the target module is the regular module ``{}_A A`` and
-        ``V = A`` through ``r e_0 |-> r``
-        (the ring's ``regular_module_isomorphism``), so
-        ``d/dx(x) = 1`` in ``A``.  For any other ``A``-module ``M``, ``V = M``.
-        """
-        target = self.target_module()
-        algebra = self.algebra()
-        match target is algebra.regular_module():
-            case True:
-                return algebra.regular_module_isomorphism()
-            case False:
-                return AdditiveGroups().AdditiveCommutative().Mor(target, target).elementwise(
-                    lambda element: element
-                )
 
     def _kahler_classifier_module(self):
         return self._preamble_kahler_classifier_module
@@ -697,7 +699,7 @@ class GradedDerivation(ModuleElement):
     For shift ``r`` this represents a map ``D : A^p -> M^(p+r)`` satisfying
     ``D(ab) = D(a)b + (-1)^(r p) a D(b)`` on homogeneous ``a``.  It is an
     actual ``R``-linear morphism, lying in a represented submodule of
-    ``Hom_R(A,M)``.
+    ``Mor_R(A,M)``.
     """
 
     def __init__(self, parent, function) -> None:
@@ -978,14 +980,14 @@ def _contraction_presentation(algebra, shift):
 
 
 class GradedDerivationSpace(RestrictedMorCategoryParent):
-    r"""The module ``Der^r(B, M)`` of degree-``r`` graded derivations, a subset of ``Hom_R(B, M)``.
+    r"""The module ``Der^r(B, M)`` of degree-``r`` graded derivations, a subset of ``Mor_R(B, M)``.
 
     For a strictly commutative DGA ``B`` and ``M = B`` it is a module over
     ``B^0``: an element ``a`` of ``B^0`` is even, hence central, so
     ``(a theta)(bc) = (a theta)(b) c + (-1)^(rp) b (a theta)(c)``.  Its
-    inclusion into ``Hom_R(B, B)`` is then only ``R``-linear, and is the
+    inclusion into ``Mor_R(B, B)`` is then only ``R``-linear, and is the
     inclusion of its restriction of scalars along ``R -> B^0``.  Otherwise it
-    is the ``R``-submodule of ``Hom_R(B, M)``.
+    is the ``R``-submodule of ``Mor_R(B, M)``.
 
     For the de Rham algebra ``B = Omega^*_{A/R}`` and ``r = -1``, ``theta``
     vanishes on ``A`` and so is ``A``-linear on ``Omega^1 = Omega_{A/R}``;
@@ -1068,7 +1070,7 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     @cached_method
     def restricted_module(self):
-        r"""``Res_R Der^r(B)`` along ``R -> B^0``, the ``R``-submodule of ``Hom_R(B, B)``."""
+        r"""``Res_R Der^r(B)`` along ``R -> B^0``, the ``R``-submodule of ``Mor_R(B, B)``."""
         scalars = self.base_ring()
         return _restricted_scalars_view(
             self,
