@@ -1856,6 +1856,68 @@ class LocalizationRings(OwnedCategory):
                     )
             return inverted[0]
 
+        @cached_method(key=lambda self, source_ring: id(source_ring))
+        def principal_localization_comparison(self, source_ring):
+            r"""Compare a finite localization tower with ``source_ring[1/f]``.
+
+            Every layer must retain a finite family of inverted elements.
+            In a principal localization, ``a/s`` is associated to ``a``;
+            localizing at it therefore adds its numerator to the product
+            inverted in the original source. Both inverse maps come from
+            localization's universal property. Reference: Mathlib,
+            ``IsLocalization.Away.mul'`` and ``Away.mul_of_associated`` in
+            ``Mathlib/RingTheory/Localization/Away/Basic.lean``.
+
+            Unexecuted iterated-localization specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: B = A.localization(x)
+                sage: C = B.localization(B(A.one()-x))
+                sage: comparison = C.principal_localization_comparison(A)
+                sage: comparison.codomain() is A.localization(x*(A.one()-x))
+                True
+                sage: element = C.fraction(B.one(), B(A.one()-x))
+                sage: comparison.inverse()(comparison(element)) == element
+                True
+            """
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _isomorphism_from_known_inverse_pair,
+            )
+
+            layers = []
+            current = self
+            while current is not source_ring:
+                if current not in LocalizationRings():
+                    raise ValueError("the requested source is not an ancestor in this localization tower")
+                layers.append(current)
+                current = current.localization_source()
+            product = source_ring.one()
+            flattened = source_ring
+            forward = source_ring.Mor(source_ring).identity()
+            reverse = forward
+            source_map = forward
+            for layer in reversed(layers):
+                generators = layer.inverted_elements()
+                assert generators.cardinality().is_finite() is True, (
+                    "a principal localization comparison requires finite chosen generator families"
+                )
+                for generator in generators:
+                    value = forward(generator)
+                    numerator = value if flattened is source_ring else flattened.localization_fraction_data(value)[0]
+                    product *= numerator
+                target = source_ring.localization(product)
+                to_target = target.localization_map()
+                if flattened is not source_ring:
+                    to_target = flattened.induced_morphism(to_target)
+                forward = layer.induced_morphism(to_target * forward)
+                source_map = layer.localization_map() * source_map
+                reverse = target.induced_morphism(source_map)
+                flattened = target
+            return _isomorphism_from_known_inverse_pair(
+                forward, reverse, base_category=OwnedRings().Commutative(),
+            )
+
         def quotient_contraction_map(self, quotient):
             r"""The canonical injection R/I -> (S^-1 R)/J, with I contracted from J.
 
