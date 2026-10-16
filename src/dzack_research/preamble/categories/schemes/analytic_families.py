@@ -13,7 +13,6 @@ requires the usual proper complex-algebraic hypotheses, which this family does
 not satisfy.
 """
 
-from sage.all import CC as SageCC
 from sage.all import QQ as SageQQ
 from sage.all import QQbar as SageQQbar
 from sage.categories.number_fields import NumberFields as SageNumberFields
@@ -52,9 +51,8 @@ def _exact_algebraic_embedding(source_ring, scalar_embedding):
     r"""The embedding ``K -> QQbar`` through which ``sigma : K -> CC`` factors.
 
     A number field ``K`` has finitely many embeddings ``K -> QQbar``, and
-    ``sigma`` is one of them followed by ``QQbar -> CC``: the one sending the
-    generator of ``K`` to the algebraic number nearest ``sigma`` of it, which is
-    how Sage identifies the embedding of ``NumberField(f, embedding=...)``.
+    ``sigma`` is one of them followed by ``QQbar -> CC``: the one whose
+    generator image agrees exactly with ``sigma`` of that generator.
     Over ``QQ`` it is the unique embedding.  The coefficients of an
     analytified map are their exact images under it.
 
@@ -67,17 +65,19 @@ def _exact_algebraic_embedding(source_ring, scalar_embedding):
         f"exact: their exact images are computed for number fields, and {source_ring} is "
         f"not a number field"
     )
-    engine_target = _engine_ring(scalar_embedding.codomain())
-    generator_image = engine_target(
-        _engine_element(
-            scalar_embedding.codomain(),
-            scalar_embedding(_owned_engine_element(source_ring, engine_source.gen())),
-        )
+    if engine_source is SageQQ:
+        return SageQQbar.coerce_map_from(SageQQ)
+    target = scalar_embedding.codomain()
+    generator_image = scalar_embedding(_owned_engine_element(source_ring, engine_source.gen()))
+    matching = tuple(
+        embedding for embedding in engine_source.embeddings(SageQQbar)
+        if (target(embedding(engine_source.gen())) == generator_image) is True
     )
-    return min(
-        engine_source.embeddings(SageQQbar),
-        key=lambda embedding: abs(SageCC(embedding(engine_source.gen())) - generator_image),
+    assert len(matching) == 1, (
+        f"the exact generator image {generator_image} of {scalar_embedding} "
+        f"must select one algebraic embedding, but it selects {len(matching)}"
     )
+    return matching[0]
 
 
 def _exact_coefficient_expression(algebraic_number):
@@ -134,7 +134,7 @@ class _AffineSpaceAnalytificationFunctor(Functor):
         self._scalar_embedding = scalar_embedding
         source = _owned_ring(scalar_embedding.domain())
         target = _owned_ring(scalar_embedding.codomain())
-        assert _engine_ring(target) is SageCC, (
+        assert target is _owned_complex_field(), (
             f"analytification along {scalar_embedding} needs an embedding into the complex "
             f"numbers CC, but its codomain is {target}"
         )
@@ -201,7 +201,7 @@ class _ProjectiveSpaceAnalytificationFunctor(Functor):
         self._scalar_embedding = scalar_embedding
         source = _owned_ring(scalar_embedding.domain())
         target = _owned_ring(scalar_embedding.codomain())
-        assert _engine_ring(target) is SageCC, (
+        assert target is _owned_complex_field(), (
             f"analytification along {scalar_embedding} needs an embedding into the complex "
             f"numbers CC, but its codomain is {target}"
         )
