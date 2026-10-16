@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     _CoreCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-    CategoricalIsomorphism,
     CategoricalMor,
     _distinct_supercategories,
     _category_accepts_morphism,
@@ -57,7 +56,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleAutomorphismMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
 )
@@ -732,16 +730,13 @@ class LatticeIsometryMethods:
 
     def __init__(self, parent, images, *, inverse_computation=None) -> None:
         self._isometry_inverse_computation = inverse_computation
-        match images:
-            # A module isomorphism of the underlying modules: an inverse pair,
-            # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
-            case CategoricalIsomorphism() | ModuleAutomorphismMethods():
-                domain = parent.domain()
-                codomain = parent.codomain()
-                forward = domain.module_category().Mor(domain, codomain)(images.forward())
-                self._underlying_module_isomorphism = images
-                super().__init__(parent, forward)
-                return
+        domain = parent.domain()
+        codomain = parent.codomain()
+        if images in domain.module_category().Core().Mor(domain, codomain):
+            forward = domain.module_category().Mor(domain, codomain)(images.forward())
+            self._underlying_module_isomorphism = images
+            super().__init__(parent, forward)
+            return
         self._underlying_module_isomorphism = None
         super().__init__(parent, images)
 
