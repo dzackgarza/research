@@ -3347,8 +3347,7 @@ def _flag_stabilizer_engine_data(automorphisms, terms):
         )
         for adapted in rows
     )
-    endomorphisms = module.module_category().Mor(module, module)
-    change = automorphisms(endomorphisms(dict(zip(labels, vectors, strict=True))))
+    change = automorphisms(dict(zip(labels, vectors, strict=True)))
     block_generators = tuple(
         automorphisms._from_backend_row_action(action)
         for action in _engine_block_general_linear_row_actions(sizes, engine_ring)
@@ -3587,13 +3586,12 @@ class ModuleAutomorphismGroup(CoreMor):
         )
         change, sizes, block_generators = _flag_stabilizer_engine_data(self, terms)
         labels = module.module_generating_set()
-        endomorphisms = module.module_category().Mor(module, module)
         block_of = dict(zip(labels, (index for index, size in enumerate(sizes) for _ in range(size)), strict=True))
         elementary = tuple(
-            self(endomorphisms({
+            self({
                 label: module.module_generator(label) + (module.module_generator(j_label) if label == k_label else module.zero())
                 for label in labels
-            }))
+            })
             for k_label in labels
             for j_label in labels
             if block_of[j_label] < block_of[k_label]
