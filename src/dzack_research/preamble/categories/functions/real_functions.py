@@ -51,7 +51,6 @@ from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
-from sage.rings.lazy_series_ring import LazyPowerSeriesRing
 from sage.rings.power_series_ring import PowerSeriesRing
 from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ
@@ -669,6 +668,8 @@ class _DifferentiableMap(_FunctionSpaceMap):
         shifted = body.subs({variable: SR(RR(centre)) + variable})
         k = space.differentiability()
         if k is Infinity:
+            from sage.rings.lazy_series_ring import LazyPowerSeriesRing
+
             return LazyPowerSeriesRing(SR, "t").taylor(shifted)
         jet = shifted.taylor(variable, ZZ.zero(), k)
         return PowerSeriesRing(SR, "t")(jet.subs({variable: SR.var("t")}))
