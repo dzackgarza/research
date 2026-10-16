@@ -134,26 +134,29 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
-    def _orbit_words(self, seeds, action, augmentation):
+    def _orbit_words(self, seeds, action, augmentation, *, point_key=None):
         r"""The one orbit search: the union of the orbits of ``seeds``, each point with a word.
 
         ``augmentation`` is a free cover ``pi: F ->> G``.  Breadth-first search
         over the free generators reaches each new point ``s.y`` by the word
         ``s t_y``.  Points are recorded by rank in a dictionary keyed by the
-        point, so each membership test is constant time.  The caller supplies
-        an effective action and the hypothesis that these orbits are finite.
+        point, or by its supplied injective rank key when the points are
+        unhashable. The caller supplies an effective action and the
+        hypothesis that these orbits are finite.
         """
         free = augmentation.domain()
         steps = tuple((word, augmentation(word)) for word in free.group_generators())
         points = list(finite_ordered_set(tuple(seeds)))
-        rank = {point: position for position, point in enumerate(points)}
+        key = (lambda point: point) if point_key is None else point_key
+        rank = {key(point): position for position, point in enumerate(points)}
         words = [free.one() for _point in points]
         position = 0
         while position < len(points):
             for word, element in steps:
                 image = action(element, points[position])
-                if image not in rank:
-                    rank[image] = len(points)
+                image_key = key(image)
+                if image_key not in rank:
+                    rank[image_key] = len(points)
                     points.append(image)
                     words.append(word * words[position])
             position += 1
@@ -461,7 +464,15 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             def action(element, subobject):
                 return point(self.act(element, member) for member in members(subobject))
 
-            orbit = FiniteGSets(self.acting_group()).from_finite_orbits((start,), action)
+            def subset_ranks(subobject):
+                return frozenset(int(ranking(member)) for member in members(subobject))
+
+            category = FiniteGSets(self.acting_group())
+            augmentation = self.acting_group().selected_group_resolution().augmentation()
+            orbit_points, _words = category._orbit_words(
+                (start,), action, augmentation, point_key=subset_ranks,
+            )
+            orbit = category(finite_ordered_set(tuple(orbit_points)), action)
             return orbit.stabilizer(start)
 
         @cached_method(key=lambda self, point: self.ranking_map()(point))
@@ -469,7 +480,9 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""The single orbit datum of ``point``: its orbit ``G``-set and its words, by the selected cover."""
             augmentation = self.acting_group().selected_group_resolution().augmentation()
             category = FiniteGSets(self.acting_group())
-            points, words = category._orbit_words((point,), self.act, augmentation)
+            points, words = category._orbit_words(
+                (point,), self.act, augmentation, point_key=self.ranking_map(),
+            )
             return category(finite_ordered_set(tuple(points)), self.act), words, augmentation
 
         def orbit_schreier_morphism(self, point):
