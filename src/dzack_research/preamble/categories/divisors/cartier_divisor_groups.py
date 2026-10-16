@@ -1016,6 +1016,24 @@ class CartierDivisorGroups(Category):
 
             Pull back every local equation on its pulled-back covering
             atlas, with no principal-divisor hypothesis (Stacks, 02AQ).
+
+            Unexecuted local-equation restriction::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: X = AffineSchemes(QQ)(A); U = X.distinguished_open(x)
+                sage: divisors = CartierDivisorGroups().of_scheme(X)
+                sage: D = divisors.principal_divisor(x)
+                sage: restricted = divisors.restriction_map(U.inclusion())(D)
+                sage: pulled = D.gluing_datum().pullback(U.inclusion())
+                sage: restricted.gluing_datum() is pulled
+                True
+                sage: projection = pulled.chart(0).left_projection().coordinate_algebra_morphism()
+                sage: expected = pulled.chart(0).coordinate_algebra().total_quotient_ring()(projection(x))
+                sage: restricted.local_equation(0) == expected
+                True
+                sage: restricted == restricted.parent().zero()
+                True
             """
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 

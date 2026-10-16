@@ -1522,6 +1522,22 @@ class _FiniteAffineAtlasEngine:
         The charts are ``U_i x_X Y`` with both actual projections. Base
         change preserves open immersions and covers; overlap transitions
         come from the pullback universal maps (Stacks, Tags 01JR and 01JA).
+
+        Unexecuted affine identity-cover pullback::
+
+            sage: from dzack_research.preamble.all import *
+            sage: A = QQ['x']; x = A.algebra_generator('x')
+            sage: X = AffineSchemes(QQ)(A)
+            sage: U = X.distinguished_open(x)
+            sage: atlas = FiniteAffineAtlases(X).identity_atlas()
+            sage: pulled = atlas.pullback(U.inclusion())
+            sage: chart = pulled.chart(0)
+            sage: chart.left_projection() == U.inclusion() * chart.right_projection()
+            True
+            sage: chart.right_projection().is_open_immersion()
+            True
+            sage: pulled.scheme() is U
+            True
         """
         if morphism.codomain() is not self.scheme():
             raise ValueError("atlas pullback requires a morphism into the atlas's scheme")
