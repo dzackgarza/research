@@ -7786,11 +7786,14 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 # The Eichler-type transvection is given by its generator images
                 # in O(L) itself (``CON-17``); its inverse is the transvection
                 # at ``-parameter``, computed on request.
-                return ambient.Isom(ambient)({
+                forward = ambient.Mor(ambient)({
                     label: ambient.module_generator(label)
                     + shift(parameter, ambient.module_generator(label))
                     for label in ambient.module_generating_set()
                 })
+                return ambient.Isom(ambient)._from_inverse_computation(
+                    forward, lambda: isometry(-parameter)
+                )
 
             return solution, isometry
 

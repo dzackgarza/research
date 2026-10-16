@@ -229,12 +229,21 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 
 def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     r"""Return the form isometry represented by mutually inverse module maps."""
-    return TorsionFormIsometry(
-        forward.parent(),
-        forward,
-        inverse,
-        quadratic=quadratic,
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        FormedModuleMorphism,
+        _represented_value_module,
     )
+
+    source, target = forward.domain(), forward.codomain()
+    category = _torsion_form_modules(source.base_ring(), quadratic=quadratic)
+    values = _represented_value_module(source)
+    assert _represented_value_module(target) is values, "an isometry preserves one value module"
+    value_identity = values.module_category().Mor(values, values).identity()
+    forward_component = forward.module_morphism() if isinstance(forward, FormedModuleMorphism) else forward
+    inverse_component = inverse.module_morphism() if isinstance(inverse, FormedModuleMorphism) else inverse
+    formed_forward = category.Mor(source, target)((forward_component, value_identity))
+    formed_inverse = category.Mor(target, source)((inverse_component, value_identity))
+    return category.Core().Mor(source, target)((formed_forward, formed_inverse))
 
 
 def _representative_gram(form, *, quadratic: bool):
@@ -1007,7 +1016,7 @@ class TorsionFormTwistFunctor(Functor):
         target = self.object_image(isometry.codomain())
         return _torsion_form_isometry(
             _twisted_module_morphism(isometry.forward(), source, target),
-            _twisted_module_morphism(isometry.inverse_morphism(), target, source),
+            _twisted_module_morphism(isometry.inverse().forward(), target, source),
             quadratic=self._quadratic,
         )
 
@@ -1278,8 +1287,22 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             engine_automorphism,
         )
 
+    @cached_method
+    def _normalization_homomorphism(self):
+        r"""The group homomorphism from form-Core automorphisms to this finite realization."""
+        category = _torsion_form_modules(self.domain().base_ring(), quadratic=self.is_quadratic())
+        source = category.Core().Mor(self.domain(), self.domain())
+        return OwnedGroups().Mor(source, self)(self._normalized_form_automorphism)
+
     def from_morphism(self, morphism):
-        r"""Return a live form automorphism as an element of this owned group."""
+        r"""Apply the normalization homomorphism to an automorphism of the formed-module core."""
+        homomorphism = self._normalization_homomorphism()
+        if not homomorphism.domain().accepts(morphism):
+            raise TypeError(f"{morphism} must be an isometry of the formed-module core before normalization")
+        return homomorphism(morphism)
+
+    def _normalized_form_automorphism(self, morphism):
+        r"""Compute the normalization homomorphism on one admitted form isometry."""
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.domain():
             raise ValueError(
                 f"{morphism} is not an automorphism of {self.domain()}: it is a morphism "

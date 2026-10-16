@@ -448,7 +448,8 @@ def _gluing_route_discriminant_classes(lattice, left, right):
                 for label in discriminant.module_generating_set()
             }
             descended = discriminant.module_category().Mor(discriminant, discriminant)(descended_images)
-            automorphism = discriminant.O().from_morphism(descended)
+            descended_isometry = _torsion_form_isometry(descended, descended.inverse(), quadratic=True)
+            automorphism = discriminant.O().from_morphism(descended_isometry)
             classes[automorphism] = automorphism
     return tuple(classes.values())
 

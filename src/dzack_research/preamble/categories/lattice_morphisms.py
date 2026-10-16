@@ -1361,7 +1361,7 @@ class LatticeIsometryMethods:
                 f"{self} induces no automorphism of a discriminant form: it is an isometry from {self.domain()} to {self.codomain()}, not an automorphism of one lattice"
             )
         form = self.domain().discriminant_group()
-        return form.orthogonal_group().from_morphism(self._discriminant_forward_morphism())
+        return form.orthogonal_group().from_morphism(self.discriminant_isometry())
 
     def is_involution(self) -> bool:
         r"""Return whether this lattice automorphism satisfies ``self^2 = 1``."""

@@ -349,6 +349,8 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
         if isinstance(images, Morphism):
             if self._already_parented_arrow(images):
+                images.validate_linearity(check=check)
+                images.validate_degree_preservation(check=check)
                 return images
             raise TypeError(f"{images} belongs to another Mor; apply the functor between the categories")
         morphism = super()._element_constructor_(images, check=check)
