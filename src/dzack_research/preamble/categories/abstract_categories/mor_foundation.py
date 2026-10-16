@@ -195,7 +195,7 @@ def _has_category_packet_surface(category: Category) -> bool:
             return False
 
 
-class CategoryPacketMethods:
+class _CategoryPacketOperations:
     r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
 
     Sited here, below the packet itself, so that the owned category bases can
@@ -358,7 +358,7 @@ def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
 
 def _category_level_operations() -> dict:
     r"""The category-level operation of each name of the Mor packet, at its one owner."""
-    packet = CategoryPacketMethods.__dict__
+    packet = _CategoryPacketOperations.__dict__
     return {
         "Mor": packet["Mor"],
         "End": packet["End"],
@@ -417,3 +417,44 @@ class ObjectLevelOperation:
 
 
 object_level = ObjectLevelOperation
+
+
+class CategoryPacketMethods(_CategoryPacketOperations):
+    r"""The category packet, with both readings on categories that are objects of Cat."""
+
+    @object_level
+    def Mor(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Mor(self, codomain)
+
+    @object_level
+    def End(self):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().End(self)
+
+    @object_level
+    def Mono(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Mono(self, codomain)
+
+    @object_level
+    def Epi(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Epi(self, codomain)
+
+    @object_level
+    def Iso(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Iso(self, codomain)
+
+    @object_level
+    def Aut(self):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Aut(self)
+

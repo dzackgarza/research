@@ -404,33 +404,15 @@ class Cat(CategoryPacketMethods, Category):
         EpiCategory = CategoryPacketMethods.EpiCategory
         IsoCategory = CategoryPacketMethods.IsoCategory
         AutCategory = CategoryPacketMethods.AutCategory
-        @object_level
-        def Mor(self, codomain):
-            r"""Functor morphisms when this category is asked as an object of Cat."""
-            return Cat().Mor(self, codomain)
+        Mor = CategoryPacketMethods.__dict__["Mor"]
+        End = CategoryPacketMethods.__dict__["End"]
+        Mono = CategoryPacketMethods.__dict__["Mono"]
+        Epi = CategoryPacketMethods.__dict__["Epi"]
+        Iso = CategoryPacketMethods.__dict__["Iso"]
+        Aut = CategoryPacketMethods.__dict__["Aut"]
 
         def identity_functor(self):
             return Cat().identity(self)
-
-        @object_level
-        def End(self):
-            return Cat().End(self)
-
-        @object_level
-        def Mono(self, codomain):
-            return Cat().Mono(self, codomain)
-
-        @object_level
-        def Epi(self, codomain):
-            return Cat().Epi(self, codomain)
-
-        @object_level
-        def Iso(self, codomain):
-            return Cat().Iso(self, codomain)
-
-        @object_level
-        def Aut(self):
-            return Cat().Aut(self)
 
         def inclusion_into(self, supercategory: Category):
             r"""Return the canonical inclusion functor into a declared supercategory."""

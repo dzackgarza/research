@@ -991,7 +991,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         functors = self.functor_category()
         if source in functors and target in functors:
             return functors.Mor(source, target)
-        return CategoryPacketMethods.Mor(self, source, target)
+        return self.MorCategory().Of(source, target)
 
     def forgetful_functor(self):
         r"""Evaluation at the unique object, ``GObjects(G,C) -> C``."""

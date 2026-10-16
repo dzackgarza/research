@@ -1239,13 +1239,6 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             _IntegerTranslationOnZZ(integers, displacement)
         )
 
-    def Mor(self, domain: Parent, codomain: Parent) -> SetMorCategory:
-        if domain not in self or codomain not in self:
-            raise TypeError(
-                f"a map of sets needs a set as domain and codomain, but got {domain} and {codomain}"
-            )
-        return _set_mor_category(domain, codomain)
-
     def Subobjects(self, base_object: Parent) -> Category:
         r"""Return the monomorphism subcategory of the slice over ``base_object``.
 
