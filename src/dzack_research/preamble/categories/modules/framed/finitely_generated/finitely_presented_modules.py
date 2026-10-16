@@ -3202,7 +3202,7 @@ def _presented_module_from_morphism(
         and presentation.domain() in FramedFreeModules(base_ring)
         and codomain in FramedFreeModules(base_ring)
     ):
-        selected_presentation = presentation
+        selected_presentation = presentation._framed_coordinate_morphism()
     else:
         existing_labels = existing.domain().module_generating_set()
         relation_labels = Sets().coproduct(
