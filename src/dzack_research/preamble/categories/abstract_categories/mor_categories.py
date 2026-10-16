@@ -1337,7 +1337,7 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
                 return Category.__contains__(self, candidate)
 
 
-class CategoricalIsomorphism(Morphism):
+class CategoricalIsomorphism(CategoricalArrow):
     r"""An isomorphism represented by mutually inverse arrows.
 
     The defining datum is the forward arrow ``f: X -> Y``; the inverse
@@ -1355,7 +1355,7 @@ class CategoricalIsomorphism(Morphism):
         *,
         verify: bool = False,
     ) -> None:
-        Morphism.__init__(self, parent)
+        CategoricalArrow.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
             raise ValueError(
                 f"an isomorphism {self.domain()} -> {self.codomain()} needs a forward map "
@@ -1438,7 +1438,7 @@ class CategoricalIsomorphism(Morphism):
         match other:
             case CategoricalIsomorphism():
                 return self.forward() == other.forward()
-            case Morphism() if other in self.forward().parent():
+            case Morphism() | CategoricalArrow() if other in self.forward().parent():
                 return self.forward() == other
             case _:
                 return False

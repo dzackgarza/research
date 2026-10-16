@@ -411,6 +411,10 @@ class Cat(CategoryPacketMethods, Category):
         def Mor(self, codomain):
             r"""Functor morphisms when this category is asked as an object of Cat."""
             return Cat().Mor(self, codomain)
+
+        def identity_functor(self):
+            return Cat().identity(self)
+
         End = CategoryPacketMethods.End
         Mono = CategoryPacketMethods.Mono
         Epi = CategoryPacketMethods.Epi
