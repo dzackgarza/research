@@ -552,6 +552,154 @@ class LatticeEmbeddingMethods:
 
         return source_form.Mono(target_form)(images, quadratic=target.is_even())
 
+    def _assert_finite_index_overlattice(self) -> None:
+        r"""State the hypotheses ``M <= L <= M^#`` under which glue is a subgroup of ``A_M``.
+
+        For ``j: M -> L`` of finite index between nondegenerate lattices of
+        finite rank over ``ZZ`` with ``L`` integral, ``L <= L^# <= M^#``.
+        """
+        source = self.domain()
+        target = self.codomain()
+        assert source.base_ring() is _owned_integers() and target.base_ring() is _owned_integers(), (
+            f"the glue of {self} is a subgroup of the discriminant group A_M, defined here for lattices "
+            f"over ZZ, but {source} is over {source.base_ring()} and {target} over {target.base_ring()}"
+        )
+        assert source.module_rank().is_finite() and source.module_rank() == target.module_rank(), (
+            f"{self} is not of finite index: {source} has rank {source.module_rank()} and {target} "
+            f"has rank {target.module_rank()}"
+        )
+        assert source.is_nondegenerate() is True, (
+            f"the glue of {self} lies in A_M = M^#/M, which is finite only for nondegenerate M, "
+            f"and {source} is not known to be nondegenerate"
+        )
+
+    @cached_method
+    def gluing_subgroup(self):
+        r"""Return ``L/M`` as the subgroup of ``A_M = M^#/M`` it defines.
+
+        For a finite-index embedding ``j: M -> L`` of nondegenerate lattices
+        over ``ZZ`` with ``L`` integral, ``M <= L <= L^# <= M^#``, so ``L/M``
+        is a subgroup of ``A_M``.  The class of ``x`` in ``L`` is the element
+        of ``M^#`` with dual-basis coordinates ``b(j e_k, x)``, the pairing
+        ``M x L -> ZZ`` obtained by pulling ``b_L`` back along ``(j, 1_L)``.
+        """
+        self._assert_finite_index_overlattice()
+        source = self.domain()
+        lattice = self.codomain()
+        ring = lattice.base_ring()
+        discriminant = source.discriminant_group()
+        identity = lattice.module_category().Mor(lattice, lattice).identity()
+        pairing = lattice.gram_tensor().pullback(self, identity)
+        discriminant_labels = tuple(discriminant.module_generating_set())
+        classes = tuple(
+            discriminant.linear_combination(
+                {
+                    label: ring(pairing[row, column])
+                    for row, label in enumerate(discriminant_labels)
+                    if pairing[row, column]
+                }
+            )
+            for column, _generator in enumerate(lattice.module_generating_set())
+        )
+        return discriminant.subobject_generated_by(classes)
+
+    def _scaled_isometry_images(self, isometry):
+        r"""Return ``m_L: L -> L``, multiplication by the index ``m``, and ``x -> j h j^{-1}(m x)``.
+
+        ``m L`` lies in ``j(M)`` because ``m`` annihilates ``L/M``.
+        """
+        self._assert_finite_index_overlattice()
+        source = self.domain()
+        lattice = self.codomain()
+        assert isometry in source.O(), (
+            f"{isometry} cannot be extended along {self}: it is not an isometry of {source}"
+        )
+        moved = source.module_category().Mor(source, lattice)(
+            lambda label: self(isometry(source.module_generator(label)))
+        )
+        scalar = lattice.base_ring()(int(self.index().finite_value()))
+        scaling = lattice.module_category().Mor(lattice, lattice)(
+            lambda label: lattice.scalar_multiple(scalar, lattice.module_generator(label))
+        )
+        images = {
+            label: moved(self.lift(lattice.scalar_multiple(scalar, lattice.module_generator(label))))
+            for label in lattice.module_generating_set()
+        }
+        return scaling, images
+
+    def isometry_extends(self, isometry) -> bool:
+        r"""Whether ``h`` in ``O(M)`` satisfies ``h_Q(L) = L`` for this finite-index ``j: M -> L``.
+
+        ``h_Q`` maps ``x`` to ``(1/m) j h j^{-1}(m x)``; it preserves ``L``
+        exactly when every ``j h j^{-1}(m x)``, ``x`` a generator, lies in
+        ``m L``, since ``h_Q`` is an isometry of ``L tensor QQ`` and ``L``
+        has the rank of ``M``.
+        """
+        scaling, images = self._scaled_isometry_images(isometry)
+        return all(scaling.is_in_image(image) for image in images.values())
+
+    def isometry_extension(self, isometry):
+        r"""Return ``h_Q`` restricted to ``L``, for ``h`` in ``O(M)`` with ``h_Q(L) = L``.
+
+        This is the restriction ``O(M_Q)_L -> O(L)`` applied to the base
+        change of ``h``; it is computed as ``x -> (1/m) j h j^{-1}(m x)``.
+        """
+        scaling, images = self._scaled_isometry_images(isometry)
+        assert all(scaling.is_in_image(image) for image in images.values()), (
+            f"{isometry} does not extend to an isometry of {self.codomain()}: its rational extension "
+            f"along {self} does not map {self.codomain()} into itself"
+        )
+        return self.codomain().O()(lambda label: scaling.lift(images[label]))
+
+    def extended_subgroup(self, subgroup):
+        r"""Return ``{h in H : h_Q(L) = L}`` restricted to ``O(L)``, for ``H <= O(M)``.
+
+        Because ``M <= L <= M^#``, ``h`` in ``O(M)`` preserves ``L`` exactly
+        when its image under ``rho_M: O(M) -> O(A_M)`` stabilizes ``L/M``
+        (:meth:`gluing_subgroup`).  So the subgroup is the stabilizer of the
+        point ``L/M`` in the finite ``H``-set of submodules of ``A_M``, ``H``
+        acting through ``rho_M``; it has index at most the number of
+        submodules of ``A_M`` in ``H``, its Schreier generators come from the
+        finite action, and each is carried to ``O(L)`` by
+        :meth:`isometry_extension`.  ``H`` must supply group generators.
+        The result is the subgroup of ``O(L)`` those extensions generate.
+        """
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+        self._assert_finite_index_overlattice()
+        source = self.domain()
+        inclusion = _subgroup_inclusion_into(subgroup, source.O())
+        representation = source.discriminant_representation()
+        discriminant_group = representation.codomain()
+        submodules = discriminant_group.subobject_action()
+        restricted = FiniteGSets(subgroup)(
+            submodules.point_set(),
+            lambda element, point: submodules.act(representation(inclusion(element)), point),
+        )
+        extending = restricted.stabilizer(discriminant_group.subobject_point(self.gluing_subgroup()))
+        into_source = inclusion * extending.inclusion()
+        return self.codomain().O().subgroup(
+            finite_ordered_set(
+                tuple(
+                    self.isometry_extension(into_source(generator))
+                    for generator in extending.group_generators()
+                )
+            )
+        )
+
+
+def _subgroup_inclusion_into(subgroup, group):
+    r"""Return the composite of subgroup inclusions ``H -> ... -> G``, the identity when ``H`` is ``G``."""
+    inclusion = group.Mor(group).identity() if subgroup is group else subgroup.inclusion()
+    current = subgroup if subgroup is group else subgroup.supergroup()
+    while current is not group:
+        assert current.supergroup() is not current, (
+            f"{subgroup} is not a subgroup of {group}: its chain of supergroups ends at {current}"
+        )
+        inclusion = current.inclusion() * inclusion
+        current = current.supergroup()
+    return inclusion
+
 
 class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
     r"""Compatibility shell for private lattice-embedding realizations."""

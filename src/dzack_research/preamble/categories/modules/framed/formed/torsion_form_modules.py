@@ -1404,36 +1404,44 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         element = self.domain()(element)
         return self.element_action().stabilizer(element)
 
-    def stabilizer_of_subgroup(self, subgroup):
-        r"""Return the setwise stabilizer through the owned subobject G-set."""
+    @cached_method
+    def subobject_action(self):
+        r"""Return the represented action of this group on the submodules of its finite form."""
         form = self.domain()
-        base_ring = form.base_ring()
-        if subgroup not in ModuleSubobjects(base_ring):
-            raise TypeError(
-                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
-                "has no inclusion morphism"
-            )
-        if subgroup not in Modules(base_ring).Subobjects(form):
-            raise ValueError(
-                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
-                f"is a submodule of {subgroup.inclusion().codomain()}"
-            )
         family = _torsion_form_all_subobjects(
             form,
             quadratic=self.is_quadratic(),
         )
+        return _torsion_form_subobject_action(form, family, self)
+
+    def subobject_point(self, subgroup):
+        r"""Return the point of :meth:`subobject_action` that is the submodule ``subgroup``."""
+        form = self.domain()
+        base_ring = form.base_ring()
+        if subgroup not in ModuleSubobjects(base_ring):
+            raise TypeError(
+                f"the submodules of {form} acted on by {self} have inclusion morphisms, but {subgroup} "
+                "has none"
+            )
+        if subgroup not in Modules(base_ring).Subobjects(form):
+            raise ValueError(
+                f"{self} acts on submodules of {form}, but {subgroup} "
+                f"is a submodule of {subgroup.inclusion().codomain()}"
+            )
         by_embedded_elements = {
             _embedded_elements(candidate): candidate
-            for candidate in family
+            for candidate in self.subobject_action().point_set()
         }
         embedded = _embedded_elements(subgroup)
         if embedded not in by_embedded_elements:
             raise ValueError(
-                f"{subgroup} does not match any submodule of {form}, so {self} has no stabilizer for it"
+                f"{subgroup} does not match any submodule of {form}, so it is no point of the action of {self}"
             )
-        point = by_embedded_elements[embedded]
-        action = _torsion_form_subobject_action(form, family, self)
-        return action.stabilizer(point)
+        return by_embedded_elements[embedded]
+
+    def stabilizer_of_subgroup(self, subgroup):
+        r"""Return the setwise stabilizer through the owned subobject G-set."""
+        return self.subobject_action().stabilizer(self.subobject_point(subgroup))
 
     stabilizer_of_subobject = stabilizer_of_subgroup
 

@@ -2411,6 +2411,135 @@ def _abelian_subgroup_quotient(subgroup):
     )
 
 
+class _GroupProductElement(MultiplicativeGroupElement):
+    r"""A point ``(g_i)_{i in I}`` of a product of groups, one component per factor."""
+
+    def __init__(self, parent, components) -> None:
+        MultiplicativeGroupElement.__init__(self, parent)
+        factors = parent.factors()
+        self._components = {label: factors[label](components[label]) for label in factors.index_set()}
+
+    def component(self, label):
+        r"""Return ``g_i``, the image of this point under the projection ``p_i``."""
+        return self._components[self.parent().factors().index_set()(label)]
+
+    def _mul_(self, other):
+        return self.parent()(
+            {label: self._components[label] * other._components[label] for label in self._components}
+        )
+
+    def __invert__(self):
+        return self.parent()({label: ~component for label, component in self._components.items()})
+
+    def is_one(self):
+        return self == self.parent().one()
+
+    def __eq__(self, other):
+        if not isinstance(other, _GroupProductElement) or other.parent() is not self.parent():
+            return False
+        # Equality in a product is componentwise; a component equality can
+        # be an undecided proposition, which the conjunction keeps.
+        return conjunction(self._components[label] == other._components[label] for label in self._components)
+
+    def __ne__(self, other):
+        return negation(self == other)
+
+    def __hash__(self):
+        return hash(tuple(hash(component) for component in self._components.values()))
+
+    def _repr_(self):
+        return "(" + ", ".join(repr(component) for component in self._components.values()) + ")"
+
+
+class _GroupProductGroup:
+    r"""The product ``prod_i G_i`` of a finite family of groups, its law componentwise.
+
+    Its points are families ``(g_i)`` with ``g_i`` in ``G_i``.  No factor
+    needs a finite realization or a presentation: the law, unit and inverse
+    are those of the factors, coordinate by coordinate.
+    """
+
+    def __init__(self, factors, **rest) -> None:
+        self._factors = factors
+        super().__init__(**rest)
+
+    def factors(self):
+        return self._factors
+
+    def __call__(self, components):
+        return self._element_constructor_(components)
+
+    def _element_constructor_(self, components):
+        if isinstance(components, _GroupProductElement) and components.parent() is self:
+            return components
+        return self.element_class(self, components)
+
+    def __contains__(self, element) -> bool:
+        return isinstance(element, _GroupProductElement) and element.parent() is self
+
+    def one(self):
+        factors = self.factors()
+        return self({label: factors[label].one() for label in factors.index_set()})
+
+    @cached_method
+    def projection(self, label):
+        r"""Return ``p_i: prod_j G_j -> G_i``."""
+        factor = self.factors()[label]
+        return self.Mor(factor).elementwise(lambda element: element.component(label))
+
+    @cached_method
+    def _factor_inclusion(self, label):
+        r"""Return ``G_i -> prod_j G_j``, ``g |-> (1, ..., g, ..., 1)``.
+
+        It is the arrow out of ``G_i`` whose ``i``-th component is the
+        identity and whose other components are the trivial homomorphisms.
+        """
+        factors = self.factors()
+        normalized = factors.index_set()(label)
+        return factors[normalized].Mor(self).elementwise(
+            lambda element: self(
+                {
+                    index: element if index == normalized else factors[index].one()
+                    for index in factors.index_set()
+                }
+            )
+        )
+
+    def _cardinality_decision(self):
+        r"""``|prod_i G_i| = prod_i |G_i|``, the cardinal product of the factors' cardinalities."""
+        return reduce(mul, (factor.cardinality() for factor in self.factors()), cardinal(1))
+
+    def _repr_(self):
+        return " x ".join(repr(factor) for factor in self.factors())
+
+
+def _componentwise_group_product(category, family):
+    r"""The product of ``family`` in ``category`` on families of components (``_GroupProductGroup``)."""
+    labels = tuple(family.index_set())
+    placement = (
+        *((OwnedAbelianGroups(),) if all(family[label] in OwnedAbelianGroups() for label in labels) else ()),
+        *((OwnedFiniteGroups(),) if all(family[label] in OwnedFiniteGroups() for label in labels) else ()),
+    )
+    product = _object_of(
+        Cat().meet((category, *placement)),
+        _engine=(OwnedGroups(), _GroupProductGroup, _GroupProductElement),
+        factors=family,
+    )
+    if all(family[label].has_selected_group_resolution() for label in labels):
+        # The images of generating sets of the factors under the factor
+        # inclusions generate the product of finitely many groups.
+        product.select_group_generators(
+            lambda: finite_ordered_set(
+                tuple(
+                    product._factor_inclusion(label)(generator)
+                    for label in labels
+                    for generator in family[label].group_generators()
+                )
+            )
+        )
+    return product
+
+
 def _canonical_subgroup_inclusion(subgroup):
     r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
     return subgroup.Mor(subgroup.supergroup())._from_subgroup_inclusion()
@@ -4150,14 +4279,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             family = _finite_factor_family(factors, name="Group product factors")
             if any(factor not in self for factor in family):
                 raise TypeError(f"the product of {family} cannot be formed in {self}: some factor is not an object of {self}")
-            assert all(
-                factor in OwnedFiniteGroups() or factor in GroupsWithChosenFinitePresentation()
-                for factor in family
-            ), (
-                f"the product of {family} is computed here for finite or finitely presented groups; "
-                "some factor has neither a finite realization nor a chosen finite presentation"
-            )
             labels = tuple(family.index_set())
+            # GAP's DirectProduct serves families of finitely presented
+            # groups, and of finite groups realized as permutation groups,
+            # whose product it returns as a permutation group; every other
+            # family is realized on families of components.
+            if labels and not (
+                all(factor in GroupsWithChosenFinitePresentation() for factor in family)
+                or all(
+                    factor in OwnedFiniteGroups() and _encodes_as_permutations(_engine_group(factor))
+                    for factor in family
+                )
+            ):
+                return self._componentwise_product_construction(family)
             if not labels:
                 product = OwnedGroups().C(1)
                 product_engine = None
@@ -4243,6 +4377,42 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     return _element_from_engine(product, image)
 
                 return apex.Mor(product).elementwise(mediating_map)
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def _componentwise_product_construction(self, family):
+            r"""Return the product of an arbitrary finite family of groups, on families of components.
+
+            The product in ``Grp`` of ``G_i`` is the set of families
+            ``(g_i)`` with the componentwise law, its projections
+            ``p_i(g) = g_i`` and, for every cone of homomorphisms
+            ``f_i: H -> G_i``, the unique mediating ``h |-> (f_i(h))``
+            (Mathlib ``Mathlib/Algebra/Group/Prod.lean``: ``MonoidHom.fst``,
+            ``MonoidHom.inl`` with ``x |-> (x, 1)``, ``MonoidHom.prod``;
+            ``lean-categories`` request lean-categories#91).  This route
+            needs nothing of the factors but their laws, so it realizes the
+            product when some factor has neither a finite realization nor a
+            chosen finite presentation; the GAP route above serves those.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _discrete_diagram,
+            )
+
+            product = _componentwise_group_product(self, family)
+            diagram = _discrete_diagram(family, self)
+            universal_cone = diagram.ProductCones().cone(
+                product,
+                lambda index: product.projection(index.value()),
+            )
+            labels = tuple(family.index_set())
+
+            def factorizer(cone):
+                apex = cone.apex()
+                legs = {label: cone.structure_morphism(diagram.domain()(label)) for label in labels}
+                return apex.Mor(product).elementwise(
+                    lambda element: product({label: legs[label](element) for label in labels})
+                )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
