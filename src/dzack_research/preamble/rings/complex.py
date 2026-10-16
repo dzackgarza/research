@@ -56,7 +56,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
-from dzack_research.preamble.categories.sets.set_categories import UncountableSets
+from dzack_research.preamble.categories.sets.set_categories import Sets, UncountableSets
 from dzack_research.preamble.logic import Predicate, Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.rings.real import RR, ExactRealNumber, _contains_approximation
@@ -289,8 +289,7 @@ class ExactComplexNumber(FieldElement):
     def n(self, prec: int = 53, digits: int | None = None):
         r"""The image of this number in the owned approximation field ``ComplexField(prec)``."""
         precision = int(prec) if digits is None else int(digits_to_bits(digits))
-        approximation = _SageComplexField(precision)(self._expression)
-        return _owned_engine_element(_owned_complex_field_of_precision(precision), approximation)
+        return self.parent().approximation_map(precision)(self)
 
     numerical_approx = n
 
@@ -630,6 +629,19 @@ class ExactComplexField(UniqueRepresentation, Field):
         It is the structure morphism of \(\mathbb C\) as an ``RR``-algebra.
         """
         return OwnedRings().Mor(RR, self).elementwise(lambda element: self(element))
+
+    @cached_method
+    def approximation_map(self, precision: int = 53):
+        r"""The rounding map from exact complex numbers to ``ComplexField(precision)``.
+
+        This is a map of sets. Rounding does not preserve field operations.
+        """
+        precision = int(precision)
+        target = _owned_complex_field_of_precision(precision)
+        engine = _SageComplexField(precision)
+        return Sets().Mor(self, target)(
+            lambda value: _owned_engine_element(target, engine(self(value).expression()))
+        )
 
 
 _OwnedRingBootstrapParent.register(ExactComplexField)
