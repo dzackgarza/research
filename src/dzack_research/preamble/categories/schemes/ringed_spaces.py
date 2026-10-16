@@ -69,9 +69,9 @@ class _SchemeTopologyData(SageObject):
 
     def is_open_subset(self, space, subset) -> bool:
         if space.has_selected_finite_affine_atlas():
-            from dzack_research.preamble.categories.schemes.gluing import _AffineChartImageSubobjects
+            from dzack_research.preamble.categories.schemes.gluing import _AffineChartOpenSubobjects
 
-            if subset in _AffineChartImageSubobjects(space):
+            if subset in _AffineChartOpenSubobjects(space):
                 return True
             return space.underlying_space().is_open_subset(subset)
         power = space.power_set()
