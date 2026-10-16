@@ -273,7 +273,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                     return _QuarticK3IntegralTopology(self)
 
                 @cached_method
-                def hodge_structure(self):
+                def _hodge_structure(self):
                     r"""The Hodge structure on ``H^*(X(CC); ZZ)`` of the quartic K3 surface.
 
                     The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of

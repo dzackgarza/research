@@ -3155,6 +3155,23 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_finite_type(self):
                 return True
 
+            @cached_method
+            def hodge_structure(self):
+                r"""The mixed Hodge structure on ``H^*(X(CC); ZZ)``.
+
+                The complex realization uses the embedding of the base
+                retained by the represented computation. For a smooth
+                proper complex variety each ``H^k`` is pure of weight ``k``
+                (Deligne, Theorie de Hodge II, (2.1.1), (2.3.1)).
+                """
+                return self._hodge_structure()
+
+            def _hodge_structure(self):
+                assert False, (
+                    f"Hodge realization of {self}: not implemented; "
+                    "an embedding into CC and its cohomological realization are required"
+                )
+
             def complex_realization(self, scalar_embedding):
                 r"""``X(CC)`` along ``sigma: k -> CC``, an object of :class:`TopologicalSpaces`.
 
@@ -4969,6 +4986,27 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             return _integral_singular_cohomology_over_rationals(self, degree)
 
+        def _hodge_structure(self):
+            r"""``H^*(P^n(CC); ZZ) = direct_sum_p ZZ(-p)`` along ``QQ -> CC``.
+
+            The class of a codimension-p linear subspace spans H^{2p} and
+            has Hodge type (p,p); odd cohomology vanishes. See Example 2.2.3,
+            https://sites.math.duke.edu/~robles/hw_HT.pdf .
+            """
+            from dzack_research.preamble.categories.modules.hodge_structures import (
+                _split_mixed_hodge_structure,
+            )
+
+            assert self.scheme_base_ring() is _owned_rationals(), (
+                f"Hodge realization of {self}: not implemented for this base; "
+                "the represented embedding is QQ -> CC"
+            )
+            return _split_mixed_hodge_structure(
+                _owned_integers(),
+                tuple(range(0, 2 * int(self.relative_dimension()) + 1, 2)),
+                name=f"H^*({self}(CC); ZZ)",
+            )
+
         @cached_method
         def _picard_intersection_pairing(self):
             r"""The form ``[O(1)]^2 = 1`` on ``Pic(P^2)``."""
@@ -5197,7 +5235,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Compute ``omega_{P^n_R} = O(-n-1)`` for the smooth-owner operation."""
             return self.O(-int(self.relative_dimension()) - 1)
 
-        @cached_method
         @cached_method
         def structure_sheaf(self):
             r"""``O_X`` on ``Open(|P^n_R|)``, glued from the standard affine charts ``D_+(x_i)``.

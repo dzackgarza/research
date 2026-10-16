@@ -1558,7 +1558,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return _toric_middle_cohomology_form(self)
 
         @cached_method
-        def hodge_structure(self):
+        def _hodge_structure(self):
             r"""The Hodge structure on ``H^*(X(CC); ZZ)``.
 
             The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of
