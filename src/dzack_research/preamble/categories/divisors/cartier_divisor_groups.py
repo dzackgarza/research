@@ -560,6 +560,23 @@ class _CartierSectionClass:
                 return self._scalar * self._operand._restrict_to_affine_open(morphism, target)
         raise ValueError(f"unrecognized Cartier section expression: {self._kind}")
 
+    def _local_equation_terms(self, coefficient=1):
+        r"""Expand the group expression as signed local-equation lifts."""
+        match self._kind:
+            case "zero":
+                return
+            case "finite_atlas":
+                yield self, coefficient
+            case "sum":
+                yield from self._left._local_equation_terms(coefficient)
+                yield from self._right._local_equation_terms(coefficient)
+            case "negation":
+                yield from self._operand._local_equation_terms(-coefficient)
+            case "multiple":
+                yield from self._operand._local_equation_terms(coefficient * int(self._scalar))
+            case _:
+                raise ValueError(f"unrecognized Cartier section expression: {self._kind}")
+
     def transition_unit(self, source_index, target_index):
         atlas = self.gluing_datum()
         source_index = atlas.normalize_chart_index(source_index)
@@ -822,9 +839,9 @@ class _CartierSectionClasses:
         )
 
     def _affine_common_refinement_equal(self, left, right):
-        r"""Compare local equations on every ``U_i x_X V_j``.
+        r"""Compare expressions on the common cover of their local lifts.
 
-        These affine intersections cover ``X``. Equality in ``K^*/O^*``
+        The iterated affine intersections cover ``X``. Equality in ``K^*/O^*``
         is local, so the two sections agree exactly when every ratio is a
         regular unit (Stacks, Tag 02AQ). The affine pullbacks retain both
         coordinate maps; no local equation is identified across parents.
@@ -844,30 +861,55 @@ class _CartierSectionClasses:
             True
             sage: E == divisors.principal_divisor(x*x)
             False
+            sage: F = divisors.restriction_map(identity)(divisors.principal_divisor(x-A.one()))
+            sage: D + F == F + D
+            True
+            sage: (D + F) + D == 2*D + F
+            True
         """
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         schemes = Schemes(self.scheme().scheme_base_ring())
 
-        def agree(left_index, right_index):
-            intersection = schemes.fiber_product(
-                left._atlas.chart_embedding(left_index),
-                right._atlas.chart_embedding(right_index),
-            )
-            left_equation = _total_quotient_pullback(
-                intersection.left_projection().coordinate_algebra_morphism(),
-                left.local_equation(left_index),
-            )
-            right_equation = _total_quotient_pullback(
-                intersection.right_projection().coordinate_algebra_morphism(),
-                right.local_equation(right_index),
-            )
-            return _regular_unit_ratio(intersection.coordinate_algebra(), left_equation, right_equation)
+        terms = (*left._local_equation_terms(), *right._local_equation_terms(-1))
+        atlases = []
+        for section, _coefficient in terms:
+            if not any(atlas is section._atlas for atlas in atlases):
+                atlases.append(section._atlas)
+        if not atlases:
+            return True
 
+        def agree(position, chart, chart_to_scheme, indices, projections):
+            if position == len(atlases):
+                ring = chart.coordinate_algebra()
+                product = ring.total_quotient_ring().one()
+                for section, coefficient in terms:
+                    atlas_index = next(index for index, atlas in enumerate(atlases) if atlas is section._atlas)
+                    equation = _total_quotient_pullback(
+                        projections[atlas_index].coordinate_algebra_morphism(),
+                        section.local_equation(indices[atlas_index]),
+                    )
+                    product *= equation ** coefficient
+                return _regular_unit_ratio(ring, product, ring.one())
+
+            atlas = atlases[position]
+
+            def next_chart(index):
+                intersection = schemes.fiber_product(chart_to_scheme, atlas.chart_embedding(index))
+                left_projection = intersection.left_projection()
+                return agree(
+                    position + 1, intersection, chart_to_scheme * left_projection,
+                    (*indices, index),
+                    (*tuple(projection * left_projection for projection in projections), intersection.right_projection()),
+                )
+
+            return conjunction(next_chart(index) for index in atlas.chart_indices())
+
+        first = atlases[0]
         return conjunction(
-            agree(left_index, right_index)
-            for left_index in left._atlas.chart_indices()
-            for right_index in right._atlas.chart_indices()
+            agree(1, first.chart(index), first.chart_embedding(index), (index,),
+                  (first.chart(index).categorical_identity_morphism(),))
+            for index in first.chart_indices()
         )
 
     def equal(self, left, right):
@@ -907,6 +949,8 @@ class _CartierSectionClasses:
                 and self.equal(left._operand, right._operand) is True
             ):
                 return True
+            case _ if self.scheme() in Schemes(self.scheme().scheme_base_ring()).Affine():
+                return self._affine_common_refinement_equal(left, right)
             case _:
                 return AtomicProposition("equal", left, right)
 
