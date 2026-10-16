@@ -1871,27 +1871,26 @@ class FiniteAtlasRefinementMethods:
                 "a refinement basis open must be the fine chart or one of its distinguished opens"
             )
         chart_map = self.chart_map(fine_index)
-        if chart_map.coordinate_algebra_morphism().is_identity() is True:
-            image = (
-                coarse_chart if selected is fine_chart else
-                coarse_chart.distinguished_open(selected.distinguished_open_element())
+        original = coarse_chart.coordinate_algebra()
+        middle = fine_chart.coordinate_algebra()
+        scalar_map = chart_map.coordinate_algebra_morphism()
+        canonical = original.Mor(original).identity()
+        if middle is not original:
+            assert middle in LocalizationRings(), (
+                "a refinement chart image requires a represented localization tower"
             )
-            return coarse_index, selected, image
-        if (
-            fine_chart in OpenImmersions(coarse_chart)
-            and fine_chart.is_distinguished_open() is True
-            and (chart_map == fine_chart.inclusion()) is True
-        ):
-            if selected is fine_chart:
-                return coarse_index, selected, fine_chart
-            ring = fine_chart.coordinate_algebra()
-            numerator, _denominator = ring.localization_fraction_data(selected.distinguished_open_element())
-            image = coarse_chart.distinguished_open(fine_chart.distinguished_open_element() * numerator)
-            return coarse_index, selected, image
-        assert False, (
-            f"the image of the fine chart {fine_index} needs an affine-open image construction "
-            "beyond identity chart maps and represented distinguished-open inclusions"
+            comparison = middle.principal_localization_comparison(original)
+            canonical = comparison.inverse().forward() * comparison.codomain().localization_map()
+        assert (scalar_map == canonical) is True, (
+            "a refinement chart image requires the canonical map of its localization tower"
         )
+        selected_ring = selected.coordinate_algebra()
+        if selected_ring is original:
+            identity = original.Mor(original).identity()
+            return coarse_index, selected, coarse_chart, identity, identity
+        comparison = selected_ring.principal_localization_comparison(original)
+        image = coarse_chart.distinguished_open(comparison.codomain().inverted_element())
+        return coarse_index, selected, image, comparison.inverse().forward(), comparison.forward()
 
     @cached_method
     def chart_open_subset(self, fine_index, open_subscheme=None):
@@ -1899,7 +1898,9 @@ class FiniteAtlasRefinementMethods:
 
         For ``D(f)`` in a coarse chart and ``g=a/s`` on ``D(f)``, the
         image of ``D(g)`` is ``D(fa)``. The denominator is already a unit
-        on ``D(f)`` (Stacks, Tag 00E0).
+        on ``D(f)`` (Stacks, Tag 00E0). Canonical finite towers use the
+        coordinate ring's principal-localization comparison, so a chart
+        map may be a composite of distinguished-open inclusions.
 
         Unexecuted refinement specimen: add the overlap as a chart of the
         projective line, then restrict the inverse-image sheaf there::
@@ -1958,7 +1959,7 @@ class FiniteAtlasRefinementMethods:
             sage: reverse(forward(denominator_inverse)) == denominator_inverse
             True
         """
-        coarse_index, _selected, image = self._coarse_chart_open(fine_index, open_subscheme)
+        coarse_index, _selected, image, _forward, _reverse = self._coarse_chart_open(fine_index, open_subscheme)
         return self.coarse_datum().chart_open_subset(coarse_index, image)
 
     @cached_method
@@ -1968,21 +1969,7 @@ class FiniteAtlasRefinementMethods:
         Both coordinate maps are induced by localization. In particular,
         ``(A_f)_g`` and ``A_fa`` retain their actual inverse universal maps.
         """
-        coarse_index, selected, image = self._coarse_chart_open(fine_index, open_subscheme)
-        fine_chart = self.fine_datum().chart(fine_index)
-        coarse_chart = self.coarse_datum().chart(coarse_index)
-        original = coarse_chart.coordinate_algebra()
-        middle = fine_chart.coordinate_algebra()
-        fine_ring = selected.coordinate_algebra()
-        image_ring = image.coordinate_algebra()
-        to_fine = self.chart_map(fine_index).coordinate_algebra_morphism()
-        if selected is not fine_chart:
-            to_fine = selected.inclusion().coordinate_algebra_morphism() * to_fine
-        forward = to_fine if image_ring is original else image_ring.induced_morphism(to_fine)
-        to_image = original.Mor(original).identity() if image_ring is original else image_ring.localization_map()
-        reverse = to_image if middle is original else middle.induced_morphism(to_image)
-        if fine_ring is not middle:
-            reverse = fine_ring.induced_morphism(reverse)
+        _index, selected, image, forward, reverse = self._coarse_chart_open(fine_index, open_subscheme)
         schemes = Schemes(selected.scheme_base_ring())
         return schemes.Core().Mor(selected, image)(
             schemes.Mor(selected, image)(forward), schemes.Mor(image, selected)(reverse),
