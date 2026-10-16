@@ -1206,12 +1206,26 @@ def _orthogonal_sum(summands):
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
     )
+
+    summands = _finite_factor_family(summands, name="Orthogonal summands")
+    return _orthogonal_sum_on_family(summands)
+
+
+@cached_function(key=lambda summands: (
+    id(summands.index_set()), tuple(id(summand) for summand in summands),
+))
+def _orthogonal_sum_on_family(summands):
+    r"""The selected biproduct on this finite indexed family of actual lattices.
+
+    Retain the index set and every component object, so the direct-sum
+    functor and a decomposition made through the same constructor have the
+    same endpoints. Distinct index sets or component objects stay distinct.
+    """
     from dzack_research.preamble.categories.lattices import (
         BiproductLattices,
         Lattices,
     )
 
-    summands = _finite_factor_family(summands, name="Orthogonal summands")
     blocks = tuple(summands)
     assert blocks, f"cannot form the orthogonal sum of {summands}: the family of summands is empty"
     ring = blocks[0].base_ring()
