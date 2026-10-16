@@ -2044,16 +2044,9 @@ class _MorCategoryOf(OwnedCategoryBase):
         Aut attachment records its canonical owning family at attachment, so
         an inherited constructor need not be followed by an owner query.
 
-        ``Cat.object(M)`` is the already-constructed Sage-Mor endpoint for
-        the exact category ``M``.  At this representation boundary its stored
-        category is the same object to look up, not new defining data to feed
-        to ``Of``.  No arbitrary object with similar methods is unwrapped.
+        ``Cat.object(M)`` is the exact category ``M``; membership reads
+        that category directly.
         """
-        from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
-
-        match candidate:
-            case CategoryObject():
-                candidate = candidate.represented_category()
         if candidate not in MorCategories():
             return False
         return self._cached_between(
