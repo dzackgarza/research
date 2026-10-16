@@ -46,7 +46,9 @@ from __future__ import annotations
 
 import ast
 import builtins
+import runpy
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -100,11 +102,19 @@ FLAGGED_ELSEWHERE = (
     INTROSPECTION_CALLS | REPRESENTATION_CALLS | MOCK_NAMES | BYPASS_CONSTRUCTORS
     | frozenset(BANNED_SPELLINGS) | frozenset({"len"})
 )
-ALLOWED_BUILTINS = frozenset(
-    name for name in dir(builtins)
-    if not name.startswith("_")
-    and name not in INTROSPECTION_CALLS | REPRESENTATION_CALLS | {"len", "open", "input", "breakpoint", "exit", "quit"}
-)
+
+
+def _allowed_builtins() -> frozenset[str]:
+    r"""The builtins a test may name, read at lint time.
+
+    A directory's ``conftest.py`` binds the session abbreviations its tests use
+    as builtins, so the set is read after the conftests have run.
+    """
+    return frozenset(
+        name for name in dir(builtins)
+        if not name.startswith("_")
+        and name not in INTROSPECTION_CALLS | REPRESENTATION_CALLS | {"len", "open", "input", "breakpoint", "exit", "quit"}
+    )
 
 
 def _is_choice_category(name: str) -> bool:
@@ -228,6 +238,7 @@ def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str])
     tree = ast.parse(source, filename=str(path))
     shown = str(path)
     findings: list[Finding] = []
+    allowed_builtins = _allowed_builtins()
 
     def flag(node: ast.AST, code: str, message: str) -> None:
         findings.append(Finding(shown, getattr(node, "lineno", 1), code, message))
@@ -303,7 +314,7 @@ def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str])
                     flag(node, "TL11", f"{name}: write {BANNED_SPELLINGS[name]}")
                 if name in BYPASS_CONSTRUCTORS or (_is_choice_category(name) and name in session_names):
                     flag(node, "TL08", f"{name}: a chosen-datum or implementation construction; construct through the top-level category of the kind")
-                if name not in bound | session_names | ALLOWED_BUILTINS | ENGINE_NAMES | FLAGGED_ELSEWHERE:
+                if name not in bound | session_names | allowed_builtins | ENGINE_NAMES | FLAGGED_ELSEWHERE:
                     flag(node, "TL13", f"{name} is not a session name")
 
     asserting = _asserting_functions(tree)
@@ -357,12 +368,31 @@ def lint(paths: list[Path]) -> list[Finding]:
     return [finding for path in paths for finding in lint_file(path, session_names, axioms)]
 
 
+def _run_conftests(files: list[Path]) -> None:
+    r"""Run each ``conftest.py`` above the linted files, as pytest would before collecting them.
+
+    The ``pythonpath`` of ``[tool.pytest.ini_options]`` goes on ``sys.path`` first,
+    because the conftests import from it.
+    """
+    options = tomllib.loads(Path("pyproject.toml").read_text())["tool"]["pytest"]["ini_options"]
+    sys.path[:0] = [str(Path(entry).resolve()) for entry in options.get("pythonpath", [])]
+    conftests = sorted({
+        directory / "conftest.py"
+        for file in files
+        for directory in file.resolve().parents
+        if (directory / "conftest.py").is_file()
+    })
+    for conftest in conftests:
+        runpy.run_path(str(conftest))
+
+
 def main(arguments: list[str]) -> int:
     named = [Path(argument) for argument in arguments]
     if named:
         files = [file for path in named for file in (sorted([*path.rglob("test_*.py"), *path.rglob("test_*.sage")]) if path.is_dir() else [path])]
     else:
         files = [file for file in sorted([*Path("tests").rglob("test_*.py"), *Path("tests").rglob("test_*.sage")]) if _unprotected(file)]
+    _run_conftests(files)
     findings = lint(files)
     for finding in findings:
         print(finding)

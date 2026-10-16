@@ -658,8 +658,5 @@ sterk-check workspace=(justfile_directory() / "formalization/prove2me_workspace"
 # Lint the test tree against the session standard (dzack_research.utilities.test_lint).
 # With no paths it lints every test outside the protected specification subtrees.
 test-lint *paths:
-    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
-    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
-    sage_launcher="$(readlink -f "$sage_launcher")"; \
-    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
+    PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
         -m dzack_research.utilities.test_lint {{paths}}
