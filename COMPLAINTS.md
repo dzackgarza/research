@@ -1602,6 +1602,3 @@ Not repaired.
 
 `_FiniteIntegralRepresentation` (`categories/rational_integral_stabilizers.py`) registers the residue orbit of a lattice by submodules of `M/dM` and needs to look a submodule up among those found. Subobjects compare by identity, so the lookup goes through the owner's private `_GeneralPresentedModule._submodule_key` (the Hermite normal form of the preimage in the cover, over ZZ) instead of `{submodule: position}`. Desired (STY-132, STY-167): `_richcmp_` and a matching `__hash__` on module subobjects, realized there for finitely presented modules over ZZ, so that equal subobjects are equal keys. Not done: it changes equality for every subobject consumer.
 
-## The post-commit hook invokes a missing host hook
-
-Observed while banking the Mor-constructor repair: `.githooks/post-commit` line 4 executes `/home/dzack/.config/git/hooks/post-commit`, which does not exist on this host. Git still creates the commit, but prints `exec: .../post-commit: not found`; the hook's intended post-commit operation does not run. This is a workflow papercut, not a mathematical capability gap. The source hook and its host installation own the repair; terminal workflow verification in [`terminal-session`](TODO.md) must keep this failure distinct from mathematical acceptance. No hook was changed by the constructor repair.
