@@ -21,10 +21,11 @@ def test_affine_plane_derivation_space_represents_leibniz_derivations() -> None:
     assert derivations.module_rank() == 2
     assert partial_x.domain() is algebra
     assert partial_x.codomain() is target
-    assert partial_x.generator_image("x") == algebra.one()
-    assert partial_x(x * y) == y
-    assert partial_x.as_morphism()(x * y) == y
-    assert partial_x.underlying_linear_morphism()(x * y) == y
+    identification = algebra.regular_module_isomorphism()
+    assert identification(partial_x.generator_image("x")) == algebra.one()
+    assert identification(partial_x(x * y)) == y
+    assert partial_x.linear_endomorphism()(x * y) == y
+    assert partial_x.restricted_codomain().regular_module_identification()(partial_x.as_morphism()(x * y)) == y
     assert partial_x.restricted_codomain().base_ring() is QQ
 
 
@@ -34,8 +35,8 @@ def test_affine_plane_derivations_have_the_expected_lie_and_cartan_operations() 
     de_rham = algebra.de_rham_algebra()
     dx = de_rham(algebra.kahler_differentials().differential_generator("x"))
 
-    assert bracket(x) == algebra.zero()
-    assert bracket(y) == algebra.one()
+    assert bracket.linear_endomorphism()(x) == algebra.zero()
+    assert bracket.linear_endomorphism()(y) == algebra.one()
     assert partial_x.interior_product()(dx) == de_rham.one()
     assert partial_x.lie_derivative()(de_rham(x)) == de_rham.one()
 
