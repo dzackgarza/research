@@ -3554,7 +3554,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                         assert False, "de_rham_complex on Schemes.Smooth: not implemented"
 
             def de_rham_hypercohomology(self):
-                r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategories(R)``.
+                r"""``RΓ(X, Ω^•_{X/R})``, an object of ``DerivedCategory(R)``.
 
                 The hypercohomology of the de Rham complex: the class of the
                 total complex of ``Γ(X, I^{•,•})`` for a Cartan--Eilenberg

@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.owned_category import _object_of
 
 
-class DerivedCategories(OwnedCategoryOverBaseRing):
+class DerivedCategory(OwnedCategoryOverBaseRing):
     r"""The derived category \(D(R)\) of the abelian category of \(R\)-modules.
 
     \(D(R) = \mathrm{Ch}(R)[W^{-1}]\) is the localization of the category
@@ -37,11 +37,8 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
     invert quasi-isomorphisms, so each factors uniquely as
     \(H^n = H^n_D \circ Q\).
 
-    \(D(R)\) is an \(R\)-linear triangulated category (Stacks Project, Tag
-    0145, Definition 13.3.2; Mathlib ``DerivedCategory.instPretriangulated``
-    and ``IsTriangulated``), so as an object of ``Cat`` it is placed in
-    ``TriangulatedCategories(R)``: that is ``category()``, a statement about
-    \(D(R)\) itself.  ``super_categories`` states what every *object* of
+    \(D(R)\) is an object of ``DerivedCategories(R)``, which is
+    ``category()``.  ``super_categories`` states what every *object* of
     \(D(R)\) is.  An object of \(D(R)\) is a cochain complex, but a morphism
     of \(D(R)\) is a roof \(X \xleftarrow{s} X' \to Y\) with \(s\) a
     quasi-isomorphism, not a cochain map, so \(D(R)\) is not a subcategory of
@@ -54,8 +51,8 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
         return f"objects of the derived category over {self.base_ring()}"
 
     def category(self):
-        r"""``D(R)`` as an object of ``Cat``: an ``R``-linear triangulated category."""
-        return TriangulatedCategories(self.base_ring())
+        r"""``D(R)`` as an object of ``Cat``: a derived category over ``R``."""
+        return DerivedCategories(self.base_ring())
 
     def super_categories(self):
         return [Objects()]
@@ -68,7 +65,7 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
 
     def cohomology(self, degree):
         r"""``H^degree : D(R) -> Mod_R``, the factorization of cochain cohomology through ``Q``."""
-        assert False, "cohomology on DerivedCategories: not implemented"
+        assert False, "cohomology on DerivedCategory: not implemented"
 
     class ParentMethods:
         def __init__(self, representing_complex, **rest) -> None:
@@ -89,11 +86,37 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
 
         def graded_cohomology(self):
             r"""\(\bigoplus_n H^n(K)\), an object of ``GradedModules(R)`` with \(H^n(K)\) in degree \(n\)."""
-            assert False, "graded_cohomology on DerivedCategories: not implemented"
+            assert False, "graded_cohomology on DerivedCategory: not implemented"
 
         def _repr_(self):
             complex_ = self.representing_complex()
             return f"Image in the derived category over {complex_.base_ring()} of {complex_}"
+
+
+class DerivedCategories(OwnedCategoryOverBaseRing):
+    r"""The category of derived categories over \(R\) and exact functors.
+
+    Its objects are the derived categories \(D(\mathcal{A})\) of
+    \(R\)-linear abelian categories \(\mathcal{A}\), each the localization of
+    \(\mathrm{Ch}(\mathcal{A})\) at the quasi-isomorphisms (Stacks Project,
+    Tag 05RU, Definition 13.11.3); the derived category \(D(R)\) of
+    \(R\)-modules is ``DerivedCategory(R)``.  A derived category is a
+    category (owner ruling, 2026-10-16), and more structured, an \(R\)-linear
+    triangulated category (Stacks Project, Tag 0145, Definition 13.3.2;
+    Mathlib ``DerivedCategory.instPretriangulated`` and ``IsTriangulated``):
+    the declaration is ``TriangulatedCategories(R)``, which declares the
+    linear categories and so ``Cat``.
+    """
+
+    def _repr_object_names(self):
+        return f"derived categories over {self.base_ring()}"
+
+    def super_categories(self):
+        return [TriangulatedCategories(self.base_ring())]
+
+    def an_object(self):
+        r"""The derived category \(D(R)\) of \(R\)-modules."""
+        return DerivedCategory(self.base_ring())
 
 
 class _DerivedLocalizationFunctor(Functor):
@@ -103,7 +126,7 @@ class _DerivedLocalizationFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
             CochainComplexes(self._base_ring),
-            DerivedCategories(self._base_ring),
+            DerivedCategory(self._base_ring),
         )
 
     def base_ring(self):
@@ -126,4 +149,4 @@ def _derived_localization_functor(base_ring) -> _DerivedLocalizationFunctor:
     return _DerivedLocalizationFunctor(base_ring)
 
 
-__all__ = ["DerivedCategories"]
+__all__ = ["DerivedCategories", "DerivedCategory"]

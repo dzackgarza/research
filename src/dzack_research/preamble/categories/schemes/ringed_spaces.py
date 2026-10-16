@@ -355,7 +355,7 @@ class ModuleSheaves(OwnedParameterizedCategory):
         r"""``RΓ(X, -) : Mod(O_X) -> D(Γ(X, O_X))``, the right derived functor of global sections.
 
         Domain: sheaves of ``O_X``-modules on ``X``.  Codomain:
-        ``DerivedCategories(Γ(X, O_X))``.  On an object, ``RΓ(X, F)`` is the
+        ``DerivedCategory(Γ(X, O_X))``.  On an object, ``RΓ(X, F)`` is the
         class of ``Γ(X, I^•)`` for an injective resolution ``F -> I^•``,
         which exists because ``Mod(O_X)`` has enough injectives; its
         ``i``-th cohomology is ``H^i(X, F)``.
@@ -364,7 +364,7 @@ class ModuleSheaves(OwnedParameterizedCategory):
 
     class ParentMethods:
         def derived_global_sections(self):
-            r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
+            r"""``RΓ(X, F)``, an object of ``DerivedCategory(Γ(X, O_X))``.
 
             The image of this sheaf ``F`` under
             ``ModuleSheaves(X).derived_global_sections()``.  Computed for the

@@ -171,7 +171,7 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             return source.module_category().Mor(source, target).identity()
 
         def derived_global_sections(self):
-            r"""``RΓ(X, F)`` as ``Q`` of this complex, an object of ``DerivedCategories(R)``.
+            r"""``RΓ(X, F)`` as ``Q`` of this complex, an object of ``DerivedCategory(R)``.
 
             An affine Čech complex of a quasi-coherent sheaf on an affine
             scheme is an acyclic resolution computing ``Γ(X, -)``, so its
@@ -264,7 +264,7 @@ def _projective_space_line_bundle_derived_global_sections(sheaf):
 
 @cached_function(key=lambda space: id(space))
 def _projective_space_de_rham_hypercohomology(space):
-    r"""``RΓ(P^n_R, Ω^•_{P^n_R/R})``, an object of ``DerivedCategories(R)``.
+    r"""``RΓ(P^n_R, Ω^•_{P^n_R/R})``, an object of ``DerivedCategory(R)``.
 
     Stacks Project, Tag 0FMJ (Lemma 50.11.4): for \(0 \le i \le n\),
     \(H^{2i}_{dR}(\mathbf{P}^n_R/R)\) is free of rank one with basis
