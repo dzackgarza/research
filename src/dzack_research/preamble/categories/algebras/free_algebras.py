@@ -2311,9 +2311,12 @@ class FramedFreeAlgebraMorphism:
             if domain in TensorAlgebras(domain.base_ring())
             else self._symmetric_terms(element)
         )
+        # An R-algebra morphism sends a coefficient c of R to its image under
+        # the codomain's structure map R -> B.
+        codomain = self.codomain()
         return sum(
             (
-                coefficient
+                codomain(coefficient)
                 * prod(
                     (self._images[label] for label in factors),
                     start=self.codomain().one(),

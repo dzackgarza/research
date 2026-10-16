@@ -594,7 +594,12 @@ class ExactRealField(UniqueRepresentation, Field):
         return True
 
     def _coerce_map_from_(self, source):
-
+        # A coercion into a ring is a ring morphism, so only a ring has one.
+        match source:
+            case _ if source in OwnedRings() or source in SageRings():
+                pass
+            case _:
+                return None
         computation_source = _engine_ring(source)
         if computation_source in (ZZ, QQ, AA):
             return True
