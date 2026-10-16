@@ -182,9 +182,31 @@ class PicardGroups(Category):
             return self.injection(0)
 
         def hyperplane_class(self):
-            r"""The class ``[O(1)]`` in ``Pic(P^n_S)``, the image of the hyperplane summand's module generator."""
-            factor = self.projective_hyperplane_factor()
-            return self.injection(1)(factor.module_generator("O(1)"))
+            r"""The class ``[O(1)]`` in ``Pic(P^n_S)``.
+
+            In ``Pic(S) + ZZ[O(1)]`` it is the image of the hyperplane
+            summand's module generator; in ``Pic(P^n_k) = ZZ[O(1)]`` over a
+            field ``k`` it is the module generator itself (Hartshorne, II.6.4
+            and II.6.17).
+            """
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+            scheme = self.picard_scheme()
+            base = scheme.scheme_base_ring()
+            assert scheme in ProjectiveSpaces(base), (
+                f"{self} has no hyperplane class: it is Pic({scheme}), and {scheme} is not a projective "
+                f"space over {base}"
+            )
+            match self:
+                case _ if self in BiproductModules(_integers()):
+                    factor = self.projective_hyperplane_factor()
+                    return self.injection(1)(factor.module_generator("O(1)"))
+                case _:
+                    assert base in OwnedFields(), (
+                        f"{self} has no hyperplane class: Pic({scheme}) over the base ring {base}, which is "
+                        "not a field, is constructed as Pic(S) + ZZ[O(1)] by PicardGroups().projective_bundle"
+                    )
+                    return self.module_generator("O(1)")
 
 
 class _PicardFunctor(Functor):

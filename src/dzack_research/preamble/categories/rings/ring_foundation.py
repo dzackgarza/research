@@ -1078,6 +1078,14 @@ class LocalizationRings(OwnedCategory):
                 case False:
                     return super()._cardinality_decision()
 
+        def _source_is_polynomial_ring_over_field(self):
+            r"""Whether the localized ring is a symmetric algebra ``Sym(V)`` over a field."""
+            from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+
+            ring = self.localization_source()
+            base = ring.base_ring()
+            return base in OwnedFields() and ring in SymmetricAlgebras(base)
+
         def inverted_submonoid_meets(self, ideal):
             r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
 
@@ -1111,6 +1119,16 @@ class LocalizationRings(OwnedCategory):
                     if self.localization_submonoid()._selected_representation_kind() != "generators":
                         return AtomicProposition("inverted_submonoid_meets", self, ideal)
                     element = prod(self.inverted_elements(), ring.one())
+                    match tuple(ideal.ideal_generators()):
+                        case (generator,) if self._source_is_polynomial_ring_over_field():
+                            # K[x_1..x_n] is factorial (Lang, Algebra, IV.2.3), and a
+                            # prime factor of d occurs in d at most deg(d) times, so
+                            # some monomial in S lies in (d) iff d | f^deg(d).
+                            if (generator == ring.zero()) is True:
+                                return False
+                            return generator.divides(element ** generator.degree())
+                        case _:
+                            pass
                     saturated = ideal._ideal_saturation_decision(ring.ideal(element))
                     if saturated is None:
                         return AtomicProposition("inverted_submonoid_meets", self, ideal)
