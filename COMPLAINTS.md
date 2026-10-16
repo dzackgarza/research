@@ -200,7 +200,6 @@ The represented object and its computation hypotheses must remain distinct.
 
 The existing `images-of-subgroups-and-predicate-subsets` and `finite-index-subgroup-generators` nodes in [TODO.md](TODO.md) own the corresponding image and generator work.
 
-The generated subgroup constructor still requires an engine before retaining its defining family: on the isotropic-line parabolic P of 2U, P.subgroup((t(e1,e2), t(e1,f2))) asserts that no group-engine subgroup construction is selected. Observed during the supplied-preimage specimen, 2026-10-16. The ambient lattice group can represent the same given matrices, and the preimage primitive can consume supplied resolutions directly, but neither supplies the missing general construction of a subgroup of an abstract group from its generators. The defining data are a group G and a finite family in G; the result is the subgroup they generate with its inclusion. Engine selection and membership computation must be deferred. This is an OWN-22 construction defect under `construction-is-instant`, not missing mathematical foundations or an arithmetic-image discovery request.
 
 ### Effective group pullbacks require general products and equalizers
 
