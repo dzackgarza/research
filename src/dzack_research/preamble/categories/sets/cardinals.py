@@ -490,19 +490,38 @@ class Cardinalities(OwnedCategory):
                 return None
 
     def finite_support_power_category(self, coefficient_ring, index_set):
-        r"""Place finite-support functions ``index_set -> coefficient_ring``.
+        r"""Place finite-support functions using placements and defining sizes only.
 
-        For finite indices these are all functions. For infinite indices the
-        zero ring gives a singleton, and any nonzero ring gives cardinality
-        ``max(|coefficient_ring|, |index_set|)``.
+        Finite support on countable sets with countable coefficients is
+        countable. Nontrivial coefficients embed the index set by delta
+        functions; a nonempty index embeds the coefficient ring. These
+        bounds need no zero-ring or cardinality algorithm at construction.
         """
-        match cardinal(index_set.cardinality()).is_finite():
-            case True:
-                return self.set_power_category(coefficient_ring, index_set)
-            case False if (coefficient_ring.one() == coefficient_ring.zero()) is True:
-                return self.set_category(self.one())
-            case _:
-                return self.set_category(self.supremum(coefficient_ring.cardinality(), index_set.cardinality()))
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+        from dzack_research.preamble.categories.sets.set_categories import (
+            Sets, FiniteSets, InfiniteSets, CountableSets,
+            CountablyInfiniteSets, UncountableSets,
+        )
+
+        if index_set in FiniteSets():
+            return self.set_power_category(coefficient_ring, index_set)
+        coefficient_size = self._size_fixed_by_enumeration(coefficient_ring)
+        if coefficient_size is not None and cardinal(coefficient_size).is_finite():
+            if cardinal(coefficient_size).finite_value() <= 1:
+                return FiniteSets()
+        nontrivial = coefficient_ring in OwnedRings().Nontrivial() or coefficient_ring in InfiniteSets()
+        if coefficient_size is not None and cardinal(coefficient_size) > cardinal(1):
+            nontrivial = True
+        if index_set in InfiniteSets():
+            if coefficient_ring in UncountableSets() or (nontrivial and index_set in UncountableSets()):
+                return UncountableSets()
+            if coefficient_ring in CountableSets() and index_set in CountableSets():
+                return CountablyInfiniteSets() if nontrivial else CountableSets()
+            if nontrivial:
+                return InfiniteSets()
+        if coefficient_ring in CountableSets() and index_set in CountableSets():
+            return CountableSets()
+        return Sets()
 
     def set_subset_category(self, source, *, fixed_size=None):
         r"""Place finite-subset sets from `2^|X|` or `|[X]^k|`."""
@@ -531,7 +550,7 @@ class Cardinalities(OwnedCategory):
                 return Sets()
 
     def set_indexed_category(self, family, *, operation):
-        r"""Place a finite-index product or coproduct by cardinal multiplication or addition.
+        r"""Place a finite-index product or coproduct from its defining factors.
 
         Unknown individual cardinalities retain only bounds supplied by their
         categories. For products, an empty factor dominates every other size.
@@ -546,24 +565,20 @@ class Cardinalities(OwnedCategory):
         # Computing finite sums/products requires the actual enumeration;
         # otherwise retain only the ambient category rather than iterating
         # an index set without a chosen order.
-        if not Sets().is_provably_finite(index) or index not in EnumeratedSets():
+        if index not in FiniteSets() or index not in EnumeratedSets():
             return Sets()
         factors = tuple(family(i) for i in index)
+        sizes = tuple(self._size_fixed_by_enumeration(factor) for factor in factors)
         match operation:
             case "product":
-                if any(
-                    Sets().is_provably_finite(f) and f.cardinality() == cardinal(0)
-                    for f in factors
-                ):
-                    return self.set_category(cardinal(0))
+                if any(size is not None and cardinal(size) == cardinal(0) for size in sizes):
+                    return FiniteSets()
                 if all(f in FiniteSets() for f in factors):
-                    return self.set_category(self.product(*(f.cardinality() for f in factors)))
-                if all(Sets().is_provably_finite(f) for f in factors):
                     return FiniteSets()
                 nonempty = all(
                     f in InfiniteSets()
-                    or (f in FiniteSets() and f.cardinality() != cardinal(0))
-                    for f in factors
+                    or (size is not None and cardinal(size) > cardinal(0))
+                    for f, size in zip(factors, sizes, strict=True)
                 )
                 if nonempty and any(f in UncountableSets() for f in factors):
                     return UncountableSets()
@@ -576,8 +591,6 @@ class Cardinalities(OwnedCategory):
                 return Sets()
             case "sum":
                 if all(f in FiniteSets() for f in factors):
-                    return self.set_category(self.sum(*(f.cardinality() for f in factors)))
-                if all(Sets().is_provably_finite(f) for f in factors):
                     return FiniteSets()
                 if any(f in UncountableSets() for f in factors):
                     return UncountableSets()
