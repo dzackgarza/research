@@ -234,9 +234,9 @@ def _engine_coordinate_pullback_of(native, domain_algebra, codomain_algebra):
         case _SageSchemeMorphismIdentity():
             return codomain_algebra.Mor(domain_algebra).identity()
         case _SageSchemeMorphismSpec():
-            return codomain_algebra.Mor(domain_algebra)(native.ring_homomorphism())
+            return codomain_algebra.Mor(domain_algebra)._from_engine_morphism(native.ring_homomorphism())
         case _SageSchemeMorphismPolynomial():
-            return codomain_algebra.Mor(domain_algebra)(
+            return codomain_algebra.Mor(domain_algebra)._from_engine_morphism(
                 _engine_ring(codomain_algebra).hom(
                     list(native.defining_polynomials()),
                     _engine_ring(domain_algebra),
@@ -6204,7 +6204,7 @@ def _quotient_base_change_pushout(left_pullback, right_pullback):
             f"cannot form the pushout {pushout} of {quotient} and {other}: Sage has no canonical map "
             f"from {quotient} to {pushout}"
         )
-        quotient_to_pushout = quotient.Mor(pushout)(engine_quotient_to_pushout)
+        quotient_to_pushout = quotient.Mor(pushout)._from_engine_morphism(engine_quotient_to_pushout)
         maps = (other_to_pushout, quotient_to_pushout) if quotient_on_right else (quotient_to_pushout, other_to_pushout)
 
         def factor(left_to_target, right_to_target):

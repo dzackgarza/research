@@ -595,7 +595,7 @@ class LeftCosetGSets(OwnedParameterizedCategory):
             schreier = _orbit_schreier_morphism(
                 self, self._coset_word_section, self._coset_augmentation
             )
-            return schreier.domain().Mor(self.subgroup()).elementwise(schreier)
+            return schreier.factor_through(self.subgroup().inclusion())
 
         @cached_method
         def right_coset_projection(self):

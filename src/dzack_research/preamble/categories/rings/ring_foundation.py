@@ -451,7 +451,7 @@ def _ringlike_mor_element(parent, datum, provider_type):
             )
         if datum.parent() is parent:
             return datum
-        return parent.elementwise(datum)
+        raise TypeError(f"{datum} belongs to another ring Mor; apply the functor between the categories")
     if isinstance(datum, Mapping):
         from dzack_research.preamble.categories.algebras.algebras import (
             _engine_algebra_morphism_from_generator_images,
@@ -462,31 +462,9 @@ def _ringlike_mor_element(parent, datum, provider_type):
             parent.codomain(),
             datum,
         )
-        return _ringlike_mor_element(parent, engine_morphism, provider_type)
+        return _ringlike_mor_from_engine(parent, engine_morphism)
     if isinstance(datum, Map):
-        source_engine = _engine_ring(parent.domain())
-        target_engine = _engine_ring(parent.codomain())
-
-        def engine_endpoint(ring):
-            return _engine_ring(ring) if ring in OwnedRings() else ring
-
-        if engine_endpoint(datum.domain()) is not source_engine:
-            raise ValueError(
-                f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
-                f"its domain is {datum.domain()}"
-            )
-        if engine_endpoint(datum.codomain()) is not target_engine:
-            raise ValueError(
-                f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
-                f"its codomain is {datum.codomain()}"
-            )
-        return parent.element_class(
-            parent,
-            lambda element: _owned_engine_element(
-                parent.codomain(), datum(_engine_element(parent.domain(), element))
-            ),
-            engine_morphism=datum,
-        )
+        raise TypeError(f"{datum} is an arrow of another Mor; native ring computations use the protected engine crossing")
     if element_parent(datum) is parent.codomain() and _is_number_field(parent.domain()):
         # A number field is QQ(theta) for its primitive element theta, so a
         # ring map out of it is the image of theta; out of QQ it is unique.
@@ -499,7 +477,7 @@ def _ringlike_mor_element(parent, datum, provider_type):
                 engine_morphism = engine_domain.hom(
                     [_engine_element(parent.codomain(), datum)], engine_codomain
                 )
-        return _ringlike_mor_element(parent, engine_morphism, provider_type)
+        return _ringlike_mor_from_engine(parent, engine_morphism)
     if callable(datum):
         return parent.elementwise(datum)
     raise TypeError(
@@ -507,6 +485,36 @@ def _ringlike_mor_element(parent, datum, provider_type):
         "the images of the ring generators or a map on elements"
     )
 
+
+def _ringlike_mor_from_engine(parent, datum):
+    r"""Raise a selected native ring computation at the ring-Mor owner's exact endpoints.
+
+    Protected engine crossing for ring structure maps and algebra/scheme
+    adapters; native maps are not public arrow-constructor data.
+    """
+    source_engine = _engine_ring(parent.domain())
+    target_engine = _engine_ring(parent.codomain())
+
+    def engine_endpoint(ring):
+        return _engine_ring(ring) if ring in OwnedRings() else ring
+
+    if engine_endpoint(datum.domain()) is not source_engine:
+        raise ValueError(
+            f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
+            f"its domain is {datum.domain()}"
+        )
+    if engine_endpoint(datum.codomain()) is not target_engine:
+        raise ValueError(
+            f"cannot view {datum} as an element of Mor({parent.domain()}, {parent.codomain()}): "
+            f"its codomain is {datum.codomain()}"
+        )
+    return parent.element_class(
+        parent,
+        lambda element: _owned_engine_element(
+            parent.codomain(), datum(_engine_element(parent.domain(), element))
+        ),
+        engine_morphism=datum,
+    )
 
 def _engine_ring_value(ring, value):
     """Lower an owned or already-engine ring element to the selected engine."""
@@ -542,6 +550,9 @@ class RngMor(CategoricalMor):
 
     def __call__(self, datum):
         return CategoricalMor.__call__(self, datum)
+
+    def _from_engine_morphism(self, datum):
+        return _ringlike_mor_from_engine(self, datum)
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RngMorphism)
@@ -774,6 +785,9 @@ class RingMor(CategoricalMor):
 
     def __call__(self, datum):
         return CategoricalMor.__call__(self, datum)
+
+    def _from_engine_morphism(self, datum):
+        return _ringlike_mor_from_engine(self, datum)
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RingMorphism)
@@ -3224,7 +3238,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         f"no canonical coefficient map {base} -> {self} is supplied by the retained "
                         "scalar tower or exact native realization; an explicit ring map may state another action"
                     )
-                return OwnedRings().Mor(base, self)(engine_map).as_algebra()
+                return OwnedRings().Mor(base, self)._from_engine_morphism(engine_map).as_algebra()
 
             def affine_spectrum(self, base_ring=None):
                 r"""Return the affine scheme represented by this commutative ring or algebra."""

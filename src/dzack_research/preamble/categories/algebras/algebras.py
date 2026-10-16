@@ -3640,7 +3640,9 @@ class AlgebraMorphism:
                 )
             else:
                 self._generator_images = None
-            linear = domain.module_category().Mor(domain, codomain).elementwise(images)
+            linear = domain.module_category().Mor(domain, codomain)._from_constructed_element_map(
+                images, premises=(images,),
+            )
             super().__init__(
                 parent, linear, _construction_premises=_construction_premises,
                 _transported_morphism=_transported_morphism,
@@ -3992,7 +3994,9 @@ class PresentedAlgebraMorphism:
                 lambda label: codomain(images(domain.algebra_generator(label))),
                 name="Generator images",
             )
-            linear = domain.module_category().Mor(domain, codomain).elementwise(images)
+            linear = domain.module_category().Mor(domain, codomain)._from_constructed_element_map(
+                images, premises=(images,),
+            )
             super().__init__(
                 parent, linear, _construction_premises=_construction_premises,
                 _transported_morphism=_transported_morphism,
@@ -4107,6 +4111,11 @@ class PresentedAlgebraMorphism:
 class _AlgebraMorCommonMethods:
     r"""Shared equality protocol for represented algebra Mor parents."""
 
+    def _from_engine_morphism(self, morphism):
+        r"""Raise an algebra/scheme adapter's selected native algebra computation."""
+        assert morphism.domain() is _engine_ring(self.domain()) and morphism.codomain() is _engine_ring(self.codomain())
+        return self.element_class(self, morphism)
+
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct from a structurally degree-preserving generator map."""
         return self(images)
@@ -4189,6 +4198,10 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
         )
 
     def _element_constructor_(self, images):
+        if isinstance(images, Map):
+            if self._already_parented_arrow(images):
+                return images
+            raise TypeError(f"{images} is an arrow of another Mor; supply algebra-generator images or apply the functor")
         return self.element_class(self, images)
 
     @object_level
@@ -4209,7 +4222,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
         if domain.is_framed_algebra():
             return self(lambda label: domain.algebra_generator(label))
         engine = _engine_ring(domain)
-        return self(engine.hom(engine))
+        return self._from_engine_morphism(engine.hom(engine))
 
 
 class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
@@ -4224,6 +4237,10 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
         )
 
     def _element_constructor_(self, images):
+        if isinstance(images, Map):
+            if self._already_parented_arrow(images):
+                return images
+            raise TypeError(f"{images} is an arrow of another Mor; supply algebra-generator images or apply the functor")
         return self.element_class(self, images)
 
     @object_level
@@ -4234,7 +4251,7 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         algebra = self.domain()
-        return self(algebra.module_category().Mor(algebra, algebra).identity())
+        return self._from_constructed_element_map(lambda element: element)
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
