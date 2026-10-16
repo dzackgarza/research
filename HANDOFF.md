@@ -1,11 +1,65 @@
-# Issue 401: remaining implementation work
+# Active task: geometry and cohomology categories in the preamble
+
+## Purpose and required result
+
+Present the mathematical categories and constructions listed below through the
+preamble. The work is to make this part of the mathematical language usable:
+objects must construct, retain their defining data and maps, and lie in the
+correct categories. Their operations must be available at their mathematical
+owners. Functors must have the correct domain, codomain and action on arrows.
+
+The initial category-stub request was followed by a construction-repair pass.
+For that pass, an expression described as “construct” must work through
+`from dzack_research.preamble.all import *`, print the mathematical object and
+answer the named operation. A construction failure or wrong placement is an
+implementation obligation. A computational stub is allowed only where its
+construction brief permits one; its domain, codomain and defining data must
+still construct.
+
+This task remains incomplete. The scope list below is the task, not a record of
+completion. Worker deliveries, merged commits, selected passing assertions and
+an importable session each establish only their stated result.
+
+## Completion condition
+
+For every scope item, reconcile the original request and its construction
+briefs against the live source. Record the public constructor, mathematical
+owner, immediate supercategories, defining data, relevant functors and arrows,
+required specimens, and any explicitly permitted computational stub. Fix each
+missing construction, wrong placement or absent required operation at its
+owner. Check the required mathematical assertions through the public preamble.
+
+The category task is complete only when every scope item has that disposition
+and every required construction works. An unexamined item remains open.
+Record a permitted stub with its exact operation and mathematical boundary;
+the existence of a stub does not establish that the surrounding construction
+works. Gate and publication work follows this reconciliation and repair.
+
+## Resume here
+
+1. Use the scope and construction obligations below to select work. Read the
+   corresponding live owners and original briefs before editing.
+2. Start with the incomplete sheaf sections datum: the fixed-value categories
+   construct, but the requested sections and restrictions have not been
+   established across those value categories. Follow the existing
+   `sheaves-compute-sections-on-opens` TODO owner and its concrete affine and
+   finite-atlas specimens. A functor that asserts on every open supplies no
+   sections datum.
+3. Reconcile every other row below, retaining the evidence already obtained
+   and repairing the remaining required constructions. Keep the live remaining
+   work with its TODO owner. Record source decisions in the relevant commits.
+4. After the category task meets its completion condition, address the
+   outstanding gate and publication obligations. A gate or push is not a
+   substitute for the category task.
+
+Read `INTENT.md`, `AGENTS.md`, `CONTRIBUTING.md`, `TODO.md`, `COMPLAINTS.md`
+and the relevant entries of `docs/preamble-megadoc.md` as the repository
+requires. Preserve existing rack work. The broader placement audit and the
+port work recorded later in this file are separate workstreams.
 
 ## Requested category work
 
-The active request is to present the following categories, their immediate
-supercategories and subtrees, and their functorial constructions. Each named
-object must construct through the preamble and have the correct placement.
-Computations may remain explicit stubs where the construction briefs permit them.
+The complete scope is:
 
 - Varieties over a field `k`, including the exact complex field `CC`; curves,
   surfaces and K3 surfaces.
@@ -34,15 +88,90 @@ Computations may remain explicit stubs where the construction briefs permit them
 - Riemannian symmetric spaces `G/K`, parameterized by Satake type.
 - Hermitian symmetric domains by classification type.
 
+## Construction obligations and current evidence
+
+The evidence column records specific assertions or constructions exercised in
+the current local line. It does not close a row. Every row still needs the
+complete source and brief reconciliation specified above.
+
+| Scope item | Required constructions and current evidence | Remaining reconciliation |
+| --- | --- | --- |
+| Exact `CC` | Nemo/Calcium supplies exact complex computation. `QQbar -> CC` is constructor ingress through a morphism. Algebraic ingress, `I^2 = -1`, `exp(I*pi) = -1`, distinction of `1` from `1 + 10^-30`, and a Fermat quartic with stated variety placement were exercised. | Check the complete exact-field brief, scalar maps, conjugation, absolute value in exact `RR`, elementary functions and named approximation maps. Keep preamble `QQbar` at its existing owner. |
+| Varieties, curves and surfaces | The real projective plane constructs as a surface. The affine parabola constructs through `Curves(QQ).from_equation(...)`. | Reconcile all requested placements and constructors over the stated bases. A general hypersurface constructor does not by itself assert integrality. |
+| K3 surfaces | The smooth quartic complete-intersection specimen supplies rank-22 cohomology and Hodge numbers `(1,20,1)`. Horikawa defining bundles and invariant branch sections construct. | Check the complete K3 construction requirements and their retained defining maps. |
+| Algebraic families | Hesse affine and projective pencils construct as slice objects. A projective-pencil fibre retains both pullback projections. The Legendre family morphism constructs. | Reconcile all named families, their bases, fibre maps and functorial constructions; a total-space scheme alone does not supply the family morphism. |
+| Function fields and hypersurfaces | The function field of projective space constructs; affine and projective hypersurface constructors are present. | Check the `P^1` function-field specimen as `k(t)`, the public coordinate-ring accessors, inclusions and stated hypotheses. |
+| `O(m)` and sheaf cohomology | `P^2.O(1).sheaf_cohomology(0)` has rank three, and its derived global sections construct. | Reconcile the required positive and negative twists, higher cohomology, and identification of sheaf cohomology with the cohomology of `RΓ`. |
+| Presheaves, sheaves and sections | Fixed-value presheaf categories construct for sets, groups, rings, `ZZ`-modules, `R`-modules and `R`-algebras. The affine structure sheaf constructs. Finite-atlas module descent retains an open-sections functor. | Complete the actual sections functors and restriction maps promised by the briefs. `_UnpresentedSectionsPresheaf` remains in live constructors. An assertion on a non-basis open is permitted only with its precise computational boundary. |
+| `P(V)` and module duals | Rank-two projectivization constructs with its projection, tautological invertible sheaf and surjective universal quotient. Its comparison with projective space constructs. The rank-two module dual has rank two. | Reconcile the public slice API, universal maps, variance and required relative constructions. |
+| Linear systems | The complete conic system on `P^2` supplies six monomial sections, an empty base locus and its associated morphism. Coordinate-hyperplane restriction and jet specimens were exercised. | Check all requested system constructions and their section-space maps against the original briefs. |
+| Graded singular cohomology | The complex realization of `P^2` supplies a graded algebra over `ZZ`. | Reconcile grading, cup product, coefficient change and the required functorial maps. |
+| de Rham algebra and cohomology | `QQ[x]` de Rham algebra, vector fields and degree-minus-one derivations construct. `H^2_dR(P^2)` has rank one. | Check the smooth affine relative DGA specimen, differential, grading, contraction and Lie derivative at their owners. |
+| Primitive cohomology | The polarized `P^2` specimen has rank-zero primitive degree-two cohomology. | Reconcile the smooth plane cubic degree-one rank-two specimen and its Lefschetz kernel/inclusion. |
+| Residue maps | The plane-cubic residue object constructs with rank-one domain and codomain. | Check the defining differential-form spaces and required maps. General residue computation remains an explicit frontier allowed by the family brief. |
+| Homotopy Lie algebras | The pointed `S^2` specimen has rank one in shifted degrees one and two, with Whitehead square `2 eta`. | Reconcile the grading, integral versus rational constructions and functorial maps. Sphere homotopy in degrees at least four is a permitted computation frontier in the later brief. |
+| Hodge structures | Tate twist, tensor product and dual specimens work; projective-plane and quartic K3 Hodge-number specimens were exercised. | Check category placement, underlying coefficient objects and all required structure maps. |
+| Connections and Gauss–Manin | Over the Hesse smooth locus, the Gauss–Manin object lies in integrable connections and its underlying bundle is finite locally free. | Reconcile connections and their morphisms. The Gauss–Manin connection matrix is an explicitly permitted computational stub; the bundle and connection object must construct. |
+| Analytic disc fibres | A disc point with exact complex coordinates gives a complex-manifold fibre and an inclusion with that same fibre as domain. | Reconcile analytification along the selected scalar embedding and all required family maps. |
+| `HH` and Siegel domains | `HH`, `H_2`, `SL_2(ZZ)\HH` and `Sp_4(ZZ)\H_2` construct, with the quotients placed in complex orbifolds. | Reconcile the action morphisms, domain definitions, quotient maps and category parents. |
+| Real hyperbolic spaces and quotients | `H^2` constructs as a globally symmetric Riemannian manifold; the lattice-isometry quotient constructs as a Riemannian orbifold. | Check the requested dimensions, retained action and quotient maps. |
+| Symmetric spaces and Hermitian domains | A Satake `SU(2,1)` specimen constructs with real rank one and dimension four. The EIII and EVII domains construct with dimensions sixteen and twenty-seven. | Reconcile all requested classification types and immediate category placements, with type supplied as a parameter. |
+
+## Binding mathematical decisions
+
+- Derivations with regular-module codomain take values in `A^1`. Compare with
+  an element of `A` through the explicit regular-module identification, as
+  `linear_endomorphism()` does. Preserve that codomain.
+- Use the existing public `picard_to_class_group_morphism()` for the
+  projective-space comparison. Picard pullback for a plane cubic inclusion
+  now sends `[O(1)]` to `[O_C(1)]`; its target group retains the cubic.
+- Category parents must state the actual mathematics. A missing generic
+  parent is an explicit category-construction obligation. A placeholder
+  `Sets()` or `Objects()` parent does not discharge it.
+- Public constructions and their constituents remain preamble objects.
+  Existing computational engines supply private computation.
+
+## Outstanding verification and publication obligations
+
+- The earlier scheme-test failure baseline remains unmeasured. Reconcile its
+  failures with the requested constructions; preserve the mathematical
+  assertions and repair their owners.
+- Focused assertions can pass while the configured session time gate fails.
+  That gate remains red. Diagnose the measured cost at its owner; preserve
+  the budget and required assertions.
+- The original cover-atlas TL01 private-import violation was repaired through
+  the public atlas datum. Check the remaining applicable lint obligations.
+- The local line contains committed repairs and remains unpushed. Publication
+  follows completion of the active category work and its required gates.
+
+## Source material and runtime
+
 The source session is
 `/home/dzack/.claude/projects/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760.jsonl`.
 Its construction briefs are in
 `/tmp/claude-1000/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760/scratchpad/`.
 
-## Earlier workstream
+Read the transcript through the `reading-transcripts` skill's parser. The
+principal briefs are `brief-common.md`, `brief-fix.md`, `brief-items2.md`,
+`brief-cc.md`, `brief-pic.md`, and the later `brief-gc*.md` and `brief-sc*.md`
+amendments. Resolve intent from the user messages when an agent-written brief
+or repository note disagrees with them.
 
-Issue 401's research-side primitives are complete. Continue the remaining
-mathematical placement and ownership work in the priority order below.
+The blocked direnv files have not supplied the runtime for the exercised
+specimens. The working command is
+`env PYTHONPATH=/home/dzack/research/src /home/dzack/gitclones/sage-dev-allopts/.venv/bin/python`.
+In a worktree, set `PYTHONPATH` to that worktree's `src` and print the imported
+`dzack_research.__file__`. The Sage launcher here does not accept `-python`.
+Run only the targeted specimens needed for the current mathematical question;
+the repository's commit and push hooks own full QC.
+
+## Earlier workstream: historical reference
+
+For the current request, the active task and resume sequence are the sections
+above. The following material records the older issue-401 and whole-preamble
+audit workstreams.
+
+Issue 401's research-side primitives are complete.
 
 ## Target
 
