@@ -16,7 +16,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import (
     Cat,
-    CategoryFunctorMorphism,
     _FunctorCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -102,7 +101,7 @@ class _DiagramCategory(_FunctorCategory):
             r"""Precompose by ``indexing_functor`` and retain that map in the general diagram owner."""
             restricted = self.functor().restrict(indexing_functor)
             category = Cat().Mor(indexing_functor.domain(), self.target_category())
-            return category.object(restricted)
+            return category(restricted)
 
 
 class DirectedSystem(_DiagramCategory):
@@ -513,13 +512,7 @@ class FiniteSequenceDiagram(Functor):
 class _FiniteSequenceFunctorCategory(_FunctorCategory):
     r"""The canonical functor category on a finite ordinal, with its adjacent arrows."""
 
-    def object(
-        self,
-        functor: Functor | CategoryFunctorMorphism | tuple[Morphism, ...] | list[Morphism],
-        *,
-        _engine=None,
-        construction_data=None,
-    ):
+    def __call__(self, functor: Functor | tuple[Morphism, ...] | list[Morphism]):
         r"""Read a functor or its ordered family of consecutive arrows."""
         if isinstance(functor, (tuple, list)):
             transitions = tuple(functor)
@@ -548,13 +541,7 @@ class _FiniteSequenceFunctorCategory(_FunctorCategory):
                 if transitions else ()
             )
             functor = FiniteSequenceDiagram(objects, transitions, base)
-        return super().object(
-            functor,
-            _engine=_engine,
-            construction_data=construction_data,
-        )
-
-    __call__ = object
+        return super().__call__(functor)
 
     class ParentMethods:
         @cached_method

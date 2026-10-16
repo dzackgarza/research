@@ -907,7 +907,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def _call_(self, action_functor):
         r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
-        return self.functor_category().object(action_functor)
+        return self.functor_category()(action_functor)
 
     def on_set(self, points, action, *, orbit_relation=None):
         r"""Present a set action through its retained functor ``BG -> Sets``.

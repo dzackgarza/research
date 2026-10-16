@@ -79,150 +79,6 @@ class CategoryObject(Objects.ParentMethods):
         return f"[{self.represented_category()}]"
 
 
-class CategoryFunctorMorphism(Morphism):
-    r"""A live functor regarded as a morphism in ``Cat``."""
-
-    def __init__(self, parent: CategoryFunctorMor, functor: Functor) -> None:
-        Morphism.__init__(self, parent)
-        if functor.domain() is not self.domain().represented_category():
-            raise ValueError(
-                f"cannot view {functor} as a morphism {self.domain()} -> {self.codomain()} in Cat: it starts at "
-                f"{functor.domain()}, not at {self.domain().represented_category()}"
-            )
-        if functor.codomain() is not self.codomain().represented_category():
-            raise ValueError(
-                f"cannot view {functor} as a morphism {self.domain()} -> {self.codomain()} in Cat: it ends at "
-                f"{functor.codomain()}, not at {self.codomain().represented_category()}"
-            )
-        self._functor = functor
-
-    def functor(self) -> Functor:
-        return self._functor
-
-    @overload
-    def __call__(self, value: Parent) -> ObjectOfCategory: ...
-
-    @overload
-    def __call__(self, value: Map) -> Map: ...
-
-    def __call__(self, value: Parent | Map) -> ObjectOfCategory | Map:
-        return self.functor()(value)
-
-    def _call_(self, value):
-        return self.functor()(value)
-
-    def __eq__(self, other: Any) -> bool | Predicate:
-        if self is other:
-            return True
-        if parent(other) is not self.parent():
-            return False
-        left, right = self.functor().factors(), other.functor().factors()
-        # Reassociation and insertion/removal of identity functors do not
-        # change a composite. Different expressions need not mean different
-        # functors, so lack of this equality proof is not inequality.
-        if len(left) == len(right) and all(first is second for first, second in zip(left, right)):
-            return True
-        from dzack_research.preamble.logic import AtomicProposition
-
-        return AtomicProposition("equal", self, other)
-
-    def __ne__(self, other: Any) -> bool | Predicate:
-        from dzack_research.preamble.logic import negation
-
-        return negation(self == other)
-
-    def __hash__(self) -> int:
-        return hash(id(self.parent()))
-
-    def __mul__(self, other):
-        if not _precomposable(self, other):
-            return NotImplemented
-        return self.parent().category_of_categories().arrow(
-            _CompositeFunctor(other.functor(), self.functor())
-        )
-
-    def _repr_(self) -> str:
-        return repr(self.functor())
-
-
-class CategoryFunctorMor(CategoricalMor):
-    Element = CategoryFunctorMorphism
-
-    def __init__(
-        self,
-        category_of_categories: Cat,
-        domain: CategoryObject,
-        codomain: CategoryObject,
-    ) -> None:
-        self._category_of_categories = category_of_categories
-        CategoricalMor.__init__(
-            self, category_of_categories.MorCategory(), domain, codomain
-        )
-
-    def category_of_categories(self) -> Cat:
-        return self._category_of_categories
-
-    def functor_category(self) -> _FunctorCategory:
-        return self.category_of_categories().Mor(self.domain(), self.codomain())
-
-    @property
-    def _MorCategory(self) -> type[NaturalTransformationMorCategoryConstruction]:
-        return NaturalTransformationMorCategoryConstruction
-
-    def super_categories(self):
-        r"""Retain the actual functor category between the selected endpoints.
-
-        EXAMPLES::
-
-            sage: C = Cat().functor_mor(Sets(), Sets())
-            sage: C.super_categories()[0] is C.functor_category()
-            True
-            sage: C.domain().represented_category() is Sets()
-            True
-            sage: C.codomain().represented_category() is Sets()
-            True
-        """
-        # This runtime Mor object represents exactly the functors and natural
-        # transformations of [C,D], not a discretization of those functors.
-        return [self.functor_category()]
-
-    def object(self, functor: Functor | CategoryFunctorMorphism) -> ObjectOfCategory:
-        return self.functor_category().object(functor)
-
-    def _mor_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> ObjectOfCategory:
-        return self.functor_category()._mor_endpoint(obj)
-
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Read raw-arrow membership and the canonical functor-object placement.
-
-        This native Mor realizes ``[C,D]``; its object entry constructs in
-        that category, and its natural-transformation endpoints use the same
-        objects. Reading their placement must therefore use that owner, not
-        the native arrow-parent test. A raw functor action is still defining
-        data, not a placed object, even when it has the right endpoints.
-        """
-        match candidate:
-            case Morphism():
-                return self.accepts(candidate)
-            case _:
-                return candidate in self.functor_category()
-
-    def _element_constructor_(self, functor):
-        if not isinstance(functor, Functor) or functor.parent() is not self:
-            raise TypeError(f"{functor} is not a functor in {self}")
-        return functor
-
-    @object_level
-    @cached_method
-    def identity(self) -> CategoryFunctorMorphism:
-        if self.domain() is not self.codomain():
-            raise ValueError(
-                f"the identity functor exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
-            )
-
-        return self(IdentityFunctor(self.domain()))
-
-
 class FunctorMorCategoryConstruction(MorCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
@@ -351,10 +207,10 @@ class Cat(CategoryPacketMethods, Category):
         self,
         domain: Category | CategoryObject,
         codomain: Category | CategoryObject,
-    ) -> CategoryFunctorMor:
+    ) -> _FunctorCategory:
         return self.Mor(self.object(domain), self.object(codomain))
 
-    def arrow(self, functor: Functor) -> CategoryFunctorMorphism:
+    def arrow(self, functor: Functor) -> Functor:
         key = id(functor)
         cached = self._arrows.get(key)
         if cached is not None and cached.functor() is functor:
@@ -363,14 +219,14 @@ class Cat(CategoryPacketMethods, Category):
         self._arrows[key] = result
         return result
 
-    def identity(self, category: Category) -> CategoryFunctorMorphism:
+    def identity(self, category: Category) -> Functor:
         return self.functor_mor(category, category).identity()
 
     def compose(
         self,
-        second: CategoryFunctorMorphism,
-        first: CategoryFunctorMorphism,
-    ) -> CategoryFunctorMorphism:
+        second: Functor,
+        first: Functor,
+    ) -> Functor:
         if first.codomain() is not second.domain():
             raise ValueError(
                 f"cannot compose the functors {second} o {first}: {first} ends at {first.codomain()}, but "
@@ -1480,7 +1336,7 @@ class _FunctorCategory(CategoricalMor):
     def codomain_category(self) -> Category:
         return self._codomain_category
 
-    def arrow_set(self) -> CategoryFunctorMor:
+    def arrow_set(self) -> _FunctorCategory:
         r"""The canonical Mor object of functors classified by ``[C,D]``."""
         return self
 
@@ -1648,35 +1504,13 @@ class _FunctorCategory(CategoricalMor):
             return None
         return self._core_isomorphism_from_apex(core_mor, witness * ~inclusion(transporter))
 
-    def object(
-        self,
-        functor: Functor | CategoryFunctorMorphism,
-        *,
-        _engine=None,
-        construction_data=None,
-    ):
-        r"""The object of ``[C, D]`` on a functor ``C -> D``: this category's one entry.
-
-        The input is the functor, or the morphism of ``Cat`` that is the same
-        functor.  A private realization may retain construction-specific data
-        without creating a second public object path.
-        """
-        match functor:
-            case CategoryFunctorMorphism():
-                functor = functor.functor()
-        if not self._has_endpoints_of(functor):
+    def __call__(self, functor: Functor):
+        r"""Admit the actual functor with this Mor category's endpoints."""
+        if not isinstance(functor, Functor) or not self._has_endpoints_of(functor):
             raise ValueError(
                 f"{functor} is not an object of the functor category {self}: its domain or codomain is wrong"
             )
-        if _engine is None and construction_data is None:
-            return functor
-        return _object_of(
-            self,
-            _engine=None if _engine is None else (self, _engine, None),
-            functor=functor,
-            fixed_mor_category=self,
-            **dict(construction_data or {}),
-        )
+        return functor
 
     def _has_endpoints_of(self, functor: Functor) -> bool:
         r"""Whether ``functor`` has the exact categories selected by this packet.
@@ -1690,20 +1524,14 @@ class _FunctorCategory(CategoricalMor):
             and functor.codomain() is self.codomain_category()
         )
 
-    @cached_method(key=lambda self, functor: id(functor))
-    def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor, fixed_mor_category=self)
-
-    __call__ = object
-
     def _mor_endpoint(
         self,
-        obj: Parent | Category | Functor | CategoryFunctorMorphism,
+        obj: Parent | Category | Functor,
     ):
         r"""An endpoint of a natural-transformation Mor: an object, or the functor it is built on."""
         match obj:
-            case Functor() | CategoryFunctorMorphism():
-                return self.object(obj)
+            case Functor():
+                return self(obj)
             case _:
                 return obj
 
@@ -1713,8 +1541,8 @@ class _FunctorCategory(CategoricalMor):
 
     def Mor(
         self,
-        domain: Parent | Functor | CategoryFunctorMorphism,
-        codomain: Parent | Functor | CategoryFunctorMorphism,
+        domain: Parent | Functor,
+        codomain: Parent | Functor,
     ) -> NaturalTransformationMor:
         domain = self._mor_endpoint(domain)
         codomain = self._mor_endpoint(codomain)
@@ -1726,8 +1554,8 @@ class _FunctorCategory(CategoricalMor):
 
     two_mor = Mor
 
-    def identity_2(self, arrow: Functor | CategoryFunctorMorphism) -> NaturalTransformationMorphism:
-        obj = self.object(arrow)
+    def identity_2(self, arrow: Functor) -> NaturalTransformationMorphism:
+        obj = self(arrow)
         return self.Mor(obj, obj).identity()
 
     @object_level
@@ -1778,8 +1606,6 @@ class _EvaluationFunctor(Functor):
 
 __all__ = [
     "Cat",
-    "CategoryFunctorMor",
-    "CategoryFunctorMorphism",
     "CategoryObject",
     "NaturalTransformationMor",
     "NaturalTransformationMorphism",

@@ -213,7 +213,7 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
     assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
     assert Sets.Δ[2] in Sets().opposite()
     functor_category = Cat().Mor(Sets(), Sets())
-    assert functor_category.object(Sets().identity_functor()) in functor_category
+    assert functor_category(Sets().identity_functor()) in functor_category
     assert Fields() in Cat()
     assert Cat() in Cat()
 

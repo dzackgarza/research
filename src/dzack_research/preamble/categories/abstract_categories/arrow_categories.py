@@ -32,7 +32,6 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import (
     Cat,
-    CategoryFunctorMorphism,
     NaturalTransformationMor,
     NaturalTransformationMorphism,
     _FunctorCategory,
@@ -439,12 +438,12 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
         """
         match value:
             case Functor():
-                return super().object(value)
+                return super().__call__(value)
         if not self.admits_arrow(value):
             raise TypeError(
                 f"{value} is not an object of {self}: it is not an arrow of the base category"
             )
-        return super().object(_walking_arrow_functor(self.codomain_category(), value))
+        return super().__call__(_walking_arrow_functor(self.codomain_category(), value))
 
     __call__ = object
 
