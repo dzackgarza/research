@@ -3,6 +3,7 @@ r"""Invertible sheaves represented by rank-one affine module descent data."""
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.categories.morphism import Morphism
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -23,6 +24,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
     _AffineChartOpenSubobjects,
 )
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     InvertibleSheavesWithChosenTrivialization,
     QuasiCoherentSheafMor,
@@ -1861,6 +1863,25 @@ def _line_bundle_identity_local_maps(source, target):
     }
 
 
+def _line_bundle_compatible_section_map(source_datum, target_datum, local_map):
+    r"""The map of compatible-section modules induced by chartwise linear maps."""
+    source_sections = source_datum.compatible_sections()
+    target_sections = target_datum.compatible_sections()
+    charts = source_datum.chart_index_set()
+
+    def image(section):
+        return target_datum.compatible_section(
+            {
+                index: local_map(index)(source_datum.compatible_section_component(section, index))
+                for index in charts
+            }
+        )
+
+    return source_sections.module_category().Mor(source_sections, target_sections)._from_constructed_element_map(
+        image, premises=tuple(local_map(index) for index in charts),
+    )
+
+
 class _ChosenTrivializationQuasiCoherentMorphismMethods:
     r"""A line-bundle sheaf morphism represented by compatible maps in one trivialization."""
 
@@ -1912,29 +1933,7 @@ class _ChosenTrivializationQuasiCoherentMorphismMethods:
                     f"cannot compute the map on global sections induced by {self}: {self.domain()} is "
                     "not glued on a distinguished affine cover or a finite affine atlas"
                 )
-        source_sections = source_datum.compatible_sections()
-        target_sections = target_datum.compatible_sections()
-
-        charts = source_datum.chart_index_set()
-
-        def image(section):
-            return target_datum.compatible_section(
-                {
-                    index: self.local_map(index)(
-                        source_datum.compatible_section_component(section, index)
-                    )
-                    for index in charts
-                }
-            )
-
-        # A compatible section mapped chartwise is linear when every local
-        # map is.
-        return source_sections.module_category().Mor(
-            source_sections, target_sections
-        )._from_constructed_element_map(
-            image,
-            premises=tuple(self.local_map(index) for index in charts),
-        )
+        return _line_bundle_compatible_section_map(source_datum, target_datum, self.local_map)
 
     def __eq__(self, other) -> bool:
         match other:
@@ -2041,15 +2040,55 @@ class _PullbackLineBundleQuasiCoherentMorphismMethods:
     def ambient_morphism(self):
         return self._ambient_morphism
 
-    def __eq__(self, other) -> bool:
-        match other:
-            case _PullbackLineBundleQuasiCoherentMorphismMethods() if other.parent() is self.parent():
-                return other.ambient_morphism() == self.ambient_morphism()
-            case _:
-                return False
+    @cached_method
+    def local_map(self, index):
+        r"""The scalar extension of the ambient arrow on a restricted chart."""
+        from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasModuleGluingMorphism
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+        source = self.domain()
+        target = self.codomain()
+        chart = source.gluing_datum().chart(index)
+        return FiniteAtlasModuleGluingMorphism._base_changed_map(
+            self.ambient_morphism().local_map(index),
+            chart.left_projection().coordinate_algebra_morphism(),
+            source.local_module(index), target.local_module(index),
+        )
+
+    @cached_method
+    def descent_morphism(self):
+        source = self.domain().module_descent_datum()
+        target = self.codomain().module_descent_datum()
+        return source.Mor(target)({index: self.local_map(index) for index in source.chart_indices()})
+
+    @cached_method
+    def global_sections_map(self):
+        r"""The map on global sections induced by the restricted chart maps."""
+        return _line_bundle_compatible_section_map(
+            self.domain().module_descent_datum(),
+            self.codomain().module_descent_datum(),
+            self.local_map,
+        )
+
+    def _richcmp_(self, other, op):
+        r"""Equality of restricted arrows is equality on the affine cover.
+
+        Pullback need not be faithful: a nonzero ambient map may vanish on
+        the closed subscheme. Compare the actual scalar-extended local maps
+        (Hartshorne, II.5.12), retaining undecided equalities.
+        """
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if not isinstance(other, _PullbackLineBundleQuasiCoherentMorphismMethods):
+            return NotImplemented
+        if self.domain() is not other.domain() or self.codomain() is not other.codomain():
+            return op == op_NE
+        decision = conjunction(
+            self.local_map(index) == other.local_map(index)
+            for index in self.domain().gluing_datum().chart_indices()
+        )
+        return decision if op == op_EQ else negation(decision)
+
+    __hash__ = None
 
     def __mul__(self, other):
         match other:
