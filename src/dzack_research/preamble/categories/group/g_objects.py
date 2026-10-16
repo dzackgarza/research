@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
-from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
@@ -1458,6 +1458,11 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             assert source in self, f"{source} is not a point of {self}"
             assert target in self, f"{target} is not a point of {self}"
             decision = self._orbit_relation_decision(source, target)
+            if decision is Unknown and self.acting_group() in OwnedFiniteGroups():
+                return negation(conjunction(
+                    negation(self.act(element, source) == target)
+                    for element in self.acting_group()
+                ))
             match decision:
                 case _ if decision is Unknown:
                     return AtomicProposition("in_same_orbit", self, source, target)
