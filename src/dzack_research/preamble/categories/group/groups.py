@@ -3379,6 +3379,21 @@ class GroupMorphism:
             return None
         return source.Mor(target).elementwise(lambda element: target_inclusion.lift(self(element)))
 
+    def _corestrict_to_subgroup(self, subgroup):
+        r"""Corestrict a map whose constructing owner supplies its image in H.
+
+        Protected image-factorization construction: the input map lands in
+        ``subgroup`` by its defining construction, rather than a membership
+        algorithm. Subgroup elements keep their ambient representation.
+        Used for a supplied generating map of a predicate subgroup and for
+        restriction to a preimage. This does not admit a foreign whole map
+        at a public Mor constructor.
+        """
+        assert subgroup.supergroup() is self.codomain()
+        return self.domain().Mor(subgroup).elementwise(
+            lambda element: _GroupMorRealizationMixin._normalize_admitted_element(subgroup, self(element))
+        )
+
     def factor_through(self, target_inclusion):
         factor = self.factor_through_or_none(target_inclusion)
         if factor is None:

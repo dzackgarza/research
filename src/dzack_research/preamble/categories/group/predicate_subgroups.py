@@ -180,7 +180,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             if generating_morphism is not None:
                 _fix_selected_generating_morphism(
                     self,
-                    lambda subgroup: generating_morphism.factor_through(subgroup.inclusion()),
+                    lambda subgroup: generating_morphism._corestrict_to_subgroup(subgroup),
                 )
 
         def defining_predicate(self):
