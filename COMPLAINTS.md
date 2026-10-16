@@ -1339,23 +1339,23 @@ the whole space and distinguished opens; general opens still raise an explicit
 assertion. The basis comparison theorem and its hypotheses need a checked source
 locator before implementation.
 
-Finite-atlas chart sections require maps from chart images into the power set.
-`_glued_chart_image` retains an open subscheme and its scheme inclusion, but
-it still has no associated subset of the glued point space. Scheme topology
-uses the topological coequalizer of chart and overlap coproducts; its openness
-criterion asks for chart preimages, whose basis presentations are not retained
-by arbitrary predicate subsets.
-`_FiniteAtlasModuleOpenPresheaf` and `_FiniteAtlasStructurePresheaf` consequently
-provide only whole-space sections. Repair the common open-site datum and its
-chart-image maps before extending chart evaluation and inverse-image sheaves.
+Finite-atlas sections still need basis opens inside charts and comparisons
+between atlases. `chart_open_subset` represents a selected chart image in the
+actual scheme's point space; the module and structure presheaves evaluate
+those images. Images of distinguished opens within charts, including the
+overlaps, still need their retained chart traces. A chart of another atlas
+also needs its point-space comparison with the construction-selected atlas.
+The topological colimit's general openness criterion asks for preimages whose
+basis presentations are not retained by arbitrary predicate subsets.
 Chart embeddings and chart-image inclusions map prime points into the retained
 topological coequalizer. The scheme accepts its quotient points. Equality of
 classes of the general infinite relation remains a proposition in the set
 coequalizer realization. The gluing cocycle gives a stronger decision route:
 two chart representatives agree exactly when they lie in the corresponding
 overlaps and the transition identifies them (Mathlib.Topology.Gluing,
-`TopCat.GlueData.ι_eq_iff_rel`). That computation and typed chart-image subsets
-remain required before chart sections can consume this point-space datum.
+`TopCat.GlueData.ι_eq_iff_rel`). That computation remains required for decidable
+point comparisons across charts. The chart-section assertions remain
+unexecuted under the source-phase rule.
 `RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and
 localization maps, and for retained Sage ring maps with exact ideal realizations.
 Its general preimage is the ideal defined by membership after the ring
