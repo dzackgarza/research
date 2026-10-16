@@ -687,15 +687,13 @@ class LatticeEmbeddingMethods:
         self._assert_finite_index_overlattice()
         source = self.domain()
         inclusion = _subgroup_inclusion_into(subgroup, source.O())
-        representation = source.discriminant_representation()
-        discriminant_group = representation.codomain()
-        elements = discriminant_group.element_action()
+        points = source.discriminant_group().elements()
         restricted = FiniteGSets(subgroup)(
-            elements.point_set(),
-            lambda element, point: elements.act(representation(inclusion(element)), point),
+            points,
+            lambda element, point: inclusion(element).discriminant_isometry()(point),
         )
         glue = self.gluing_subgroup().inclusion()
-        subset = elements.point_set().power_set()(tuple(glue(point) for point in glue.domain().elements()))
+        subset = points.power_set()(tuple(glue(point) for point in glue.domain().elements()))
         extending = restricted.setwise_stabilizer(subset)
         into_source = inclusion * extending.inclusion()
         return self.codomain().O().subgroup(
