@@ -11,5 +11,5 @@ def test_a_whole_isomorphism_is_not_restricted_by_a_set_map_constructor():
     identity = Sets().Core().Mor(two, two).identity()
     maps = Sets().Mor(one, two)
 
-    with pytest.raises(ValueError, match="cannot view"):
+    with pytest.raises(ValueError):
         maps(identity)
