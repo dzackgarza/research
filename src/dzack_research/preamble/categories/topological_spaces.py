@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 
 
@@ -219,6 +220,43 @@ class _FinalTopologyData(SageObject):
             lambda point: projection(point) in selected
         )
         return self._source_space.is_open_subset(preimage)
+
+
+class _CoproductTopologyData(SageObject):
+    r"""The final topology along the injections into a disjoint union.
+
+    A subset is open exactly when its trace on each summand is open.
+    Reference: Mathlib.Topology.Category.TopCat.Limits.Basic,
+    ``TopCat.isOpen_iff_of_isColimit``.
+    """
+
+    def __init__(self, factors, point_set) -> None:
+        self._factors = factors
+        self._point_set = point_set
+
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset):
+        power = space.power_set()
+        selected = power(subset)
+        if selected is power.top() or selected is power.bottom():
+            return True
+        indices = self._factors.index_set()
+        if not Sets().is_provably_finite(indices) or indices not in EnumeratedSets():
+            return AtomicProposition("is_open_subset", space, selected)
+
+        def trace_is_open(index):
+            factor = self._factors[index]
+            injection = self._point_set.injection(index)
+            trace = factor.power_set().from_predicate(
+                lambda point: injection(point) in selected
+            )
+            return factor.is_open_subset(trace)
+
+        return conjunction(trace_is_open(index) for index in indices)
 
 
 class _TransportedTopologyData(SageObject):
@@ -502,11 +540,13 @@ class TopologicalSpaceMor(CategoricalMor):
     def _from_continuous_set_map(self, set_morphism):
         r"""Construct a map whose continuity follows from a categorical theorem.
 
-        Used only by identity, composition, and the maps of a final topology:
+        Used by identity, composition, and the maps of a final topology:
         the projection ``q: Y -> Q`` is continuous by the definition of the
         final topology, and the map ``Q -> Z`` induced by a continuous
         ``h: Y -> Z`` is continuous because the ``q``-preimage of the preimage
-        of an open ``V`` is ``h^{-1}(V)``.  No arbitrary caller datum enters
+        of an open ``V`` is ``h^{-1}(V)``. The same statement for a family
+        of injections supplies coproduct injections and their universal maps.
+        No arbitrary caller datum enters
         through this route.
         """
         return self.element_class(self, set_morphism)
@@ -591,6 +631,91 @@ class TopologicalSpaces(OwnedCategory):
 
     def _categorical_coequalizer(self, left_morphism, right_morphism):
         return self._categorical_coequalizer_construction(left_morphism, right_morphism).object()
+
+    def _categorical_coproduct_construction(self, factors):
+        r"""The coproduct of a family of spaces, with its universal maps.
+
+        The underlying set is the disjoint union; its topology is final for
+        the summand injections. A map out is continuous exactly when its
+        restrictions to the summands are continuous (Mathlib,
+        ``TopCat.continuous_iff_of_isColimit``).
+
+        Unexecuted Sierpinski-space specimen::
+
+            sage: from dzack_research.preamble.all import *
+            sage: top = TopologicalSpaces()
+            sage: X = top((0, 1), ((), (1,), (0, 1)))
+            sage: construction = top._categorical_coproduct_construction((X, X))
+            sage: Q = construction.object()
+            sage: shape = construction.diagram().domain()
+            sage: left = construction.costructure_morphism(shape(0))
+            sage: right = construction.costructure_morphism(shape(1))
+            sage: left(X(0)) != right(X(0))
+            True
+            sage: component = Q.power_set().from_predicate(lambda point: point.summand_index() == 0)
+            sage: Q.is_open_subset(component)
+            True
+            sage: closed_point = Q.power_set().from_predicate(
+            ....:     lambda point: point.summand_index() == 0 and point.summand_element() == X(0)
+            ....: )
+            sage: Q.is_open_subset(closed_point)
+            False
+            sage: cocone = construction.diagram().CoproductCocones().cocone(
+            ....:     X, lambda index: top.Mor(X, X).identity()
+            ....: )
+            sage: fold = construction.factor(cocone).apex_map()
+            sage: fold(left(X(0))) == X(0) and fold(right(X(1))) == X(1)
+            True
+        """
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            SelectedColimitConstruction,
+            _discrete_diagram,
+            _factor_family,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        supplied = _factor_family(factors, name="Topological coproduct factors")
+
+        def factor_at(index):
+            factor = supplied[index]
+            if factor not in self:
+                raise TypeError(f"a coproduct in {self} requires topological spaces, got {factor}")
+            return factor
+
+        family = indexed_family(supplied.index_set(), factor_at, name="Topological coproduct factors")
+        set_construction = Sets()._categorical_coproduct_construction(family)
+        point_set = set_construction.object()
+        coproduct = _object_of(
+            self,
+            _engine=(TopologicalSpaces(), _FinalTopologySpaceEngine, None),
+            topology_data=_CoproductTopologyData(family, point_set),
+            point_set=point_set,
+        )
+        diagram = _discrete_diagram(family, self)
+
+        def injection(index):
+            factor = family[index.value()]
+            set_injection = point_set.injection(index.value())
+            return self.Mor(factor, coproduct)._from_continuous_set_map(
+                Sets().Mor(factor, coproduct)(lambda point: coproduct(set_injection(point)))
+            )
+
+        universal_cocone = diagram.CoproductCocones().cocone(coproduct, injection)
+
+        def factorizer(cocone):
+            apex = cocone.apex()
+            set_cocone = set_construction.diagram().CoproductCocones().cocone(
+                apex,
+                lambda index: cocone.costructure_morphism(
+                    diagram.domain()(index.value())
+                ).underlying_set_morphism(),
+            )
+            set_factor = set_construction.factor(set_cocone).apex_map()
+            return self.Mor(coproduct, apex)._from_continuous_set_map(
+                Sets().Mor(coproduct, apex)(lambda point: set_factor(point))
+            )
+
+        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
     def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
         r"""The coequalizer ``(Q, q)`` of continuous ``f, g: X -> Y``.
