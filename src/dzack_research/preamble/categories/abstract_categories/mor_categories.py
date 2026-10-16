@@ -1452,18 +1452,18 @@ class CategoricalIsomorphism(Morphism):
         return self.forward()(element)
 
     def __eq__(self, other: Any) -> bool | Predicate:
-        r"""Two isomorphisms of one Mor are equal when their forward arrows are.
+        r"""Compare through the retained forward arrows of the core inclusion.
 
         An inverse is unique when it exists, so the forward arrows decide;
         neither inverse is computed.
         """
         if self is other:
             return True
-        # A represented isomorphism can be parented by an ordinary Mor object of
-        # its base category, beside maps that are not isomorphisms.
         match other:
-            case CategoricalIsomorphism() if parent(other) is self.parent():
+            case CategoricalIsomorphism():
                 return self.forward() == other.forward()
+            case Morphism() if other in self.forward().parent():
+                return self.forward() == other
             case _:
                 return False
 
@@ -1473,7 +1473,7 @@ class CategoricalIsomorphism(Morphism):
         return negation(self == other)
 
     def __hash__(self) -> int:
-        return hash(id(self.parent()))
+        return hash(self.forward())
 
     def __mul__(self, other):
         r"""Compose with ``other``; a composite of isomorphisms is an element of the Iso Mor.
