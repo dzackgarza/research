@@ -142,5 +142,6 @@ def test_two_quadrics_in_p4_meet_in_a_gorenstein_del_pezzo_surface_of_degree_fou
     assert not surface.is_smooth()
     assert anticanonical.degree() == 1
     assert anticanonical.is_ample()
-    assert surface.is_del_pezzo()
-    assert DelPezzoSurfaces(surface.scheme_base_ring())(surface).del_pezzo_degree() == 4
+    assert surface.is_gorenstein_del_pezzo()
+    assert not surface.is_del_pezzo()
+    assert surface.del_pezzo_degree() == 4

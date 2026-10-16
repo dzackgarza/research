@@ -6,7 +6,6 @@ modules.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from sage.rings.infinity import Infinity
 
 
 def test_z_mod_6_finite_presentation_is_a_degree_one_resolution_object() -> None:
@@ -24,7 +23,7 @@ def test_z_mod_6_finite_presentation_is_a_degree_one_resolution_object() -> None
 
 
 def test_q_as_a_z_module_has_a_canonical_degree_zero_resolution_without_being_finitely_generated() -> None:
-    Q = Modules(ZZ)(QQ)
+    Q = QQ.regular_module().restrict_scalars(ZZ.fraction_field_map())
     resolutions = Modules(ZZ).resolutions(0)
     resolution = resolutions.comonadic(
         Sets().free_module_adjunction(ZZ),
@@ -38,18 +37,18 @@ def test_q_as_a_z_module_has_a_canonical_degree_zero_resolution_without_being_fi
 
 
 def test_q_as_a_z_module_has_the_infinite_canonical_comonadic_resolution() -> None:
-    Q = Modules(ZZ)(QQ)
-    resolutions = Modules(ZZ).resolutions(Infinity)
+    Q = QQ.regular_module().restrict_scalars(ZZ.fraction_field_map())
+    resolutions = Modules(ZZ).resolutions(omega0)
     resolution = resolutions.comonadic(
         Sets().free_module_adjunction(ZZ),
         Q,
     )
 
     assert resolution.target() is Q
-    assert resolution.truncation() is Infinity
+    assert resolution.truncation() is omega0
     assert resolution.level(0) in Modules(ZZ).Projective()
     assert resolution.level(3) in Modules(ZZ).Projective()
-    assert resolution.length() is Infinity
+    assert resolution.length() is omega0
 
 
 def test_infinite_module_resolution_category_represents_length_zero_chain_data() -> None:
@@ -57,12 +56,12 @@ def test_infinite_module_resolution_category_represents_length_zero_chain_data()
     resolutions = Resolutions(
         Modules(ZZ),
         Modules(ZZ).Projective(),
-        Infinity,
+        omega0,
         Modules(ZZ).Free(),
     ).dold_kan_image()
     resolution = resolutions.constant(free)
 
-    assert resolution.truncation() is Infinity
+    assert resolution.truncation() is omega0
     assert resolution.length() == 0
     assert resolution.level(0) is free
     assert resolution.level(4).is_zero()

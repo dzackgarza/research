@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -211,9 +212,10 @@ class CategoryFunctorMor(CategoricalMor):
             case CategoryFunctorMorphism():
                 if functor.parent() is self:
                     return functor
-                functor = functor.functor()
+                raise TypeError(f"{functor} belongs to another Mor; apply the functor between the categories")
         return CategoryFunctorMorphism(self, functor)
 
+    @object_level
     @cached_method
     def identity(self) -> CategoryFunctorMorphism:
         if self.domain() is not self.codomain():
@@ -1374,6 +1376,7 @@ class NaturalTransformationMor(CategoricalMor):
         selected = NaturalTransformationMorphism if element_class is None else element_class
         return selected(self, transformation, **dict(construction_data or {}))
 
+    @object_level
     @cached_method
     def identity(self) -> NaturalTransformationMorphism:
         if self.domain() is not self.codomain():
@@ -1395,6 +1398,32 @@ class NaturalTransformationMor(CategoricalMor):
 
 class NaturalTransformationMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = NaturalTransformationMor
+
+
+class _EvaluationFunctor(Functor):
+    r"""Evaluation at an object ``c`` of ``C``: the functor ``[C, D] -> D``.
+
+    It sends a functor ``F`` to ``F(c)`` and a natural transformation
+    ``alpha : F => G`` to its component ``alpha_c : F(c) -> G(c)``. This is
+    Mathlib's ``CategoryTheory.evaluation`` (``CategoryTheory/Products/Basic.lean``).
+    For a presheaf category ``[C^op, D]`` and an object ``U`` of ``C^op``, it is
+    the sections functor ``Gamma(U, -)``.
+    """
+
+    def __init__(self, functor_category, index):
+        assert index in functor_category.domain_category()
+        self._index = index
+        super().__init__(functor_category, functor_category.codomain_category())
+
+    def evaluation_object(self):
+        r"""Return the object of the domain category at which this functor evaluates."""
+        return self._index
+
+    def _apply_object(self, functor_object):
+        return functor_object.functor()(self.evaluation_object())
+
+    def _apply_morphism(self, transformation):
+        return transformation.component(self.evaluation_object())
 
 
 class _FunctorCategory(FixedMorCategory):
@@ -1526,6 +1555,11 @@ class _FunctorCategory(FixedMorCategory):
             value,
         )
 
+    @cached_method(key=lambda self, index: id(index))
+    def evaluation(self, index):
+        r"""Return evaluation at ``index``, the functor ``[C, D] -> D``, ``F |-> F(index)``."""
+        return _EvaluationFunctor(self, index)
+
     def super_categories(self):
         return [Objects()]
 
@@ -1541,7 +1575,10 @@ class _FunctorCategory(FixedMorCategory):
     # supplies that decision.
     # Owner: ``_FunctorCategory``, which builds the natural isomorphisms.
     # Caller: ``CoreMor`` (``is_empty``, ``an_element``, ``group_generators``,
-    # ``an_element_in``) through ``_CoreCategory.base_category()``; no other.
+    # ``an_element_in``) through ``_CoreCategory.base_category()``; and, for
+    # ``D._marked_automorphism_generators`` only, ``LatticeIsometryMor``
+    # (``split_orbit`` and ``vector_stabilizer_generators``), which needs the
+    # apex image of ``Aut`` of a marking as a subgroup of ``O(L)``; no other.
     # Implementer: the codomain category ``D``, through
     #   ``D._marked_isometry(diagram_category, source, target)`` -> apex
     #   isomorphism ``F(n-1) -> G(n-1)`` of ``D``, or ``None`` when none exists;
@@ -1759,8 +1796,43 @@ class _FunctorCategory(FixedMorCategory):
     def identity(self, functor_object: Parent) -> NaturalTransformationMorphism:
         return self.Mor(functor_object, functor_object).identity()
 
+    def evaluation_functor(self, obj: Parent) -> _EvaluationFunctor:
+        r"""``ev_c: [C, D] -> D``, evaluation at the object ``c`` of ``C``.
+
+        Domain: this functor category ``[C, D]``.  Codomain: ``D``.  It sends
+        a functor ``F`` to ``F(c)`` and a natural transformation ``eta`` to
+        its component ``eta_c``; it is the evaluation bifunctor
+        ``[C, D] x C -> D`` with ``c`` fixed (Mathlib,
+        ``CategoryTheory.evaluation``, ``Mathlib/CategoryTheory/Products/Basic.lean``).
+        """
+        assert obj in self.domain_category(), (
+            f"evaluation on {self} is at an object of {self.domain_category()}, but {obj} is in "
+            f"{obj.category()}"
+        )
+        return _EvaluationFunctor(self, obj)
+
     def _repr_(self) -> str:
         return f"Functor category [{self.domain_category()}, {self.codomain_category()}]"
+
+
+class _EvaluationFunctor(Functor):
+    r"""``ev_c: [C, D] -> D``, ``F |-> F(c)`` and ``eta |-> eta_c``, for one object ``c`` of ``C``."""
+
+    def __init__(self, functor_category: _FunctorCategory, obj: Parent) -> None:
+        self._object = obj
+        super().__init__(functor_category, functor_category.codomain_category())
+
+    def evaluated_object(self) -> Parent:
+        return self._object
+
+    def _apply_object(self, functor_object: Parent) -> ObjectOfCategory:
+        return functor_object.functor()(self.evaluated_object())
+
+    def _apply_morphism(self, morphism: Map) -> Map:
+        return morphism.component(self.evaluated_object())
+
+    def _repr_(self) -> str:
+        return f"Evaluation at {self.evaluated_object()} on {self.domain()}"
 
 
 __all__ = [

@@ -8,9 +8,10 @@ lengths.  Cartier divisors themselves are global sections of
 ``K_X^*/O_X^*`` and are owned by :mod:`cartier_divisor_groups`.
 
 Class groups are obtained from explicit principal-divisor presentations
-(``PicardGroups().picard_to_class_group_morphism``).  A presentation may be
-finite even when the full Weil divisor group is not; the presentation is
-retained rather than identified with the full divisor group.
+(``picard_to_class_group_morphism`` of a locally Noetherian integral
+scheme).  A presentation may be finite even when the full Weil divisor group
+is not; the presentation is retained rather than identified with the full
+divisor group.
 """
 
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -116,6 +117,20 @@ def _principal_weil_divisor(group, rational_function):
     return group.linear_combination(coefficients)
 
 
+def _projective_space_over_field_picard_to_class_group_morphism(projective_space):
+    r"""\(\operatorname{Pic}(\mathbb{P}^n_k) \to \operatorname{Cl}(\mathbb{P}^n_k)\) for a field ``k``.
+
+    ``Pic(P^n_k) = ZZ[O(1)]`` and ``Cl(P^n_k) = ZZ[H]`` (Hartshorne, II.6.4
+    and II.6.17).  The map sends ``[O(1)]`` to the hyperplane class ``[H]``;
+    it is an isomorphism because ``P^n_k`` is regular (Hartshorne, II.6.16).
+    """
+    picard = PicardGroups().projective_space_over_field(projective_space)
+    classes = ClassGroups().projective_space_over_field(projective_space)
+    return picard.module_category().Mor(picard, classes)(
+        {"O(1)": classes.module_generator("H")}
+    )
+
+
 def _projective_space_picard_to_class_group_morphism(
     projective_space,
     base_picard_group,
@@ -147,7 +162,7 @@ def _projective_space_picard_to_class_group_morphism(
     )
     picard = PicardGroups().projective_bundle(projective_space, base_picard_group)
     classes = ClassGroups().projective_bundle(projective_space, base_class_group)
-    picard_hyperplane = picard.projective_hyperplane_factor()
+    picard_hyperplane = picard.biproduct_factor(1)
     class_hyperplane = classes.biproduct_factor(1)
     class_hyperplane_label = class_hyperplane.module_generating_set()[0]
     hyperplane_map = picard_hyperplane.module_category().Mor(picard_hyperplane, class_hyperplane)(
@@ -163,9 +178,10 @@ def _projective_space_picard_to_class_group_morphism(
         target=classes,
     )
     weil_hyperplane = classes.injection(1)(class_hyperplane.module_generator(class_hyperplane_label))
-    assert comparison(picard.hyperplane_class()) == weil_hyperplane, (
+    picard_hyperplane_class = picard.injection(1)(picard_hyperplane.module_generator("O(1)"))
+    assert comparison(picard_hyperplane_class) == weil_hyperplane, (
         f"the map Pic({projective_space}) -> Cl({projective_space}) sends [O(1)] to "
-        f"{comparison(picard.hyperplane_class())}, not to the hyperplane class {weil_hyperplane}"
+        f"{comparison(picard_hyperplane_class)}, not to the hyperplane class {weil_hyperplane}"
     )
     return comparison
 

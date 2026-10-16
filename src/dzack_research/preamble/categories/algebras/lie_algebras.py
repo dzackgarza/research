@@ -54,9 +54,8 @@ class CommutatorLieAlgebras(OwnedCategoryOverBaseRing):
         r"""``gl_2(R)``, the commutator Lie algebra of the two-by-two matrices."""
         return Algebras(self.base_ring()).Lie().an_object()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "commutator Lie algebras"
+    def _repr_object_names(self):
+        return f"commutator Lie algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Algebras(self.base_ring()).Lie()]

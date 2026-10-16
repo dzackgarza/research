@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class CohomologyAlgebraMorCategoryConstruction(MorCategoryConstruction):
@@ -99,9 +100,8 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
             )
         return _cohomology_algebra_from_dga(dga)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cohomology algebras"
+    def _repr_object_names(self):
+        return f"cohomology algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring())]
@@ -197,6 +197,7 @@ class CohomologyAlgebraMor(CategoricalMor):
     def _element_constructor_(self, dga_morphism):
         return self.element_class(self, dga_morphism)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

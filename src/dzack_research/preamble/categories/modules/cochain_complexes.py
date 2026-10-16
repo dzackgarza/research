@@ -1,5 +1,6 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
@@ -42,6 +43,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.owned_category import owned_category_join
 from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -125,9 +127,8 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             _realization=_realization,
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cochain complexes"
+    def _repr_object_names(self):
+        return f"cochain complexes over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -151,6 +152,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
         return _cohomology_functor(self.base_ring(), degree)
 
+    def localization_at_quasi_isomorphisms(self):
+        r"""Return ``Q : Ch(R) -> D(R)``, the localization at quasi-isomorphisms."""
+        from dzack_research.preamble.categories.modules.derived_categories import (
+            _derived_localization_functor,
+        )
+
+        return _derived_localization_functor(self.base_ring())
+
     class ParentMethods:
         @cached_method
         def differential(self):
@@ -172,15 +181,24 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
 
 class CohomologyModules(OwnedCategoryOverBaseRing):
-    r"""Cohomology modules retaining their represented cycle quotient."""
+    r"""Cohomology modules ``H^p(C)`` retaining a represented cycle quotient.
+
+    The retained data are cochain maps ``r : C -> C'`` and ``s : C' -> C``,
+    mutually inverse up to homotopy, and the quotient ``Z^p(C') / B^p(C')``
+    of the cycles of ``C'`` by its boundaries.  Homotopic cochain maps
+    induce the same map on cohomology, so ``H^p(r)`` and ``H^p(s)`` are
+    inverse isomorphisms ``H^p(C) ≅ H^p(C')``: a cocycle ``z`` of ``C`` has
+    the class of ``r(z)``, and a class has the representative ``s(z')`` of
+    a representative ``z'`` in ``C'``.  The cycle quotient of ``C`` itself is
+    the case ``C' = C`` with ``r = s`` the identity.
+    """
 
     def an_object(self):
         r"""The degree-zero cohomology of a one-term complex."""
         return CochainComplexes(self.base_ring()).an_object().cohomology(0)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cohomology modules"
+    def _repr_object_names(self):
+        return f"cohomology modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -190,7 +208,8 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             self,
             cohomology_complex,
             cohomology_degree,
-            cohomology_current_module,
+            cohomology_retraction,
+            cohomology_section,
             cohomology_cycles,
             cohomology_boundaries,
             cohomology_boundary_in_cycles,
@@ -198,7 +217,8 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         ) -> None:
             self._preamble_cohomology_complex = cohomology_complex
             self._preamble_cohomology_degree = cohomology_degree
-            self._preamble_cohomology_current_module = cohomology_current_module
+            self._preamble_cohomology_retraction = cohomology_retraction
+            self._preamble_cohomology_section = cohomology_section
             self._preamble_cohomology_cycles = cohomology_cycles
             self._preamble_cohomology_boundaries = cohomology_boundaries
             self._preamble_cohomology_boundary_in_cycles = cohomology_boundary_in_cycles
@@ -213,27 +233,34 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         degree = cohomological_degree
 
         def cycle_representative(self, cohomology_class):
-            r"""Return the selected closed representative in ``C^p``."""
+            r"""Return the selected closed representative ``s(z')`` in ``C^p``."""
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
-            coordinates = self._framing_lift(self(cohomology_class))
-            projection = self.cokernel_projection()
-            cycles = projection.domain()
-            representative = cycles.linear_combination(
-                {label: coordinates(label) for label in coordinates.support().domain()}
-            )
-            return cycles.inclusion()(representative)
+            lift = self._framing_lift(self(cohomology_class))
+            cycles = self.cokernel_projection().domain()
+            # When the presentation's codomain is the cycle module itself, the
+            # chosen preimage under ``Z^p ->> H^p`` already is a cycle; a free
+            # cover on the cycle generators states its framing coordinates.
+            match lift.parent():
+                case source if source is cycles:
+                    representative = lift
+                case _:
+                    representative = cycles.linear_combination(
+                        {label: lift(label) for label in lift.support().domain()}
+                    )
+            section = self._preamble_cohomology_section.component(self.cohomological_degree())
+            return section(cycles.inclusion()(representative))
 
         def class_of_cycle(self, cycle):
-            r"""Return the cohomology class of a closed element of ``C^p``."""
+            r"""Return the class of ``r(z)`` for a closed element ``z`` of ``C^p``."""
 
             complex_ = self.cochain_complex()
             degree = self.cohomological_degree()
-            current = self._preamble_cohomology_current_module
+            outgoing = complex_.differential_component(degree)
+            current = outgoing.domain()
             if cycle.parent() is not current:
                 cycle = current(cycle)
-            outgoing = complex_.differential_component(degree)
             target = outgoing.codomain()
             closed = outgoing(cycle) == target.zero()
             if closed is False:
@@ -242,8 +269,9 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
                     f"but d^{degree}({cycle}) = {outgoing(cycle)} is nonzero"
                 )
 
+            transported = self._preamble_cohomology_retraction.component(degree)(cycle)
             cycles = self._preamble_cohomology_cycles
-            cycle_in_cycles = cycles.inclusion().lift(cycle)
+            cycle_in_cycles = cycles.inclusion().lift(transported)
             return self.cokernel_projection()(cycle_in_cycles)
 
 
@@ -511,7 +539,7 @@ class CochainMorphismMethods:
         return True
 
     def __init__(self, parent, components, *, cochain_premises=None) -> None:
-        if isinstance(components, Morphism):
+        if isinstance(components, Map):
             if (
                 components.domain() is not parent.domain()
                 or components.codomain() is not parent.codomain()
@@ -551,7 +579,7 @@ class CochainMorphismMethods:
         source = self.domain().graded_piece(degree)
         target = self.codomain().graded_piece(degree)
         mor = ModuleMorCategoryConstruction(
-            GeneralModules(self.domain().base_ring())
+            Modules(self.domain().base_ring())
         ).Of(source, target)
         return mor(self._raw_component(degree))
 
@@ -708,30 +736,11 @@ class CochainMor(CategoricalMor):
         )
 
     def _element_constructor_(self, components):
-        if isinstance(components, CochainMorphismMethods):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a cochain map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            if components.parent() is self:
+        if isinstance(components, Map):
+            if self._already_parented_arrow(components):
                 return components
-            return self._from_constructed_components(
-                indexed_family(
-                    self.domain().degree_index_set(),
-                    components._selected_degree_component,
-                    name="Reparented cochain-morphism components",
-                ),
-                premises=(components,),
-            )
-        elif isinstance(components, Morphism):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            return self.elementwise(lambda element: components(element))
-        elif isinstance(components, dict):
+            raise TypeError(f"{components} belongs to another Mor; apply the functor between the categories")
+        if isinstance(components, dict):
             selected = {int(degree): morphism for degree, morphism in components.items()}
 
             def component_at(degree):
@@ -829,6 +838,8 @@ class CochainMor(CategoricalMor):
         return self._module_scalar_multiple(scalar, self.identity())
 
     def elementwise(self, function):
+        if isinstance(function, Map):
+            return self(function)
         if not callable(function):
             raise TypeError(
                 f"an element of {self} given elementwise needs a function on {self.domain()}, "
@@ -863,6 +874,7 @@ class CochainMor(CategoricalMor):
             result += self.scalar_multiple(coefficient, morphism)
         return result
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -899,29 +911,41 @@ CochainComplexes._EndCategory = LinearEndCategoryConstruction
 @cached_function(key=lambda complex_, degree: (id(complex_), int(degree)))
 def _cohomology(complex_, degree):
     r"""Return ``H^degree = ker(d^degree) / im(d^(degree-1))``."""
+    identity = CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
+    return _cohomology_along(complex_, degree, identity, identity)
+
+
+def _cohomology_along(complex_, degree, retraction, section):
+    r"""Return ``H^degree(C)`` as the cycle quotient of ``C' = retraction.codomain()``.
+
+    ``retraction : C -> C'`` and ``section : C' -> C`` are cochain maps
+    inverse to each other up to homotopy, so ``H^degree(C) ≅ H^degree(C')``
+    by ``H(retraction)`` with inverse ``H(section)``.
+    """
     degree = int(degree)
     ring = complex_.base_ring()
-    cycles = complex_.cycles(degree)
-    boundaries = complex_.boundaries(degree)
+    comparison = retraction.codomain()
+    cycles = comparison.cycles(degree)
+    boundaries = comparison.boundaries(degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
     if cycles not in FinitelyPresentedModules(ring):
         raise NotImplementedError(
-            f"H^{degree} of {complex_} is ker(d)/im(d), but this chosen "
+            f"H^{degree} of {complex_} is ker(d)/im(d) of {comparison}, but this chosen "
             "finite-presentation realization requires finitely presented cycles"
         )
-    result = ModulesWithChosenFinitePresentation(ring)(
+    return ModulesWithChosenFinitePresentation(ring)(
         boundary_in_cycles,
         category=owned_category_join((CohomologyModules(ring),)),
         **{
             "cohomology_complex": complex_,
             "cohomology_degree": degree,
-            "cohomology_current_module": cycles.inclusion().codomain(),
+            "cohomology_retraction": retraction,
+            "cohomology_section": section,
             "cohomology_cycles": cycles,
             "cohomology_boundaries": boundaries,
             "cohomology_boundary_in_cycles": boundary_in_cycles,
         },
     )
-    return result
 
 
 __all__ = [

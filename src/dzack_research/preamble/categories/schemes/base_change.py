@@ -494,9 +494,9 @@ class _SchemeBaseChangeFunctor(Functor):
                 int(changed_ambient.relative_dimension()) - len(equations),
             ):
                 case (True, 2) if bool(engine.defining_ideal().is_prime()):
-                    from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+                    from dzack_research.preamble.categories.schemes.varieties import Surfaces
 
-                    placements.append(ProjectiveSurfaces(self._target_ring))
+                    placements.append(Surfaces(self._target_ring).Projective())
                 case _:
                     pass
 

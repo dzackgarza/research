@@ -16,10 +16,12 @@ def test_the_picard_group_of_projective_space_over_Q_is_free_on_the_hyperplane_c
         space = ProjectiveSpaces(QQ)(dimension)
         picard = space.picard_group()
 
-        assert picard in PicardGroups()
-        assert picard.picard_scheme() is space
+        picard_functor = Schemes(QQ).picard_functor()
+
+        assert picard in Modules(ZZ)
+        assert picard_functor(picard_functor.domain()(space)) is picard
         assert picard.is_free()
-        assert picard.hyperplane_class() != picard.zero()
+        assert space.hyperplane_class() != picard.zero()
 
 
 def test_the_picard_group_of_projective_space_over_Q_has_rank_one() -> None:
@@ -38,7 +40,7 @@ def test_the_comparison_from_picard_to_class_group_is_linear_on_the_hyperplane()
     plane = ProjectiveSpaces(QQ)(2)
     picard = plane.picard_group()
     comparison = plane.picard_to_class_group_morphism()
-    hyperplane = picard.hyperplane_class()
+    hyperplane = plane.hyperplane_class()
 
     assert comparison.domain() is picard
     assert comparison.codomain() is plane.class_group()

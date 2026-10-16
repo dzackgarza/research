@@ -6,6 +6,7 @@ relation submodule in the appropriate sense; these constructors check that
 descent before equipping the module with the form.
 """
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
@@ -74,6 +75,7 @@ from dzack_research.preamble.tensors.tensor import (
     tensor,
 )
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _gram_rows(gram, rank):
@@ -162,7 +164,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
         ``check=True``, or strict checking, runs the validators
         :meth:`validate_inverse` and :meth:`validate_form_preservation`.
         """
-        super().__init__(parent, forward, inverse, verify=False)
+        super().__init__(parent, forward, lambda: inverse, verify=False)
         self._quadratic = bool(quadratic)
         self.validate_inverse(check=check)
         self.validate_form_preservation(check=check)
@@ -223,17 +225,26 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 
     def inverse_morphism(self):
         r"""Return the underlying inverse module morphism."""
-        return self._inverse
+        return self._inverse_morphism()
 
 
 def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     r"""Return the form isometry represented by mutually inverse module maps."""
-    return TorsionFormIsometry(
-        forward.parent(),
-        forward,
-        inverse,
-        quadratic=quadratic,
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        FormedModuleMorphism,
+        _represented_value_module,
     )
+
+    source, target = forward.domain(), forward.codomain()
+    category = _torsion_form_modules(source.base_ring(), quadratic=quadratic)
+    values = _represented_value_module(source)
+    assert _represented_value_module(target) is values, "an isometry preserves one value module"
+    value_identity = values.module_category().Mor(values, values).identity()
+    forward_component = forward.module_morphism() if isinstance(forward, FormedModuleMorphism) else forward
+    inverse_component = inverse.module_morphism() if isinstance(inverse, FormedModuleMorphism) else inverse
+    formed_forward = category.Mor(source, target)((forward_component, value_identity))
+    formed_inverse = category.Mor(target, source)((inverse_component, value_identity))
+    return category.Core().Mor(source, target)((formed_forward, formed_inverse))
 
 
 def _representative_gram(form, *, quadratic: bool):
@@ -1006,7 +1017,7 @@ class TorsionFormTwistFunctor(Functor):
         target = self.object_image(isometry.codomain())
         return _torsion_form_isometry(
             _twisted_module_morphism(isometry.forward(), source, target),
-            _twisted_module_morphism(isometry.inverse_morphism(), target, source),
+            _twisted_module_morphism(isometry.inverse().forward(), target, source),
             quadratic=self._quadratic,
         )
 
@@ -1277,8 +1288,22 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             engine_automorphism,
         )
 
+    @cached_method
+    def _normalization_homomorphism(self):
+        r"""The group homomorphism from form-Core automorphisms to this finite realization."""
+        category = _torsion_form_modules(self.domain().base_ring(), quadratic=self.is_quadratic())
+        source = category.Core().Mor(self.domain(), self.domain())
+        return OwnedGroups().Mor(source, self)(self._normalized_form_automorphism)
+
     def from_morphism(self, morphism):
-        r"""Return a live form automorphism as an element of this owned group."""
+        r"""Apply the normalization homomorphism to an automorphism of the formed-module core."""
+        homomorphism = self._normalization_homomorphism()
+        if not homomorphism.domain().accepts(morphism):
+            raise TypeError(f"{morphism} must be an isometry of the formed-module core before normalization")
+        return homomorphism(morphism)
+
+    def _normalized_form_automorphism(self, morphism):
+        r"""Compute the normalization homomorphism on one admitted form isometry."""
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.domain():
             raise ValueError(
                 f"{morphism} is not an automorphism of {self.domain()}: it is a morphism "
@@ -1288,14 +1313,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         normalized_form = normalization.codomain()
 
         original_form = normalization.domain()
-        forward = original_form.module_category().Mor(
-            original_form,
-            normalized_form,
-        )(normalization.forward())
-        inverse = normalized_form.module_category().Mor(
-            normalized_form,
-            normalization.domain(),
-        )(normalization.inverse().forward())
+        forward = normalization.forward().module_morphism()
+        inverse = normalization.inverse().forward().module_morphism()
         from sage.matrix.constructor import matrix as sage_matrix
 
         labels = tuple(normalized_form.module_generating_set())
@@ -1330,9 +1349,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
                 )
             if datum.parent() is self:
                 return datum
-            return self._from_engine(datum._engine())
-        if isinstance(datum, ModuleMorphismMethods):
-            return self.from_morphism(datum)
+            raise TypeError(f"{datum} belongs to another Mor; apply the realization functor")
+        if isinstance(datum, Map):
+            raise TypeError(f"{datum} is a whole arrow; apply the form-Core normalization homomorphism")
         return self._from_engine(datum)
 
     def accepts(self, candidate) -> bool:
@@ -1357,6 +1376,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def one(self):
         return self._from_engine(self._engine_group().one())
 
+    @object_level
     def identity(self, *args, **kwargs):
         return self.one(*args, **kwargs)
     def identity_automorphism(self, *args, **kwargs):
@@ -1402,36 +1422,44 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         element = self.domain()(element)
         return self.element_action().stabilizer(element)
 
-    def stabilizer_of_subgroup(self, subgroup):
-        r"""Return the setwise stabilizer through the owned subobject G-set."""
+    @cached_method
+    def subobject_action(self):
+        r"""Return the represented action of this group on the submodules of its finite form."""
         form = self.domain()
-        base_ring = form.base_ring()
-        if subgroup not in ModuleSubobjects(base_ring):
-            raise TypeError(
-                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
-                "has no inclusion morphism"
-            )
-        if subgroup not in Modules(base_ring).Subobjects(form):
-            raise ValueError(
-                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
-                f"is a submodule of {subgroup.inclusion().codomain()}"
-            )
         family = _torsion_form_all_subobjects(
             form,
             quadratic=self.is_quadratic(),
         )
+        return _torsion_form_subobject_action(form, family, self)
+
+    def subobject_point(self, subgroup):
+        r"""Return the point of :meth:`subobject_action` that is the submodule ``subgroup``."""
+        form = self.domain()
+        base_ring = form.base_ring()
+        if subgroup not in ModuleSubobjects(base_ring):
+            raise TypeError(
+                f"the submodules of {form} acted on by {self} have inclusion morphisms, but {subgroup} "
+                "has none"
+            )
+        if subgroup not in Modules(base_ring).Subobjects(form):
+            raise ValueError(
+                f"{self} acts on submodules of {form}, but {subgroup} "
+                f"is a submodule of {subgroup.inclusion().codomain()}"
+            )
         by_embedded_elements = {
             _embedded_elements(candidate): candidate
-            for candidate in family
+            for candidate in self.subobject_action().point_set()
         }
         embedded = _embedded_elements(subgroup)
         if embedded not in by_embedded_elements:
             raise ValueError(
-                f"{subgroup} does not match any submodule of {form}, so {self} has no stabilizer for it"
+                f"{subgroup} does not match any submodule of {form}, so it is no point of the action of {self}"
             )
-        point = by_embedded_elements[embedded]
-        action = _torsion_form_subobject_action(form, family, self)
-        return action.stabilizer(point)
+        return by_embedded_elements[embedded]
+
+    def stabilizer_of_subgroup(self, subgroup):
+        r"""Return the setwise stabilizer through the owned subobject G-set."""
+        return self.subobject_action().stabilizer(self.subobject_point(subgroup))
 
     stabilizer_of_subobject = stabilizer_of_subgroup
 
@@ -1542,9 +1570,8 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
 class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
     r"""Finite formed modules retained as literal cokernels of a selected module map."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cokernel torsion forms"
+    def _repr_object_names(self):
+        return f"cokernel torsion forms over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import (

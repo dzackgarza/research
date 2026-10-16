@@ -102,6 +102,7 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 from typing import TYPE_CHECKING
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -647,25 +648,23 @@ class FormEmbeddingMor(CategoricalMor):
             )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
+    def __call__(self, images, *, value_morphism=None, **kwargs):
+        if isinstance(images, Morphism) and value_morphism is not None:
+            return super().__call__((images, value_morphism), **kwargs)
+        return super().__call__(images, value_morphism=value_morphism, **kwargs)
+
     def _element_constructor_(self, images, *, quadratic: bool | None = None, value_morphism=None, denominator_clearing=None, check=False):
         domain = self.domain()
         codomain = self.codomain()
-        if isinstance(images, FormEmbedding):
-            if images.domain() is not domain or images.codomain() is not codomain:
-                raise ValueError(
-                    f"{images} is an embedding {images.domain()} -> {images.codomain()}, "
-                    f"not an element of {self}"
-                )
-            if images.parent() is self:
+        if isinstance(images, tuple) and len(images) == 2 and all(isinstance(part, Morphism) for part in images):
+            images, value_morphism = images
+        elif isinstance(images, Morphism):
+            if self._already_parented_arrow(images):
                 images.validate_form_preservation(check=check)
                 images.validate_injectivity(check=check)
                 images.validate_denominator_clearing(check=check)
                 return images
-            if value_morphism is None:
-                value_morphism = images.value_morphism()
-            if denominator_clearing is None:
-                denominator_clearing = images._denominator_clearing
-            images = domain.module_category().Mor(domain, codomain)(images)
+            raise TypeError(f"{images} is not an arrow of {self}; give the module and value maps as defining data")
 
         if quadratic is None:
             ring = domain.base_ring()
@@ -736,33 +735,18 @@ class FormedModuleMor(CategoricalMor):
         ):
             domain = self.domain()
             codomain = self.codomain()
-            datum = domain.module_category().Mor(domain, codomain)(datum)
+            module_morphism = domain.module_category().Mor(domain, codomain)(datum)
+            source_values = _represented_value_module(domain)
+            target_values = _represented_value_module(codomain)
+            if source_values is not target_values:
+                raise TypeError(f"{self} requires an explicit value map between {source_values} and {target_values}")
+            datum = (module_morphism, source_values.module_category().Mor(source_values, target_values).identity())
 
-        if isinstance(datum, FormedModuleMorphism):
-            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not an element of {self}"
-                )
-            if datum.parent() is self:
+        if isinstance(datum, Morphism):
+            if self._already_parented_arrow(datum):
                 datum.validate_form_preservation(check=check)
                 return datum
-            module_mor = self.domain().module_category().Mor(self.domain(), self.codomain())
-            datum = (module_mor(datum), datum.value_morphism())
-        elif isinstance(datum, ModuleMorphismMethods):
-            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError(
-                    f"the module map {datum} is {datum.domain()} -> {datum.codomain()}, so it does not give "
-                    f"an element of {self}"
-                )
-            source_values = _represented_value_module(self.domain())
-            target_values = _represented_value_module(self.codomain())
-            if source_values is not target_values:
-                raise TypeError(
-                    f"the module map {datum} alone does not determine a morphism of formed modules in {self}: "
-                    f"the forms take values in different modules {source_values} and {target_values}, "
-                    "so a value map must also be given"
-                )
-            datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
+            raise TypeError(f"{datum} is not an arrow of {self}; give the module and value maps as defining data")
         module_morphism, value_morphism = datum
         morphism = self.element_class(self, module_morphism, value_morphism)
         morphism.validate_form_preservation(check=check)
@@ -793,6 +777,7 @@ class FormedModuleMor(CategoricalMor):
             values.module_category().Mor(values, values).identity(),
         )
 
+    @object_level
     @cached_method
     def identity(self):
 
@@ -1040,16 +1025,21 @@ class FiberedFormedModuleMor(CategoricalMor):
         morphism.validate_form_preservation(check=check)
         return morphism
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"{self} has no identity: its domain {self.domain()} differs from its codomain {self.codomain()}"
             )
-        if not self.ring_map().is_identity():
+        identity_decision = self.ring_map().is_identity()
+        if identity_decision is False:
             raise ValueError(
                 f"{self} has no identity: it lies over the ring map {self.ring_map()}, "
                 "which is not the identity"
             )
+        assert identity_decision is True, (
+            f"constructing the identity of {self} requires deciding whether {self.ring_map()} is the identity"
+        )
 
         changed = self.base_changed_domain()
         module_map = self.module_mor().identity().linearization()
@@ -1079,9 +1069,8 @@ def _value_module_of(value_object):
 class PairingObjects(OwnedCategoryOverBaseRing):
     r"""Module objects carrying one represented pairing ``X tensor_R Y -> W``."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "pairing-bearing module objects"
+    def _repr_object_names(self):
+        return f"pairing-bearing module objects over {self.base_ring()}"
 
     def super_categories(self):
         r"""Paired modules are slice objects and formed modules are modules; both are sets."""
@@ -1308,7 +1297,7 @@ def _formed_module_base_change(self, ring_map):
 
     assert self.value_module() is self.base_ring()
     target_ring = _base_change_codomain(self, ring_map)
-    if ring_map.is_identity():
+    if ring_map.is_identity() is True:
         return self
     source = self
     source_labels = source.module_generating_set()
@@ -1421,9 +1410,8 @@ class FormModules(OwnedCategoryOverBaseRing):
         r"""Return the bilinear owner's formed-module witness over this base."""
         return BilinearFormModules(self.base_ring()).an_object()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "form modules"
+    def _repr_object_names(self):
+        return f"form modules over {self.base_ring()}"
 
     def super_categories(self):
         return [
@@ -1702,6 +1690,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     return self.left_curry().is_injective() and self.right_curry().is_injective()
 
 
+        @object_level
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
             return FormModules(self.base_ring()).Mono(self, codomain)
@@ -2313,9 +2302,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             form = module.bilinear_forms(ring)(lambda left, right: ring.zero())
         return BilinearFormModules(ring).Symmetric().Even()(form)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a bilinear form"
+    def _repr_object_names(self):
+        return f"modules with a bilinear form over {self.base_ring()}"
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -2776,9 +2764,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_group()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a quadratic form"
+    def _repr_object_names(self):
+        return f"modules with a quadratic form over {self.base_ring()}"
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -3219,9 +3206,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "free form modules"
+    def _repr_object_names(self):
+        return f"free form modules over {self.base_ring()}"
 
     def super_categories(self):
 

@@ -1163,7 +1163,7 @@ class _AT21ADEDoubleCoverEngine:
         from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisorGroups
 
         return FormalDivisorGroups(_rationals()).from_terms(
-            ((_rationals().one(), self.boundary_subscheme()),)
+            {self.boundary_subscheme(): _rationals().one()}
         )
 
     @cached_method
@@ -1177,10 +1177,10 @@ class _AT21ADEDoubleCoverEngine:
         coefficients = self.log_boundary_coefficient_ring()
         epsilon = coefficients.algebra_generator("epsilon")
         return FormalDivisorGroups(coefficients).from_terms(
-            (
-                (coefficients.one(), self.boundary_subscheme()),
-                (epsilon, self.ramification_subscheme()),
-            ),
+            {
+                self.boundary_subscheme(): coefficients.one(),
+                self.ramification_subscheme(): epsilon,
+            },
         )
 
     def equipped_pair(self):

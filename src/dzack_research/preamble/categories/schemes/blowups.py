@@ -26,9 +26,6 @@ is the first product projection restricted along the inclusion.
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroups,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -42,7 +39,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
 )
-from dzack_research.preamble.categories.schemes.varieties import ProjectiveSurfaces
+from dzack_research.preamble.categories.schemes.varieties import Surfaces
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -203,9 +200,9 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
     Over a field, the graph-closure realization has the declared projective
     surface placement, and its blowdown retains its exact endpoints::
 
-        sage: from dzack_research.preamble.all import QQ, ProjectivePointBlowups, ProjectiveSurfaces
+        sage: from dzack_research.preamble.all import QQ, ProjectivePointBlowups, Surfaces
         sage: B = ProjectivePointBlowups(QQ).an_object()
-        sage: B in ProjectivePointBlowups(QQ) and B in ProjectiveSurfaces(QQ)
+        sage: B in ProjectivePointBlowups(QQ) and B in Surfaces(QQ).Projective()
         True
         sage: B.blowup_morphism().domain() is B
         True
@@ -221,7 +218,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         categories = [Blowups(base), Schemes(base).Smooth()]
         match base in OwnedFields():
             case True:
-                categories.append(ProjectiveSurfaces(base))
+                categories.append(Surfaces(base).Projective())
             case False:
                 pass
         return categories
@@ -340,15 +337,14 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return _integers()(multiplicity)
 
         @cached_method
-        def _picard_group(self, base_picard_group=None):
-            assert base_picard_group is None, (
-                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
-                "this point-blowup presentation computes its Picard group directly"
-            )
-            module = _integers()._fresh_free_module_on(
+        def _picard_group(self):
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+
+            return _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
+                _extra_categories=(PicardGroups(),),
+                _extra_construction_data={"picard_scheme": self},
             )
-            return PicardGroups()(module, scheme=self)
 
         def hyperplane_picard_class(self):
             return self.picard_group().module_generator("H")

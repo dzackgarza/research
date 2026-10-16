@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.sets.set_categories import EnumeratedSet
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -148,7 +149,7 @@ class PosetMor(CategoricalMor):
     def poset_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.poset_category()
         return cardinal(
             1
@@ -172,6 +173,7 @@ class PosetMor(CategoricalMor):
             )
         return self.unique()
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -347,7 +349,7 @@ class FiniteOrdinalMor(CategoricalMor):
     def ordinal_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         return cardinal(1 if self.domain().position() <= self.codomain().position() else 0)
 
     @cached_method
@@ -367,6 +369,7 @@ class FiniteOrdinalMor(CategoricalMor):
             )
         return self.unique()
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -612,7 +615,7 @@ class ParallelPairMor(CategoricalMor):
     def parallel_pair_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.parallel_pair_category()
         if self.domain() is self.codomain():
             return cardinal(1)
@@ -639,6 +642,7 @@ class ParallelPairMor(CategoricalMor):
             f"the walking parallel pair has no arrow {self.domain()} -> {self.codomain()}"
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -824,7 +828,7 @@ class ParallelFamilyMor(CategoricalMor):
     def parallel_family_category(self):
         return self.base_category()
 
-    def cardinality(self):
+    def _cardinality_decision(self):
         category = self.parallel_family_category()
         if self.domain() is self.codomain():
             return cardinal(1)
@@ -852,6 +856,7 @@ class ParallelFamilyMor(CategoricalMor):
             f"the walking parallel-family category has no arrow {self.domain()} -> {self.codomain()}"
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1370,18 +1375,14 @@ class ConeMor(CategoricalMor):
             case ConeMorphism():
                 if apex_map.parent() is self:
                     return apex_map
-                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {apex_map} as a morphism of cones {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
-                    )
-                apex_map = apex_map.apex_map()
+                raise TypeError(f"{apex_map} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, apex_map)
 
     def _from_commuting_apex_map(self, apex_map):
         r"""Construct from an apex map whose cone equations are structural."""
         return self.element_class(self, apex_map, verify=False)
 
+    @object_level
     def identity(self) -> ConeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -1416,14 +1417,10 @@ class CoconeMor(CategoricalMor):
             case CoconeMorphism():
                 if apex_map.parent() is self:
                     return apex_map
-                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {apex_map} as a morphism of cocones {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
-                    )
-                apex_map = apex_map.apex_map()
+                raise TypeError(f"{apex_map} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, apex_map)
 
+    @object_level
     def identity(self) -> CoconeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -376,6 +377,7 @@ class CardinalityMor(CategoricalMor):
             raise ValueError(f"{morphism} is not in {self}")
         return self.unique_morphism()
 
+    @object_level
     def identity(self) -> CardinalityMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -408,32 +410,32 @@ class Cardinalities(OwnedCategory):
                 return UncountableSets()
 
     def set_power_category(self, codomain, exponent):
-        r"""Place `Y^X` from supplied finite cardinalities and cardinal bounds.
+        r"""Place `Y^X` at its construction from what the constructions of `X` and `Y` fix (``OWN-22``).
 
-        Finite endpoints suffice for finiteness.  Exact sizes are consulted
-        only when they distinguish stronger placements, through the Set
-        owner's optional cardinality hook or a chosen finite enumeration.
-        A finite predicate subset need not supply either computation.
+        Constructing a function set computes nothing about its endpoints.
+        Finiteness, countability and infinitude are read from their
+        placement.  An exact size, which decides the stronger placements
+        (`|Y|^0 = 1`, `|Y| <= 1`, `|Y| >= 2`), is read only from an
+        endpoint presented by an enumeration from an index set: its size is
+        that of the index set, a defining datum.  No cardinality or
+        finiteness algorithm runs.  Such an algorithm may need a map into the
+        endpoint (the augmentation of a presented module), or an enumeration
+        the endpoint has not got (a predicate subgroup of a finite group,
+        counted by passing over the group); the exact cardinality of `Y^X`
+        stays an operation of the constructed set, computed when asked.
         """
         from dzack_research.preamble.categories.sets.set_categories import (
-            Sets, EnumeratedSets, FiniteSets, InfiniteSets, CountableSets,
-            CountablyInfiniteSets, UncountableSets, EnumeratedSets,
+            Sets, FiniteSets, InfiniteSets, CountableSets,
+            CountablyInfiniteSets, UncountableSets,
         )
 
-        # Constructing a function set must not execute its endpoints' cardinality
-        # algorithms: those algorithms may themselves need maps into the endpoint
-        # (for example the augmentation of a presented module).  Use the supplied
-        # categorical finiteness here; computing cardinality remains an operation
-        # on the constructed set.
         finite_exponent = exponent in FiniteSets()
         finite_codomain = codomain in FiniteSets()
         if finite_exponent and finite_codomain:
             return FiniteSets()
 
         if finite_exponent:
-            size = exponent._cardinality_decision()
-            if size is None and exponent in EnumeratedSets():
-                size = exponent.cardinality()
+            size = self._size_fixed_by_enumeration(exponent)
             if size is not None:
                 size = cardinal(size)
                 assert size.is_finite(), (
@@ -450,9 +452,7 @@ class Cardinalities(OwnedCategory):
             return Sets()
 
         if finite_codomain:
-            size = codomain._cardinality_decision()
-            if size is None and codomain in EnumeratedSets():
-                size = codomain.cardinality()
+            size = self._size_fixed_by_enumeration(codomain)
             if size is not None:
                 size = cardinal(size)
                 assert size.is_finite(), (
@@ -468,6 +468,27 @@ class Cardinalities(OwnedCategory):
             return UncountableSets()
         return Sets()
 
+    def _size_fixed_by_enumeration(self, endpoint):
+        r"""The size of a set presented by an enumeration from an index set, else ``None``.
+
+        Private to the placements of this owner.  A set presented by an
+        enumeration ``I -> X`` has the size of ``I``; the finite ordinal
+        ``[n]`` is its own index set and retains ``n``.  This reads that
+        defining datum through the ``Sets`` cardinality hook, which for
+        such a set reads its index set.  Any other set supplies no size
+        here, so that placing a construction never runs a cardinality
+        algorithm.  ``None`` asserts nothing.
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            OrderedEnumeratedSets,
+        )
+
+        match endpoint:
+            case _ if endpoint in OrderedEnumeratedSets():
+                return endpoint._cardinality_decision()
+            case _:
+                return None
+
     def finite_support_power_category(self, coefficient_ring, index_set):
         r"""Place finite-support functions ``index_set -> coefficient_ring``.
 
@@ -475,10 +496,10 @@ class Cardinalities(OwnedCategory):
         zero ring gives a singleton, and any nonzero ring gives cardinality
         ``max(|coefficient_ring|, |index_set|)``.
         """
-        match cardinal(index_set.cardinality()).is_finite(), coefficient_ring.one() == coefficient_ring.zero():
-            case True, _:
+        match cardinal(index_set.cardinality()).is_finite():
+            case True:
                 return self.set_power_category(coefficient_ring, index_set)
-            case False, True:
+            case False if (coefficient_ring.one() == coefficient_ring.zero()) is True:
                 return self.set_category(self.one())
             case _:
                 return self.set_category(self.supremum(coefficient_ring.cardinality(), index_set.cardinality()))
@@ -1287,6 +1308,7 @@ class OrdinalMor(CategoricalMor):
             raise ValueError(f"{morphism} is not in {self}")
         return self.unique_morphism()
 
+    @object_level
     def identity(self) -> OrdinalMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

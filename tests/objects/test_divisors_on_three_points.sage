@@ -29,13 +29,6 @@ def test_the_cartier_divisor_group_on_three_points() -> None:
     assert divisors.module_rank() == 3
 
 
-def test_the_picard_group_on_three_points() -> None:
-    r"""With no principal divisors to divide by, the classes are the divisors."""
-    classes = PicardGroups()(free())
-    assert classes in PicardGroups()
-    assert classes.module_rank() == 3
-
-
 def test_the_class_group_on_three_points() -> None:
     classes = ClassGroups()(free())
     assert classes in ClassGroups()

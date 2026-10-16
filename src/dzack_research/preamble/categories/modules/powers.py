@@ -167,9 +167,8 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Modules(self.base_ring()).an_object().tensor_power(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "tensor powers of modules"
+    def _repr_object_names(self):
+        return f"tensor powers of modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -185,9 +184,8 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Modules(self.base_ring()).an_object().symmetric_power(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "symmetric powers of modules"
+    def _repr_object_names(self):
+        return f"symmetric powers of modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -227,9 +225,8 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Modules(self.base_ring()).an_object().exterior_power(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "exterior powers of modules"
+    def _repr_object_names(self):
+        return f"exterior powers of modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -249,9 +246,8 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Modules(self.base_ring()).an_object().divided_power_module(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "divided powers of modules"
+    def _repr_object_names(self):
+        return f"divided powers of modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -608,9 +604,8 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object().divided_square()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "divided-square modules"
+    def _repr_object_names(self):
+        return f"divided-square modules over {self.base_ring()}"
 
     def super_categories(self):
         return [DividedPowerModules(self.base_ring())]

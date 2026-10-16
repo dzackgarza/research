@@ -134,13 +134,27 @@ def _number_field_of(polynomial):
     chosen primitive element.  Irreducibility of ``f`` is the caller's claim
     (``OWN-22``).  The field is placed by this construction, never by the
     class of its engine (``ARC-08``).
+
+    The quotient map ``QQ[t] ->> QQ[t]/(f)`` out of the free commutative
+    algebra ``QQ[t] = Sym(QQ^{t})`` is part of this construction, so the
+    field is constructed with it as its chosen degree-zero algebra resolution
+    (``CAT-29``): the generating set is ``{t}`` and ``t`` goes to ``theta``.
     """
+    from dzack_research.preamble.categories.algebras.algebras import _OwnedAlgebraParent
+
     ring = element_parent(polynomial)
     assert ring in OwnedRings() and ring.base_ring() is _owned_rationals() and len(ring.variable_names()) == 1, (
         f"a number field QQ[t]/(f) is constructed from a polynomial f in one variable over QQ, but {polynomial} "
         f"lies in {ring}"
     )
-    field = _OwnedRingParent(_number_field_engine(polynomial), named_placement=_number_field_placements)
+    field = _OwnedAlgebraParent(
+        _number_field_engine(polynomial),
+        ring.base_ring(),
+        ring.algebra_generating_set(),
+        algebra_framing_source=ring,
+        ring_placement=_number_field_placements,
+        constructing_category=OwnedRings(),
+    )
     _set_owned_ring_display(field, f"Number field defined by {polynomial}")
     return field
 
@@ -150,8 +164,12 @@ def _number_field_extension(base, polynomial):
     r"""``K(theta) = K[t]/(g)``: the finite extension of the number field ``K`` by an irreducible ``g`` in ``K[t]``.
 
     The defining datum is ``(K, g)``; it is a number field, finite over ``QQ``
-    by the tower law.  Irreducibility of ``g`` is the caller's claim.
+    by the tower law.  Irreducibility of ``g`` is the caller's claim.  The
+    quotient map ``K[t] ->> K[t]/(g)`` is its chosen degree-zero resolution
+    as a ``K``-algebra (``CAT-29``), as for :func:`_number_field_of`.
     """
+    from dzack_research.preamble.categories.algebras.algebras import _OwnedAlgebraParent
+
     ring = element_parent(polynomial)
     assert ring.base_ring() is base and len(ring.variable_names()) == 1, (
         f"an extension of {base} is constructed from a polynomial in one variable over {base}, but {polynomial} "
@@ -159,7 +177,14 @@ def _number_field_extension(base, polynomial):
     )
     (label,) = ring.variable_names()
     engine = _engine_ring(base).extension(_engine_element(ring, polynomial), label)
-    field = _OwnedRingParent(engine, named_placement=_number_field_placements)
+    field = _OwnedAlgebraParent(
+        engine,
+        base,
+        ring.algebra_generating_set(),
+        algebra_framing_source=ring,
+        ring_placement=_number_field_placements,
+        constructing_category=OwnedRings(),
+    )
     _set_owned_ring_display(field, f"Number field defined by {polynomial} over {base}")
     return field
 
@@ -435,13 +460,36 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 return self.Mor(target).embeddings()
 
             source_engine = _engine_ring(self)
+            from dzack_research.preamble.rings.complex import ExactComplexField
             from dzack_research.preamble.rings.real import ExactRealField
 
+            from sage.rings.qqbar import AA as SageAA
+            from sage.rings.qqbar import QQbar as SageQQbar
+
+            # An embedding K -> RR (K -> CC) has image in the real (complex)
+            # algebraic numbers AA (QQbar), since every element of K is
+            # algebraic over QQ.
             match target:
                 case ExactRealField():
-                    from sage.rings.qqbar import AA as SageAA
+                    algebraic_numbers = SageAA
+                case ExactComplexField():
+                    algebraic_numbers = SageQQbar
+                case _:
+                    algebraic_numbers = None
 
-                    engine_embeddings = tuple(source_engine.embeddings(SageAA))
+            match algebraic_numbers:
+                case None:
+                    engine_embeddings = tuple(
+                        source_engine.embeddings(_engine_ring(target))
+                    )
+
+                    def embedding_at(position):
+                        return self.Mor(target)(
+                            engine_embeddings[int(position)]
+                        )
+
+                case _:
+                    engine_embeddings = tuple(source_engine.embeddings(algebraic_numbers))
 
                     def embedding_at(position):
                         engine_embedding = engine_embeddings[int(position)]
@@ -451,16 +499,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                                     _engine_element(self, self(element))
                                 )
                             )
-                        )
-
-                case _:
-                    engine_embeddings = tuple(
-                        source_engine.embeddings(_engine_ring(target))
-                    )
-
-                    def embedding_at(position):
-                        return self.Mor(target)(
-                            engine_embeddings[int(position)]
                         )
 
             positions = finite_ordered_set(range(len(engine_embeddings)))

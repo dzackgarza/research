@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     distinguished_affine_coverage,
     LocallyRingedSpaces,
     ModuleSheaves,
+    PresheafObjects,
     QuasiCoherentSheaves,
     RingedSpaces,
     SheafObjects,
@@ -72,14 +73,10 @@ from dzack_research.preamble.categories.schemes.blowups import (
     ProjectivePointBlowups,
 )
 
-from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections, SmoothQuarticK3CompleteIntersections
+from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections
 
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
-    ProjectiveCurves,
-    ProjectiveSurfaces,
-    DelPezzoSurfaces,
-    ProperSurfaces,
     Surfaces,
     Varieties,
 )
@@ -112,23 +109,22 @@ from dzack_research.preamble.categories.schemes.toric.blowups import ToricFixedP
 
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 
-from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes, SmoothCompleteRationalToricSchemes
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+    GorensteinToricSchemes,
+    SmoothCompleteRationalToricSchemes,
+    ToricProjectiveSpaces,
+    ToricSchemes,
+)
 
 from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import FiniteGluedInvariantQuotient
 
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     ToricGeometricLineBundleCohomologySpaces,
-    GeometricFundamentalGroups,
-    IntegralTopologicalCohomologyGroups,
-    ResolutionIntegralCohomologyGroups,
     NodalCubic,
     NodalCubicNormalization,
     NodalCubicIntegralTopology,
-    IntegralSingularCohomologyGroups,
     PGL2IntegralTopology,
     ProjectiveGeneralLinearGroup2,
-    ToricIntegralSingularCohomologyGroups,
-    ToricFundamentalGroups,
     ToricWeightCohomologyComplexes,
 )
 
@@ -183,16 +179,12 @@ __all__ = [
     'EffectiveCartierDivisors',
     'ProjectivePointBlowups',
     'ProjectiveCompleteIntersections',
-    'SmoothQuarticK3CompleteIntersections',
     'ProjectiveSchemes',
-    'ProjectiveSurfaces',
-    'ProjectiveCurves',
-    'DelPezzoSurfaces',
-    'ProperSurfaces',
     'ProjectiveSpaces',
     'ProjectiveLines',
     'ProductProjectiveSpaces',
     'ProductSchemes',
+    'PresheafObjects',
     'QuasiCoherentSheaves',
     'RationalPolyhedralFans',
     'RingedSpaces',
@@ -210,18 +202,14 @@ __all__ = [
     'ToricFixedPointBlowups',
     'ToricSchemes',
     'SmoothCompleteRationalToricSchemes',
+    'GorensteinToricSchemes',
+    'ToricProjectiveSpaces',
     'ToricGeometricLineBundleCohomologySpaces',
-    'GeometricFundamentalGroups',
-    'IntegralTopologicalCohomologyGroups',
-    'ResolutionIntegralCohomologyGroups',
     'NodalCubic',
     'NodalCubicNormalization',
     'NodalCubicIntegralTopology',
-    'IntegralSingularCohomologyGroups',
     'PGL2IntegralTopology',
     'ProjectiveGeneralLinearGroup2',
-    'ToricIntegralSingularCohomologyGroups',
-    'ToricFundamentalGroups',
     'ToricWeightCohomologyComplexes',
     'Varieties',
     'FiniteGluedInvariantQuotient',

@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedIntegralDomains,
     OwnedOrders,
     OwnedPrincipalIdealDomains,
@@ -109,12 +110,17 @@ class _PrimeSpectrumTopologyData:
         )
 
     def is_open_subset(self, spectrum, subset) -> bool:
+        # ``D(f)`` is the complement of the closed set ``V(f)`` (Stacks 00E0,
+        # Lemma 10.17.2(11)), hence open.
+        match subset:
+            case _ if subset in DistinguishedOpenSubobjects(spectrum):
+                return True
         power = spectrum.power_set()
         selected = power(subset)
         match selected:
-            case _ if selected == power.bottom():
+            case _ if power.inclusion_order().le(selected, power.bottom()) is True:
                 return True
-            case _ if selected == power.top():
+            case _ if power.inclusion_order().le(power.top(), selected) is True:
                 return True
             case _:
                 assert False, (
@@ -124,7 +130,40 @@ class _PrimeSpectrumTopologyData:
 
 
 class PrimeSpectra(OwnedCategory):
-    r"""The prime spectra \(\operatorname{Spec}R\), ordered by inclusion."""
+    r"""The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
+
+    Unexecuted specialization specimen over a local ring. The primes
+    ``(x)`` and ``(y)`` of ``QQ[x,y]_(x,y)`` are distinct and incomparable;
+    both specialize to ``(x,y)`` (the localization prime correspondence,
+    Atiyah--Macdonald, Proposition 3.11; Stacks, Tag 00E0)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: A = QQ['x', 'y']
+        sage: x = A.algebra_generator('x'); y = A.algebra_generator('y')
+        sage: R = A.localize_at_prime(A.ideal(x, y))
+        sage: spectrum = R.spectrum()
+        sage: px = spectrum(R.ideal(R(x)))
+        sage: py = spectrum(R.ideal(R(y)))
+        sage: closed = spectrum(R.ideal(R(x), R(y)))
+        sage: px == py
+        False
+        sage: px.specializes_to(py)
+        False
+        sage: py.specializes_to(px)
+        False
+        sage: px.specializes_to(closed) and py.specializes_to(closed)
+        True
+        sage: R.ideal(R(x)) in spectrum
+        True
+        sage: px in spectrum.D(R(y))
+        True
+        sage: px in spectrum.D(R(x))
+        False
+        sage: py in spectrum.V(R.ideal(R(x)))
+        False
+        sage: closed in spectrum.V(R.ideal(R(x)))
+        True
+    """
 
     def an_object(self):
         r"""\(\operatorname{Spec}\mathbb{Z}\)."""
@@ -392,22 +431,26 @@ class PrimeSpectra(OwnedCategory):
             return function.valuation(uniformizer)
 
         def specializes_to(self, other) -> bool:
+            r"""Whether this prime is contained in the target prime.
+
+            The specialization order uses the actual ideals of the ring
+            (Stacks, Tag 00E0), including localized ideals whose private
+            computation field has a different ideal lattice.
+            """
             if other.parent() is not self.parent():
                 raise ValueError(
                     f"specialization is a relation between points of one spectrum, but {self} lies in "
                     f"{self.parent()} and {other} lies in {other.parent()}"
                 )
-            ring = self.parent().ring()
-            return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
+            return self.ideal().is_contained_in(other.ideal())
 
         def _richcmp_(self, other, op):
-            if other.parent() is not self.parent() or other.parent() is not self.parent():
+            if element_parent(other) is not self.parent():
                 return NotImplemented
             from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
 
-            ring = self.parent().ring()
-            left_ideal = _engine_ideal(ring, self.ideal())
-            right_ideal = _engine_ideal(ring, other.ideal())
+            left_ideal = self.ideal()
+            right_ideal = other.ideal()
             if op == op_EQ:
                 return left_ideal == right_ideal
             if op == op_NE:
@@ -415,12 +458,12 @@ class PrimeSpectra(OwnedCategory):
             if op == op_LE:
                 return self.specializes_to(other)
             if op == op_LT:
-                return left_ideal != right_ideal and self.specializes_to(other)
+                return conjunction((left_ideal != right_ideal, self.specializes_to(other)))
             return NotImplemented
 
         def __hash__(self):
             r"""Hash the prime ideal equality compares, so a point may key a cache."""
-            return hash(_engine_ideal(self.parent().ring(), self.ideal()))
+            return hash(self.ideal())
 
         def _repr_(self):
             return f"Point {self.ideal()} of {self.parent()}"
@@ -464,8 +507,52 @@ class PrimeSpectra(OwnedCategory):
             return self._element_constructor_(ideal)
 
         def _element_constructor_(self, ideal):
+            r"""Construct from a prime ideal, or lift a localization-source prime.
+
+            Primes of ``S^-1 A`` correspond to primes of ``A`` disjoint from
+            ``S``; the lift is extension of the ideal (Mathlib,
+            ``PrimeSpectrum.localization_comap_range``).
+
+            Unexecuted inverse-image specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: B = A.localization(x)
+                sage: p = A.spectrum()(A.ideal(x - A.one()))
+                sage: lifted = B.spectrum()(p)
+                sage: lifted.ideal() == p.ideal().extension_to_localization(B)
+                True
+                sage: spec = OwnedRings().Commutative().prime_spectrum_functor()
+                sage: opposite = spec.domain()
+                sage: arrow = opposite.Mor(opposite(B), opposite(A))(B.localization_map())
+                sage: spec.on_morphism(arrow)(lifted) == p
+                True
+                sage: B.inverted_submonoid_meets(A.ideal(x))
+                True
+            """
             if isinstance(ideal, self.category().ElementType) and ideal.parent() is self:
                 return ideal
+            source = element_parent(ideal)
+            ring = self.ring()
+            if (
+                source in PrimeSpectra()
+                and ring in LocalizationRings()
+                and ring.localization_source() is source.ring()
+            ):
+                prime = ideal.ideal()
+                match ring.inverted_submonoid_meets(prime):
+                    case False:
+                        return self.element_class(self, prime.extension_to_localization(ring))
+                    case True:
+                        raise ValueError(
+                            f"the prime {prime} meets the inverted submonoid of {ring}, "
+                            "so it has no point above it in this localization"
+                        )
+                    case _:
+                        assert False, (
+                            f"lifting {ideal} to {self} requires deciding whether its prime "
+                            "meets the inverted submonoid"
+                        )
             candidate = _owned_ideal(self.ring(), ideal)
             if not bool(candidate.is_prime()):
                 raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
@@ -474,7 +561,7 @@ class PrimeSpectra(OwnedCategory):
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):
                 return candidate.parent() is self
-            ideal = _engine_ideal(self.ring(), candidate)
+            ideal = _owned_ideal(self.ring(), candidate)
             return bool(ideal.is_prime())
 
         def le(self, left, right) -> bool:
@@ -494,6 +581,87 @@ class PrimeSpectra(OwnedCategory):
 
         def _repr_(self):
             return f"Spec({self.ring()})"
+
+
+class _PrimeSpectrumFunctor(Functor):
+    r"""``Spec: CRing^op -> Top``, acting on primes by contraction.
+
+    A preimage of a prime along a unital ring map is prime. Continuity follows
+    from ``Spec(f)^-1 D(a) = D(f(a))`` (Mathlib,
+    ``PrimeSpectrum.comap_asIdeal``, ``PrimeSpectrum.continuous_comap`` and
+    ``PrimeSpectrum.comap_basicOpen``). Contraction algorithms remain at the
+    ring-map owner.
+
+    Unexecuted localization-point specimen::
+
+        sage: from dzack_research.preamble.all import *
+        sage: A = QQ['x']; x = A.algebra_generator('x')
+        sage: B = A.localization(x)
+        sage: f = B.localization_map()
+        sage: spec = OwnedRings().Commutative().prime_spectrum_functor()
+        sage: opposite = spec.domain()
+        sage: arrow = opposite.Mor(opposite(B), opposite(A))(f)
+        sage: image = spec.on_morphism(arrow)
+        sage: p = B.spectrum()(B.ideal(B(x - A.one())))
+        sage: image(p) == A.spectrum()(A.ideal(x - A.one()))
+        True
+        sage: image(p) in A.spectrum().D(x)
+        True
+        sage: identity = opposite.Mor(opposite(A), opposite(A)).identity()
+        sage: spec.on_morphism(identity)(image(p)) == image(p)
+        True
+        sage: negation_map = A.Mor(A)({'x': -x})
+        sage: involution = OwnedRings().Commutative().Core().Mor(A, A)(negation_map, negation_map)
+        sage: reverse = opposite.Mor(opposite(A), opposite(A))(involution)
+        sage: homeomorphism = spec.on_morphism(reverse)
+        sage: q = A.spectrum()(A.ideal(x - A.one()))
+        sage: homeomorphism(q) == A.spectrum()(A.ideal(x + A.one()))
+        True
+        sage: homeomorphism.inverse()(homeomorphism(q)) == q
+        True
+    """
+
+    def __init__(self, rings) -> None:
+        Functor.__init__(self, rings.opposite(), TopologicalSpaces())
+
+    def _apply_object(self, opposite_ring):
+        return opposite_ring.underlying_object().spectrum()
+
+    def _apply_morphism(self, opposite_arrow):
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            CategoricalIsomorphism,
+        )
+
+        ring_map = opposite_arrow.underlying_arrow()
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+
+        def prime_map(prime_source, prime_target, preimage):
+            def image(point):
+                contracted = preimage(prime_source(point).ideal())
+                # PrimeSpectrum.comap_asIdeal: primality follows from the
+                # unital map and the source prime.
+                return prime_target.element_class(prime_target, contracted)
+
+            return self.codomain().Mor(prime_source, prime_target)._from_continuous_set_map(
+                Sets().Mor(prime_source, prime_target)(image)
+            )
+
+        if isinstance(ring_map, CategoricalIsomorphism):
+            # For an isomorphism f, f^-1(J) is extension along its inverse.
+            # These ideal transports are inverse, so their continuous maps
+            # form the homeomorphism Spec(f), without a new inverse search.
+            forward = prime_map(source, target, ring_map.inverse().forward().extension_of_ideal)
+            inverse = prime_map(target, source, ring_map.forward().extension_of_ideal)
+            return _isomorphism_from_known_inverse_pair(
+                forward, inverse, base_category=self.codomain()
+            )
+        if ring_map.is_identity() is True:
+            return self.codomain().Mor(source, target).identity()
+        return prime_map(source, target, ring_map.contraction_of_ideal)
 
 
 class IntegralPrimeSpectra(OwnedCategory):
@@ -623,6 +791,31 @@ class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
         return [Sets().Subobjects(self.base())]
 
     class ParentMethods:
+        def is_contained_in(self, other):
+            r"""``D(f) <= D(g)`` exactly when ``g`` is a unit in ``A_f``.
+
+            Reference: Mathlib
+            ``PrimeSpectrum.basicOpen_le_basicOpen_iff_algebraMap_isUnit``.
+
+            Unexecuted basis-containment specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: spectrum = A.spectrum()
+                sage: spectrum.D(x).is_contained_in(spectrum.D(x*x))
+                True
+                sage: spectrum.D(x*x).is_contained_in(spectrum.D(x))
+                True
+                sage: spectrum.D(x) == spectrum.D(x*x)
+                True
+                sage: spectrum.D(A.one()).is_contained_in(spectrum.D(x))
+                False
+            """
+            if other in DistinguishedOpenSubobjects(self.codomain()):
+                ring = self.coordinate_ring()
+                return ring.localization_map()(other.function()).is_unit()
+            return super().is_contained_in(other)
+
         def __init__(self, function, **rest):
             self._function = function
             super().__init__(**rest)
@@ -639,10 +832,7 @@ class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
 
 def _zariski_closed_subobject(spectrum, ideal):
     domain = spectrum.condition_set(
-        lambda point: bool(
-            _engine_ideal(spectrum.ring(), ideal)
-            <= _engine_ideal(spectrum.ring(), point.ideal())
-        )
+        lambda point: ideal.is_contained_in(point.ideal())
     )
     inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
@@ -655,8 +845,7 @@ def _zariski_closed_subobject(spectrum, ideal):
 def _distinguished_open_subobject(spectrum, function):
     function = spectrum.ring()(function)
     domain = spectrum.condition_set(
-        lambda point: _engine_element(spectrum.ring(), function)
-        not in _engine_ideal(spectrum.ring(), point.ideal())
+        lambda point: negation(point.ideal().contains_ambient_element(function))
     )
     inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
@@ -949,6 +1138,16 @@ class QuotientRings(OwnedCategory):
                 return cardinal(1)
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
+            # For a k-algebra A over a field k and a proper ideal I, the
+            # structure map k -> A/I is a ring map from a field to a nonzero
+            # ring, hence injective, and A -> A/I is onto, so
+            # |k| <= |A/I| <= |A|.  When |k| = |A| the cardinality is decided.
+            base = self.quotient_source().base_ring()
+            if base is not self.quotient_source() and base in OwnedFields():
+                lower = base._cardinality_decision()
+                upper = self.quotient_source()._cardinality_decision()
+                if lower is not None and upper is not None and (cardinal(lower) == cardinal(upper)) is True:
+                    return cardinal(lower)
             if self.quotient_source() in LocalizationRings():
                 comparison = self._finite_localized_quotient_isomorphism()
                 return None if comparison is None else comparison.domain()._cardinality_decision()
@@ -3422,6 +3621,7 @@ def _quotient_ring(source, defining_ideal):
         and not exact_source_quotient
         and not prime_field
         and source.base_ring() in PrimeFields()
+        and source.base_ring().characteristic() != 0
         and source in SymmetricAlgebras(source.base_ring())
         and source.algebra_generating_set().is_finite() is True
         and (source.algebra_generating_set().cardinality() == cardinal(1)) is True
@@ -3491,14 +3691,37 @@ def _one_step_inverted_family(source, generators):
     The descent stops at a localization that inverts a set with no chosen
     finite generating set, such as the complement of a prime, which no family
     presents.
+
+    The family of ``S^{-1}A`` comes first and the numerators of the new
+    generators follow, so the family of a tower extends the family of the
+    localization below it.  The inverse-variable realization of the tower
+    therefore extends that of the ring below it variable by variable.
     """
     inverted = tuple(generators)
     while source in LocalizationRings() and source not in PrimeLocalizations():
-        inverted = tuple(
+        inverted = tuple(source.inverted_elements()) + tuple(
             source.localization_fraction_data(element)[0] for element in inverted
-        ) + tuple(source.inverted_elements())
+        )
         source = source.localization_source()
     return source, inverted
+
+
+def _fraction_over_localized_bottom(ring, element, bottom):
+    r"""Write an element of an iterated localization of ``bottom`` as one fraction over it.
+
+    In ``T^{-1}(S^{-1}A)`` an element ``n/d`` with ``n = a/s`` and ``d = b/t``
+    is ``(a t)/(s b)``, a fraction of ``A`` whose denominator lies in the
+    submonoid generated by the one-step inverted family of
+    :func:`_one_step_inverted_family`, so its image in the inverse-variable
+    presentation is a unit.  The descent follows the same chain of
+    localization sources.
+    """
+    if ring is bottom:
+        return element, bottom.one()
+    source = ring.localization_source()
+    numerator, numerator_denominator = _fraction_over_localized_bottom(source, element.numerator(), bottom)
+    denominator, denominator_denominator = _fraction_over_localized_bottom(source, element.denominator(), bottom)
+    return numerator * denominator_denominator, numerator_denominator * denominator
 
 
 def _submonoid_contains_zero_in_domain(source, submonoid):
@@ -3731,6 +3954,14 @@ def _finite_generated_localization(source, submonoid):
         localization_engine = extended_cover.quotient(
             extended_cover.ideal(relations)
         )
+
+        def engine_source_encoder(element):
+            numerator, denominator = _fraction_over_localized_bottom(source, element, bottom)
+            return localization_engine(
+                extended_cover(_engine_element(bottom, numerator).lift())
+            ) / localization_engine(
+                extended_cover(_engine_element(bottom, denominator).lift())
+            )
     elif (
         bottom is source
         and hasattr(engine_bottom, "variable_names")
@@ -4550,9 +4781,8 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         r"""The formal power series ring in one variable."""
         return self.base_ring().power_series_ring("t")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "formal power-series rings"
+    def _repr_object_names(self):
+        return f"formal power-series rings over {self.base_ring()}"
 
     def super_categories(self):
         return [

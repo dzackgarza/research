@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
 )
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class SemilinearModuleMorphism:
@@ -79,7 +80,7 @@ class SemilinearModuleMorphism:
             case None, None:
                 raise TypeError(
                     f"a semilinear map {domain} -> {codomain} needs its defining linear map "
-                    f"{domain} -> {restricted} or a construction-derived evaluator"
+                    f"{domain} -> Res_{{{scalar_map}}}({codomain}) or a construction-derived evaluator"
                 )
             case None, _:
                 pass
@@ -271,30 +272,11 @@ class SemilinearModuleMor(CategoricalMor):
         if compatible_map is None and isinstance(scalar_map, SemilinearModuleMorphism):
             if scalar_map.parent() is self:
                 return scalar_map
-            compatible_map = scalar_map.restricted_morphism()
-            scalar_map = scalar_map.scalar_map()
+            raise TypeError(f"{scalar_map} belongs to another Mor; give the scalar map and compatible linear map")
         self._validate_scalar_map(scalar_map)
         restricted = self.restricted_codomain(scalar_map)
         compatible_mor = self.compatible_mor(scalar_map)
-        match compatible_map:
-            case Morphism() if (
-                compatible_map.domain() is self.domain()
-                and compatible_map.codomain() is self.codomain()
-            ):
-                additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
-                    self.domain(), self.codomain()
-                )(compatible_map)
-                if isinstance(compatible_map, ModuleMorphismMethods):
-                    compatible_map = compatible_mor._from_constructed_element_map(
-                        lambda element: restricted.wrap(additive(element)),
-                        premises=(compatible_map,),
-                    )
-                else:
-                    compatible_map = compatible_mor.elementwise(
-                        lambda element: restricted(additive(element))
-                    )
-            case _:
-                compatible_map = compatible_mor(compatible_map)
+        compatible_map = compatible_mor(compatible_map)
         return self.element_class(self, scalar_map, compatible_map)
 
     def _from_linearization(self, scalar_map, linearization):
@@ -313,6 +295,7 @@ class SemilinearModuleMor(CategoricalMor):
         )
         return self.element_class(self, scalar_map, compatible)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

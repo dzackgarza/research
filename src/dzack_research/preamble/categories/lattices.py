@@ -19,6 +19,7 @@ from collections import Counter
 from collections.abc import Hashable, Mapping, Sequence
 from functools import cache
 from typing import TYPE_CHECKING, overload
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
 
 from sage.arith.misc import gcd
+from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
@@ -90,6 +92,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _kissing_number,
     _lll_reduction,
     _minimum,
+    _norm_two_root_types,
     _packing_density,
     _packing_radius,
     _reflective_root_system_components,
@@ -377,8 +380,8 @@ def _lattice_subobject_on_basis(module, basis, extra_categories, construction_da
             )
 
     def inclusion_factory(source):
-        module_inclusion = source.Mono(module)(embedded)
-        return source.Emb(module)(module_inclusion)
+        # The inclusion is built from its generator images in its own Mor (``CON-17``).
+        return source.Emb(module)(embedded)
 
     return _lattice_object(
         Lattices(ring),
@@ -1378,8 +1381,51 @@ def _ring_notation(ring):
     return str(ring), raw
 
 
+def _postcomposed(automorphism, leg):
+    r"""The arrow ``g o leg`` for an automorphism ``g`` of the codomain of ``leg``, in the Mor of ``leg``.
+
+    ``g`` is an automorphism of ``B = leg.codomain()``, so ``g o leg`` has the
+    endpoints of ``leg`` and is constructed in its Mor on its generator images.
+    """
+    source = leg.domain()
+    return leg.parent()(lambda label: automorphism(leg(source.module_generator(label))))
+
+
+def _assert_monic_leg(category, marked, leg):
+    r"""State the hypothesis that a marking of ``Ar(Lattices)`` or ``Fun([n], Lattices)`` is a monomorphism."""
+    assert leg.is_injective() is True, (
+        f"{marked} is an object of {category} whose leg {leg} into its apex is not known to be "
+        f"injective: the automorphisms of the apex carrying a marking onto itself are the setwise "
+        f"stabilizer of its image only when the marking is a monomorphism"
+    )
+
+
 class _MarkedLatticeMethods:
-    r"""Operations of the categories of marked lattices: ``<n>/Lattices``, ``Ar(Lattices)``, ``Fun([2], Lattices)``."""
+    r"""Operations of the categories of marked lattices: ``<n>/Lattices``, ``Ar(Lattices)``, ``Fun([2], Lattices)``.
+
+    A marked lattice is a diagram of lattices ending at a lattice ``L``, its
+    apex (``sage-indefinite-port`` ``references/port-design.md``, *Marked
+    lattices*).  ``O(L)`` acts on the marked lattices with apex ``L`` by
+    postcomposing the legs into the apex, and an isomorphism of marked
+    lattices with apex component ``g in O(L)`` exists from ``m`` to ``m'``
+    exactly when ``g . m`` and ``m'`` are isomorphic with identity apex
+    component.  Each marking category states the two operations of this
+    action: :meth:`apex_action` and :meth:`apex_stabilizer`.
+    """
+
+    @abstract_method
+    def apex_action(self, automorphism, marked):
+        r"""Return ``g . marked``: the marking of the apex ``L`` postcomposed with ``g = automorphism`` in ``O(L)``."""
+
+    @abstract_method
+    def apex_stabilizer(self, marked):
+        r"""Return the subgroup of ``O(L)`` of apex components of the automorphisms of ``marked``.
+
+        It is ``{g in O(L) : g . marked is isomorphic to marked by an
+        isomorphism with apex component g}``, so the stabilizer of
+        ``g . marked`` is ``g S g^{-1}`` for ``S`` the stabilizer of
+        ``marked``.
+        """
 
     def primitive_marking_classes(self, source: Parent, lattice: Parent) -> Parent:
         r"""One marked lattice per isomorphism class of primitive markings of ``lattice`` of shape ``source``.
@@ -1470,11 +1516,73 @@ class Lattices(OwnedCategoryOverBaseRing):
     class Coslices(_MarkedLatticeMethods, CosliceCategory):
         r"""``X/Lattices``: lattices marked by a map from ``X``, the coslice construction on ``Lattices``."""
 
+        def apex_action(self, automorphism, marked):
+            r"""``(L, g o i)`` for the object ``(L, i: X -> L)`` and ``g`` in ``O(L)``."""
+            return self.object(_postcomposed(automorphism, self.arrow(marked)))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g o i = i}``: an isomorphism of ``X/Lattices`` is the identity on ``X``.
+
+            The marking ``i`` is fixed, not movable, so the stabilizer fixes
+            the image of every generator of ``X``; ``i`` need not be injective
+            (the zero vector is a marking of ``<0> -> L``).
+            """
+            arrow = self.arrow(marked)
+            return arrow.codomain().O().pointwise_stabilizer(arrow)
+
     class ArrowDiagrams(_MarkedLatticeMethods, _WalkingArrowFunctorCategory):
         r"""``Ar(Lattices) = [[1], Lattices]``: lattices marked by a sublattice."""
 
+        def apex_action(self, automorphism, marked):
+            r"""``(L, g o i)`` for the marking ``i: I -> L`` and ``g`` in ``O(L)``."""
+            return self.object(_postcomposed(automorphism, marked.arrow()))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g(i(I)) = i(I)}`` for a monic marking ``i: I -> L``.
+
+            An isomorphism of ``Ar(Lattices)`` is a square ``(alpha, g)`` with
+            ``g i = i alpha``; for monic ``i`` such an ``alpha`` exists exactly
+            when ``g`` carries the image of ``i`` onto itself.
+            """
+            arrow = marked.arrow()
+            _assert_monic_leg(self, marked, arrow)
+            return arrow.codomain().O().setwise_stabilizer(arrow)
+
     class SequenceDiagrams(_MarkedLatticeMethods, _FiniteSequenceFunctorCategory):
         r"""``[[n], Lattices]``: lattices marked by a chain of sublattices, such as a flag."""
+
+        def apex_action(self, automorphism, marked):
+            r"""The chain ``I_0 -> ... -> I_{n-1} -> L`` with its last arrow postcomposed with ``g``.
+
+            Every leg into the apex ``L`` factors through the last arrow, so
+            postcomposing it postcomposes each leg.
+            """
+            transitions = tuple(marked.arrows())
+            return self.object((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
+
+        def apex_stabilizer(self, marked):
+            r"""``{g in O(L) : g(F(j -> top)(F(j))) = F(j -> top)(F(j)) for every j}``, for a chain of monomorphisms.
+
+            An isomorphism of chains is a natural isomorphism; with monic legs
+            ``F(j -> top)`` into the apex its component at ``j`` exists exactly
+            when ``g`` carries the image of that leg onto itself, so the
+            stabilizer is the intersection of the setwise stabilizers of the
+            images of the legs.
+            """
+            functor = marked.functor()
+            shape = functor.domain()
+            top = shape(int(shape.object_set().cardinality()) - 1)
+            orthogonal_group = functor(top).O()
+            legs = tuple(
+                functor(shape.Mor(vertex, top).unique())
+                for vertex in shape.objects()
+                if vertex is not top
+            )
+            for leg in legs:
+                _assert_monic_leg(self, marked, leg)
+            return orthogonal_group.intersection(
+                *(orthogonal_group.setwise_stabilizer(leg) for leg in legs)
+            )
 
     @cached_method
     def Core(self):
@@ -1513,7 +1621,13 @@ class Lattices(OwnedCategoryOverBaseRing):
         return isometry(diagram_category, source, target)
 
     def _marked_automorphism_generators(self, diagram_category, marked):
-        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403)."""
+        r"""Implementer side of the marked-diagram contract: apex isometries generating ``Aut`` of the marking (#403).
+
+        Callers: ``CoreMor`` through the marking category, as declared at
+        ``_FunctorCategory``, and ``LatticeIsometryMor``, whose orbit
+        splitting and vector stabilizers read the apex image of ``Aut`` of
+        a marking of an indefinite lattice.
+        """
         from sage_indefinite_port.indefinite.marked_lattices import (
             automorphism_group_generators,
         )
@@ -2449,6 +2563,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lattice_isometry_mor(self, codomain)
 
+        @object_level
         def Aut(self):
             r"""Return ``Isom(L,L)``, the orthogonal automorphism Mor."""
             return self.Isom(self)
@@ -5029,15 +5144,20 @@ class Lattices(OwnedCategoryOverBaseRing):
         def vectors_of_square(self, square):
             r"""Return the complete square fibre with its lattice inclusion.
 
-            Definite fibres and nonzero split binary fibres are finite and
-            enumerated. Other fibres retain the complete defining locus; the
-            orbits of a nonsplit binary fibre under ``O(L)`` or ``SO(L)`` are
-            :meth:`binary_fixed_norm_representatives`.
+            Definite fibres over ``ZZ`` and nonzero split binary fibres are
+            finite and enumerated. Other fibres retain the complete defining
+            locus; the orbits of a nonsplit binary fibre under ``O(L)`` or
+            ``SO(L)`` are :meth:`binary_fixed_norm_representatives`.  A definite
+            fibre over another base ring is one of these (``STY-129``): over
+            ``QQ`` the fibre of ``x^2 + y^2`` at ``1`` contains ``(3/5, 4/5)``,
+            and it is not the finite shell of the integral span.
             """
             square = self.base_ring()(square)
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
+                if self.base_ring() is not _owned_integers():
+                    return self.square_fibre(square).object()
                 return self.finite_subsets()(_vectors_of_square(self, square))
             if (
                 self.module_rank() == 2
@@ -5116,6 +5236,45 @@ class Lattices(OwnedCategoryOverBaseRing):
             the order of its simple roots that the diagram of the type fixes.
             """
             return _reflective_root_system_components(self)
+
+        @cached_method
+        def norm_two_root_types(self) -> str:
+            r"""Return the type of the root system \(\{v\in L : |b(v,v)| = 2\}\) of an even definite lattice over ``ZZ``.
+
+            The value is the label of the type: each irreducible component is
+            spelled by its letter and rank, and the components are joined by
+            ``+``, ``E`` before ``D`` before ``A`` and decreasing rank within
+            one letter, as ``E8+E8+A1`` and ``E7+D10``.  The empty root system
+            is the empty sum ``""``.  No owned object presents the types of
+            finite root systems, so the label is the answer, as for
+            :meth:`root_system_type_name` of a root lattice.
+
+            The norm-two vectors of an integral lattice generate a direct sum
+            of root lattices (Witt's theorem, Conway--Sloane, *SPLAG*, Ch. 4,
+            §3).  On an even lattice they are all its reflective roots of
+            norm two; the reflective root system of
+            :meth:`reflective_root_system_components` can also contain roots
+            of norm four, which this type omits.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: (Lattices(ZZ)("E8") + Lattices(ZZ)("E8") + Lattices(ZZ)("A1")).norm_two_root_types()
+                'E8+E8+A1'
+            """
+            assert self.base_ring() is _owned_integers(), (
+                f"the norm-two root type of {self} is computed for lattices over ZZ, but {self} is a lattice over {self.base_ring()}"
+            )
+            assert self.module_rank().is_finite(), (
+                f"the norm-two vectors of {self} form a finite root system only for a lattice of finite rank, but {self} has rank {self.module_rank()}"
+            )
+            assert self.is_definite(), (
+                f"the norm-two vectors of {self} form a finite root system only when the lattice is definite, but {self} has signature {self.signature_pair()}"
+            )
+            assert self.is_even() is True, (
+                f"the norm-two root type is stated for even lattices, but {self} is not known to be even: an odd lattice also has reflective roots of norm one"
+            )
+            return _norm_two_root_types(self)
 
         def reduction_cell(self, inequalities, *, equations=()):
             r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.
@@ -6094,10 +6253,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)("U").basis_vector(0)
                 e_0
             """
-            return repr_lincomb(self._lattice_terms(), strip_one=True)
+            return repr_lincomb(
+                [(f"e_{label}", coefficient) for label, coefficient in self._lattice_terms()],
+                strip_one=True,
+            )
 
         def _latex_(self):
-            return repr_lincomb(self._lattice_terms(), is_latex=True, strip_one=True)
+            return repr_lincomb(
+                [(f"e_{{{label}}}", coefficient) for label, coefficient in self._lattice_terms()],
+                is_latex=True,
+                strip_one=True,
+            )
 
         def __mul__(self, other):
             r"""``v * w`` is \(b(v,w)\) for a vector of this lattice, and ``v * r`` the scalar multiple for ``r`` in the base ring.
@@ -6472,9 +6638,8 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
         lattice = Lattices(self.base_ring()).an_object()
         return Lattices(self.base_ring()).biproduct((lattice, lattice))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen lattice biproducts"
+    def _repr_object_names(self):
+        return f"chosen lattice biproducts over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -6614,9 +6779,60 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
             return source.module_category().Mor(source, self)(image)
 
+        def orthogonal_sum_map(self, product):
+            r"""Return ``prod_i G_i -> O(L)``, ``(g_i) |-> sum_i g_i``, for subgroups ``G_i <= O(L_i)``.
+
+            ``L = sum_i L_i`` is this orthogonal sum.  ``product`` is a selected
+            product of groups ``prod_i G_i`` (``OwnedGroups().product_construction``),
+            its ``i``-th factor, in the order of the summands, a subgroup of
+            ``O(L_i)``.  ``sum_i g_i`` is the isometry acting by ``g_i`` on the
+            summand ``L_i``: the map out of the biproduct whose legs are
+            ``L_i --g_i--> L_i --> L``.  The map is injective, since
+            ``sum_i g_i`` restricts to ``g_i`` on ``L_i``.
+            """
+            from dzack_research.preamble.categories.lattice_morphisms import (
+                _subgroup_inclusion_into,
+            )
+
+            factors = self.biproduct_factors()
+            labels = tuple(factors.index_set())
+            shape = product.diagram().domain()
+            projections = {
+                index: product.structure_morphism(shape(position))
+                for position, index in enumerate(labels)
+            }
+            inclusions = {
+                index: _subgroup_inclusion_into(projections[index].codomain(), factors[index].O())
+                for index in labels
+            }
+            source = product.object()
+
+            def block_isometry(element):
+                legs = finite_indexed_family(
+                    factors.index_set(),
+                    lambda index: factors[index].module_category().Mor(factors[index], self)(
+                        lambda label, index=index: self.injection(index)(
+                            inclusions[index](projections[index](element))(
+                                factors[index].module_generator(label)
+                            )
+                        )
+                    ),
+                    name=f"Blocks of an element of {source}",
+                )
+                block_sum = self.from_coproduct_cocone(legs)
+                return self.O()(lambda label: block_sum(self.module_generator(label)))
+
+            return source.Mor(self.O()).elementwise(block_isometry)
+
 
 class DefiniteLattices(OwnedCategoryOverBaseRing):
-    r"""Finite-rank definite lattices with finitely enumerable reflective roots."""
+    r"""Finite-rank definite lattices.
+
+    Over ``ZZ`` their reflective roots are finite in number and enumerated
+    shell by shell.  Over ``QQ`` a definite space of rank at least 2 has
+    infinite square fibres (``x^2 + y^2 = 1`` has ``(3/5, 4/5)``), so finiteness
+    of the roots is not a consequence of definiteness alone.
+    """
 
     def super_categories(self):
         return [Lattices(self.base_ring()).FinitelyGenerated()]
@@ -7117,9 +7333,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         plane = Lattices(self.base_ring())("U")
         return (plane + plane).basis_vector(0).isotropic_reduction()
 
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "isotropic reductions"
+    def _repr_object_names(self) -> str:
+        return f"isotropic reductions over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
@@ -7613,20 +7828,17 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 return result
 
             def isometry(parameter):
-                forward = ambient.module_category().Mor(ambient, ambient)({
+                # The Eichler-type transvection is given by its generator images
+                # in O(L) itself (``CON-17``); its inverse is the transvection
+                # at ``-parameter``, computed on request.
+                forward = ambient.Mor(ambient)({
                     label: ambient.module_generator(label)
                     + shift(parameter, ambient.module_generator(label))
                     for label in ambient.module_generating_set()
                 })
-                inverse = ambient.module_category().Mor(ambient, ambient)({
-                    label: ambient.module_generator(label)
-                    - shift(parameter, ambient.module_generator(label))
-                    for label in ambient.module_generating_set()
-                })
-                module_isomorphism = ambient.module_category().Core().Mor(
-                    ambient, ambient
-                )._from_known_inverse_pair(forward, inverse)
-                return ambient.Isom(ambient)(module_isomorphism)
+                return ambient.Isom(ambient)._from_inverse_computation(
+                    forward, lambda: isometry(-parameter)
+                )
 
             return solution, isometry
 
@@ -8007,9 +8219,8 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Lattices.root_lattice("H", 3)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "noncrystallographic root lattices"
+    def _repr_object_names(self):
+        return f"noncrystallographic root lattices over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring()).FinitelyGenerated().Nondegenerate().Even()]
@@ -8102,6 +8313,7 @@ class RootLattices(OwnedCategory):
             r"""Return the private engine Cartan type named by :meth:`root_system_type_name`."""
             return CartanType(self.root_system_type_name())
 
+        @cached_method
         def dynkin_diagram(self):
             r"""Return the Dynkin diagram of the simple roots.
 

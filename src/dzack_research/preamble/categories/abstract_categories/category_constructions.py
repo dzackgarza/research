@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -95,12 +96,7 @@ class OppositeMor(CategoricalMor):
             case OppositeMorphism():
                 if underlying_arrow.parent() is self:
                     return underlying_arrow
-                if underlying_arrow.domain() is not self.domain() or underlying_arrow.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {underlying_arrow} as a morphism {self.domain()} -> {self.codomain()} in the "
-                        f"opposite category: it is a morphism {underlying_arrow.domain()} -> {underlying_arrow.codomain()}"
-                    )
-                underlying_arrow = underlying_arrow.underlying_arrow()
+                raise TypeError(f"{underlying_arrow} belongs to another Mor; apply the functor between the categories")
         base = self.opposite_category().base_category()
         if not _category_accepts_morphism(
             base,
@@ -114,6 +110,7 @@ class OppositeMor(CategoricalMor):
             )
         return OppositeMorphism(self, underlying_arrow)
 
+    @object_level
     def identity(self) -> OppositeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -150,6 +147,10 @@ class _OppositeCategory(OwnedCategory):
         def underlying_object(self) -> ObjectOfCategory:
             return self._underlying_object
 
+        def Mor(self, codomain: Parent) -> OppositeMor:
+            r"""``Mor_{C^op}(X, Y) = Mor_C(Y, X)``, with this object as ``X``."""
+            return self.opposite_category().Mor(self, codomain)
+
         def _repr_(self) -> str:
             return f"op({self.underlying_object()})"
 
@@ -164,7 +165,19 @@ class _OppositeCategory(OwnedCategory):
         return self._base_category
 
     def super_categories(self):
-        return [Objects()]
+        r"""``D^op`` for each declared ``C -> D``; the root ``Objects()`` above ``Objects()^op``.
+
+        ``C^op`` has the objects of ``C``, and a forgetful functor
+        ``U: C -> D`` is also a functor ``U^op: C^op -> D^op``
+        (Mac Lane, *Categories for the Working Mathematician*, II.2).  The
+        owned root has no supercategory, so ``Objects()^op`` declares the
+        root itself: each ``op(X)`` is a represented object.
+        """
+        match self.base_category().super_categories():
+            case []:
+                return [Objects()]
+            case supers:
+                return [supercategory.opposite() for supercategory in supers]
 
     @cached_method(key=lambda self, underlying_object: id(underlying_object))
     def object(self, underlying_object: Parent) -> ObjectOfCategory:
@@ -275,12 +288,7 @@ class ProductMor(CategoricalMor):
             case ProductMorphism() if second is None:
                 if first.parent() is self:
                     return first
-                if first.domain() is not self.domain() or first.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {first} as a morphism {self.domain()} -> {self.codomain()} in the product "
-                        f"category: it is a morphism {first.domain()} -> {first.codomain()}"
-                    )
-                first, second = first.first(), first.second()
+                raise TypeError(f"{first} belongs to another Mor; apply the functor between the categories")
         if second is None:
             first, second = first
         product = self.product_category()
@@ -306,6 +314,7 @@ class ProductMor(CategoricalMor):
             )
         return ProductMorphism(self, first, second)
 
+    @object_level
     def identity(self) -> ProductMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

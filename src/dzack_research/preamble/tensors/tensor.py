@@ -1263,34 +1263,44 @@ def _engine_general_linear_two_coset_permutations(generator_row_actions, index):
     Protected caller: ``ModuleAutomorphismGroup._finite_index_coset_permutations``.
     ``generator_row_actions`` are the engine row actions of generators of
     ``H``; ``index`` is the caller's stated finite index.  GAP's
-    ``CosetTable`` enumerates the right cosets of ``H`` in
+    ``CosetTable`` enumerates the right cosets of ``H`` in the presentation
+    of ``GL_2(ZZ)`` stated by A. Ram, *Advanced Discrete Math MAST90030
+    notes* (10 August 2025), Section 16, Proposition 16.1(b), p. 128
+    (https://math.soimeme.org/~arunram/Teaching/2025AdvDiscreteMath/250810Modulargroup.pdf,
+    opened 2026-10-16), transcribed: generators ``omega_1 = [[0,1],[-1,0]]``,
+    ``omega_2 = [[0,1],[-1,1]]``, ``e = [[1,0],[0,-1]]``, relations
 
-        < s_2, s_3, e | s_2^4, s_2^2 s_3^-3, e^2, e s_2 e^-1 = w(e s_2 e),
-                        e s_3 e^-1 = w(e s_3 e) >,
+        omega_1^2 in Z(GL_2(ZZ)),  omega_1^4 = 1,  omega_2^3 = omega_1^2,
+        e^2 = 1,  e omega_1 e^-1 = omega_1^-1,  e omega_2 e^-1 = omega_1 omega_2^-1 omega_1^-1.
 
-    taken to present ``GL_2(ZZ)``.  ``s_2 = S`` and ``s_3 = S^-1 T^-1 =
-    (TS)^-1`` for ``S = [[0,-1],[1,0]]``, ``T = [[1,1],[0,1]]`` (hand
-    computation).  Generation is Mathlib's
-    ``Matrix.SpecialLinearGroup.SL2Z_generators`` and Conrad, *SL_2(ZZ)*
-    (kconrad.math.uconn.edu), Cor. 2.3.  The relators hold:
-    ``s_2^2 = -1`` and ``s_3^3 = ((TS)^3)^-1 = -1`` by TauCeti's
-    ``T_mul_S_pow_three``; the last two relators hold because ``w`` is the
-    word Sage's ``sl2z_word_problem`` returns for the matrix ``e s_i e``.  UNSOURCED: that these relations
-    present the group.  Conrad, Thm. C.1 (proved), and Milne, *Modular
-    Functions and Modular Forms* v1.31, Remark 2.14 (stated without proof),
-    give only ``PSL_2(ZZ) = ZZ/2 * ZZ/3``; no opened source states the
-    presentation of ``SL_2(ZZ)`` or of its extension by ``e = diag(1,-1)``
-    (COMPLAINTS.md, *A finite presentation of GL_2(ZZ)*).  The index
-    assertion below detects a wrong presentation only when it changes the
-    coset count.  Enumeration terminates exactly when the
-    index is finite (TauCeti's ``CosetTable.index_le`` bounds the index by a
-    table's size).  Returns, for ``s_2, s_3, e``, the right action on the
-    coset numbers ``0, ..., index - 1`` (``0`` is ``H``) as tuples.
+    Its proof (pp. 129--135) derives SL_2(ZZ) = Z/4 *_{Z/2} Z/6 on
+    ``<omega_1>, <omega_2>`` from Serre, *Trees*, 4.2(c) and Theorem 6, and
+    GL_2(ZZ) = SL_2(ZZ) and its coset by ``e``.  The same SL_2(ZZ)
+    presentation, ``<R, S | S^4 = (RS)^3 = 1, S^2 (RS) = (RS) S^2>`` with
+    ``R = [[1,1],[0,1]]``, ``S = [[0,1],[-1,0]] = omega_1`` and
+    ``RS = omega_2^2``, is stated by Blanc--Deserti, *Embeddings of SL(2,Z)
+    into the Cremona group*, arXiv:1103.0114v2, Section 2.1, p. 4, citing
+    Newman, *Integral Matrices*, Ch. VIII.
+
+    The adapter's letters are ``s_2 = [[0,-1],[1,0]] = omega_1^-1``,
+    ``s_3 = omega_2`` and ``e``, the generators in which
+    ``_engine_general_linear_two_word`` writes elements.  Substituting
+    ``omega_1 = s_2^-1``, ``omega_2 = s_3`` (an invertible change of free
+    generators) turns the relations above into the relators below, one for
+    one: ``s_2^4``; ``s_3^3 s_2^2``; ``[s_2^2, s_3]`` and ``[s_2^2, e]`` (the
+    centrality of ``omega_1^2``; its commutator with ``omega_1`` is trivial
+    in the free group); ``e^2``; ``e s_2^-1 e^-1 s_2^-1``;
+    ``e s_3 e^-1 s_2^-1 s_3 s_2``.  So the finitely presented group below is
+    GL_2(ZZ), with ``s_2, s_3, e`` sent to their matrices.  Enumeration
+    terminates exactly when the index is finite (TauCeti's
+    ``CosetTable.index_le`` bounds the index by a table's size); the index
+    assertion below compares GAP's count with the caller's stated index.
+    Returns, for ``s_2, s_3, e``, the right action on the coset numbers
+    ``0, ..., index - 1`` (``0`` is ``H``) as tuples.
     """
     from functools import reduce
 
     from sage.libs.gap.libgap import libgap
-    from sage.rings.integer_ring import ZZ as SageZZ
 
     free = libgap.FreeGroup(["s2", "s3", "e"])
     letters = free.GeneratorsOfGroup()
@@ -1302,16 +1312,15 @@ def _engine_general_linear_two_coset_permutations(generator_row_actions, index):
             generators[0] ** 0,
         )
 
-    two = _sage_matrix(SageZZ, [[0, -1], [1, 0]])
-    three = _sage_matrix(SageZZ, [[0, 1], [-1, 1]])
-    reflection = _sage_matrix.diagonal(SageZZ, [1, -1])
     s2, s3, e = letters
     relators = [
         s2 ** 4,
-        s2 ** 2 * s3 ** -3,
+        s3 ** 3 * s2 ** 2,
+        s2 ** 2 * s3 * s2 ** -2 * s3 ** -1,
+        s2 ** 2 * e * s2 ** -2 * e ** -1,
         e ** 2,
-        e * s2 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * two * reflection), letters).Inverse(),
-        e * s3 * e.Inverse() * word(_engine_general_linear_two_column_word(reflection * three * reflection), letters).Inverse(),
+        e * s2 ** -1 * e ** -1 * s2 ** -1,
+        e * s3 * e ** -1 * s2 ** -1 * s3 * s2,
     ]
     presented = free / relators
     presented_letters = presented.GeneratorsOfGroup()

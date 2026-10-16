@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -39,7 +38,14 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
-    r"""Projective spaces ``|D| = P(H^0(X,O_X(D)))`` with their defining data."""
+    r"""Complete linear systems ``|D|``: the linear system of all of ``H^0(X, O_X(D))``.
+
+    A complete linear system is the linear system whose section subspace is
+    the whole space, ``W = H^0(X, O_X(D))`` with ``i = id``.  This level adds
+    the scheme ``X`` and the divisor ``D``; the section space, its lines and
+    their quotient-convention realization are those of the general linear
+    system.
+    """
 
     def an_object(self):
         r"""The hyperplane system on the toric projective line over the base ring."""
@@ -48,18 +54,16 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         projective_line = ToricSchemes(self.base_ring()).an_object()
         return projective_line.complete_linear_system(projective_line.hyperplane_divisor())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "complete linear systems"
+    def _repr_object_names(self):
+        return f"complete linear systems over {self.base_ring()}"
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveLinearSystems(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, linear_system_scheme, linear_system_divisor, section_space, **rest) -> None:
+        def __init__(self, linear_system_scheme, linear_system_divisor, **rest) -> None:
             self._linear_system_scheme = linear_system_scheme
             self._linear_system_divisor = linear_system_divisor
-            self._section_space = section_space
             super().__init__(**rest)
 
         def linear_system_scheme(self):
@@ -69,10 +73,12 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
             return self._linear_system_divisor
 
         def section_space(self):
-            return self._section_space
+            r"""``H^0(X, O_X(D))``, which is the whole section space of this system."""
+            return self.ambient_section_space()
 
-        def projective_dimension(self):
-            return self.relative_dimension()
+        def complete_linear_system(self):
+            r"""A complete linear system is its own completion."""
+            return self
 
         def associated_morphism(self):
             r"""Return the map defined by this complete linear system when basepoint-free."""
@@ -80,46 +86,36 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
                 self.linear_system_divisor()
             )
 
-        @cached_method
-        def quotient_projectivization(self):
-            r"""Return the quotient-convention realization ``P_quot(H^0(D)^*)``.
-
-            The complete linear system parametrizes lines in ``H^0(D)``.  A
-            line in a finite free module ``V`` is equivalently a rank-one
-            quotient of ``V^*``; this method records that variance explicitly
-            rather than applying quotient projectivization directly to ``V``.
-            """
-            sections = self.section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
-
-        @cached_method
-        def quotient_projectivization_comparison(self):
-            r"""Return the chartwise isomorphism ``P_quot(H^0(D)^*) ~= |D|``."""
-            projectivization = self.quotient_projectivization().arrow().domain()
-            return projectivization.projective_space_comparison(self)
-
 
 class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
-    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n, \mathcal{O}(d))\).
+    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n_R, \mathcal{O}(d))\).
 
-    An object is the free module on the degree-\(d\) monomials of a homogeneous
-    coordinate algebra of a projective scheme \(X\).  The free-module level
-    consumes the monomials; this level adds \(X\), the degree \(d\), the
-    coordinate algebra, and the exponent vector of each monomial.
+    For a commutative ring \(R\) and \(S = R[x_0, \dots, x_n]\) graded by total
+    degree, \(\Gamma(\mathbb{P}^n_R, \mathcal{O}(d)) \cong S_d\), the degree-\(d\)
+    homogeneous piece, for every \(d \in \mathbb{Z}\), and \(S_d = 0\) for
+    \(d < 0\) (Hartshorne, Proposition II.5.13).  \(S_d\) is a free \(R\)-module:
+    the monomials \(x^a\) with \(|a| = d\) give the chosen framing
+    \(R^{(\{x^a\})} \cong S_d\).  So an object is a framed free module in
+    ``Modules(R)`` over any \(R\).  The free-module level
+    consumes the monomials; this level adds the projective scheme \(X\), the
+    degree \(d\), the graded coordinate algebra \(S\) whose degree-\(d\) piece
+    this is, and the exponent vector of each monomial.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "homogeneous polynomial section spaces"
+    def _repr_object_names(self):
+        return f"homogeneous polynomial section spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The linear forms on the projective line over the base ring."""
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).global_sections()
 
     def super_categories(self):
-        return [VectorSpaces(self.base_ring())]
+        r"""The monomial basis is a chosen framing of a free module over the same ring."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
+        return [FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -288,16 +284,20 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     each monomial, and the variable block of each factor.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "multihomogeneous polynomial section spaces"
+    def _repr_object_names(self):
+        return f"multihomogeneous polynomial section spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The bidegree-(1,1) sections on a product of two projective lines."""
         return ProductProjectiveSpaces(self.base_ring()).an_object().O(1, 1).global_sections()
 
     def super_categories(self):
-        return [VectorSpaces(self.base_ring())]
+        r"""The monomial basis is a chosen framing of a free module over the same ring."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
+        return [FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -373,31 +373,47 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
-    r"""Projective parameter spaces of represented section subspaces of ``O(d)``."""
+    r"""Linear systems: the projective space of lines of ``W`` for ``i: W -> H^0(X, L)``.
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "projective linear systems"
+    A linear system on a scheme ``X`` is a submodule ``W`` of the global
+    sections of an invertible sheaf ``L``; its points are the lines of ``W``.
+    This level adds the inclusion ``i``, from which ``W`` is its domain and
+    ``H^0(X, L)`` its codomain.  The complete linear system ``|L|`` is the case
+    ``W = H^0(X, L)``, and a linear system with imposed multiplicity is the case
+    ``W = ker(H^0(X, L) -> J)`` for a jet evaluation; both specialize this one.
+    """
+
+    def _repr_object_names(self):
+        return f"projective linear systems over {self.base_ring()}"
 
     def an_object(self):
         r"""The complete projective linear system of O(1) on the projective line."""
         return ProjectiveSpaces(self.base_ring()).an_object().O(1).linear_system()
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, line_bundle, section_embedding, base_locus, **rest) -> None:
-            self._line_bundle = line_bundle
+        def __init__(self, section_embedding, **rest) -> None:
             self._section_embedding = section_embedding
-            self._base_locus = base_locus
             super().__init__(**rest)
 
         def line_bundle(self):
-            return self._line_bundle
+            r"""``L``, for sections that are homogeneous polynomials: ``O(d)`` on ``P^n``."""
+            sections = self.ambient_section_space()
+            assert sections in HomogeneousPolynomialSectionSpaces(self.base_ring()), (
+                "line_bundle on ProjectiveLinearSystems(R) whose sections are not homogeneous "
+                f"polynomials on a projective space, such as {sections}: not implemented"
+            )
+            return sections.section_scheme().O(sections.homogeneous_degree())
 
         def ambient_section_space(self):
-            return self.line_bundle().global_sections()
+            return self.section_embedding().codomain()
+
+        @cached_method
+        def complete_linear_system(self):
+            r"""Return ``|L|``, the linear system of all of ``H^0(X, L)``."""
+            return self.line_bundle().linear_system()
 
         def projective_dimension(self):
             return self.relative_dimension()
@@ -425,16 +441,58 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             section subspace V.  With the repository's quotient convention
             that is P_quot(V^*), not P_quot(V).
             """
-            sections = self.selected_section_space()
-            dual = sections.dual_module()
-            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
-            return base_scheme.associated_module_sheaf(dual).projectivization()
+            return self.selected_section_space().dual_module().projectivization()
 
         @cached_method
         def quotient_projectivization_comparison(self):
             r"""Return the chartwise isomorphism from P_quot(V^*) to this system."""
             projectivization = self.quotient_projectivization().arrow().domain()
             return projectivization.projective_space_comparison(self)
+
+        def closed_immersion_into_complete_linear_system(self):
+            r"""Return the closed immersion of this system into ``|L| = P(H^0(X, L)^*)``.
+
+            The selected subspace ``i: W -> H^0(X, L)`` dualizes to the surjection
+            ``i^*: H^0(X, L)^* -> W^*``, and a surjection ``E -> F`` of quasi-coherent
+            sheaves induces the closed immersion ``P(F) -> P(E)`` that sends a rank-one
+            quotient of ``F`` to its composite with ``E -> F`` (EGA II, 4.1.2).  The
+            lines of ``W`` are therefore a linear subspace of the lines of
+            ``H^0(X, L)``, and the immersion is an element of ``self.Mor(|L|)``.
+
+            In coordinates, the homogeneous coordinate ``x_j`` of this system is
+            the ``j``-th basis vector ``w_j`` of ``W`` and that of ``|L|`` is the
+            ``m``-th framing vector ``v_m`` of ``H^0(X, L)``.  The line spanned by
+            ``sum_j a_j w_j`` goes to the line spanned by ``sum_j a_j i(w_j)``,
+            whose ``m``-th coordinate is the linear form
+            ``sum_j v_m^*(i(w_j)) x_j``, with ``v_m^*`` the dual basis.  Since
+            ``i`` is injective these forms have no common zero.
+            """
+            complete = self.complete_linear_system()
+            embedding = self.section_embedding()
+            selected = self.selected_section_space()
+            sections = self.ambient_section_space()
+            linear_forms = self.O(1).global_sections()
+            variable = {
+                tuple(linear_forms.monomial_exponents(monomial)).index(1): monomial
+                for monomial in linear_forms.module_generating_set()
+            }
+            images = tuple(
+                embedding(selected.module_generator(label))
+                for label in selected.module_generating_set()
+            )
+            dual_basis = sections.dual_basis()
+            coordinates = tuple(
+                linear_forms.homogeneous_polynomial(
+                    linear_forms.linear_combination(
+                        {
+                            variable[position]: dual_basis[label](image)
+                            for position, image in enumerate(images)
+                        }
+                    )
+                )
+                for label in sections.module_generating_set()
+            )
+            return self.projective_morphism_from_coordinates(complete, coordinates)
 
         def restriction_map(self, closed_subscheme):
             return _projective_section_restriction(
@@ -444,8 +502,20 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
                 into_complete=self.section_embedding(),
             )
 
+        @cached_method
         def base_locus(self):
-            return self._base_locus
+            r"""The common zero locus of the sections of ``W`` in ``X``."""
+            sections = self.ambient_section_space()
+            assert sections in HomogeneousPolynomialSectionSpaces(self.base_ring()), (
+                "base_locus on ProjectiveLinearSystems(R) whose sections are not homogeneous "
+                f"polynomials on a projective space, such as {sections}: not implemented"
+            )
+            return sections.section_scheme().closed_subscheme(
+                tuple(
+                    sections.homogeneous_polynomial(section)
+                    for section in self.selected_sections()
+                )
+            )
 
         def is_basepoint_free(self) -> bool:
             return self.base_locus().is_empty()
@@ -478,9 +548,8 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
     local quotient \(\mathcal{O}_{\mathbb{P},p}/\mathfrak{m}_p^r\).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "projective jet spaces"
+    def _repr_object_names(self):
+        return f"projective jet spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""The first jet of O(1) at a coordinate point of the projective line."""
@@ -488,7 +557,12 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         return projective_line.coordinate_point_jet_evaluation(1, 0, 1).codomain()
 
     def super_categories(self):
-        return [VectorSpaces(self.base_ring())]
+        r"""The monomial basis is a chosen framing of a free module over the same ring."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
+        return [FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
         def __init__(
@@ -558,11 +632,15 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
 
 
 class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
-    r"""Projective parameter spaces of sections satisfying one jet condition."""
+    r"""Linear systems of the sections vanishing to order ``r`` at a point ``p``.
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "linear systems with imposed multiplicity"
+    For the jet evaluation ``e: H^0(X, L) -> L_p / m_p^r L_p`` this is the
+    linear system with ``W = ker(e)`` and ``i`` the kernel inclusion.  This
+    level adds ``e``.
+    """
+
+    def _repr_object_names(self):
+        return f"linear systems with imposed multiplicity over {self.base_ring()}"
 
     def an_object(self):
         r"""Sections of O(1) on the projective line vanishing at one coordinate point."""
@@ -570,18 +648,16 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return projective_line.imposed_multiplicity_linear_system(1, 0, 1)
 
     def super_categories(self):
-        return [Schemes(self.base_ring()).Projective()]
+        return [ProjectiveLinearSystems(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, jet_evaluation, **rest) -> None:
             self._jet_evaluation = jet_evaluation
             super().__init__(**rest)
 
-        def ambient_section_space(self):
-            return self.imposed_jet_evaluation().domain()
-
         def constrained_section_space(self):
-            return self.imposed_jet_evaluation().kernel()
+            r"""``ker(e)``, the section subspace of this linear system."""
+            return self.selected_section_space()
 
         def imposed_jet_evaluation(self):
             return self._jet_evaluation
@@ -604,17 +680,15 @@ def _weak_compositions(total, length):
 
 
 def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordinate_names=None):
-    r"""Return the degree-``d`` homogeneous polynomial space on ``P^n``.
+    r"""Return the degree-``d`` homogeneous piece ``S_d`` of ``S = R[x_0..x_n]`` on ``P^n_R``.
 
     Basis labels are the actual monomials in an owned homogeneous-coordinate
-    polynomial algebra, not anonymous positions.
+    polynomial algebra, not anonymous positions.  No monomial has negative
+    total degree, so for ``d < 0`` the piece is the zero module on the empty
+    framing.
     """
     base = projective_scheme.scheme_base_ring()
     degree = int(degree)
-    assert degree >= 0, (
-        f"no space of homogeneous polynomials of degree {degree} on {projective_scheme}: "
-        "the degree must be nonnegative"
-    )
     width = int(projective_scheme.relative_dimension()) + 1
     names = (
         tuple(f"x{index}" for index in range(width))
@@ -629,7 +703,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     labels = tuple(ring.algebra_generating_set())
     monomials = []
     exponent_data = {}
-    for exponents in _weak_compositions(degree, width):
+    for exponents in _weak_compositions(degree, width) if degree >= 0 else ():
         monomial = ring.one()
         for position, exponent in enumerate(exponents):
             if exponent:
@@ -649,12 +723,15 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
 
 
 def _multihomogeneous_polynomial_section_space(projective_product, degrees):
-    r"""Return ``H^0(prod P^{n_i}, O(d_i))`` for a nonnegative multidegree.
+    r"""Return ``H^0(prod P^{n_i}, O(d_1, ..., d_r))`` for any integer multidegree.
 
     ``degrees`` is the multidegree as a family indexed by the product's own
     factor index set.  Basis labels are the actual multihomogeneous monomials
     in one owned polynomial coordinate algebra, so repeated isomorphic factors
-    keep distinct roles.
+    keep distinct roles.  By the Kuenneth formula the space is the tensor
+    product of the ``H^0(P^{n_i}, O(d_i))``, and a factor with ``d_i < 0`` has no
+    sections (Hartshorne, Proposition II.5.13), so a negative degree gives the
+    zero module on the empty framing.
     """
     base = projective_product.scheme_base_ring()
     assert projective_product in ProductProjectiveSpaces(base), (
@@ -669,10 +746,6 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         f"{projective_product} are indexed by {factor_indices}"
     )
     degree_values = tuple(_owned_integers()(degrees[label]) for label in factor_labels)
-    assert all(degree >= 0 for degree in degree_values), (
-        f"no space of multihomogeneous polynomials of multidegree {degree_values} on "
-        f"{projective_product}: every degree must be nonnegative"
-    )
     multidegree = finite_indexed_family(
         factor_indices,
         lambda label: degree_values[
@@ -704,7 +777,7 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
     monomials = []
     exponent_data = {}
     block_exponents = tuple(
-        tuple(_weak_compositions(int(degree), width))
+        tuple(_weak_compositions(int(degree), width)) if degree >= 0 else ()
         for degree, width in zip(degree_values, widths, strict=True)
     )
     for blocks in cartesian_product(*block_exponents):
@@ -753,8 +826,8 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
         degree,
         coordinate_names=source_names,
     )
-    native_ring = projective_space.coordinate_ring()
-    hyperplane = projective_space.closed_subscheme(native_ring.gen(coordinate_index))
+    equation = tuple(projective_space.homogeneous_coordinate_generators())[coordinate_index]
+    hyperplane = projective_space.hypersurface(equation)
     target_names = tuple(
         name for index, name in enumerate(source_names) if index != coordinate_index
     )
@@ -938,19 +1011,12 @@ def _projective_linear_system(line_bundle, sections):
         "system is given by a basis of its space of sections"
     )
     embedding = selected.Mono(ambient)(images)
-    polynomials = tuple(
-        ambient.homogeneous_polynomial(section)
-        for section in sections
-    )
-    base_locus = scheme.closed_subscheme(polynomials)
     return _projective_space(
         base,
         len(sections) - 1,
         None,
         (ProjectiveLinearSystems(base),),
-        line_bundle=line_bundle,
         section_embedding=embedding,
-        base_locus=base_locus,
     )
 
 
@@ -1118,7 +1184,8 @@ def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index,
 def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_order):
     r"""Projectivize sections vanishing to order at least ``r`` at ``point``."""
     evaluation = _projective_point_jet_evaluation(line_bundle, point, vanishing_order)
-    dimension = int(evaluation.kernel().dimension())
+    kernel = evaluation.kernel()
+    dimension = int(kernel.dimension())
     assert dimension != 0, (
         f"no nonzero section of {line_bundle} vanishes to order {vanishing_order} at {point}, "
         "so the linear system is empty and has no projectivization"
@@ -1130,6 +1197,7 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
         None,
         (ImposedMultiplicityLinearSystems(base),),
         jet_evaluation=evaluation,
+        section_embedding=kernel.inclusion(),
     )
 
 
@@ -1182,7 +1250,12 @@ def _complete_linear_system(scheme, divisor, section_space):
         (CompleteLinearSystems(base),),
         linear_system_scheme=scheme,
         linear_system_divisor=divisor,
-        section_space=section_space,
+        section_embedding=section_space.Mono(section_space)(
+            {
+                label: section_space.module_generator(label)
+                for label in section_space.module_generating_set()
+            }
+        ),
     )
 
 

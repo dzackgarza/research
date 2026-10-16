@@ -37,9 +37,8 @@ class SectionRings(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring(), NN)]
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "section rings"
+    def _repr_object_names(self):
+        return f"section rings over {self.base_ring()}"
 
     def _call_(self, source, divisor=None):
         r"""\(R(X, L)\) for a line bundle ``source``, or \(R(X, \mathcal{O}_X(D))\) for a scheme ``source`` and a divisor."""

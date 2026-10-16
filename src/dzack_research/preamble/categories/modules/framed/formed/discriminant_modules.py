@@ -47,9 +47,8 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_module()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "discriminant modules"
+    def _repr_object_names(self):
+        return f"discriminant modules over {self.base_ring()}"
 
     def super_categories(self):
         r"""``A_L`` is the cokernel of ``L -> L^#``: a quotient with its projection, not a subobject."""
@@ -168,9 +167,8 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_module()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "discriminant bilinear modules"
+    def _repr_object_names(self):
+        return f"discriminant bilinear modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -331,9 +329,8 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_module()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "discriminant quadratic modules"
+    def _repr_object_names(self):
+        return f"discriminant quadratic modules over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -512,9 +509,8 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
     r"""Finite subgroups of a discriminant module with the restricted form."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "discriminant submodules"
+    def _repr_object_names(self):
+        return f"discriminant submodules over {self.base_ring()}"
 
     def super_categories(self):
         r"""A subgroup ``H <= A_L`` is a finite module with its inclusion into ``A_L``."""

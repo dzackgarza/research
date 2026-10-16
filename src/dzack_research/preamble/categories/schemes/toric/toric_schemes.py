@@ -41,6 +41,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebras,
 )
@@ -49,7 +50,6 @@ from dzack_research.preamble.categories.divisors.chow_groups import (
     TorusInvariantCycleGroups,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
 )
@@ -60,6 +60,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
+    _owned_engine_element,
     _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -78,7 +79,6 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
-    ProjectiveSurfaces,
     Surfaces,
     Varieties,
 )
@@ -245,7 +245,9 @@ def _face_transition_morphism(face, source_cone, target_cone, base_ring):
     target_chart = _affine_chart(target_cone, base_ring)
     target_algebra = target_chart.coordinate_algebra()
     labels = tuple(target_algebra.algebra_generating_set())
-    extension = target_algebra.Mor(source_open.coordinate_algebra())(
+    extension = Algebras(base_ring).Associative().Unital().Commutative().Mor(
+        target_algebra, source_open.coordinate_algebra()
+    )(
         {
             labels[position]: _character_on_overlap(
                 generator, face, source_cone, base_ring
@@ -874,7 +876,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             fan, so the class group is this cokernel whether or not ``X`` has a
             torus factor; it is exact on the left exactly when ``X`` has none.
             """
-            return ClassGroups()(self, self.character_divisor_morphism())
+            return ClassGroups().cokernel_of_principal_divisors(self, self.character_divisor_morphism())
 
         @cached_method
         def class_group_projection(self):
@@ -1019,7 +1021,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return True
 
         @cached_method
-        def _picard_group(self, base_picard_group=None):
+        def _picard_group(self):
             r"""``Pic(X) = CDiv_T(X)/M`` (CLS Thm. 4.2.1).
 
             On a smooth fan every torus-invariant Weil divisor is Cartier (CLS
@@ -1030,16 +1032,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             free divisor group into a finitely presented cokernel, and the
             module layer represents kernels only between free modules.
             """
-            assert base_picard_group is None, (
-                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
-                "the toric divisor presentation has no projective-bundle base datum"
-            )
             assert self.fan().is_smooth(), (
                 f"the Picard group of {self} is computed only for a smooth fan, where every Weil "
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "
                 "with is_cartier instead"
             )
-            return PicardGroups()(self.character_divisor_morphism().cokernel())
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+
+            return PicardGroups().cokernel_of_principal_divisors(self, self.character_divisor_morphism())
 
         @cached_method
         def _picard_to_class_group_morphism(
@@ -1558,8 +1558,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return _toric_middle_cohomology_form(self)
 
         @cached_method
-        def hodge_structure(self):
-            r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
+        def _hodge_structure(self):
+            r"""The Hodge structure on ``H^*(X(CC); ZZ)``.
+
+            The required value is ``⊕_k H^k(X(CC); ZZ)`` as an object of
+            ``MixedHodgeStructures(ZZ)`` whose weight filtration splits with
+            ``Gr^W_k = H^k`` in ``HodgeStructures(ZZ, k)`` (Deligne, Théorie de
+            Hodge II, (2.1.1), (2.3.1)).
+            """
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
                 _toric_hodge_structure,
             )
@@ -1686,7 +1692,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             value = engine.integrate(
                 cohomology(engine_divisor(left)) * cohomology(engine_divisor(right))
             )
-            return _integers()(value)
+            return _owned_engine_element(_integers(), SageZZ(value))
 
         @cached_method
         def _picard_intersection_pairing(self):
@@ -1762,11 +1768,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 }
             )
 
-            module = relation.cokernel()
-            return ChowGroups(module.base_ring())(
-                module,
+            return ChowGroups(integers)(
                 self,
                 cycle_dimension,
+                relation,
             )
 
         @cached_method
@@ -2031,7 +2036,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
                 pass
     match (base in OwnedFields(), int(fan.dimension()), fan.is_complete()):
         case (True, 2, True):
-            decided.append(ProjectiveSurfaces(base))
+            decided.append(Surfaces(base).Projective())
         case _:
             pass
     engine_base = _engine_ring(base)

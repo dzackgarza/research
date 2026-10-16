@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.logic import AtomicProposition, Propositions
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class DegreewiseLinearMorphism(ModuleMorphism):
@@ -55,7 +56,16 @@ class DegreewiseLinearMorphism(ModuleMorphism):
 
 
 class DifferentialComponentMorphism(DegreewiseLinearMorphism):
-    r"""A degreewise component of a represented DGA differential."""
+    r"""A degreewise component of a represented DGA differential.
+
+    A differential of a differential graded ``R``-algebra is by definition an
+    ``R``-linear map of degree ``+1``, and constructing the algebra is the
+    caller's statement of that law (``OWN-22``), so each component is linear
+    by construction.
+    """
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
@@ -151,9 +161,8 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             law_decisions=law_decisions,
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "differential graded algebras"
+    def _repr_object_names(self):
+        return f"differential graded algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -557,6 +566,7 @@ class DGAMor(CategoricalMor):
             differential_compatibility=decision,
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

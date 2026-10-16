@@ -27,6 +27,7 @@ reuses the arrow objects without inheriting all the squares between them.
 """
 
 from __future__ import annotations
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _compose_operation_preserving_mor(left, right, fallback):
@@ -77,12 +78,15 @@ from dzack_research.preamble.owned_category import (
 from dzack_research.preamble.refine import (
     check_certifying_predicates,
     construction_scope,
+    owned_parent_class,
     realize_owned_category,
     run_construction_hooks,
 )
 from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
     from dzack_research.preamble.logic import Predicate
     from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -554,7 +558,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     (``OWN-22``).
     """
 
-    _mor_placement: Category | None = None
+    _mor_placement: Category
 
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
@@ -593,7 +597,14 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     @cached_method
     def _generated_arrow_type(self) -> type:
         r"""Return the arrow type generated from this Mor category's graph."""
-        providers = []
+        # Each level's ``__init__`` threads cooperatively to the levels it
+        # declares, and only the set-map root runs Sage's non-cooperative
+        # ``Morphism`` initialization.  So every Mor category precedes all of
+        # its supercategories: the reverse postorder of the declared graph,
+        # visited right to left so declaration order breaks ties.  A preorder
+        # placed the root inside an algebra arrow, ahead of its module level,
+        # whose datum then never existed.
+        postorder = []
         visited = set()
 
         def visit(mor):
@@ -601,17 +612,65 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             if marker in visited:
                 return
             visited.add(marker)
+            for super_category in reversed(mor.super_categories()):
+                if isinstance(super_category, CategoricalMor):
+                    visit(super_category)
+            postorder.append(mor)
+
+        visit(self)
+
+        # A Mor class also supplies the arrow methods of its Python ancestors,
+        # in their MRO order.  A provider precedes the next one its own class
+        # lists, and every provider of a Mor category precedes each provider
+        # that only a declared supercategory supplies.  Two Mor categories of
+        # one class (an algebra Mor over two categories of algebras) supply
+        # the same providers and add no order between them.  The providers
+        # are then sorted topologically (Kahn, Comm. ACM 5 (1962) 558), ties
+        # going to the first supplier in reverse postorder.
+        def own_providers(mor):
+            found = []
             for ancestor in type(mor).__mro__:
                 if ancestor is CategoricalMor:
                     break
                 provider = ancestor.__dict__.get("ElementMethods")
-                if isinstance(provider, type) and provider not in providers:
-                    providers.append(provider)
-            for super_category in mor.super_categories():
-                if isinstance(super_category, CategoricalMor):
-                    visit(super_category)
+                if isinstance(provider, type) and provider not in found:
+                    found.append(provider)
+            return found
 
-        visit(self)
+        first_supplier = {}
+        successors = {}
+        for position, mor in enumerate(reversed(postorder)):
+            own = own_providers(mor)
+            for provider in own:
+                first_supplier.setdefault(provider, position)
+                successors.setdefault(provider, set())
+            for earlier, later in zip(own, own[1:]):
+                successors[earlier].add(later)
+            for super_category in mor.super_categories():
+                if not isinstance(super_category, CategoricalMor):
+                    continue
+                for later in own_providers(super_category):
+                    if later not in own:
+                        for earlier in own:
+                            successors[earlier].add(later)
+        predecessor_count = dict.fromkeys(successors, 0)
+        for later_set in successors.values():
+            for later in later_set:
+                predecessor_count[later] += 1
+        providers = []
+        ready = [p for p, count in predecessor_count.items() if count == 0]
+        while ready:
+            ready.sort(key=first_supplier.__getitem__)
+            provider = ready.pop(0)
+            providers.append(provider)
+            for later in successors[provider]:
+                predecessor_count[later] -= 1
+                if predecessor_count[later] == 0:
+                    ready.append(later)
+        assert len(providers) == len(successors), (
+            f"the arrow providers of {self} have no order in which every Mor "
+            "category precedes its supercategories"
+        )
 
         bases = []
         for candidate in (
@@ -701,7 +760,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         _init_mor_category_class(self)
         # Host ``Homset`` initialization.  It stores the endpoints and runs
         # ``Parent.__init__`` once, in Sage's ``Sets`` Mor category, and
-        # ``_init_category_`` records the placement over it.
+        # ``_init_category_`` records the placement over it.  A Mor object is
+        # a set of arrows, so a caller that supplies no richer placement
+        # places it in ``Sets()``.
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
         self._mor_placement = category
         SageHomset.__init__(self, domain, codomain, category=SageSets())
         with construction_scope(self) as reached:
@@ -727,13 +792,9 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         recorded as the join of that category with the caller's placement.
         """
         Parent._init_category_(self, category)
-        match self._mor_placement:
-            case None:
-                pass
-            case placement:
-                SageCategoryObject._init_category_(
-                    self, owned_category_join((category, placement))
-                )
+        SageCategoryObject._init_category_(
+            self, owned_category_join((category, self._mor_placement))
+        )
 
     @validator
     def validate_placement(self) -> None:
@@ -757,10 +818,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         the weaker Mor must therefore preserve the arrow rather than
         reinterpret its object as generator images or presentation data.
         """
-        match args:
-            case (Morphism() as arrow,) if not kwargs and self._already_parented_arrow(arrow):
-                return arrow
-        return self._element_constructor_(*args, **kwargs)
+        return OwnedMor.__call__(self, *args, **kwargs)
 
     def mor_family(self) -> _MorCategoryOf:
         return self._family
@@ -783,6 +841,13 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         category of the owned Mor family.
         """
         return self.mor_family().base_category()
+
+    def _repr_(self) -> str:
+        r"""Name the category whose arrows these are, not the ``Sets`` runtime spine."""
+        return (
+            f"Set of Morphisms from {self.domain_object()} to {self.codomain_object()} "
+            f"in {self.mor_category()}"
+        )
 
     def identity_at(self, obj: Parent) -> Morphism:
         return self.mor_family().Of(obj, obj).arrow_set().identity()
@@ -940,6 +1005,7 @@ class MorArrowDiscreteMor(CategoricalMor):
             return value
         return self.element_class(self)
 
+    @object_level
     @cached_method
     def identity(self) -> MorArrowIdentity:
         return self()
@@ -1113,7 +1179,14 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
     two_mor = Mor
 
     def identity_2(self, arrow: Parent | Morphism) -> Morphism:
-        return self.Mor(arrow, arrow).identity()
+        r"""The identity 2-arrow of ``arrow``, read through ``two_mor``.
+
+        ``two_mor`` is this category's ``Mor`` between its objects.  When this
+        Mor is also a group or a set, the name ``Mor`` on it resolves to the
+        object-level ``X.Mor(Y)`` of that category (``ARC-07``), so the
+        category-level construction is asked by ``two_mor``.
+        """
+        return self.two_mor(arrow, arrow).identity()
 
     def identity(self, arrow_object: Parent | Morphism) -> Morphism:
         return self.Mor(arrow_object, arrow_object).identity()
@@ -1204,15 +1277,29 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
     and cannot become a second Mor for the same fixed endpoints.
 
     The owned category base already makes it a parent; what this level adds
-    is the category its *elements* form (a set, a module, a group), recorded
-    and realized exactly as the owned root records a category on an object:
-    the category is written on the parent and its owned methods are realized,
-    with no second class rewrite.
+    is the category its *elements* form (a set, a module, a group).  The
+    class is fixed from that category before the object exists, so the
+    owned levels of the category consume their construction data (the
+    scalar ring of a module, the inclusion of a subobject) in the same
+    cooperative ``__init__`` chain as this one, and the category is then
+    recorded on the parent with no second class rewrite.
     """
 
     @staticmethod
-    def __classcall__(cls, *arguments, **options):
-        return typecall(cls, *arguments, **options)
+    def __classcall__(cls, family, domain, codomain, *, category=None, **data):
+        r"""Construct an object of ``category`` from the data its owned levels declare."""
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
+        return typecall(
+            owned_parent_class(cls, category),
+            family=family,
+            domain=domain,
+            codomain=codomain,
+            category=category,
+            **data,
+        )
 
     def __init__(
         self,
@@ -1220,13 +1307,14 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
         domain: Parent,
         codomain: Parent,
         *,
-        category: Category | None = None,
+        category: Category,
+        base: Parent | None = None,
     ) -> None:
+        # ``base`` is the scalar ring that a module level of ``category``
+        # hands to the host parent.  That level already records it as its
+        # own datum; as a fixed Mor category the object has no base, so the
+        # chain ends here without one.
         FixedRestrictedMorCategory.__init__(self, family, domain, codomain)
-        if category is None:
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-
-            category = Sets()
         with construction_scope(self) as reached:
             SageCategoryObject._init_category_(self, category)
             realize_owned_category(self)
@@ -1266,13 +1354,20 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
 
 
 class CategoricalIsomorphism(Morphism):
-    r"""An isomorphism represented by mutually inverse arrows."""
+    r"""An isomorphism represented by mutually inverse arrows.
+
+    The defining datum is the forward arrow ``f: X -> Y``; the inverse
+    ``f^{-1}: Y -> X`` is determined by it.  It is supplied as a zero-argument
+    computation, asked on the first request and cached (``OWN-22``): a known
+    inverse is the constant computation, and a composite ``g f`` supplies
+    ``f^{-1} g^{-1}`` without composing it at construction.
+    """
 
     def __init__(
         self,
         parent: Parent,
         forward: Morphism,
-        inverse: Morphism,
+        inverse_computation: Callable[[], Morphism],
         *,
         verify: bool = False,
     ) -> None:
@@ -1282,18 +1377,28 @@ class CategoricalIsomorphism(Morphism):
                 f"an isomorphism {self.domain()} -> {self.codomain()} needs a forward map "
                 f"{self.domain()} -> {self.codomain()}, but {forward} is a map {forward.domain()} -> {forward.codomain()}"
             )
-        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
-            raise ValueError(
-                f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
-                f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
-            )
         self._forward = forward
-        self._inverse = inverse
+        self._inverse_computation = inverse_computation
         if verify:
             self.validate_inverse_pair()
 
     def forward(self) -> Morphism:
         return self._forward
+
+    @cached_method
+    def _inverse_morphism(self) -> Morphism:
+        r"""The base inverse arrow ``Y -> X``, computed once (protected; ``OWN-05``).
+
+        Owner: this isomorphism; callers: its own methods and those of its
+        subclasses.  Any other caller asks ``inverse().forward()``.
+        """
+        inverse = self._inverse_computation()
+        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
+            raise ValueError(
+                f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
+                f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
+            )
+        return inverse
 
     def inverse(self) -> CategoricalIsomorphism:
         r"""The inverse isomorphism ``Y -> X``, an element of the core Mor from the codomain.
@@ -1306,17 +1411,17 @@ class CategoricalIsomorphism(Morphism):
             _isomorphism_from_known_inverse_pair,
         )
 
-        return _isomorphism_from_known_inverse_pair(self._inverse, self._forward)
+        return _isomorphism_from_known_inverse_pair(self._inverse_morphism(), self._forward)
 
     def __invert__(self) -> CategoricalIsomorphism:
         return self.inverse()
 
     def left_inverse_decision(self):
-        composite = self._inverse * self.forward()
+        composite = self._inverse_morphism() * self.forward()
         return composite == composite.parent().identity()
 
     def right_inverse_decision(self):
-        composite = self.forward() * self._inverse
+        composite = self.forward() * self._inverse_morphism()
         return composite == composite.parent().identity()
 
     def inverse_pair_decision(self):
@@ -1328,7 +1433,7 @@ class CategoricalIsomorphism(Morphism):
         decision = self.inverse_pair_decision()
         if decision is False:
             raise ValueError(
-                f"{self._inverse} is not an inverse of {self.forward()}: at least one inverse equation fails"
+                f"{self._inverse_morphism()} is not an inverse of {self.forward()}: at least one inverse equation fails"
             )
         return decision
 
@@ -1339,19 +1444,20 @@ class CategoricalIsomorphism(Morphism):
         return self.forward()(element)
 
     def __eq__(self, other: Any) -> bool | Predicate:
+        r"""Two isomorphisms of one Mor are equal when their forward arrows are.
+
+        An inverse is unique when it exists, so the forward arrows decide;
+        neither inverse is computed.
+        """
         if self is other:
             return True
         # A represented isomorphism can be parented by an ordinary Mor object of
         # its base category, beside maps that are not isomorphisms.
         match other:
             case CategoricalIsomorphism() if parent(other) is self.parent():
-                pass
+                return self.forward() == other.forward()
             case _:
                 return False
-        equalities = (self.forward() == other.forward(), self._inverse == other._inverse)
-        from dzack_research.preamble.logic import conjunction
-
-        return conjunction(equalities)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
@@ -1365,24 +1471,21 @@ class CategoricalIsomorphism(Morphism):
         r"""Compose with ``other``; a composite of isomorphisms is an element of the Iso Mor.
 
         For isomorphisms ``f: A -> B`` and ``g: B -> C`` the composite ``g f``
-        has inverse ``f^{-1} g^{-1}``, so it is that known inverse pair in
-        ``Core(C).Mor(A, C)``, whose arrows are those of ``Iso_C(A, C)``.
-        Composed with an arrow that is not an isomorphism, it is the
-        composite of the forward arrow with that arrow.
+        has inverse ``f^{-1} g^{-1}``, so it is the isomorphism of
+        ``Core(C).Mor(A, C)`` with forward arrow ``g f`` whose inverse is
+        that composite, computed when it is first asked.  ``f`` may be any
+        arrow of the core Mor, whatever type realizes it: its inverse is
+        asked through ``f.inverse()``.  Composed with an arrow that is not an
+        isomorphism, it is the composite of the forward arrow with that arrow.
         """
         if not _precomposable(self, other):
             return NotImplemented
         core = self.parent().mor_category().Core()
         if other not in core.Mor(other.domain(), self.domain()):
             return self.forward() * other
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            _isomorphism_from_known_inverse_pair,
-        )
-
-        return _isomorphism_from_known_inverse_pair(
+        return core.Mor(other.domain(), self.codomain())._from_inverse_computation(
             self.forward() * other.forward(),
-            other._inverse * self._inverse,
-            base_category=core,
+            lambda: other.inverse().forward() * self._inverse_morphism(),
         )
 
 
@@ -1877,6 +1980,7 @@ class _MorCategoryOf(OwnedCategoryBase):
         # refinement, and a candidate survives when
         # this category states nothing stronger than the class it already is.
         inherited = []
+        declared = []
         for supercategory in _packet_supercategories(self.base_category()):
             if not self._inherits_morphisms_from(supercategory, domain, codomain):
                 continue
@@ -1889,6 +1993,8 @@ class _MorCategoryOf(OwnedCategoryBase):
             if domain not in supercategory or codomain not in supercategory:
                 continue
             candidate = self.family_over(supercategory).Of(domain, codomain)
+            if all(candidate is not known for known in declared):
+                declared.append(candidate)
             if not (
                 fixed_class is FixedMorCategory or isinstance(candidate, fixed_class)
             ):
@@ -1897,7 +2003,12 @@ class _MorCategoryOf(OwnedCategoryBase):
                 inherited.append(candidate)
 
         inherited = _minimal_inherited_homs(inherited)
-        if len(inherited) == 1:
+        # A literal reuse is the Mor of this category only when it lies under
+        # every Mor its supercategories give: a map of associative unital
+        # algebras is a ring map, though a map of unital algebras is not.
+        if len(inherited) == 1 and all(
+            _declared_category_reaches(inherited[0], other) for other in declared
+        ):
             # One inherited Mor of the class this category would have built:
             # the subcategory adds no morphisms, so reuse that object literally
             # rather than fabricating a second parent for the same maps.

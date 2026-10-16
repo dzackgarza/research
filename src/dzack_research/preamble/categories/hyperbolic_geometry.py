@@ -1,8 +1,9 @@
 r"""Positive-cone components and their projectivized hyperbolic geometry."""
 
 from itertools import count, product
+from math import gcd
 
-from sage.arith.misc import gcd
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -131,7 +132,7 @@ def _primitive_on_selected_ray(lattice, vector, timelike):
             f"the zero vector of {lattice} spans no ray: a point of a projective space is "
             f"the ray of a nonzero vector"
         )
-    content = gcd(nonzero_coordinates)
+    content = gcd(*nonzero_coordinates)
     primitive = lattice(tuple(entry // content for entry in coordinates))
     if lattice.b(primitive, timelike) < 0:
         primitive = -primitive
@@ -169,7 +170,42 @@ class PositiveConeComponents(OwnedParameterizedCategory):
         return [Sets().Subobjects(self.ambient_space())]
 
     def an_object(self):
-        return _positive_cone_component(self.lattice(), _timelike_witness(self.lattice()))
+        return self.component_through(self.reference_vector())
+
+    @cached_method
+    def reference_vector(self):
+        r"""Return the integral vector of positive square that labels the components.
+
+        The positive cone ``{x : q(x) > 0}`` of a lattice of signature
+        ``(1, n)`` has exactly two components, exchanged by ``-1``, and a
+        timelike ``t`` lies in the component of ``w`` exactly when
+        ``b(t, w) > 0``.  So ``w`` and ``-w`` label the two components.
+        """
+        return _timelike_witness(self.lattice())
+
+    def component_through(self, timelike):
+        r"""Return the component of ``{x : q(x) > 0}`` that contains ``timelike``.
+
+        A component is a subset of ``L ⊗ RR``, determined by the sign of
+        ``b(timelike, w)`` for the reference vector ``w``, so equal components
+        are the same object.
+        """
+        lattice = self.lattice()
+        timelike = lattice(timelike)
+        assert lattice.q(timelike) > lattice.base_ring().zero(), (
+            f"{timelike} lies in no component of the positive cone of {lattice}: "
+            f"it must have positive square, but q = {lattice.q(timelike)}"
+        )
+        reference = self.reference_vector()
+        match lattice.b(timelike, reference) > lattice.base_ring().zero():
+            case True:
+                return self._component_labelled_by(reference)
+            case False:
+                return self._component_labelled_by(-reference)
+
+    @cached_method
+    def _component_labelled_by(self, label):
+        return _labelled_positive_cone_component(self, label)
 
     class ParentMethods:
         def __init__(self, lattice, timelike, **rest) -> None:
@@ -219,16 +255,233 @@ class PositiveConeComponents(OwnedParameterizedCategory):
         def opposite(self):
             return _positive_cone_component(self.lattice(), -self.timelike_vector())
 
+        def __eq__(self, other):
+            r"""Two components of the positive cone of ``L`` are equal when they meet.
+
+            The components of ``{x : q(x) > 0}`` are disjoint, and timelike
+            ``s``, ``t`` lie in one component exactly when ``b(s, t) > 0``.  Any
+            other subset of ``L ⊗ RR`` is compared through its inclusion.
+            """
+            if self is other:
+                return True
+            match other in PositiveConeComponents(self.lattice()):
+                case True:
+                    lattice = self.lattice()
+                    pairing = lattice.b(self.timelike_vector(), other.timelike_vector())
+                    return pairing > lattice.base_ring().zero()
+                case False:
+                    return super().__eq__(other)
+
+        def __ne__(self, other):
+            from dzack_research.preamble.logic import negation
+
+            return negation(self == other)
+
+        def __hash__(self) -> int:
+            # Equal subsets of ``L ⊗ RR`` have the same inclusion codomain.
+            return hash(self.codomain())
+
         @cached_method
         def projectivization(self):
             return _hyperbolic_space(self)
 
         def _repr_(self):
-            return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
+            return f"Positive-cone component of {self.lattice()} ⊗ RR containing {self.timelike_vector()}"
 
 
 class HyperbolicSpaces(OwnedParameterizedCategory):
-    r"""Projectivizations of chosen positive-cone components."""
+    r"""Hyperbolic spaces of dimension ``n``.
+
+    An object is a complete simply connected Riemannian ``n``-manifold of
+    constant sectional curvature ``-1``.  Any two are isometric (the
+    Killing--Hopf theorem), so the family is parameterized by the dimension
+    ``n >= 1`` alone.  Each hyperboloid model ``HH(C^+)`` is an object: for a
+    lattice ``L`` of signature ``(1, n)`` and a chosen component ``C^+`` of
+    ``{x in L_RR : q(x) > 0}``, ``HH(C^+)`` is ``{x in C^+ : q(x) = 1}`` with
+    the metric ``-b`` on each tangent space ``x^perp``.  It is
+    ``SO_0(1, n)/SO(n)``, a Riemannian globally symmetric space of the
+    noncompact type (Helgason, Ch. X, §6, Table V, type BDI with ``q = 1``),
+    and ``RiemannianManifolds().GloballySymmetric()`` is the immediate
+    supercategory.  The rays of positive rational vectors are its rational
+    points, the separate object ``rational_points()``.
+    """
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        assert dimension >= 1, (
+            f"a hyperbolic space has dimension at least 1, and {dimension} is not"
+        )
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def _repr_object_names(self):
+        return f"hyperbolic spaces of dimension {self.dimension()}"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+        return [RiemannianManifolds().GloballySymmetric()]
+
+    @cached_method
+    def an_object(self):
+        r"""Return the standard ``H^n``, the hyperboloid of ``I_{1,n}`` in its reference positive-cone component."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        lattice = Lattices.IPQ(1, self.dimension())
+        return PositiveConeComponents(lattice).an_object().projectivization()
+
+    def _call_(self, component):
+        r"""Return the hyperboloid model ``HH(C^+)`` of a positive-cone component of rank ``n + 1``."""
+        assert component.lattice().module_rank() == self.dimension() + 1, (
+            f"{component} spans a hyperbolic space of dimension "
+            f"{component.lattice().module_rank() - 1}, not {self.dimension()}"
+        )
+        return component.projectivization()
+
+    class ParentMethods:
+        def __init__(self, component, **rest) -> None:
+            self._component = component
+            super().__init__(**rest)
+
+        def positive_cone_component(self):
+            return self._component
+
+        def lattice(self):
+            return self._component.lattice()
+
+        def riemannian_metric(self):
+            r"""Return the metric ``-b`` restricted to each tangent space ``x^perp`` of the hyperboloid."""
+            assert False, "riemannian_metric on HyperbolicSpaces: not implemented"
+
+        @cached_method
+        def rational_points(self):
+            r"""Return the topological space of rays of positive rational vectors of the component."""
+            return _object_of(
+                HyperbolicRationalPoints(self._component),
+                topology_data=_HyperbolicTopologyData(),
+                component=self._component,
+            )
+
+        def rational_point(self, vector):
+            r"""Return the rational point on the ray of ``vector``, a positive vector of the component."""
+            return self.rational_points()(vector)
+
+        def ideal_point(self, vector):
+            r"""Return the point at infinity on the ray of the isotropic ``vector``.
+
+            An ideal point of the projectivized component is an isotropic ray
+            of its closure, which is the one-dimensional rational polyhedral
+            cone it spans.
+            """
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                RationalPolyhedralCones,
+            )
+
+            lattice = self.lattice()
+            vector = lattice(vector)
+            assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
+                f"{vector} does not define an ideal point of {self}: an ideal point is the "
+                f"ray of a nonzero isotropic vector in the closure of {self._component}, "
+                f"and {vector} has square {lattice.q(vector)}"
+            )
+            primitive = _primitive_on_selected_ray(
+                lattice, vector, self._component.timelike_vector()
+            )
+            return RationalPolyhedralCones(lattice).from_rays((primitive,))
+
+        def projectivize_cone(self, cone):
+            r"""Return the hyperbolic polyhedron of rational points on the rays of ``cone``."""
+            if cone.ambient_lattice() is not self.lattice():
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: the cone lies in "
+                    f"{cone.ambient_lattice()}, not in {self.lattice()}"
+                )
+            if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: a hyperbolic polyhedron comes "
+                    f"from a cone in the closure of {self._component}, and {cone} is not "
+                    f"contained in it"
+                )
+            points = self.rational_points()
+            subset = points.condition_set(
+                lambda point: cone.contains(point.representative())
+            )
+            return Sets().Subobjects(points).object(
+                subset.inclusion(),
+                categories=(HyperbolicPolyhedra(self),),
+                construction_data={"space": self, "cone": cone},
+            )
+
+        def isometric_action(self, group):
+            r"""Return the ``Gamma``-space ``(HH(C^+), rho)`` of a group ``Gamma`` of isometries of ``L``.
+
+            ``group`` is a subgroup ``Gamma`` of ``O(L)``, for instance the
+            reflection group ``W(L)``.  An isometry ``g`` of ``L`` maps the
+            cone ``{q > 0}`` to itself and permutes its two components, so
+            ``rho(g)`` is the isometry ``x |-> eps g x`` of the hyperboloid,
+            with ``eps = +-1`` the sign that keeps ``g x`` in ``C^+``: this is
+            the action of ``O(L)`` on ``HH(C^+)``, the set of positive lines,
+            through ``O(L) -> PO(L)`` (Ratcliffe, Foundations of Hyperbolic
+            Manifolds, Ch. 3).  It is a left action, and ``-1`` acts
+            trivially.  ``O(L)`` is discrete in ``O(L tensor RR)`` and the
+            stabilizer of a point of ``HH^n`` is compact, so ``Gamma`` acts
+            properly discontinuously.  The result is an object of
+            ``GObjects(Gamma, RiemannianManifolds()).ProperlyDiscontinuous()``;
+            its ``orbit_space()`` is the Riemannian orbifold ``Gamma\HH^n``.
+            """
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+            return GObjects(group, RiemannianManifolds()).ProperlyDiscontinuous().on_space(
+                self, lambda element, point: self._isometry_image(element, point)
+            )
+
+        def _isometry_image(self, element, point):
+            r"""The point ``eps g x`` for ``g`` an isometry of the lattice and ``x`` a point of the hyperboloid."""
+            frame = self._hyperboloid_frame()
+            lattice = self.lattice()
+            assert element.domain() is lattice and element.codomain() is lattice, (
+                f"{element} does not act on {self}: an isometry of the hyperboloid of {lattice} "
+                f"comes from an isometry of {lattice}, and {element} is a map "
+                f"{element.domain()} -> {element.codomain()}"
+            )
+            vector = frame.vector(tuple(point.coordinates()))
+            images = tuple(
+                frame.coordinates(element(generator)) for generator in frame.generators
+            )
+            image = tuple(
+                sum((vector[source] * images[source][target] for source in range(frame.rank)), RR.zero())
+                for target in range(frame.rank)
+            )
+            match frame.pairing(image, frame.timelike) > RR.zero():
+                case True:
+                    return self.point(frame.chart(image), "hyperboloid")
+                case False:
+                    return self.point(frame.chart(tuple(-entry for entry in image)), "hyperboloid")
+
+        @cached_method
+        def _hyperboloid_frame(self):
+            return _HyperboloidFrame(self.lattice(), self._component.timelike_vector())
+
+        def _repr_(self):
+            component = self.positive_cone_component()
+            return (
+                f"Hyperbolic space HH^{self.dimension()}: the hyperboloid q = 1 in the "
+                f"positive-cone component of {component.lattice()} ⊗ RR containing "
+                f"{component.timelike_vector()}"
+            )
+
+
+class HyperbolicRationalPoints(OwnedParameterizedCategory):
+    r"""The rays of positive rational vectors of a chosen positive-cone component.
+
+    A point is the ray ``RR_{>0} v`` of a vector ``v`` of ``L`` with
+    ``q(v) > 0`` in ``C^+``, represented by its primitive lattice vector; it
+    meets the hyperboloid of ``HH(C^+)`` in ``v / sqrt(q(v))``.
+    """
 
     def parameter_category(self):
         component = self.parameter()
@@ -239,13 +492,13 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
 
     @classmethod
     def _repr_object_names(cls):
-        return "hyperbolic spaces"
+        return "spaces of rational hyperbolic points"
 
     def super_categories(self):
         return [TopologicalSpaces()]
 
     def an_object(self):
-        return _hyperbolic_space(self.positive_cone_component())
+        return _hyperbolic_space(self.positive_cone_component()).rational_points()
 
     class ElementMethods(Element):
         r"""A rational point of a hyperbolic space: the ray of a positive vector of the component."""
@@ -320,61 +573,24 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
         def rational_point(self, vector):
             return self(vector)
 
-        def ideal_point(self, vector):
-            r"""Return the point at infinity on the ray of the isotropic ``vector``.
-
-            An ideal point of the projectivized component is an isotropic ray
-            of its closure, which is the one-dimensional rational polyhedral
-            cone it spans.
-            """
-            from dzack_research.preamble.categories.polyhedral_cones import (
-                RationalPolyhedralCones,
-            )
-
-            lattice = self.lattice()
-            vector = lattice(vector)
-            assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
-                f"{vector} does not define an ideal point of {self}: an ideal point is the "
-                f"ray of a nonzero isotropic vector in the closure of {self._component}, "
-                f"and {vector} has square {lattice.q(vector)}"
-            )
-            primitive = _primitive_on_selected_ray(
-                lattice, vector, self._component.timelike_vector()
-            )
-            return RationalPolyhedralCones(lattice).from_rays((primitive,))
-
-        def projectivize_cone(self, cone):
-            if cone.ambient_lattice() is not self.lattice():
-                raise ValueError(
-                    f"cannot projectivize {cone} into {self}: the cone lies in "
-                    f"{cone.ambient_lattice()}, not in {self.lattice()}"
-                )
-            if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
-                raise ValueError(
-                    f"cannot projectivize {cone} into {self}: a hyperbolic polyhedron comes "
-                    f"from a cone in the closure of {self._component}, and {cone} is not "
-                    f"contained in it"
-                )
-            category = HyperbolicPolyhedra(self)
-            subset = self.condition_set(
-                lambda point: cone.contains(point.representative())
-            )
-            return Sets().Subobjects(self).object(
-                subset.inclusion(),
-                categories=(category,),
-                construction_data={"space": self, "cone": cone},
-            )
+        def hyperbolic_space(self):
+            r"""Return ``HH(C^+)``, the hyperbolic space whose rational points these are."""
+            return self._component.projectivization()
 
         def _repr_(self):
-            return f"Hyperbolic projectivization of {self._component}"
+            return f"Rational points of the hyperbolic space of {self._component}"
 
 
 class HyperbolicPolyhedra(OwnedParameterizedCategory):
-    r"""Projectivized rational polyhedral cones in a chosen hyperbolic space."""
+    r"""Projectivized rational polyhedral cones in a chosen hyperbolic space.
+
+    An object is the subset of the rational points of ``HH(C^+)`` lying on
+    the rays of a rational polyhedral cone in the closure of ``C^+``, with
+    its inclusion.
+    """
 
     def parameter_category(self):
-        space = self.parameter()
-        return HyperbolicSpaces(space.positive_cone_component())
+        return HyperbolicSpaces(self.parameter().dimension())
 
     def hyperbolic_space(self):
         return self.base()
@@ -384,7 +600,7 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
         return "hyperbolic polyhedra"
 
     def super_categories(self):
-        return [Sets().Subobjects(self.hyperbolic_space())]
+        return [Sets().Subobjects(self.hyperbolic_space().rational_points())]
 
     def an_object(self):
         from dzack_research.preamble.categories.polyhedral_cones import (
@@ -446,9 +662,12 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
 
 
 def _positive_cone_component(lattice, timelike):
-    category = PositiveConeComponents(lattice)
+    return PositiveConeComponents(lattice).component_through(timelike)
+
+
+def _labelled_positive_cone_component(category, timelike):
+    lattice = category.lattice()
     ambient = category.ambient_space()
-    timelike = lattice(timelike)
     subset = ambient.condition_set(
         lambda vector: _positive_component_contains(
             lattice,
@@ -464,16 +683,75 @@ def _positive_cone_component(lattice, timelike):
     )
 
 
+class _HyperboloidFrame(SageObject):
+    r"""The coordinates of the chart ``hyperboloid`` of ``HH(C^+)``; a private realization.
+
+    For ``t`` the timelike vector of ``C^+`` and ``w_j = b(t, e_j)``, choose
+    ``k`` with ``w_k != 0``; the vectors ``u_j = w_k e_j - w_j e_k``, ``j != k``,
+    are a basis of ``t^perp``.  A point ``x`` has chart coordinates ``y`` with
+    ``x - (b(x, t)/b(t, t)) t = sum_j y_j u_j``, and conversely
+    ``x = s t + sum_j y_j u_j`` with ``s = sqrt((1 - q(y))/q(t))``.
+    """
+
+    def __init__(self, lattice, timelike) -> None:
+        self.labels = tuple(lattice.module_generating_set())
+        self.generators = tuple(lattice.module_generator(label) for label in self.labels)
+        self.rank = len(self.labels)
+        self.gram = tuple(
+            tuple(RR(lattice.b(left, right)) for right in self.generators) for left in self.generators
+        )
+        self.timelike = self.coordinates(timelike)
+        self.timelike_pairings = tuple(
+            sum((self.timelike[row] * self.gram[row][column] for row in range(self.rank)), RR.zero())
+            for column in range(self.rank)
+        )
+        self.pivot = next(
+            index for index, value in enumerate(self.timelike_pairings) if value != RR.zero()
+        )
+        self.others = tuple(index for index in range(self.rank) if index != self.pivot)
+
+    def coordinates(self, vector):
+        coordinates = vector.to_vector()
+        support = {label: RR(coordinates(label)) for label in coordinates.support().domain()}
+        return tuple(support.get(label, RR.zero()) for label in self.labels)
+
+    def pairing(self, left, right):
+        return sum(
+            (
+                left[row] * self.gram[row][column] * right[column]
+                for row in range(self.rank)
+                for column in range(self.rank)
+            ),
+            RR.zero(),
+        )
+
+    def vector(self, chart_coordinates):
+        w = self.timelike_pairings
+        projection = [RR.zero()] * self.rank
+        for position, index in enumerate(self.others):
+            projection[index] = chart_coordinates[position] * w[self.pivot]
+            projection[self.pivot] -= chart_coordinates[position] * w[index]
+        projection = tuple(projection)
+        height = (
+            (RR.one() - self.pairing(projection, projection)) / self.pairing(self.timelike, self.timelike)
+        ).sqrt()
+        return tuple(height * self.timelike[index] + projection[index] for index in range(self.rank))
+
+    def chart(self, vector):
+        ratio = self.pairing(vector, self.timelike) / self.pairing(self.timelike, self.timelike)
+        projection = tuple(vector[index] - ratio * self.timelike[index] for index in range(self.rank))
+        return tuple(projection[index] / self.timelike_pairings[self.pivot] for index in self.others)
+
+
 def _hyperbolic_space(component):
-    return _object_of(
-        HyperbolicSpaces(component),
-        topology_data=_HyperbolicTopologyData(),
-        component=component,
-    )
+    from dzack_research.preamble.categories.manifolds import RiemannianManifolds
+
+    return RiemannianManifolds().GloballySymmetric().hyperbolic_space(component)
 
 
 __all__ = [
     "HyperbolicPolyhedra",
+    "HyperbolicRationalPoints",
     "HyperbolicSpaces",
     "PositiveConeComponents",
 ]

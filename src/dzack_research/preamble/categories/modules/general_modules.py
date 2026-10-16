@@ -97,9 +97,8 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def _repr_(self):
             return repr(self.underlying_element())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "general modules"
+    def _repr_object_names(self):
+        return f"general modules over {self.base_ring()}"
 
     def an_object(self):
         r"""The zero module, the one-point set with its only additive structure."""

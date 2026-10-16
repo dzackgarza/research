@@ -9,10 +9,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedOrders,
     RingMorphism,
     _engine_ring,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class OrderEmbedding:
@@ -64,10 +64,8 @@ class OrderEmbedding:
 class OrderMor(CategoricalMor):
     ElementMethods = OrderEmbedding
 
-    def __init__(self, domain, codomain) -> None:
-        CategoricalMor.__init__(
-            self, OwnedOrders().MorCategory(), domain, codomain
-        )
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, field_embedding):
         r"""Admit the ring map of fraction fields, or any datum that ring ``Mor`` admits."""
@@ -75,6 +73,7 @@ class OrderMor(CategoricalMor):
         target_field = self.codomain().fraction_field()
         return self.element_class(self, source_field.Mor(target_field)(field_embedding))
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

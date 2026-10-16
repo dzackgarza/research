@@ -14,7 +14,7 @@ def test_the_derivations_of_qq_x() -> None:
     assert derivations in Modules(ring)
     assert derivations.module_rank() == 1
     assert delta(x ^ 2) == 2 * x * delta(x)
-    assert delta(ring.one()) == ring.zero()
+    assert delta.linear_endomorphism()(ring.one()) == ring.zero()
 
 
 def test_the_degree_minus_one_derivations_of_the_de_rham_algebra() -> None:

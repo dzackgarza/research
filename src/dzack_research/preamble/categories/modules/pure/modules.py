@@ -93,6 +93,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, ask, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -1220,9 +1221,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
         _categorical_coproduct_morphism = _categorical_product_morphism
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules"
+    def _repr_object_names(self):
+        return f"modules over {self.base_ring()}"
 
     def an_object(self):
         r"""The free module of rank one, which is the base ring itself."""
@@ -1462,10 +1462,12 @@ class Modules(OwnedCategoryOverBaseRing):
             _register_module_scalar_action(self)
 
 
+        @object_level
         def Mono(self, codomain):
             r"""Return the declared injective linear maps into ``codomain``."""
             return Modules(self.base_ring()).Mono(self, codomain)
 
+        @object_level
         def End(self):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
             return Modules(self.base_ring()).End(self)
@@ -1478,6 +1480,7 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             return self.module_category().Aut(self)
 
+        @object_level
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
 
@@ -2488,6 +2491,29 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, ring.regular_module())
 
         @cached_method
+        def projectivization(self):
+            r"""Return ``P(M) = Proj_R(Sym_R(M)) -> Spec R``, Grothendieck's projectivization.
+
+            The points of ``P(M)`` with values in an ``R``-algebra ``T`` are the
+            invertible quotients of ``M tensor_R T`` (EGA II, 4.1.1 and 4.2.3), so a
+            ``k``-point of ``P(V)`` over a field ``k`` is a one-dimensional quotient of
+            ``V``, equivalently a hyperplane of ``V`` or a line of the dual ``V^*``.
+            For ``V`` free of rank ``n+1`` this is ``P^n_k``, whose homogeneous
+            coordinates are a basis of ``V`` itself, since ``Sym(V) = k[x_0, ..., x_n]``.
+
+            ``P(M)`` is the projectivization of the quasi-coherent sheaf ``M~`` on
+            ``Spec R``, so it is computed by that sheaf's ``projectivization()``.
+            """
+            ring = self.base_ring()
+            assert ring in OwnedRings().Commutative(), (
+                f"P({self}) = Proj Sym(M) needs Spec R, which exists only for a commutative ring, and "
+                f"R = {ring} is not known to be commutative"
+            )
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+            return Schemes(ring).base_scheme().associated_module_sheaf(self).projectivization()
+
+        @cached_method
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
             return _restricted_scalars_view(self, ring_map)
@@ -3109,9 +3135,8 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
         free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "linear Mor modules"
+    def _repr_object_names(self):
+        return f"linear Mor modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3159,9 +3184,8 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
         free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "internal Mor modules"
+    def _repr_object_names(self):
+        return f"internal Mor modules over {self.base_ring()}"
 
     def super_categories(self):
         return [LinearMorModules(self.base_ring())]
@@ -3307,9 +3331,8 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         r"""The ideal (2), a submodule of the base ring."""
         return self.base_ring().ideal(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "module subobjects"
+    def _repr_object_names(self):
+        return f"module subobjects over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3487,9 +3510,8 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "vector spaces"
+    def _repr_object_names(self):
+        return f"vector spaces over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -3522,9 +3544,8 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
     presence is not evidence that an arbitrary framed module carries it.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a chosen component presentation"
+    def _repr_object_names(self):
+        return f"modules with a chosen component presentation over {self.base_ring()}"
 
     def an_object(self):
         from dzack_research.preamble.categories.modules.word_modules import (
@@ -3561,9 +3582,8 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a chosen finite presentation"
+    def _repr_object_names(self):
+        return f"modules with a chosen finite presentation over {self.base_ring()}"
 
     def __call__(self, morphism, category=None, **construction_data):
         r"""Construct the presented module even when ``morphism`` is itself in this category.
@@ -3660,7 +3680,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 _presented_module_from_morphism,
             )
 
-            if ring_map.is_identity() and not _extra_construction_data:
+            if ring_map.is_identity() is True and not _extra_construction_data:
                 return self
             presentation = self.presentation()
             source = presentation.domain().base_change(ring_map)
@@ -3720,6 +3740,38 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
             return _TensorMorAdjunction(self)
+
+        def _selected_relation_morphism(self):
+            r"""Return the selected relation morphism ``r: F_1 -> F_0`` to module-construction adapters.
+
+            Protected presented-module contract under OWN-05--07. Permitted
+            callers are module, group-module and module-morphism constructors
+            that rebuild owned kernels, quotients, direct constructions, or
+            scalar changes from the selected finite presentation.  Every
+            module with a chosen finite presentation answers it, whichever
+            constructor fixed that presentation.
+            """
+            return self.presentation()
+
+        def presentation(self):
+            r"""Return the selected relation morphism ``F_1 -> F_0``."""
+            selected = self.selected_module_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.differential(1)
+                case _:
+                    raise TypeError(
+                        f"{self} has no selected relation map F_1 -> F_0: its chosen module resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
+
+        def _rank_decision(self):
+            r"""``rank_R M = rank_R coker(r)`` for the chosen presentation ``r: F_1 -> F_0``.
+
+            The presentation is exact, ``F_1 -> F_0 -> M -> 0``, so ``M`` is
+            isomorphic to ``coker(r)``, and rank is an isomorphism invariant.
+            """
+            return self.presentation().cokernel().module_rank()
 
         @cached_method
         def presentation_object(self):
@@ -4222,9 +4274,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             ring.Mor(ring)(lambda element: element)
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "restricted-scalars modules"
+    def _repr_object_names(self):
+        return f"restricted-scalars modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -4337,6 +4388,33 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
 
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
+
+        @cached_method
+        def regular_module_identification(self):
+            r"""The isomorphism ``Res_f(S^1) -> S`` of ``R``-modules, ``s e_0 |-> s``.
+
+            Here ``f: R -> S`` is the structure morphism of the ``R``-algebra
+            ``S`` and ``S^1`` is the regular ``S``-module.  The target is
+            ``S`` with its own ``R``-module structure, on which ``r`` acts as
+            multiplication by ``f(r)``.  Both modules have the underlying set
+            of ``S``, and the map is ``R``-linear because
+            ``r.(s e_0) = (f(r) s) e_0 |-> f(r) s = r.s``.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            scalars = self.extension_ring()
+            assert self.module_over_extension() is scalars.regular_module(), (
+                f"{self} is not restricted from the regular module of {scalars}, so it has no identification "
+                f"with {scalars}"
+            )
+            assert scalars in Algebras(self.base_ring()) and self.ring_map() is scalars.algebra_structure_morphism(), (
+                f"{self} is restricted along {self.ring_map()}, which is not the structure morphism of {scalars} "
+                f"as a {self.base_ring()}-algebra"
+            )
+            to_scalars = scalars.regular_module_isomorphism()
+            return self.module_category().Mor(self, scalars)._from_constructed_element_map(
+                lambda element: to_scalars(self(element).underlying_element())
+            )
 
         def underlying_additive_group(self):
             r"""Return the unchanged additive group of the extension-ring module."""
@@ -4629,13 +4707,14 @@ def _restricted_scalar_presentation(module, ring_map, labels, scalar_basis):
     )
 
 
-@cached_function(key=lambda module, ring_map, **data: (
-    id(module), id(ring_map), tuple(sorted((name, id(value)) for name, value in data.items()))
+@cached_function(key=lambda module, ring_map, *data: (
+    id(module), id(ring_map), tuple(id(value) for value in data)
 ))
 def _restricted_scalars_view(
     module,
     ring_map,
-    *,
+    # Sage's cached_function argument fixer cannot read keyword-only
+    # defaults, so these selected-subobject data are ordinary keywords.
     _subobject_ambient=None,
     _subobject_generator_images=None,
     _subobject_lift=None,
@@ -4654,9 +4733,10 @@ def _restricted_scalars_view(
     already represented dimension is multiplied by that basis cardinality.
     This dimension transport does not require or create a finite frame of M.
     """
-    assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
-        f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the base ring "
-        f"{module.base_ring()}, but its codomain is {ring_map.codomain()}"
+    extension_ring = _owned_ring(module.base_ring())
+    assert _owned_ring(ring_map.codomain()) is extension_ring, (
+        f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the scalar ring "
+        f"{extension_ring} of the module, but its codomain is {ring_map.codomain()}"
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
@@ -4666,7 +4746,6 @@ def _restricted_scalars_view(
     )
 
     base_ring = _owned_ring(ring_map.domain())
-    extension_ring = _owned_ring(module.base_ring())
     placement = [RestrictedScalarsModules(base_ring)]
     if base_ring in OwnedFields():
         placement.append(VectorSpaces(base_ring))
@@ -4866,9 +4945,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
         free = Modules(self.base_ring()).an_object()
         return Modules(self.base_ring()).tensor_product((free, free))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen tensor-product modules"
+    def _repr_object_names(self):
+        return f"chosen tensor-product modules over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -5384,9 +5462,8 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         free = Modules(self.base_ring()).an_object()
         return Modules(self.base_ring()).biproduct((free, free))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen module biproducts"
+    def _repr_object_names(self):
+        return f"chosen module biproducts over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
@@ -5675,9 +5752,8 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix Mor objects"
+    def _repr_object_names(self):
+        return f"matrix Mor objects over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -6180,9 +6256,8 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
                 free = modules.an_object()
         return modules.Mor(free, free)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix endomorphism objects"
+    def _repr_object_names(self):
+        return f"matrix endomorphism objects over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.group.additive_mors import (

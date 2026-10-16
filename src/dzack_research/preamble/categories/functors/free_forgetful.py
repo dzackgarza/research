@@ -43,9 +43,10 @@ class _UnderlyingSetFunctor(Functor):
         return module
 
     def _apply_morphism(self, module_morphism):
+        r"""``U(f)`` is the function ``f`` computes on points (``CON-17``)."""
         return Sets().Mor(
             module_morphism.domain(), module_morphism.codomain()
-        )(module_morphism)
+        )(lambda element: module_morphism(element))
 
     def _repr_(self):
         return f"Underlying-set functor on {self._base_ring}-modules"

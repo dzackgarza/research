@@ -25,10 +25,8 @@ def test_finite_atlas_sheaf_arrows_preserve_descent_identity_and_zero() -> None:
     preserves the two distinct endomorphisms zero and identity and their
     compositions on the standard affine atlas of projective space.
     """
-    from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasModuleGluingData
-
     atlas = ProjectiveSpaces(QQ)(1).standard_affine_atlas()
-    datum = FiniteAtlasModuleGluingData(atlas).structure_module_datum()
+    datum = atlas.structure_module_datum()
     sheaf = datum.sheaf()
     hom = QuasiCoherentSheaves(sheaf.scheme()).Mor(sheaf, sheaf)
     zero = hom({

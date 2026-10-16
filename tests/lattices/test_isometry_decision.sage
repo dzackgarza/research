@@ -30,6 +30,9 @@ def test_a_genus_of_two_spinor_genera_has_two_classes() -> None:
     assert representatives.cardinality() == 2
     first, second = representatives[0], representatives[1]
     assert first.Isom(second).is_empty() is True
+    # Isom(L, M) has distinct endpoints and no placement among the sets, so its
+    # cardinality is the core Mor's operation, read from the isometry decision.
+    assert first.Isom(second).cardinality() == 0
     classes = Lattices(ZZ).isometry_classes(finite_family((first, second, lattice)))
     assert classes.cardinality() == 2
 

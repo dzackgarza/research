@@ -1,6 +1,6 @@
 r"""Categories of chosen truncated projective resolutions.
 
-For a category C, a projective class P <= C and n >= 0, Resolutions(C, P, n)
+For a category C, a projective class P <= C and an ordinal n <= omega, Resolutions(C, P, n)
 is a category of chosen data over objects of C.  Its objects are augmented
 simplicial resolutions through degree n whose resolved levels lie in P; its
 morphisms are maps of the augmented truncated simplicial objects.  The target
@@ -10,6 +10,7 @@ For finite truncation the resolution equations concern the augmentation
 and degrees below the last chosen level. A degree-one presentation gives
 its degree-zero coequalizer, not vanishing of top-degree homotopy or a
 resolution terminating in degree one.
+The session ordinal ``omega0`` selects an untruncated resolution.
 
 The common owner supplies three constructions whose acyclicity follows from
 the construction itself: a projective-source epimorphism in truncation zero,
@@ -26,7 +27,6 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
-from sage.rings.infinity import Infinity
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -36,18 +36,22 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_mor_parent,
     _category_packet,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    object_level,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.sets.cardinals import omega0
 from dzack_research.preamble.owned_category import _object_of
 
 
 def _normalize_truncation(truncation):
     match truncation:
-        case _ if truncation is Infinity:
-            return Infinity
+        case _ if truncation is omega0:
+            return omega0
         case _:
             value = int(truncation)
             match value < 0:
@@ -149,8 +153,7 @@ class ResolutionMorphism(Morphism):
                 category = self.domain().resolution_category()
                 return category.Mor(other.domain(), self.codomain())(
                     lambda degree: self.component(degree) * other.component(degree),
-                    target_morphism=self.target_morphism()
-                    * other.target_morphism(),
+                    target_morphism=self.target_morphism() * other.target_morphism(),
                 )
             case _:
                 return NotImplemented
@@ -179,7 +182,7 @@ class ResolutionMorphism(Morphism):
             case _:
                 pass
         match self.domain().truncation():
-            case _ if self.domain().truncation() is Infinity:
+            case _ if self.domain().truncation() is omega0:
                 return AtomicProposition("equal", self, other)
             case truncation:
                 return conjunction(
@@ -228,18 +231,8 @@ class ResolutionMor(CategoricalMor):
                     case True:
                         return morphism
                     case False:
-                        match self.domain().truncation():
-                            case _ if self.domain().truncation() is Infinity:
-                                components = morphism.component
-                            case truncation:
-                                components = {
-                                    degree: morphism.component(degree)
-                                    for degree in range(truncation + 1)
-                                }
-                        return self.element_class(
-                            self,
-                            components,
-                            target_morphism=morphism.target_morphism(),
+                        raise TypeError(
+                            f"{morphism} belongs to another Mor; give the resolution components"
                         )
             case _:
                 return self.element_class(
@@ -248,6 +241,7 @@ class ResolutionMor(CategoricalMor):
                     target_morphism=target_morphism,
                 )
 
+    @object_level
     @cached_method
     def identity(self):
         match self.domain() is self.codomain():
@@ -343,9 +337,7 @@ class _DegreeZeroResolutionTransport(Functor):
         target = self(morphism.codomain())
         return self.codomain().Mor(source, target)(
             {0: self.transported_functor()(morphism.component(0))},
-            target_morphism=self.transported_functor()(
-                morphism.target_morphism()
-            ),
+            target_morphism=self.transported_functor()(morphism.target_morphism()),
         )
 
     def _repr_(self) -> str:
@@ -486,7 +478,7 @@ class Resolutions(OwnedCategory):
             case True:
                 pass
         match self.truncation():
-            case _ if self.truncation() is Infinity:
+            case _ if self.truncation() is omega0:
                 pass
             case truncation:
                 for degree in range(truncation + 1):
@@ -595,7 +587,10 @@ class Resolutions(OwnedCategory):
                 )
             case True:
                 pass
-        match generator_morphism.domain() is generating_set and generator_morphism.codomain() is target:
+        match (
+            generator_morphism.domain() is generating_set
+            and generator_morphism.codomain() is target
+        ):
             case False:
                 raise ValueError(
                     f"the selected generator map of {target} must be a map from "
@@ -802,7 +797,7 @@ class Resolutions(OwnedCategory):
             adjunction.counit(target),
             face_function=face,
             degeneracy_function=degeneracy,
-            length=Infinity,
+            length=omega0,
             model="comonadic",
         )
 
@@ -1046,7 +1041,7 @@ class Resolutions(OwnedCategory):
             component_function,
         ) -> None:
             match self.truncation():
-                case _ if self.truncation() is Infinity:
+                case _ if self.truncation() is omega0:
                     # As for a natural transformation on an infinite source
                     # category, the component family is theorem-backed data:
                     # there is no finite admission loop that can establish all
@@ -1085,11 +1080,9 @@ class Resolutions(OwnedCategory):
                     pass
             for degree in range(1, self.truncation() + 1):
                 for index in range(degree + 1):
-                    match (
-                        target.face(degree, index) * component_function(degree)
-                        == component_function(degree - 1)
-                        * self.face(degree, index)
-                    ):
+                    match target.face(degree, index) * component_function(
+                        degree
+                    ) == component_function(degree - 1) * self.face(degree, index):
                         case False:
                             raise ValueError(
                                 f"the resolution morphism {self} -> {target} does not commute "
@@ -1099,11 +1092,10 @@ class Resolutions(OwnedCategory):
                             pass
             for degree in range(self.truncation()):
                 for index in range(degree + 1):
-                    match (
-                        target.degeneracy(degree, index)
-                        * component_function(degree)
-                        == component_function(degree + 1)
-                        * self.degeneracy(degree, index)
+                    match target.degeneracy(degree, index) * component_function(
+                        degree
+                    ) == component_function(degree + 1) * self.degeneracy(
+                        degree, index
                     ):
                         case False:
                             raise ValueError(

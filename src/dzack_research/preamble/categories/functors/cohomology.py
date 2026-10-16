@@ -137,6 +137,47 @@ class _DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
         return f"H^*_dR(-/{self.base_ring()})"
 
 
+class _SingularCohomologyFunctor(Functor):
+    r"""``H^*(-; R): Top^op -> GradedAlgebras(R, ZZ).Supercommutative()``.
+
+    An object of ``Top^op`` is a space ``X``; its image is
+    ``X.singular_cohomology(R)``.  An arrow of ``Top^op`` is a continuous map
+    ``f: X -> Y``; its image is the pullback ``f^*: H^*(Y; R) -> H^*(X; R)``
+    (Hatcher, *Algebraic Topology*, §3.2).
+    """
+
+    def __init__(self, base_ring) -> None:
+        from dzack_research.preamble.categories.algebras.graded_algebras import (
+            GradedAlgebras,
+        )
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _owned_integers,
+        )
+        from dzack_research.preamble.categories.topological_spaces import (
+            TopologicalSpaces,
+        )
+
+        self._base_ring = _owned_ring(base_ring)
+        super().__init__(
+            TopologicalSpaces().opposite(),
+            GradedAlgebras(self._base_ring, _owned_integers()).Supercommutative(),
+        )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _apply_object(self, space):
+        return space.underlying_object().singular_cohomology(self.base_ring())
+
+    def _apply_morphism(self, morphism):
+        assert False, (
+            f"the pullback {morphism.underlying_arrow()}^* on H^*(-; {self.base_ring()}): not implemented"
+        )
+
+    def _repr_(self):
+        return f"H^*(-; {self.base_ring()}) on topological spaces"
+
+
 @cached_function
 def _cohomology_functor(base_ring, degree) -> _CohomologyFunctor:
     return _CohomologyFunctor(base_ring, degree)
@@ -155,6 +196,11 @@ def _cohomology_algebra_functor(base_ring) -> _CohomologyAlgebraFunctor:
 @cached_function
 def _de_rham_cohomology_algebra_functor(base_ring) -> _DeRhamCohomologyAlgebraFunctor:
     return _DeRhamCohomologyAlgebraFunctor(base_ring)
+
+
+@cached_function
+def _singular_cohomology_functor(base_ring) -> _SingularCohomologyFunctor:
+    return _SingularCohomologyFunctor(base_ring)
 
 
 __all__ = []

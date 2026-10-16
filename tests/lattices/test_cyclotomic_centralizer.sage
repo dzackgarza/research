@@ -1,5 +1,7 @@
 r"""Cyclotomic decompositions of finite-order isometries and their gluing."""
 
+import pytest
+
 from dzack_research.preamble.all import *
 
 
@@ -75,3 +77,65 @@ def test_the_centralizer_of_minus_one_on_Z2_is_the_signed_permutation_group_of_o
     swap = lattice.O()({0: second, 1: first})
     assert swap in minus_one.centralizer_group()
     assert swap(first) == second
+
+
+def swap_of_two_hyperbolic_planes():
+    r"""``U + U`` with the isometry exchanging its two summands."""
+    lattice = NamedLattices.U + NamedLattices.U
+    labels = lattice.module_generating_set()
+    e1, f1, e2, f2 = lattice.module_generators()
+    return lattice, lattice.O()({labels[0]: e2, labels[1]: f2, labels[2]: e1, labels[3]: f1})
+
+
+def test_the_swap_of_two_hyperbolic_planes_has_a_glued_centralizer_containing_f_and_minus_one() -> None:
+    r"""The swap ``f`` of ``U + U`` has ``ker(f - 1)`` the diagonal copy and
+    ``ker(f + 1)`` the antidiagonal copy of ``U``, each with the form doubled:
+    ``U(2)``, of rank two and discriminant group of order ``4``.  ``U + U`` is
+    unimodular, so ``[L : L_1 + L_2]^2 = det(L_1) det(L_2) = 16`` and the
+    index is ``4``.  ``f`` and ``-1`` commute with ``f``, so both lie in
+    ``Z_{O(L)}(f)``; the glued generators generate that group (acceptance of
+    TODO ``arithmetic-centralizers-from-component-gluing``)."""
+    lattice, swap = swap_of_two_hyperbolic_planes()
+    decomposition = swap.cyclotomic_decomposition(2)
+
+    assert Set(decomposition.nonzero_divisors()) == Set((1, 2))
+    for divisor in (1, 2):
+        summand = decomposition.summand(divisor)
+        assert summand.module_rank() == 2
+        assert summand.discriminant_group().cardinality() == 4
+    assert decomposition.index() == 4
+    assert decomposition.gluing_subgroup().cardinality() == 4
+
+    centralizer = lattice.O().centralizer(swap)
+    generators = tuple(centralizer.group_generators())
+    assert all(generator * swap == swap * generator for generator in generators)
+    generated = lattice.O().subgroup(generators)
+    assert swap in generated
+    assert negation_of(lattice) in generated
+
+
+def test_the_centralizer_of_minus_one_on_E8_is_all_of_O_E8() -> None:
+    r"""``-1`` is central in ``O(E8(-1)) = W(E8)``, of order ``696729600``
+    (Conway--Sloane, *Sphere Packings, Lattices and Groups*, ch. 4, sect. 8.1),
+    so its centralizer is the whole group."""
+    lattice = NamedLattices.E8
+    minus_one = negation_of(lattice)
+
+    generators = tuple(lattice.O().centralizer(minus_one).group_generators())
+    assert all(generator * minus_one == minus_one * generator for generator in generators)
+    assert lattice.O().subgroup(generators).cardinality() == 696729600
+
+
+def test_an_indefinite_hermitian_component_asserts_its_frontier() -> None:
+    r"""The Coxeter rotation of ``A2`` has order three and fixes no vector,
+    so on ``A2 + A2(-1)``, of signature ``(2, 2)``, the rotation of both
+    summands has the single cyclotomic summand ``ker Phi_3 = L``: an
+    indefinite hermitian lattice over ``ZZ[zeta_3]``, whose unitary group has
+    no generating route, so reading its generators asserts."""
+    lattice = Lattices(ZZ)([[2, -1], [-1, 2]]) + Lattices(ZZ)([[-2, 1], [1, -2]])
+    labels = lattice.module_generating_set()
+    a1, a2, b1, b2 = lattice.module_generators()
+    rotation = lattice.O()({labels[0]: a2, labels[1]: -a1 - a2, labels[2]: b2, labels[3]: -b1 - b2})
+
+    with pytest.raises(AssertionError, match="unitary group"):
+        lattice.O().centralizer(rotation).group_generators()

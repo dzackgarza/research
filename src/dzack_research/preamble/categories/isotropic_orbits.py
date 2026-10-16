@@ -834,7 +834,6 @@ def _marked_isotropic_object(obj, *, flag):
                 )
             line, plane = terms
             line_into_plane = line.inclusion().factor_through(plane.inclusion())
-            line_into_plane = line.Emb(plane)(line_into_plane)
             return _marked_isotropic_category(obj.lattice(), flag=True).object(
                 (line_into_plane, plane.inclusion())
             )

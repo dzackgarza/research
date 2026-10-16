@@ -121,8 +121,8 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
     def character_lattice(self):
         r"""The character lattice ``M`` of the torus ``T_N`` (CLS §1.1).
 
-        ``M`` is the dual of ``N`` in the chosen frame, so the two share a
-        label set and the frame of ``M`` is the dual frame of ``N``.
+        ``M`` is the dual module of ``N``, and its frame is the dual frame of
+        the chosen frame of ``N``.
         """
         return self.lattice().dual_module()
 
@@ -130,25 +130,25 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
     def character_cocharacter_pairing(self):
         r"""The perfect evaluation pairing ``<-,->: M ⊗ N -> ZZ`` (CLS (1.1.2)).
 
-        This is the duality of the two lattices.  It is not a form on either
-        of them: a positive form a session may additionally put on ``N`` is a
-        different morphism, out of the tensor square of ``N``.
+        This is the duality of the two lattices, ``<m, u> = m(u)`` on the
+        frames.  It is not a form on either of them: a positive form a session
+        may additionally put on ``N`` is a different morphism, out of the
+        tensor square of ``N``.
         """
         characters = self.character_lattice()
         cocharacters = self.lattice()
         integers = _integers()
         values = integers.regular_module()
-        dual_frames = BilinearMap(
+        return BilinearMap(
             characters,
             cocharacters,
             values,
-            lambda character_label, cocharacter_label: (
-                integers.one()
-                if character_label == cocharacter_label
-                else integers.zero()
+            lambda character_label, cocharacter_label: integers(
+                characters.module_generator(character_label)(
+                    cocharacters.module_generator(cocharacter_label)
+                )
             ),
         )
-        return dual_frames
 
     def character_cocharacter_value(self, character, cocharacter):
         r"""Return the scalar integer ``<character, cocharacter>``.

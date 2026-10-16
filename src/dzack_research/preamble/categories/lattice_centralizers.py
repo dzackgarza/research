@@ -31,6 +31,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -410,7 +411,8 @@ class CyclotomicDecomposition(SageObject):
                     f"{proper_divisor}-th power is the identity of {lattice}"
                 )
 
-        self._divisors = finite_ordered_set(tuple(divisors(self._order)))
+        integers = _owned_integers()
+        self._divisors = finite_ordered_set(tuple(integers(int(divisor)) for divisor in divisors(self._order)))
         self._summands = finite_indexed_family(
             self._divisors,
             lambda divisor: isometry.cyclotomic_summand(int(divisor)),
@@ -579,42 +581,22 @@ class CyclotomicDecomposition(SageObject):
             for divisor in self.nonzero_divisors()
         )
 
-    def _scaled_extension(self, components):
-        r"""Return multiplication by the index ``m`` on ``L`` and ``x -> g(m x)``.
-
-        ``g`` is the orthogonal sum of the components on the cyclotomic sum,
-        which contains ``m L``.
-        """
-        lattice = self.lattice()
-        moved_images = []
+    def _block_sum(self, components):
+        r"""Return the orthogonal sum of the components on ``M = sum_d L_d``, in ``O(M)``."""
+        result = self.orthogonal_sum().O().one()
         for divisor in self.nonzero_divisors():
-            summand = self.summand(divisor)
-            inclusion = summand.inclusion()
-            component = components[divisor]
-            moved_images.extend(inclusion(component(generator)) for generator in summand.module_generators())
-        orthogonal_sum = self.orthogonal_sum()
-        moved = orthogonal_sum.module_category().Mor(orthogonal_sum, lattice)(tuple(moved_images))
-
-        scalar = lattice.base_ring()(int(self.index().finite_value()))
-        scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
-        inclusion = self.orthogonal_sum_inclusion()
-
-        def scaled_image(label):
-            scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
-            return moved(inclusion.lift(scaled))
-
-        return scaling, scaled_image
+            result = result * self._block_isometry(divisor, components[divisor])
+        return result
 
     def lift_component_isometries(self, component_isometries):
         r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
 
-        Compatibility is tested by extension, not by comparing only finite
-        discriminant images.  If ``m`` is the index of the cyclotomic sum,
-        every ``m*x`` lies in that sum.  Apply the component tuple there and
-        divide by ``m`` again.  The division succeeds in ``L`` exactly when
-        the tuple preserves the integral glue; the ambient ``O(L)`` constructor
-        then verifies the form and bijectivity, and commutation with ``f`` is
-        checked separately.
+        The orthogonal sum ``g`` of the components is an isometry of the
+        cyclotomic sum ``M``; the tuple is compatible exactly when ``g``
+        extends along the finite-index inclusion ``M -> L``, and the lift is
+        that extension (:meth:`LatticeEmbeddingMethods.isometry_extension`).
+        Commutation with ``f`` holds on ``M`` because each component commutes
+        with ``f_d``, hence on ``L tensor QQ``.
         """
         components = self._component_tuple(component_isometries)
         if not self._components_commute(components):
@@ -623,32 +605,90 @@ class CyclotomicDecomposition(SageObject):
                 f"{self.isometry()}: some component does not commute with f restricted to "
                 f"its cyclotomic summand"
             )
-        scaling, scaled_image = self._scaled_extension(components)
-        lifted = self.lattice().O()(lambda label: scaling.lift(scaled_image(label)))
-        if lifted * self.isometry() != self.isometry() * lifted:
-            raise ArithmeticError(
-                f"the lift {lifted} of the components {component_isometries} does not "
-                f"commute with {self.isometry()}, although each component commutes with "
-                f"f on its cyclotomic summand"
-            )
-        return lifted
+        return self.orthogonal_sum_inclusion().isometry_extension(self._block_sum(components))
 
     def component_isometries_extend(self, component_isometries) -> bool:
         r"""Whether the component tuple extends to an isometry of ``L`` commuting with ``f``.
 
         The orthogonal sum ``g`` of commuting components is an isometry of
-        ``L tensor QQ``; it preserves ``L`` exactly when ``g(m x)`` lies in
-        ``m L`` for every generator ``x``, and it then commutes with ``f``
-        because it does so on the finite-index cyclotomic sum.
+        ``M``; it extends to ``L`` exactly when ``g_Q(L) = L``
+        (:meth:`LatticeEmbeddingMethods.isometry_extends`), and it then
+        commutes with ``f`` because it does so on the finite-index ``M``.
         """
         components = self._component_tuple(component_isometries)
         if not self._components_commute(components):
             return False
-        scaling, scaled_image = self._scaled_extension(components)
-        return all(
-            scaling.is_in_image(scaled_image(label))
-            for label in self.lattice().module_generating_set()
+        return self.orthogonal_sum_inclusion().isometry_extends(self._block_sum(components))
+
+    def _orthogonal_sum_image(self, divisor, element):
+        r"""Return the image of ``element`` of ``L_d`` under ``L_d -> M = sum_e L_e``.
+
+        ``M`` embeds in ``L`` by ``j``, and ``L_d -> M`` is the factorization
+        of ``L_d -> L`` through ``j``.
+        """
+        summand = self.summand(divisor)
+        return self.orthogonal_sum_inclusion().lift(summand.inclusion()(element))
+
+    def _block_isometry(self, divisor, component):
+        r"""Return ``component`` on ``L_d`` extended by the identity of every other ``L_e``, in ``O(M)``."""
+        orthogonal_sum = self.orthogonal_sum()
+        images = []
+        for other in self.nonzero_divisors():
+            images.extend(
+                self._orthogonal_sum_image(other, component(generator) if other == divisor else generator)
+                for generator in self.summand(other).module_generators()
+            )
+        by_label = dict(zip(orthogonal_sum.module_generating_set(), images, strict=True))
+        return orthogonal_sum.O()(lambda label: by_label[label])
+
+    def _block_restriction(self, divisor, automorphism):
+        r"""Restrict a block-diagonal ``g`` in ``O(M)`` to ``L_d``, an element of ``O(L_d)``."""
+        summand = self.summand(divisor)
+        inclusion = summand.inclusion()
+        orthogonal_sum_inclusion = self.orthogonal_sum_inclusion()
+        return summand.O()(
+            {
+                label: inclusion.lift(
+                    orthogonal_sum_inclusion(
+                        automorphism(self._orthogonal_sum_image(divisor, summand.module_generator(label)))
+                    )
+                )
+                for label in summand.module_generating_set()
+            }
         )
+
+    def gluing_subgroup(self):
+        r"""Return ``L/M`` as the subgroup of ``A_M`` it defines, for ``M = sum_d L_d``.
+
+        This is the glue of the finite-index inclusion ``M -> L``
+        (:meth:`LatticeEmbeddingMethods.gluing_subgroup`).
+        """
+        return self.orthogonal_sum_inclusion().gluing_subgroup()
+
+    @cached_method
+    def glued_centralizer_generators(self):
+        r"""Return group generators of ``Z_{O(L)}(f)`` glued from the component centralizers.
+
+        Let ``Gamma <= O(M)`` be generated by the block-diagonal elements
+        ``g_d``, one for each group generator of each
+        ``Z_{O(L_d)}(f_d)``.  Every element of ``Z_{O(L)}(f)`` restricts to
+        each ``L_d``, so ``Z_{O(L)}(f)`` is the subgroup of ``Gamma`` of
+        elements preserving ``L``, restricted to ``L``: the extended subgroup
+        of ``Gamma`` along the finite-index inclusion ``M -> L``
+        (:meth:`LatticeEmbeddingMethods.extended_subgroup`), computed there
+        as a preimage under ``rho_M: O(M) -> O(A_M)``.  No abstract product
+        of the component groups is formed: a generated subgroup of ``O(M)``
+        on the block-diagonal generators is the group the gluing needs.
+        """
+        orthogonal_sum = self.orthogonal_sum()
+        centralizers = self.component_centralizers()
+        block_generators = tuple(
+            self._block_isometry(divisor, generator)
+            for divisor in self.nonzero_divisors()
+            for generator in centralizers[divisor].group_generators()
+        )
+        blocks = orthogonal_sum.O().subgroup(block_generators)
+        return self.orthogonal_sum_inclusion().extended_subgroup(blocks).group_generators()
 
 
 class PolarizedEquivariantLattice(SageObject):
@@ -859,7 +899,7 @@ class IsometryPrimitiveExtension:
             element = coinvariant_form.module_generator(label)
             twisted = twisted_coinvariant_form(element)
             target_element = target_inclusion.lift(twisted)
-            source_element = glue.inverse_morphism()(target_element)
+            source_element = glue.inverse().forward()(target_element)
             invariant_class = source_inclusion(source_element)
             moved_invariant_class = invariant_automorphism(invariant_class)
             moved_source = source_inclusion.lift(moved_invariant_class)
@@ -867,7 +907,13 @@ class IsometryPrimitiveExtension:
             moved_twisted = target_inclusion(moved_target)
             images[label] = coinvariant_form(moved_twisted)
         morphism = coinvariant_form.module_category().Mor(coinvariant_form, coinvariant_form)(images)
-        return coinvariant_form.O()(morphism)
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            _torsion_form_isometry,
+        )
+
+        group = coinvariant_form.O()
+        isometry = _torsion_form_isometry(morphism, morphism.inverse(), quadratic=group.is_quadratic())
+        return group.from_morphism(isometry)
 
     def lift_coinvariant_extension_element(self, coinvariant_part):
         r"""Lift ``g_-`` from the anti-invariant extension group to ``O(L,f)``.
@@ -1138,6 +1184,78 @@ class IsometryPrimitiveExtension:
 
     def __repr__(self) -> str:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
+
+
+def arithmetic_centralizer(orthogonal_group, isometry):
+    r"""Return ``Z_{O(L)}(f)``, its group generators selected to be computed on first request.
+
+    The subgroup is the predicate subgroup ``{g in O(L) : g f = f g}``.
+    Construction computes nothing (``OWN-22``): the generating family is
+    computed by :func:`_arithmetic_centralizer_group_generators` when
+    ``group_generators()`` is first read.
+    """
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+    from dzack_research.preamble.categories.group.predicate_subgroups import (
+        CentralizerSubgroups,
+    )
+
+    centralizer = CentralizerSubgroups(orthogonal_group)(isometry)
+    if not centralizer.has_selected_resolution(OwnedGroups()):
+        centralizer.select_group_generators(
+            lambda: _arithmetic_centralizer_group_generators(centralizer)
+        )
+    return centralizer
+
+
+def _arithmetic_centralizer_group_generators(centralizer):
+    r"""Compute a generating set of ``Z = Z_{O(L)}(f)`` for ``f`` of finite order.
+
+    Let ``L_d = ker Phi_d(f)`` be the nonzero cyclotomic summands.
+
+    - One summand with ``d`` in ``{1, 2}``: ``f = 1`` or ``f = -1`` is
+      central, ``Z = O(L)``, and its generators are those of ``O(L)``.
+    - ``L`` definite: ``O(L)`` is finite and GAP computes the centralizer of
+      ``f`` in it.
+    - Two or more summands: ``Z`` is glued from the component centralizers
+      ``Z_{O(L_d)}(f_d)`` by
+      :meth:`CyclotomicDecomposition.glued_centralizer_generators`.
+    - One summand with ``d > 2`` in an indefinite ``L``: ``L`` is a hermitian
+      lattice over ``ZZ[zeta_d]`` with ``f`` acting by ``zeta_d``, and no
+      route computes the generators of its unitary group (port #18,
+      2026-10-15).  That frontier asserts.
+    """
+    from sage.rings.infinity import Infinity
+
+    from dzack_research.preamble.categories.group.groups import (
+        _finite_group_centralizer_generators,
+    )
+
+    group = centralizer.supergroup()
+    isometry = centralizer.centralizing_element()
+    lattice = group.lattice()
+    order = lattice.module_category().Mor(lattice, lattice)(isometry).multiplicative_order()
+    assert order != Infinity, (
+        f"the centralizer of {isometry} in {group} has group generators computed here only "
+        f"for an isometry of finite order, through the cyclotomic summands ker Phi_d(f); "
+        f"{isometry} has infinite order"
+    )
+    decomposition = isometry.cyclotomic_decomposition(order)
+    nonzero_divisors = tuple(int(divisor) for divisor in decomposition.nonzero_divisors())
+    match nonzero_divisors:
+        case (1,) | (2,):
+            generators = group.group_generators()
+        case _ if lattice.is_definite():
+            generators = _finite_group_centralizer_generators(group, isometry)
+        case (_, _, *_):
+            generators = decomposition.glued_centralizer_generators()
+        case (divisor,):
+            assert False, (
+                f"the centralizer of {isometry} in {group} is the unitary group of {lattice} "
+                f"as a hermitian lattice over ZZ[zeta_{divisor}], on which {isometry} acts "
+                f"by zeta_{divisor}; {lattice} is indefinite, and no route computes generators "
+                f"of that unitary group (port #18, 2026-10-15)"
+            )
+    return finite_ordered_set(tuple(centralizer(generator) for generator in generators))
 
 
 __all__ = [

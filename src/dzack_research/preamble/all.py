@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectMorphism,
     TrivialCoveringFamilies,
     trivial_coverage,
+    OpenCoveringFamilies,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     DiscreteCategories,
@@ -131,7 +132,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
     PicardGroups,
-    ProjectiveBundlePicardGroups,
     ProjectiveJetSpaces,
     ProjectiveLinearSystems,
     SectionRings,
@@ -268,6 +268,31 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pair,
     signature_pairs,
 )
+from dzack_research.preamble.categories.group.groups import (  # noqa: F401
+    LieGroups,
+    TopologicalGroups,
+)
+from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+    HyperbolicPolyhedra,
+    HyperbolicRationalPoints,
+    HyperbolicSpaces,
+    PositiveConeComponents,
+)
+from dzack_research.preamble.categories.manifolds import (  # noqa: F401
+    ComplexManifolds,
+    DifferentiableManifolds,
+    RiemannianManifolds,
+    SmoothManifolds,
+    TopologicalManifolds,
+)
+from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
+    ComplexAnalyticSpaces,
+)
+from dzack_research.preamble.categories.orbifolds import (  # noqa: F401
+    ComplexOrbifolds,
+    Orbifolds,
+    RiemannianOrbifolds,
+)
 from dzack_research.preamble.categories.modules import (
     BilinearFormModules,
     BilinearMap,
@@ -325,6 +350,7 @@ from dzack_research.preamble.categories.modules import (
     ModulesWithChosenFinitePresentation,
     ModulesWithConnection,
     ModulesWithFlatConnection,
+    VectorBundlesWithConnection,
     PairingObjects,
     PairedModules,
     ProjectiveModules,
@@ -339,10 +365,20 @@ from dzack_research.preamble.categories.modules import (
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
+    DerivedCategories,
+    DerivedCategory,
+    LinearCategories,
+    TriangulatedCategories,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,
     MatrixSpaces,
+)
+from dzack_research.preamble.categories.modules.hodge_structures import (  # noqa: F401
+    FilteredModules,
+    HodgeStructures,
+    MixedHodgeStructures,
+    PolarizedHodgeStructures,
 )
 from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
     FiniteCommensurabilityQuotient,
@@ -373,13 +409,10 @@ _lazy_import(
         "EffectiveCartierDivisors",
         "FiberProductSchemes",
         "FiniteGluedInvariantQuotient",
-        "GeometricFundamentalGroups",
         "HesseBertiniFamily",
         "HorikawaEnriquesSurface",
         "HorikawaK3Family",
         "IntegralSchemes",
-        "IntegralSingularCohomologyGroups",
-        "IntegralTopologicalCohomologyGroups",
         "IsolatedHypersurfaceSingularity",
         "LatticePolygons",
         "LatticePolytopes",
@@ -398,37 +431,30 @@ _lazy_import(
         "ProductProjectiveSpaces",
         "ProductSchemes",
         "ProjectiveCompleteIntersections",
-        "SmoothQuarticK3CompleteIntersections",
         "ProjectiveGeneralLinearGroup2",
         "ProjectivePointBlowups",
         "ProjectiveSchemes",
-        "ProjectiveSurfaces",
-        "ProjectiveCurves",
-        "DelPezzoSurfaces",
         "ProjectiveSpaces",
         "ProjectiveLines",
-        "ProperSurfaces",
         "QuasiCoherentSheaves",
         "RationalPolyhedralFans",
         "RegularPolytopes",
         "RelativeCyclicCoverLift",
         "RelativeProjectivizations",
-        "ResolutionIntegralCohomologyGroups",
         "RingedSpaces",
         "SchemeMonomorphisms",
         "SchemeMorphism",
         "Schemes",
         "SchemesOverIntegralDomains",
         "SchemesOverLocalRings",
+        "PresheafObjects",
         "SheafObjects",
         "SheafedSpaces",
         "SideDecoration",
         "SmoothSchemes",
         "Surfaces",
         "ToricFixedPointBlowups",
-        "ToricFundamentalGroups",
         "ToricGeometricLineBundleCohomologySpaces",
-        "ToricIntegralSingularCohomologyGroups",
         "ToricLogPairs",
         "ToricSchemes",
         "ToricProjectiveSpaces",
@@ -495,6 +521,15 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     TopologicalSpaceMor,
     TopologicalSpaces,
 )
+from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
+    TopologicalSpaceCoslices,
+)
+from dzack_research.preamble.categories.algebras.graded_lie_algebras import (  # noqa: F401
+    GradedLieAlgebras,
+)
+from dzack_research.preamble.categories.algebras.graded_nonassociative_algebras import (  # noqa: F401
+    GradedNonassociativeAlgebras,
+)
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
@@ -509,6 +544,8 @@ from dzack_research.preamble.logic import Predicate, Propositions, Unknown, ask 
 from dzack_research.preamble.validation import strict_checking  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
+    CC,
+    I,
     binomial,
     cos,
     cosh,
@@ -534,6 +571,8 @@ from dzack_research.preamble.rings import (  # noqa: F401
     DivisionRings,
     ExactRealField,
     ExactRealNumber,
+    ExactComplexField,
+    ExactComplexNumber,
     Fields,
     FormalPowerSeriesRings,
     IntegralDomains,

@@ -5,8 +5,8 @@ from dzack_research.preamble.categories.divisors.divisor_groups import (
     FormalDivisorGroups,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups, ProjectiveBundlePicardGroups
 from dzack_research.preamble.categories.divisors.chow_groups import (
     AlgebraicCycleGroups,
     ChowGroups,
@@ -43,7 +43,6 @@ __all__ = [
     "ImposedMultiplicityLinearSystems",
     "LineBundleCohomologySpaces",
     "PicardGroups",
-    "ProjectiveBundlePicardGroups",
     "ProjectiveJetSpaces",
     "ProjectiveLinearSystems",
     "SectionRings",

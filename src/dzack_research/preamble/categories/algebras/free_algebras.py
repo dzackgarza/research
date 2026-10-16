@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
+from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra, _PowerAlgebraElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphismMethods,
 )
@@ -74,6 +74,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
@@ -666,6 +667,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             else None
         )
 
+    def _repr_(self):
+        r"""``P/(r_1, ..., r_k)``: the quotient named by its chosen presentation."""
+        display = self._preamble_ring_display
+        if display is not None:
+            return display
+        relations = ", ".join(repr(relation) for relation in self.relations())
+        return f"{self.presentation_ring()}/({relations})"
+
 
 
 
@@ -1181,9 +1190,8 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "free algebras"
+    def _repr_object_names(self):
+        return f"free algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Algebras(self.base_ring()).Associative().Unital()]
@@ -1233,9 +1241,8 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "graded free algebras"
+    def _repr_object_names(self):
+        return f"graded free algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1418,9 +1425,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "tensor algebras"
+    def _repr_object_names(self):
+        return f"tensor algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1570,9 +1576,8 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "symmetric algebras"
+    def _repr_object_names(self):
+        return f"symmetric algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
@@ -1753,9 +1758,8 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.exterior_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "alternating algebras"
+    def _repr_object_names(self):
+        return f"alternating algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
@@ -1778,6 +1782,9 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods(_PowerAlgebra):
         r"""The exterior power realization of the alternating algebra on ``M``."""
+
+    class ElementMethods(_PowerAlgebraElement):
+        pass
 
 
 def _presentation_data(algebra):
@@ -1996,9 +2003,8 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object().divided_power_algebra()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "divided power algebras"
+    def _repr_object_names(self):
+        return f"divided power algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
@@ -2013,6 +2019,9 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             f"{module} is over {module.base_ring()}"
         )
         return _power_algebra_of(module, "divided")
+
+    class ElementMethods(_PowerAlgebraElement):
+        pass
 
     class ParentMethods(_PowerAlgebra):
         def divided_power(self, value, exponent):
@@ -2303,9 +2312,12 @@ class FramedFreeAlgebraMorphism:
             if domain in TensorAlgebras(domain.base_ring())
             else self._symmetric_terms(element)
         )
+        # An R-algebra morphism sends a coefficient c of R to its image under
+        # the codomain's structure map R -> B.
+        codomain = self.codomain()
         return sum(
             (
-                coefficient
+                codomain(coefficient)
                 * prod(
                     (self._images[label] for label in factors),
                     start=self.codomain().one(),
@@ -2368,14 +2380,20 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebra
         )
 
     def _element_constructor_(self, datum):
-        r"""Retain a whole map, or extend explicitly supplied generator data.
-
-        A linear map with these endpoints is its actual elementwise datum.
-        Agreement on the algebra generators alone cannot replace it: the
-        zero linear map and the generator-zero augmentation differ at 1.
-        """
+        r"""Extend defining generator data through the free-algebra universal property."""
+        if isinstance(datum, Map):
+            if self._already_parented_arrow(datum):
+                return datum
+            source = self.domain()
+            generating = source.generating_module()
+            labels = source.algebra_generating_set()
+            generator_mor = generating.module_category().Mor(generating, self.codomain())
+            label_mor = Sets().Mor(labels, self.codomain())
+            if not (generator_mor.accepts(datum) or label_mor.accepts(datum)):
+                raise TypeError(f"{datum} is a whole arrow of another Mor; give the free-generator map")
         return self.element_class(self, datum)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
