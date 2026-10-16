@@ -411,7 +411,8 @@ class CyclotomicDecomposition(SageObject):
                     f"{proper_divisor}-th power is the identity of {lattice}"
                 )
 
-        self._divisors = finite_ordered_set(tuple(divisors(self._order)))
+        integers = _owned_integers()
+        self._divisors = finite_ordered_set(tuple(integers(int(divisor)) for divisor in divisors(self._order)))
         self._summands = finite_indexed_family(
             self._divisors,
             lambda divisor: isometry.cyclotomic_summand(int(divisor)),
@@ -580,42 +581,22 @@ class CyclotomicDecomposition(SageObject):
             for divisor in self.nonzero_divisors()
         )
 
-    def _scaled_extension(self, components):
-        r"""Return multiplication by the index ``m`` on ``L`` and ``x -> g(m x)``.
-
-        ``g`` is the orthogonal sum of the components on the cyclotomic sum,
-        which contains ``m L``.
-        """
-        lattice = self.lattice()
-        moved_images = []
+    def _block_sum(self, components):
+        r"""Return the orthogonal sum of the components on ``M = sum_d L_d``, in ``O(M)``."""
+        result = self.orthogonal_sum().O().one()
         for divisor in self.nonzero_divisors():
-            summand = self.summand(divisor)
-            inclusion = summand.inclusion()
-            component = components[divisor]
-            moved_images.extend(inclusion(component(generator)) for generator in summand.module_generators())
-        orthogonal_sum = self.orthogonal_sum()
-        moved = orthogonal_sum.module_category().Mor(orthogonal_sum, lattice)(tuple(moved_images))
-
-        scalar = lattice.base_ring()(int(self.index().finite_value()))
-        scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
-        inclusion = self.orthogonal_sum_inclusion()
-
-        def scaled_image(label):
-            scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
-            return moved(inclusion.lift(scaled))
-
-        return scaling, scaled_image
+            result = result * self._block_isometry(divisor, components[divisor])
+        return result
 
     def lift_component_isometries(self, component_isometries):
         r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
 
-        Compatibility is tested by extension, not by comparing only finite
-        discriminant images.  If ``m`` is the index of the cyclotomic sum,
-        every ``m*x`` lies in that sum.  Apply the component tuple there and
-        divide by ``m`` again.  The division succeeds in ``L`` exactly when
-        the tuple preserves the integral glue; the ambient ``O(L)`` constructor
-        then verifies the form and bijectivity, and commutation with ``f`` is
-        checked separately.
+        The orthogonal sum ``g`` of the components is an isometry of the
+        cyclotomic sum ``M``; the tuple is compatible exactly when ``g``
+        extends along the finite-index inclusion ``M -> L``, and the lift is
+        that extension (:meth:`LatticeEmbeddingMethods.isometry_extension`).
+        Commutation with ``f`` holds on ``M`` because each component commutes
+        with ``f_d``, hence on ``L tensor QQ``.
         """
         components = self._component_tuple(component_isometries)
         if not self._components_commute(components):
@@ -624,32 +605,20 @@ class CyclotomicDecomposition(SageObject):
                 f"{self.isometry()}: some component does not commute with f restricted to "
                 f"its cyclotomic summand"
             )
-        scaling, scaled_image = self._scaled_extension(components)
-        lifted = self.lattice().O()(lambda label: scaling.lift(scaled_image(label)))
-        if lifted * self.isometry() != self.isometry() * lifted:
-            raise ArithmeticError(
-                f"the lift {lifted} of the components {component_isometries} does not "
-                f"commute with {self.isometry()}, although each component commutes with "
-                f"f on its cyclotomic summand"
-            )
-        return lifted
+        return self.orthogonal_sum_inclusion().isometry_extension(self._block_sum(components))
 
     def component_isometries_extend(self, component_isometries) -> bool:
         r"""Whether the component tuple extends to an isometry of ``L`` commuting with ``f``.
 
         The orthogonal sum ``g`` of commuting components is an isometry of
-        ``L tensor QQ``; it preserves ``L`` exactly when ``g(m x)`` lies in
-        ``m L`` for every generator ``x``, and it then commutes with ``f``
-        because it does so on the finite-index cyclotomic sum.
+        ``M``; it extends to ``L`` exactly when ``g_Q(L) = L``
+        (:meth:`LatticeEmbeddingMethods.isometry_extends`), and it then
+        commutes with ``f`` because it does so on the finite-index ``M``.
         """
         components = self._component_tuple(component_isometries)
         if not self._components_commute(components):
             return False
-        scaling, scaled_image = self._scaled_extension(components)
-        return all(
-            scaling.is_in_image(scaled_image(label))
-            for label in self.lattice().module_generating_set()
-        )
+        return self.orthogonal_sum_inclusion().isometry_extends(self._block_sum(components))
 
     def _orthogonal_sum_image(self, divisor, element):
         r"""Return the image of ``element`` of ``L_d`` under ``L_d -> M = sum_e L_e``.
@@ -688,34 +657,13 @@ class CyclotomicDecomposition(SageObject):
             }
         )
 
-    @cached_method
     def gluing_subgroup(self):
-        r"""Return ``L/M`` as the subgroup of ``A_M = M^#/M`` it defines.
+        r"""Return ``L/M`` as the subgroup of ``A_M`` it defines, for ``M = sum_d L_d``.
 
-        ``M = sum_d L_d`` has finite index in the integral lattice ``L``, so
-        ``M <= L <= L^# <= M^#`` and ``L/M`` is a subgroup of ``A_M``.  The
-        class of ``x`` in ``L`` is the element of ``M^#`` with dual-basis
-        coordinates ``b(j e_k, x)``, the pairing ``M x L -> ZZ`` obtained by
-        pulling ``b_L`` back along ``(j, 1_L)``.
+        This is the glue of the finite-index inclusion ``M -> L``
+        (:meth:`LatticeEmbeddingMethods.gluing_subgroup`).
         """
-        lattice = self.lattice()
-        ring = lattice.base_ring()
-        orthogonal_sum = self.orthogonal_sum()
-        discriminant = orthogonal_sum.discriminant_group()
-        identity = lattice.module_category().Mor(lattice, lattice).identity()
-        pairing = lattice.gram_tensor().pullback(self.orthogonal_sum_inclusion(), identity)
-        discriminant_labels = tuple(discriminant.module_generating_set())
-        classes = tuple(
-            discriminant.linear_combination(
-                {
-                    label: ring(pairing[row, column])
-                    for row, label in enumerate(discriminant_labels)
-                    if pairing[row, column]
-                }
-            )
-            for column, _generator in enumerate(lattice.module_generating_set())
-        )
-        return discriminant.subobject_generated_by(classes)
+        return self.orthogonal_sum_inclusion().gluing_subgroup()
 
     @cached_method
     def glued_centralizer_generators(self):
@@ -723,24 +671,15 @@ class CyclotomicDecomposition(SageObject):
 
         Let ``Gamma <= O(M)`` be generated by the block-diagonal elements
         ``g_d``, one for each group generator of each
-        ``Z_{O(L_d)}(f_d)``.  An element of ``O(M)`` extends to an isometry
-        of ``L`` exactly when its image under ``rho_M: O(M) -> O(A_M)``
-        stabilizes ``L/M``, because ``M <= L <= M^#``.  Every element of
-        ``Z_{O(L)}(f)`` restricts to each ``L_d``, so
-        ``Z_{O(L)}(f) = (rho_M|_Gamma)^{-1}(Stab(L/M))``, restricted to ``L``.
-        That preimage has index at most ``|O(A_M)|`` in ``Gamma``, and its
-        Schreier generators come from the preimage owner.  Each one is split
-        into its components and lifted through
-        :meth:`lift_component_isometries`.  No abstract product of the
-        component groups is formed: a generated subgroup of ``O(M)`` on the
-        block-diagonal generators is the group the gluing needs.
+        ``Z_{O(L_d)}(f_d)``.  Every element of ``Z_{O(L)}(f)`` restricts to
+        each ``L_d``, so ``Z_{O(L)}(f)`` is the subgroup of ``Gamma`` of
+        elements preserving ``L``, restricted to ``L``: the extended subgroup
+        of ``Gamma`` along the finite-index inclusion ``M -> L``
+        (:meth:`LatticeEmbeddingMethods.extended_subgroup`), computed there
+        as a preimage under ``rho_M: O(M) -> O(A_M)``.  No abstract product
+        of the component groups is formed: a generated subgroup of ``O(M)``
+        on the block-diagonal generators is the group the gluing needs.
         """
-        lattice = self.lattice()
-        assert lattice.base_ring() is _owned_integers(), (
-            f"the centralizer of {self.isometry()} is glued through the discriminant group "
-            f"A_M of the cyclotomic sum M, which is defined here for lattices over ZZ, and "
-            f"{lattice} is over {lattice.base_ring()}"
-        )
         orthogonal_sum = self.orthogonal_sum()
         centralizers = self.component_centralizers()
         block_generators = tuple(
@@ -749,21 +688,7 @@ class CyclotomicDecomposition(SageObject):
             for generator in centralizers[divisor].group_generators()
         )
         blocks = orthogonal_sum.O().subgroup(block_generators)
-        representation = orthogonal_sum.discriminant_representation()
-        stabilizer = representation.codomain().stabilizer_of_subgroup(self.gluing_subgroup())
-        extending = (representation * blocks.inclusion()).preimage_subgroup(stabilizer)
-        to_orthogonal_sum = blocks.inclusion() * extending.inclusion()
-        return finite_ordered_set(
-            tuple(
-                self.lift_component_isometries(
-                    {
-                        int(divisor): self._block_restriction(divisor, to_orthogonal_sum(generator))
-                        for divisor in self.nonzero_divisors()
-                    }
-                )
-                for generator in extending.group_generators()
-            )
-        )
+        return self.orthogonal_sum_inclusion().extended_subgroup(blocks).group_generators()
 
 
 class PolarizedEquivariantLattice(SageObject):

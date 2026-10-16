@@ -6779,6 +6779,51 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
             return source.module_category().Mor(source, self)(image)
 
+        def orthogonal_sum_map(self, product):
+            r"""Return ``prod_i G_i -> O(L)``, ``(g_i) |-> sum_i g_i``, for subgroups ``G_i <= O(L_i)``.
+
+            ``L = sum_i L_i`` is this orthogonal sum.  ``product`` is a selected
+            product of groups ``prod_i G_i`` (``OwnedGroups().product_construction``),
+            its ``i``-th factor, in the order of the summands, a subgroup of
+            ``O(L_i)``.  ``sum_i g_i`` is the isometry acting by ``g_i`` on the
+            summand ``L_i``: the map out of the biproduct whose legs are
+            ``L_i --g_i--> L_i --> L``.  The map is injective, since
+            ``sum_i g_i`` restricts to ``g_i`` on ``L_i``.
+            """
+            from dzack_research.preamble.categories.lattice_morphisms import (
+                _subgroup_inclusion_into,
+            )
+
+            factors = self.biproduct_factors()
+            labels = tuple(factors.index_set())
+            shape = product.diagram().domain()
+            projections = {
+                index: product.structure_morphism(shape(position))
+                for position, index in enumerate(labels)
+            }
+            inclusions = {
+                index: _subgroup_inclusion_into(projections[index].codomain(), factors[index].O())
+                for index in labels
+            }
+            source = product.object()
+
+            def block_isometry(element):
+                legs = finite_indexed_family(
+                    factors.index_set(),
+                    lambda index: factors[index].module_category().Mor(factors[index], self)(
+                        lambda label, index=index: self.injection(index)(
+                            inclusions[index](projections[index](element))(
+                                factors[index].module_generator(label)
+                            )
+                        )
+                    ),
+                    name=f"Blocks of an element of {source}",
+                )
+                block_sum = self.from_coproduct_cocone(legs)
+                return self.O()(lambda label: block_sum(self.module_generator(label)))
+
+            return source.Mor(self.O()).elementwise(block_isometry)
+
 
 class DefiniteLattices(OwnedCategoryOverBaseRing):
     r"""Finite-rank definite lattices.
