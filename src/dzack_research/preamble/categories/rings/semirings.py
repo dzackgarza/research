@@ -5,6 +5,7 @@ semiring Mor theory by their stronger ring Mor theory, while every unital ring
 still receives the unique semiring morphism from the natural numbers.
 """
 
+from sage.categories.map import Map
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
@@ -265,7 +266,7 @@ class SemiringMor(CategoricalMor):
     ElementMethods = SemiringMorphism
 
     def _element_constructor_(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             if (
                 function.domain() is not self.domain()
                 or function.codomain() is not self.codomain()

@@ -1503,7 +1503,7 @@ class LatticeMor(CategoricalMor):
         return morphism
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Morphism):
+        if isinstance(images, Map):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice morphism from {self.domain()} to {self.codomain()}"
@@ -1562,7 +1562,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return embedding
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Morphism):
+        if isinstance(images, Map):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice embedding of {self.domain()} into {self.codomain()}"
@@ -1956,7 +1956,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             if images.parent() is self:
                 return images
             _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
-        if isinstance(images, Morphism):
+        if isinstance(images, Map):
             # A module isomorphism or automorphism, a lattice endomorphism or a
             # set map: almost none is an isometry (``CON-17``).
             _refuse_foreign_arrow(

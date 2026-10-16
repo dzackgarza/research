@@ -49,7 +49,7 @@ class AdditiveMagmaMorphism:
 
 
 def _additive_operation_mor_element(parent, datum):
-    if isinstance(datum, Morphism):
+    if isinstance(datum, Map):
         if datum.domain() is not parent.domain() or datum.codomain() is not parent.codomain():
             raise ValueError(
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
@@ -544,7 +544,7 @@ class AdditiveMor(CategoricalMor):
         return self._scalar_identity(self.base_ring().one())
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             assert datum.domain() is self.domain() and datum.codomain() is self.codomain(), (
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a "
                 f"morphism {self.domain()} -> {self.codomain()}"

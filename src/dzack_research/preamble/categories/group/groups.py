@@ -3532,6 +3532,8 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                     f"element of the free basis {indices}, but it has keys {tuple(images)}"
                 )
                 generator_morphism = set_mor(images.__getitem__)
+            case Map():
+                raise TypeError(f"{images} is a whole arrow; the defining map must have the free basis as source")
             case _ if callable(images):
                 generator_morphism = set_mor(images)
             case _ if self in AbelianGroupEndomorphismRings():
@@ -3617,9 +3619,9 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 morphism.validate_homomorphism(check=True)
             case GapElement():
                 raise TypeError("a GAP whole group map is private engine output; give generator images")
-            case Morphism() if self._already_parented_arrow(images):
+            case Map() if self._already_parented_arrow(images):
                 return images
-            case Morphism():
+            case Map():
                 raise TypeError(f"{images} is an arrow of another Mor; give generator images or apply the functor")
             case tuple() | list():
                 morphism = self._from_gap_generator_images(images)
@@ -3898,9 +3900,9 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
     def _element_constructor_(self, datum):
         match datum:
-            case Morphism() if self._already_parented_arrow(datum):
+            case Map() if self._already_parented_arrow(datum):
                 return datum
-            case Morphism():
+            case Map():
                 raise TypeError(f"{datum} is an arrow of another Mor; give defining data or apply the functor")
             case _ if callable(datum):
                 return self._from_elementwise_rule(datum)

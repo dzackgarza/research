@@ -2335,7 +2335,7 @@ class ModuleEmbeddingMor(CategoricalMor):
             and images.domain() is self.domain().module_generating_set()
             and images.codomain() is self.codomain()
         )
-        if isinstance(images, Morphism) and not generator_map:
+        if isinstance(images, Map) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if self._already_parented_arrow(images):
@@ -2631,7 +2631,7 @@ class _ModuleMorCommonMethods:
             _refuse_foreign_arrow(
                 self, images, "apply the functor changing the module category, or supply the defining generator images"
             )
-        elif isinstance(images, Morphism) and not generator_map:
+        elif isinstance(images, Map) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             # A set map, group map or other non-linear arrow of these

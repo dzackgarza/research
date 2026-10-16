@@ -1227,6 +1227,14 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def _element_constructor_(self, images, *, lift=None, check=False):
         if isinstance(images, GroupModuleMorphismMethods) and images.parent() is self and lift is None:
             return images
+        if isinstance(images, Map):
+            generator_map = (
+                self.domain().has_selected_module_resolution()
+                and images.domain() is self.domain().module_generating_set()
+                and images.codomain() is self.codomain()
+            )
+            if not generator_map:
+                raise TypeError(f"{images} is a whole arrow of another Mor; give equivariant generator images")
         morphism = self.element_class(self, images, lift=lift)
         morphism.validate_linearity(check=check)
         morphism.validate_equivariance(check=check)

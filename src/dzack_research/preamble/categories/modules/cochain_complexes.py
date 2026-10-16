@@ -539,7 +539,7 @@ class CochainMorphismMethods:
         return True
 
     def __init__(self, parent, components, *, cochain_premises=None) -> None:
-        if isinstance(components, Morphism):
+        if isinstance(components, Map):
             if (
                 components.domain() is not parent.domain()
                 or components.codomain() is not parent.codomain()
@@ -736,7 +736,7 @@ class CochainMor(CategoricalMor):
         )
 
     def _element_constructor_(self, components):
-        if isinstance(components, Morphism):
+        if isinstance(components, Map):
             if self._already_parented_arrow(components):
                 return components
             raise TypeError(f"{components} belongs to another Mor; apply the functor between the categories")

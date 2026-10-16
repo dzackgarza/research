@@ -1,5 +1,6 @@
 """Modules graded by a monoid."""
 
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity as _Infinity
@@ -347,7 +348,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
-        if isinstance(images, Morphism):
+        if isinstance(images, Map):
             if self._already_parented_arrow(images):
                 images.validate_linearity(check=check)
                 images.validate_degree_preservation(check=check)
