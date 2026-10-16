@@ -1276,6 +1276,9 @@ class _LeftCosetPoint(Element):
     def representative(self):
         return self._representative
 
+    def __contains__(self, element):
+        return self.representative().inverse() * element in self.parent().subgroup()
+
     def __eq__(self, other):
         return (isinstance(other, _LeftCosetPoint) and other.parent() is self.parent()
                 and self.representative().inverse() * other.representative() in self.parent().subgroup())
