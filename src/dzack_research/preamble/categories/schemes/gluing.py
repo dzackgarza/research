@@ -179,7 +179,20 @@ def _finite_chart_family(charts):
     return family
 
 
-class _GluedSchemeOpenInclusion(SchemeMorphism):
+class _GluedChartPointMorphism(SchemeMorphism):
+    r"""Point evaluation shared by a chart embedding and its open inclusion."""
+
+    def _call_(self, point):
+        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeSpectra
+
+        if element_parent(point) in PrimeSpectra():
+            if element_parent(point) is not self.domain().underlying_space():
+                raise ValueError(f"{point} is not a prime point of the chart {self.domain()}")
+            return self.codomain()._glued_chart_point_map(self.chart_index())(point)
+        return super()._call_(point)
+
+
+class _GluedSchemeOpenInclusion(_GluedChartPointMorphism):
     r"""The chosen inclusion of one chart image into the glued scheme."""
 
     def __init__(self, parent, gluing_datum, chart_index) -> None:
@@ -226,7 +239,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
         return f"Open inclusion {self.domain()} -> {self.codomain()}"
 
 
-class _GluedSchemeChartEmbedding(SchemeMorphism):
+class _GluedSchemeChartEmbedding(_GluedChartPointMorphism):
     r"""One canonical chart map into a represented two-chart glued scheme."""
 
     def __init__(
@@ -6338,7 +6351,8 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
     def _apply_object(self, opposite_object):
         subset = opposite_object.underlying_object().value()
         scheme = self._datum.scheme()
-        assert subset is scheme.power_set().top(), (
+        opens = self.domain().base_category().object_set()
+        assert subset is opens.inclusion().codomain().top(), (
             f"sections of the module sheaf on {subset}: not implemented; "
             "the open's traces on the chosen affine atlas are not represented"
         )
@@ -7280,7 +7294,8 @@ class _FiniteAtlasStructurePresheaf(Functor):
 
     def _apply_object(self, opposite_object):
         subset = opposite_object.underlying_object().value()
-        assert subset is self.scheme().power_set().top(), (
+        opens = self.domain().base_category().object_set()
+        assert subset is opens.inclusion().codomain().top(), (
             f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; only the whole space is "
             "computed, since an open of a glued scheme is not yet presented through its traces on the charts"
         )

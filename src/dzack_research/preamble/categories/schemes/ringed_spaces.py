@@ -51,18 +51,23 @@ class _SchemeTopologyData(SageObject):
 
     The open subsets of ``X`` are the subsets ``U`` whose preimage in every
     chart ``U_i = Spec A_i`` is open (Stacks, Lemma 26.14.1, Tag 01JB).  The topology is the
-    subobject of the power set of ``X`` cut out by openness.  Openness is
-    decided for the empty set and the whole space, and is assertion-gated
-    otherwise until a subset can be presented through its traces on the
-    charts.
+    subobject of the power set cut out by openness. A gluing realization
+    supplies this topology through its topological colimit. Computing
+    openness still requires the preimages to be represented at the chart
+    topology owners. Without a selected gluing realization, only the empty
+    set and whole space have a supplied openness decision here.
     """
 
     def open_subsets(self, space):
+        if space._is_glued_from_affine_atlas():
+            return space.underlying_space().open_subsets()
         return space.power_set().condition_set(
             lambda subset: self.is_open_subset(space, subset)
         )
 
     def is_open_subset(self, space, subset) -> bool:
+        if space._is_glued_from_affine_atlas():
+            return space.underlying_space().is_open_subset(subset)
         power = space.power_set()
         selected = power(subset)
         match selected:

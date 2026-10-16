@@ -2491,9 +2491,13 @@ class Schemes(OwnedCategoryOverBaseRing):
         _derived_construction_parameters = frozenset({"topology_data"})
 
         def __contains__(self, point) -> bool:
+            if self._is_glued_from_affine_atlas():
+                return point in self.underlying_space()
             return element_parent(point) is self
 
         def _element_constructor_(self, point):
+            if self._is_glued_from_affine_atlas():
+                return self.underlying_space()(point)
             match element_parent(point) is self:
                 case True:
                     return point
@@ -2502,6 +2506,23 @@ class Schemes(OwnedCategoryOverBaseRing):
                         f"{point} is not a point of {self}: points of a scheme glued from affine "
                         "charts are constructed only from points of its charts"
                     )
+
+        def underlying_space(self):
+            r"""The topological space retained by this scheme's construction."""
+            if self._is_glued_from_affine_atlas():
+                return self._scheme_engine_realization.underlying_space()
+            return self
+
+        def _glued_chart_point_map(self, index):
+            r"""Supply a selected chart's continuous map to the glued point space.
+
+            Protected scheme-realization operation. Its callers are the chart
+            embedding and chart-image inclusion realizations in ``gluing``.
+            """
+            assert self._is_glued_from_affine_atlas(), (
+                f"{self} has no selected affine gluing presentation"
+            )
+            return self._scheme_engine_realization.chart_point_map(index)
 
         def __init__(
             self, scheme_base_ring, scheme_engine=None, topology_data=None, **rest
