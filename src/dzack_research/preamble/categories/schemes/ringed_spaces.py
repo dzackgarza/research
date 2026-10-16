@@ -227,11 +227,16 @@ def _unpresented_sheaf_placement(
     fibre, whose morphisms are the natural transformations of the sections
     functors.
     """
+    presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
+    return _open_sheaf_placement(space, presheaf, mor_category)
+
+
+def _open_sheaf_placement(space, presheaf, mor_category=None):
+    r"""Place a sections functor in the sheaves on the open site of its space."""
     from dzack_research.preamble.categories.abstract_categories.presheaves import (
         OpenCoveringFamilies,
     )
 
-    presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
     presheaves = PresheafObjects(space)
     coverage = OpenCoveringFamilies(space)
     sheaves = coverage.sheaves(presheaf.codomain())
@@ -1617,6 +1622,60 @@ class _AffineModuleSheafEngine:
         return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
 
 
+class _AffineModuleOpenPresheaf(Functor):
+    r"""The additive sections of ``M~`` on ``Spec A`` and its basis opens.
+
+    Values and restrictions use the associated sheaf's localization operations
+    (Stacks, Tag 01I8). Forgetting scalars sends the restriction
+    ``M -> Res(A_f, M_f)`` to its additive map ``M -> M_f``.
+    """
+
+    def __init__(self, scheme, sheaf) -> None:
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        self._scheme = scheme
+        self._sheaf = sheaf
+        super().__init__(
+            scheme.open_subsets_site().opposite(),
+            AdditiveGroups().AdditiveCommutative(),
+        )
+
+    def _open_scheme(self, opposite_object):
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            DistinguishedOpenSubobjects,
+        )
+
+        subset = opposite_object.underlying_object().value()
+        spectrum = self._scheme.underlying_space()
+        if subset is spectrum.power_set().top():
+            return self._scheme
+        if subset in DistinguishedOpenSubobjects(spectrum):
+            return self._scheme.distinguished_open(subset.function())
+        assert False, (
+            f"sections of the associated module sheaf on {subset}: not implemented; "
+            "only the basis opens X and D(f) are computed"
+        )
+
+    def _apply_object(self, opposite_object):
+        open_scheme = self._open_scheme(opposite_object)
+        sheaf = self._sheaf()
+        module = (
+            sheaf.global_sections()
+            if open_scheme is self._scheme
+            else sheaf.sections_on_distinguished_open(open_scheme)
+        )
+        return module.underlying_additive_group()
+
+    def _apply_morphism(self, opposite_arrow):
+        restriction = self._sheaf().restriction_map(
+            self._open_scheme(opposite_arrow.domain()),
+            self._open_scheme(opposite_arrow.codomain()),
+        )
+        return restriction.domain().module_category().underlying_additive_group_functor()(
+            restriction
+        )
+
+
 class QuasiCoherentSheafMorphismMethods:
     r"""Operations defined on every represented quasi-coherent sheaf arrow."""
 
@@ -1872,16 +1931,21 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
                 ring_map
             )
 
-    def object(self, *, categories=(), construction_data=None, _engine):
+    def object(self, *, categories=(), construction_data=None, _engine, open_sections_presheaf=None):
         r"""Construct one represented quasi-coherent sheaf through this owner.
 
         ``_engine`` is the private realization of the sheaf in the represented
         regime selected by the caller.  Stronger semantic placement is joined
         here so specializations do not initialize a second ``Parent`` shell.
         """
-        fibre, presheaf_data = _unpresented_sheaf_placement(
-            self.scheme(), f"a quasi-coherent sheaf on {self.scheme()}", self
-        )
+        if open_sections_presheaf is None:
+            fibre, presheaf_data = _unpresented_sheaf_placement(
+                self.scheme(), f"a quasi-coherent sheaf on {self.scheme()}", self
+            )
+        else:
+            fibre, presheaf_data = _open_sheaf_placement(
+                self.scheme(), open_sections_presheaf, self
+            )
         return _object_of(
             owned_category_join((self, fibre, *tuple(categories))),
             _engine=(self, _engine, None),
@@ -1954,10 +2018,13 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
             f"the sheaf M~ on {self.scheme()} is defined for a module over its coordinate ring, "
             f"but {module} is in {module.category()}"
         )
-        return self.object(
+        presheaf = _AffineModuleOpenPresheaf(self.scheme(), lambda: sheaf)
+        sheaf = self.object(
             construction_data={"scheme": self.scheme(), "module": module},
             _engine=_AffineModuleSheafEngine,
+            open_sections_presheaf=presheaf,
         )
+        return sheaf
 
     def global_sections(self, sheaf):
         r"""``M~ |-> M``, the inverse equivalence."""
