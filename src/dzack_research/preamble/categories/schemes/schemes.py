@@ -3854,14 +3854,16 @@ class Schemes(OwnedCategoryOverBaseRing):
                 element = algebra(element)
                 localized = algebra.localization(element)
                 base = self.scheme_base_ring()
-                localization = localized.localization_map()
                 return _affine_scheme(
                     localized,
                     base,
                     (OpenImmersions(self),),
                     inclusion_codomain=self,
-                    inclusion_datum=Algebras(base).Associative().Unital().Commutative().Mor(algebra, localized)(
-                        localization
+                    # The canonical R-algebra map is a |-> a/1. The
+                    # localization's scalar action is R -> A -> S^-1 A,
+                    # so this formula preserves scalars, product and unit.
+                    inclusion_datum=Algebras(base).Associative().Unital().Commutative().Mor(algebra, localized)._from_constructed_element_map(
+                        lambda element: localized.fraction(element)
                     ),
                 )
 
