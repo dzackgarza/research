@@ -74,6 +74,7 @@ from dzack_research.preamble.tensors.tensor import (
     tensor,
 )
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _gram_rows(gram, rank):
@@ -1357,6 +1358,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def one(self):
         return self._from_engine(self._engine_group().one())
 
+    @object_level
     def identity(self, *args, **kwargs):
         return self.one(*args, **kwargs)
     def identity_automorphism(self, *args, **kwargs):

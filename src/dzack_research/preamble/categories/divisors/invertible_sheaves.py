@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _homogeneous_section_identity_comparison(sections):
@@ -1772,6 +1773,7 @@ class _ChosenTrivializationQuasiCoherentMor(QuasiCoherentSheafMor):
                 pass
         return self.element_class(self, local_maps)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1866,6 +1868,7 @@ class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
                 pass
         return self.element_class(self, ambient_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _engine_cartan_type_data(value):
@@ -301,6 +302,7 @@ class CoxeterDiagramMor(CategoricalMor):
         morphism.validate_preservation(check=False)
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

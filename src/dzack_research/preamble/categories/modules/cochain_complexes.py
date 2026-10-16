@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.owned_category import owned_category_join
 from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -889,6 +890,7 @@ class CochainMor(CategoricalMor):
             result += self.scalar_multiple(coefficient, morphism)
         return result
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

@@ -85,6 +85,7 @@ from dzack_research.preamble.owned_category import _object_of, owned_category_jo
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook, refine
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -291,6 +292,7 @@ class MultiplicativeAlgebraMor(CategoricalMor):
                 pass
         return self.element_class(self, datum)
 
+    @object_level
     @cached_method
     def identity(self):
         assert self.domain() is self.codomain(), (
@@ -4189,6 +4191,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    @object_level
     @cached_method
     def identity(self):
         r"""Return the identity of this endomorphism Mor.
@@ -4223,6 +4226,7 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -114,6 +115,7 @@ class OppositeMor(CategoricalMor):
             )
         return OppositeMorphism(self, underlying_arrow)
 
+    @object_level
     def identity(self) -> OppositeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -322,6 +324,7 @@ class ProductMor(CategoricalMor):
             )
         return ProductMorphism(self, first, second)
 
+    @object_level
     def identity(self) -> ProductMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

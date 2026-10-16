@@ -93,6 +93,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, ask, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -1461,10 +1462,12 @@ class Modules(OwnedCategoryOverBaseRing):
             _register_module_scalar_action(self)
 
 
+        @object_level
         def Mono(self, codomain):
             r"""Return the declared injective linear maps into ``codomain``."""
             return Modules(self.base_ring()).Mono(self, codomain)
 
+        @object_level
         def End(self):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
             return Modules(self.base_ring()).End(self)
@@ -1477,6 +1480,7 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             return self.module_category().Aut(self)
 
+        @object_level
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
 

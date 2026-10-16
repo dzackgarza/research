@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class AdditiveMagmaMorphism:
@@ -529,6 +530,7 @@ class AdditiveMor(CategoricalMor):
         r"""The integer scalar ring of this additive Mor group."""
         return self._preamble_base_ring
 
+    @object_level
     @cached_method
     def identity(self):
         r"""The canonical identity in this additive Mor's diagonal."""

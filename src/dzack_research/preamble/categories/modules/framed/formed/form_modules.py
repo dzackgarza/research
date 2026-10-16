@@ -102,6 +102,7 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.validation import validator
 from typing import TYPE_CHECKING
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -793,6 +794,7 @@ class FormedModuleMor(CategoricalMor):
             values.module_category().Mor(values, values).identity(),
         )
 
+    @object_level
     @cached_method
     def identity(self):
 
@@ -1040,6 +1042,7 @@ class FiberedFormedModuleMor(CategoricalMor):
         morphism.validate_form_preservation(check=check)
         return morphism
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -1700,6 +1703,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     return self.left_curry().is_injective() and self.right_curry().is_injective()
 
 
+        @object_level
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
             return FormModules(self.base_ring()).Mono(self, codomain)

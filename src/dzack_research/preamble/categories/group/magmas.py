@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class MagmaMorphism:
@@ -131,6 +132,7 @@ class MagmaMor(CategoricalMor):
             )
         return self.element_class(self, function)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -914,6 +916,7 @@ class MonoidMor(CategoricalMor):
             submonoid_of_codomain=True,
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

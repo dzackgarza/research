@@ -88,6 +88,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _ordered_transition_images(datum, transition_data, source_index, target_index):
@@ -669,6 +670,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
             return _GluedSchemeMorphism(self, datum)
         return super()._element_constructor_(datum)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -3668,6 +3670,7 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -3719,6 +3722,7 @@ class FiniteAtlasModuleGluingMor(CategoricalMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -4234,6 +4238,7 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -5323,6 +5328,7 @@ class ModuleGluingMor(CategoricalMor):
             local_maps = local_maps.local_maps()
         return self.element_class(self, local_maps)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -6089,6 +6095,7 @@ class AlgebraGluingMor(CategoricalMor):
             local_maps = local_maps.local_maps()
         return self.element_class(self, local_maps)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -6295,6 +6302,7 @@ class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
             )
         return self.element_class(self, source_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

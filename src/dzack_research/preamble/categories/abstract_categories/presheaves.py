@@ -86,6 +86,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _OppositeFunctor(Functor):
@@ -566,6 +567,7 @@ class CoveringFamilyMor(CategoricalMor):
             check=check,
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

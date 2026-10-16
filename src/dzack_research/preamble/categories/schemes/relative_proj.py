@@ -56,6 +56,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _RelativeProjectivizationProjection(SchemeMorphism):
@@ -607,6 +608,7 @@ class RelativeProjectivizationQuasiCoherentMor(QuasiCoherentSheafMor):
                     f"projectivization and its universal quotient, but {datum} is neither"
                 )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

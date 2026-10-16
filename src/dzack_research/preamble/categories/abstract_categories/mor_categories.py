@@ -27,6 +27,7 @@ reuses the arrow objects without inheriting all the squares between them.
 """
 
 from __future__ import annotations
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _compose_operation_preserving_mor(left, right, fallback):
@@ -1007,6 +1008,7 @@ class MorArrowDiscreteMor(CategoricalMor):
             return value
         return self.element_class(self)
 
+    @object_level
     @cached_method
     def identity(self) -> MorArrowIdentity:
         return self()

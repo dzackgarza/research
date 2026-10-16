@@ -80,6 +80,7 @@ from dzack_research.preamble.tensors.tensor import (
     _engine_row_action_matrix,
     tensor,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.lattices import Lattices
@@ -1499,6 +1500,7 @@ class LatticeMor(CategoricalMor):
             lambda label: function(source.module_generator(label)),
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(f"there is no identity morphism from {self.domain()} to {self.codomain()}: they are different lattices")
@@ -1952,6 +1954,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             supers.extend(superpacket.Auts().Of(source) for superpacket in packet.super_packets() if source in superpacket.C())
         return _distinct_supercategories(supers)
 
+    @object_level
     def identity(self) -> LatticeIsometryMethods:
         if self.domain() is not self.codomain():
             raise ValueError(f"there is no identity isometry from {self.domain()} to {self.codomain()}: they are different lattices")

@@ -19,6 +19,7 @@ from collections import Counter
 from collections.abc import Hashable, Mapping, Sequence
 from functools import cache
 from typing import TYPE_CHECKING, overload
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -2562,6 +2563,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lattice_isometry_mor(self, codomain)
 
+        @object_level
         def Aut(self):
             r"""Return ``Isom(L,L)``, the orthogonal automorphism Mor."""
             return self.Isom(self)

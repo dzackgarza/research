@@ -82,6 +82,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class GroupModuleMorCategoryConstruction(MorCategoryConstruction):
@@ -630,6 +631,7 @@ class ModulesOverGroupAlgebra(Modules):
             return self(element)
 
 
+        @object_level
         def End(self):
             r"""``End_{R[G]}(M)``, the equivariant endomorphism object.
 
@@ -640,6 +642,7 @@ class ModulesOverGroupAlgebra(Modules):
             """
             return Modules(self.group_algebra()).End(self)
 
+        @object_level
         def Aut(self):
             r"""``Aut_{R[G]}(M)``, the equivariant module automorphisms.
 
@@ -1257,6 +1260,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         morphism.validate_linearity(check=False)
         return morphism
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

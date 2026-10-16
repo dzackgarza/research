@@ -112,6 +112,7 @@ from dzack_research.preamble.owned_category import (
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook, realize_owned_category, refine
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 # Finite generation reuses Sage's axiom for it, ``FinitelyGeneratedAsMagma``.
 # Finite presentation is qualified as Sage qualifies that one: an axiom name
@@ -3849,6 +3850,7 @@ class GroupAutomorphismGroup(GroupMor):
             supers.extend(superpacket.Auts().Of(group) for superpacket in packet.super_packets() if group in superpacket.C())
         return _distinct_supercategories(supers)
 
+    @object_level
     def identity(self):
         return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
@@ -5638,9 +5640,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
 
+        @object_level
         def End(self):
             return OwnedGroups().End(self)
 
+        @object_level
         @cached_method
         def Aut(self):
             return OwnedGroups().Aut(self)

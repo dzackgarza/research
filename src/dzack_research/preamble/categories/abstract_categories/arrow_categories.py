@@ -56,6 +56,7 @@ from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -352,6 +353,7 @@ class ArrowMor(NaturalTransformationMor):
             left, right, commutativity_premises=commutativity_premises
         )
 
+    @object_level
     @cached_method
     def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
@@ -1597,6 +1599,7 @@ class SubobjectMor(CategoricalMor):
                 return result
         return SubobjectMorphism(self, factor_morphism, verify=check)
 
+    @object_level
     def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -2417,6 +2420,7 @@ class CoreMor(CategoricalMor):
         """
         return self.element_class(self, forward, inverse_computation, verify=False)
 
+    @object_level
     def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

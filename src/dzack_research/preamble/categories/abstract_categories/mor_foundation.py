@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import update_wrapper
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -53,7 +54,13 @@ class OwnedMor(SageHomset):
         return self.identity()
 
 
-__all__ = ["CategoryPacketMethods", "OwnedMor", "UnderlyingSetMor"]
+__all__ = [
+    "CategoryPacketMethods",
+    "ObjectLevelOperation",
+    "OwnedMor",
+    "UnderlyingSetMor",
+    "object_level",
+]
 
 class UnderlyingSetMor(OwnedMor):
     r"""Plain-function Mor used only when an owned category declares no stronger arrows."""
@@ -248,3 +255,93 @@ class CategoryPacketMethods:
 
     def Aut(self, obj: Parent) -> Category:
         return self.AutCategory().Of(obj)
+
+
+def _identity_of_object(category: Category, obj: Parent) -> Morphism:
+    r"""``C.identity(X)``: the identity arrow of the object ``X`` of ``C``, read in ``Mor_C(X, X)``."""
+    return category.MorCategory().Of(obj, obj).identity()
+
+
+def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
+    r"""Whether a name of the Mor packet is asked of ``owner`` as a category.
+
+    Owner ruling 2026-10-16 (``ARC-07``): an object that is also a category,
+    such as a Mor category that is a monoid (``End(X)``) or a group
+    (``O(L) = Aut(L)``), answers ``Mor``, ``End``, ``Aut``, ``Mono`` and
+    ``identity`` in two readings.  Asked of it as an object, they are the
+    operations of its nearest ambient category (``O(L).Mor(H)`` is the group
+    homomorphisms).  Asked of it as a category, they take its own objects as
+    arguments (``End(X).Mor(f, g)`` is the 2-arrows from ``f`` to ``g``).
+    The reading is decided by what is asked: the category reading exactly
+    when ``owner`` is a category and every argument is one of its objects.
+    """
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    match objects:
+        case ():
+            return False
+        case _ if owner in Cat():
+            return all(obj in owner for obj in objects)
+        case _:
+            return False
+
+
+def _category_level_operations() -> dict:
+    r"""The category-level operation of each name of the Mor packet, at its one owner."""
+    packet = CategoryPacketMethods.__dict__
+    return {
+        "Mor": packet["Mor"],
+        "End": packet["End"],
+        "Aut": packet["Aut"],
+        "Mono": packet["Mono"],
+        "Epi": packet["Epi"],
+        "Iso": packet["Iso"],
+        "identity": _identity_of_object,
+    }
+
+
+class ObjectLevelOperation:
+    r"""The object-level reading of a name of the Mor packet (``ARC-07``).
+
+    Declared at each owner of the object-level operation, as
+    :class:`~dzack_research.preamble.refine.RealizationHook` is declared at
+    each hook.  A call is routed by what it asks of whom
+    (:func:`_asked_of_the_category`): arguments that are objects of the
+    receiver regarded as a category go to the category-level operation
+    (:func:`_category_level_operations`); every other call is the declared
+    object-level body.  The category's method classes precede a realization
+    in the owned runtime (``refine._rebuild_parent_class``), so on an object
+    that is also a category the object-level owner is the one Python finds;
+    this descriptor is where both readings meet, without reordering that
+    resolution and without a convention per class.
+
+    A data descriptor: Sage's ``cached_method`` stores its caller on the
+    instance by the method's name when it can, which would bypass the
+    routing, and falls back to its private cache when that store is refused.
+    """
+
+    def __init__(self, reading) -> None:
+        self._reading = reading
+        update_wrapper(self, reading)
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self._reading.__get__(None, owner)
+        reading = self._reading.__get__(instance, owner)
+        category_level = _category_level_operations()[self.__name__]
+
+        def operation(*objects, **options):
+            if not options and _asked_of_the_category(instance, objects):
+                return category_level(instance, *objects)
+            return reading(*objects, **options)
+
+        update_wrapper(operation, reading)
+        return operation
+
+    def __set__(self, instance, value) -> None:
+        raise AttributeError(
+            f"{self.__name__} is an operation of the Mor packet, not a field of {instance}"
+        )
+
+
+object_level = ObjectLevelOperation

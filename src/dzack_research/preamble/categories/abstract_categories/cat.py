@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -214,6 +215,7 @@ class CategoryFunctorMor(CategoricalMor):
                 functor = functor.functor()
         return CategoryFunctorMorphism(self, functor)
 
+    @object_level
     @cached_method
     def identity(self) -> CategoryFunctorMorphism:
         if self.domain() is not self.codomain():
@@ -1374,6 +1376,7 @@ class NaturalTransformationMor(CategoricalMor):
         selected = NaturalTransformationMorphism if element_class is None else element_class
         return selected(self, transformation, **dict(construction_data or {}))
 
+    @object_level
     @cached_method
     def identity(self) -> NaturalTransformationMorphism:
         if self.domain() is not self.codomain():

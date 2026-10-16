@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import OwnedSetMorphism
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _PowerAlgebra:
@@ -324,6 +325,7 @@ class PowerAlgebraMor(CategoricalMor):
     def _element_constructor_(self, degree_one_map):
         return self.element_class(self, degree_one_map)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

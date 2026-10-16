@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _FiniteDigraphEngine:
@@ -199,6 +200,7 @@ class DigraphMor(CategoricalMor):
     def _from_graph_map(self, set_morphism):
         return self.element_class(self, set_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

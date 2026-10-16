@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
 )
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class AffineGroupSchemeMorCategoryConstruction(MorCategoryConstruction):
@@ -175,6 +176,7 @@ class AffineGroupSchemeMor(CategoricalMor):
         )(arrow)
         return self.element_class(self, internal.underlying_arrow())
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -339,6 +341,7 @@ class AffineGroupSchemeActionMor(CategoricalMor):
         )(arrow)
         return self.element_class(self, internal.underlying_arrow())
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

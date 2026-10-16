@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.sets.set_categories import EnumeratedSet
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -172,6 +173,7 @@ class PosetMor(CategoricalMor):
             )
         return self.unique()
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -367,6 +369,7 @@ class FiniteOrdinalMor(CategoricalMor):
             )
         return self.unique()
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -639,6 +642,7 @@ class ParallelPairMor(CategoricalMor):
             f"the walking parallel pair has no arrow {self.domain()} -> {self.codomain()}"
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -852,6 +856,7 @@ class ParallelFamilyMor(CategoricalMor):
             f"the walking parallel-family category has no arrow {self.domain()} -> {self.codomain()}"
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1382,6 +1387,7 @@ class ConeMor(CategoricalMor):
         r"""Construct from an apex map whose cone equations are structural."""
         return self.element_class(self, apex_map, verify=False)
 
+    @object_level
     def identity(self) -> ConeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -1424,6 +1430,7 @@ class CoconeMor(CategoricalMor):
                 apex_map = apex_map.apex_map()
         return self.element_class(self, apex_map)
 
+    @object_level
     def identity(self) -> CoconeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

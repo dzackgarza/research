@@ -124,6 +124,7 @@ from dzack_research.preamble.logic import AtomicProposition, conjunction, negati
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 for _scheme_axiom in (
     "Affine",
@@ -1776,6 +1777,7 @@ class SchemeMorCategory(CategoricalMor):
                     f"{datum} is not a defining datum of a morphism {domain} -> {codomain}"
                 )
 
+    @object_level
     @cached_method
     def identity(self):
         r"""``id_X``: the identity pullback on an affine scheme, else the engine identity."""

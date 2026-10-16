@@ -48,6 +48,7 @@ from dzack_research.preamble.owned_category import OwnedParent, _object_of, owne
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import (
@@ -1042,6 +1043,7 @@ class SetMorCategory(CategoricalMor):
             )
         return self.element_class(self, datum)
 
+    @object_level
     @cached_method
     def identity(self) -> OwnedSetMorphism:
         r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
@@ -2280,6 +2282,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
             return _ambient_of(constructing)
 
+        @object_level
         def Mor(
             self,
             codomain: Parent,
@@ -2303,10 +2306,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
             return ambient.Mor(self, codomain)
 
+        @object_level
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
             return Sets().End(self)
 
+        @object_level
         def Aut(self):
             r"""The automorphisms of this set in its selected category."""
             return Sets().Aut(self)
@@ -2912,6 +2917,7 @@ class SetInjectionMor(SetMorCategory):
             and Sets().MonoCategory().accepts(arrow)
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -2970,6 +2976,7 @@ class SetSurjectionMor(SetMorCategory):
             and Sets().EpiCategory().accepts(arrow)
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -5927,6 +5934,7 @@ class WellOrderedSetMor(CategoricalMor):
             )
         return self.element_class(self, set_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

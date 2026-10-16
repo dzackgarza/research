@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import negation
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _FiniteChamberSystemEngine:
@@ -121,6 +122,7 @@ class ChamberSystemMor(CategoricalMor):
     def _from_chamber_map(self, set_morphism):
         return self.element_class(self, set_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

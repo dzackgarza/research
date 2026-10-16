@@ -80,6 +80,7 @@ from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook, realize_owned_category
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _OwnedRingBootstrapParent(metaclass=ABCMeta):
@@ -556,6 +557,7 @@ class RngMor(CategoricalMor):
             engine_morphism=engine_morphism,
         )
 
+    @object_level
     def identity(self):
         return _ringlike_mor_identity(self)
 
@@ -782,6 +784,7 @@ class RingMor(CategoricalMor):
             self, function, engine_morphism=engine_morphism
         )
 
+    @object_level
     def identity(self):
         return _ringlike_mor_identity(self)
 
@@ -3831,6 +3834,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return the represented subring of elements satisfying ``predicate``."""
             return _predicate_subring(self, predicate, description, category)
 
+        @object_level
         def Mor(self, codomain, category=None):
             rings = OwnedRings()
             if category is None:
@@ -4180,6 +4184,7 @@ class OwnedOrders(CategoryPacketMethods, OwnedCategory):
         return self.MorCategory().Of(domain, codomain)
 
     class ParentMethods:
+        @object_level
         def Mor(self, codomain, category=None):
             orders = OwnedOrders()
             if codomain in orders and (

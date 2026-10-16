@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
 )
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class SemilinearModuleMorphism:
@@ -313,6 +314,7 @@ class SemilinearModuleMor(CategoricalMor):
         )
         return self.element_class(self, scalar_map, compatible)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

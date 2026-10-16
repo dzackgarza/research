@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _SparseFreeAlgebra(_WordModule):
@@ -380,6 +381,7 @@ class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebra
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

@@ -53,6 +53,7 @@ from dzack_research.preamble.logic import ask
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 for _manifold_axiom in ("GloballySymmetric", "BoundedSymmetric"):
     if _manifold_axiom not in all_axioms:
@@ -1504,6 +1505,7 @@ class ComplexManifoldMor(CategoricalMor):
         r"""Raise a private Sage map with its coordinate representations into this Mor object."""
         return self.element_class(self, HolomorphicMapPresentation(engine, representations))
 
+    @object_level
     @cached_method
     def identity(self):
         r"""The identity, represented on each chart ``U_s`` by its own coordinates."""

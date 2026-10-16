@@ -33,6 +33,7 @@ from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
@@ -521,10 +522,12 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
+        @object_level
         def End(self):
             r"""Endomorphisms preserving the chosen degree decomposition."""
             return self._graded_module_placement().End(self)
 
+        @object_level
         def Aut(self):
             r"""Automorphisms preserving the chosen degree decomposition."""
             return self._graded_module_placement().Aut(self)

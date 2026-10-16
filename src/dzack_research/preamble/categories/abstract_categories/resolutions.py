@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _normalize_truncation(truncation):
@@ -248,6 +249,7 @@ class ResolutionMor(CategoricalMor):
                     target_morphism=target_morphism,
                 )
 
+    @object_level
     @cached_method
     def identity(self):
         match self.domain() is self.codomain():

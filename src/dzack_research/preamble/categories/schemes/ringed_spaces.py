@@ -38,6 +38,7 @@ from dzack_research.preamble.logic import AtomicProposition, conjunction, negati
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 if "Invertible" not in all_axioms:
@@ -492,6 +493,7 @@ class AlgebraSheafMor(CategoricalMor):
     def _from_known_algebra_map(self, underlying_morphism):
         return self.element_class(self, underlying_morphism, algebra_laws=True)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1735,6 +1737,7 @@ class AffineQuasiCoherentSheafMor(QuasiCoherentSheafMor):
                 pass
         return self.element_class(self, module_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

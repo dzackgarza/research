@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class NonUnitalSemiringMor(MagmaMor):
@@ -277,6 +278,7 @@ class SemiringMor(CategoricalMor):
             function = function.__call__
         return self.element_class(self, function)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

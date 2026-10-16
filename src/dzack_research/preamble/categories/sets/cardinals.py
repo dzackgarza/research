@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -376,6 +377,7 @@ class CardinalityMor(CategoricalMor):
             raise ValueError(f"{morphism} is not in {self}")
         return self.unique_morphism()
 
+    @object_level
     def identity(self) -> CardinalityMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -1306,6 +1308,7 @@ class OrdinalMor(CategoricalMor):
             raise ValueError(f"{morphism} is not in {self}")
         return self.unique_morphism()
 
+    @object_level
     def identity(self) -> OrdinalMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _members_of_subset(base_set, candidate):
@@ -523,6 +524,7 @@ class TopologicalSpaceMor(CategoricalMor):
         """
         return self.element_class(self, set_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
