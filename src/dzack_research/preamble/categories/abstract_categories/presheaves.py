@@ -1065,8 +1065,44 @@ class OpenCoveringFamilies(OwnedCategoryBase):
         return [CoveringFamilies(self.site_category())]
 
     def whole_open(self) -> Parent:
-        r"""``X`` as an object of ``Open(X)``."""
-        return self.site_category()(self.space().power_set().top())
+        r"""``X`` as the terminal object of its open site.
+
+        The topology retains its inclusion into the power set of its points.
+        In particular an affine scheme uses the points of its prime spectrum.
+
+        Unexecuted affine sections specimen (Stacks, Tag 01I8)::
+
+            sage: from dzack_research.preamble.all import *
+            sage: ring = QQ["x"]
+            sage: line = AffineSchemes(QQ)(ring)
+            sage: module = ring.free_module(1)
+            sage: sheaf = QuasiCoherentSheaves(line).associated_sheaf(module)
+            sage: whole = sheaf.descent_data().coverage().whole_open()
+            sage: sheaf.sections(whole) is module
+            True
+            sage: site = sheaf.descent_data().coverage().site_category()
+            sage: x = ring.algebra_generator("x")
+            sage: basic = site(line.underlying_space().distinguished_open(x))
+            sage: opposite = site.opposite()
+            sage: arrow = opposite.Mor(opposite(whole), opposite(basic))(
+            ....:     site.Mor(basic, whole).unique()
+            ....: )
+            sage: restriction = sheaf.open_sections_presheaf()(arrow)
+            sage: localized = sheaf.sections(basic)
+            sage: e = module.module_generator(0)
+            sage: image = restriction(e)
+            sage: image != localized.zero()
+            True
+            sage: localized.base_ring()(x).is_unit()
+            True
+            sage: restriction(module.scalar_multiple(x, e)) == localized.scalar_multiple(
+            ....:     localized.base_ring()(x), image
+            ....: )
+            True
+        """
+        opens = self.site_category().object_set()
+        power = opens.inclusion().codomain()
+        return self.site_category()(power.top())
 
     terminal_site_object = whole_open
 

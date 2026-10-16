@@ -101,12 +101,8 @@ class _FiniteTopologyData(SageObject):
 
     def open_subsets(self, space):
         r"""The open sets of ``space``, the points of ``space`` at the members of each open of ``tau``."""
-        power = space.power_set()
-        return finite_ordered_set(
-            tuple(
-                power(tuple(space(member) for member in members))
-                for members in self._open_member_families
-            )
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
         )
 
     def is_open_subset(self, space, candidate) -> bool:
@@ -237,17 +233,9 @@ class _TransportedTopologyData(SageObject):
         self._source_space = source_space
 
     def open_subsets(self, space):
-        source_opens = self._source_space.open_subsets()
-        match source_opens:
-            case _ if source_opens in FiniteSets() and source_opens in EnumeratedSets():
-                power = space.power_set()
-                return finite_ordered_set(
-                    tuple(power(tuple(space(point) for point in subset)) for subset in source_opens)
-                )
-            case _:
-                return space.power_set().condition_set(
-                    lambda subset: self.is_open_subset(space, subset)
-                )
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
 
     def is_open_subset(self, space, subset) -> bool:
         selected = space.power_set()(subset)

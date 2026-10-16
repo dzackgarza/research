@@ -1323,22 +1323,7 @@ The fibre product of schemes is constructed for affine bases, for glued schemes 
 
 A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). `PresheafObjects(X)` is the Grothendieck construction `∫_D [Open(X)^op, D]` with fibres `with_values(D)`, and `SheafObjects(X)` declares it (`schemes/ringed_spaces.py`); `PresheafObjects(X)` declares no supercategory, because no category of Grothendieck constructions of a `Cat`-valued functor is presented. The affine structure sheaf is still built on `distinguished_affine_coverage(X)` valued in `Modules(O(X))` (`_structure_sheaf`, `schemes/ringed_spaces.py`), and `M~` has no functor and no descent datum (`QuasiCoherentSheaves`). The comparison lemma (restriction `Sh(Open(X), D) -> Sh(B, D)` is an equivalence for a basis `B`; Stacks 009H, locator to check) is stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` (`TopologicalSpaces...open_subsets_site()`) -> `OpenCoveringFamilies(X)` -> the extension functor -> every represented sheaf an object of `Sh(Open(X), D)` -> the honest supercategories. **Consequences:** `O_X.global_sections()` keeps a method returning the ring `O(X)`, where the general `Sheaves.ParentMethods.global_sections()` would return the regular module, and `M~` keeps its own section methods.
 
-The whole-open construction must use the same power set as the site's opens.
-Source inspection on 2026-10-16 found that `_AffineSchemeTopologyData.open_subsets`
-returns opens in the power set of `A.spectrum()`, whereas
-`OpenCoveringFamilies(X).whole_open()` constructs `X.power_set().top()`.
-`Schemes.Affine.ParentMethods.underlying_space()` returns `A.spectrum()`, a
-different object from the scheme `X`. Thus the terminal-open request and the
-affine sections functors use different subset parents. This is a source-level
-endpoint discrepancy; its runtime effect has not been checked.
-
-The same open-site path also assumes `open_subsets()` has an `inclusion()`:
-`TopologicalSpaces.ParentMethods.open_subsets_site()` calls it directly.
-`_FiniteTopologyData.open_subsets()` instead returns a finite ordered set of
-open subsets. The site construction must retain the actual map from its open
-set to the power set, including this finite topology case.
-
-Finite-atlas chart sections require this same map for chart images.
+Finite-atlas chart sections require maps from chart images into the power set.
 `_glued_chart_image` retains an open subscheme and its scheme inclusion, but
 `_SchemeTopologyData.is_open_subset` handles only the empty and whole subsets.
 `_FiniteAtlasModuleOpenPresheaf` and `_FiniteAtlasStructurePresheaf` consequently
