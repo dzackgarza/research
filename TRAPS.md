@@ -654,3 +654,13 @@ Edits to existing files are live; a new module needs the install again.
 direnv exec ~/research "$SAGE_BIN" -pip install --no-deps \
   --config-settings editable_mode=strict -e ~/gitclones/tree-sitter-sage
 ```
+
+### Ideal saturation is Singular-backed and has no route over `AA`, `QQbar` or `CC`
+
+`I.saturation(J)` for ideals of a multivariate polynomial ring goes through Singular, which accepts only its own coefficient fields.
+Over `AA`, `QQbar` and the MPFR `CC` there is no saturation, so a localization `K[x, y]_f` could not decide whether a denominator `d` becomes a unit.
+Exact divisibility `d.divides(g)` works over all three.
+Measured on 2026-10-16 with Sage 10.x in `R = K['a,b']`: `(a^2).divides(a^3*b)` takes 0.23 s over `AA` on the first call and 0.02 s over `QQbar`.
+
+Route chosen: for a principal ideal `(d)` in a polynomial ring over a field, `inverted_submonoid_meets` decides `(d)` meets `S` by `d | f^deg(d)`, where `f` is the product of the inverted elements.
+Other ideals keep the saturation route.
