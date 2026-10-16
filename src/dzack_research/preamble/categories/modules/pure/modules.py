@@ -3186,13 +3186,14 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
                 a = source_action(source_projection(pair))
                 b = target_action(target_projection(pair))
 
-                def transform(element, left, right):
-                    linear = logarithm(element)
-                    moved = self(lambda label: left(linear(right(source.module_generator(label)))))
-                    return exponential(moved)
-
-                forward = normal.Mor(normal).elementwise(lambda element: transform(element, b, ~a))
-                inverse = normal.Mor(normal).elementwise(lambda element: transform(element, ~b, a))
+                forward_action = (~a).internal_mor_map(
+                    b, source_internal_mor=self, target_internal_mor=self
+                )
+                inverse_action = a.internal_mor_map(
+                    ~b, source_internal_mor=self, target_internal_mor=self
+                )
+                forward = normal.Mor(normal).elementwise(lambda element: exponential(forward_action(logarithm(element))))
+                inverse = normal.Mor(normal).elementwise(lambda element: exponential(inverse_action(logarithm(element))))
                 return automorphisms(forward, inverse)
 
             if self.base_ring() is _owned_integers() and self.has_selected_module_resolution() and self.module_generating_set() in Sets().Finite():
