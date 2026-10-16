@@ -6142,8 +6142,14 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 )
             return result
 
+        @cached_method
         def smith_form(self):
-            r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization."""
+            r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization.
+
+            The comparison maps belong to this fixed morphism. Retain them
+            across integral-preimage requests instead of normalizing the same
+            presentation for every right-hand side.
+            """
 
             ring = self.parent().base_ring()
             assert ring in PrincipalIdealDomains(), (
