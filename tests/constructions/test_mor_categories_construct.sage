@@ -15,12 +15,12 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _singleton_end_category():
     point = Sets.Δ[0]
-    return point, point.End()
+    return point, Sets().End(point)
 
 
 def _identity_object():
     point, end = _singleton_end_category()
-    identity = point.Mor(point).identity()
+    identity = end.identity()
     return point, end, identity, end(identity)
 
 
@@ -32,8 +32,8 @@ def test_fixed_mor_category_retains_family_endpoints_and_underlying_mor() -> Non
     assert end.base_category() is Sets()
     assert end.domain_object() is point
     assert end.codomain_object() is point
-    assert end.arrow_set() is point.Mor(point)
-    assert end.underlying_mor() is point.Mor(point)
+    assert end.arrow_set() is Sets().Mor(point, point)
+    assert end.underlying_mor() is Sets().Mor(point, point)
     assert end.accepts(identity)
     assert end(identity) is arrow
     assert end.object_set() is end.arrow_set()

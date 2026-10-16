@@ -2318,12 +2318,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         @object_level
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
-            return Sets().End(self)
+            return self.ambient_category().End(self)
 
         @object_level
         def Aut(self):
             r"""The automorphisms of this set in its selected category."""
-            return Sets().Aut(self)
+            return self.ambient_category().Aut(self)
 
         def condition_set(self, predicate) -> Sets().ObjectType:
             r"""Return the represented subset of ``self`` cut out by ``predicate``."""
