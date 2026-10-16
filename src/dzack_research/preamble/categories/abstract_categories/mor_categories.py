@@ -818,10 +818,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         the weaker Mor must therefore preserve the arrow rather than
         reinterpret its object as generator images or presentation data.
         """
-        match args:
-            case (Morphism() as arrow,) if not kwargs and self._already_parented_arrow(arrow):
-                return arrow
-        return self._element_constructor_(*args, **kwargs)
+        return OwnedMor.__call__(self, *args, **kwargs)
 
     def mor_family(self) -> _MorCategoryOf:
         return self._family

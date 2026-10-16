@@ -77,7 +77,10 @@ class TwistFunctor(Functor):
         # ``T(f)`` is built from its defining data in its own Mor (``CON-17``):
         # an arrow of another Mor between the twisted lattices is never re-read.
         if isinstance(morphism, (LatticeIsometryMethods, CategoricalIsomorphism)):
-            return source.Isom(target)(transported(morphism))
+            forward = source.Mor(target)(transported(morphism))
+            return source.Isom(target)._from_inverse_computation(
+                forward, lambda: self(morphism.inverse())
+            )
         if isinstance(morphism, LatticeEmbeddingMethods):
             return source.Emb(target)(transported(morphism))
         return source.Mor(target)(transported(morphism))

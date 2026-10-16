@@ -43,7 +43,20 @@ class OwnedMor(SageHomset):
     # its category is set; the presented-modules slot starts empty here too.
     _selected_module_presentation = None
 
+    def _already_parented_arrow(self, arrow: Morphism) -> bool:
+        return arrow.parent() is self
+
     def __call__(self, *args, **kwargs) -> Morphism:
+        if len(args) == 1 and isinstance(args[0], Morphism):
+            arrow = args[0]
+            if self._already_parented_arrow(arrow):
+                if not kwargs:
+                    return arrow
+            elif arrow.domain() is self.domain() and arrow.codomain() is self.codomain():
+                raise TypeError(
+                    f"{arrow} belongs to {arrow.parent()}, not to {self}; apply the functor between "
+                    "the categories instead of constructing an arrow from another arrow (CON-17)"
+                )
         return self._element_constructor_(*args, **kwargs)
 
     def identity_at(self, obj: Parent) -> Morphism:

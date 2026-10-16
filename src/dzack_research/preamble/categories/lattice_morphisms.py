@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
     CategoricalMor,
     _distinct_supercategories,
+    _category_accepts_morphism,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
@@ -370,6 +371,20 @@ class LatticeMorphismMethods:
         {"module_morphism", "value_morphism"}
     )
 
+    def _factor_from_generator_preimages(self, target_embedding, preimages):
+        r"""Factor a form-preserving map through a lattice embedding.
+
+        Injectivity of the subobject map and preservation of the same form
+        give the factor's form equation; a monic source map gives a monic
+        factor.  Its selected generator images are computed by the module
+        factorization owner, without reconstructing an existing arrow.
+        """
+        base = self.parent().base_category()
+        assert _category_accepts_morphism(base, target_embedding.domain(), self.codomain(), target_embedding), (
+            f"factorization in {base} needs a lattice subobject map of {base}"
+        )
+        return self.domain().Mor(target_embedding.domain())(preimages)
+
     def __init__(self, parent, images, *, elementwise=False) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
@@ -403,6 +418,13 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 
 class LatticeEmbeddingMethods:
     r"""A form-preserving monomorphism of lattices."""
+
+    def _factor_from_generator_preimages(self, target_embedding, preimages):
+        base = self.domain().lattice_category()
+        assert _category_accepts_morphism(base, target_embedding.domain(), self.codomain(), target_embedding), (
+            f"factorization of a lattice embedding needs a lattice subobject map of {base}"
+        )
+        return self.domain().Emb(target_embedding.domain())(preimages)
 
     @validator
     def validate_injectivity(self) -> None:
@@ -567,7 +589,8 @@ class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, images, *, inverse_computation=None) -> None:
+        self._isometry_inverse_computation = inverse_computation
         match images:
             # A module isomorphism of the underlying modules: an inverse pair,
             # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
@@ -1003,6 +1026,10 @@ class LatticeIsometryMethods:
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
+        if self._isometry_inverse_computation is not None:
+            inverse = self._isometry_inverse_computation()
+            target = codomain.Isom(self.domain())
+            return target._from_inverse_computation(inverse, lambda: self)
         module_isomorphism = self._underlying_module_isomorphism
         if module_isomorphism is not None:
             target = codomain.Isom(self.domain())
@@ -1482,16 +1509,7 @@ class LatticeMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if not isinstance(images, FormedModuleMorphism):
-                # A module map, set map or other arrow of these endpoints:
-                # almost none preserves the form (``CON-17``).
-                refuse_arrow_of_another_mor(
-                    self, images, "a lattice morphism is given by its generator images or its function on elements, "
-                    "whose form preservation is its validator"
-                )
-            # TODO(mor-element-constructors-admit-no-foreign-arrow): an arrow of
-            # another formed-module Mor between these lattices is still re-read here.
-            return self.element_class(self, images)
+            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
@@ -1548,16 +1566,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            if not isinstance(images, FormedModuleMorphism):
-                # A module embedding or other arrow of these endpoints: almost
-                # none preserves the form (``CON-17``).
-                refuse_arrow_of_another_mor(
-                    self, images, "a lattice embedding is given by its generator images or its function on elements, "
-                    "whose form preservation and injectivity are its validators"
-                )
-            # TODO(mor-element-constructors-admit-no-foreign-arrow): an arrow of
-            # another formed-module Mor between these lattices is still re-read here.
-            return self.element_class(self, images)
+            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
@@ -1902,9 +1911,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         return self._from_inverse_computation(forward, lambda: inverse)
 
     def _from_inverse_computation(self, forward, inverse_computation):
-        r"""The isometry whose forward arrow is ``forward``; the isometry computes its own inverse."""
-        domain = self.domain()
-        return self(lambda label: forward(domain.module_generator(label)))
+        r"""Retain the core's forward lattice arrow and lazy inverse (``CoreMor``'s protected contract)."""
+        base = self.core_category().base_category()
+        assert _category_accepts_morphism(base, self.domain(), self.codomain(), forward), (
+            f"{forward} is not a lattice morphism {self.domain()} -> {self.codomain()}"
+        )
+        return self.element_class(self, forward, inverse_computation=inverse_computation)
 
     def __init__(self, mor_family, domain, codomain) -> None:
         group = CoreMor._vertex_group_placement(domain, codomain)
@@ -1938,9 +1950,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 )
             if images.parent() is self:
                 return images
-            # TODO(mor-element-constructors-admit-no-foreign-arrow): an isometry
-            # of another isometry Mor between these lattices is still re-read here.
-            return self.element_class(self, images)
+            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
         if isinstance(images, Morphism):
             # A module isomorphism or automorphism, a lattice endomorphism or a
             # set map: almost none is an isometry (``CON-17``).

@@ -1644,7 +1644,12 @@ class ModuleMorphismMethods:
         }
         if any(preimage is None for preimage in preimages.values()):
             return None
-        return source.module_category().Mor(source, target)(preimages)
+        return self._factor_from_generator_preimages(target_embedding, preimages)
+
+    def _factor_from_generator_preimages(self, target_embedding, preimages):
+        r"""Realize the linear factor from the computed generator preimages."""
+        source = self.domain()
+        return source.module_category().Mor(source, target_embedding.domain())(preimages)
 
     @cached_method
     def selected_presentation_morphism(self):
@@ -3433,6 +3438,8 @@ class ModuleAutomorphismGroup(CoreMor):
             refuse_arrow_of_another_mor(
                 self, datum, "an automorphism is given by its generator images, or by the pair (forward, inverse)"
             )
+        if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, Morphism) for part in datum):
+            return self._from_known_inverse_pair(*datum)
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)

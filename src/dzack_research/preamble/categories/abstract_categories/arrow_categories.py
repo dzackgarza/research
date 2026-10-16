@@ -2371,6 +2371,11 @@ class CoreMor(CategoricalMor):
         """
         return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
 
+    def __call__(self, forward, inverse=None, **kwargs):
+        if inverse is not None:
+            return super().__call__((forward, inverse), **kwargs)
+        return super().__call__(forward, **kwargs)
+
     def _element_constructor_(self, forward, inverse=None):
         match forward:
             case CategoricalIsomorphism() if inverse is None:
