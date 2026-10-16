@@ -75,9 +75,9 @@ def test_the_given_two_plane_transvections_construct_their_subgroup():
 
     subgroup = parabolic.subgroup((first, second))
     inclusion = subgroup.inclusion()
-    generators = tuple(subgroup.group_generators())
+    family = tuple(subgroup.group_generators())
 
-    assert generators == (first, second)
+    assert family == (first, second)
     assert inclusion(subgroup.one()) == parabolic.one()
     assert first * second == second * first
-    assert all(inclusion(generator)(e) == e for generator in generators)
+    assert all(inclusion(generator)(e) == e for generator in family)

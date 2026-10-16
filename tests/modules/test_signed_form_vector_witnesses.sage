@@ -9,9 +9,9 @@ import pytest
 from dzack_research.preamble.all import *
 
 
-@pytest.mark.parametrize("rows, has_negative", (([[2]], False), ([[2, 0], [0, -2]], True), ([[0, 1], [1, 0]], True)))
-def test_signed_witnesses_use_the_actual_diagonal_form(rows, has_negative):
-    module = ZZ.free_module(tuple(range(len(rows))))
+@pytest.mark.parametrize("rank, rows, has_negative", ((1, [[2]], False), (2, [[2, 0], [0, -2]], True), (2, [[0, 1], [1, 0]], True)))
+def test_signed_witnesses_use_the_actual_diagonal_form(rank, rows, has_negative):
+    module = ZZ.free_module(tuple(range(rank)))
     formed = FormModules(ZZ)(module.bilinear_hom_space(ZZ)(rows))
 
     positive = formed.positive_vector()

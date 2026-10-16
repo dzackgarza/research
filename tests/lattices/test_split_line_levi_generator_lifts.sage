@@ -34,7 +34,7 @@ def test_every_complement_generator_has_a_pointwise_line_lift(name, scale, sign)
     assert quotient_group.subgroup(family).cardinality() == order
     for generator in family:
         lift = levi.lift(generator)
-        assert lift is not None
+        assert lift.preserves_form_exactly()
         assert lift.domain() is lattice and lift.codomain() is lattice
         assert lift(isotropic) == isotropic
         assert (~lift)(isotropic) == isotropic
