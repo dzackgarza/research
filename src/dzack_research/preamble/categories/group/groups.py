@@ -6122,7 +6122,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 choice; it is fixed here when no other cover was selected.
                 """
                 if not self.has_selected_resolution(OwnedGroups()):
-                    _fix_selected_group_resolution_on(self, lambda: self)
+                    _fix_selected_group_resolution_on(
+                        self, lambda: finite_ordered_set(tuple(self))
+                    )
                 return self.selected_resolution(OwnedGroups())
 
             def conjugate_subgroup(self, group_element, subgroup):
