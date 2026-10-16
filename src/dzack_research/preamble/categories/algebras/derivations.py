@@ -612,17 +612,17 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 normalized = {}
                 for key, image in generator_images.items():
                     if key in labels:
-                        normalized[key] = image
-                        continue
-                    matching = tuple(
-                        label for label in labels
-                        if self.algebra().algebra_generator(label) == key
-                    )
-                    if len(matching) != 1:
-                        raise ValueError(
-                            f"{key} does not select one algebra generator of {self.algebra()}"
+                        label = key
+                    else:
+                        matching = tuple(
+                            label for label in labels
+                            if self.algebra().algebra_generator(label) == key
                         )
-                    label = matching[0]
+                        if len(matching) != 1:
+                            raise ValueError(
+                                f"{key} does not select one algebra generator of {self.algebra()}"
+                            )
+                        label = matching[0]
                     if label in normalized:
                         raise ValueError(f"the image of the algebra generator {label} is given twice")
                     normalized[label] = image

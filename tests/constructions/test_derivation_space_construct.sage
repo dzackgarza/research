@@ -18,6 +18,7 @@ def test_affine_plane_derivation_space_represents_leibniz_derivations() -> None:
     algebra, x, y, target, derivations, partial_x, _ = _plane_derivations()
 
     assert derivations in Modules(algebra)
+    assert partial_x == derivations({"x": algebra.one(), "y": algebra.zero()})
     assert derivations.module_rank() == 2
     assert partial_x.domain() is algebra
     assert partial_x.codomain() is target
