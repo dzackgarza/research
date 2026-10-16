@@ -653,14 +653,15 @@ def _owned_implementation_bases(
         )
 
     predecessors = {provider: set() for provider in bases}
-    # Cat's represented endpoints are objects, and their realization has
-    # Cat.ParentMethods before the owned object root.  An intersection with
-    # a catalogue that declares Objects() must retain that same order.
-    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    # Objects owns the terminal Sage Parent initialization. Every other
+    # cooperative provider must consume its construction data before that
+    # boundary, including providers from a different branch of a join.
     from dzack_research.preamble.categories.abstract_categories.objects import Objects
 
-    if Cat.ParentMethods in predecessors and Objects.ParentMethods in predecessors:
-        predecessors[Objects.ParentMethods].add(Cat.ParentMethods)
+    if Objects.ParentMethods in predecessors:
+        predecessors[Objects.ParentMethods].update(
+            provider for provider in bases if provider is not Objects.ParentMethods
+        )
     for producer in bases:
         derived = frozenset(
             getattr(producer, "_derived_construction_parameters", ())
