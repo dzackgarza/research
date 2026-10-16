@@ -393,15 +393,17 @@ class ObjectLevelOperation:
     def __init__(self, reading) -> None:
         self._reading = reading
         update_wrapper(self, reading)
+        self._category_reading = _category_level_operations()[self.__name__]
+        self._category_arity = self._category_reading.__code__.co_argcount - 1
 
     def __get__(self, instance, owner=None):
         if instance is None:
             return self._reading.__get__(None, owner)
         reading = self._reading.__get__(instance, owner)
-        category_level = _category_level_operations()[self.__name__]
+        category_level = self._category_reading
 
         def operation(*objects, **options):
-            if not options and _asked_of_the_category(instance, objects):
+            if not options and len(objects) == self._category_arity and _asked_of_the_category(instance, objects):
                 return category_level(_category_reading_owner(instance), *objects)
             return reading(*objects, **options)
 

@@ -363,9 +363,6 @@ class Cat(CategoryPacketMethods, Category):
         self._arrows[key] = result
         return result
 
-    def Mor(self, domain: Category, codomain: Category) -> _FunctorCategory:
-        return self.MorCategory().Of(domain, codomain)
-
     def identity(self, category: Category) -> CategoryFunctorMorphism:
         return self.functor_mor(category, category).identity()
 
@@ -415,11 +412,25 @@ class Cat(CategoryPacketMethods, Category):
         def identity_functor(self):
             return Cat().identity(self)
 
-        End = CategoryPacketMethods.End
-        Mono = CategoryPacketMethods.Mono
-        Epi = CategoryPacketMethods.Epi
-        Iso = CategoryPacketMethods.Iso
-        Aut = CategoryPacketMethods.Aut
+        @object_level
+        def End(self):
+            return Cat().End(self)
+
+        @object_level
+        def Mono(self, codomain):
+            return Cat().Mono(self, codomain)
+
+        @object_level
+        def Epi(self, codomain):
+            return Cat().Epi(self, codomain)
+
+        @object_level
+        def Iso(self, codomain):
+            return Cat().Iso(self, codomain)
+
+        @object_level
+        def Aut(self):
+            return Cat().Aut(self)
 
         def inclusion_into(self, supercategory: Category):
             r"""Return the canonical inclusion functor into a declared supercategory."""
@@ -1220,6 +1231,13 @@ class Cat(CategoryPacketMethods, Category):
         )
 
         return _ProductCategory(left, right)
+
+    Mor = ParentMethods.__dict__["Mor"]
+    End = ParentMethods.__dict__["End"]
+    Mono = ParentMethods.__dict__["Mono"]
+    Epi = ParentMethods.__dict__["Epi"]
+    Iso = ParentMethods.__dict__["Iso"]
+    Aut = ParentMethods.__dict__["Aut"]
 
     def _repr_(self) -> str:
         return "Cat: categories with functors as morphisms"
