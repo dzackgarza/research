@@ -2017,7 +2017,37 @@ def _chosen_trivialization_isomorphism(source, target):
 
 
 class _PullbackLineBundleQuasiCoherentMorphismMethods:
-    r"""The pullback of a represented ambient line-bundle morphism along one closed immersion."""
+    r"""The pullback of an ambient line-bundle arrow along a closed immersion.
+
+    Unexecuted vanishing along a coordinate hyperplane (Hartshorne, II.5.12)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: P = ProjectiveSpaces(QQ)(1)
+        sage: source = P.O(0); target = P.O(1)
+        sage: forms = target.global_sections(); S = forms.homogeneous_coordinate_ring()
+        sage: x0 = S.algebra_generator(P.variable_names()[0])
+        sage: section = forms.section_from_homogeneous_polynomial(x0)
+        sage: atlas = P.standard_affine_atlas()
+        sage: local_maps = {i: source.local_module(i).Mor(target.local_module(i))({0: target.section_on_chart(section, i)}) for i in atlas.chart_indices()}
+        sage: zero_maps = {i: source.local_module(i).Mor(target.local_module(i)).zero() for i in atlas.chart_indices()}
+        sage: ambient = QuasiCoherentSheaves(P).Mor(source, target)
+        sage: nonzero = ambient(local_maps); zero = ambient(zero_maps)
+        sage: nonzero.local_map(0)(source.local_module(0).module_generator(0)) != target.local_module(0).zero()
+        True
+        sage: Z = P.closed_subscheme(x0)
+        sage: pulled_source = Z.inclusion().module_pullback(source)
+        sage: pulled_target = Z.inclusion().module_pullback(target)
+        sage: hom = QuasiCoherentSheaves(Z).Mor(pulled_source, pulled_target)
+        sage: restricted = hom(nonzero)
+        sage: restricted == hom(zero)
+        True
+        sage: restricted.local_map(1)(pulled_source.local_module(1).module_generator(0)) == pulled_target.local_module(1).zero()
+        True
+        sage: datum = pulled_source.module_descent_datum()
+        sage: unit = datum.compatible_section({i: pulled_source.local_module(i).module_generator(0) for i in datum.chart_indices()})
+        sage: restricted.global_sections_map()(unit) == pulled_target.global_sections().zero()
+        True
+    """
 
     def __init__(self, parent, ambient_morphism) -> None:
         source = parent.domain()
