@@ -7748,6 +7748,9 @@ class _FiniteAtlasStructurePresheaf(Functor):
         sage: whole = sheaf.descent_data().coverage().whole_open()
         sage: sheaf.sections(whole) is QQ
         True
+        sage: empty = site(site.object_set().inclusion().codomain().bottom())
+        sage: sheaf.sections(empty).one() == sheaf.sections(empty).zero()
+        True
         sage: opposite = site.opposite()
         sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
         sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
@@ -7805,6 +7808,10 @@ class _FiniteAtlasStructurePresheaf(Functor):
         return subset.chart_index()
 
     def _apply_object(self, opposite_object):
+        if _is_empty_open(self, opposite_object):
+            # The empty cover forces the terminal ring (Stacks, Tag 04B3).
+            ring = self.scheme().scheme_base_ring()
+            return ring.localization(ring.zero())
         if self._is_whole(opposite_object):
             return self._global_section_ring
         self._chart_index(opposite_object)
@@ -7821,6 +7828,8 @@ class _FiniteAtlasStructurePresheaf(Functor):
     def _apply_morphism(self, opposite_arrow):
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
+        if _is_empty_open(self, opposite_arrow.domain()) or _is_empty_open(self, opposite_arrow.codomain()):
+            return self.codomain().Mor(source, target).elementwise(lambda _section: target.zero())
         if opposite_arrow.domain() is opposite_arrow.codomain() or (
             self._is_whole(opposite_arrow.domain()) and self._is_whole(opposite_arrow.codomain())
         ):

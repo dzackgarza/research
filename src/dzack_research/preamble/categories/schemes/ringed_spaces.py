@@ -898,6 +898,9 @@ class _AffineOpenStructurePresheaf(Functor):
         subset = opposite_object.underlying_object().value()
         spectrum = self.scheme().underlying_space()
         match subset:
+            case _ if _is_empty_open(self, opposite_object):
+                ring = self.scheme().coordinate_algebra()
+                return ring.localization(ring.zero())
             case _ if subset is spectrum.power_set().top():
                 return self.scheme().coordinate_algebra()
             case _ if subset in DistinguishedOpenSubobjects(spectrum):
@@ -1664,6 +1667,9 @@ class _ModuleOpenPresheaf(Functor):
         )
 
     def _apply_object(self, opposite_object):
+        if _is_empty_open(self, opposite_object):
+            # A module sheaf has one empty-open section (Stacks, Tag 04B3).
+            return self._scheme.scheme_base_ring().free_module(0).underlying_additive_group()
         open_scheme = self._open_scheme(opposite_object)
         sheaf = self._sheaf()
         module = (
@@ -1674,6 +1680,10 @@ class _ModuleOpenPresheaf(Functor):
         return module.underlying_additive_group()
 
     def _apply_morphism(self, opposite_arrow):
+        if _is_empty_open(self, opposite_arrow.domain()) or _is_empty_open(self, opposite_arrow.codomain()):
+            return self.codomain().Mor(
+                self(opposite_arrow.domain()), self(opposite_arrow.codomain()),
+            ).zero()
         source_open = self._open_scheme(opposite_arrow.domain())
         target_open = self._open_scheme(opposite_arrow.codomain())
         if source_open is target_open:
