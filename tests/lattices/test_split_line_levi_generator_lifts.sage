@@ -1,8 +1,8 @@
 r"""Every complement isometry lifts across an integral orthogonal direct sum.
 
-For L=U(s) perpendicular K(s) and e the first null basis vector, the
-integral block map id_U(s) perpendicular g fixes e and induces g on
-e-perp/Ze=K(s). This holds for s=2 as well as s=1; scaling a direct sum
+For L=U(s) perpendicular K(sign*s) and e the first null basis vector,
+the integral block map id_U(s) perpendicular g fixes e and induces g on
+e-perp/Ze=K(sign*s). This holds for both signs and s=2 as well as s=1; scaling a direct sum
 does not create a gluing obstruction. The orders of O(A1), O(A2), O(E8)
 are 2, 12, 696729600 (Conway--Sloane, SPLAG, Ch. 4, §6).
 """
@@ -14,8 +14,9 @@ from dzack_research.preamble.all import *
 
 @pytest.mark.parametrize("name", ("A1", "A2", "E8"))
 @pytest.mark.parametrize("scale", (1, 2))
-def test_every_complement_generator_has_a_pointwise_line_lift(name, scale):
-    complement = Lattices(ZZ)(name).twist(scale)
+@pytest.mark.parametrize("sign", (1, -1))
+def test_every_complement_generator_has_a_pointwise_line_lift(name, scale, sign):
+    complement = Lattices(ZZ)(name).twist(sign * scale)
     lattice = NamedLattices.U.twist(scale) + complement
     isotropic = lattice.basis_vector(0)
     reduction = isotropic.isotropic_reduction()
