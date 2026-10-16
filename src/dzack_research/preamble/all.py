@@ -131,6 +131,7 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     HomogeneousPolynomialSectionSpaces,
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
+    PicardGroups,
     ProjectiveJetSpaces,
     ProjectiveLinearSystems,
     SectionRings,
