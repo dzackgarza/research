@@ -1801,6 +1801,63 @@ class FiniteAtlasRefinementMethods:
     def comparison_morphism(self):
         return self.target_map().left()
 
+    @cached_method
+    def global_function_map(self):
+        r"""Pull back global functions between the chosen atlas presentations.
+
+        A function restricts to each coarse chart, pulls back along the fine
+        chart map, and gives a compatible fine-chart family. Multiplication
+        and the unit are componentwise (Hartshorne, II, Exercise 1.22).
+        """
+        coarse = self.coarse_datum()
+        fine = self.fine_datum()
+        source = coarse.global_function_algebra()
+        target = fine.global_function_algebra()
+        if coarse is fine:
+            return _algebra_mor(source, target).identity()
+        structure = fine.structure_module_datum()
+
+        def image(function):
+            components = {}
+            for index in fine.chart_indices():
+                restriction = coarse.global_function_restriction(self.coarse_index(index))
+                scalar = self.chart_map(index).coordinate_algebra_morphism()(restriction(function))
+                module = structure.local_module(index)
+                label = next(iter(module.module_generating_set()))
+                components[index] = module.scalar_multiple(scalar, module.module_generator(label))
+            return target(structure.base_restricted_section(components))
+
+        return _algebra_mor(source, target)._from_constructed_element_map(image)
+
+    @cached_method(key=lambda self, descent: id(descent))
+    def global_section_pullback(self, descent):
+        r"""The map from coarse sections to fine sections with scalars restricted.
+
+        The target is read over the coarse global-function ring along
+        :meth:`global_function_map`. The map retains the actual module
+        pullback functor's target, rather than another equalizer realization.
+        """
+        if descent.gluing_datum() is not self.coarse_datum():
+            raise ValueError("global-section pullback requires descent on the coarse atlas")
+        pulled_sheaf = self.module_pullback_functor()(descent.sheaf())
+        pulled = pulled_sheaf.gluing_datum()
+        source = descent.compatible_sections()
+        target = pulled_sheaf.global_sections().restrict_scalars(self.global_function_map())
+
+        def image(section):
+            components = {
+                index: _base_change_element(
+                    descent.local_module(self.coarse_index(index)),
+                    pulled.local_module(index),
+                    self.chart_map(index).coordinate_algebra_morphism(),
+                    descent.compatible_section_component(section, self.coarse_index(index)),
+                )
+                for index in self.fine_datum().chart_indices()
+            }
+            return target.wrap(pulled.compatible_section(components))
+
+        return source.module_category().Mor(source, target)._from_constructed_element_map(image)
+
     def overlap_map(self, source_index, target_index):
         r"""Map one fine overlap to the corresponding coarse overlap or chart."""
         fine = self.fine_datum()
