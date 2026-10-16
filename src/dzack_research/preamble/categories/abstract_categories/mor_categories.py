@@ -1137,6 +1137,10 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
         return arrow.parent() is mor or _arrow_is_inherited_from_subcategory(self, arrow)
 
     def __call__(self, *data, **options):
+        if len(data) == 1 and not options and isinstance(data[0], (Morphism, CategoricalArrow)):
+            if self.accepts(data[0]):
+                return data[0]
+            raise TypeError(f"{data[0]} is not an arrow of {self}; apply a functor between the categories")
         return self.arrow_set()(*data, **options)
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
