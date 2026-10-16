@@ -212,6 +212,24 @@ class Functor:
     def on_morphism(self, morphism: Map) -> Map:
         return self.morphism_image(morphism)
 
+    def map_isomorphism(self, isomorphism):
+        r"""The isomorphism F(f), with inverse F(f^{-1}) (Mathlib Functor.mapIso)."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import _core_mor
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+        assert _category_accepts_morphism(
+            self.domain().Core(), isomorphism.domain(), isomorphism.codomain(), isomorphism
+        ), f"{isomorphism} is not an isomorphism of {self.domain()}"
+        target = _core_mor(
+            self.object_image(isomorphism.domain()),
+            self.object_image(isomorphism.codomain()),
+            base_category=self.codomain(),
+        )
+        return target._from_inverse_computation(
+            self.morphism_image(isomorphism.forward()),
+            lambda: self.morphism_image(isomorphism.inverse().forward()),
+        )
+
     @overload
     def __call__(self, value: ObjectOfCategory) -> ObjectOfCategory: ...
 

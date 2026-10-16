@@ -94,10 +94,17 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
         source_witt, source_section, source_split = _rational_splitting(source, plane)
         target_witt, target_section, target_split = _rational_splitting(target, plane)
         source_sum, target_sum = source_split.codomain(), target_split.codomain()
-        diagonal = source_sum.Isom(target_sum)(source_sum.from_summands(
-            target_sum.injection(0),
-            target_sum.injection(1) * reduction_isometry,
-        ))
+        direct_sum = Lattices(field_map.codomain()).orthogonal_direct_sum_bifunctor()
+        product = direct_sum.domain()
+        source_pair = product(plane, reduction_isometry.domain())
+        target_pair = product(plane, reduction_isometry.codomain())
+        plane_identity = plane.O().one()
+        forward = product.Mor(source_pair, target_pair)(plane_identity, reduction_isometry)
+        inverse = product.Mor(target_pair, source_pair)(plane_identity, ~reduction_isometry)
+        diagonal = direct_sum.map_isomorphism(product.Core().Mor(source_pair, target_pair)(forward, inverse))
+        assert diagonal.domain() is source_sum and diagonal.codomain() is target_sum, (
+            "the orthogonal direct-sum functor must retain the Witt splitting's summands"
+        )
         base = target_split.inverse() * diagonal * source_split
         source_ambient, target_ambient = base.domain(), base.codomain()
         source_e = source_witt.isotropic_vector()

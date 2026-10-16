@@ -215,7 +215,7 @@ class _OrthogonalDirectSumBifunctor(Functor):
                 left_target_rank,
             )
 
-        return source.Mor(target)(image)
+        return self.codomain().Mor(source, target)(image)
 
 
 @cached_function
