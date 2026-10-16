@@ -2320,8 +2320,7 @@ def _relation_morphism(module):
     relations = module._selected_relation_morphism()
     if relations is None:
         raise TypeError(f"{module} is finitely presented, but its relations are not known explicitly")
-    _require_matrix_mor(relations.parent())
-    return relations
+    return relations._framed_coordinate_morphism()
 
 
 
