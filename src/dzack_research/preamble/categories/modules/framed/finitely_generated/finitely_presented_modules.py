@@ -1833,6 +1833,7 @@ class _GeneralPresentedElement(ModuleElement):
         equal = AtomicProposition("equal", self, other) if contained is None else contained
         return equal if op == op_EQ else negation(equal)
 
+    @cached_method
     def __hash__(self):
         parent = self.parent()
         smith_engine = parent._smith_engine()
