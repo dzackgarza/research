@@ -299,6 +299,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
             return self._permutation_representation
 
+        @cached_method
         def action_of(self, group_element):
             r"""Evaluate the retained group map to obtain the permutation of ``X``.
 
