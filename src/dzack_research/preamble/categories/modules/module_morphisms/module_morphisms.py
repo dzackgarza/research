@@ -1388,14 +1388,15 @@ class ModuleMorphismMethods:
         computations instead use this explicit realization, retaining the
         original linear arrow as the construction premise. The selected
         source and target framings, hence the comparison, are fixed.
+        Callers are integral preimages and the tensor owner's coordinate,
+        pullback and private row-action adapters.
         """
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         source, target = self.domain(), self.codomain()
         mor = source.module_category().Mor(source, target)
-        assert mor in MatrixSpaces(source.base_ring()), (
-            f"coordinates of {self} require finite free modules with selected framings"
-        )
+        if mor not in MatrixSpaces(source.base_ring()):
+            raise TypeError(f"coordinates of {self} require finite free modules with selected framings")
         if self.parent() is mor:
             return self
         return mor._from_constructed_element_map(self, premises=(self,))

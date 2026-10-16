@@ -1027,9 +1027,7 @@ class Tensor:
                 f"map f: V -> W between free modules of finite rank with chosen bases, "
                 f"not a tensor"
             )
-        matrix = morphism.domain().module_category().Mor(
-            morphism.domain(), morphism.codomain()
-        )(morphism)
+        matrix = morphism._framed_coordinate_morphism()
         if matrix.parent() not in MatrixSpaces(matrix.parent().base_ring()):
             raise TypeError(
                 f"cannot pull back a tensor along {morphism}: its domain and codomain must be "
@@ -1188,9 +1186,7 @@ def _engine_row_action_matrix(morphism):
     this lowering converts the convention once, by one transpose.  Row ``i`` of
     the result is the coordinate row of ``f(e_i)``; raising reads it so.
     """
-    matrix = morphism.domain().module_category().Mor(
-        morphism.domain(), morphism.codomain()
-    )(morphism)
+    matrix = morphism._framed_coordinate_morphism()
     assert matrix.parent() in MatrixSpaces(matrix.parent().base_ring()), (
         f"{morphism} has no matrix: its domain {morphism.domain()} and codomain "
         f"{morphism.codomain()} must be free modules of finite rank with a chosen basis, "
@@ -2552,9 +2548,7 @@ class _TensorConstructor:
 
         The ordinary module Mor of the endpoints must itself be a matrix Mor.
         """
-        matrix = morphism.domain().module_category().Mor(
-            morphism.domain(), morphism.codomain()
-        )(morphism)
+        matrix = morphism._framed_coordinate_morphism()
         return self.from_matrix(matrix)
 
     def __call__(
