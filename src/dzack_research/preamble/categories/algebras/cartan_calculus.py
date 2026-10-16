@@ -1,7 +1,8 @@
 r"""Cartan calculus on represented affine algebraic de Rham algebras.
 
 No new object is introduced here.  Vector fields are exactly derivations
-``Der_R(A,A)``, valued in ``A`` through ``{}_A A -> A``, ``e_0 |-> 1``, while
+``Der_R(A) = Der_R(A, A^1)``; each composes as the ``R``-linear endomorphism
+of ``A`` obtained through ``Res_f(A^1) -> A``, ``a e_0 |-> a``, while
 contractions and Lie derivatives are actual graded derivations of the existing
 de Rham DGA.
 """
@@ -29,10 +30,12 @@ def _lie_bracket(left, right):
         raise TypeError(
             f"the Lie bracket [X, Y] needs derivations A -> A, but {left} is not a vector field on {algebra}"
         )
+    left_endomorphism = left.linear_endomorphism()
+    right_endomorphism = right.linear_endomorphism()
     return vector_fields(
         {
-            label: left(right(algebra.algebra_generator(label)))
-            - right(left(algebra.algebra_generator(label)))
+            label: left(right_endomorphism(algebra.algebra_generator(label)))
+            - right(left_endomorphism(algebra.algebra_generator(label)))
             for label in vector_fields.generator_labels()
         }
     )
@@ -95,8 +98,7 @@ def _interior_product(vector_field):
             f"the contraction i_X needs a derivation X: A -> A with A = {algebra}, but {vector_field} "
             "takes values elsewhere"
         )
-
-
+    endomorphism = vector_field.linear_endomorphism()
     de_rham = algebra.de_rham_algebra()
     exterior = de_rham.extension_algebra()
 
@@ -123,7 +125,7 @@ def _interior_product(vector_field):
                             f"the basis element {label} of the de Rham algebra is not a product of Kahler differentials "
                             f"da: its factor {differential_label} is not of the form da"
                         )
-                    scalar = vector_field(algebra.algebra_generator(differential_label[1]))
+                    scalar = endomorphism(algebra.algebra_generator(differential_label[1]))
                     if not scalar:
                         continue
                     remaining = word[:position] + word[position + 1 :]
