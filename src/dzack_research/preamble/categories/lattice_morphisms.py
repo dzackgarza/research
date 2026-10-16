@@ -126,15 +126,7 @@ def _framing_tuple(element):
 
 def _module_matrix(morphism):
     r"""Return the finite-free underlying module Mor element for computation."""
-    linear = morphism.domain().module_category().Mor(morphism.domain(), morphism.codomain())(morphism)
-    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
-
-    assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
-        f"{morphism} has no matrix: its domain {morphism.domain()} and codomain "
-        f"{morphism.codomain()} must be free modules of finite rank with a chosen basis, "
-        f"but the module maps between them form {linear.parent()}"
-    )
-    return linear
+    return morphism._framed_coordinate_morphism()
 
 
 def _binary_form_from_gram(gram):
