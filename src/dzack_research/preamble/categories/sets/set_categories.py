@@ -3210,24 +3210,13 @@ class PowerSets(OwnedCategory):
         def _is_contained_in(self, smaller, larger) -> bool | Predicate:
             r"""Whether \(A\subseteq B\): every point of \(A\) lies in \(B\).
 
-            Decided when \(A\) is empty, when \(B\) is \(X\), and when \(A\) is
-            finite and enumerated; otherwise the proposition \(A\subseteq B\).
+            The subset owner supplies its defining inclusion criterion.
+            General subsets decide the finite enumerated cases and retain
+            an undecided inclusion as a proposition.
             """
-            from dzack_research.preamble.logic import AtomicProposition, conjunction
-
             left = self(smaller)
             right = self(larger)
-            inclusion = left.inclusion()
-            points = inclusion.domain()
-            match left:
-                case _ if left is self.bottom():
-                    return True
-                case _ if right is self.top():
-                    return True
-                case _ if Sets().is_provably_finite(points) and points in EnumeratedSets():
-                    return conjunction(right.is_parent_of(inclusion(point)) for point in points)
-                case _:
-                    return AtomicProposition("is_subset", left, right)
+            return left.is_contained_in(right)
 
         def inverse_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.codomain() is not self.base_set():

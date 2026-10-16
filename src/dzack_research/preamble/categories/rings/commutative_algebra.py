@@ -791,6 +791,29 @@ class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
         return [Sets().Subobjects(self.base())]
 
     class ParentMethods:
+        def is_contained_in(self, other):
+            r"""``D(f) <= D(g)`` exactly when ``g`` is a unit in ``A_f``.
+
+            Reference: Mathlib
+            ``PrimeSpectrum.basicOpen_le_basicOpen_iff_algebraMap_isUnit``.
+
+            Unexecuted basis-containment specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: spectrum = A.spectrum()
+                sage: spectrum.D(x).is_contained_in(spectrum.D(x*x))
+                True
+                sage: spectrum.D(x*x).is_contained_in(spectrum.D(x))
+                True
+                sage: spectrum.D(A.one()).is_contained_in(spectrum.D(x))
+                False
+            """
+            if other in DistinguishedOpenSubobjects(self.codomain()):
+                ring = self.coordinate_ring()
+                return ring.localization_map()(other.function()).is_unit()
+            return super().is_contained_in(other)
+
         def __init__(self, function, **rest):
             self._function = function
             super().__init__(**rest)

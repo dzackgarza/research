@@ -87,7 +87,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family_from_values,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import conjunction, negation
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.validation import validator
 
@@ -732,6 +732,17 @@ class _AffineChartOpenSubobjects(OwnedParameterizedCategory):
 
         def chart_open(self):
             return self._chart_open
+
+        def is_contained_in(self, other):
+            scheme = self.chart_embedding().codomain()
+            if (
+                other in _AffineChartOpenSubobjects(scheme)
+                and other.gluing_datum() is self.gluing_datum()
+            ):
+                return scheme.selected_finite_affine_atlas().basis_open_inclusion(
+                    self.chart_index(), self.chart_open(), other.chart_index(), other.chart_open(),
+                )
+            return super().is_contained_in(other)
 
 
 def _affine_chart_image_subset(scheme, datum, index, point_map, embedding, chart_open):
@@ -1553,6 +1564,35 @@ class _FiniteAffineAtlasEngine:
         if source_open is source_chart:
             return chart_map
         return source_open.coordinate_algebra().induced_morphism(chart_map)
+
+    def basis_open_inclusion(self, smaller_index, smaller_open, larger_index, larger_open):
+        r"""Decide containment from overlap membership and localization units."""
+        smaller_index = self.normalize_chart_index(smaller_index)
+        larger_index = self.normalize_chart_index(larger_index)
+        smaller_chart = self.chart(smaller_index)
+        larger_chart = self.chart(larger_index)
+        if smaller_index == larger_index:
+            spectrum = smaller_chart.underlying_space()
+            smaller = (
+                spectrum.distinguished_open(smaller_chart.coordinate_algebra().one())
+                if smaller_open is smaller_chart else smaller_open.open_subset()
+            )
+            larger = spectrum.power_set().top() if larger_open is larger_chart else larger_open.open_subset()
+            return smaller.is_contained_in(larger)
+        overlap = self.overlap(smaller_index, larger_index)
+        contained = self.basis_open_inclusion(smaller_index, smaller_open, smaller_index, overlap)
+        if contained is False:
+            return False
+        if contained is not True:
+            return AtomicProposition(
+                "basis_open_is_contained_in", self, smaller_index, smaller_open, larger_index, larger_open,
+            )
+        if larger_open is larger_chart:
+            return True
+        restriction = self.basis_coordinate_restriction(
+            larger_index, larger_chart, smaller_index, smaller_open,
+        )
+        return restriction(larger_open.distinguished_open_element()).is_unit()
 
     @cached_method
     def structure_module_datum(self):
@@ -7522,6 +7562,16 @@ class _FiniteAtlasStructurePresheaf(Functor):
         sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
         sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
         sage: restriction(QQ(2)) == sheaf.sections(chart)(2)
+        True
+        sage: second = site(atlas.chart_open_subset(1))
+        sage: overlap = site(atlas.chart_open_subset(0, atlas.overlap(0, 1)))
+        sage: first_arrow = opposite.Mor(opposite(chart), opposite(overlap))(site.Mor(overlap, chart)())
+        sage: second_arrow = opposite.Mor(opposite(second), opposite(overlap))(site.Mor(overlap, second)())
+        sage: first_restriction = sheaf.open_sections_presheaf().on_morphism(first_arrow)
+        sage: second_restriction = sheaf.open_sections_presheaf().on_morphism(second_arrow)
+        sage: x = next(iter(sheaf.sections(chart).algebra_generators()))
+        sage: y = next(iter(sheaf.sections(second).algebra_generators()))
+        sage: first_restriction(x) * second_restriction(y) == sheaf.sections(overlap).one()
         True
     """
 

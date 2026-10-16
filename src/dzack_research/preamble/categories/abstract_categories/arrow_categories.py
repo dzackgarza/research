@@ -1769,6 +1769,27 @@ class SetSubobjectCategory(SliceCategory):
     class ParentMethods:
         r"""A set ``A`` with its inclusion into ``X``; its points are those of ``A``, constructed through the set owner."""
 
+        def is_contained_in(self, other):
+            r"""Whether this subset lies in another subset of the same set.
+
+            Finite enumerated domains decide the universal membership
+            condition. Other domains retain the subset proposition; more
+            structured subsets supply their defining inclusion criterion.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+            from dzack_research.preamble.logic import AtomicProposition, conjunction
+
+            ambient = self.codomain()
+            if other.codomain() is not ambient:
+                raise ValueError("subset inclusion requires a common ambient set")
+            power = ambient.power_set()
+            if self is other or self is power.bottom() or other is power.top():
+                return True
+            points = self.inclusion().domain()
+            if Sets().is_provably_finite(points) and points in EnumeratedSets():
+                return conjunction(other.is_parent_of(self.inclusion()(point)) for point in points)
+            return AtomicProposition("is_subset", self, other)
+
         def inclusion(self):
             return self.arrow()
 
