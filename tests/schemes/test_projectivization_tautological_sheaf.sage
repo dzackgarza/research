@@ -10,6 +10,9 @@ def test_rank_two_projectivization_has_its_tautological_invertible_sheaf():
     line_bundle = total.tautological_line_bundle()
 
     assert line_bundle in QuasiCoherentSheaves(total).Invertible()
-    assert line_bundle.rank() == 1
+    assert all(
+        line_bundle.local_module(index).module_rank() == 1
+        for index in line_bundle.chart_indices()
+    )
     assert line_bundle.open_sections_presheaf().domain() is PresheafObjects(total).site().opposite()
     assert total.universal_quotient().is_surjective()
