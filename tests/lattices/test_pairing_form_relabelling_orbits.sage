@@ -12,7 +12,7 @@ from dzack_research.preamble.all import *
 
 
 def test_relabelling_the_a3_root_family_keeps_its_canonical_pairing_form():
-    lattice = NamedLattices.A3
+    lattice = Lattices(ZZ)("A3")
     indices = Sets.Δ[2]
     free = ZZ.free_module(indices)
     roots = tuple(lattice.module_generators())
