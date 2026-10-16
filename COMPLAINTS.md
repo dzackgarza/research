@@ -1359,6 +1359,18 @@ the ideal-representation prerequisite of `general-minimal-prime-locus` in
 `lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition
 is requested for them. The glued point set must also identify overlap points
 through the supplied transition isomorphisms.
+The inspected sheafed-space ancestors also lack a morphism datum at their
+owner. `SheafedSpaces` and `RingedSpaces` declare no fixed Mor; their topological
+ancestor supplies continuous maps alone. A morphism of ringed spaces needs
+both a continuous map `f` and a ring-sheaf map `O_Y -> f_* O_X`.
+`LocallyRingedMorCategoryConstruction` chooses a domain-specific realization,
+and the affine scheme realization retains its coordinate pullback, but these
+do not supply the general sheafed-space morphism or its forgetful functor.
+The ancestor and Mor-graph obligations belong to `placement-audit` in
+`TODO.md`. The formal scheme declarations are imported through
+`lean-categories/LeanCategories/Schemes.lean`; the inspected gap concerns their
+preamble presentation. This does not add a prerequisite to affine ring-map
+contraction, which has its own mathematical owner.
 The existing `sheaves-compute-sections-on-opens` owner in [TODO.md](TODO.md)
 retains those obligations. The inspected boundary is the topology, open-cover,
 affine-scheme and finite-atlas constructors named here; no absence of the
