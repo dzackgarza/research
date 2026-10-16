@@ -350,7 +350,52 @@ class _FiniteAtlasLineBundleOpenPresheaf(Functor):
         )
 
 
-class _FiniteAtlasInvertibleSheafEngine:
+class _FiniteAtlasLineBundleSections:
+    r"""Sections from rank-one modules and their retained atlas transitions."""
+
+    def global_sections(self):
+        r"""Return the chosen section space or the module of compatible sections."""
+        match self._section_space:
+            case None:
+                return self.compatible_sections()
+            case section_space:
+                return section_space
+
+    @cached_method
+    def module_descent_datum(self):
+        r"""The rank-one chart modules with their semilinear descent maps."""
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _finite_atlas_line_bundle_module_datum,
+        )
+
+        return _finite_atlas_line_bundle_module_datum(self)
+
+    @cached_method
+    def module_sheaf(self):
+        return self.module_descent_datum().sheaf()
+
+    @cached_method
+    def compatible_sections(self):
+        return self.module_sheaf().global_sections()
+
+    def section_on_chart(self, section, index):
+        r"""The chart component of a global section in this trivialization."""
+        assert self._section_space is None, (
+            "a selected framed space of global sections needs its chart-component comparison"
+        )
+        return self.module_descent_datum().compatible_section_component(section, index)
+
+    def compatible_section(self, section):
+        r"""The compatible chart family represented by this global section."""
+        atlas = self.gluing_datum()
+        components = {index: self.section_on_chart(section, index) for index in atlas.chart_indices()}
+        return self.module_descent_datum().compatible_section(components)
+
+    def sheaf(self):
+        return self
+
+
+class _FiniteAtlasInvertibleSheafEngine(_FiniteAtlasLineBundleSections):
     r"""A line bundle on a finite glued affine atlas via transition functions.
 
     Unlike the distinguished-cover realization, whose descent datum lives on one affine
@@ -564,52 +609,6 @@ class _FiniteAtlasInvertibleSheafEngine:
     def dual_sheaf(self):
         return self.tensor_power(-1)
 
-    def global_sections(self):
-        r"""Return \(\Gamma(X, L)\) as an object of ``Modules(R)``.
-
-        A bundle constructed with its framed section space, such as \(O(d)\)
-        on \(\mathbb{P}^n_R\), returns it.  Otherwise \(\Gamma(X, L)\) is the
-        equalizer of the restrictions of the chart sections to the overlaps.
-        """
-        match self._section_space:
-            case None:
-                return self.compatible_sections()
-            case section_space:
-                return section_space
-
-    @cached_method
-    def module_descent_datum(self):
-        r"""The rank-one chart modules with their semilinear descent maps."""
-        from dzack_research.preamble.categories.schemes.gluing import (
-            _finite_atlas_line_bundle_module_datum,
-        )
-
-        return _finite_atlas_line_bundle_module_datum(self)
-
-    @cached_method
-    def module_sheaf(self):
-        return self.module_descent_datum().sheaf()
-
-    @cached_method
-    def compatible_sections(self):
-        return self.module_sheaf().global_sections()
-
-    def section_on_chart(self, section, index):
-        r"""The chart component of a global section in this trivialization."""
-        assert self._section_space is None, (
-            "a selected framed space of global sections needs its chart-component comparison"
-        )
-        return self.module_descent_datum().compatible_section_component(section, index)
-
-    def compatible_section(self, section):
-        r"""The compatible chart family represented by this global section."""
-        atlas = self.gluing_datum()
-        components = {index: self.section_on_chart(section, index) for index in atlas.chart_indices()}
-        return self.module_descent_datum().compatible_section(components)
-
-    def sheaf(self):
-        return self
-
     def _repr_(self):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
 
@@ -779,11 +778,14 @@ def _invertible_sheaf_object(
 ):
     r"""Realize one line-bundle engine directly in ``QCoh(scheme).Invertible()``."""
     category = QuasiCoherentSheaves(scheme).Invertible()
-    return QuasiCoherentSheaves(scheme).object(
+    presheaf = _FiniteAtlasLineBundleOpenPresheaf(scheme, lambda: sheaf)
+    sheaf = QuasiCoherentSheaves(scheme).object(
         categories=(category, *placements),
         construction_data=construction_data,
         _engine=engine,
+        open_sections_presheaf=presheaf,
     )
+    return sheaf
 
 
 class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
@@ -1135,7 +1137,39 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
 
 
 
-class _ProjectiveSubschemeLineBundleEngine:
+class _RestrictedLineBundleDescent(_FiniteAtlasLineBundleSections):
+    r"""Pullback of line-bundle transition functions on the inverse-image atlas.
+
+    If the ambient frames have transition ``u_ij``, their pulled frames have
+    transition ``i^#(u_ij)`` (Hartshorne, II.5.12). Computation is lazy, so
+    the object retains the specified pullback morphism before chart comparisons
+    are requested.
+    """
+
+    def __init__(self, **rest):
+        self._section_space = None
+        super().__init__(**rest)
+
+    @cached_method
+    def gluing_datum(self):
+        return self.ambient_line_bundle().gluing_datum().pullback(self.pullback_morphism())
+
+    @cached_method
+    def local_module(self, index):
+        return self.gluing_datum().chart(index).coordinate_algebra().free_module(1)
+
+    @cached_method
+    def transition_unit(self, source_index, target_index):
+        atlas = self.gluing_datum()
+        ambient = self.ambient_line_bundle()
+        overlap = atlas.overlap(source_index, target_index)
+        into_ambient_chart = atlas.chart(source_index).left_projection() * overlap.inclusion()
+        ambient_overlap = ambient.gluing_datum().overlap(source_index, target_index)
+        into_ambient_overlap = ambient_overlap.corestriction(into_ambient_chart)
+        return into_ambient_overlap.coordinate_algebra_morphism()(ambient.transition_unit(source_index, target_index))
+
+
+class _ProjectiveSubschemeLineBundleEngine(_RestrictedLineBundleDescent):
     r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
 
     The defining datum is the actual closed immersion together with the
@@ -1638,7 +1672,7 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
 
 
 
-class _ProductProjectiveSubschemeLineBundleEngine:
+class _ProductProjectiveSubschemeLineBundleEngine(_RestrictedLineBundleDescent):
     r"""The pullback of ``O(d_1,...,d_r)`` to a closed multiprojective subscheme."""
 
     def __init__(self, closed_subscheme, ambient_line_bundle, **rest) -> None:
