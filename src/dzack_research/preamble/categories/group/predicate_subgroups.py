@@ -689,7 +689,11 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 f"cannot take the preimage of {subgroup} along {morphism} as a subgroup of "
                 f"{group}: the domain of {morphism} is {morphism.domain()}, not {group}"
             )
-        if subgroup is not morphism.codomain() and subgroup not in Subgroups(morphism.codomain()):
+        if subgroup is morphism.codomain():
+            subgroup = PredicateSubgroups(subgroup)(
+                lambda _element: True, "the whole codomain"
+            )
+        if subgroup not in Subgroups(morphism.codomain()):
             raise ValueError(
                 f"cannot take the preimage of {subgroup} under {morphism}: "
                 f"the specified target is not a subgroup of {morphism.codomain()}"
