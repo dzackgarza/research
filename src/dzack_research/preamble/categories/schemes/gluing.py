@@ -80,6 +80,7 @@ from dzack_research.preamble.categories.sets.finite_families import finite_famil
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -771,6 +772,94 @@ class _GluedScheme(SageObject):
 
     def gluing_datum(self):
         return self._gluing_datum
+
+    @cached_method
+    def _chart_space_coproduct(self):
+        datum = self.gluing_datum()
+        spaces = finite_indexed_family(
+            datum.chart_index_set(),
+            lambda index: datum.chart(index).underlying_space(),
+            name="Underlying spaces of affine gluing charts",
+        )
+        return TopologicalSpaces()._categorical_coproduct_construction(spaces)
+
+    @cached_method
+    def topological_gluing_construction(self):
+        r"""Glue chart spaces by the coequalizer of their overlap inclusions.
+
+        The cocycle datum identifies the two images of every overlap point.
+        Topological coproducts and coequalizers supply the point set and final
+        topology, with their actual universal maps (Mathlib.Topology.Gluing,
+        ``TopCat.GlueData.glued`` and ``TopCat.GlueData.isOpen_iff``).
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+
+        datum = self.gluing_datum()
+        top = TopologicalSpaces()
+        charts = self._chart_space_coproduct()
+        chart_shape = charts.diagram().domain()
+        pairs = finite_ordered_set(tuple(combinations(tuple(datum.chart_indices()), 2)))
+        overlap_spaces = finite_indexed_family(
+            pairs,
+            lambda pair: datum.overlap(pair[0], pair[1]).underlying_space(),
+            name="Underlying spaces of affine gluing overlaps",
+        )
+        overlaps = top._categorical_coproduct_construction(overlap_spaces)
+        rings = OwnedRings().Commutative()
+        spectrum = rings.prime_spectrum_functor()
+        opposite = spectrum.domain()
+
+        def spectrum_map(ring_map):
+            return spectrum.on_morphism(opposite.Mor(
+                opposite(ring_map.codomain()), opposite(ring_map.domain())
+            )(ring_map))
+
+        def overlap_legs(pair):
+            left, right = pair
+            transition = datum.transition_between(left, right)
+            left_overlap = datum.overlap(left, right)
+            right_overlap = datum.overlap(right, left)
+            left_inclusion = spectrum_map(left_overlap.inclusion().coordinate_algebra_morphism())
+            right_inclusion = spectrum_map(right_overlap.inclusion().coordinate_algebra_morphism())
+            # Contravariance sends the scheme inverse pair to its retained
+            # coordinate-ring inverse pair, then back to a homeomorphism.
+            ring_isomorphism = _isomorphism_from_known_inverse_pair(
+                transition.forward().coordinate_algebra_morphism(),
+                transition.inverse().forward().coordinate_algebra_morphism(),
+                base_category=rings,
+            )
+            chart_change = spectrum_map(ring_isomorphism).forward()
+            return (
+                charts.costructure_morphism(chart_shape(left)) * left_inclusion,
+                charts.costructure_morphism(chart_shape(right)) * right_inclusion * chart_change,
+            )
+
+        legs = finite_indexed_family(pairs, overlap_legs, name="Gluing overlap point maps")
+        overlap_diagram = overlaps.diagram()
+        left_cocone = overlap_diagram.CoproductCocones().cocone(
+            charts.object(), lambda index: legs[index.value()][0]
+        )
+        right_cocone = overlap_diagram.CoproductCocones().cocone(
+            charts.object(), lambda index: legs[index.value()][1]
+        )
+        left = overlaps.factor(left_cocone).apex_map()
+        right = overlaps.factor(right_cocone).apex_map()
+        return top._categorical_coequalizer_construction(left, right)
+
+    def underlying_space(self):
+        return self.topological_gluing_construction().object()
+
+    @cached_method
+    def chart_point_map(self, index):
+        r"""The continuous chart map into the glued underlying space."""
+        datum = self.gluing_datum()
+        index = datum.normalize_chart_index(index)
+        charts = self._chart_space_coproduct()
+        quotient = self.topological_gluing_construction()
+        projection = quotient.costructure_morphism(quotient.diagram().domain().target())
+        return projection * charts.costructure_morphism(charts.diagram().domain()(index))
 
     def _native_realization_for_scheme_adapter(self):
         r"""The optional native scheme of this same atlas, supplied by its construction."""
