@@ -375,7 +375,7 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                 lift = self.parameterization()(parameter)
                 return lift.integral_restriction(source, target) is not None
 
-            return quotient.codomain().condition_set(integral)
+            return quotient.codomain().elements().condition_set(integral)
 
         @cached_method
         def integral_base_point(self):
