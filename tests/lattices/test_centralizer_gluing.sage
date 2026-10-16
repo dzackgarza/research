@@ -51,8 +51,8 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     # A_{Z(e+f)} and A_{Z(e-f)} both have order two and U is unimodular, so
     # the glue subgroup is the whole of the first and the index is two.
     assert extension.index() == 2
-    assert extension.gluing_subgroup().cardinality() == 2
-    assert extension.glue().domain() is extension.gluing_subgroup()
+    assert extension.invariant_gluing_subgroup().cardinality() == 2
+    assert extension.glue().domain() is extension.invariant_gluing_subgroup()
     extension_inclusion = extension.orthogonal_sum_inclusion()
     extension_generators = tuple(extension_inclusion.domain().module_generators())
     assert extension_inclusion.codomain() is lattice
@@ -80,7 +80,7 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
     assert extension.invariant.discriminant_group().cardinality() == 1024
     assert extension.orthogonal_complement.discriminant_group().cardinality() == 1024
     assert extension.index() == 1024
-    assert extension.gluing_subgroup().cardinality() == 1024
+    assert extension.invariant_gluing_subgroup().cardinality() == 1024
 
 
 def test_the_enriques_cyclotomic_summands_are_the_two_eigen_sublattices() -> None:
@@ -174,7 +174,7 @@ def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> Non
     # non-trivially; the glue subgroup is its subgroup of order two, and the
     # index of the orthogonal sum is that order.
     assert extension.index() == 2
-    assert extension.gluing_subgroup().cardinality() == 2
+    assert extension.invariant_gluing_subgroup().cardinality() == 2
     glue = extension.glue()
     assert glue.domain().cardinality() == 2
     assert glue.codomain().cardinality() == 2
@@ -264,7 +264,7 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
     assert extension.invariant.discriminant_group().cardinality() == 3
     assert extension.orthogonal_complement.discriminant_group().cardinality() == 3
     assert extension.index() == 3
-    assert extension.gluing_subgroup().cardinality() == 3
+    assert extension.invariant_gluing_subgroup().cardinality() == 3
 
 
 def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None:

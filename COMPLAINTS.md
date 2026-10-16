@@ -225,11 +225,6 @@ The [expressive-power assessment](docs/preamble-expressive-power.md) records the
 **Request:** [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2). It runs beside the delivered computation and parks nothing.
 Products over infinite index sets remain unrepresented: the group product hook takes finitely many factors (`_finite_factor_family`).
 
-### `gluing_subgroup` names two different subgroups
-
-`LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
-
-
 ### Group colimits do not compose chosen finite presentations
 
 Finite coproducts of groups are free products.

@@ -151,7 +151,7 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
         return self._torsion_pullback
 
     def discriminant_gluing_subgroup(self):
-        return self.primitive_extension().gluing_subgroup()
+        return self.primitive_extension().invariant_gluing_subgroup()
 
     def discriminant_gluing_map(self):
         return self.primitive_extension().glue()

@@ -805,7 +805,7 @@ class IsometryPrimitiveExtension:
         r"""Return the Nikulin anti-isometry ``H_+ -> H_-(-1)`` of this extension."""
         return self.lattice.glue_map(self.invariant, self.orthogonal_complement)
 
-    def gluing_subgroup(self):
+    def invariant_gluing_subgroup(self):
         r"""Return ``H_+ = L/(L^f + (L^f)^perp)`` seen inside ``A_{L^f}``."""
         return self.glue().domain()
 
