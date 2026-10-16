@@ -851,7 +851,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 def _framed_free_base_change(module, ring_map, extra_construction_data):
     r"""Return ``S tensor_R R^(S)``, the framed free ``S``-module on the labels ``S``."""
     target_ring = _base_change_codomain(module, ring_map)
-    if ring_map.is_identity() and not extra_construction_data:
+    if ring_map.is_identity() is True and not extra_construction_data:
         return module
     return target_ring._fresh_free_module_on(
         module.module_generating_set(),

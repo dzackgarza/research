@@ -1045,11 +1045,15 @@ class FiberedFormedModuleMor(CategoricalMor):
             raise ValueError(
                 f"{self} has no identity: its domain {self.domain()} differs from its codomain {self.codomain()}"
             )
-        if not self.ring_map().is_identity():
+        identity_decision = self.ring_map().is_identity()
+        if identity_decision is False:
             raise ValueError(
                 f"{self} has no identity: it lies over the ring map {self.ring_map()}, "
                 "which is not the identity"
             )
+        assert identity_decision is True, (
+            f"constructing the identity of {self} requires deciding whether {self.ring_map()} is the identity"
+        )
 
         changed = self.base_changed_domain()
         module_map = self.module_mor().identity().linearization()
@@ -1307,7 +1311,7 @@ def _formed_module_base_change(self, ring_map):
 
     assert self.value_module() is self.base_ring()
     target_ring = _base_change_codomain(self, ring_map)
-    if ring_map.is_identity():
+    if ring_map.is_identity() is True:
         return self
     source = self
     source_labels = source.module_generating_set()

@@ -154,9 +154,16 @@ class RingMorphism:
         # subcategory's (a number-field embedding is a ring morphism).
         if not _is_ring_map_into(other, self.domain()):
             return NotImplemented
-        if self.is_identity():
+        if self._preamble_is_identity or (
+            self._engine_morphism is not None and self._engine_is_identity()
+        ):
             return other
-        if other.is_identity():
+        if isinstance(other, RingMorphism):
+            if other._preamble_is_identity or (
+                other._engine_morphism is not None and other._engine_is_identity()
+            ):
+                return self
+        elif other.domain() is other.codomain() and other is other.parent().identity():
             return self
         return _ring_composite(self, other)
 
@@ -191,12 +198,31 @@ class RingMorphism:
 
         return _is_group_algebra_map_of_subgroup_inclusion(self)
 
-    def is_identity(self) -> bool:
+    def is_identity(self):
+        r"""Decide identity from the ring map's actual determining data.
+
+        An elementwise map need not retain a native realization. In that
+        case compare with the fixed Mor's identity; an unavailable equality
+        decision remains a proposition.
+
+        Unexecuted localization identity specimen::
+
+            sage: from dzack_research.preamble.all import *
+            sage: A = QQ['x']; x = A.algebra_generator('x')
+            sage: B = A.localization(x)
+            sage: f = B.Mor(B)(lambda element: element)
+            sage: f.is_identity()
+            True
+            sage: (f*f).is_identity()
+            True
+        """
         if self.domain() is not self.codomain():
             return False
         if self._preamble_is_identity:
             return True
-        return self._engine_is_identity()
+        if self._engine_morphism is not None:
+            return self._engine_is_identity()
+        return _ring_morphisms_equal(self, self.parent().identity())
 
     def _engine_is_identity(self) -> bool:
         r"""Ask only the selected private engine realization about identity."""
@@ -373,7 +399,7 @@ class RingMorphism:
         assert ideal.ring() is codomain, (
             f"cannot contract {ideal} along {self}: it is an ideal of {ideal.ring()}, not of {codomain}"
         )
-        if self.is_identity():
+        if self.is_identity() is True:
             return ideal
         match codomain:
             case _ if codomain in LocalizationRings() and self is codomain.localization_map():
@@ -762,7 +788,7 @@ def _ring_morphisms_equal(left, right):
         case _ if domain in QuotientRings():
             quotient_map = domain.quotient_map()
             return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
-        case _ if _engine_ring(domain) is SageZZ:
+        case _ if domain is _owned_integers():
             # A unital map out of Z is uniquely determined by 1.
             return True
         case _ if _is_finite_or_number_field(domain):

@@ -659,7 +659,7 @@ class _PrimeSpectrumFunctor(Functor):
             return _isomorphism_from_known_inverse_pair(
                 forward, inverse, base_category=self.codomain()
             )
-        if ring_map.is_identity():
+        if ring_map.is_identity() is True:
             return self.codomain().Mor(source, target).identity()
         return prime_map(source, target, ring_map.contraction_of_ideal)
 

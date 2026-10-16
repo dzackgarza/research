@@ -81,14 +81,14 @@ class _ScalarExtensionFunctor(Functor):
         # S tensor_R Res_f(M) cannot be replaced by a free module merely
         # because a generating family of Res_f(M) was selected.
         match self.ring_map():
-            case ring_map if ring_map.is_identity():
+            case ring_map if ring_map.is_identity() is True:
                 return module
             case _:
                 return module.base_change(self.ring_map())
 
     def _apply_morphism(self, morphism):
         match self.ring_map():
-            case ring_map if ring_map.is_identity():
+            case ring_map if ring_map.is_identity() is True:
                 return morphism
             case _:
                 pass
@@ -190,7 +190,7 @@ class _RestrictionOfScalarsFunctor(Functor):
         return self._target_ring in GroupAlgebras(self._source_ring)
 
     def _apply_object(self, module):
-        if self.ring_map().is_identity():
+        if self.ring_map().is_identity() is True:
             return module
         if self._restricts_group_modules():
             return module.unformed_module()
@@ -208,7 +208,7 @@ class _RestrictionOfScalarsFunctor(Functor):
         underlying ``R``-module of an ``R[G]``-module, are built on the
         elements of ``M`` itself, which ``M`` reads directly.
         """
-        if self.ring_map().is_identity():
+        if self.ring_map().is_identity() is True:
             return element
         match restricted:
             case _ if restricted in RestrictedScalarsModules(self._source_ring):
@@ -222,7 +222,7 @@ class _RestrictionOfScalarsFunctor(Functor):
         # through the restricted parents, and its ``R``-linearity is the
         # ``S``-linearity of ``g`` along ``f``, not a runtime condition.  A
         # framing of the source is therefore not part of the statement.
-        if self.ring_map().is_identity():
+        if self.ring_map().is_identity() is True:
             return morphism
         source = self(morphism.domain())
         target = self(morphism.codomain())

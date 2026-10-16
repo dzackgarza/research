@@ -3676,7 +3676,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 _presented_module_from_morphism,
             )
 
-            if ring_map.is_identity() and not _extra_construction_data:
+            if ring_map.is_identity() is True and not _extra_construction_data:
                 return self
             presentation = self.presentation()
             source = presentation.domain().base_change(ring_map)
