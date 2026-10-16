@@ -1,7 +1,7 @@
 """Primitive-vector and discriminant-action invariants of integral lattices.
 
 This module owns the algorithms migrated from the former
-``lattice-database/src/latticedb/sage_genus.py`` implementation.  The
+``src/latticedb/sage_genus.py`` implementation of dzackgarza/lattice-database.  The
 orthogonal group itself is never recomputed here: definite orbit calculations
 consume ``L.orthogonal_group().group_generators()``.
 """

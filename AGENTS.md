@@ -185,7 +185,7 @@ explicit owner instruction stops the repository again.
 
 ## Every subagent reads the contributing guidelines before it touches code (always-on)
 
-No agent edits code in this repository, or in `lattice-database/`, until it has read
+No agent edits code in this repository, or in the `dzackgarza/lattice-database` repository, until it has read
 the contributing guidelines in full. This applies to every subagent, worker and
 delegate, whatever its task size. A brief that cites rule codes, or that summarizes
 the rules, does not satisfy it.
@@ -899,13 +899,13 @@ linked in. Edit the real file under `writing/`; the symlink is only how Quarto r
   refuses to start while it is running, because the two renders write the same
   intermediate paths and corrupt each other.
 
-- **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`). The same deployment publishes the lattice database at https://dzackgarza.github.io/research/lattice-database/: a deployment replaces the whole site, so the workflow builds both and uploads one artifact, and a cache keyed on `writing/` lets a database-only push reuse the rendered book.
+- **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`). The lattice database is published separately, at https://dzackgarza.github.io/lattice-database/, from its own repository.
 
 - **GitHub wiki** — the repo's native GitHub wiki is **disabled** (no `wiki/` ref exists; `hasWiki: true` in API but no commits).
   Do not conflate "the wiki" (historical name for the docs book, migrated via PR #272 "wiki-book-migration") with the GitHub wiki feature.
   The book under `writing/` is the wiki's successor.
 
-A push of `main` that changes `writing/` or `lattice-database/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
+A push of `main` that changes `writing/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
 
 ## Annotation feedback loop
 
@@ -1353,7 +1353,7 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
   Spike tests live in each spike's own `tests/` tree.
   `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 
-- **`lattice-database/`** — the catalogue of lattices, one record per lattice, and its site. It stores every computation about its lattices: no invariant, identification, map or source transcription computed for it is thrown away. `lattice-database/AGENTS.md` owns that rule.
+- **The lattice database** — the catalogue of lattices, one record per lattice, and its site, live in their own repository, `dzackgarza/lattice-database`. It imports this preamble from research's `src/`, so a preamble change can break its build; its nightly `verify` workflow checks it against `research` `main`. Its `AGENTS.md` owns the rule that it stores every computation about its lattices.
 
 - **`writing/`** — authored prose: the Coble paper draft and research notes, oral exams, research statement, talks.
   The user's durable authored artifacts — preserve native LaTeX/tikz source.

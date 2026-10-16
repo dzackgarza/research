@@ -112,7 +112,9 @@ def _integral_preimage_solver(morphism, ring):
     # right is the inverse domain change applied after diagonal solving.
     target_labels = left.domain().module_generating_set()
     shifted_labels = left.codomain().module_generating_set()
-    width = int(smith.domain().module_generating_set().cardinality())
+    diagonal_rows = smith.codomain().module_generating_set()
+    diagonal_columns = smith.domain().module_generating_set()
+    width = int(diagonal_columns.cardinality())
 
     def solve(target):
         target_values = tuple(ring(value) for value in target)
@@ -127,7 +129,7 @@ def _integral_preimage_solver(morphism, ring):
         solution = [ring.zero()] * width
         for index, shifted_label in enumerate(shifted_labels):
             value = shifted_coordinates(shifted_label)
-            divisor = smith[index, index] if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
+            divisor = smith.matrix_entry(diagonal_rows[index], diagonal_columns[index]) if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
             if divisor == 0:
                 if value != 0:
                     return None

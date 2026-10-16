@@ -373,33 +373,39 @@ def _stabilizer_generators(orthogonal_group, family):
         integral = IntegralStructureAction(rational_group, realization.rationalization()).with_stable_containing_bound(
             containing
         ).stabilizer().group_generators()
-    return tuple(_owned_isometry(orthogonal_group, lattice.integral_isometry(generator)) for generator in integral)
+    return tuple(_homset_element(orthogonal_group, lattice.integral_isometry(generator)) for generator in integral)
 
 
-def _transporter(orthogonal_group, source_family, target_family):
-    r"""One ``g`` in ``O(L)`` with ``g o v = w o sigma`` for a colour-preserving bijection ``sigma``, or ``None``.
+def _transporter(homset, source_family, target_family):
+    r"""One ``g`` in ``Isom(L, M)`` with ``g o v = w o sigma`` for a colour-preserving bijection ``sigma``, or ``None``.
 
-    A colour- and pairing-preserving bijection ``sigma`` of the families gives
-    the rational isometry ``T_0 = T_sigma``; every rational ``g`` carrying
-    ``(v, c)`` to ``(w, d)`` up to colour-preserving reindexing is ``h T_0`` with ``h`` in the configuration group
-    ``G`` of the target.  An integral one carries ``T_0(L)`` to ``L``: the
-    transporter of the integral-structure action of ``G``, bounded by the
-    ``G``-stable module ``K'/e'``.  The exponent ``e`` of ``L/K`` is an
-    invariant of the transport, so different exponents decide that there is none.
+    ``v`` is a family in ``L``, the domain of ``homset``, and ``w`` a family in
+    ``M``, its codomain (``L = M`` for ``O(L)``).  A colour- and
+    pairing-preserving bijection ``sigma`` gives the rational isometry
+    ``T_0 = T_sigma``; every rational ``g`` carrying ``(v, c)`` to ``(w, d)``
+    up to colour-preserving reindexing is ``h T_0`` with ``h`` in the
+    configuration group ``G`` of the target.  An integral one carries
+    ``T_0(L)`` to ``M``: the transporter of the integral-structure action of
+    ``G``, bounded by the ``G``-stable module ``K'/e'``.  The exponent ``e`` of
+    ``L/K`` is an invariant of the transport, so different exponents decide
+    that there is none (AutomorphismPolytope.g:288-339,
+    ``KernelLinPolytopeIntegral_Isomorphism_Subspaces``).
     """
     from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
 
-    lattice = orthogonal_group.lattice()
-    source = _realization(lattice, source_family)
-    target = _realization(lattice, target_family)
+    source_lattice = homset.domain()
+    target_lattice = homset.codomain()
+    source = _realization(source_lattice, source_family)
+    target = _realization(target_lattice, target_family)
     if source.indices().cardinality() != target.indices().cardinality():
         return None
     sigma = source.pairing_graph().isomorphism(target.pairing_graph())
     if sigma is None:
         return None
     equivalence = source.rational_transformation(target, sigma)
-    if equivalence.integral_restriction(lattice, lattice) is not None:
-        return _owned_isometry(orthogonal_group, lattice.integral_isometry(equivalence))
+    restricted = equivalence.integral_restriction(source_lattice, target_lattice)
+    if restricted is not None:
+        return _homset_element(homset, restricted)
     source_exponent, _source_containing = source.containing_bound()
     target_exponent, containing = target.containing_bound()
     if source_exponent != target_exponent:
@@ -409,9 +415,9 @@ def _transporter(orthogonal_group, source_family, target_family):
     source_rationalization = source.rationalization()
     target_rationalization = target.rationalization()
     ambient_space = target_rationalization.codomain()
-    moved = Modules(lattice.base_ring()).Mono(lattice, ambient_space)(
+    moved = Modules(source_lattice.base_ring()).Mono(source_lattice, ambient_space)(
         lambda label: ambient_space.wrap(
-            equivalence(source_rationalization(lattice.module_generator(label)).underlying_element())
+            equivalence(source_rationalization(source_lattice.module_generator(label)).underlying_element())
         )
     )
     transporter = IntegralStructureAction(target.configuration_group(), moved).with_stable_containing_bound(
@@ -422,15 +428,30 @@ def _transporter(orthogonal_group, source_family, target_family):
     composite = rational_source.Isom(rational_target)(
         lambda label: transporter(equivalence(rational_source.module_generator(label)))
     )
-    return _owned_isometry(orthogonal_group, lattice.integral_isometry(composite))
+    restricted = composite.integral_restriction(source_lattice, target_lattice)
+    assert restricted is not None, (
+        f"the transporter {transporter} of the integral structures does not restrict to an isometry "
+        f"{source_lattice} -> {target_lattice}"
+    )
+    return _homset_element(homset, restricted)
 
 
-def _owned_isometry(orthogonal_group, isometry):
-    r"""The element of ``O(L)`` acting on ``L`` as ``isometry`` does."""
-    lattice = orthogonal_group.lattice()
-    if isometry.parent() is orthogonal_group:
-        return isometry
-    return orthogonal_group(lambda label: isometry(lattice.module_generator(label)))
+def _homset_element(homset, isometry):
+    r"""The element of ``homset`` (``Isom(L, M)``, or ``O(L)``) acting as the lattice isometry ``isometry``."""
+    domain = homset.domain()
+    return homset(lambda label: isometry(domain.module_generator(label)))
+
+
+def _is_family_in(value, lattice):
+    r"""Whether ``value`` is a family ``I -> L`` or a coloured family ``I -> L x C`` of vectors of ``lattice``."""
+    from sage.categories.homset import Homset
+    from sage.structure.element import parent as element_parent
+
+    homset = element_parent(value)
+    if not isinstance(homset, Homset):
+        return False
+    values = homset.codomain()
+    return values is lattice or (values is not None and hasattr(values, "factor") and values.factor(0) is lattice)
 
 
 def _index_permutation(orthogonal_group, family, isometry):

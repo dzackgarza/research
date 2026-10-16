@@ -384,7 +384,29 @@ Repair the existing public construction routes and inherited methods before prov
     into finite diagram limits and colimits, pullback cones and pushout
     cocones at the shared owner. Set quotients must admit infinite relation
     diagrams, including those with finite quotients; class sets compose
-    these general quotient maps.
+    these general quotient maps. `f0fc0f6ed3` (on `origin/main` through
+    the merge `7ae0b3d376`) realizes the coequalizer of `id_ZZ` and the
+    translation `t_d: n -> n+d` by the projection `ZZ -> ZZ/(d)` inside the
+    general `Sets.coequalizer_construction` and
+    `coequalizer_of_family_construction`
+    (`categories/sets/set_categories.py`). The branch is selected by
+    `target is _own_ring(SageZZ)` and `isinstance(..., OwnedSetMorphism)`
+    on the stored `selected_integer_translation_step()`. This contradicts
+    `AGENTS.md`, *What optimization is for*: "give the structure its own
+    category and let placement pick the algorithm, never ... special-case
+    inside a general method"; and *Dynamic peeking is prohibited*, which
+    bans `isinstance` in mathematical preamble code. Specimen: the
+    coequalizer of `id_ZZ` and `Sets().integer_translation(2)` reaches its
+    realization `ZZ -> ZZ/(2)` only through these identity and class
+    checks. Policy search: `CONTRIBUTING.md`, *Preamble design philosophy*
+    ("General undecidability does not invalidate an available specialized
+    algorithm") admits the algorithm, not its placement; `STY-130`
+    recovers a special case "as the axioms, subcategories, or algorithmic
+    cases it formalizes", not by object identity. Repair: `t_d` generates
+    the translation action of `dZZ <= (ZZ,+)` on `ZZ`, and the projection
+    to its orbit set `ZZ/dZZ` realizes the coequalizer. Route the case by
+    placement to the orbit-set owner (`group/g_sets.py`, `_OrbitSet`) and
+    remove the branch from `Sets`.
   - Correct category placement and transport of preserved structure through
     the same construction. Retain actual actions, morphisms, functors and
     embedded subobjects as defining data. The `StabilizerSubgroups` action

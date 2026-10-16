@@ -5924,7 +5924,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return self._matrix_column_coordinates(column_label)(row_label)
 
         def __getitem__(self, index):
-            r"""The entry at ``(row, column)``."""
+            r"""The entry at the label pair ``(row, column)``."""
             row, column = index
             return self.matrix_entry(row, column)
 
@@ -6352,8 +6352,9 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
 
 
 def _matrix_index(index_set, key):
-    r"""Read a row or column key as a label of ``index_set``, or as the position of a label."""
-    return index_set(key) if key in index_set else index_set[operator.index(key)]
+    r"""Read a row or column key as a label of ``index_set``; a position is read through ``index_set[i]`` by the caller."""
+    assert key in index_set, f"{key!r} is not a label of {index_set}: matrix entries are keyed by label"
+    return index_set(key)
 
 
 def _engine_matrix(morphism):

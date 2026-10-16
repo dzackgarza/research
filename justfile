@@ -302,6 +302,10 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Run the scheduled whole-tree audit (semgrep and debt scans) through the central implementation.
+ambient:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . ambient
+
 # The suite runs in parallel, one Sage process per worker, and records which
 # test ran each line; only lines a passing test ran count as covered.
 # Every preamble line and branch no passing test runs, file by file
@@ -451,7 +455,7 @@ test-universe:
 tensor-boundary:
     #!/usr/bin/env bash
     set -uo pipefail
-    files=$(git ls-files 'src/dzack_research/preamble/*.py' 'lattice-database/src/*.py' \
+    files=$(git ls-files 'src/dzack_research/preamble/*.py' \
         | grep -v '^src/dzack_research/preamble/tensors/') || exit 1
     total=0
     for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)' '$X.einsum($$$A)' 'einsum($$$A)' '$X.matmul($$$A)' 'matmul($$$A)' '$X.dot($$$A)' '$X @ $Y'; do
