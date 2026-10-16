@@ -2405,10 +2405,17 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
             gluing_presentation=presentation,
         )
 
-    def an_object(self):
+    @cached_method
+    def identity_atlas(self):
+        r"""The one-chart atlas ``{id_X}`` of an affine scheme.
+
+        This is the identity covering in the Zariski site (Stacks, 00VI).
+        Its unique chart is the original scheme and its chart arrow is the
+        original identity, so local equations retain their affine owner.
+        """
         scheme = self.scheme()
         assert scheme in Schemes(self.base_ring()).Affine(), (
-            f"{self} has no example object: an example atlas is chosen here only for an affine "
+            f"{self} has no one-chart identity atlas: this construction requires an affine "
             f"scheme, but {scheme} is an object of {scheme.category()}"
         )
         identity = scheme.Mor(scheme).identity()
@@ -2417,6 +2424,9 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
             {},
             (identity,),
         )
+
+    def an_object(self):
+        return self.identity_atlas()
 
 
 def _finite_atlas_quasi_coherent_sheaves(atlas):

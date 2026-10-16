@@ -788,6 +788,31 @@ class CartierDivisorGroups(Category):
             section = self.underlying_set().finite_atlas(atlas, local_equations)
             return self(section)
 
+        def principal_divisor(self, rational_function):
+            r"""The Cartier divisor with the single local equation ``f``.
+
+            Here the scheme is affine and ``f`` must be a unit of its total
+            quotient ring. The equation on the identity atlas is its image
+            in ``K_X^*/O_X^*`` (Stacks, Tag 02AQ). Thus a regular unit gives
+            zero, and multiplication of equations gives addition of divisors.
+
+            Unexecuted affine-line assertions::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: X = AffineSchemes(QQ)(A)
+                sage: divisors = CartierDivisorGroups().of_scheme(X)
+                sage: D = divisors.principal_divisor(x)
+                sage: D + D == divisors.principal_divisor(x*x)
+                True
+                sage: divisors.principal_divisor(A.one()) == divisors.zero()
+                True
+                sage: D + divisors.principal_divisor(A.total_quotient_ring()(x).inverse_of_unit()) == divisors.zero()
+                True
+            """
+            atlas = FiniteAffineAtlases(self.divisor_scheme()).identity_atlas()
+            return self.finite_atlas_section(atlas, {0: rational_function})
+
     class ElementMethods:
         def gluing_datum(self):
             r"""The finite atlas of this represented local-equation lift."""
