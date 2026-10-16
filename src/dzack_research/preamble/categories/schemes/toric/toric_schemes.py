@@ -60,6 +60,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
+    _owned_engine_element,
     _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -1695,7 +1696,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             value = engine.integrate(
                 cohomology(engine_divisor(left)) * cohomology(engine_divisor(right))
             )
-            return _integers()(value)
+            return _owned_engine_element(_integers(), SageZZ(value))
 
         @cached_method
         def _picard_intersection_pairing(self):
