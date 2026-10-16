@@ -155,7 +155,7 @@ def _engine_group(group):
     return group._engine_group()
 
 
-def _engine_finiteness(engine):
+def _engine_finiteness(engine, *, compute=False):
     r"""Return ``True``/``False`` when Sage's category states finiteness, else ``None``.
 
     ``None`` means that the engine's category states neither, so the engine
@@ -165,6 +165,8 @@ def _engine_finiteness(engine):
         return True
     if engine.category().is_subcategory(SageGroups().Infinite()):
         return False
+    if compute and isinstance(engine, MatrixGroup_generic) and engine.base_ring() in (ZZ, QQ):
+        return bool(engine.is_finite())
     return None
 
 
@@ -1307,8 +1309,8 @@ class _GroupEngine:
                     return False
                 if self in GeneratedSubgroups(self.supergroup()) and self.supergroup().is_finite() is not True:
                     decision = self.membership_decision(value)
-                    if decision is True:
-                        return True
+                    if decision is True or decision is False:
+                        return decision
                     raise TypeError(f"membership of {value} in {self} is undecided; supply a word witness to membership_decision")
                 return _engine_subgroup_admits(self, value)
             case _:
@@ -7595,6 +7597,21 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
         def selected_subgroup_generators(self):
             return self._selected_subgroup_generators
 
+        @cached_method
+        def _finiteness_decision(self):
+            r"""Decide a supplied rational matrix subgroup with its selected engine.
+
+            Finiteness of a subgroup is independent of whether its ambient
+            group is finite. Engine computation occurs only when asked,
+            never while constructing or placing the generated subgroup.
+            """
+            if self in OwnedFiniteGroups():
+                return True
+            if self in OwnedInfiniteGroups():
+                return False
+            decision = _engine_finiteness(_engine_group(self), compute=True)
+            return AtomicProposition("is_finite", self) if decision is None else decision
+
         def membership_decision(self, candidate, *, word=None):
             r"""Membership certified by a word in the selected free generators.
 
@@ -7621,7 +7638,7 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
                 for generator in self.selected_subgroup_generators()
             ):
                 return True
-            if ambient.is_finite() is True:
+            if self.is_finite() is True:
                 return _engine_subgroup_admits(self, candidate)
             return AtomicProposition("is_member", candidate, self)
 
