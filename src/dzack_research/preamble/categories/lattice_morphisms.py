@@ -1760,7 +1760,8 @@ class LatticeEmbeddingMor(CategoricalMor):
 
         yield from assign(())
 
-    def is_empty(self):
+    def _emptiness_decision(self) -> bool | None:
+        r"""``Emb(L, M) = ∅``, supplied to the ``Sets`` emptiness hook; ``None`` where no route decides it."""
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
@@ -1768,7 +1769,13 @@ class LatticeEmbeddingMor(CategoricalMor):
         source = self.domain()
         target = self.codomain()
         if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
-            return source.Isom(target).is_empty()
+            match source.Isom(target).is_empty():
+                case True:
+                    return True
+                case False:
+                    return False
+                case _:
+                    return None
         target_embedding_data = self._target_primitive_embedding_data()
         if target_embedding_data is False:
             return True
@@ -1782,7 +1789,7 @@ class LatticeEmbeddingMor(CategoricalMor):
                     _signature = self.codomain().signature_pair()
                     positive, negative = _signature.first(), _signature.second()
                     return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
-        return AtomicProposition("is_empty", self)
+        return None
 
     def an_element(self):
         if self._codomain_is_definite_over_integers():
@@ -2872,13 +2879,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             raise ValueError(f"cannot compose {second} after {first}: the codomain {first.codomain()} of {first} is not the domain {second.domain()} of {second}")
         return first.domain().Isom(second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
 
-    def is_empty(self):
-        r"""Return whether ``Isom(L, M)`` is empty, decided without constructing an isometry where a theorem allows.
+    def _emptiness_decision(self) -> bool | None:
+        r"""``Isom(L, M) = ∅``, supplied to the ``Sets`` emptiness hook, decided without constructing an isometry where a theorem allows.
 
         :meth:`_isometry_decision` owns the decision; an isometry is built
-        only by :meth:`an_element`.
+        only by :meth:`an_element`.  An undecided case supplies no decision,
+        and ``Sets.is_empty`` returns the proposition.
         """
-        return self._isometry_decision()[0]
+        match self._isometry_decision()[0]:
+            case True:
+                return True
+            case False:
+                return False
+            case _:
+                return None
 
     def _isometry_from_column_matrix(self, transformation):
         r"""The isometry whose \(j\)-th generator image has the \(j\)-th column of ``transformation`` as coordinates."""

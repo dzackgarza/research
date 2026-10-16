@@ -2272,21 +2272,6 @@ class CoreMor(CategoricalMor):
             case _:
                 return None
 
-    def cardinality(self):
-        r"""``|Iso_C(X, Y)|`` for a core Mor with distinct endpoints.
-
-        Such a Mor is placed in no owned category of sets, so this is its
-        cardinality operation; a vertex group ``Aut_C(X)`` reaches the same
-        count through ``Sets``' ``cardinality`` and this realization's
-        ``_cardinality_decision``.
-        """
-        count = self._cardinality_decision()
-        assert count is not None, (
-            f"cannot compute the cardinality of {self}: the bijections are counted only between finite "
-            f"sets, and {self.domain()} -> {self.codomain()} is a core Mor of {self.core_category().base_category()}"
-        )
-        return count
-
     def __init__(
         self,
         family: MorCategoryConstruction,
@@ -2362,8 +2347,13 @@ class CoreMor(CategoricalMor):
         r"""One isomorphism, or ``None``: the base category's decision (its protected core contract)."""
         return self.core_category().base_category()._core_isomorphism_witness(self)
 
-    def is_empty(self) -> bool:
-        r"""Whether there is no isomorphism between the endpoints, as the base category decides."""
+    def _emptiness_decision(self) -> bool:
+        r"""``Iso_C(X, Y) = ∅``, supplied to the ``Sets`` emptiness hook: the base category's decision.
+
+        ``is_empty`` is the one operation of ``Sets``, where every fixed Mor
+        is placed (``CategoricalMor``); this realization supplies only the
+        decision.  On a vertex group the group owner's hook answers first.
+        """
         return self._isomorphism_witness() is None
 
     def an_element(self) -> CategoricalIsomorphism:
